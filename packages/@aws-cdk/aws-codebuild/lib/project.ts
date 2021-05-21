@@ -724,10 +724,14 @@ export class Project extends ProjectBase {
     const kmsIamResources = new Set<string>();
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
-      let envVariableValue;
-      if (secretsmanager.Secret.isSecret(envVariable.value)) {
-        const secretArn = (envVariable.value as secretsmanager.Secret).secretArn;
-        envVariableValue = envVariable.qualifier ? `${secretArn}:${envVariable.qualifier}` : secretArn;
+      let envVariableValue: string;
+      if (SecretValue.isSecretValue(envVariable.value)) {
+        const secretArn = (envVariable.value as SecretValue).secretArn;
+        if (secretArn) {
+          envVariableValue = secretArn;
+        } else {
+          throw new Error('When providing a SecretValue it must resolve to a value from SecretsManager!');
+        }
       } else {
         envVariableValue = envVariable.value?.toString();
       }
@@ -770,13 +774,13 @@ export class Project extends ProjectBase {
 
         // save SecretsManager env variables
         if (envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER) {
-          if (secretsmanager.Secret.isSecret(envVariable.value)) {
-            const secretArn = (envVariable.value as secretsmanager.Secret).secretArn;
-            const parsedSecretArn = stack.parseArn(secretArn);
-
+          if (SecretValue.isSecretValue(envVariable.value)) {
+            // We already throw an exception up top if no secretArn was provided
+            const secretArn: string = (envVariable.value as SecretValue).secretArn!;
             secretsManagerIamResources.add(`${secretArn}*`);
-            if (parsedSecretArn && parsedSecretArn.account &&
-              Token.compareStrings(stack.account, parsedSecretArn.account) === TokenComparison.DIFFERENT) {
+
+            const parsedSecretArn = stack.parseArn(secretArn);
+            if (parsedSecretArn.account && Token.compareStrings(stack.account, parsedSecretArn.account) === TokenComparison.DIFFERENT) {
               kmsIamResources.add(stack.formatArn({
                 service: 'kms',
                 resource: 'key',
@@ -784,7 +788,6 @@ export class Project extends ProjectBase {
                 // the key policies have to allow this access, so a wildcard is safe here
                 resourceName: '*',
                 sep: '/',
-                partition: parsedSecretArn.partition,
                 account: parsedSecretArn.account,
                 region: parsedSecretArn.region,
               }));
@@ -1925,16 +1928,12 @@ export interface BuildEnvironmentVariable {
    * The value of the environment variable.
    * For plain-text variables (the default), this is the literal value of variable.
    * For SSM parameter variables, pass the name of the parameter here (`parameterName` property of `IParameter`).
-   * For SecretsManager variables secrets, pass either the secret name (`secretName` property of `ISecret`),
-   * the secret ARN (`secretArn` property of `ISecret`) or the secret itself (type of ISecret) here.
-   */
-  readonly value: any;
-
-  /**
-   * Optional SecretsManager qualifiers separated by ':',like the JSON key, or the version or stage,
+   * For SecretsManager variables secrets, pass the SecretValue (`secretValue` property of `ISecret`) or pass either
+   * the secret name (`secretName` property of `ISecret`) or the secret ARN (`secretArn` property of `ISecret`) here,
+   * along with optional SecretsManager qualifiers separated by ':', like the JSON key, or the version or stage
    * (see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager for details).
    */
-  readonly qualifier?: string
+  readonly value: any;
 }
 
 export enum BuildEnvironmentVariableType {

@@ -1467,73 +1467,18 @@ export = {
         test.done();
       },
 
-      'can be provided as a Secret from complete secret Arn'(test: Test) {
+      'can be provided as a SecretValue for SecretsManager'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
         // WHEN
-        const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
-          'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456');
+        const secretValue = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
+          'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456').secretValueFromJson('json-key');
         new codebuild.PipelineProject(stack, 'Project', {
           environmentVariables: {
             'ENV_VAR1': {
               type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-              value: secret,
-            },
-          },
-        });
-
-        // THEN
-        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Environment': {
-            'EnvironmentVariables': [
-              {
-                'Name': 'ENV_VAR1',
-                'Type': 'SECRETS_MANAGER',
-                'Value': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456',
-              },
-            ],
-          },
-        }));
-
-        // THEN
-        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-          'PolicyDocument': {
-            'Statement': arrayWith({
-              'Action': 'secretsmanager:GetSecretValue',
-              'Effect': 'Allow',
-              'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456*',
-            }),
-          },
-        }));
-
-        // THEN
-        expect(stack).to(not(haveResourceLike('AWS::IAM::Policy', {
-          'PolicyDocument': {
-            'Statement': arrayWith({
-              'Action': 'kms:Decrypt',
-              'Effect': 'Allow',
-              'Resource': 'arn:aws:kms:us-west-2:123456789012:key/*',
-            }),
-          },
-        })));
-
-        test.done();
-      },
-
-      'can be provided as a Secret from complete secret Arn with a qualifier'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        // WHEN
-        const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
-          'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456');
-        new codebuild.PipelineProject(stack, 'Project', {
-          environmentVariables: {
-            'ENV_VAR1': {
-              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-              value: secret,
-              qualifier: 'json-key',
+              value: secretValue,
             },
           },
         });
@@ -1557,83 +1502,47 @@ export = {
             'Statement': arrayWith({
               'Action': 'secretsmanager:GetSecretValue',
               'Effect': 'Allow',
-              'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456*',
+              'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456:json-key*',
             }),
           },
         }));
 
+        // THEN
+        expect(stack).to(not(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:123456789012:key/*',
+            }),
+          },
+        })));
+
         test.done();
       },
 
-      'can be provided as a Secret from secret name'(test: Test) {
+      'throws error when provided as a SecretValue not for SecretsManager'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
         // WHEN
-        const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'mysecret');
-        new codebuild.PipelineProject(stack, 'Project', {
-          environmentVariables: {
-            'ENV_VAR1': {
-              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-              value: secret,
+        const secretValue = cdk.SecretValue.plainText('secret');
+        // THEN
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environmentVariables: {
+              'ENV_VAR1': {
+                type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+                value: secretValue,
+              },
             },
-          },
-        });
-
-        // THEN
-        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Environment': {
-            'EnvironmentVariables': [
-              {
-                'Name': 'ENV_VAR1',
-                'Type': 'SECRETS_MANAGER',
-                'Value': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      { 'Ref': 'AWS::Partition' },
-                      ':secretsmanager:',
-                      { 'Ref': 'AWS::Region' },
-                      ':',
-                      { 'Ref': 'AWS::AccountId' },
-                      ':secret:mysecret',
-                    ],
-                  ],
-                },
-              },
-            ],
-          },
-        }));
-
-        // THEN
-        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-          'PolicyDocument': {
-            'Statement': arrayWith({
-              'Action': 'secretsmanager:GetSecretValue',
-              'Effect': 'Allow',
-              'Resource': {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    { 'Ref': 'AWS::Partition' },
-                    ':secretsmanager:',
-                    { 'Ref': 'AWS::Region' },
-                    ':',
-                    { 'Ref': 'AWS::AccountId' },
-                    ':secret:mysecret*',
-                  ],
-                ],
-              },
-            }),
-          },
-        }));
+          });
+        }, /When providing a SecretValue it must resolve to a value from SecretsManager!/);
 
         test.done();
       },
 
-      "when provided as a Secret from another account, adds permission to decrypt keys in the Secret's account"(test: Test) {
+      "when provided as a SecretValue pointing to a Secret from another account, adds permission to decrypt keys in the Secret's account"(test: Test) {
         // GIVEN
         const app = new cdk.App();
         const stack = new cdk.Stack(app, 'ProjectStack', {
@@ -1641,13 +1550,13 @@ export = {
         });
 
         // WHEN
-        const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
-          'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret-123456');
+        const secretValue = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
+          'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret-123456').secretValue;
         new codebuild.PipelineProject(stack, 'Project', {
           environmentVariables: {
             'ENV_VAR1': {
               type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-              value: secret,
+              value: secretValue,
             },
           },
         });
@@ -1658,7 +1567,16 @@ export = {
             'Statement': arrayWith({
               'Action': 'kms:Decrypt',
               'Effect': 'Allow',
-              'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
+              'Resource': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { 'Ref': 'AWS::Partition' },
+                    ':kms:us-west-2:901234567890:key/*',
+                  ],
+                ],
+              },
             }),
           },
         }));
@@ -1694,7 +1612,7 @@ export = {
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
           'b': {
-            value: cdk.SecretValue.secretsManager('my-secret'),
+            value: secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'my-secret'),
           },
         },
         checkSecretsInPlainTextEnvVariables: false,
