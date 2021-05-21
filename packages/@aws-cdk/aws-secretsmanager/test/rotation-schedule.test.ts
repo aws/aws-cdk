@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as secretsmanager from '../lib';
@@ -107,6 +108,64 @@ test('assign permissions for rotation schedule with a rotation Lambda', () => {
         Ref: 'LambdaServiceRoleA8ED4D3B',
       },
     ],
+  });
+});
+
+test('assign kms permissions for rotation schedule with a rotation Lambda', () => {
+  // GIVEN
+  const encryptionKey = new kms.Key(stack, 'Key');
+  const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey });
+  const rotationLambda = new lambda.Function(stack, 'Lambda', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    code: lambda.Code.fromInline('export.handler = event => event;'),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+    secret,
+    rotationLambda,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: [{}, {}, {},
+        {
+          Action: [
+            'kms:Decrypt',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::GetAtt': [
+                'LambdaServiceRoleA8ED4D3B',
+                'Arn',
+              ],
+            },
+          },
+          Resource: '*',
+        }],
+    },
   });
 });
 
