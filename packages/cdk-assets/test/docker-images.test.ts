@@ -87,6 +87,7 @@ test('pass destination properties to AWS client', async () => {
   }));
 });
 
+
 describe('with a complete manifest', () => {
   let pub: AssetPublishing;
   beforeEach(() => {
@@ -102,6 +103,18 @@ describe('with a complete manifest', () => {
       imageIds: [{ imageTag: 'abcdef' }],
       repositoryName: 'repo',
     }));
+  });
+
+  test('Displays an error if the ECR repository cannot be found', async () => {
+    aws.mockEcr.describeImages = mockedApiFailure('RepositoryNotFoundException', 'Repository not Found');
+
+    await expect(pub.publish()).rejects.toThrow('Error publishing: Repository not Found');
+  });
+
+  test('successful run does not need to query account ID', async () => {
+    aws.mockEcr.describeImages = mockedApiResult({ /* No error == image exists */ });
+    await pub.publish();
+    expect(aws.discoverCurrentAccount).not.toHaveBeenCalled();
   });
 
   test('upload docker image if not uploaded yet but exists locally', async () => {
