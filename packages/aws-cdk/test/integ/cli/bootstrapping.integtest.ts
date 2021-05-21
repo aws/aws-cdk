@@ -54,7 +54,8 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
       '--force',
     ],
   });
-}));
+}), 3_600_000, // Observed in eu-west-2 that CF update takes over 10 minutes for this test.
+);
 
 integTest('can and deploy if omitting execution policies', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
