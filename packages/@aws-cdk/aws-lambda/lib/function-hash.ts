@@ -80,7 +80,9 @@ const VERSION_LOCKED: { [key: string]: boolean } = {
 
 function filterUsefulKeys(properties: any) {
   const versionProps = { ...VERSION_LOCKED, ...LambdaFunction._VER_PROPS };
-  const unclassified = Object.keys(properties).filter(p => !Object.keys(versionProps).includes(p));
+  const unclassified = Object.entries(properties)
+    .filter(([k, v]) => v != null && !Object.keys(versionProps).includes(k))
+    .map(([k, _]) => k);
   if (unclassified.length > 0) {
     throw new Error(`The following properties are not recognized as version properties: [${unclassified}].`
       + ' See the README of the aws-lambda module to learn more about this and to fix it.');
