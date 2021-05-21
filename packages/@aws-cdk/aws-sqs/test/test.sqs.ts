@@ -227,6 +227,7 @@ export = {
       testGrant((q, p) => q.grantSendMessages(p),
         'sqs:SendMessage',
         'sqs:GetQueueAttributes',
+        'sqs:SendMessageBatch',
         'sqs:GetQueueUrl',
       );
       test.done();
@@ -354,6 +355,7 @@ export = {
               'Action': [
                 'sqs:SendMessage',
                 'sqs:GetQueueAttributes',
+                'sqs:SendMessageBatch',
                 'sqs:GetQueueUrl',
               ],
               'Effect': 'Allow',

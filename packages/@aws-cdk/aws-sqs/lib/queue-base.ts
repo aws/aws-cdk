@@ -195,6 +195,7 @@ export abstract class QueueBase extends Resource implements IQueue {
    *
    *  - sqs:SendMessage
    *  - sqs:GetQueueAttributes
+   *  - sqs:SendMessageBatch
    *  - sqs:GetQueueUrl
    *
    * @param grantee Principal to grant send rights to
@@ -203,6 +204,7 @@ export abstract class QueueBase extends Resource implements IQueue {
     const ret = this.grant(grantee,
       'sqs:SendMessage',
       'sqs:GetQueueAttributes',
+      'sqs:SendMessageBatch',
       'sqs:GetQueueUrl');
 
     if (this.encryptionMasterKey) {
