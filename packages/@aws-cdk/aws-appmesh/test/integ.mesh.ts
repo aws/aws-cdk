@@ -78,7 +78,7 @@ const node2 = mesh.addVirtualNode('node2', {
   backendDefaults: {
     tlsClientPolicy: {
       tlsValidationContext: {
-        trust: appmesh.TlsValidationContextTrust.fileTrust({
+        trust: appmesh.TlsValidationTrust.file({
           certificateChain: 'path/to/cert',
         }),
       },
@@ -106,7 +106,7 @@ const node3 = mesh.addVirtualNode('node3', {
   backendDefaults: {
     tlsClientPolicy: {
       tlsValidationContext: {
-        trust: appmesh.TlsValidationContextTrust.fileTrust({
+        trust: appmesh.TlsValidationTrust.file({
           certificateChain: 'path-to-certificate',
         }),
       },

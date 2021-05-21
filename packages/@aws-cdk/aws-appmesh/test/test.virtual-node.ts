@@ -334,7 +334,7 @@ export = {
             tlsClientPolicy: {
               ports: [8080, 8081],
               tlsValidationContext: {
-                trust: appmesh.TlsValidationContextTrust.acmTrust({
+                trust: appmesh.TlsValidationTrust.acm({
                   certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
                 }),
               },
@@ -390,8 +390,8 @@ export = {
           tlsClientPolicy: {
             ports: [8080, 8081],
             tlsValidationContext: {
-              trust: appmesh.TlsValidationContextTrust.fileTrust({
-                certificateChain: 'path/to/cert',
+              trust: appmesh.TlsValidationTrust.file({
+                certificateChain: 'path-to-certificate',
               }),
             },
           },
@@ -412,7 +412,7 @@ export = {
                       Validation: {
                         Trust: {
                           File: {
-                            CertificateChain: 'path/to/cert',
+                            CertificateChain: 'path-to-certificate',
                           },
                         },
                       },

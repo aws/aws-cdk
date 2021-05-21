@@ -5,6 +5,7 @@ import { CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 import { IMesh, Mesh } from './mesh';
 import { AccessLog, BackendDefaults } from './shared-interfaces';
+import { renderTlsPolicy } from './tls-validation';
 import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-gateway-listener';
 
 /**
@@ -187,26 +188,19 @@ export class VirtualGateway extends VirtualGatewayBase {
     }
 
     const accessLogging = props.accessLog?.bind(this);
-    const backendDefaults = props.backendDefaults;
+    const tlsClientPolicy = props.backendDefaults?.tlsClientPolicy;
 
     const node = new CfnVirtualGateway(this, 'Resource', {
       virtualGatewayName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
         listeners: this.listeners.map(listener => listener.listener),
-        backendDefaults: backendDefaults !== undefined ?
-          {
-            clientPolicy: backendDefaults.tlsClientPolicy !== undefined ?
-              {
-                tls: {
-                  ports: backendDefaults.tlsClientPolicy.ports,
-                  enforce: backendDefaults.tlsClientPolicy.enforce,
-                  validation: {
-                    trust: backendDefaults.tlsClientPolicy.tlsValidationContext.trust.bind(this).virtualGatewayClientTlsValidationContextTrust,
-                  },
-                },
-              }
-              : undefined,
+        backendDefaults: props.backendDefaults
+          ? {
+            clientPolicy: {
+              tls: tlsClientPolicy ? renderTlsPolicy(this, tlsClientPolicy,
+                (config) => config.virtualGatewayClientTlsValidationTrust) : undefined,
+            },
           }
           : undefined,
         logging: accessLogging !== undefined ? {

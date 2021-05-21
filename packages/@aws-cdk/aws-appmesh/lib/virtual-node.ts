@@ -1,14 +1,20 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
 import { ServiceDiscovery } from './service-discovery';
 import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
+import { renderTlsPolicy } from './tls-validation';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 
 /**
- * Interface which all VirtualNode based classes must implement
+ * Interface which
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core'; all VirtualNode based classes must implement
  */
 export interface IVirtualNode extends cdk.IResource {
   /**
@@ -189,7 +195,7 @@ export class VirtualNode extends VirtualNodeBase {
     props.listeners?.forEach(listener => this.addListener(listener));
     const accessLogging = props.accessLog?.bind(this);
     const serviceDiscovery = props.serviceDiscovery?.bind(this);
-    const backendDefaults = props.backendDefaults;
+    const tlsClientPolicy = props.backendDefaults?.tlsClientPolicy;
 
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
@@ -197,19 +203,12 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: backendDefaults !== undefined ?
-          {
-            clientPolicy: backendDefaults.tlsClientPolicy !== undefined ?
-              {
-                tls: {
-                  ports: backendDefaults.tlsClientPolicy.ports,
-                  enforce: backendDefaults.tlsClientPolicy.enforce,
-                  validation: {
-                    trust: backendDefaults.tlsClientPolicy.tlsValidationContext.trust.bind(this).virtualNodeClientTlsValidationContextTrust,
-                  },
-                },
-              }
-              : undefined,
+        backendDefaults: props.backendDefaults
+          ? {
+            clientPolicy: {
+              tls: tlsClientPolicy ? renderTlsPolicy(this, tlsClientPolicy,
+                (config) => config.virtualNodeClientTlsValidationTrust) : undefined,
+            },
           }
           : undefined,
         serviceDiscovery: {

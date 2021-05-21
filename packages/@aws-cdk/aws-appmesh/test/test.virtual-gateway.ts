@@ -399,7 +399,7 @@ export = {
         backendDefaults: {
           tlsClientPolicy: {
             tlsValidationContext: {
-              trust: appmesh.TlsValidationContextTrust.fileTrust({
+              trust: appmesh.TlsValidationTrust.file({
                 certificateChain: 'path/to/cert',
               }),
             },

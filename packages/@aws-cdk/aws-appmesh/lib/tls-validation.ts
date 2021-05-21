@@ -6,13 +6,38 @@ import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { Construct } from '@aws-cdk/core';
 
 /**
+ * Represents the properties needed to define client policy
+ */
+export interface TlsClientPolicy {
+  /**
+   * Whether the policy is enforced.
+   *
+   * @default true
+   */
+  readonly enforce?: boolean;
+
+  /**
+   * TLS is enforced on the ports specified here.
+   * If no ports are specified, TLS will be enforced on all the ports.
+   *
+   * @default - all ports
+   */
+  readonly ports?: number[];
+
+  /**
+   * Represents the object for TLS validation context
+   */
+  readonly tlsValidationContext: TlsValidation;
+}
+
+/**
  * Represents the properties needed to define TLS validation context
  */
-export interface TlsValidationContext {
+export interface TlsValidation {
   /**
    * Reference to where to retrieve the trust chain.
    */
-  readonly trust: TlsValidationContextTrust;
+  readonly trust: TlsValidationTrust;
 }
 
 /**
@@ -22,32 +47,32 @@ export interface TlsValidationTrustConfig {
   /**
    * VirtualNode CFN configuration for client policy's TLS Validation
    */
-  readonly virtualNodeClientTlsValidationContextTrust: CfnVirtualNode.TlsValidationContextTrustProperty;
+  readonly virtualNodeClientTlsValidationTrust: CfnVirtualNode.TlsValidationContextTrustProperty;
 
   /**
    * VirtualNode CFN configuration for listener's TLS Validation
    *
    * @default - no TLS Validation
    */
-  readonly virtualNodeListenerTlsValidationContextTrust?: CfnVirtualNode.ListenerTlsValidationContextTrustProperty
+  readonly virtualNodeListenerTlsValidationTrust?: CfnVirtualNode.ListenerTlsValidationContextTrustProperty
 
   /**
    * VirtualGateway CFN configuration for client policy's TLS Validation
    */
-  readonly virtualGatewayClientTlsValidationContextTrust: CfnVirtualGateway.VirtualGatewayTlsValidationContextTrustProperty;
+  readonly virtualGatewayClientTlsValidationTrust: CfnVirtualGateway.VirtualGatewayTlsValidationContextTrustProperty;
 
   /**
    * VirtualGateway CFN configuration for listener's TLS Validation
    *
    * @default - no TLS Validation
    */
-  readonly virtualGatewayListenerTlsValidationContextTrust?: CfnVirtualGateway.VirtualGatewayListenerTlsValidationContextTrustProperty;
+  readonly virtualGatewayListenerTlsValidationTrust?: CfnVirtualGateway.VirtualGatewayListenerTlsValidationContextTrustProperty;
 }
 
 /**
  * ACM Trust Properties
  */
-export interface AcmTrustOptions {
+export interface TlsValidationAcmTrustOptions {
   /**
    * Contains information for your private certificate authority
    */
@@ -57,7 +82,7 @@ export interface AcmTrustOptions {
 /**
  * File Trust Properties
  */
-export interface FileTrustOptions {
+export interface TlsValidationFileTrustOptions {
   /**
    * Path to the Certificate Chain file on the file system where the Envoy is deployed.
    */
@@ -67,19 +92,19 @@ export interface FileTrustOptions {
 /**
  * Defines the TLS validation context trust.
  */
-export abstract class TlsValidationContextTrust {
+export abstract class TlsValidationTrust {
   /**
    * Tells envoy where to fetch the validation context from
    */
-  public static fileTrust(props: FileTrustOptions): TlsValidationContextTrust {
-    return new FileTlsValidationContextTrustImpl(props);
+  public static file(props: TlsValidationFileTrustOptions): TlsValidationTrust {
+    return new TlsValidationFileTrustImpl(props);
   }
 
   /**
    * TLS validation context trust for ACM Private Certificate Authority (CA).
    */
-  public static acmTrust(props: AcmTrustOptions): TlsValidationContextTrust {
-    return new AcmTlsValidationContextTrustImpl(props);
+  public static acm(props: TlsValidationAcmTrustOptions): TlsValidationTrust {
+    return new TlsValidationAcmTrustImpl(props);
   }
 
   /**
@@ -89,13 +114,13 @@ export abstract class TlsValidationContextTrust {
 
 }
 
-class AcmTlsValidationContextTrustImpl extends TlsValidationContextTrust {
+class TlsValidationAcmTrustImpl extends TlsValidationTrust {
   /**
    * Contains information for your private certificate authority
    */
   readonly certificateAuthorities: acmpca.ICertificateAuthority[];
 
-  constructor (props: AcmTrustOptions) {
+  constructor (props: TlsValidationAcmTrustOptions) {
     super();
     this.certificateAuthorities = props.certificateAuthorities;
   }
@@ -105,13 +130,13 @@ class AcmTlsValidationContextTrustImpl extends TlsValidationContextTrust {
       throw new Error('you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy');
     } else {
       return {
-        virtualNodeClientTlsValidationContextTrust: {
+        virtualNodeClientTlsValidationTrust: {
           acm: {
             certificateAuthorityArns: this.certificateAuthorities.map(certificateArn =>
               certificateArn.certificateAuthorityArn),
           },
         },
-        virtualGatewayClientTlsValidationContextTrust: {
+        virtualGatewayClientTlsValidationTrust: {
           acm: {
             certificateAuthorityArns: this.certificateAuthorities.map(certificateArn =>
               certificateArn.certificateAuthorityArn),
@@ -122,39 +147,50 @@ class AcmTlsValidationContextTrustImpl extends TlsValidationContextTrust {
   }
 }
 
-class FileTlsValidationContextTrustImpl extends TlsValidationContextTrust {
+class TlsValidationFileTrustImpl extends TlsValidationTrust {
   /**
    * Path to the Certificate Chain file on the file system where the Envoy is deployed.
    */
   readonly certificateChain: string;
 
-  constructor (props: FileTrustOptions) {
+  constructor (props: TlsValidationFileTrustOptions) {
     super();
     this.certificateChain = props.certificateChain;
   }
 
   public bind(_scope: Construct): TlsValidationTrustConfig {
     return {
-      virtualNodeClientTlsValidationContextTrust: {
+      virtualNodeClientTlsValidationTrust: {
         file: {
           certificateChain: this.certificateChain,
         },
       },
-      virtualNodeListenerTlsValidationContextTrust: {
+      virtualNodeListenerTlsValidationTrust: {
         file: {
           certificateChain: this.certificateChain,
         },
       },
-      virtualGatewayClientTlsValidationContextTrust: {
+      virtualGatewayClientTlsValidationTrust: {
         file: {
           certificateChain: this.certificateChain,
         },
       },
-      virtualGatewayListenerTlsValidationContextTrust: {
+      virtualGatewayListenerTlsValidationTrust: {
         file: {
           certificateChain: this.certificateChain,
         },
       },
     };
   }
+}
+
+export function renderTlsPolicy(scope: Construct, tlsClientPolicy: TlsClientPolicy,
+  extractor: (c: TlsValidationTrustConfig) => CfnVirtualNode.TlsValidationContextTrustProperty): CfnVirtualNode.ClientPolicyTlsProperty {
+  return {
+    ports: tlsClientPolicy.ports,
+    enforce: tlsClientPolicy.enforce,
+    validation: {
+      trust: extractor(tlsClientPolicy.tlsValidationContext.trust.bind(scope)),
+    },
+  };
 }
