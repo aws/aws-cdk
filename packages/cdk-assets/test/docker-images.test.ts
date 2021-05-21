@@ -87,7 +87,6 @@ test('pass destination properties to AWS client', async () => {
   }));
 });
 
-
 describe('with a complete manifest', () => {
   let pub: AssetPublishing;
   beforeEach(() => {
