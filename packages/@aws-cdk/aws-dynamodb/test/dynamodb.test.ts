@@ -20,6 +20,7 @@ import {
   Operation,
   CfnTable,
 } from '../lib';
+import { ReplicaProvider } from '../lib/replica-provider';
 
 jest.mock('@aws-cdk/custom-resources');
 
@@ -2281,6 +2282,10 @@ describe('import', () => {
 });
 
 describe('global', () => {
+  beforeEach(() => {
+    (ReplicaProvider as any).getOrCreateCalls.clear();
+  });
+
   test('create replicas', () => {
     // GIVEN
     const stack = new Stack();
@@ -2826,6 +2831,29 @@ describe('global', () => {
     expect(cr.Provider).toHaveBeenCalledWith(expect.anything(), expect.any(String), expect.objectContaining({
       totalTimeout: Duration.hours(1),
     }));
+  });
+
+  test('throws when reaching the maximum table with replication limit', () => {
+    // GIVEN
+    const stack = new Stack();
+    for (let i = 1; i <= 10; i++) {
+      new Table(stack, `Table${i}`, {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING,
+        },
+        replicationRegions: ['eu-central-1'],
+      });
+    }
+
+    // THEN
+    expect(() => new Table(stack, 'OverLimit', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: ['eu-central-1'],
+    })).toThrow(/cannot have more than 10 global tables/);
   });
 });
 
