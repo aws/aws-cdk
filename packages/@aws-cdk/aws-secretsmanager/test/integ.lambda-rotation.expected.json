@@ -113,6 +113,40 @@
                 }
               },
               "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "kms:ViaService": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "secretsmanager.",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ".amazonaws.com"
+                      ]
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "LambdaServiceRoleA8ED4D3B",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
