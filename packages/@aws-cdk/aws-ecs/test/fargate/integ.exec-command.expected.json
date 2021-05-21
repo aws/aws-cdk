@@ -517,35 +517,6 @@
           }
         }
       },
-      "TaskDefExecutionRoleB4775C97": {
-        "Type": "AWS::IAM::Role",
-        "Properties": {
-          "AssumeRolePolicyDocument": {
-            "Statement": [
-              {
-                "Action": "sts:AssumeRole",
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "ecs-tasks.amazonaws.com"
-                }
-              }
-            ],
-            "Version": "2012-10-17"
-          },
-          "ManagedPolicyArns": [{
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-              ]
-            ]
-          }]
-        }
-      },
       "TaskDefTaskRole1EDB4A67": {
         "Type": "AWS::IAM::Role",
         "Properties": {
@@ -577,6 +548,19 @@
                 ],
                 "Effect": "Allow",
                 "Resource": "*"
+              },
+              {
+                "Action": [
+                  "kms:Decrypt",
+                  "kms:GenerateDataKey"
+                ],
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "KmsKey46693ADD",
+                    "Arn"
+                  ]
+                }
               },
               {
                 "Action": "logs:DescribeLogGroups",
@@ -646,19 +630,6 @@
                     ]
                   ]
                 }
-              },
-              {
-                "Action": [
-                  "kms:Decrypt",
-                  "kms:GenerateDataKey"
-                ],
-                "Effect": "Allow",
-                "Resource": {
-                  "Fn::GetAtt": [
-                    "KmsKey46693ADD",
-                    "Arn"
-                  ]
-                }
               }
             ],
             "Version": "2012-10-17"
@@ -689,12 +660,6 @@
           "TaskRoleArn": {
             "Fn::GetAtt": [
               "TaskDefTaskRole1EDB4A67",
-              "Arn"
-            ]
-          },
-          "ExecutionRoleArn": {
-            "Fn::GetAtt": [
-              "TaskDefExecutionRoleB4775C97",
               "Arn"
             ]
           }

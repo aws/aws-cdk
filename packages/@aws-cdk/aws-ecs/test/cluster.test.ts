@@ -2021,7 +2021,7 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-    }, /Need to provide log configuration when setting execute command logging field to OVERRIDE/);
+    }, /Execute command log configuration needs to be provided when setting the logging to OVERRIDE./);
 
     test.done();
   },
@@ -2043,11 +2043,10 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.DEFAULT,
         },
       });
-    }, /Log configuration provided but execute command logging field not set to OVERRIDE. Please set logging to OVERRIDE./);
+    }, /Execute command log configuration must only be specified when log configuration is OVERRIDE./);
 
     test.done();
   },
-
 
   'throws when CloudWatchEncryptionEnabled without providing CloudWatch Logs log group name'(test: Test) {
     // GIVEN
@@ -2064,7 +2063,7 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-    }, /CloudWatchEncryptionEnabled without specifying a CloudWatch Logs log group in execute command log configuration./);
+    }, /CloudWatchEncryptionEnabled cannot be specified without a CloudWatch log group in execute command log configuration./);
 
     test.done();
   },
@@ -2084,7 +2083,7 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-    }, /S3EncryptionEnabled without specifying an S3 Bucket in execute command log configuration./);
+    }, /S3EncryptionEnabled cannot be specified without an S3 bucket name in execute command log configuration./);
 
     test.done();
   },

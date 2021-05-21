@@ -179,10 +179,10 @@ export class Cluster extends Resource implements ICluster {
     if (props.executeCommandConfiguration) {
       if (props.executeCommandConfiguration.logging) {
         if (props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE && !props.executeCommandConfiguration.logConfiguration) {
-          throw new Error('Need to provide log configuration when setting execute command logging field to OVERRIDE');
+          throw new Error('Execute command log configuration needs to be provided when setting the logging to OVERRIDE.');
         }
         if (props.executeCommandConfiguration.logging !== ExecuteCommandLogging.OVERRIDE && props.executeCommandConfiguration.logConfiguration) {
-          throw new Error('Log configuration provided but execute command logging field not set to OVERRIDE. Please set logging to OVERRIDE.');
+          throw new Error('Execute command log configuration must only be specified when log configuration is OVERRIDE.');
         }
       }
       this._executeCommandConfiguration = props.executeCommandConfiguration;
@@ -192,7 +192,7 @@ export class Cluster extends Resource implements ICluster {
       clusterName: this.physicalName,
       clusterSettings,
       capacityProviders: Lazy.list({ produce: () => this._fargateCapacityProviders }, { omitEmpty: true }),
-      configuration: this._executeCommandConfiguration ? this.renderConfiguration() : undefined,
+      configuration: this.renderConfiguration(),
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -232,35 +232,37 @@ export class Cluster extends Resource implements ICluster {
     }
   }
 
-  private renderConfiguration() : CfnCluster.ClusterConfigurationProperty {
-    return {
-      executeCommandConfiguration: this.renderExecuteCommandConfiguration(),
-    };
+  private renderConfiguration() : CfnCluster.ClusterConfigurationProperty | undefined {
+    if (this._executeCommandConfiguration) {
+      return {
+        executeCommandConfiguration: this.renderExecuteCommandConfiguration(),
+      };
+    }
+    return undefined;
   }
 
   private renderExecuteCommandConfiguration() : CfnCluster.ExecuteCommandConfigurationProperty {
     return {
-      kmsKeyId: this._executeCommandConfiguration?.kmsKey ? this._executeCommandConfiguration?.kmsKey.keyArn : undefined,
-      logConfiguration: this._executeCommandConfiguration?.logConfiguration ?
-        this.renderExecuteCommandLogConfiguration(this._executeCommandConfiguration?.logConfiguration) : undefined,
-      logging: this._executeCommandConfiguration?.logging ? this._executeCommandConfiguration?.logging : undefined,
+      kmsKeyId: this._executeCommandConfiguration?.kmsKey?.keyArn,
+      logConfiguration: this._executeCommandConfiguration?.logConfiguration ? this.renderExecuteCommandLogConfiguration() : undefined,
+      logging: this._executeCommandConfiguration?.logging,
     };
   }
 
-  private renderExecuteCommandLogConfiguration(logConfiguration: ExecuteCommandLogConfiguration):
-  CfnCluster.ExecuteCommandLogConfigurationProperty | undefined {
-    if (logConfiguration.s3EncryptionEnabled && !logConfiguration.s3BucketName) {
-      throw new Error('S3EncryptionEnabled without specifying an S3 Bucket in execute command log configuration.');
+  private renderExecuteCommandLogConfiguration(): CfnCluster.ExecuteCommandLogConfigurationProperty {
+    const logConfiguration = this._executeCommandConfiguration?.logConfiguration;
+    if (logConfiguration?.s3EncryptionEnabled && !logConfiguration?.s3BucketName) {
+      throw new Error('S3EncryptionEnabled cannot be specified without an S3 bucket name in execute command log configuration.');
     }
-    if (logConfiguration.cloudWatchEncryptionEnabled && !logConfiguration.cloudWatchLogGroupName) {
-      throw new Error('CloudWatchEncryptionEnabled without specifying a CloudWatch Logs log group in execute command log configuration.');
+    if (logConfiguration?.cloudWatchEncryptionEnabled && !logConfiguration?.cloudWatchLogGroupName) {
+      throw new Error('CloudWatchEncryptionEnabled cannot be specified without a CloudWatch log group in execute command log configuration.');
     }
     return {
-      cloudWatchEncryptionEnabled: logConfiguration.cloudWatchEncryptionEnabled,
-      cloudWatchLogGroupName: logConfiguration.cloudWatchLogGroupName,
-      s3BucketName: logConfiguration.s3BucketName,
-      s3EncryptionEnabled: logConfiguration.s3EncryptionEnabled,
-      s3KeyPrefix: logConfiguration.s3KeyPrefix,
+      cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
+      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroupName,
+      s3BucketName: logConfiguration?.s3BucketName,
+      s3EncryptionEnabled: logConfiguration?.s3EncryptionEnabled,
+      s3KeyPrefix: logConfiguration?.s3KeyPrefix,
     };
   }
 
@@ -1168,7 +1170,7 @@ export interface ExecuteCommandConfiguration {
   /**
    * The log setting to use for redirecting logs for the execute command results.
    *
-   * @default - 'DEFAULT'
+   * @default - No log setting
    */
   readonly logging?: ExecuteCommandLogging,
 }
@@ -1207,14 +1209,14 @@ export interface ExecuteCommandLogConfiguration {
   readonly cloudWatchEncryptionEnabled?: boolean,
 
   /**
-   * The name of the CloudWatch log group to send logs to.
+   * The name of the CloudWatch log group to send logs to. The CloudWatch log group must already be created.
    *
    * @default - none
    */
   readonly cloudWatchLogGroupName?: string,
 
   /**
-   * The name of the S3 bucket to send logs to.
+   * The name of the S3 bucket to send logs to. The S3 bucket must already be created.
    *
    * @default - none
    */

@@ -2529,6 +2529,19 @@ nodeunitShim({
               Resource: '*',
             },
             {
+              Action: [
+                'kms:Decrypt',
+                'kms:GenerateDataKey',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'KmsKey46693ADD',
+                  'Arn',
+                ],
+              },
+            },
+            {
               Action: 'logs:DescribeLogGroups',
               Effect: 'Allow',
               Resource: '*',
@@ -2579,19 +2592,6 @@ nodeunitShim({
                     },
                     '/*',
                   ],
-                ],
-              },
-            },
-            {
-              Action: [
-                'kms:Decrypt',
-                'kms:GenerateDataKey',
-              ],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': [
-                  'KmsKey46693ADD',
-                  'Arn',
                 ],
               },
             },
@@ -2735,6 +2735,19 @@ nodeunitShim({
               Resource: '*',
             },
             {
+              Action: [
+                'kms:Decrypt',
+                'kms:GenerateDataKey',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'KmsKey46693ADD',
+                  'Arn',
+                ],
+              },
+            },
+            {
               Action: 'logs:DescribeLogGroups',
               Effect: 'Allow',
               Resource: '*',
@@ -2800,19 +2813,6 @@ nodeunitShim({
                       Ref: 'EcsExecBucket4F468651',
                     },
                   ],
-                ],
-              },
-            },
-            {
-              Action: [
-                'kms:Decrypt',
-                'kms:GenerateDataKey',
-              ],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': [
-                  'KmsKey46693ADD',
-                  'Arn',
                 ],
               },
             },

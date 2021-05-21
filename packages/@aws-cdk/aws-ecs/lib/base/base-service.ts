@@ -8,7 +8,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, ExecuteCommandLogConfiguration } from '../cluster';
+import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
@@ -428,43 +428,12 @@ export abstract class BaseService extends Resource
       this.enableExecuteCommand();
 
       const logging = this.cluster.executeCommandConfiguration?.logging || ExecuteCommandLogging.DEFAULT;
+
       if (logging !== ExecuteCommandLogging.NONE) {
-        this.executeCommandLogConfiguration(logging, this.cluster.executeCommandConfiguration?.logConfiguration);
-
         if (this.cluster.executeCommandConfiguration?.kmsKey) {
-          this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-            actions: [
-              'kms:Decrypt',
-              'kms:GenerateDataKey',
-            ],
-            resources: [`${this.cluster.executeCommandConfiguration.kmsKey.keyArn}`],
-          }));
-
-          this.cluster.executeCommandConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
-            actions: [
-              'kms:*',
-            ],
-            resources: ['*'],
-            principals: [new iam.ArnPrincipal(`arn:aws:iam::${this.stack.account}:root`)],
-          }));
-
-          if (this.cluster.executeCommandConfiguration.logConfiguration?.cloudWatchEncryptionEnabled) {
-            this.cluster.executeCommandConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
-              actions: [
-                'kms:Encrypt*',
-                'kms:Decrypt*',
-                'kms:ReEncrypt*',
-                'kms:GenerateDataKey*',
-                'kms:Describe*',
-              ],
-              resources: ['*'],
-              principals: [new iam.ServicePrincipal(`logs.${this.stack.region}.amazonaws.com`)],
-              conditions: {
-                ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:aws:logs:${this.stack.region}:${this.stack.account}:*` },
-              },
-            }));
-          }
+          this.enableExecuteCommandEncryption();
         }
+        this.executeCommandLogConfiguration();
       }
     }
     this.node.defaultChild = this.resource;
@@ -477,25 +446,24 @@ export abstract class BaseService extends Resource
     return this.cloudmapService;
   }
 
-  private executeCommandLogConfiguration(logging: ExecuteCommandLogging, logConfiguration?: ExecuteCommandLogConfiguration) {
-    if (logging == ExecuteCommandLogging.DEFAULT || (logging == ExecuteCommandLogging.OVERRIDE && logConfiguration?.cloudWatchLogGroupName)) {
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-        actions: [
-          'logs:DescribeLogGroups',
-        ],
-        resources: ['*'],
-      }));
+  private executeCommandLogConfiguration() {
+    const logConfiguration = this.cluster.executeCommandConfiguration?.logConfiguration;
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:DescribeLogGroups',
+      ],
+      resources: ['*'],
+    }));
 
-      const logGroupArn = logConfiguration?.cloudWatchLogGroupName ? `arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroupName}:*` : '*';
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-        actions: [
-          'logs:CreateLogStream',
-          'logs:DescribeLogStreams',
-          'logs:PutLogEvents',
-        ],
-        resources: [logGroupArn],
-      }));
-    }
+    const logGroupArn = logConfiguration?.cloudWatchLogGroupName ? `arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroupName}:*` : '*';
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:CreateLogStream',
+        'logs:DescribeLogStreams',
+        'logs:PutLogEvents',
+      ],
+      resources: [logGroupArn],
+    }));
 
     if (logConfiguration?.s3BucketName) {
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
@@ -518,6 +486,41 @@ export abstract class BaseService extends Resource
           resources: [`arn:aws:s3:::${logConfiguration.s3BucketName}`],
         }));
       }
+    }
+  }
+
+  private enableExecuteCommandEncryption() {
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'kms:Decrypt',
+        'kms:GenerateDataKey',
+      ],
+      resources: [`${this.cluster.executeCommandConfiguration?.kmsKey?.keyArn}`],
+    }));
+
+    this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        'kms:*',
+      ],
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal(`arn:aws:iam::${this.stack.account}:root`)],
+    }));
+
+    if (this.cluster.executeCommandConfiguration?.logConfiguration?.cloudWatchEncryptionEnabled) {
+      this.cluster.executeCommandConfiguration.kmsKey?.addToResourcePolicy(new iam.PolicyStatement({
+        actions: [
+          'kms:Encrypt*',
+          'kms:Decrypt*',
+          'kms:ReEncrypt*',
+          'kms:GenerateDataKey*',
+          'kms:Describe*',
+        ],
+        resources: ['*'],
+        principals: [new iam.ServicePrincipal(`logs.${this.stack.region}.amazonaws.com`)],
+        conditions: {
+          ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:aws:logs:${this.stack.region}:${this.stack.account}:*` },
+        },
+      }));
     }
   }
 
@@ -896,7 +899,6 @@ export abstract class BaseService extends Resource
       ],
       resources: ['*'],
     }));
-    this.taskDefinition.obtainExecutionRole().addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSTaskExecutionRolePolicy'));
   }
 }
 

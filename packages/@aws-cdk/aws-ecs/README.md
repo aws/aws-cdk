@@ -886,7 +886,7 @@ const execBucket = new s3.Bucket(stack, 'EcsExecBucket');
 const cluster = new ecs.Cluster(stack, 'Cluster', {
   vpc,
   executeCommandConfiguration: {
-    kmsKeyId: kmsKey.keyArn,
+    kmsKeyId: kmsKey,
     logConfiguration: {
       cloudWatchLogGroupName: logGroup.logGroupName,
       cloudWatchEncryptionEnabled: true,
