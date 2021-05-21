@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import { expect as expectCDK, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -517,6 +518,74 @@ describe('repository', () => {
           'Version': '2012-10-17',
         },
       }));
+    });
+  });
+
+  describe('repository name validation', () => {
+    test('repository name validations', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new ecr.Repository(stack, 'Repo1', {
+        repositoryName: 'abc-xyz-34ab',
+      })).not.toThrow();
+
+      expect(() => new ecr.Repository(stack, 'Repo2', {
+        repositoryName: '124/pp-33',
+      })).not.toThrow();
+    });
+
+    test('repository name validation skips tokenized values', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new ecr.Repository(stack, 'Repo', {
+        repositoryName: cdk.Lazy.string({ produce: () => '_REPO' }),
+      })).not.toThrow();
+    });
+
+    test('fails with message on invalid repository names', () => {
+      const stack = new cdk.Stack();
+      const repositoryName = `-repositoRy.--${new Array(256).join('$')}`;
+      const expectedErrors = [
+        `Invalid ECR repository name (value: ${repositoryName})`,
+        'Repository name must be at least 2 and no more than 256 characters',
+        'Repository name must follow the specified pattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*',
+      ].join(EOL);
+
+      expect(() => new ecr.Repository(stack, 'Repo', {
+        repositoryName,
+      })).toThrow(expectedErrors);
+    });
+
+    test('fails if repository name has less than 2 or more than 256 characters', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new ecr.Repository(stack, 'Repo1', {
+        repositoryName: 'a',
+      })).toThrow(/at least 2/);
+
+      expect(() => new ecr.Repository(stack, 'Repo2', {
+        repositoryName: new Array(258).join('x'),
+      })).toThrow(/no more than 256/);
+    });
+
+    test('fails if repository name does not follow the specified pattern', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new ecr.Repository(stack, 'Repo1', {
+        repositoryName: 'aAa',
+      })).toThrow(/must follow the specified pattern/);
+
+      expect(() => new ecr.Repository(stack, 'Repo2', {
+        repositoryName: 'a--a',
+      })).toThrow(/must follow the specified pattern/);
+
+      expect(() => new ecr.Repository(stack, 'Repo3', {
+        repositoryName: 'a./a-a',
+      })).toThrow(/must follow the specified pattern/);
+
+      expect(() => new ecr.Repository(stack, 'Repo4', {
+        repositoryName: 'a//a-a',
+      })).toThrow(/must follow the specified pattern/);
     });
   });
 });
