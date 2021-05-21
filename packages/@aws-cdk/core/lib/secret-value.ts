@@ -61,7 +61,8 @@ export class SecretValue extends Intrinsic {
     const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
 
     if (secretId.startsWith('arn:')) {
-      return this.cfnDynamicReference(dyref, secretId);
+      const secretArn = options.jsonField ? `${secretId}:${options.jsonField}` : secretId;
+      return this.cfnDynamicReference(dyref, secretArn);
     }
     return this.cfnDynamicReference(dyref);
   }
