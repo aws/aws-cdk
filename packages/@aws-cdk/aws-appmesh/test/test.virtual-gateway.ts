@@ -400,7 +400,7 @@ export = {
           tlsClientPolicy: {
             tlsValidationContext: {
               trust: appmesh.TlsValidationTrust.file({
-                certificateChain: 'path/to/cert',
+                certificateChain: 'path-to-certificate',
               }),
             },
           },
