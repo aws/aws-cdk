@@ -145,7 +145,6 @@
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily.NODEJS",
       "docs-public-apis:@aws-cdk/aws-lambda.Alias.lambda",
       "docs-public-apis:@aws-cdk/aws-lambda.Alias.fromAliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-lambda.Function.fromFunctionArn",
       "docs-public-apis:@aws-cdk/aws-lambda.FunctionBase",
       "docs-public-apis:@aws-cdk/aws-lambda.QualifiedFunctionBase",
       "docs-public-apis:@aws-cdk/aws-lambda.QualifiedFunctionBase.lambda",
