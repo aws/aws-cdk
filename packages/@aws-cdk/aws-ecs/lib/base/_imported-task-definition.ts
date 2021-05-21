@@ -109,7 +109,7 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
   /**
    * Return true if the task definition can be run on a ECS Anywhere cluster
    */
-   public get isExternalCompatible(): boolean {
+  public get isExternalCompatible(): boolean {
     return isExternalCompatible(this.compatibility);
   }
 }
