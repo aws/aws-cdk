@@ -2283,7 +2283,7 @@ describe('import', () => {
 
 describe('global', () => {
   beforeEach(() => {
-    ReplicaProvider.clearGetOrCreateCalls();
+    (ReplicaProvider as any).getOrCreateCalls.clear();
   });
 
   test('create replicas', () => {
@@ -2853,7 +2853,7 @@ describe('global', () => {
         type: AttributeType.STRING,
       },
       replicationRegions: ['eu-central-1'],
-    })).toThrow(/The maximum of 10 tables with replication per stack has been reached/);
+    })).toThrow(/cannot have more than 10 global tables/);
   });
 });
 

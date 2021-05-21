@@ -120,8 +120,8 @@ const globalTable = new dynamodb.Table(this, 'Table', {
 });
 ```
 
-A maximum of 10 tables with replication can be added to a stack. Consider splitting your tables across
-multiple stacks if your reach this limit.
+A maximum of 10 tables with replication can be added to a stack.
+Consider splitting your tables across multiple stacks if your reach this limit.
 
 ## Encryption
 

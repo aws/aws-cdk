@@ -32,10 +32,6 @@ export class ReplicaProvider extends NestedStack {
     return stack.node.tryFindChild(uid) as ReplicaProvider ?? new ReplicaProvider(stack, uid, props);
   }
 
-  public static clearGetOrCreateCalls() {
-    this.getOrCreateCalls.clear();
-  }
-
   // Map of getOrCreate() calls per stack
   private static getOrCreateCalls = new Map<string, number>();
 
@@ -43,16 +39,11 @@ export class ReplicaProvider extends NestedStack {
     // The custom resource implementation uses IAM managed policies. There's
     // a limit of 10 managed policies per role in IAM. Throw if we reach this
     // limit.
-    const MAX_MANAGED_POLICIES = 10;
-    const calls = this.getOrCreateCalls.get(stack.stackName);
-    if (!calls) {
-      this.getOrCreateCalls.set(stack.stackName, 1);
-    } else {
-      if (calls >= MAX_MANAGED_POLICIES) {
-        throw new Error('The maximum of 10 tables with replication per stack has been reached. Consider splitting your table across multiple stacks.');
-      }
-      this.getOrCreateCalls.set(stack.stackName, calls + 1);
+    const calls = this.getOrCreateCalls.get(stack.stackName) ?? 0;
+    if (calls >= 10) {
+      throw new Error('You currently cannot have more than 10 global tables in a single stack. Consider splitting your tables across multiple stacks.');
     }
+    this.getOrCreateCalls.set(stack.stackName, calls + 1);
   }
 
   /**
