@@ -46,10 +46,9 @@ when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` pr
 
 ## Lock file
 
-The `NodejsFunction` requires a dependencies lock file (`yarn.lock` or
-`package-lock.json`). When bundling in a Docker container, the path containing this
-lock file is used as the source (`/asset-input`) for the volume mounted in the
-container.
+The `NodejsFunction` requires a dependencies lock file (`yarn.lock`, `pnpm-lock.yaml` or
+`package-lock.json`). When bundling in a Docker container, the path containing this lock file is
+used as the source (`/asset-input`) for the volume mounted in the container.
 
 By default, the construct will try to automatically determine your project lock file.
 Alternatively, you can specify the `depsLockFilePath` prop manually. In this
@@ -114,8 +113,9 @@ new lambda.NodejsFunction(this, 'my-handler', {
 ```
 
 The modules listed in `nodeModules` must be present in the `package.json`'s dependencies or
-installed. The same version will be used for installation. The lock file (`yarn.lock` or
-`package-lock.json`) will be used along with the right installer (`yarn` or `npm`).
+installed. The same version will be used for installation. The lock file (`yarn.lock`,
+`pnpm-lock.yaml` or `package-lock.json`) will be used along with the right installer (`yarn`,
+`pnpm` or `npm`).
 
 When working with `nodeModules` using native dependencies, you might want to force bundling in a
 Docker container even if `esbuild` is available in your environment. This can be done by setting
@@ -144,8 +144,8 @@ new lambda.NodejsFunction(this, 'my-handler', {
     keepNames: true, // defaults to false
     tsconfig: 'custom-tsconfig.json', // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false
-    banner : '/* comments */', // by default no comments are passed
-    footer : '/* comments */', // by default no comments are passed
+    banner : '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    footer : '/* comments */', // requires esbuild >= 0.9.0, defaults to none
   },
 });
 ```
@@ -166,7 +166,6 @@ new lambda.NodejsFunction(this, 'my-handler-with-commands', {
     }
     // ...
   }
-  
 });
 ```
 
@@ -220,7 +219,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 ```
 
 This image should have `esbuild` installed **globally**. If you plan to use `nodeModules` it
-should also have `npm` or `yarn` depending on the lock file you're using.
+should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
 
 Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.

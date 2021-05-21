@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.105.0](https://github.com/aws/aws-cdk/compare/v1.104.0...v1.105.0) (2021-05-19)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **lambda-nodejs:** using `banner` and `footer` now requires `esbuild` >= 0.9.0
+
+### Features
+
+* **apigatewayv2:** http api - lambda authorizer ([#13181](https://github.com/aws/aws-cdk/issues/13181)) ([4da78f6](https://github.com/aws/aws-cdk/commit/4da78f6ba2036f4a94d0e47c8581131b9bc23e14)), closes [#10534](https://github.com/aws/aws-cdk/issues/10534)
+* **custom-resources:** restrict output of AwsCustomResource to list of paths ([#14041](https://github.com/aws/aws-cdk/issues/14041)) ([773ca8c](https://github.com/aws/aws-cdk/commit/773ca8c5d2a845f392f530d7710020075b884c72)), closes [#2825](https://github.com/aws/aws-cdk/issues/2825)
+* **stepfunctions:** Add support for ResultSelector ([#14648](https://github.com/aws/aws-cdk/issues/14648)) ([50d486a](https://github.com/aws/aws-cdk/commit/50d486ad4e7d175dfac048dbb4abf5e4084ce4fe)), closes [#9904](https://github.com/aws/aws-cdk/issues/9904)
+
+
+### Bug Fixes
+
+* **cli:** Updated typo user to uses ([#14357](https://github.com/aws/aws-cdk/issues/14357)) ([7fe329c](https://github.com/aws/aws-cdk/commit/7fe329cd17502cf04c451153f6d19955621952dc))
+* **core:** cannot determine packaging when bundling that produces an archive is skipped ([#14372](https://github.com/aws/aws-cdk/issues/14372)) ([163e812](https://github.com/aws/aws-cdk/commit/163e8122db994d0bea7077f025876dbeac490ead)), closes [#14369](https://github.com/aws/aws-cdk/issues/14369)
+* **ecr:** add validations for ECR repository names ([#12613](https://github.com/aws/aws-cdk/issues/12613)) ([396dca9](https://github.com/aws/aws-cdk/commit/396dca965b56bfbe8a7aedb2bcaddb196b5560c4)), closes [#9877](https://github.com/aws/aws-cdk/issues/9877)
+* **lambda:** unable to access SingletonFunction vpc connections ([#14533](https://github.com/aws/aws-cdk/issues/14533)) ([49d18ab](https://github.com/aws/aws-cdk/commit/49d18ab8e8f55f8b36584f7fb95427106139a140)), closes [#6261](https://github.com/aws/aws-cdk/issues/6261)
+* **lambda-nodejs:** banner and footer values not escaped ([#14743](https://github.com/aws/aws-cdk/issues/14743)) ([81aa612](https://github.com/aws/aws-cdk/commit/81aa61213b4f5e3bd9cbbc155264252bd64d0f5b)), closes [#13576](https://github.com/aws/aws-cdk/issues/13576)
+* **pipelines:** self-mutating builds cannot be run in privileged mode ([#14655](https://github.com/aws/aws-cdk/issues/14655)) ([73b9b4a](https://github.com/aws/aws-cdk/commit/73b9b4a89078d1425f4acdf50a6e9b5275b7e555)), closes [#11425](https://github.com/aws/aws-cdk/issues/11425)
+* **pipelines:** stackOutput generates names too long to be used in useOutputs ([#14680](https://github.com/aws/aws-cdk/issues/14680)) ([d81e06d](https://github.com/aws/aws-cdk/commit/d81e06d5a5651cf332614d73e27bf6ed95d083a3)), closes [#13552](https://github.com/aws/aws-cdk/issues/13552)
+* **pipelines:** synth fails if 'aws-cdk' is not in `package.json` ([#14745](https://github.com/aws/aws-cdk/issues/14745)) ([0b8ee97](https://github.com/aws/aws-cdk/commit/0b8ee97b7c029c5195de694a1d2eea309c343f61)), closes [#14658](https://github.com/aws/aws-cdk/issues/14658)
+
+## [1.104.0](https://github.com/aws/aws-cdk/compare/v1.103.0...v1.104.0) (2021-05-14)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **apigatewayv2:** setting the authorizer of an API route to HttpNoneAuthorizer will now remove any existing authorizer on the route
+
+### Features
+
+* **appsync:** elasticsearch data source for graphql api ([#14651](https://github.com/aws/aws-cdk/issues/14651)) ([2337b5d](https://github.com/aws/aws-cdk/commit/2337b5d965028ba06d6ff72f991c0b8e46433a8f)), closes [#6063](https://github.com/aws/aws-cdk/issues/6063)
+* **cfnspec:** cloudformation spec v35.2.0 ([#14610](https://github.com/aws/aws-cdk/issues/14610)) ([799ce1a](https://github.com/aws/aws-cdk/commit/799ce1a7d5fb261cae92d514b4f7e315d8f0e589))
+* **cloudwatch:** GraphWidget supports period and statistic ([#14679](https://github.com/aws/aws-cdk/issues/14679)) ([b240f6e](https://github.com/aws/aws-cdk/commit/b240f6ece74d129e5f43b210e8ad12f95c4a2971))
+* **cloudwatch:** time range support for GraphWidget ([#14659](https://github.com/aws/aws-cdk/issues/14659)) ([010a6b1](https://github.com/aws/aws-cdk/commit/010a6b1a14f14be5001779644df3d3a2e27d4e71)), closes [#4649](https://github.com/aws/aws-cdk/issues/4649)
+* **ecs:** add support for EC2 Capacity Providers ([#14386](https://github.com/aws/aws-cdk/issues/14386)) ([114f7cc](https://github.com/aws/aws-cdk/commit/114f7ccdaf736988834fe2be487363a992a31369))
+* **secretsmanager:** Automatically grant permissions to rotation Lambda ([#14471](https://github.com/aws/aws-cdk/issues/14471)) ([85e00fa](https://github.com/aws/aws-cdk/commit/85e00faf1e3bcc32c2f7aa881d42c6d1f6c17f63))
+
+
+### Bug Fixes
+
+* **apigatewayv2:** authorizer is not removed when HttpNoneAuthorizer is used ([#14424](https://github.com/aws/aws-cdk/issues/14424)) ([3698a91](https://github.com/aws/aws-cdk/commit/3698a91ac81a31f763c55487f200458d5b5eaf0f))
+* **ecs:** Classes FargateService and Ec2Service have no defaultChild ([#14691](https://github.com/aws/aws-cdk/issues/14691)) ([348e11e](https://github.com/aws/aws-cdk/commit/348e11e26edc0ff90b623b7cec778f4935e61e6d)), closes [#14665](https://github.com/aws/aws-cdk/issues/14665)
+* **events-targets:** circular dependency when adding a KMS-encrypted SQS queue  ([#14638](https://github.com/aws/aws-cdk/issues/14638)) ([3063818](https://github.com/aws/aws-cdk/commit/3063818aa7c3c3ff56cf55254b0f6561db190a3e)), closes [#11158](https://github.com/aws/aws-cdk/issues/11158)
+* **lambda:** custom resource fails to connect to efs filesystem ([#14431](https://github.com/aws/aws-cdk/issues/14431)) ([10a633c](https://github.com/aws/aws-cdk/commit/10a633c8cda9f21b85c82f911d88641f3a362c4d))
+* **lambda-event-sources:** incorrect documented defaults for stream types ([#14562](https://github.com/aws/aws-cdk/issues/14562)) ([0ea24e9](https://github.com/aws/aws-cdk/commit/0ea24e95939412765c0e09133a7793557f779c76)), closes [#13908](https://github.com/aws/aws-cdk/issues/13908)
+* **lambda-nodejs:** handler filename missing from error message ([#14564](https://github.com/aws/aws-cdk/issues/14564)) ([256fd4c](https://github.com/aws/aws-cdk/commit/256fd4c6fcdbe6519bc70f62415557dbeae950a1))
+
 ## [1.103.0](https://github.com/aws/aws-cdk/compare/v1.102.0...v1.103.0) (2021-05-10)
 
 
