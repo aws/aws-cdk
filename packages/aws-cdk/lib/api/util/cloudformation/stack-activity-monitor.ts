@@ -153,7 +153,6 @@ export class StackActivityMonitor {
 
   public async stop() {
     this.active = false;
-    this.printer.stop();
     if (this.tickTimer) {
       clearTimeout(this.tickTimer);
     }
@@ -162,6 +161,8 @@ export class StackActivityMonitor {
     // already returned an error, but the monitor hasn't seen all the events yet and we'd end
     // up not printing the failure reason to users.
     await this.finalPollToEnd();
+
+    this.printer.stop();
   }
 
   private scheduleNextTick() {
@@ -281,9 +282,6 @@ export class StackActivityMonitor {
     }
 
     await this.readNewEvents();
-
-    // Final print
-    this.printer.print();
   }
 
   private simplifyConstructPath(path: string) {
@@ -622,6 +620,11 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     // Print failures at the end
     const lines = new Array<string>();
     for (const failure of this.failures) {
+      // Root stack failures are not interesting
+      if (failure.event.StackName == failure.event.LogicalResourceId) {
+        continue;
+      }
+
       lines.push(util.format(colors.red('%s | %s | %s | %s%s') + '\n',
         padLeft(TIMESTAMP_WIDTH, new Date(failure.event.Timestamp).toLocaleTimeString()),
         padRight(STATUS_WIDTH, (failure.event.ResourceStatus || '').substr(0, STATUS_WIDTH)),
