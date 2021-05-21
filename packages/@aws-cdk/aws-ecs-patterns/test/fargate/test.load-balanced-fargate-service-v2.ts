@@ -317,7 +317,7 @@ export = {
         taskImageOptions: {
           image: ecs.ContainerImage.fromRegistry('test'),
         },
-        loadBalancerName: `alb-test-load-balancer`
+        loadBalancerName: 'alb-test-load-balancer',
       });
 
       // THEN - stack contains a load balancer and a service
