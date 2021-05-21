@@ -2,6 +2,8 @@ import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-r
 import { CfnParameter } from './cfn-parameter';
 import { Intrinsic, IntrinsicProps } from './private/intrinsic';
 
+const SECRET_VALUE_SYMBOL = Symbol.for('@aws-cdk/core.SecretValue');
+
 /**
  * Work with secret values in the CDK
  *
@@ -18,6 +20,11 @@ import { Intrinsic, IntrinsicProps } from './private/intrinsic';
  * so is highly discouraged.
  */
 export class SecretValue extends Intrinsic {
+  /** Return whether the indicated object is a SecretValue */
+  public static isSecretValue(x: any): x is SecretValue {
+    return x !== null && typeof (x) === 'object' && SECRET_VALUE_SYMBOL in x;
+  }
+
   /**
    * Construct a literal secret value for use with secret-aware constructs
    *
@@ -111,6 +118,7 @@ export class SecretValue extends Intrinsic {
   constructor(value: any, options: IntrinsicProps = {}, secretArn?: string) {
     super(value, options);
 
+    Object.defineProperty(this, SECRET_VALUE_SYMBOL, { value: true });
     if (secretArn) {
       this.secretArn = secretArn;
     }

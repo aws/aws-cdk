@@ -114,4 +114,12 @@ nodeunitShim({
     test.done();
   },
 
+  'isSecretValue correctly detects an instance of type SecretValue'(test: Test) {
+    // WHEN
+    const result = SecretValue.isSecretValue(SecretValue.plainText('secret'));
+
+    // THEN
+    test.equal(result, true);
+    test.done();
+  },
 });
