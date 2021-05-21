@@ -1,6 +1,6 @@
 const GitHub = require('github-api');
 jest.mock('github-api');
-const linter = require('../index');
+const linter = require('../lint');
 
 beforeEach(() => {
   GitHub.mockClear();
