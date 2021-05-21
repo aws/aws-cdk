@@ -165,8 +165,7 @@ export class SnsPublish extends sfn.TaskStateBase {
     const attrs: { [key: string]: any } = {};
     for (const a of Object.keys(this.props.messageAttributes)) {
       const attr = this.props.messageAttributes[a];
-      attrs[a] = {};
-      attrs[a].DataType = attr.type;
+      attrs[a] = { DataType: attr.type };
       attrs[a][`${attr.type}Value`] = attr.value.value;
     }
     return attrs;
