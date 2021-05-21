@@ -417,7 +417,7 @@ export = {
                 Validation: {
                   Trust: {
                     File: {
-                      CertificateChain: 'path/to/cert',
+                      CertificateChain: 'path-to-certificate',
                     },
                   },
                 },

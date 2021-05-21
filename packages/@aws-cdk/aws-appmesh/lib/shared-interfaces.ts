@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
-import { TlsClientPolicy } from './tls-validation';
+import { renderTlsPolicy, TlsClientPolicy } from './tls-validation';
 import { IVirtualService } from './virtual-service';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -240,13 +240,8 @@ class VirtualServiceBackend extends Backend {
           virtualServiceName: this.virtualService.virtualServiceName,
           clientPolicy: this.tlsClientPolicy
             ? {
-              tls: {
-                ports: this.tlsClientPolicy.ports,
-                enforce: this.tlsClientPolicy.enforce,
-                validation: {
-                  trust: this.tlsClientPolicy.tlsValidationContext.trust.bind(scope).virtualNodeClientTlsValidationTrust,
-                },
-              },
+              tls: this.tlsClientPolicy ? renderTlsPolicy(scope, this.tlsClientPolicy,
+                (config) => config.virtualNodeClientTlsValidationTrust) : undefined,
             }
             : undefined,
         },
