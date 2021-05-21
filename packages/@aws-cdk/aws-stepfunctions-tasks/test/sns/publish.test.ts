@@ -1,7 +1,7 @@
 import * as sns from '@aws-cdk/aws-sns';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { SnsPublish } from '../../lib/sns/publish';
+import { SnsPublish, SnsMessageAttributeType } from '../../lib/sns/publish';
 
 describe('Publish', () => {
 
@@ -35,6 +35,59 @@ describe('Publish', () => {
       Parameters: {
         TopicArn: { Ref: 'TopicBFC7AF6E' },
         Message: 'Publish this message',
+      },
+    });
+  });
+  test('with message attributes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    const task = new SnsPublish(stack, 'Publish', {
+      topic,
+      message: sfn.TaskInput.fromText('Publish this message'),
+      messageAttributes: {
+        cake: {
+          type: SnsMessageAttributeType.STRING,
+          value: sfn.TaskInput.fromText('chocolate'),
+        },
+        cakePic: {
+          type: SnsMessageAttributeType.BINARY,
+          value: sfn.TaskInput.fromDataAt('$.cake.pic'),
+        },
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::sns:publish',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        TopicArn: { Ref: 'TopicBFC7AF6E' },
+        Message: 'Publish this message',
+        MessageAttributes: {
+          cake: {
+            DataType: 'String',
+            StringValue: 'chocolate',
+          },
+          cakePic: {
+            'DataType': 'Binary',
+            'BinaryValue.$': '$.cake.pic',
+          },
+        },
       },
     });
   });

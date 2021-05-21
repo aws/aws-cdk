@@ -5,6 +5,44 @@ import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
+ * SNS Message Attribute type enum
+ */
+export enum SnsMessageAttributeType {
+
+  /**
+   * String type attributes.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
+   */
+  STRING = 'String',
+
+  /**
+   * Binary type attributes.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
+   */
+  BINARY = 'Binary',
+}
+
+/**
+ * SNS Message Attribute
+ */
+export interface SnsMessageAttribute {
+  /**
+   * MessageAttributeType is the type of data being passed.
+   *
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
+   */
+  readonly type: SnsMessageAttributeType;
+
+  /**
+   * The value of the data being passed
+   */
+  readonly value: sfn.TaskInput;
+}
+
+/**
  * Properties for publishing a message to an SNS topic
  */
 export interface SnsPublishProps extends sfn.TaskStateBaseProps {
@@ -22,6 +60,17 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
    * For SMS, each message can contain up to 140 characters.
    */
   readonly message: sfn.TaskInput;
+
+  /**
+   * Add message attributes when publishing.
+   *
+   * For example, these attributes can carry additional metadata and may be used
+   * for SNS Filter Subscriptions.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
+   * @default no attributes are sent
+   */
+  readonly messageAttributes?: { [key: string]: SnsMessageAttribute };
 
   /**
    * Send different messages for each transport protocol.
@@ -98,8 +147,30 @@ export class SnsPublish extends sfn.TaskStateBase {
         TopicArn: this.props.topic.topicArn,
         Message: this.props.message.value,
         MessageStructure: this.props.messagePerSubscriptionType ? 'json' : undefined,
+        MessageAttributes: this._renderAttributes(),
         Subject: this.props.subject,
       }),
     };
   }
+  /**
+   * Provides the message attributes rendering
+   */
+  /**
+   * @internal
+   */
+  private _renderAttributes(): any {
+    if (!this.props.messageAttributes) {
+      return undefined;
+    }
+    const attrs: { [key: string]: any } = {};
+    for (const a of Object.keys(this.props.messageAttributes)) {
+      const attr = this.props.messageAttributes[a];
+      attrs[a] = {};
+      attrs[a].DataType = attr.type;
+      attrs[a][`${attr.type}Value`] = attr.value.value;
+    }
+    return attrs;
+  }
+
 }
+
