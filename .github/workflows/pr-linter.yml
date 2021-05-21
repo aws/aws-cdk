@@ -27,6 +27,6 @@ jobs:
         run: cd tools/prlint && npm ci
 
       - name: Validate
-        uses: tools/prlint
+        uses: ./tools/prlint
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
