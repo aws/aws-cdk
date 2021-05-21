@@ -2021,7 +2021,7 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-    }, /Execute command log configuration needs to be provided when setting the logging to OVERRIDE./);
+    }, /Execute command log configuration must only be specified when logging is OVERRIDE./);
 
     test.done();
   },
@@ -2043,7 +2043,7 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.DEFAULT,
         },
       });
-    }, /Execute command log configuration must only be specified when log configuration is OVERRIDE./);
+    }, /Execute command log configuration must only be specified when logging is OVERRIDE./);
 
     test.done();
   },
