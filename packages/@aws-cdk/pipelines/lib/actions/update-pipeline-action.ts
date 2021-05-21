@@ -21,8 +21,16 @@ export interface UpdatePipelineActionProps {
 
   /**
    * Name of the pipeline stack
+   *
+   * @deprecated - Use `pipelineStackHierarchicalId` instead.
+   * @default - none
    */
-  readonly pipelineStackName: string;
+  readonly pipelineStackName?: string;
+
+  /**
+   * Hierarchical id of the pipeline stack
+   */
+  readonly pipelineStackHierarchicalId: string;
 
   /**
    * Version of CDK CLI to 'npm install'.
@@ -63,6 +71,7 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
 
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
 
+    const stackIdentifier = props.pipelineStackHierarchicalId ?? props.pipelineStackName;
     const selfMutationProject = new codebuild.PipelineProject(this, 'SelfMutation', {
       projectName: props.projectName,
       environment: {
@@ -78,7 +87,7 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
           build: {
             commands: [
               // Cloud Assembly is in *current* directory.
-              `cdk -a ${embeddedAsmPath(scope)} deploy ${props.pipelineStackName} --require-approval=never --verbose`,
+              `cdk -a ${embeddedAsmPath(scope)} deploy ${stackIdentifier} --require-approval=never --verbose`,
             ],
           },
         },
