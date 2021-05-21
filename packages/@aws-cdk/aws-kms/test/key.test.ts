@@ -1,4 +1,4 @@
-import { arrayWith, ResourcePart } from '@aws-cdk/assert-internal';
+import { arrayWith, expect as expectCdk, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -579,6 +579,65 @@ describe('imported keys', () => {
         },
       },
     });
+  });
+});
+
+describe('fromCfnKey()', () => {
+  test('allows creating an L2 Key from an L1 CfnKey', () => {
+    const stack = new cdk.Stack();
+
+    const cfnKey = new kms.CfnKey(stack, 'CfnKey', {
+      keyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':iam::',
+                  { Ref: 'AWS::AccountId' },
+                  ':root',
+                ]],
+              },
+            },
+            Resource: '*',
+          },
+        ],
+      },
+    });
+    const key = kms.Key.fromCfnKey(cfnKey);
+
+    expect(stack.resolve(key.keyId)).toStrictEqual({
+      Ref: 'CfnKey',
+    });
+    expect(stack.resolve(key.keyArn)).toStrictEqual({
+      'Fn::GetAtt': ['CfnKey', 'Arn'],
+    });
+    expectCdk(stack).to(haveResource('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':iam::',
+                  { Ref: 'AWS::AccountId' },
+                  ':root',
+                ]],
+              },
+            },
+            Resource: '*',
+          },
+        ],
+      },
+    }));
   });
 });
 

@@ -485,6 +485,28 @@ export class Key extends KeyBase {
     return new Import(keyResourceName);
   }
 
+  /**
+   * Create a mutable {@link IKey} based on a low-level {@link CfnKey}.
+   * This is most useful when combined with the cloudformation-include module.
+   * This method is different than {@link fromKeyArn()} because the {@link IKey}
+   * returned from this method is mutable;
+   * meaning, calling any mutating methods on it,
+   * like {@link IKey.addToResourcePolicy()},
+   * will actually be reflected in the resulting template,
+   * as opposed to the object returned from {@link fromKeyArn()},
+   * on which calling that method would have no effect.
+   */
+  public static fromCfnKey(cfnKey: CfnKey): IKey {
+    class L2KeyFromL1 extends KeyBase {
+      public readonly keyArn = cfnKey.attrArn;
+      public readonly keyId = cfnKey.ref;
+      protected readonly policy?: iam.PolicyDocument | undefined = undefined; // ToDo add policy handling
+      protected readonly trustAccountIdentities = false;
+    }
+
+    return new L2KeyFromL1(cfnKey, 'Resource');
+  }
+
   public readonly keyArn: string;
   public readonly keyId: string;
   protected readonly policy?: iam.PolicyDocument;
