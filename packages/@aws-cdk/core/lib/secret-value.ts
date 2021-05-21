@@ -1,6 +1,6 @@
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
 import { CfnParameter } from './cfn-parameter';
-import { Intrinsic } from './private/intrinsic';
+import { Intrinsic, IntrinsicProps } from './private/intrinsic';
 
 /**
  * Work with secret values in the CDK
@@ -52,6 +52,10 @@ export class SecretValue extends Intrinsic {
     ];
 
     const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
+
+    if (secretId.startsWith('arn:')) {
+      return this.cfnDynamicReference(dyref, secretId);
+    }
     return this.cfnDynamicReference(dyref);
   }
 
@@ -76,9 +80,11 @@ export class SecretValue extends Intrinsic {
    * If possible, use `SecretValue.ssmSecure` or `SecretValue.secretsManager` directly.
    *
    * @param ref The dynamic reference to use.
+   *
+   * @param secretArn The secretArn if the reference is for a secret.
    */
-  public static cfnDynamicReference(ref: CfnDynamicReference) {
-    return new SecretValue(ref);
+  public static cfnDynamicReference(ref: CfnDynamicReference, secretArn?: string) {
+    return new SecretValue(ref, undefined, secretArn);
   }
 
   /**
@@ -95,6 +101,19 @@ export class SecretValue extends Intrinsic {
     }
 
     return new SecretValue(param.value);
+  }
+
+  /**
+   * Specifies the secretArn when it was provided for a value from SecretsManager
+   */
+  readonly secretArn?: string;
+
+  constructor(value: any, options: IntrinsicProps = {}, secretArn?: string) {
+    super(value, options);
+
+    if (secretArn) {
+      this.secretArn = secretArn;
+    }
   }
 }
 

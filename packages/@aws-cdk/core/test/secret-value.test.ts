@@ -39,6 +39,21 @@ nodeunitShim({
 
     // THEN
     test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:::}}');
+    test.equal(v.secretArn, undefined);
+    test.done();
+  },
+
+  'secretsManager with an ARN ID stores ARN'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const secretId = 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456:json-key';
+
+    // WHEN
+    const v = SecretValue.secretsManager(secretId);
+
+    // THEN
+    test.deepEqual(stack.resolve(v), `{{resolve:secretsmanager:${secretId}:SecretString:::}}`);
+    test.equal(v.secretArn, secretId);
     test.done();
   },
 
