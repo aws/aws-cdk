@@ -242,6 +242,60 @@ test('grantRead', () => {
   });
 });
 
+test('grantRead cross account', () => {
+  // GIVEN
+  const key = new kms.Key(stack, 'KMS');
+  const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
+  const principal = new iam.AccountPrincipal('1234');
+
+  // WHEN
+  secret.grantRead(principal, ['FOO', 'bar']).assertSuccess();
+
+  // THEN
+  expect(stack).toHaveResource('AWS::SecretsManager::ResourcePolicy', {
+    ResourcePolicy: {
+      Statement: [
+        {
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
+          Effect: 'Allow',
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'secretsmanager:VersionStage': [
+                'FOO',
+                'bar',
+              ],
+            },
+          },
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::1234:root',
+                ],
+              ],
+            },
+          },
+          Resource: {
+            Ref: 'SecretA720EF05',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    SecretId: {
+      Ref: 'SecretA720EF05',
+    },
+  });
+});
+
 test('grantRead with version label constraint', () => {
   // GIVEN
   const key = new kms.Key(stack, 'KMS');
