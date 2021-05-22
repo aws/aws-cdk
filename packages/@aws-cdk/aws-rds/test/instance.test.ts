@@ -199,6 +199,19 @@ describe('instance', () => {
 
   });
 
+  test('throws when create database with specific AZ and multiAZ enabled', () => {
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        multiAz: true,
+        availabilityZone: 'ew-west-1a',
+      });
+    }).toThrow(/Requesting a specific availability zone is not valid for Multi-AZ instances/);
+
+
+  });
+
   test('instance with option and parameter group', () => {
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
