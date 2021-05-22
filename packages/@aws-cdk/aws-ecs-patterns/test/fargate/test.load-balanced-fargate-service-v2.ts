@@ -322,7 +322,7 @@ export = {
 
       // THEN - stack contains a load balancer and a service
       expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        Name: `alb-test-load-balancer`
+        Name: 'alb-test-load-balancer',
       }));
 
       expect(stack).to(haveResource('AWS::ECS::Service', {
