@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { FeatureFlags, IResource, RemovalPolicy, Resource, Stack, Duration } from '@aws-cdk/core';
+import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
@@ -497,14 +497,30 @@ export class Key extends KeyBase {
    * on which calling that method would have no effect.
    */
   public static fromCfnKey(cfnKey: CfnKey): IKey {
-    class L2KeyFromL1 extends KeyBase {
-      public readonly keyArn = cfnKey.attrArn;
-      public readonly keyId = cfnKey.ref;
-      protected readonly policy?: iam.PolicyDocument | undefined = undefined; // ToDo add policy handling
-      protected readonly trustAccountIdentities = false;
+    let keyPolicy: iam.PolicyDocument;
+    try {
+      keyPolicy = iam.PolicyDocument.fromJson(cfnKey.keyPolicy);
+    } catch (e) {
+      // If the KeyPolicy contains any CloudFormation functions,
+      // PolicyDocument.fromJson() throws an exception.
+      // In that case, because we would have to effectively make the returned IKey immutable,
+      // throw an exception suggesting to use the other importing methods instead.
+      // We might make this parsing logic smarter later,
+      // but let's start by erroring out.
+      throw new Error('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
+        'This makes it impossible to create a mutable IKey from that Policy. ' +
+        'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey');
     }
 
-    return new L2KeyFromL1(cfnKey, 'Resource');
+    // change the key policy of the L1, so that all changes done in the L2 are reflected in the resulting template
+    cfnKey.keyPolicy = Lazy.any({ produce: () => keyPolicy.toJSON() });
+
+    return new class extends KeyBase {
+      public readonly keyArn = cfnKey.attrArn;
+      public readonly keyId = cfnKey.ref;
+      protected readonly policy = keyPolicy;
+      protected readonly trustAccountIdentities = false;
+    }(cfnKey, 'Resource');
   }
 
   public readonly keyArn: string;

@@ -583,10 +583,13 @@ describe('imported keys', () => {
 });
 
 describe('fromCfnKey()', () => {
-  test('allows creating an L2 Key from an L1 CfnKey', () => {
-    const stack = new cdk.Stack();
+  let stack: cdk.Stack;
+  let cfnKey: kms.CfnKey;
+  let key: kms.IKey;
 
-    const cfnKey = new kms.CfnKey(stack, 'CfnKey', {
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    cfnKey = new kms.CfnKey(stack, 'CfnKey', {
       keyPolicy: {
         Statement: [
           {
@@ -606,16 +609,25 @@ describe('fromCfnKey()', () => {
             Resource: '*',
           },
         ],
+        Version: '2012-10-17',
       },
     });
-    const key = kms.Key.fromCfnKey(cfnKey);
+    key = kms.Key.fromCfnKey(cfnKey);
+  });
 
+  test("correctly resolves the 'keyId' property", () => {
     expect(stack.resolve(key.keyId)).toStrictEqual({
       Ref: 'CfnKey',
     });
+  });
+
+  test("correctly resolves the 'keyArn' property", () => {
     expect(stack.resolve(key.keyArn)).toStrictEqual({
       'Fn::GetAtt': ['CfnKey', 'Arn'],
     });
+  });
+
+  test('preserves the KMS Key resource', () => {
     expectCdk(stack).to(haveResource('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
@@ -636,8 +648,187 @@ describe('fromCfnKey()', () => {
             Resource: '*',
           },
         ],
+        Version: '2012-10-17',
       },
     }));
+  });
+
+  describe("calling 'addToResourcePolicy()' on the returned Key", () => {
+    let addToResourcePolicyResult: iam.AddToResourcePolicyResult;
+
+    beforeEach(() => {
+      addToResourcePolicyResult = key.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['kms:action'],
+        resources: ['*'],
+        principals: [new iam.AnyPrincipal()],
+      }));
+    });
+
+    test("the AddToResourcePolicyResult returned has 'statementAdded' set to 'true'", () => {
+      expect(addToResourcePolicyResult.statementAdded).toBeTruthy();
+    });
+
+    test('preserves the mutating call in the resulting template', () => {
+      expectCdk(stack).to(haveResource('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: [
+            {
+              Action: 'kms:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':iam::',
+                    { Ref: 'AWS::AccountId' },
+                    ':root',
+                  ]],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              Action: 'kms:action',
+              Effect: 'Allow',
+              Principal: '*',
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
+    });
+  });
+
+  describe("called with a CfnKey that has an 'Fn::If' passed as the KeyPolicy", () => {
+    beforeEach(() => {
+      cfnKey = new kms.CfnKey(stack, 'CfnKey2', {
+        keyPolicy: cdk.Fn.conditionIf(
+          'AlwaysTrue',
+          {
+            Statement: [
+              {
+                Action: 'kms:action1',
+                Effect: 'Allow',
+                Principal: '*',
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+          {
+            Statement: [
+              {
+                Action: 'kms:action2',
+                Effect: 'Allow',
+                Principal: '*',
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+        ),
+      });
+    });
+
+    test('throws a descriptive exception', () => {
+      expect(() => {
+        kms.Key.fromCfnKey(cfnKey);
+      }).toThrow(/Could not parse the PolicyDocument of the passed AWS::KMS::Key/);
+    });
+  });
+
+  describe("called with a CfnKey that has an 'Fn::If' passed as the Statement of a KeyPolicy", () => {
+    beforeEach(() => {
+      cfnKey = new kms.CfnKey(stack, 'CfnKey2', {
+        keyPolicy: {
+          Statement: cdk.Fn.conditionIf(
+            'AlwaysTrue',
+            [
+              {
+                Action: 'kms:action1',
+                Effect: 'Allow',
+                Principal: '*',
+                Resource: '*',
+              },
+            ],
+            [
+              {
+                Action: 'kms:action2',
+                Effect: 'Allow',
+                Principal: '*',
+                Resource: '*',
+              },
+            ],
+          ),
+          Version: '2012-10-17',
+        },
+      });
+    });
+
+    test('throws a descriptive exception', () => {
+      expect(() => {
+        kms.Key.fromCfnKey(cfnKey);
+      }).toThrow(/Could not parse the PolicyDocument of the passed AWS::KMS::Key/);
+    });
+  });
+
+  describe("called with a CfnKey that has an 'Fn::If' passed as one of the statements of a KeyPolicy", () => {
+    beforeEach(() => {
+      cfnKey = new kms.CfnKey(stack, 'CfnKey2', {
+        keyPolicy: {
+          Statement: [
+            cdk.Fn.conditionIf(
+              'AlwaysTrue',
+              {
+                Action: 'kms:action1',
+                Effect: 'Allow',
+                Principal: '*',
+                Resource: '*',
+              },
+              {
+                Action: 'kms:action2',
+                Effect: 'Allow',
+                Principal: '*',
+                Resource: '*',
+              },
+            ),
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
+    test('throws a descriptive exception', () => {
+      expect(() => {
+        kms.Key.fromCfnKey(cfnKey);
+      }).toThrow(/Could not parse the PolicyDocument of the passed AWS::KMS::Key/);
+    });
+  });
+
+  describe("called with a CfnKey that has an 'Fn::If' passed for the Action in one of the statements of a KeyPolicy", () => {
+    beforeEach(() => {
+      cfnKey = new kms.CfnKey(stack, 'CfnKey2', {
+        keyPolicy: {
+          Statement: [
+            {
+              Action: cdk.Fn.conditionIf('AlwaysTrue', 'kms:action1', 'kms:action2'),
+              Effect: 'Allow',
+              Principal: '*',
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
+    test('throws a descriptive exception', () => {
+      expect(() => {
+        key = kms.Key.fromCfnKey(cfnKey);
+      }).toThrow(/Could not parse the PolicyDocument of the passed AWS::KMS::Key/);
+    });
   });
 });
 
