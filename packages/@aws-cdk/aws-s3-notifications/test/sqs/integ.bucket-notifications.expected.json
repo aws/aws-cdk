@@ -66,6 +66,7 @@
               "Action": [
                 "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
+                "sqs:SendMessageBatch",
                 "sqs:GetQueueUrl"
               ],
               "Condition": {
@@ -93,6 +94,7 @@
               "Action": [
                 "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
+                "sqs:SendMessageBatch",
                 "sqs:GetQueueUrl"
               ],
               "Condition": {
@@ -340,6 +342,7 @@
               "Action": [
                 "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
+                "sqs:SendMessageBatch",
                 "sqs:GetQueueUrl"
               ],
               "Condition": {

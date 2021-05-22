@@ -344,6 +344,7 @@ test('sqs as destination', () => {
           Action: [
             'sqs:SendMessage',
             'sqs:GetQueueAttributes',
+            'sqs:SendMessageBatch',
             'sqs:GetQueueUrl',
           ],
           Effect: 'Allow',
