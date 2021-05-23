@@ -799,7 +799,7 @@ describe('fromSecretAttributes', () => {
     });
 
     // THEN
-    expect(cdk.Token.compareStrings(secret.env.account, secretAccount) === cdk.TokenComparison.SAME).toBeTruthy();
+    expect(secret.env.account).toBe(secretAccount);
   });
 });
 
