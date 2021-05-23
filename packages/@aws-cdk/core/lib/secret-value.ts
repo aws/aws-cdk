@@ -2,8 +2,6 @@ import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-r
 import { CfnParameter } from './cfn-parameter';
 import { Intrinsic, IntrinsicProps } from './private/intrinsic';
 
-const SECRET_VALUE_SYMBOL = Symbol.for('@aws-cdk/core.SecretValue');
-
 /**
  * Work with secret values in the CDK
  *
@@ -20,11 +18,6 @@ const SECRET_VALUE_SYMBOL = Symbol.for('@aws-cdk/core.SecretValue');
  * so is highly discouraged.
  */
 export class SecretValue extends Intrinsic {
-  /** Return whether the indicated object is a SecretValue */
-  public static isSecretValue(x: any): x is SecretValue {
-    return x !== null && typeof (x) === 'object' && SECRET_VALUE_SYMBOL in x;
-  }
-
   /**
    * Construct a literal secret value for use with secret-aware constructs
    *
@@ -59,12 +52,13 @@ export class SecretValue extends Intrinsic {
     ];
 
     const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
-
-    if (secretId.startsWith('arn:')) {
-      const secretArn = options.jsonField ? `${secretId}:${options.jsonField}` : secretId;
-      return this.cfnDynamicReference(dyref, secretArn);
-    }
-    return this.cfnDynamicReference(dyref);
+    const secretQualifier: SecretQualifier = {
+      secretId,
+      jsonField: options.jsonField,
+      versionStage: options.versionStage,
+      versionId: options.versionId,
+    };
+    return new SecretValue(dyref, { secretQualifier });
   }
 
   /**
@@ -88,11 +82,9 @@ export class SecretValue extends Intrinsic {
    * If possible, use `SecretValue.ssmSecure` or `SecretValue.secretsManager` directly.
    *
    * @param ref The dynamic reference to use.
-   *
-   * @param secretArn The secretArn if the reference is for a secret.
    */
-  public static cfnDynamicReference(ref: CfnDynamicReference, secretArn?: string) {
-    return new SecretValue(ref, undefined, secretArn);
+  public static cfnDynamicReference(ref: CfnDynamicReference) {
+    return new SecretValue(ref);
   }
 
   /**
@@ -112,17 +104,14 @@ export class SecretValue extends Intrinsic {
   }
 
   /**
-   * Specifies the secretArn when it was provided for a value from SecretsManager
+   * Specifies the secret qualifiers when they were provided for a value from SecretsManager
    */
-  readonly secretArn?: string;
+  readonly secretQualifier?: SecretQualifier;
 
-  constructor(value: any, options: IntrinsicProps = {}, secretArn?: string) {
-    super(value, options);
+  constructor(value: any, props: SecretValueProps = {}) {
+    super(value, props);
 
-    Object.defineProperty(this, SECRET_VALUE_SYMBOL, { value: true });
-    if (secretArn) {
-      this.secretArn = secretArn;
-    }
+    this.secretQualifier = props.secretQualifier;
   }
 }
 
@@ -131,7 +120,7 @@ export class SecretValue extends Intrinsic {
  */
 export interface SecretsManagerSecretOptions {
   /**
-   * Specified the secret version that you want to retrieve by the staging label attached to the version.
+   * Specifies the secret version that you want to retrieve by the staging label attached to the version.
    *
    * Can specify at most one of `versionId` and `versionStage`.
    *
@@ -155,4 +144,39 @@ export interface SecretsManagerSecretOptions {
    * @default - returns all the content stored in the Secrets Manager secret.
    */
   readonly jsonField?: string;
+}
+
+/**
+ * Properties for a Secret Value
+ */
+export interface SecretValueProps extends IntrinsicProps {
+  /**
+   * The qualifiers of a Secret from SecretsManager
+   */
+  readonly secretQualifier?: SecretQualifier;
+}
+
+/**
+ * Qualifiers of a Secret from SecretsManager
+ */
+export interface SecretQualifier {
+  /**
+   * The Arn of the Secret
+   */
+  readonly secretId: string;
+
+  /**
+   * The key of a JSON field to retrieve.
+   */
+  readonly jsonField?: string;
+
+  /**
+   * Specifies the secret version that you want to retrieve by the staging label attached to the version.
+   */
+  readonly versionStage?: string;
+
+  /**
+   * Specifies the unique identifier of the version of the secret you want to use.
+   */
+  readonly versionId?: string;
 }
