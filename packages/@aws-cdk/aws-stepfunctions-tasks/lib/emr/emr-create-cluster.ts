@@ -360,7 +360,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
 export namespace EmrCreateCluster {
   /**
-   * Valid valus for the Cluster ScaleDownBehavior
+   * Valid values for the Cluster ScaleDownBehavior
    *
    */
   export enum EmrClusterScaleDownBehavior {
