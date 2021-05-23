@@ -28,6 +28,7 @@ nodeunitShim({
 
     // THEN
     test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:json-key:version-stage:version-id}}');
+    test.equal(v.secretQualifier, { secretId: 'secret-id', jsonField: 'json-key', versionStage: 'version-stage', versionId: 'version-id' });
     test.done();
   },
 
@@ -45,20 +46,6 @@ nodeunitShim({
     test.done();
   },
 
-  'secretsManager with an ARN ID stores ARN'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const secretId = 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456';
-
-    // WHEN
-    const v = SecretValue.secretsManager(secretId, { jsonField: 'json-key' });
-
-    // THEN
-    test.deepEqual(stack.resolve(v), `{{resolve:secretsmanager:${secretId}:SecretString:json-key::}}`);
-    test.equal(v.secretQualifier, { secretId, jsonField: 'json-key' });
-    test.done();
-  },
-
   'secretsManager with an empty ID'(test: Test) {
     test.throws(() => SecretValue.secretsManager(''), /secretId cannot be empty/);
     test.done();
@@ -69,7 +56,7 @@ nodeunitShim({
     test.done();
   },
 
-  'stores ARN correctly when getting SecretValue from an imported Secret from another account'(test: Test) {
+  'when getting SecretValue from an imported Secret from another account has correct secret qualifiers'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'ProjectStack', {
@@ -85,7 +72,7 @@ nodeunitShim({
     test.done();
   },
 
-  'stores ARN correctly when getting SecretValue via secretValueFromJson from imported Secret'(test: Test) {
+  'when getting SecretValue via secretValueFromJson from imported Secret has correct secret qualifiers'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const secretArn = 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456';
