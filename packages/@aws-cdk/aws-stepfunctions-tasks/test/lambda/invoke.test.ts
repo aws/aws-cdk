@@ -261,7 +261,7 @@ describe('LambdaInvoke', () => {
     }));
   });
 
-  test('Invoke lambda with payloadResponseOnly with valid payload', () => {
+  test('Invoke lambda with payloadResponseOnly with object payload', () => {
     // WHEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
@@ -287,7 +287,27 @@ describe('LambdaInvoke', () => {
     }));
   });
 
-  test('Invoke lambda with payloadResponseOnly with invalid payload', () => {
+  test('Invoke lambda with payloadResponseOnly with undefined payload', () => {
+    // WHEN
+    const task = new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      payloadResponseOnly: true,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
+      End: true,
+      Type: 'Task',
+      Resource: {
+        'Fn::GetAtt': [
+          'Fn9270CBC0',
+          'Arn',
+        ],
+      },
+    }));
+  });
+
+  test('Invoke lambda with payloadResponseOnly with string payload', () => {
     // WHEN
     const payload = sfn.TaskInput.fromText('invalid-payload');
 
@@ -296,7 +316,7 @@ describe('LambdaInvoke', () => {
       lambdaFunction,
       payloadResponseOnly: true,
       payload,
-    })).toThrow(`Invalid LambdaInvoke payload value for 'payloadResponseOnly' invocation. Expected 'object' or 'undefined', got '${typeof(payload.value)}'.`);
+    })).toThrow('Invalid LambdaInvoke payload value for \'payloadResponseOnly\' invocation. Expected \'object\' or \'undefined\', got \'string\'.');
   });
 
   test('with retryOnServiceExceptions set to false', () => {

@@ -149,6 +149,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
+    // TaskInput payload may be an object, a string, or undefined, but renderObject does not allow strings
     if (this.props.payloadResponseOnly &&
       (this.props.payload?.value === undefined || typeof(this.props.payload?.value) === 'object')) {
       return {
