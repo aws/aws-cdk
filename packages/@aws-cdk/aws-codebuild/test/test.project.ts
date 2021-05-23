@@ -1,4 +1,13 @@
-import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
+import {
+  arrayWith,
+  countResources,
+  expect,
+  haveResource,
+  haveResourceLike,
+  not,
+  objectLike,
+  ResourcePart,
+} from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -1467,18 +1476,18 @@ export = {
         test.done();
       },
 
-      'can be provided as a SecretValue for SecretsManager'(test: Test) {
+      'can be provided as a SecretValue from a SecretsManager imported Secret by complete ARN'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
         // WHEN
-        const secretValue = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
-          'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456').secretValueFromJson('json-key');
+        const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
+          'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456');
         new codebuild.PipelineProject(stack, 'Project', {
           environmentVariables: {
             'ENV_VAR1': {
               type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-              value: secretValue,
+              value: secret.secretValueFromJson('json-key'),
             },
           },
         });
@@ -1502,7 +1511,7 @@ export = {
             'Statement': arrayWith({
               'Action': 'secretsmanager:GetSecretValue',
               'Effect': 'Allow',
-              'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456:json-key*',
+              'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456*',
             }),
           },
         }));
@@ -1521,12 +1530,13 @@ export = {
         test.done();
       },
 
-      'throws error when provided as a SecretValue not for SecretsManager'(test: Test) {
+      'throws error when provided as a SecretValue from plainText'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
         // WHEN
         const secretValue = cdk.SecretValue.plainText('secret');
+
         // THEN
         test.throws(() => {
           new codebuild.PipelineProject(stack, 'Project', {
@@ -1550,13 +1560,13 @@ export = {
         });
 
         // WHEN
-        const secretValue = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
-          'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret-123456').secretValue;
+        const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
+          'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret-123456');
         new codebuild.PipelineProject(stack, 'Project', {
           environmentVariables: {
             'ENV_VAR1': {
               type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-              value: secretValue,
+              value: secret.secretValue,
             },
           },
         });
@@ -1567,22 +1577,131 @@ export = {
             'Statement': arrayWith({
               'Action': 'kms:Decrypt',
               'Effect': 'Allow',
-              'Resource': {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    { 'Ref': 'AWS::Partition' },
-                    ':kms:us-west-2:901234567890:key/*',
-                  ],
-                ],
-              },
+              'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
             }),
           },
         }));
 
         test.done();
 
+      },
+
+      'can be provided as a SecretValue with a jsonField and versionStage'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const secretValue = cdk.SecretValue.secretsManager('secretId', { jsonField: 'json-key', versionStage: 'version-stage' });
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: secretValue,
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': 'secretId:json-key:version-stage',
+              },
+            ],
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':secretsmanager:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':secret:secretId-??????',
+                ]],
+              },
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
+      'can be provided as a SecretValue with a jsonField and versionId'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        // WHEN
+        const secretValue = cdk.SecretValue.secretsManager(
+          'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456',
+          { jsonField: 'json-key', versionId: 'version-id' },
+        );
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: secretValue,
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456:json-key:version-id',
+              },
+            ],
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456*',
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
+      'throws error when SecretValue is provided with versionStage and versionId'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const secretValue = cdk.SecretValue.secretsManager('secretId', { versionStage: 'version-stage', versionId: 'version-id' });
+
+        // THEN
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environmentVariables: {
+              'ENV_VAR1': {
+                type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+                value: secretValue,
+              },
+            },
+          });
+        }, /Secret Value cannot provide versionStage and versionId at the same time!/);
+
+        test.done();
       },
     },
 
