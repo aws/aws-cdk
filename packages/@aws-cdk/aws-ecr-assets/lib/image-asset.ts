@@ -139,7 +139,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     // Ensure the Dockerfile is included no matter what.
     exclude.push('!' + path.basename(file));
     // Ensure the cdk.out folder is not included to avoid infinite loops.
-    exclude.push('cdk.out')
+    exclude.push('cdk.out');
 
     if (props.repositoryName) {
       Annotations.of(this).addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
