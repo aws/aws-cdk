@@ -994,8 +994,6 @@ class StandardS3Location extends S3Location {
 
 /**
  * ML compute instance type for the transform job.
- *
- * @experimental
  */
 export class InstanceType {
   /**

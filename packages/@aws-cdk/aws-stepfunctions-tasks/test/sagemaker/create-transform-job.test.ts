@@ -250,7 +250,7 @@ test('pass param to transform job', () => {
   });
 });
 
-test('create transform job with instance type as a parameter', () => {
+test('create transform job with instance type supplied as JsonPath', () => {
   // WHEN
   const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
     transformJobName: 'MyTransformJob',
