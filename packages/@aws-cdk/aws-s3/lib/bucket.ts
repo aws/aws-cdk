@@ -1841,8 +1841,7 @@ export class Bucket extends BucketBase {
     this.addToResourcePolicy(new iam.PolicyStatement({
       actions: [
         // list objects
-        's3:GetBucket*',
-	's3:List*',
+        ...perms.BUCKET_READ_METADATA_ACTIONS,
         ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
       ],
       resources: [
