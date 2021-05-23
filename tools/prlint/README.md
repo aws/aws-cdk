@@ -1,4 +1,4 @@
-# prlint (beta)
+# prlint
 
 A linter that can run various checks to validate a PR adheres to our standards.
 

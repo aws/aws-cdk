@@ -11,6 +11,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
+    "@actions/core": "^1.2.2",
+    "@actions/github": "^2.1.0",
     "github-api": "^3.4.0"
   },
   "devDependencies": {
@@ -20,6 +22,6 @@
   "scripts": {
     "build": "echo success",
     "test": "jest",
-    "build+test": "npm run build test && npm run test"
+    "build+test": "npm run build && npm run test"
   }
 }
