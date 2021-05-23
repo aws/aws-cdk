@@ -17,7 +17,7 @@
               },
               "/",
               {
-                "Ref": "AssetParametersa527a472d3f86da9e79b1046a4cd7360513c32debc9f3da48f93c51dab2eaf48S3BucketA7A4FA66"
+                "Ref": "AssetParameters527472d3f86da9e79b1046a4cd7360513c32debc9f3da48f93c51dab2eaf48S3BucketA7A4FA66"
               },
               "/",
               {
@@ -27,7 +27,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersa527a472d3f86da9e79b1046a4cd7360513c32debc9f3da48f93c51dab2eaf48S3VersionKeyE2EB822E"
+                        "Ref": "AssetParameters527a472d3f86da9e79b1046a4cd7360513c32debc9f3da48f93c51dab2eaf48S3VersionKeyE2EB822E"
                       }
                     ]
                   }
@@ -40,7 +40,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersa527a472d3f86da9e79b1046a4cd7360513c32debc9f3da48f93c51dab2eaf48S3VersionKeyE2EB822E"
+                        "Ref": "AssetParameters527a472d3f86da9e79b1046a4cd7360513c32debc9f3da48f93c51dab2eaf48S3VersionKeyE2EB822E"
                       }
                     ]
                   }
