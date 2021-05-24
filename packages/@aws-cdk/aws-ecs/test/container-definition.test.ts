@@ -1892,7 +1892,7 @@ describe('container definition', () => {
                 { Ref: 'AWS::Region' },
                 '.',
                 { Ref: 'AWS::URLSuffix' },
-                '/aws-cdk/assets:b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
+                '/aws-cdk/assets:0c7eaa76a180464444a0b21036987c8415680b2bef014e3450abd59747c7772e',
               ],
             ],
           },
@@ -1948,11 +1948,11 @@ describe('container definition', () => {
     const asm = app.synth();
     expect(asm.getStackArtifact(stack.artifactId).assets[0]).toEqual({
       repositoryName: 'aws-cdk/assets',
-      imageTag: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
-      id: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      imageTag: '77b7ee1972500c787b1cd8b4cde3cdd08783c9a8a1305bd4bc0adb53146d7d02',
+      id: '77b7ee1972500c787b1cd8b4cde3cdd08783c9a8a1305bd4bc0adb53146d7d02',
       packaging: 'container-image',
-      path: 'asset.ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
-      sourceHash: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      path: 'asset.77b7ee1972500c787b1cd8b4cde3cdd08783c9a8a1305bd4bc0adb53146d7d02',
+      sourceHash: '77b7ee1972500c787b1cd8b4cde3cdd08783c9a8a1305bd4bc0adb53146d7d02',
       target: 'build-target',
       file: 'index.py',
     });
