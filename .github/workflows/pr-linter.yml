@@ -23,8 +23,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install packages
-        run: cd tools/prlint && npm ci
+      - name: Install & Build prlint
+        run: cd tools/prlint && npm ci && npm run build+test
 
       - name: Validate
         uses: ./tools/prlint
