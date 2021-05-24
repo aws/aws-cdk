@@ -135,7 +135,9 @@ export class ManagedKafkaEventSource extends StreamEventSource {
       sourceAccessConfigurations.push({ type: lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH, uri: this.innerProps.secret.secretArn });
     }
 
-    return sourceAccessConfigurations;
+    return sourceAccessConfigurations.length === 0
+      ? undefined
+      : sourceAccessConfigurations;
   }
 }
 
@@ -155,6 +157,8 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       if (!props.vpcSubnets) {
         throw new Error('vpcSubnets must be set when providing vpc');
       }
+    } else if (!props.secret) {
+      throw new Error('secret must be set if Kafka brokers accessed over Internet');
     }
     this.innerProps = props;
   }
@@ -210,6 +214,9 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         sourceAccessConfigurations.push({ type: lambda.SourceAccessConfigurationType.VPC_SUBNET, uri: id });
       });
     }
-    return sourceAccessConfigurations;
+
+    return sourceAccessConfigurations.length === 0
+      ? undefined
+      : sourceAccessConfigurations;
   }
 }
