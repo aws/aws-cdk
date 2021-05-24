@@ -27,7 +27,7 @@ App Mesh gives you consistent visibility and network traffic controls for every 
 
 App Mesh supports microservice applications that use service discovery naming for their components. To use App Mesh, you must have an existing application running on AWS Fargate, Amazon ECS, Amazon EKS, Kubernetes on AWS, or Amazon EC2.
 
-For futher information on **AWS AppMesh** visit the [AWS Docs for AppMesh](https://docs.aws.amazon.com/app-mesh/index.html).
+For further information on **AWS AppMesh** visit the [AWS Docs for AppMesh](https://docs.aws.amazon.com/app-mesh/index.html).
 
 ## Create the App and Stack
 
@@ -584,3 +584,18 @@ appmesh.Mesh.fromMeshArn(stack, 'imported-mesh', arn);
 ```ts
 appmesh.Mesh.fromMeshName(stack, 'imported-mesh', 'abc');
 ```
+
+## IAM Grants
+
+Virtual Node and Virtual Gateway implement `grantStreamAggregatedResources` that will grant identities that are running 
+Envoy access to stream generated config from App Mesh.
+
+```ts
+const gateway = new appmesh.VirtualGateway(stack, 'testGateway', { mesh: mesh });
+const envoyUser = new iam.User(stack, 'envoyUser');
+
+/**
+ * This will grant `grantStreamAggregatedResources` ONLY for this gateway.
+ */
+gateway.grantStreamAggregatedResources(envoyUser)
+``` 

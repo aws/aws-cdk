@@ -77,7 +77,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "@types/aws-lambda": "^8.10.76",
-    "@types/lodash": "^4.14.168",
+    "@types/lodash": "^4.14.169",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -145,7 +145,6 @@
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily.NODEJS",
       "docs-public-apis:@aws-cdk/aws-lambda.Alias.lambda",
       "docs-public-apis:@aws-cdk/aws-lambda.Alias.fromAliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-lambda.Function.fromFunctionArn",
       "docs-public-apis:@aws-cdk/aws-lambda.FunctionBase",
       "docs-public-apis:@aws-cdk/aws-lambda.QualifiedFunctionBase",
       "docs-public-apis:@aws-cdk/aws-lambda.QualifiedFunctionBase.lambda",
@@ -181,7 +180,9 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["docker"]
+    "ostools": [
+      "docker"
+    ]
   },
   "maturity": "stable",
   "publishConfig": {
