@@ -26,29 +26,34 @@ export enum TlsMode {
 }
 
 /**
- * A wrapper for the tls config returned by {@link TlsCertificate.bind}
+ * Represents TLS properties for listener
  */
-export interface TlsCertificateConfig {
+export interface TlsListener {
   /**
-   * The CFN shape for a listener TLS certificate
+   * Represents TLS certificate
    */
-  readonly tlsCertificate: CfnVirtualNode.ListenerTlsCertificateProperty,
+  readonly certificate: TlsCertificate;
 
   /**
    * The TLS mode.
    */
-  readonly tlsMode: TlsMode;
+  readonly mode: TlsMode;
+}
+
+/**
+ * A wrapper for the tls config returned by {@link TlsCertificate.bind}
+ */
+export interface TlsCertificateConfig {
+  /**
+   * The CFN shape for a TLS certificate
+   */
+  readonly tlsCertificate: CfnVirtualNode.ListenerTlsCertificateProperty,
 }
 
 /**
  * ACM Certificate Properties
  */
 export interface AcmCertificateOptions {
-  /**
-   * The TLS mode.
-   */
-  readonly tlsMode: TlsMode;
-
   /**
    * The ACM certificate
    */
@@ -59,11 +64,6 @@ export interface AcmCertificateOptions {
  * File Certificate Properties
  */
 export interface FileCertificateOptions {
-  /**
-   * The TLS mode.
-   */
-  readonly tlsMode: TlsMode;
-
   /**
    * The file path of the certificate chain file.
    */
@@ -105,20 +105,12 @@ export abstract class TlsCertificate {
  */
 class AcmTlsCertificate extends TlsCertificate {
   /**
-   * The TLS mode.
-   *
-   * @default - TlsMode.DISABLED
-   */
-  readonly tlsMode: TlsMode;
-
-  /**
    * The ARN of the ACM certificate
    */
   readonly acmCertificate: acm.ICertificate;
 
   constructor(props: AcmCertificateOptions) {
     super();
-    this.tlsMode = props.tlsMode;
     this.acmCertificate = props.certificate;
   }
 
@@ -129,7 +121,6 @@ class AcmTlsCertificate extends TlsCertificate {
           certificateArn: this.acmCertificate.certificateArn,
         },
       },
-      tlsMode: this.tlsMode,
     };
   }
 }
@@ -138,13 +129,6 @@ class AcmTlsCertificate extends TlsCertificate {
  * Represents a file provided TLS certificate
  */
 class FileTlsCertificate extends TlsCertificate {
-  /**
-   * The TLS mode.
-   *
-   * @default - TlsMode.DISABLED
-   */
-  readonly tlsMode: TlsMode;
-
   /**
    * The file path of the certificate chain file.
    */
@@ -157,7 +141,6 @@ class FileTlsCertificate extends TlsCertificate {
 
   constructor(props: FileCertificateOptions) {
     super();
-    this.tlsMode = props.tlsMode;
     this.certificateChain = props.certificateChainPath;
     this.privateKey = props.privateKeyPath;
   }
@@ -170,7 +153,6 @@ class FileTlsCertificate extends TlsCertificate {
           privateKey: this.privateKey,
         },
       },
-      tlsMode: this.tlsMode,
     };
   }
 }

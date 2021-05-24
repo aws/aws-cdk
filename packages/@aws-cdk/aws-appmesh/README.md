@@ -248,13 +248,15 @@ const cert = new certificatemanager.Certificate(this, 'cert', {...});
 
 const node = new appmesh.VirtualNode(stack, 'node', {
   mesh,
-  dnsHostName: 'node',
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('node'),
   listeners: [appmesh.VirtualNodeListener.grpc({
     port: 80,
-    tlsCertificate: appmesh.TlsCertificate.acm({
-      certificate: cert,
-      tlsMode: TlsMode.STRICT,
-    }),
+    tls: {
+      mode: TlsMode.STRICT,
+      certificate: appmesh.TlsCertificate.acm({
+        certificate: cert,
+      }),
+    },
   })],
 });
 
@@ -263,11 +265,13 @@ const gateway = new appmesh.VirtualGateway(this, 'gateway', {
   mesh: mesh,
   listeners: [appmesh.VirtualGatewayListener.grpc({
     port: 8080,
-    tlsCertificate: appmesh.TlsCertificate.file({
-      certificateChain: 'path/to/certChain',
-      privateKey: 'path/to/privateKey',
-      tlsMode: TlsMode.STRICT,
-    }),
+    tls: {
+      mode: TlsMode.STRICT,
+      certificate: appmesh.TlsCertificate.file({
+        certificateChainPath: 'path/to/certChain',
+        privateKeyPath: 'path/to/privateKey',
+      }),
+    },
   })],
   virtualGatewayName: 'gateway',
 });
@@ -309,7 +313,7 @@ connection pool properties per listener protocol types.
 // A Virtual Node with a gRPC listener with a connection pool set
 const node = new appmesh.VirtualNode(stack, 'node', {
   mesh,
-  dnsHostName: 'node',
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('node'),
   listeners: [appmesh.VirtualNodeListener.http({
     port: 80,
     connectionPool: {
