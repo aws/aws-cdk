@@ -139,6 +139,23 @@ export = {
 
   'self-managed kafka': {
     'default'(test: Test) {
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const bootstrapServers = ['kafka-broker:9092'];
+
+      test.throws(() => {
+        fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+          {
+            bootstrapServers: bootstrapServers,
+            topic: kafkaTopic,
+            startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          }));
+      }, /secret must be set/);
+
+      test.done();
+    },
+    'with secret'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -203,24 +220,6 @@ export = {
           },
         ],
       }));
-
-      test.done();
-    },
-    'requires secret'(test: Test) {
-      const stack = new cdk.Stack();
-      const fn = new TestFunction(stack, 'Fn');
-      const kafkaTopic = 'some-topic';
-      const bootstrapServers = ['kafka-broker:9092'];
-
-      test.throws(() => {
-        fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-          {
-            bootstrapServers: bootstrapServers,
-            topic: kafkaTopic,
-            startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-            vpcSubnets: { subnetType: SubnetType.PRIVATE },
-          }));
-      }, /secret must be set/);
 
       test.done();
     },
