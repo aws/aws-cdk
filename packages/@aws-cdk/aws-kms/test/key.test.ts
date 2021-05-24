@@ -1,4 +1,4 @@
-import { arrayWith, expect as expectCdk, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import { arrayWith, expect as expectCdk, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -596,15 +596,13 @@ describe('fromCfnKey()', () => {
             Action: 'kms:*',
             Effect: 'Allow',
             Principal: {
-              AWS: {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':iam::',
-                  { Ref: 'AWS::AccountId' },
-                  ':root',
-                ]],
-              },
+              AWS: cdk.Fn.join('', [
+                'arn:',
+                cdk.Aws.PARTITION,
+                ':iam::',
+                cdk.Aws.ACCOUNT_ID,
+                ':root',
+              ]),
             },
             Resource: '*',
           },
@@ -698,6 +696,73 @@ describe('fromCfnKey()', () => {
           Version: '2012-10-17',
         },
       }));
+    });
+  });
+
+  describe('calling fromCfnKey() again', () => {
+    beforeEach(() => {
+      key = kms.Key.fromCfnKey(cfnKey);
+    });
+
+    describe('and using it for grantDecrypt() on a Role', function () {
+      beforeEach(() => {
+        const role = new iam.Role(stack, 'Role', {
+          assumedBy: new iam.AnyPrincipal(),
+        });
+        key.grantDecrypt(role);
+      });
+
+      test('creates the correct IAM Policy', () => {
+        expectCdk(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: 'kms:Decrypt',
+                Effect: 'Allow',
+                Resource: {
+                  'Fn::GetAtt': ['CfnKey', 'Arn'],
+                },
+              },
+            ],
+          },
+        }));
+      });
+
+      test('correctly mutates the Policy of the underlying CfnKey', () => {
+        expectCdk(stack).to(haveResourceLike('AWS::KMS::Key', {
+          KeyPolicy: {
+            Statement: [
+              {
+                Action: 'kms:*',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':iam::',
+                      { Ref: 'AWS::AccountId' },
+                      ':root',
+                    ]],
+                  },
+                },
+                Resource: '*',
+              },
+              {
+                Action: 'kms:Decrypt',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
+                    'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
+                  },
+                },
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+        }));
+      });
     });
   });
 

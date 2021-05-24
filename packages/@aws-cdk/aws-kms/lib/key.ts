@@ -494,9 +494,20 @@ export class Key extends KeyBase {
    * like {@link IKey.addToResourcePolicy()},
    * will actually be reflected in the resulting template,
    * as opposed to the object returned from {@link fromKeyArn()},
-   * on which calling that method would have no effect.
+   * on which calling those methods would have no effect.
    */
   public static fromCfnKey(cfnKey: CfnKey): IKey {
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnKey';
+
+    // if fromCfnKey() was already called on this cfnKey,
+    // return the same L2
+    // (as different L2s would conflict, because of the mutation of the keyPolicy property of the L1 below)
+    const existing = cfnKey.node.tryFindChild(id);
+    if (existing) {
+      return <IKey>existing;
+    }
+
     let keyPolicy: iam.PolicyDocument;
     try {
       keyPolicy = iam.PolicyDocument.fromJson(cfnKey.keyPolicy);
@@ -520,7 +531,7 @@ export class Key extends KeyBase {
       public readonly keyId = cfnKey.ref;
       protected readonly policy = keyPolicy;
       protected readonly trustAccountIdentities = false;
-    }(cfnKey, 'Resource');
+    }(cfnKey, id);
   }
 
   public readonly keyArn: string;
