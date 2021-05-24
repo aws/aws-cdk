@@ -9,6 +9,8 @@ on:
 
 jobs:
   test:
+    permissions:
+      issues: write
     runs-on: ubuntu-latest
     steps:
       - uses: Naturalclar/issue-action@v2.0.2
@@ -76,8 +78,8 @@ jobs:
            {"keywords":["(@aws-cdk/aws-dlm)","(aws-dlm)","(dlm)"],"labels":["@aws-cdk/aws-dlm"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-dms)","(aws-dms)","(dms)"],"labels":["@aws-cdk/aws-dms"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-docdb)","(aws-docdb)","(docdb)","(doc db)","(doc-db)"],"labels":["@aws-cdk/aws-docdb"],"assignees":["iliapolo"]},
-           {"keywords":["(@aws-cdk/aws-dynamodb)","(aws-dynamodb)","(dynamodb)","(dynamo db)","(dynamo-db)"],"labels":["@aws-cdk/aws-dynamodb"],"assignees":["RomainMuller"]},
-           {"keywords":["(@aws-cdk/aws-dynamodb-global)","(aws-dynamodb-global)","(dynamodb-global)","(dynamodb global)"],"labels":["@aws-cdk/aws-dynamodb-global"],"assignees":["RomainMuller"]},
+           {"keywords":["(@aws-cdk/aws-dynamodb)","(aws-dynamodb)","(dynamodb)","(dynamo db)","(dynamo-db)"],"labels":["@aws-cdk/aws-dynamodb"],"assignees":["skinny85"]},
+           {"keywords":["(@aws-cdk/aws-dynamodb-global)","(aws-dynamodb-global)","(dynamodb-global)","(dynamodb global)"],"labels":["@aws-cdk/aws-dynamodb-global"],"assignees":["skinny85"]},
            {"keywords":["(@aws-cdk/aws-ec2)","(aws-ec2)","(ec2)","(vpc)"],"labels":["@aws-cdk/aws-ec2"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/aws-ecr)","(aws-ecr)","(ecr)"],"labels":["@aws-cdk/aws-ecr"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["(@aws-cdk/aws-ecr-assets)","(aws-ecr-assets)","(ecr-assets)","(ecr assets)","(ecrassets)"],"labels":["@aws-cdk/aws-ecr-assets"],"assignees":["eladb"]},
@@ -155,7 +157,7 @@ jobs:
            {"keywords":["(@aws-cdk/aws-sdb)","(aws-sdb)","(sdb)"],"labels":["@aws-cdk/aws-sdb"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-secretsmanager)","(aws-secretsmanager)","(secretsmanager)","(secrets manager)","(secrets-manager)"],"labels":["@aws-cdk/aws-secretsmanager"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-securityhub)","(aws-securityhub)","(securityhub)","(security hub)","(security-hub)"],"labels":["@aws-cdk/aws-securityhub"],"assignees":["skinny85"]},
-           {"keywords":["(@aws-cdk/aws-servicecatalog)","(aws-servicecatalog)","(servicecatalog)","(service catalog)","(service-catalog)"],"labels":["@aws-cdk/aws-servicecatalog"],"assignees":["MrArnoldPalmer"]},
+           {"keywords":["(@aws-cdk/aws-servicecatalog)","(aws-servicecatalog)","(servicecatalog)","(service catalog)","(service-catalog)"],"labels":["@aws-cdk/aws-servicecatalog"],"assignees":["skinny85"]},
            {"keywords":["(@aws-cdk/aws-servicediscovery)","(aws-servicediscovery)","(servicediscovery)","(service discovery)","(service-discovery)"],"labels":["@aws-cdk/aws-servicediscovery"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["(@aws-cdk/aws-ses)","(aws-ses)","(ses)"],"labels":["@aws-cdk/aws-ses"],"assignees":["iliapolo"]},
            {"keywords":["(@aws-cdk/aws-ses-actions)","(aws-ses-actions)","(ses-actions)","(ses actions)"],"labels":["@aws-cdk/aws-ses-actions"],"assignees":["iliapolo"]},
@@ -182,7 +184,7 @@ jobs:
            {"keywords":["(@aws-cdk/custom-resources)","(custom-resources)","(custom resources)"],"labels":["@aws-cdk/custom-resources"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/cx-api)","(cx-api)","(cx api)"],"labels":["@aws-cdk/cx-api"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/pipelines)","(pipelines)","(cdk pipelines)","(cdk-pipelines)"],"labels":["@aws-cdk/pipelines"],"assignees":["rix0rrr"]},
-           {"keywords":["(@aws-cdk/region-info)","(region-info)","(region info)"],"labels":["@aws-cdk/region-info"],"assignees":["RomainMuller"]},
+           {"keywords":["(@aws-cdk/region-info)","(region-info)","(region info)"],"labels":["@aws-cdk/region-info"],"assignees":["skinny85"]},
            {"keywords":["(aws-cdk-lib)","(cdk-v2)", "(v2)", "(ubergen)"],"labels":["aws-cdk-lib"],"assignees":["nija-at"]},
            {"keywords":["(monocdk)","(monocdk-experiment)"],"labels":["monocdk"],"assignees":["nija-at"]}
            ]

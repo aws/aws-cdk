@@ -71,8 +71,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/jest": "^26.0.23",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-batch": "0.0.0",
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
@@ -82,7 +84,7 @@
     "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -91,6 +93,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
@@ -103,7 +106,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -112,6 +115,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
@@ -132,6 +136,7 @@
       "docs-public-apis:@aws-cdk/aws-events-targets.SfnStateMachine.machine",
       "docs-public-apis:@aws-cdk/aws-events-targets.SnsTopic.topic",
       "docs-public-apis:@aws-cdk/aws-events-targets.SqsQueue.queue",
+      "docs-public-apis:@aws-cdk/aws-events-targets.ApiGateway.restApi",
       "docs-public-apis:@aws-cdk/aws-events-targets.ContainerOverride",
       "props-default-doc:@aws-cdk/aws-events-targets.ContainerOverride.environment",
       "props-default-doc:@aws-cdk/aws-events-targets.EcsTaskProps.containerOverrides"

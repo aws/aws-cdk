@@ -41,7 +41,7 @@ export interface StreamEventSourceProps {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
-   * @default Duration.days(7)
+   * @default - the retention period configured on the stream
    */
   readonly maxRecordAge?: Duration;
 
@@ -51,7 +51,7 @@ export interface StreamEventSourceProps {
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default 10000
+   * @default - retry until the record expires
    */
   readonly retryAttempts?: number;
 
