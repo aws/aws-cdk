@@ -383,6 +383,23 @@ export class Function extends FunctionBase {
     return this._currentVersion;
   }
 
+  /** @internal */
+  public static _VER_PROPS: { [key: string]: boolean } = {};
+
+  /**
+   * Record whether specific properties in the `AWS::Lambda::Function` resource should
+   * also be associated to the Version resource.
+   * See 'currentVersion' section in the module README for more details.
+   * @param propertyName The property to classify
+   * @param locked whether the property should be associated to the version or not.
+   */
+  public static classifyVersionProperty(propertyName: string, locked: boolean) {
+    this._VER_PROPS[propertyName] = locked;
+  }
+
+  /**
+   * Import a lambda function into the CDK using its ARN
+   */
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
     return Function.fromFunctionAttributes(scope, id, { functionArn });
   }
