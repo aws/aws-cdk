@@ -208,8 +208,6 @@ describe('instance', () => {
         availabilityZone: 'ew-west-1a',
       });
     }).toThrow(/Requesting a specific availability zone is not valid for Multi-AZ instances/);
-
-
   });
 
   test('instance with option and parameter group', () => {
