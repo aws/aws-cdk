@@ -1,6 +1,5 @@
-import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, SecretValue, Stack } from '../lib';
+import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, SecretValue, Stack } from '../lib';
 
 nodeunitShim({
   'plainText'(test: Test) {
@@ -53,35 +52,6 @@ nodeunitShim({
 
   'secretsManager with a non-ARN ID that has colon'(test: Test) {
     test.throws(() => SecretValue.secretsManager('not:an:arn'), /is not an ARN but contains ":"/);
-    test.done();
-  },
-
-  'when getting SecretValue from an imported Secret from another account has correct secret qualifiers'(test: Test) {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'ProjectStack', {
-      env: { account: '123456789012' },
-    });
-    const secretArn = 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret-123456';
-
-    // WHEN
-    const secretValue = Secret.fromSecretCompleteArn(stack, 'Secret', secretArn).secretValue;
-
-    // THEN
-    test.equal(secretValue.secretQualifier, { secretId: secretArn, jsonField: '' });
-    test.done();
-  },
-
-  'when getting SecretValue via secretValueFromJson from imported Secret has correct secret qualifiers'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const secretArn = 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456';
-
-    // WHEN
-    const secretValue = Secret.fromSecretCompleteArn(stack, 'Secret', secretArn).secretValueFromJson('json-key');
-
-    // THEN
-    test.equal(secretValue.secretQualifier, { secretId: secretArn, jsonField: 'json-key' });
     test.done();
   },
 

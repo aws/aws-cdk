@@ -152,6 +152,8 @@ export interface SecretsManagerSecretOptions {
 export interface SecretValueProps extends IntrinsicProps {
   /**
    * The qualifiers of a Secret from SecretsManager
+   *
+   * @default - no qualifiers will be defined.
    */
   readonly secretQualifier?: SecretQualifier;
 }
@@ -162,21 +164,29 @@ export interface SecretValueProps extends IntrinsicProps {
 export interface SecretQualifier {
   /**
    * The Arn of the Secret
+   *
+   * @default - the ID or Arn of the secret.
    */
   readonly secretId: string;
 
   /**
    * The key of a JSON field to retrieve.
+   *
+   * @default - all the content stored in the Secrets Manager secret.
    */
   readonly jsonField?: string;
 
   /**
    * Specifies the secret version that you want to retrieve by the staging label attached to the version.
+   *
+   * @default - AWSCURRENT.
    */
   readonly versionStage?: string;
 
   /**
    * Specifies the unique identifier of the version of the secret you want to use.
+   *
+   * @default - AWSCURRENT.
    */
   readonly versionId?: string;
 }
