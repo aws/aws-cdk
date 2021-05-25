@@ -725,12 +725,8 @@ export class Project extends ProjectBase {
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
       let envVariableValue: string;
-      if (envVariable.value instanceof SecretValue) {
+      if (envVariable.value instanceof SecretValue && envVariable.value.secretQualifier) {
         const secretQualifier = envVariable.value.secretQualifier;
-        if (!secretQualifier) {
-          throw new Error('When providing a SecretValue it must resolve to a value from SecretsManager!');
-        }
-
         const versionStage = secretQualifier.versionStage ? `:${secretQualifier.versionStage}`: '';
         const versionId = secretQualifier.versionId ? `:${secretQualifier.versionId}`: '';
         if (versionStage && versionId) {

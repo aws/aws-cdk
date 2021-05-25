@@ -1530,28 +1530,6 @@ export = {
         test.done();
       },
 
-      'throws error when provided as a SecretValue from plainText'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        // WHEN
-        const secretValue = cdk.SecretValue.plainText('secret');
-
-        // THEN
-        test.throws(() => {
-          new codebuild.PipelineProject(stack, 'Project', {
-            environmentVariables: {
-              'ENV_VAR1': {
-                type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-                value: secretValue,
-              },
-            },
-          });
-        }, /When providing a SecretValue it must resolve to a value from SecretsManager!/);
-
-        test.done();
-      },
-
       "when provided as a SecretValue pointing to a Secret from another account, adds permission to decrypt keys in the Secret's account"(test: Test) {
         // GIVEN
         const app = new cdk.App();
