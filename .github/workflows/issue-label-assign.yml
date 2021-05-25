@@ -223,7 +223,7 @@ jobs:
            {"keywords":["(@aws-cdk/pipelines)","(pipelines)","(cdk pipelines)","(cdk-pipelines)"],"labels":["@aws-cdk/pipelines"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/region-info)","(region-info)","(region info)"],"labels":["@aws-cdk/region-info"],"assignees":["skinny85"]},
            {"keywords":["(aws-cdk-lib)","(cdk-v2)", "(v2)", "(ubergen)"],"labels":["aws-cdk-lib"],"assignees":["nija-at"]},
-           {"keywords":["(monocdk)","(monocdk-experiment)"],"labels":["monocdk"],"assignees":["nija-at"]}
+           {"keywords":["(monocdk)","(monocdk-experiment)"],"labels":["monocdk"],"assignees":["nija-at"]},
            {"keywords":["(@aws-cdk/yaml-cfn)","(aws-yaml-cfn)","(yaml-cfn)"],"labels":["@aws-cdk/aws-yaml-cfn"],"assignees":["skinny85"]}
 
            ]
