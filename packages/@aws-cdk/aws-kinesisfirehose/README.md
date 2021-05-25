@@ -21,4 +21,32 @@
 
 <!--END STABILITY BANNER-->
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project. It allows you to create Kinesis Data Firehose delivery streams.
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as redshift from '@aws-cdk/aws-redshift';
+
+// Given a Redshift cluster
+const vpc = new ec2.Vpc(this, 'Vpc');
+const database = 'my_db';
+const cluster = new redshift.Cluster(this, 'Cluster', {
+  vpc: vpc,
+  masterUser: {
+    masterUsername: 'master',
+  },
+  defaultDatabaseName: database,
+});
+
+// Create a delivery stream that publishes data to the cluster
+new DeliveryStream(this, 'Firehose', {
+  destination: new RedshiftDestination({
+    cluster: cluster,
+    user: {
+      username: 'firehose',
+    },
+    database: database,
+    tableName: 'table',
+  }),
+});
+```
