@@ -1,7 +1,6 @@
 import * as child_process from 'child_process';
-import * as os from 'os';
 import * as path from 'path';
-import { callsites, exec, extractDependencies, findUp, getEsBuildVersion } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -119,72 +118,5 @@ describe('extractDependencies', () => {
       path.join(__dirname, '../package.json'),
       ['unknown'],
     )).toThrow(/Cannot extract version for module 'unknown'/);
-  });
-});
-
-describe('getEsBuildVersion', () => {
-  test('returns the version', () => {
-    const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('version'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    expect(getEsBuildVersion()).toBe('version');
-    expect(spawnSyncMock).toHaveBeenCalledWith('npx', ['--no-install', 'esbuild', '--version']);
-
-    spawnSyncMock.mockRestore();
-  });
-
-  test('returns undefined on non zero status', () => {
-    const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
-      status: 127, // status error
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    expect(getEsBuildVersion()).toBeUndefined();
-
-    spawnSyncMock.mockRestore();
-  });
-
-  test('returns undefined on error', () => {
-    const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
-      error: new Error('bad error'),
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    expect(getEsBuildVersion()).toBeUndefined();
-
-    spawnSyncMock.mockRestore();
-  });
-
-  test('Windows', () => {
-    const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('version'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
-
-    expect(getEsBuildVersion()).toBe('version');
-    expect(spawnSyncMock).toHaveBeenCalledWith('npx.cmd', expect.any(Array));
-
-    spawnSyncMock.mockRestore();
-    osPlatformMock.mockRestore();
   });
 });
