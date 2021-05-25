@@ -726,13 +726,23 @@ export class Project extends ProjectBase {
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
       let envVariableValue: string;
       if (envVariable.value instanceof SecretValue && envVariable.value.secretQualifier) {
+        // validate that the plain-text environment variables don't contain any secrets in them
+        if (validateNoPlainTextSecrets && (!envVariable.type || envVariable.type === BuildEnvironmentVariableType.PLAINTEXT)) {
+          throw new Error(`Plaintext environment variable '${name}' contains a secret value! ` +
+            'This means the value of this variable will be visible in plain text in the AWS Console. ' +
+            "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
+            "If you'd like to continue with having this secret in the plaintext environment variables, " +
+            'please set the checkSecretsInPlainTextEnvVariables property to false');
+        }
+
         const secretQualifier = envVariable.value.secretQualifier;
+        const jsonField = secretQualifier.jsonField ? `:${secretQualifier.jsonField}`: '';
         const versionStage = secretQualifier.versionStage ? `:${secretQualifier.versionStage}`: '';
         const versionId = secretQualifier.versionId ? `:${secretQualifier.versionId}`: '';
         if (versionStage && versionId) {
           throw new Error('Secret Value cannot provide versionStage and versionId at the same time!');
         }
-        envVariableValue = `${secretQualifier.secretId}:${secretQualifier.jsonField}${versionStage}${versionId}`;
+        envVariableValue = `${secretQualifier.secretId}${jsonField}${versionStage}${versionId}`;
       } else {
         envVariableValue = envVariable.value?.toString();
       }
@@ -743,7 +753,6 @@ export class Project extends ProjectBase {
       };
       ret.push(cfnEnvVariable);
 
-      // validate that the plain-text environment variables don't contain any secrets in them
       if (validateNoPlainTextSecrets && cfnEnvVariable.type === BuildEnvironmentVariableType.PLAINTEXT) {
         const fragments = Tokenization.reverseString(cfnEnvVariable.value);
         for (const token of fragments.tokens) {

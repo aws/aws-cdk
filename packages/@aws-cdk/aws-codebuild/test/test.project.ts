@@ -1692,6 +1692,24 @@ export = {
         new codebuild.PipelineProject(stack, 'Project', {
           environmentVariables: {
             'a': {
+              value: cdk.SecretValue.secretsManager('my-secret'),
+            },
+          },
+        });
+      }, /Plaintext environment variable 'a' contains a secret value!/);
+
+      test.done();
+    },
+
+    'should fail creating when using a secret value as token in a plaintext variable'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // THEN
+      test.throws(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'a': {
               value: `a_${cdk.SecretValue.secretsManager('my-secret')}_b`,
             },
           },
