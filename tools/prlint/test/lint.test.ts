@@ -39,7 +39,7 @@ describe('breaking changes format', () => {
 
   test('valid title', async () => {
     const issue = {
-      title: 'chore(foo): some title',
+      title: 'chore(s3): some title',
       body: 'BREAKING CHANGE: this breaking change',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };

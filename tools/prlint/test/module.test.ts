@@ -1,35 +1,34 @@
-import { findModulePaths, moduleStability } from '../module';
+import { findModulePath, moduleStability } from '../module';
 import * as path from 'path';
 
 const repoRoot = path.join(__dirname, '..', '..', '..');
 
-describe('findModulePaths', () => {
-  test('single match', () => {
-    expect(relative(findModulePaths('lambda'))).toEqual(['packages/@aws-cdk/aws-lambda']);
-    expect(relative(findModulePaths('s3'))).toEqual(['packages/@aws-cdk/aws-s3']);
-    expect(relative(findModulePaths('cdk-build-tools'))).toEqual(['tools/cdk-build-tools']);
+describe('findModulePath', () => {
+  test('single fuzzy match', () => {
+    expect(relative(findModulePath('lambda'))).toEqual('packages/@aws-cdk/aws-lambda');
+    expect(relative(findModulePath('s3'))).toEqual('packages/@aws-cdk/aws-s3');
+    expect(relative(findModulePath('cdk-build-tools'))).toEqual('tools/cdk-build-tools');
   });
 
-  test('multiple matches', () => {
-    expect(relative(findModulePaths('assert'))).toEqual([
-      'packages/@aws-cdk/assert',
-      'packages/@monocdk-experiment/assert'
-    ]);
+  test('multiple fuzzy matches', () => {
+    // also matches 'packages/@monocdk-experiment/assert'
+    expect(relative(findModulePath('assert'))).toEqual('packages/@aws-cdk/assert');
 
-    expect(relative(findModulePaths('cdk'))).toEqual([
-      'packages/aws-cdk',
-      'packages/cdk',
-      'tools/eslint-plugin-cdk'
-    ]);
-  })
+    // also matches 'packages/aws-cdk' and 'tools/eslint-plugin-cdk'
+    expect(relative(findModulePath('cdk'))).toEqual('packages/cdk');
+  });
 
-  function relative(paths: string[]): string[] {
-    return paths.map(p => path.relative(repoRoot, p));
+  test('no matches', () => {
+    expect(() => findModulePath('doesnotexist')).toThrow(/No module/);
+  });
+
+  function relative(loc: string) {
+    return path.relative(repoRoot, loc);
   }
 });
 
 describe('moduleStability', () => {
-  test('default', () => {
+  test('happy', () => {
     expect(moduleStability(absolute('packages/@aws-cdk/aws-lambda'))).toEqual('stable');
     expect(moduleStability(absolute('packages/@aws-cdk/aws-s3'))).toEqual('stable');
 
@@ -37,6 +36,10 @@ describe('moduleStability', () => {
     expect(moduleStability(absolute('packages/@aws-cdk/assert'))).toEqual('experimental');
 
     expect(moduleStability(absolute('tools/cdk-build-tools'))).toBeUndefined();
+  });
+
+  test('error', () => {
+    expect(() => moduleStability(absolute('tools'))).toThrow(/no package.json found/);
   });
 
   function absolute(loc: string) {
