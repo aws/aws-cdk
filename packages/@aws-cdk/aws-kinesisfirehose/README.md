@@ -39,7 +39,7 @@ const cluster = new redshift.Cluster(this, 'Cluster', {
 });
 
 // Create a delivery stream that publishes data to the cluster
-new DeliveryStream(this, 'Firehose', {
+new DeliveryStream(this, 'Delivery Stream', {
   destination: new RedshiftDestination({
     cluster: cluster,
     user: {

@@ -1,6 +1,6 @@
-import { IFunction } from '@aws-cdk/aws-lambda';
-import { ILogGroup, ILogStream } from '@aws-cdk/aws-logs';
-import { IBucket } from '@aws-cdk/aws-s3';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDeliveryStream } from './delivery-stream';
@@ -86,7 +86,7 @@ export interface DataProcessor {
    * The Lambda function that will be called to transform records.
    * TODO: inspect timeout to validate < 5 minutes?
    */
-  readonly lambdaFunction: IFunction;
+  readonly lambdaFunction: lambda.IFunction;
 
   /**
    * The length of time Firehose will buffer incoming data before calling the processor.
@@ -126,14 +126,14 @@ export interface DestinationProps {
    *
    * @default - if `logging` is set to `true`, a log group will be created for you.
    */
-  readonly logGroup?: ILogGroup;
+  readonly logGroup?: logs.ILogGroup;
 
   /**
    * The CloudWatch log stream where error logs will be written.
    *
    * @default - if `logging` is set to true, a log stream will be created for you.
    */
-  readonly logStream?: ILogStream;
+  readonly logStream?: logs.ILogStream;
 
   /**
    * The series of data transformations that should be performed on the data before writing to the destination.
@@ -157,7 +157,7 @@ export interface DestinationProps {
    *
    * @default - if `s3Backup` is set to `true`, a bucket will be created for you.
    */
-  readonly backupBucket?: IBucket;
+  readonly backupBucket?: s3.IBucket;
 
   /**
    * The prefix Firehose will prepend to all source records backed up to S3.

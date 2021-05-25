@@ -1,7 +1,7 @@
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal, UnknownPrincipal } from '@aws-cdk/aws-iam';
-import { IStream } from '@aws-cdk/aws-kinesis';
-import { IKey } from '@aws-cdk/aws-kms';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kinesis from '@aws-cdk/aws-kinesis';
+import * as kms from '@aws-cdk/aws-kms';
 import { IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDestination } from './destination';
@@ -10,7 +10,7 @@ import { CfnDeliveryStream } from './kinesisfirehose.generated';
 /**
  * Represents a Kinesis Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends IResource, IGrantable {
+export interface IDeliveryStream extends IResource, iam.IGrantable {
   /**
    * Name of the delivery stream.
    *
@@ -28,17 +28,17 @@ export interface IDeliveryStream extends IResource, IGrantable {
   /**
    * Grant the given identity permissions to perform the given actions.
    */
-  grant(grantee: IGrantable, ...actions: string[]): Grant;
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
    * Grant the given identity permissions to write data to this stream.
    */
-  grantWrite(grantee: IGrantable, ...actions: string[]): Grant;
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Return the given named metric for this delivery stream
    */
-  metric(metricName: string, props?: MetricOptions): Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -84,14 +84,14 @@ export interface DeliveryStreamProps {
    *
    * @default - data is written to the delivery stream via a direct put.
    */
-  readonly sourceStream?: IStream;
+  readonly sourceStream?: kinesis.IStream;
 
   /**
    * The IAM role assumed by Kinesis Firehose to read from sources, invoke processors, and write to destinations
    *
    * @default - a role will be created with default permissions
    */
-  readonly role?: IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Indicates the type of customer master key (CMK) to use for server-side encryption.
@@ -107,57 +107,34 @@ export interface DeliveryStreamProps {
    *
    * @default - if `encryption` is set to `CUSTOMER_MANAGED`, a KMS key will be created for you.
    */
-  readonly encryptionKey?: IKey;
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
- * Create a Kinesis Data Firehose delivery stream
- *
- * @resource AWS::KinesisFirehose::DeliveryStream
+ * Base class for new and imported Kinesis Data Firehose delivery streams
  */
-export class DeliveryStream extends Resource implements IDeliveryStream {
-  /**
-   * Import an existing delivery stream from its name.
-   */
-  static fromDeliveryStreamName(scope: Construct, id: string, deliveryStreamName: string): IDeliveryStream {
-    class Import extends Resource implements IDeliveryStream {
-      public readonly deliveryStreamName = deliveryStreamName;
-      public readonly deliveryStreamArn = Stack.of(scope).formatArn({
-        service: 'firehose',
-        resource: 'deliverystream',
-        resourceName: deliveryStreamName,
-      })
-      public readonly grantPrincipal = new UnknownPrincipal({ resource: this });
-    }
-    return new Import(scope, id);
-  }
+export abstract class DeliveryStreamBase extends Resource implements IDeliveryStream {
 
-  /**
-   * Name of the delivery stream.
-   */
-  public readonly deliveryStreamName: string;
+  abstract readonly deliveryStreamName: string;
 
-  /**
-   * ARN of the delivery stream.
-   */
-  public readonly deliveryStreamArn: string;
+  abstract readonly deliveryStreamArn: string;
 
-  public readonly grantPrincipal: IPrincipal;
+  abstract readonly grantPrincipal: iam.IPrincipal;
 
-  public grant(grantee: IGrantable, ...actions: string[]): Grant {
-    return Grant.addToPrincipal({
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
       resourceArns: [this.deliveryStreamArn],
       grantee: grantee,
       actions: actions,
     });
   }
 
-  public grantWrite(grantee: IGrantable): Grant {
+  public grantWrite(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'firehose:PutRecord', 'firehose:PutRecordBatch');
   }
 
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    return new Metric({
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
       namespace: 'AWS/Firehose',
       metricName: metricName,
       dimensions: {
@@ -166,12 +143,41 @@ export class DeliveryStream extends Resource implements IDeliveryStream {
       ...props,
     });
   }
+}
+
+/**
+ * Create a Kinesis Data Firehose delivery stream
+ *
+ * @resource AWS::KinesisFirehose::DeliveryStream
+ */
+export class DeliveryStream extends DeliveryStreamBase {
+  /**
+   * Import an existing delivery stream from its name.
+   */
+  static fromDeliveryStreamName(scope: Construct, id: string, deliveryStreamName: string): IDeliveryStream {
+    class Import extends DeliveryStreamBase {
+      public readonly deliveryStreamName = deliveryStreamName;
+      public readonly deliveryStreamArn = Stack.of(scope).formatArn({
+        service: 'firehose',
+        resource: 'deliverystream',
+        resourceName: deliveryStreamName,
+      })
+      public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
+    }
+    return new Import(scope, id);
+  }
+
+  readonly deliveryStreamName: string;
+
+  readonly deliveryStreamArn: string;
+
+  readonly grantPrincipal: iam.IPrincipal;
 
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {
     super(scope, id);
 
-    this.grantPrincipal = props.role ?? new Role(this, 'Service Role', {
-      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    this.grantPrincipal = props.role ?? new iam.Role(this, 'Service Role', {
+      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
 
     const resource = new CfnDeliveryStream(this, 'Resource');

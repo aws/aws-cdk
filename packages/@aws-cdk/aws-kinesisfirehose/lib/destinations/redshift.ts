@@ -1,6 +1,6 @@
-import { IKey } from '@aws-cdk/aws-kms';
-import { Cluster } from '@aws-cdk/aws-redshift';
-import { IBucket } from '@aws-cdk/aws-s3';
+import * as kms from '@aws-cdk/aws-kms';
+import * as redshift from '@aws-cdk/aws-redshift';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, SecretValue, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDeliveryStream } from '../delivery-stream';
@@ -29,7 +29,7 @@ export interface RedshiftUser {
    *
    * @default - default master key.
    */
-  readonly encryptionKey?: IKey;
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -40,7 +40,7 @@ export interface RedshiftDestinationProps extends DestinationProps {
    * The Redshift cluster to deliver data to.
    * TODO: add ingress access from the Firehose CIDR
    */
-  readonly cluster: Cluster;
+  readonly cluster: redshift.Cluster;
 
   /**
    * The cluster user that has INSERT permissions to the desired output table.
@@ -89,7 +89,7 @@ export interface RedshiftDestinationProps extends DestinationProps {
    *
    * @default - a bucket will be created for you.
    */
-  readonly intermediateBucket?: IBucket;
+  readonly intermediateBucket?: s3.IBucket;
 
   /**
    * The size of the buffer that Firehose uses for incoming data before delivering it to the intermediate bucket.
