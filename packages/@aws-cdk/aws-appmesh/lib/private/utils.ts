@@ -1,6 +1,6 @@
-
 import { CfnVirtualNode } from '../appmesh.generated';
-import { TlsClientPolicy, TlsValidationTrustConfig } from '../tls-validation';
+import { TlsClientPolicy } from '../client-policy';
+import { TlsValidationTrustConfig } from '../tls-validation';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order

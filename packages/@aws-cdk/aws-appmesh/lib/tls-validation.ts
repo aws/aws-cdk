@@ -6,31 +6,6 @@ import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { Construct } from '@aws-cdk/core';
 
 /**
- * Represents the properties needed to define client policy
- */
-export interface TlsClientPolicy {
-  /**
-   * Whether the policy is enforced.
-   *
-   * @default true
-   */
-  readonly enforce?: boolean;
-
-  /**
-   * TLS is enforced on the ports specified here.
-   * If no ports are specified, TLS will be enforced on all the ports.
-   *
-   * @default - all ports
-   */
-  readonly ports?: number[];
-
-  /**
-   * Represents the object for TLS validation context
-   */
-  readonly validation: TlsValidation;
-}
-
-/**
  * Represents the properties needed to define TLS validation context
  */
 export interface TlsValidation {
@@ -50,23 +25,9 @@ export interface TlsValidationTrustConfig {
   readonly virtualNodeClientTlsValidationTrust: CfnVirtualNode.TlsValidationContextTrustProperty;
 
   /**
-   * VirtualNode CFN configuration for listener's TLS Validation
-   *
-   * @default - no TLS Validation
-   */
-  readonly virtualNodeListenerTlsValidationTrust?: CfnVirtualNode.ListenerTlsValidationContextTrustProperty
-
-  /**
    * VirtualGateway CFN configuration for client policy's TLS Validation
    */
   readonly virtualGatewayClientTlsValidationTrust: CfnVirtualGateway.VirtualGatewayTlsValidationContextTrustProperty;
-
-  /**
-   * VirtualGateway CFN configuration for listener's TLS Validation
-   *
-   * @default - no TLS Validation
-   */
-  readonly virtualGatewayListenerTlsValidationTrust?: CfnVirtualGateway.VirtualGatewayListenerTlsValidationContextTrustProperty;
 }
 
 /**
@@ -165,17 +126,7 @@ class TlsValidationFileTrust extends TlsValidationTrust {
           certificateChain: this.certificateChain,
         },
       },
-      virtualNodeListenerTlsValidationTrust: {
-        file: {
-          certificateChain: this.certificateChain,
-        },
-      },
       virtualGatewayClientTlsValidationTrust: {
-        file: {
-          certificateChain: this.certificateChain,
-        },
-      },
-      virtualGatewayListenerTlsValidationTrust: {
         file: {
           certificateChain: this.certificateChain,
         },

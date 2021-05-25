@@ -184,7 +184,7 @@ const node = new VirtualNode(this, 'node', {
   })],
   backendDefaults: {
     tlsClientPolicy: {
-      tlsValidationContext: {
+      validation: {
         trust: appmesh.TlsValidationTrust.file({
           certificateChain: '/keys/local_cert_chain.pem',
         }),
@@ -499,7 +499,7 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
   backendDefaults: {
     tlsClientPolicy: {
       ports: [8080, 8081],
-      tlsValidationContext: {
+      validation: {
         trust: appmesh.TlsValidationTrust.acm({
           certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
         }),

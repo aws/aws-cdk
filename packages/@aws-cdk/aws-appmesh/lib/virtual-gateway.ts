@@ -188,7 +188,7 @@ export class VirtualGateway extends VirtualGatewayBase {
     }
 
     const accessLogging = props.accessLog?.bind(this);
-    const tlsClientPolicy = props.backendDefaults?.tlsClientPolicy;
+    const backendDefaultsTlsClientPolicy = props.backendDefaults?.tlsClientPolicy;
 
     const node = new CfnVirtualGateway(this, 'Resource', {
       virtualGatewayName: this.physicalName,
@@ -198,7 +198,7 @@ export class VirtualGateway extends VirtualGatewayBase {
         backendDefaults: props.backendDefaults !== undefined
           ? {
             clientPolicy: {
-              tls: renderTlsClientPolicy(this, tlsClientPolicy, (config) => config.virtualGatewayClientTlsValidationTrust),
+              tls: renderTlsClientPolicy(this, backendDefaultsTlsClientPolicy, (config) => config.virtualGatewayClientTlsValidationTrust),
             },
           }
           : undefined,
