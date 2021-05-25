@@ -1,5 +1,7 @@
 import * as path from 'path';
 import * as GitHub from 'github-api';
+import { breakingModules } from './parser';
+import { findModulePath, moduleStability } from './module';
 
 const OWNER = "aws"
 const REPO = "aws-cdk"
@@ -100,6 +102,18 @@ function validateBreakingChangeFormat(title: string, body: string) {
   }
 }
 
+function assertStability(title: string, body: string) {
+  const breakingInStable = breakingModules(title, body)
+      .map(mod => [mod, findModulePath(mod)])
+      .map(([mod, modPath]) => [mod, moduleStability(modPath)])
+      .filter(([_, stability]) => stability === 'stable')
+      .map(([mod, _]) => mod);
+
+  if (breakingInStable.length > 0) {
+    throw new Error(`Breaking changes in stable modules [${breakingInStable.join(', ')}] is disallowed.`);
+  }
+}
+
 export async function validatePr(number: number) {
 
   if (!number) {
@@ -133,6 +147,8 @@ export async function validatePr(number: number) {
   }
   
   validateBreakingChangeFormat(issue.title, issue.body);
+
+  assertStability(issue.title, issue.body)
   
   console.log("✅  Success")
 

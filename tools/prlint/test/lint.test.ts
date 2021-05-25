@@ -39,8 +39,50 @@ describe('breaking changes format', () => {
 
   test('valid title', async () => {
     const issue = {
+      title: 'chore(cdk-build-tools): some title',
+      body: 'BREAKING CHANGE: this breaking change',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+    };
+    configureMock(issue, undefined);
+    await linter.validatePr(1000); // not throw
+  });
+});
+
+describe('ban breaking changes in stable modules', () => {
+  test('breaking change in stable module', async () => {
+    const issue = {
       title: 'chore(s3): some title',
       body: 'BREAKING CHANGE: this breaking change',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+    };
+    configureMock(issue, undefined);
+    await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
+  });
+
+  test('breaking changes mixed in stable and experimental', async () => {
+    const issue = {
+      title: 'chore(lambda): some title',
+      body: `
+        BREAKING CHANGE: this breaking change
+        continued message
+        * **apigatewayv2**: another breaking change here
+        continued message
+        * **ecs**: further breaking in ecs
+      `,
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+    };
+    configureMock(issue, undefined);
+    await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
+  });
+
+  test('breaking changes only in experimental', async () => {
+    const issue = {
+      title: 'chore(apigatewayv2): some title',
+      body: `
+        BREAKING CHANGE: this breaking change
+        continued message
+        * **lambda-python**: another breaking change here
+      `,
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
     configureMock(issue, undefined);
