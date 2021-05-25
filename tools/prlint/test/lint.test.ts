@@ -88,6 +88,22 @@ describe('ban breaking changes in stable modules', () => {
     configureMock(issue, undefined);
     await linter.validatePr(1000); // not throw
   });
+
+  test('with additional "closes" footer', async () => {
+    const issue = {
+      title: 'chore(s3): some title',
+      body: `
+        description of the commit
+
+        closes #123456789
+
+        BREAKING CHANGE: this breaking change
+      `,
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+    };
+    configureMock(issue, undefined);
+    await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
+  });
 });
 
 function configureMock(issue: any, prFiles: any[] | undefined) {

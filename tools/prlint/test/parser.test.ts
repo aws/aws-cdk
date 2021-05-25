@@ -40,4 +40,15 @@ describe('breakingModules', () => {
 
     expect(breakingModules(title, body)).toEqual(['m1', 'm2']);
   });
+
+  test('additional footer', () => {
+    const title = 'feat(m1): this is a breaking change';
+    const body = `
+    a breaking change description
+    closes #123456789
+    BREAKING CHANGE: unintended breaking change
+    `;
+
+    expect(breakingModules(title, body)).toEqual(['m1']);
+  });
 });
