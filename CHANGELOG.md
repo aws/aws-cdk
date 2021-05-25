@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.106.0](https://github.com/aws/aws-cdk/compare/v1.105.0...v1.106.0) (2021-05-25)
+
+
+### Features
+
+* **ecs-service-extensions**: allow taskRole to be passed in on creation of an ECS service ([3e257a0](https://github.com/aws/aws-cdk/commit/3e257a0e554851b7393f52bbbea2f5187673e8a7))
+* **appmesh:** add IAM grants for StreamAggregatedResources ([#13596](https://github.com/aws/aws-cdk/issues/13596)) ([f4a2938](https://github.com/aws/aws-cdk/commit/f4a2938cf6773bf80e3316abda82d03aed051108)), closes [#11639](https://github.com/aws/aws-cdk/issues/11639)
+* **cfnspec:** cloudformation spec v36.0.0 ([#14791](https://github.com/aws/aws-cdk/issues/14791)) ([3a9f56d](https://github.com/aws/aws-cdk/commit/3a9f56d5167aab6a1bd0bf8b29b53dd8658a2313))
+* **dynamodb:** add ability to enable contributor insights on Table ([#14742](https://github.com/aws/aws-cdk/issues/14742)) ([3c7a89d](https://github.com/aws/aws-cdk/commit/3c7a89de6edaf7a1910bf716419dbe5568d79374))
+* **lambda:** support Principal conditions in Permission ([#14674](https://github.com/aws/aws-cdk/issues/14674)) ([b78a1bb](https://github.com/aws/aws-cdk/commit/b78a1bbf445743d96c8e4f54e7d2e7cac204342a)), closes [#8116](https://github.com/aws/aws-cdk/issues/8116)
+* **lambda-nodejs:** pnpm support ([#14772](https://github.com/aws/aws-cdk/issues/14772)) ([b02311c](https://github.com/aws/aws-cdk/commit/b02311cd55b5bdbe408085488dd17816f181fd2c)), closes [#14757](https://github.com/aws/aws-cdk/issues/14757)
+
+
+### Bug Fixes
+
+* **cognito:** user pool - phoneNumberVerified attribute fails deployment ([#14699](https://github.com/aws/aws-cdk/issues/14699)) ([cd2589f](https://github.com/aws/aws-cdk/commit/cd2589f560600294cc50988a98e69b091c42e3f8)), closes [#14175](https://github.com/aws/aws-cdk/issues/14175)
+* **iam:** permissions boundaries not added to custom resource roles ([#14754](https://github.com/aws/aws-cdk/issues/14754)) ([f36feb5](https://github.com/aws/aws-cdk/commit/f36feb52a750a326842903ac4dc23be83e4aee1a)), closes [#13310](https://github.com/aws/aws-cdk/issues/13310)
+* **lambda:** changing reserved concurrency fails lambda version deployment ([#14586](https://github.com/aws/aws-cdk/issues/14586)) ([f47d5cb](https://github.com/aws/aws-cdk/commit/f47d5cb48e641515b503bae092cd32071dae2ed9)), closes [#11537](https://github.com/aws/aws-cdk/issues/11537)
+* **lambda-nodejs:** esbuild detection with Yarn 2 in PnP mode ([#14739](https://github.com/aws/aws-cdk/issues/14739)) ([5c84696](https://github.com/aws/aws-cdk/commit/5c84696a88f9319af1b2782b747e10f408c4c8fb))
+* **pipelines:** self-update build fails with named pipeline stack ([#14729](https://github.com/aws/aws-cdk/issues/14729)) ([eff9c75](https://github.com/aws/aws-cdk/commit/eff9c7504710929da58eab96c45d7b925132f73e)), closes [#10782](https://github.com/aws/aws-cdk/issues/10782)
+
 ## [1.105.0](https://github.com/aws/aws-cdk/compare/v1.104.0...v1.105.0) (2021-05-19)
 
 
