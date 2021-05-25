@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
+import { TlsMode } from '../lib/tls-listener';
 
 export = {
   'When creating a VirtualGateway': {
@@ -171,7 +172,7 @@ export = {
         listeners: [appmesh.VirtualGatewayListener.http({
           port: 8080,
           tls: {
-            mode: appmesh.TlsMode.STRICT,
+            mode: TlsMode.STRICT,
             certificate: appmesh.TlsCertificate.acm({
               certificate: cert,
             }),
@@ -185,7 +186,7 @@ export = {
           Listeners: [
             {
               TLS: {
-                Mode: appmesh.TlsMode.STRICT,
+                Mode: TlsMode.STRICT,
                 Certificate: {
                   ACM: {
                     CertificateArn: {
@@ -217,7 +218,7 @@ export = {
         listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 8080,
           tls: {
-            mode: appmesh.TlsMode.STRICT,
+            mode: TlsMode.STRICT,
             certificate: appmesh.TlsCertificate.file({
               certificateChainPath: 'path/to/certChain',
               privateKeyPath: 'path/to/privateKey',
@@ -232,7 +233,7 @@ export = {
           Listeners: [
             {
               TLS: {
-                Mode: appmesh.TlsMode.STRICT,
+                Mode: TlsMode.STRICT,
                 Certificate: {
                   File: {
                     CertificateChain: 'path/to/certChain',
@@ -263,7 +264,7 @@ export = {
         listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 8080,
           tls: {
-            mode: appmesh.TlsMode.PERMISSIVE,
+            mode: TlsMode.PERMISSIVE,
             certificate: appmesh.TlsCertificate.file({
               certificateChainPath: 'path/to/certChain',
               privateKeyPath: 'path/to/privateKey',
@@ -278,7 +279,7 @@ export = {
           Listeners: [
             {
               TLS: {
-                Mode: appmesh.TlsMode.PERMISSIVE,
+                Mode: TlsMode.PERMISSIVE,
                 Certificate: {
                   File: {
                     CertificateChain: 'path/to/certChain',

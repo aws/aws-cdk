@@ -5,7 +5,8 @@ import {
   GrpcConnectionPool, GrpcTimeout, Http2ConnectionPool, HttpConnectionPool,
   HttpTimeout, OutlierDetection, Protocol, TcpConnectionPool, TcpTimeout,
 } from './shared-interfaces';
-import { TlsListener } from './tls-certificate';
+import { TlsListener } from './tls-listener';
+
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
