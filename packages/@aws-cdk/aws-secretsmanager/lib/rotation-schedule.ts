@@ -1,5 +1,4 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -69,35 +68,6 @@ export class RotationSchedule extends Resource {
 
     if ((!props.rotationLambda && !props.hostedRotation) || (props.rotationLambda && props.hostedRotation)) {
       throw new Error('One of `rotationLambda` or `hostedRotation` must be specified.');
-    }
-
-    if (props.rotationLambda?.permissionsNode.defaultChild) {
-      props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
-
-      props.rotationLambda.addToRolePolicy(
-        new iam.PolicyStatement({
-          actions: [
-            'secretsmanager:DescribeSecret',
-            'secretsmanager:GetSecretValue',
-            'secretsmanager:PutSecretValue',
-            'secretsmanager:UpdateSecretVersionStage',
-          ],
-          resources: [props.secret.secretArn],
-          conditions: {
-            StringEquals: {
-              'secretsmanager:resource/AllowRotationLambdaArn': props.rotationLambda.functionArn,
-            },
-          },
-        }),
-      );
-      props.rotationLambda.addToRolePolicy(
-        new iam.PolicyStatement({
-          actions: [
-            'secretsmanager:GetRandomPassword',
-          ],
-          resources: ['*'],
-        }),
-      );
     }
 
     new CfnRotationSchedule(this, 'Resource', {
