@@ -1,6 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
@@ -163,7 +164,7 @@ export = {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           listeners: [appmesh.VirtualNodeListener.http2({
             port: 80,
-            healthCheck: {},
+            healthCheck: appmesh.HealthCheck.http2(),
             timeout: { idle: cdk.Duration.seconds(10) },
           })],
         });
@@ -219,7 +220,9 @@ export = {
 
         node.addListener(appmesh.VirtualNodeListener.tcp({
           port: 80,
-          healthCheck: { timeout: cdk.Duration.seconds(3) },
+          healthCheck: appmesh.HealthCheck.tcp({
+            timeout: cdk.Duration.seconds(3),
+          }),
           timeout: { idle: cdk.Duration.seconds(10) },
         }));
 
@@ -557,6 +560,164 @@ export = {
         test.done();
       },
     },
+
+    'Can add an http connection pool to listener'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualNode(stack, 'test-node', {
+        mesh,
+        listeners: [
+          appmesh.VirtualNodeListener.http({
+            port: 80,
+            connectionPool: {
+              maxConnections: 100,
+              maxPendingRequests: 10,
+            },
+          }),
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        Spec: {
+          Listeners: [
+            {
+              ConnectionPool: {
+                HTTP: {
+                  MaxConnections: 100,
+                  MaxPendingRequests: 10,
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'Can add an tcp connection pool to listener'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualNode(stack, 'test-node', {
+        mesh,
+        listeners: [
+          appmesh.VirtualNodeListener.tcp({
+            port: 80,
+            connectionPool: {
+              maxConnections: 100,
+            },
+          }),
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        Spec: {
+          Listeners: [
+            {
+              ConnectionPool: {
+                TCP: {
+                  MaxConnections: 100,
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'Can add an grpc connection pool to listener'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualNode(stack, 'test-node', {
+        mesh,
+        listeners: [
+          appmesh.VirtualNodeListener.grpc({
+            port: 80,
+            connectionPool: {
+              maxRequests: 10,
+            },
+          }),
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        Spec: {
+          Listeners: [
+            {
+              ConnectionPool: {
+                GRPC: {
+                  MaxRequests: 10,
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'Can add an http2 connection pool to listener'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualNode(stack, 'test-node', {
+        mesh,
+        listeners: [
+          appmesh.VirtualNodeListener.http2({
+            port: 80,
+            connectionPool: {
+              maxRequests: 10,
+            },
+          }),
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        Spec: {
+          Listeners: [
+            {
+              ConnectionPool: {
+                HTTP2: {
+                  MaxRequests: 10,
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
   },
 
   'Can import Virtual Nodes using an ARN'(test: Test) {
@@ -576,6 +737,7 @@ export = {
 
     test.done();
   },
+
   'Can import Virtual Nodes using attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -589,6 +751,46 @@ export = {
     // THEN
     test.equal(virtualNode.mesh.meshName, meshName);
     test.equal(virtualNode.virtualNodeName, virtualNodeName);
+
+    test.done();
+  },
+
+  'Can grant an identity StreamAggregatedResources for a given VirtualNode'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const node = new appmesh.VirtualNode(stack, 'test-node', {
+      mesh,
+      listeners: [appmesh.VirtualNodeListener.http({
+        port: 80,
+        tlsCertificate: appmesh.TlsCertificate.file({
+          certificateChainPath: 'path/to/certChain',
+          privateKeyPath: 'path/to/privateKey',
+          tlsMode: appmesh.TlsMode.PERMISSIVE,
+        }),
+      })],
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    node.grantStreamAggregatedResources(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:StreamAggregatedResources',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'testnode3EE2776E',
+            },
+          },
+        ],
+      },
+    }));
 
     test.done();
   },

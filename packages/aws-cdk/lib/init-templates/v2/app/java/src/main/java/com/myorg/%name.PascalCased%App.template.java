@@ -1,8 +1,8 @@
 package com.myorg;
 
-import software.amazon.awscdk.lib.App;
-import software.amazon.awscdk.lib.Environment;
-import software.amazon.awscdk.lib.StackProps;
+import software.amazon.awscdk.App;
+import software.amazon.awscdk.Environment;
+import software.amazon.awscdk.StackProps;
 
 import java.util.Arrays;
 

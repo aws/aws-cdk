@@ -9,7 +9,7 @@ import { CfnOutput, Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { } from './testmatchers';
-import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
+import { BucketStack, PIPELINE_ENV, stringNoLongerThan, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -37,6 +37,44 @@ beforeEach(() => {
 
 afterEach(() => {
   app.cleanup();
+});
+
+test('stackOutput generates names limited to 100 characters', () => {
+  const stage = new AppWithStackOutput(app, 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild');
+  const pipeStage = pipeline.addApplicationStage(stage);
+  pipeStage.addActions(new cdkp.ShellScriptAction({
+    actionName: 'TestOutput',
+    useOutputs: {
+      BUCKET_NAME: pipeline.stackOutput(stage.output),
+    },
+    commands: ['echo $BUCKET_NAME'],
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild',
+      Actions: arrayWith(
+        deepObjectLike({
+          Name: 'Stack.Deploy',
+          OutputArtifacts: [{ Name: stringNoLongerThan(100) }],
+          Configuration: {
+            OutputFileName: 'outputs.json',
+          },
+        }),
+        deepObjectLike({
+          ActionTypeId: {
+            Provider: 'CodeBuild',
+          },
+          Configuration: {
+            ProjectName: anything(),
+          },
+          InputArtifacts: [{ Name: stringNoLongerThan(100) }],
+          Name: 'TestOutput',
+        }),
+      ),
+    }),
+  });
 });
 
 test('can use stack outputs as validation inputs', () => {
@@ -81,7 +119,7 @@ test('can use stack outputs as validation inputs', () => {
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -122,7 +160,7 @@ test('can use additional files from source', () => {
   });
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -161,7 +199,7 @@ test('can use additional files from build', () => {
   });
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -250,7 +288,7 @@ test('run ShellScriptAction in a VPC', () => {
   });
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     VpcConfig: {
       SecurityGroupIds: [

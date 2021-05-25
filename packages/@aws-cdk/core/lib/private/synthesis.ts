@@ -36,7 +36,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
-  synthesizeTree(root, builder);
+  synthesizeTree(root, builder, options.validateOnSynthesis);
 
   return builder.buildAssembly();
 }
@@ -146,11 +146,12 @@ function injectMetadataResources(root: IConstruct) {
  *
  * Stop at Assembly boundaries.
  */
-function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
+function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, validateOnSynth: boolean = false) {
   visit(root, 'post', construct => {
     const session = {
       outdir: builder.outdir,
       assembly: builder,
+      validateOnSynth,
     };
 
     if (Stack.isStack(construct)) {
@@ -205,7 +206,6 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstr
 /**
  * Interface which provides access to special methods of Construct
  *
- * @experimental
  */
 interface IProtectedConstructMethods extends IConstruct {
   /**

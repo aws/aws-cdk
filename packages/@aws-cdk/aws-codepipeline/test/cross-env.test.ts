@@ -139,3 +139,73 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
     });
   });
 });
+
+describe('cross-environment CodePipeline', function () {
+  test('correctly detects that an Action is cross-account from the account of the resource backing the Action', () => {
+    const app = new App();
+
+    const pipelineStack = new Stack(app, 'PipelineStack', {
+      env: { account: '123', region: 'my-region' },
+    });
+    const sourceOutput = new codepipeline.Artifact();
+    const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [
+            new FakeSourceAction({
+              actionName: 'Source',
+              output: sourceOutput,
+            }),
+          ],
+        },
+      ],
+    });
+
+    // Import a resource backing the FakeBuildAction into the pipeline's Stack,
+    // but specify a different account for it during the import.
+    // This should be correctly detected by the CodePipeline construct,
+    // and a correct support Stack should be created.
+    const deployBucket = s3.Bucket.fromBucketAttributes(pipelineStack, 'DeployBucket', {
+      bucketName: 'my-bucket',
+      account: '456',
+    });
+    pipeline.addStage({
+      stageName: 'Build',
+      actions: [
+        new FakeBuildAction({
+          actionName: 'Build',
+          input: sourceOutput,
+          resource: deployBucket,
+        }),
+      ],
+    });
+
+    const asm = app.synth();
+    const supportStack = asm.getStackByName(`${pipelineStack.stackName}-support-456`);
+    expect(supportStack).toHaveResourceLike('AWS::IAM::Role', {
+      RoleName: 'pipelinestack-support-456dbuildactionrole91c6f1a469fd11d52dfe',
+    });
+
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        { Name: 'Source' },
+        {
+          Name: 'Build',
+          Actions: [
+            {
+              Name: 'Build',
+              RoleArn: {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':iam::456:role/pipelinestack-support-456dbuildactionrole91c6f1a469fd11d52dfe',
+                ]],
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
+});

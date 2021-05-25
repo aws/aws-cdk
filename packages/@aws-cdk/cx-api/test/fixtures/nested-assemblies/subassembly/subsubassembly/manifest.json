@@ -1,0 +1,13 @@
+{
+  "version": "0.0.0",
+  "artifacts": {
+    "stack2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://37736633/us-region-1",
+      "properties": {
+        "templateFile": "template.2.json",
+        "stackName": "second-stack"
+      }
+    }
+  }
+}
