@@ -13,6 +13,7 @@
   "dependencies": {
     "@actions/core": "^1.2.2",
     "@actions/github": "^2.1.0",
+    "conventional-commits-parser": "^3.2.1",
     "fs-extra": "^9.1.0",
     "github-api": "^3.4.0",
     "glob": "^7.1.7"

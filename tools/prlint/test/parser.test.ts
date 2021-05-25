@@ -1,0 +1,43 @@
+import { breakingModules } from '../parser';
+
+describe('breakingModules', () => {
+  test('no breakages', () => {
+    const title = 'feat(m1): this is not a breaking change';
+    const body = 'a regular description';
+
+    expect(breakingModules(title, body)).toEqual([]);
+  });
+
+  test('main module breaks', () => {
+    const title = 'feat(m1): this is a breaking change';
+    const body = `
+    a breaking change description
+    BREAKING CHANGE: unintended breaking change
+    `;
+
+    expect(breakingModules(title, body)).toEqual(['m1']);
+  });
+
+  test('errors on missing scope', () => {
+    const title = 'feat: this is a breaking change';
+    const body = `
+    a breaking change description
+    BREAKING CHANGE: unintended breaking change
+    `;
+
+    expect(() => breakingModules(title, body)).toThrow(/must specify a "scope"/);
+  });
+
+  test('multiple breaking changes', () => {
+    const title = 'feat(m1): this is a breaking change';
+    const body = `
+    a breaking change description
+    BREAKING CHANGE: unintended breaking change
+    continued message
+    * **m2**: Another breaking change here
+    continuing again
+    `;
+
+    expect(breakingModules(title, body)).toEqual(['m1', 'm2']);
+  });
+});
