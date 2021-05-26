@@ -41,7 +41,7 @@ nodeunitShim({
 
     // THEN
     test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:::}}');
-    test.equal( v.secretQualifier, { secretId: secretId });
+    test.equal(v.secretQualifier, { secretId: secretId });
     test.done();
   },
 

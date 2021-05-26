@@ -736,9 +736,9 @@ export class Project extends ProjectBase {
         }
 
         const secretQualifier = envVariable.value.secretQualifier;
-        const jsonField = secretQualifier.jsonField ? `:${secretQualifier.jsonField}`: '';
-        const versionStage = secretQualifier.versionStage ? `:${secretQualifier.versionStage}`: '';
-        const versionId = secretQualifier.versionId ? `:${secretQualifier.versionId}`: '';
+        const jsonField = secretQualifier.jsonField ? `:${secretQualifier.jsonField}` : '';
+        const versionStage = secretQualifier.versionStage ? `:${secretQualifier.versionStage}` : '';
+        const versionId = secretQualifier.versionId ? `:${secretQualifier.versionId}` : '';
         if (versionStage && versionId) {
           throw new Error('Secret Value cannot provide versionStage and versionId at the same time!');
         }
@@ -757,6 +757,7 @@ export class Project extends ProjectBase {
         const fragments = Tokenization.reverseString(cfnEnvVariable.value);
         for (const token of fragments.tokens) {
           if (token instanceof SecretValue) {
+            // validate that the plain-text environment variables don't contain any secrets in them
             throw new Error(`Plaintext environment variable '${name}' contains a secret value! ` +
               'This means the value of this variable will be visible in plain text in the AWS Console. ' +
               "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +

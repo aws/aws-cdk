@@ -1,13 +1,4 @@
-import {
-  arrayWith,
-  countResources,
-  expect,
-  haveResource,
-  haveResourceLike,
-  not,
-  objectLike,
-  ResourcePart,
-} from '@aws-cdk/assert-internal';
+import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -1561,7 +1552,6 @@ export = {
         }));
 
         test.done();
-
       },
 
       'can be provided as a SecretValue with a jsonField and versionStage'(test: Test) {
@@ -1727,7 +1717,7 @@ export = {
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
           'b': {
-            value: secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'my-secret'),
+            value: cdk.SecretValue.secretsManager('my-secret'),
           },
         },
         checkSecretsInPlainTextEnvVariables: false,
