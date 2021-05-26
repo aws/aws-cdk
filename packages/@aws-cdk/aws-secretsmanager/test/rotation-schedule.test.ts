@@ -82,16 +82,6 @@ test('assign permissions for rotation schedule with a rotation Lambda', () => {
           Resource: {
             Ref: 'SecretA720EF05',
           },
-          Condition: {
-            StringEquals: {
-              'secretsmanager:resource/AllowRotationLambdaArn': {
-                'Fn::GetAtt': [
-                  'LambdaD247545B',
-                  'Arn',
-                ],
-              },
-            },
-          },
         },
         {
           Action: 'secretsmanager:GetRandomPassword',

@@ -83,11 +83,6 @@ export class RotationSchedule extends Resource {
             'secretsmanager:UpdateSecretVersionStage',
           ],
           resources: [props.secret.secretArn],
-          conditions: {
-            StringEquals: {
-              'secretsmanager:resource/AllowRotationLambdaArn': props.rotationLambda.functionArn,
-            },
-          },
         }),
       );
       props.rotationLambda.addToRolePolicy(
