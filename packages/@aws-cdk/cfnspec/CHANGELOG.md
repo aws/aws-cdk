@@ -1,3 +1,37 @@
+# CloudFormation Resource Specification v37.0.0
+
+## New Resource Types
+
+* AWS::AppRunner::Service
+* AWS::EC2::TransitGatewayPeeringAttachment
+* AWS::IoTCoreDeviceAdvisor::SuiteDefinition
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::MediaPackage::Channel EgressAccessLogs (__added__)
+* AWS::MediaPackage::Channel IngressAccessLogs (__added__)
+* AWS::MediaPackage::OriginEndpoint Id.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaPackage::PackagingConfiguration Id.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaPackage::PackagingGroup EgressAccessLogs (__added__)
+
+## Property Type Changes
+
+* AWS::MediaPackage::Channel.LogConfiguration (__added__)
+* AWS::MediaPackage::PackagingGroup.LogConfiguration (__added__)
+* AWS::MediaPackage::OriginEndpoint.CmafEncryption ConstantInitializationVector (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage UtcTiming (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage UtcTimingUri (__added__)
+* AWS::MediaPackage::PackagingConfiguration.CmafPackage IncludeEncoderConfigurationInSegments (__added__)
+* AWS::MediaPackage::PackagingConfiguration.DashPackage IncludeEncoderConfigurationInSegments (__added__)
+
+
 # CloudFormation Resource Specification v36.0.0
 
 ## New Resource Types
