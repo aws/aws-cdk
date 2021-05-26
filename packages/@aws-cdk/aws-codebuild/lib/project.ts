@@ -725,16 +725,8 @@ export class Project extends ProjectBase {
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
       let envVariableValue: string;
-      if (envVariable.value instanceof SecretValue && envVariable.value.secretQualifier) {
-        // validate that the plain-text environment variables don't contain any secrets in them
-        if (validateNoPlainTextSecrets && (!envVariable.type || envVariable.type === BuildEnvironmentVariableType.PLAINTEXT)) {
-          throw new Error(`Plaintext environment variable '${name}' contains a secret value! ` +
-            'This means the value of this variable will be visible in plain text in the AWS Console. ' +
-            "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
-            "If you'd like to continue with having this secret in the plaintext environment variables, " +
-            'please set the checkSecretsInPlainTextEnvVariables property to false');
-        }
-
+      if (envVariable.value instanceof SecretValue && envVariable.value.secretQualifier
+        && envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER) {
         const secretQualifier = envVariable.value.secretQualifier;
         const jsonField = secretQualifier.jsonField ? `:${secretQualifier.jsonField}` : '';
         const versionStage = secretQualifier.versionStage ? `:${secretQualifier.versionStage}` : '';
