@@ -418,6 +418,10 @@
                             "$ref": "#/definitions/SecurityGroupContextQuery"
                         }
                     ]
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up\nthe missing values in this context. (Default - None)",
+                    "type": "string"
                 }
             },
             "required": [

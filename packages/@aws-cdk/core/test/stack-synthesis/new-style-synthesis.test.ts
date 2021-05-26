@@ -101,6 +101,27 @@ nodeunitShim({
     test.done();
   },
 
+  'enrich context'(test: Test) {
+    // GIVEN
+    stack = new Stack(app, 'Stack3', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+      }),
+    });
+
+    // WHEN
+    const enrichedContext = stack.synthesizer.enrichContext({
+      key: 'foo',
+      props: { account: '123456', region: 'bermuda-triangle-1' },
+      provider: cxschema.ContextProvider.AMI_PROVIDER,
+    });
+
+    // THEN
+    test.equals(enrichedContext.lookupRoleArn, 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}');
+
+    test.done();
+  },
+
   'add file asset'(test: Test) {
     // WHEN
     const location = stack.synthesizer.addFileAsset({

@@ -13,7 +13,7 @@ import { SecurityGroupContextProviderPlugin } from './security-groups';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
 
-type ProviderConstructor = (new (sdk: SdkProvider) => ContextProviderPlugin);
+type ProviderConstructor = (new (sdk: SdkProvider, lookupRoleArn?: string) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ProviderConstructor};
 
 /**
@@ -27,12 +27,13 @@ export async function provideContextValues(
   for (const missingContext of missingValues) {
     const key = missingContext.key;
     const constructor = availableContextProviders[missingContext.provider];
+    const lookupRoleArn = missingContext.lookupRoleArn;
     if (!constructor) {
       // eslint-disable-next-line max-len
       throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
     }
 
-    const provider = new constructor(sdk);
+    const provider = new constructor(sdk, lookupRoleArn);
 
     let value;
     try {

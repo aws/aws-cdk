@@ -3,6 +3,7 @@ import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { addStackArtifactToAssembly } from './_shared';
 import { IStackSynthesizer } from './types';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * Base class for implementing an IStackSynthesizer
@@ -56,6 +57,10 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
   protected emitStackArtifact(stack: Stack, session: ISynthesisSession, options: SynthesizeStackArtifactOptions = {}) {
     addStackArtifactToAssembly(session, stack, options ?? {}, options.additionalDependencies ?? []);
   }
+
+  public enrichContext(ctx: cxschema.MissingContext): cxschema.MissingContext {
+    return ctx;
+  }
 }
 
 /**
@@ -85,6 +90,13 @@ export interface SynthesizeStackArtifactOptions {
    * @default - No role is assumed (current credentials are used)
    */
   readonly assumeRoleArn?: string;
+
+  /**
+   * The role that needs to be assumed to lookup missing values
+   *
+   * @default - No role is assumed (current credentials are used)
+   */
+  readonly lookupRoleArn?: string;
 
   /**
    * The role that is passed to CloudFormation to execute the change set

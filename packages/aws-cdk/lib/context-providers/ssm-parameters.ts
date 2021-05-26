@@ -9,7 +9,7 @@ import { ContextProviderPlugin } from './provider';
  * Plugin to read arbitrary SSM parameter names
  */
 export class SSMContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
+  constructor(private readonly aws: SdkProvider, private readonly assumeRoleArn?: string) {
   }
 
   public async getValue(args: cxschema.SSMParameterContextQuery) {
@@ -39,7 +39,8 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
    * @throws Error if a service error (other than ``ParameterNotFound``) occurs.
    */
   private async getSsmParameterValue(account: string, region: string, parameterName: string): Promise<AWS.SSM.GetParameterResult> {
-    const ssm = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ssm();
+    const options = { assumeRoleArn: this.assumeRoleArn };
+    const ssm = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ssm();
     try {
       return await ssm.getParameter({ Name: parameterName }).promise();
     } catch (e) {

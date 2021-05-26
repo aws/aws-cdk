@@ -7,14 +7,15 @@ import { ContextProviderPlugin } from './provider';
 
 export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
-  constructor(private readonly aws: SdkProvider) {
+  constructor(private readonly aws: SdkProvider, private readonly assumeRoleArn?: string) {
   }
 
   public async getValue(args: cxschema.VpcContextQuery) {
     const account: string = args.account!;
     const region: string = args.region!;
 
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ec2();
+    const options = { assumeRoleArn: this.assumeRoleArn };
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
 
     const vpcId = await this.findVpc(ec2, args);
 

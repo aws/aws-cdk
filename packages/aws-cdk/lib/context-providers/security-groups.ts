@@ -5,14 +5,15 @@ import { Mode, SdkProvider } from '../api';
 import { ContextProviderPlugin } from './provider';
 
 export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
+  constructor(private readonly aws: SdkProvider, private readonly assumeRoleArn?: string) {
   }
 
   async getValue(args: cxschema.SecurityGroupContextQuery): Promise<cxapi.SecurityGroupContextResponse> {
     const account: string = args.account!;
     const region: string = args.region!;
 
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ec2();
+    const options = { assumeRoleArn: this.assumeRoleArn };
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
 
     const response = await ec2.describeSecurityGroups({
       GroupIds: [args.securityGroupId],

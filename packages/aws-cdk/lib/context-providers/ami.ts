@@ -8,7 +8,7 @@ import { ContextProviderPlugin } from './provider';
  * Plugin to search AMIs for the current account
  */
 export class AmiContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
+  constructor(private readonly aws: SdkProvider, private readonly assumeRoleArn?: string) {
   }
 
   public async getValue(args: cxschema.AmiContextQuery) {
@@ -20,7 +20,8 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
     print(`Searching for AMI in ${account}:${region}`);
     debug(`AMI search parameters: ${JSON.stringify(args)}`);
 
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ec2();
+    const options = { assumeRoleArn: this.assumeRoleArn };
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
     const response = await ec2.describeImages({
       Owners: args.owners,
       Filters: Object.entries(args.filters).map(([key, values]) => ({

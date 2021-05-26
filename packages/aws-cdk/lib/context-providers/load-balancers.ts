@@ -8,11 +8,12 @@ import { ContextProviderPlugin } from './provider';
  * Provides load balancer context information.
  */
 export class LoadBalancerContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
+  constructor(private readonly aws: SdkProvider, private readonly assumeRoleArn?: string) {
   }
 
   async getValue(query: cxschema.LoadBalancerContextQuery): Promise<cxapi.LoadBalancerContextResponse> {
-    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading)).elbv2();
+    const options = { assumeRoleArn: this.assumeRoleArn };
+    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading, options)).elbv2();
 
     if (!query.loadBalancerArn && !query.loadBalancerTags) {
       throw new Error('The load balancer lookup query must specify either `loadBalancerArn` or `loadBalancerTags`');
@@ -53,11 +54,12 @@ type LoadBalancerListenerResponse = cxapi.LoadBalancerListenerContextResponse;
  * Provides load balancer listener context information
  */
 export class LoadBalancerListenerContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
+  constructor(private readonly aws: SdkProvider, private readonly assumeRoleArn?: string) {
   }
 
   async getValue(query: LoadBalancerListenerQuery): Promise<LoadBalancerListenerResponse> {
-    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading)).elbv2();
+    const options = { assumeRoleArn: this.assumeRoleArn };
+    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading, options)).elbv2();
 
     if (!query.listenerArn && !query.loadBalancerArn && !query.loadBalancerTags) {
       throw new Error('The load balancer listener query must specify at least one of: `listenerArn`, `loadBalancerArn` or `loadBalancerTags`');

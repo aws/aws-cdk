@@ -777,7 +777,8 @@ export class Stack extends CoreConstruct implements ITaggable {
     fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
 
     for (const ctx of this._missingContext) {
-      builder.addMissing(ctx);
+      const enrichedContext = this.synthesizer.enrichContext(ctx);
+      builder.addMissing(enrichedContext);
     }
   }
 

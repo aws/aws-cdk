@@ -60,6 +60,14 @@ export interface MissingContext {
    * A set of provider-specific options.
    */
   readonly props: ContextQueryProperties;
+
+  /**
+   * The ARN of the role that should be used to look up
+   * the missing values in this context.
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
 }
 
 /**

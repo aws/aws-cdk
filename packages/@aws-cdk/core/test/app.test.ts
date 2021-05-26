@@ -1,7 +1,7 @@
 import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { CfnResource, Construct, Stack, StackProps } from '../lib';
+import { CfnResource, Construct, DefaultStackSynthesizer, Stack, StackProps } from '../lib';
 import { Annotations } from '../lib/annotations';
 import { App, AppProps } from '../lib/app';
 
@@ -219,12 +219,13 @@ nodeunitShim({
     }
 
     const assembly = withApp({}, app => {
-      new MyStack(app, 'MyStack');
+      new MyStack(app, 'MyStack', { synthesizer: new DefaultStackSynthesizer() });
     });
 
     test.deepEqual(assembly.manifest.missing, [
       {
         key: 'missing-context-key',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}',
         provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
           account: '12345689012',
@@ -233,6 +234,7 @@ nodeunitShim({
       },
       {
         key: 'missing-context-key-2',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}',
         provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
           account: '12345689012',

@@ -1,6 +1,7 @@
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * Encodes information how a certain Stack should be deployed
@@ -31,4 +32,9 @@ export interface IStackSynthesizer {
    * Synthesize the associated stack to the session
    */
   synthesize(session: ISynthesisSession): void;
+
+  /**
+   * Returns another context with additional information, known by the synthesizer
+   */
+  enrichContext(ctx: cxschema.MissingContext): cxschema.MissingContext;
 }

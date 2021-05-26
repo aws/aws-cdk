@@ -7,15 +7,16 @@ import { ContextProviderPlugin } from './provider';
  * Plugin to retrieve the Availability Zones for an endpoint service
  */
 export class EndpointServiceAZContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
+  constructor(private readonly aws: SdkProvider, private readonly assumeRoleArn?: string) {
   }
 
-  public async getValue(args: {[key: string]: any}) {
+  public async getValue(args: { [key: string]: any }) {
     const region = args.region;
     const account = args.account;
     const serviceName = args.serviceName;
     debug(`Reading AZs for ${account}:${region}:${serviceName}`);
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ec2();
+    const options = { assumeRoleArn: this.assumeRoleArn };
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
     const response = await ec2.describeVpcEndpointServices({ ServiceNames: [serviceName] }).promise();
 
     // expect a service in the response
