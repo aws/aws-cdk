@@ -1,7 +1,7 @@
 {
-  "name": "@aws-cdk/aws-ssmincidents",
+  "name": "@aws-cdk/aws-iotcoredeviceadvisor",
   "version": "0.0.0",
-  "description": "The CDK Construct Library for AWS::SSMIncidents",
+  "description": "The CDK Construct Library for AWS::IoTCoreDeviceAdvisor",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -9,17 +9,17 @@
     "projectReferences": true,
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SSMIncidents",
-        "packageId": "Amazon.CDK.AWS.SSMIncidents",
+        "namespace": "Amazon.CDK.AWS.IoTCoreDeviceAdvisor",
+        "packageId": "Amazon.CDK.AWS.IoTCoreDeviceAdvisor",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.ssmincidents",
+        "package": "software.amazon.awscdk.services.iotcoredeviceadvisor",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ssmincidents"
+          "artifactId": "iotcoredeviceadvisor"
         }
       },
       "python": {
@@ -27,15 +27,15 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
         ],
-        "distName": "aws-cdk.aws-ssmincidents",
-        "module": "aws_cdk.aws_ssmincidents"
+        "distName": "aws-cdk.aws-iotcoredeviceadvisor",
+        "module": "aws_cdk.aws_iotcoredeviceadvisor"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-ssmincidents"
+    "directory": "packages/@aws-cdk/aws-iotcoredeviceadvisor"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
@@ -55,7 +55,7 @@
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::SSMIncidents",
+    "cloudformation": "AWS::IoTCoreDeviceAdvisor",
     "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
@@ -65,8 +65,8 @@
     "aws",
     "cdk",
     "constructs",
-    "AWS::SSMIncidents",
-    "aws-ssmincidents"
+    "AWS::IoTCoreDeviceAdvisor",
+    "aws-iotcoredeviceadvisor"
   ],
   "author": {
     "name": "Amazon Web Services",
