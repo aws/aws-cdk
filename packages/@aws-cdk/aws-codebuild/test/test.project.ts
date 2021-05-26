@@ -1649,28 +1649,6 @@ export = {
 
         test.done();
       },
-
-      'throws error when SecretValue is provided with versionStage and versionId'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        // WHEN
-        const secretValue = cdk.SecretValue.secretsManager('secretId', { versionStage: 'version-stage', versionId: 'version-id' });
-
-        // THEN
-        test.throws(() => {
-          new codebuild.PipelineProject(stack, 'Project', {
-            environmentVariables: {
-              'ENV_VAR1': {
-                type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-                value: secretValue,
-              },
-            },
-          });
-        }, /Secret Value cannot provide versionStage and versionId at the same time!/);
-
-        test.done();
-      },
     },
 
     'should fail creating when using a secret value in a plaintext variable'(test: Test) {

@@ -731,9 +731,6 @@ export class Project extends ProjectBase {
         const jsonField = secretQualifier.jsonField ? `:${secretQualifier.jsonField}` : '';
         const versionStage = secretQualifier.versionStage ? `:${secretQualifier.versionStage}` : '';
         const versionId = secretQualifier.versionId ? `:${secretQualifier.versionId}` : '';
-        if (versionStage && versionId) {
-          throw new Error('Secret Value cannot provide versionStage and versionId at the same time!');
-        }
         envVariableValue = `${secretQualifier.secretId}${jsonField}${versionStage}${versionId}`;
       } else {
         envVariableValue = envVariable.value?.toString();
