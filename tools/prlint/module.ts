@@ -10,9 +10,9 @@ export function findModulePath(fuzz: string): string {
     const lernaConfig = require(path.join(repoRoot, 'lerna.json'));
     const searchPaths: string[] = lernaConfig.packages;
     searchPaths.forEach(p => {
-      const globMatches = glob.sync(path.join(repoRoot, p));
-      const filtered = globMatches.filter(m => fs.existsSync(path.join(m, 'package.json')));
-      modules.push(...filtered);
+      const globMatches = glob.sync(path.join(repoRoot, p, 'package.json'));
+      const trimmed = globMatches.map(m => path.dirname(m));
+      modules.push(...trimmed);
     });
   }
   

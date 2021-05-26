@@ -14,9 +14,9 @@ export function breakingModules(title: string, body: string): string[] {
   if (!parsed.scope) {
     throw new Error('Commits with breaking change must specify a "scope" in the title. See https://www.conventionalcommits.org');
   }
-  parsed.scope && breakingModules.push(parsed.scope);
+  breakingModules.push(parsed.scope);
+  const re = /^\* \*\*([\w]+)\*\*/;
   for (const line of lines) {
-    const re = /^\* \*\*([\w]+)\*\*/
     const match = re.exec(line);
     match && breakingModules.push(match[1]);
   }
