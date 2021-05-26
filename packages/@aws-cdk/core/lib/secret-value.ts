@@ -62,7 +62,8 @@ export class SecretValue extends Intrinsic {
       versionStage: options.versionStage,
       versionId: options.versionId,
     };
-    return new SecretValue(dyref, { secretQualifier });
+    const props: SecretValueProps = { secretQualifier };
+    return new SecretValue(dyref, props);
   }
 
   /**
@@ -112,6 +113,7 @@ export class SecretValue extends Intrinsic {
    */
   readonly secretQualifier?: SecretQualifier;
 
+  constructor(value: any, props?: IntrinsicProps)
   constructor(value: any, props: SecretValueProps = {}) {
     super(value, props);
 
