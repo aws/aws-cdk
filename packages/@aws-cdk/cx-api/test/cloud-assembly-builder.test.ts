@@ -118,6 +118,8 @@ test('cloud assembly builder', () => {
       },
     },
   });
+
+  expect(session.hasMissingContext()).toBe(true);
 });
 
 test('outdir must be a directory', () => {
@@ -172,6 +174,8 @@ test('write and read nested cloud assembly artifact', () => {
 
   const nested = art?.nestedAssembly;
   expect(nested?.artifacts.length).toEqual(0);
+
+  expect(session.hasMissingContext()).toBe(false);
 });
 
 test('missing values are reported to top-level asm', () => {

@@ -306,6 +306,13 @@ export class CloudAssemblyBuilder {
   }
 
   /**
+   * Whether this cloud assembly has any missing context.
+   */
+  public hasMissingContext(): boolean {
+    return this.missing.length > 0;
+  }
+
+  /**
    * Finalizes the cloud assembly into the output directory returns a
    * `CloudAssembly` object that can be used to inspect the assembly.
    * @param options

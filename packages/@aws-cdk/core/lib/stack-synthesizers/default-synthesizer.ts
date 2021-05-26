@@ -22,6 +22,13 @@ export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 const MIN_BOOTSTRAP_STACK_VERSION = 4;
 
 /**
+ * The minimum bootstrap stack version that has an IAM role that allows lookups
+ * of missing values. If we ever bump MIN_BOOTSTRAP_STACK_VERSION to a number
+ * greater than 6, this constant should be removed.
+ */
+const MIN_BOOTSTRAP_STACK_VERSION_WITH_LOOKUP_ROLE = 6;
+
+/**
  * Configuration properties for DefaultStackSynthesizer
  */
 export interface DefaultStackSynthesizerProps {
@@ -387,13 +394,17 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     assertBound(this.stack);
     assertBound(this.qualifier);
 
+    const bootstrapVersion = session.assembly.hasMissingContext()
+      ? MIN_BOOTSTRAP_STACK_VERSION_WITH_LOOKUP_ROLE
+      : MIN_BOOTSTRAP_STACK_VERSION;
+
     // Must be done here -- if it's done in bind() (called in the Stack's constructor)
     // then it will become impossible to set context after that.
     //
     // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
     // right constructs.
     if (this.props.generateBootstrapVersionRule ?? true) {
-      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this.qualifier);
+      addBootstrapVersionRule(this.stack, bootstrapVersion, this.qualifier);
     }
 
     this.synthesizeStackTemplate(this.stack, session);
@@ -407,7 +418,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       assumeRoleArn: this._deployRoleArn,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
-      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+      requiresBootstrapStackVersion: bootstrapVersion,
       bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this.qualifier}/version`,
       additionalDependencies: [artifactId],
     });
