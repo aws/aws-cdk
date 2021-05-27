@@ -2,7 +2,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import * as appmesh from '../lib/';
-import { TlsMode } from '../lib/tls-listener';
 
 export const app = new cdk.App();
 
@@ -209,7 +208,7 @@ new appmesh.VirtualGateway(stack, 'gateway2', {
       interval: cdk.Duration.seconds(10),
     }),
     tls: {
-      mode: TlsMode.STRICT,
+      mode: appmesh.TlsMode.STRICT,
       certificate: appmesh.TlsCertificate.file({
         certificateChainPath: 'path/to/certChain',
         privateKeyPath: 'path/to/privateKey',
