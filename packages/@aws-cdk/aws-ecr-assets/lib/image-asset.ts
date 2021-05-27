@@ -10,7 +10,7 @@ import { Construct } from 'constructs';
 import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct as CoreConstruct, Stage } from '@aws-cdk/core';
 
 /**
  * Options for DockerImageAsset
@@ -62,6 +62,8 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
 export interface DockerImageAssetProps extends DockerImageAssetOptions {
   /**
    * The directory where the Dockerfile is stored
+   * 
+   * Any directory inside with a name that matches the CDK output folder (cdk.out by default) will be excluded from the asset
    */
   readonly directory: string;
 }
@@ -124,7 +126,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
 
     const ignore = path.join(dir, '.dockerignore');
 
-    if (fs.existsSync(ignore)) {
+  if (fs.existsSync(ignore)) {
       const dockerIgnorePatterns = fs.readFileSync(ignore).toString().split('\n').filter(e => !!e);
 
       exclude = [
