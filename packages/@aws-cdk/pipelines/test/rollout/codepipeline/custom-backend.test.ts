@@ -1,8 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { arrayWith, deepObjectLike, encodedJson, objectLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, deepObjectLike, encodedJson, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
-import * as cdkp from '../../lib2';
+import * as cdkp from '../../../lib';
 import { OneStackApp } from '../test-app';
 import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from '../testutil';
 

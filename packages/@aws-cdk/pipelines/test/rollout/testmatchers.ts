@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { annotateMatcher, InspectionFailure, matcherFrom, PropertyMatcher } from '@aws-cdk/assert';
+import { annotateMatcher, InspectionFailure, matcherFrom, PropertyMatcher } from '@aws-cdk/assert-internal';
 
 /**
  * Sort an array (of Actions) by their RunOrder field before applying a matcher.

@@ -37,7 +37,7 @@ export class ExecutionShellAction extends ExecutionAction {
     this.installCommands = props.installCommands ?? [];
     this.buildCommands = props.buildCommands ?? [];
     this.image = props.image ?? CommandImage.GENERIC_LINUX;
-    this.computeType = props.computeType ?? ComputeType.DEFAULT;
+    this.computeType = props.computeType ?? ComputeType.default;
     this.buildsDockerImages = props.buildsDockerImages ?? false;
     this.environmentVariables = props.environmentVariables ?? {};
 

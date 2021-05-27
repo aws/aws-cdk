@@ -28,7 +28,7 @@ export interface AddApplicationOptions {
   readonly approvers?: Approver[];
 }
 
-export interface CdkPipelineProps {
+export interface PipelineProps {
   /**
    * Source (GitHub, ...)
    *
@@ -61,13 +61,13 @@ export interface CdkPipelineProps {
   readonly cdkCliVersion?: string;
 }
 
-export class CdkPipeline extends CoreConstruct {
+export class Pipeline extends CoreConstruct {
   private readonly graph = new PipelineGraph();
   private readonly backend: Backend;
   private readonly assetPublishing: AssetPublishingStrategy;
   private built = false;
 
-  constructor(scope: Construct, id: string, props: CdkPipelineProps) {
+  constructor(scope: Construct, id: string, props: PipelineProps) {
     super(scope, id);
 
     this.backend = props.backend ?? Backend.codePipeline();
@@ -85,7 +85,7 @@ export class CdkPipeline extends CoreConstruct {
     this.addDeployment(new CdkStageDeployment(stage, options));
   }
 
-  public addDeploymentGroup(name: string): CdkPipelineDeploymentGroup {
+  public addDeploymentGroup(name: string): PipelineDeploymentGroup {
     if (this.built) {
       throw new Error('Immutable');
     }
@@ -93,7 +93,7 @@ export class CdkPipeline extends CoreConstruct {
     this.graph.add(phase);
 
     const self = this;
-    return new class extends CdkPipelineDeploymentGroup {
+    return new class extends PipelineDeploymentGroup {
       public addApplicationStage(stage: Stage, options?: AddApplicationOptions): void {
         this.addDeployment(new CdkStageDeployment(stage, options));
       }
@@ -124,6 +124,6 @@ export class CdkPipeline extends CoreConstruct {
   }
 }
 
-export abstract class CdkPipelineDeploymentGroup {
+export abstract class PipelineDeploymentGroup {
   public abstract addApplicationStage(stage: Stage, options?: AddApplicationOptions): void;
 }

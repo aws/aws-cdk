@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Aws, SecretValue, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
-import { embeddedAsmPath } from '../../lib/private/construct-internals';
+import { embeddedAsmPath } from '../../private/construct-internals';
 import { enumerate, expectProp, flatten, maybeSuffix } from '../_util';
 import { ExecutionAction, ExecutionGraph, ExecutionNode, ExecutionSourceAction, commonAncestor, SourceType, ancestorPath, ExecutionShellAction, PipelineGraph, CreateChangeSetAction, ExecuteChangeSetAction, ManualApprovalAction } from '../graph';
 import { ArtifactMap } from './codepipeline/artifact-map';

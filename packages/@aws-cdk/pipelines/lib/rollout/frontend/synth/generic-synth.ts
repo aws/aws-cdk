@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { AddSynthToGraphOptions, Synth } from '.';
-import { cloudAssemblyBuildSpecDir } from '../../../lib/private/construct-internals';
-import { toPosixPath } from '../../../lib/private/fs';
+import { cloudAssemblyBuildSpecDir } from '../../../private/construct-internals';
+import { toPosixPath } from '../../../private/fs';
 import { ExecutionArtifact, ExecutionShellAction } from '../../graph';
 import { CommandImage, ComputeType } from '../../shared';
 
@@ -69,6 +69,6 @@ export class GenericSynth extends Synth {
     });
 
     options.parent.add(action);
-    options.root.setCloudAssemblyArtifact(asm);
+    options.root.recordCloudAssemblyArtifact(asm);
   }
 }

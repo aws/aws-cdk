@@ -7,7 +7,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { toPosixPath } from '../private/fs';
+import { toPosixPath } from '../../private/fs';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
 
 const DEFAULT_OUTPUT_DIR = 'cdk.out';

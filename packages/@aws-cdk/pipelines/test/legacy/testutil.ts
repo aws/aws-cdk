@@ -6,8 +6,8 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, AppProps, Environment, SecretValue, Stack, StackProps, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as cdkp from '../lib';
-import { assemblyBuilderOf } from '../lib/private/construct-internals';
+import * as cdkp from '../../lib';
+import { assemblyBuilderOf } from '../../lib/private/construct-internals';
 
 export const PIPELINE_ENV: Environment = {
   account: '123pipeline',

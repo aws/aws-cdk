@@ -1,15 +1,25 @@
 /// !cdk-integ PipelineStack
+import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { App, CfnResource, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as cdkp from '../lib';
+import * as cdkp from '../../lib';
 
 class MyStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
     const stack = new Stack(this, 'Stack', props);
+
+    new s3_assets.Asset(stack, 'Asset', {
+      path: path.join(__dirname, 'test-file-asset.txt'),
+    });
+    new s3_assets.Asset(stack, 'Asset2', {
+      path: path.join(__dirname, 'test-file-asset-two.txt'),
+    });
+
     new CfnResource(stack, 'Resource', {
       type: 'AWS::Test::SomeResource',
     });

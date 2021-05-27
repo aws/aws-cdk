@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { CfnOutput, Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as cdkp from '../lib';
+import * as cdkp from '../../lib';
 import { } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, stringNoLongerThan, TestApp, TestGitHubNpmPipeline } from './testutil';
 

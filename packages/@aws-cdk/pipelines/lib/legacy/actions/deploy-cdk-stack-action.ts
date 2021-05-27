@@ -7,8 +7,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnCapabilities, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
-import { appOf, assemblyBuilderOf } from '../private/construct-internals';
-import { toPosixPath } from '../private/fs';
+import { appOf, assemblyBuilderOf } from '../../private/construct-internals';
+import { toPosixPath } from '../../private/fs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line

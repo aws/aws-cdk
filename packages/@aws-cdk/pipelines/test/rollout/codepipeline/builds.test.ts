@@ -1,12 +1,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { arrayWith, deepObjectLike, encodedJson, objectLike, Capture } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, deepObjectLike, encodedJson, objectLike, Capture } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cbuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import * as cdkp from '../../lib2';
+import * as cdkp from '../../../lib';
 import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from '../testutil';
 
 let app: TestApp;
@@ -295,7 +295,7 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
     installCommands: ['do install'],
   }));
   const hash3 = synthWithAction(() => cdkp.Synth.standardNpm({
-    computeType: cdkp.ComputeType.LARGE,
+    computeType: cdkp.ComputeType.large,
   }));
   const hash4 = synthWithAction(() => cdkp.Synth.standardNpm({
     environmentVariables: {

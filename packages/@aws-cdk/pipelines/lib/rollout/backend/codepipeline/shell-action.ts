@@ -5,12 +5,16 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { mapValues, noEmptyObject } from '../../_util';
 import { ExecutionShellAction, ShellArtifact } from '../../graph';
 import { CommandImage, ComputeType } from '../../shared';
 import { ArtifactMap } from './artifact-map';
 import { CodePipelineImage } from './codepipeline-image';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction props for SimpleSynthAction

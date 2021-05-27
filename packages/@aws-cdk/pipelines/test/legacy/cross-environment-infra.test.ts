@@ -2,7 +2,7 @@ import { arrayWith, objectLike, stringLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as cdkp from '../lib';
+import * as cdkp from '../../lib';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;

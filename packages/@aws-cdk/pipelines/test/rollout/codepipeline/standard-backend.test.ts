@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as fs from 'fs';
 import * as path from 'path';
 import {
@@ -11,16 +12,15 @@ import {
   stringLike,
 } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
-import * as cp from '@aws-cdk/aws-codepipeline';
-import * as cpa from '@aws-cdk/aws-codepipeline-actions';
-import { Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
+import { Stack, Stage, StageProps, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as cdkp from '../lib';
-import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
+import * as cdkp from '../../../lib';
+import { OneStackApp } from '../test-app';
+import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from '../testutil';
 
 let app: TestApp;
 let pipelineStack: Stack;
-let pipeline: cdkp.CdkPipeline;
+let pipeline: cdkp.Pipeline;
 
 beforeEach(() => {
   app = new TestApp();
@@ -42,7 +42,7 @@ test('references stack template in subassembly', () => {
       Name: 'App',
       Actions: arrayWith(
         objectLike({
-          Name: 'Stack.Prepare',
+          Name: 'Prepare',
           InputArtifacts: [objectLike({})],
           Configuration: objectLike({
             StackName: 'App-Stack',
@@ -71,7 +71,7 @@ test('action has right settings for same-env deployment', () => {
       Name: 'Same',
       Actions: [
         objectLike({
-          Name: 'Stack.Prepare',
+          Name: 'Prepare',
           RoleArn: {
             'Fn::Join': ['', [
               'arn:',
@@ -101,7 +101,7 @@ test('action has right settings for same-env deployment', () => {
           }),
         }),
         objectLike({
-          Name: 'Stack.Deploy',
+          Name: 'Deploy',
           RoleArn: {
             'Fn::Join': ['', [
               'arn:',
@@ -123,56 +123,6 @@ test('action has right settings for same-env deployment', () => {
   });
 });
 
-test('action has right settings for cross-account deployment', () => {
-  // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
-
-  // THEN
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
-      Name: 'CrossAccount',
-      Actions: [
-        objectLike({
-          Name: 'Stack.Prepare',
-          RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::you:role/cdk-hnb659fds-deploy-role-you-',
-              { Ref: 'AWS::Region' },
-            ]],
-          },
-          Configuration: objectLike({
-            StackName: 'CrossAccount-Stack',
-            RoleArn: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':iam::you:role/cdk-hnb659fds-cfn-exec-role-you-',
-                { Ref: 'AWS::Region' },
-              ]],
-            },
-          }),
-        }),
-        objectLike({
-          Name: 'Stack.Deploy',
-          RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::you:role/cdk-hnb659fds-deploy-role-you-',
-              { Ref: 'AWS::Region' },
-            ]],
-          },
-          Configuration: objectLike({
-            StackName: 'CrossAccount-Stack',
-          }),
-        }),
-      ],
-    }),
-  });
-});
-
 test('action has right settings for cross-region deployment', () => {
   // WHEN
   pipeline.addApplicationStage(new OneStackApp(app, 'CrossRegion', { env: { region: 'elsewhere' } }));
@@ -183,7 +133,7 @@ test('action has right settings for cross-region deployment', () => {
       Name: 'CrossRegion',
       Actions: [
         objectLike({
-          Name: 'Stack.Prepare',
+          Name: 'Prepare',
           RoleArn: {
             'Fn::Join': ['', [
               'arn:',
@@ -212,7 +162,7 @@ test('action has right settings for cross-region deployment', () => {
           }),
         }),
         objectLike({
-          Name: 'Stack.Deploy',
+          Name: 'Deploy',
           RoleArn: {
             'Fn::Join': ['', [
               'arn:',
@@ -227,55 +177,6 @@ test('action has right settings for cross-region deployment', () => {
           Region: 'elsewhere',
           Configuration: objectLike({
             StackName: 'CrossRegion-Stack',
-          }),
-        }),
-      ],
-    }),
-  });
-});
-
-test('action has right settings for cross-account/cross-region deployment', () => {
-  // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossBoth', { env: { account: 'you', region: 'elsewhere' } }));
-
-  // THEN
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
-      Name: 'CrossBoth',
-      Actions: [
-        objectLike({
-          Name: 'Stack.Prepare',
-          RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere',
-            ]],
-          },
-          Region: 'elsewhere',
-          Configuration: objectLike({
-            StackName: 'CrossBoth-Stack',
-            RoleArn: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':iam::you:role/cdk-hnb659fds-cfn-exec-role-you-elsewhere',
-              ]],
-            },
-          }),
-        }),
-        objectLike({
-          Name: 'Stack.Deploy',
-          RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere',
-            ]],
-          },
-          Region: 'elsewhere',
-          Configuration: objectLike({
-            StackName: 'CrossBoth-Stack',
           }),
         }),
       ],
@@ -301,14 +202,13 @@ test('pipeline has self-mutation stage', () => {
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:5.0',
-      PrivilegedMode: false,
+      Image: 'aws/codebuild/standard:4.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
           install: {
-            commands: 'npm install -g aws-cdk',
+            commands: ['npm install -g aws-cdk'],
           },
           build: {
             commands: arrayWith('cdk -a . deploy PipelineStack --require-approval=never --verbose'),
@@ -328,13 +228,13 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
   // THEN
   expect(stackTemplate(nestedPipelineStack)).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:5.0',
+      Image: 'aws/codebuild/standard:4.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
           build: {
-            commands: arrayWith('cdk -a assembly-PipelineStage deploy PipelineStage/PipelineStack --require-approval=never --verbose'),
+            commands: arrayWith('cdk -a assembly-PipelineStage deploy PipelineStage-PipelineStack --require-approval=never --verbose'),
           },
         },
       })),
@@ -344,11 +244,11 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
 
 test('selfmutation feature can be turned off', () => {
   const stack = new Stack();
-  const cloudAssemblyArtifact = new cp.Artifact();
   // WHEN
   new TestGitHubNpmPipeline(stack, 'Cdk', {
-    cloudAssemblyArtifact,
-    selfMutating: false,
+    backend: cdkp.Backend.codePipeline({
+      selfMutating: false,
+    }),
   });
   // THEN
   expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -356,21 +256,6 @@ test('selfmutation feature can be turned off', () => {
       Name: 'UpdatePipeline',
       Actions: anything(),
     })),
-  });
-});
-
-test('generates CodeBuild project in privileged mode', () => {
-  // WHEN
-  const stack = new Stack(app, 'PrivilegedPipelineStack', { env: PIPELINE_ENV });
-  new TestGitHubNpmPipeline(stack, 'PrivilegedPipeline', {
-    supportDockerAssets: true,
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-    Environment: {
-      PrivilegedMode: true,
-    },
   });
 });
 
@@ -385,7 +270,7 @@ test('overridden stack names are respected', () => {
       {
         Name: 'App1',
         Actions: arrayWith(objectLike({
-          Name: 'MyFancyStack.Prepare',
+          Name: 'Prepare',
           Configuration: objectLike({
             StackName: 'MyFancyStack',
           }),
@@ -394,36 +279,13 @@ test('overridden stack names are respected', () => {
       {
         Name: 'App2',
         Actions: arrayWith(objectLike({
-          Name: 'MyFancyStack.Prepare',
+          Name: 'Prepare',
           Configuration: objectLike({
             StackName: 'MyFancyStack',
           }),
         })),
       },
     ),
-  });
-});
-
-test('can control fix/CLI version used in pipeline selfupdate', () => {
-  // WHEN
-  const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
-  new TestGitHubNpmPipeline(stack2, 'Cdk2', {
-    pipelineName: 'vpipe',
-    cdkCliVersion: '1.2.3',
-  });
-
-  // THEN
-  expect(stack2).toHaveResourceLike('AWS::CodeBuild::Project', {
-    Name: 'vpipe-selfupdate',
-    Source: {
-      BuildSpec: encodedJson(deepObjectLike({
-        phases: {
-          install: {
-            commands: 'npm install -g aws-cdk@1.2.3',
-          },
-        },
-      })),
-    },
   });
 });
 
@@ -454,28 +316,6 @@ test('changing CLI version leads to a different pipeline structure (restarting i
 
 });
 
-test('add another action to an existing stage', () => {
-  // WHEN
-  pipeline.stage('Source').addAction(new cpa.GitHubSourceAction({
-    actionName: 'GitHub2',
-    oauthToken: SecretValue.plainText('oops'),
-    output: new cp.Artifact(),
-    owner: 'OWNER',
-    repo: 'REPO',
-  }));
-
-  // THEN
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
-      Name: 'Source',
-      Actions: [
-        objectLike({ Name: 'GitHub' }),
-        objectLike({ Name: 'GitHub2' }),
-      ],
-    }),
-  });
-});
-
 test('tags get reflected in pipeline', () => {
   // WHEN
   const stage = new OneStackApp(app, 'App');
@@ -489,7 +329,7 @@ test('tags get reflected in pipeline', () => {
       Name: 'App',
       Actions: arrayWith(
         objectLike({
-          Name: 'Stack.Prepare',
+          Name: 'Prepare',
           InputArtifacts: [objectLike({})],
           Configuration: objectLike({
             StackName: 'App-Stack',
@@ -509,13 +349,6 @@ test('tags get reflected in pipeline', () => {
     },
   }));
 });
-
-class OneStackApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
-    super(scope, id, props);
-    new BucketStack(this, 'Stack');
-  }
-}
 
 class OneStackAppWithCustomName extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {

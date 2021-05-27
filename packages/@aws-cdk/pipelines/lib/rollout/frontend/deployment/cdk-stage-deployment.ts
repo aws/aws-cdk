@@ -2,9 +2,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../../../lib/private/asset-manifest';
-import { appOf, assemblyBuilderOf } from '../../../lib/private/construct-internals';
-import { toPosixPath } from '../../../lib/private/fs';
+import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../../../private/asset-manifest';
+import { appOf, assemblyBuilderOf } from '../../../private/construct-internals';
+import { toPosixPath } from '../../../private/fs';
+import { AssetType } from '../../../types/asset-type';
 import { CreateChangeSetAction, ExecuteChangeSetAction, ExecutionGraph } from '../../graph';
 import { Approver } from '../approver';
 import { AddDeploymentToGraphOptions, Deployment } from './index';
@@ -164,21 +165,6 @@ function isCloudFormationStack(s: cxapi.CloudArtifact): s is cxapi.CloudFormatio
   // instanceof is too risky, and we're at a too late stage to properly fix.
   // return s instanceof cxapi.CloudFormationStackArtifact;
   return s.constructor.name === 'CloudFormationStackArtifact';
-}
-
-/**
- * Type of the asset that is being published
- */
-export enum AssetType {
-  /**
-   * A file
-   */
-  FILE = 'file',
-
-  /**
-   * A Docker image
-   */
-  DOCKER_IMAGE = 'docker-image',
 }
 
 /**

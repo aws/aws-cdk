@@ -4,8 +4,8 @@ import * as path from 'path';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, AppProps, Environment, Stack, StackProps, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { assemblyBuilderOf } from '../lib/private/construct-internals';
-import * as cdkp from '../lib2';
+import * as cdkp from '../../lib';
+import { assemblyBuilderOf } from '../../lib/private/construct-internals';
 
 export const PIPELINE_ENV: Environment = {
   account: '123pipeline',
@@ -30,8 +30,8 @@ export class TestApp extends App {
   }
 }
 
-export class TestGitHubNpmPipeline extends cdkp.CdkPipeline {
-  constructor(scope: Construct, id: string, props?: Partial<cdkp.CdkPipelineProps>) {
+export class TestGitHubNpmPipeline extends cdkp.Pipeline {
+  constructor(scope: Construct, id: string, props?: Partial<cdkp.PipelineProps>) {
     super(scope, id, {
       source: cdkp.Source.gitHub('test/test'),
       synth: cdkp.Synth.standardNpm(),

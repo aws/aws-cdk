@@ -32,3 +32,4 @@ export abstract class Synth {
 }
 
 import { GenericSynth, GenericSynthProps } from './generic-synth';
+export { GenericSynth, GenericSynthProps } from './generic-synth';

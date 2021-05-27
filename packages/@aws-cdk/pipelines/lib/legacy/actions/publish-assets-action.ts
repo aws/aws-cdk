@@ -6,26 +6,12 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { toPosixPath } from '../../private/fs';
+import { AssetType } from '../../types/asset-type';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-import { toPosixPath } from '../private/fs';
-
-/**
- * Type of the asset that is being published
- */
-export enum AssetType {
-  /**
-   * A file
-   */
-  FILE = 'file',
-
-  /**
-   * A Docker image
-   */
-  DOCKER_IMAGE = 'docker-image',
-}
 
 /**
  * Props for a PublishAssetsAction

@@ -1,13 +1,14 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as sqs from '@aws-cdk/aws-sqs';
-import { App, Construct, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
-import * as pipelines from '../lib2';
+import { App, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import * as pipelines from '../../lib';
 
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
+    const pipeline = new pipelines.Pipeline(this, 'Pipeline', {
       source: pipelines.Source.gitHub('rix0rrr/cdk-pipelines-demo'),
       synth: pipelines.Synth.standardNpm(),
     });
@@ -17,6 +18,22 @@ class PipelineStack extends Stack {
     const group = pipeline.addDeploymentGroup('Wave1');
     group.addApplicationStage(new AppStage(this, 'Prod1'));
     group.addApplicationStage(new AppStage(this, 'Prod2'));
+
+    const group2 = pipeline.addDeploymentGroup('Wave2');
+    group2.addApplicationStage(new AppStage(this, 'Prod1'));
+    group2.addApplicationStage(new AppStage(this, 'Prod2'));
+    group2.addApplicationStage(new AppStage(this, 'Prod1'));
+    group2.addApplicationStage(new AppStage(this, 'Prod2'));
+
+    const group3 = pipeline.addDeploymentGroup('Wave3');
+    group3.addApplicationStage(new AppStage(this, 'Prod1'));
+    group3.addApplicationStage(new AppStage(this, 'Prod2'));
+    group3.addApplicationStage(new AppStage(this, 'Prod1'));
+    group3.addApplicationStage(new AppStage(this, 'Prod2'));
+    group3.addApplicationStage(new AppStage(this, 'Prod1'));
+    group3.addApplicationStage(new AppStage(this, 'Prod2'));
+    group3.addApplicationStage(new AppStage(this, 'Prod1'));
+    group3.addApplicationStage(new AppStage(this, 'Prod2'));
   }
 }
 

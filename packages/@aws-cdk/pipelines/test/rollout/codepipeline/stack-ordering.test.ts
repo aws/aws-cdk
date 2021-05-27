@@ -1,15 +1,15 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { arrayWith, objectLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { App, Stack } from '@aws-cdk/core';
-import * as cdkp from '../../lib2';
+import * as cdkp from '../../../lib';
 import { ThreeStackApp, TwoStackApp } from '../test-app';
 import { sortedByRunOrder } from '../testmatchers';
 import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from '../testutil';
 
 let app: App;
 let pipelineStack: Stack;
-let pipeline: cdkp.CdkPipeline;
+let pipeline: cdkp.Pipeline;
 
 beforeEach(() => {
   app = new TestApp();

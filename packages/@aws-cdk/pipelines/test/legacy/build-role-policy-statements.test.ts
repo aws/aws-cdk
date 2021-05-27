@@ -3,7 +3,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import * as cdkp from '../lib';
+import * as cdkp from '../../lib';
 import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;

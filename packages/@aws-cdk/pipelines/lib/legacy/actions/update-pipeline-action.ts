@@ -4,7 +4,7 @@ import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
-import { embeddedAsmPath } from '../private/construct-internals';
+import { embeddedAsmPath } from '../../private/construct-internals';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line

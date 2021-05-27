@@ -1,4 +1,4 @@
-import { ExecutionGraph, ExecutionNode } from '../../lib2/graph';
+import { ExecutionGraph, ExecutionNode } from '../../../lib/rollout/graph';
 
 class PlainNode extends ExecutionNode { }
 

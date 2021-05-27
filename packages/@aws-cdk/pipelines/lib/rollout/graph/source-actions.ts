@@ -6,7 +6,7 @@ export enum SourceType {
   GITHUB = 'GITHUB',
 }
 
-export interface GitHubSourceProps {
+export interface ImplGitHubSourceProps {
   readonly owner: string;
   readonly repo: string;
   readonly branch: string;
@@ -15,7 +15,7 @@ export interface GitHubSourceProps {
 
 export interface SourceProps {
   readonly type: SourceType;
-  readonly gitHubSource?: GitHubSourceProps;
+  readonly gitHubSource?: ImplGitHubSourceProps;
 }
 
 export class ExecutionSourceAction extends ExecutionAction {

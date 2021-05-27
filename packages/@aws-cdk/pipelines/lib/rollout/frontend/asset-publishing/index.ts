@@ -1,4 +1,4 @@
-import { AssetType } from '../../../lib/actions/publish-assets-action';
+import { AssetType } from '../../../types/asset-type';
 import { ExecutionGraph, PipelineGraph } from '../../graph';
 
 export abstract class AssetPublishingStrategy {

@@ -4,8 +4,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Annotations, App, Aws, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
-import { appOf, assemblyBuilderOf } from './private/construct-internals';
+import { appOf, assemblyBuilderOf } from '../private/construct-internals';
+import { AssetType } from '../types/asset-type';
+import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.

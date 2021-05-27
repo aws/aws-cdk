@@ -23,3 +23,4 @@ export interface AddSourceToGraphOptions {
 }
 
 import { GitHubSource, GitHubSourceProps } from './github-source';
+export { GitHubSource, GitHubSourceProps } from './github-source';

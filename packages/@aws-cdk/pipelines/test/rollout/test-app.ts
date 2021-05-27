@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BucketStack } from './testutil';

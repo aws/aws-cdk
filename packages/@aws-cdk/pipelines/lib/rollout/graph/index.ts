@@ -35,7 +35,7 @@ export abstract class ExecutionNode {
 }
 
 export class ExecutionGraph extends ExecutionNode {
-  protected readonly nodes = new Set<ExecutionNode>();
+  private readonly nodes = new Set<ExecutionNode>();
 
   constructor(name: string, nodes?: ExecutionNode[]) {
     super(name);
@@ -183,7 +183,7 @@ export class PipelineGraph extends ExecutionGraph {
     return this._cloudAssemblyArtifact;
   }
 
-  public setCloudAssemblyArtifact(artifact: ExecutionArtifact) {
+  public recordCloudAssemblyArtifact(artifact: ExecutionArtifact) {
     this._cloudAssemblyArtifact = artifact;
   }
 }
