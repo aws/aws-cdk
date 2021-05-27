@@ -1,6 +1,3 @@
-/**
- * Enum of supported TLS modes
- */
 import { TlsCertificate } from './tls-certificate';
 
 /**
