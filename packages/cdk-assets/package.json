@@ -16,8 +16,8 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
-    "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat"
   },
   "cdk-build": {
@@ -32,23 +32,23 @@
   "devDependencies": {
     "@types/archiver": "^5.1.0",
     "@types/glob": "^7.1.3",
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^26.0.23",
     "@types/jszip": "^3.4.1",
     "@types/mock-fs": "^4.13.0",
-    "@types/node": "^10.17.48",
-    "@types/yargs": "^15.0.10",
+    "@types/node": "^10.17.60",
+    "@types/yargs": "^15.0.13",
     "cdk-build-tools": "0.0.0",
     "jest": "^26.6.3",
-    "jszip": "^3.5.0",
-    "mock-fs": "^4.13.0",
+    "jszip": "^3.6.0",
+    "mock-fs": "^4.14.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "archiver": "^5.2.0",
-    "aws-sdk": "^2.824.0",
-    "glob": "^7.1.6",
+    "archiver": "^5.3.0",
+    "aws-sdk": "^2.848.0",
+    "glob": "^7.1.7",
     "yargs": "^16.2.0"
   },
   "repository": {
@@ -67,6 +67,12 @@
   "cdk-package": {
     "shrinkWrap": true
   },
+  "nozem": {
+    "ostools": ["unzip", "diff", "rm"]
+  },
   "stability": "experimental",
-  "maturity": "experimental"
+  "maturity": "experimental",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

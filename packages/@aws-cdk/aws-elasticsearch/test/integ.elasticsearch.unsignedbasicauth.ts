@@ -1,4 +1,5 @@
-import { App, Stack, StackProps } from '@aws-cdk/core';
+/// !cdk-integ pragma:ignore-assets
+import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as es from '../lib';
 
@@ -7,6 +8,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     new es.Domain(this, 'Domain', {
+      removalPolicy: RemovalPolicy.DESTROY,
       version: es.ElasticsearchVersion.V7_1,
       useUnsignedBasicAuth: true,
     });

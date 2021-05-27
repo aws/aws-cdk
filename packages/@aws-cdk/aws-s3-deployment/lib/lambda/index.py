@@ -7,10 +7,11 @@ import traceback
 import logging
 import shutil
 import boto3
+import contextlib
 from datetime import datetime
 from uuid import uuid4
 
-from botocore.vendored import requests
+from urllib.request import Request, urlopen
 from zipfile import ZipFile
 
 logger = logging.getLogger()
@@ -168,7 +169,7 @@ def create_metadata_args(raw_user_metadata, raw_system_metadata):
         return []
 
     format_system_metadata_key = lambda k: k.lower()
-    format_user_metadata_key = lambda k: k.lower() if k.lower().startswith("x-amz-meta-") else f"x-amz-meta-{k.lower()}"
+    format_user_metadata_key = lambda k: k.lower()
 
     system_metadata = { format_system_metadata_key(k): v for k, v in raw_system_metadata.items() }
     user_metadata = { format_user_metadata_key(k): v for k, v in raw_user_metadata.items() }
@@ -212,8 +213,9 @@ def cfn_send(event, context, responseStatus, responseData={}, physicalResourceId
     }
 
     try:
-        response = requests.put(responseUrl, data=body, headers=headers)
-        logger.info("| status code: " + response.reason)
+        request = Request(responseUrl, method='PUT', data=bytes(body.encode('utf-8')), headers=headers)
+        with contextlib.closing(urlopen(request)) as response:
+          logger.info("| status code: " + response.reason)
     except Exception as e:
         logger.error("| unable to send response to CloudFormation")
         logger.exception(e)

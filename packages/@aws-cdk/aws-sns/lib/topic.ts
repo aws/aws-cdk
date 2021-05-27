@@ -80,13 +80,26 @@ export class Topic extends TopicBase {
       physicalName: props.topicName,
     });
 
+    if (props.fifo && !props.topicName) {
+      // NOTE: Workaround for CloudFormation problem reported in CDK issue 12386
+      // see https://github.com/aws/aws-cdk/issues/12386
+      throw new Error('FIFO SNS topics must be given a topic name.');
+    }
+
     if (props.contentBasedDeduplication && !props.fifo) {
       throw new Error('Content based deduplication can only be enabled for FIFO SNS topics.');
     }
 
+    let cfnTopicName: string;
+    if (props.fifo && props.topicName && !props.topicName.endsWith('.fifo')) {
+      cfnTopicName = this.physicalName + '.fifo';
+    } else {
+      cfnTopicName = this.physicalName;
+    }
+
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
-      topicName: this.physicalName,
+      topicName: cfnTopicName,
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
       contentBasedDeduplication: props.contentBasedDeduplication,
       fifoTopic: props.fifo,

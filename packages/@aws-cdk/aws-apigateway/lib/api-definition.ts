@@ -1,15 +1,16 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import * as cdk from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Represents an OpenAPI definition asset.
- * @experimental
  */
 export abstract class ApiDefinition {
   /**
    * Creates an API definition from a specification file in an S3 bucket
-   * @experimental
    */
   public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3ApiDefinition {
     return new S3ApiDefinition(bucket, key, objectVersion);
@@ -67,7 +68,6 @@ export abstract class ApiDefinition {
 
   /**
    * Loads the API specification from a local disk asset.
-   * @experimental
    */
   public static fromAsset(file: string, options?: s3_assets.AssetOptions): AssetApiDefinition {
     return new AssetApiDefinition(file, options);
@@ -80,12 +80,11 @@ export abstract class ApiDefinition {
    * @param scope The binding scope. Don't be smart about trying to down-cast or
    * assume it's initialized. You may just use it as a construct scope.
    */
-  public abstract bind(scope: cdk.Construct): ApiDefinitionConfig;
+  public abstract bind(scope: Construct): ApiDefinitionConfig;
 }
 
 /**
  * S3 location of the API definition file
- * @experimental
  */
 export interface ApiDefinitionS3Location {
   /** The S3 bucket */
@@ -101,7 +100,6 @@ export interface ApiDefinitionS3Location {
 
 /**
  * Post-Binding Configuration for a CDK construct
- * @experimental
  */
 export interface ApiDefinitionConfig {
   /**
@@ -121,7 +119,6 @@ export interface ApiDefinitionConfig {
 
 /**
  * OpenAPI specification from an S3 archive.
- * @experimental
  */
 export class S3ApiDefinition extends ApiDefinition {
   private bucketName: string;
@@ -136,7 +133,7 @@ export class S3ApiDefinition extends ApiDefinition {
     this.bucketName = bucket.bucketName;
   }
 
-  public bind(_scope: cdk.Construct): ApiDefinitionConfig {
+  public bind(_scope: Construct): ApiDefinitionConfig {
     return {
       s3Location: {
         bucket: this.bucketName,
@@ -149,7 +146,6 @@ export class S3ApiDefinition extends ApiDefinition {
 
 /**
  * OpenAPI specification from an inline JSON object.
- * @experimental
  */
 export class InlineApiDefinition extends ApiDefinition {
   constructor(private definition: any) {
@@ -164,7 +160,7 @@ export class InlineApiDefinition extends ApiDefinition {
     }
   }
 
-  public bind(_scope: cdk.Construct): ApiDefinitionConfig {
+  public bind(_scope: Construct): ApiDefinitionConfig {
     return {
       inlineDefinition: this.definition,
     };
@@ -173,7 +169,6 @@ export class InlineApiDefinition extends ApiDefinition {
 
 /**
  * OpenAPI specification from a local file.
- * @experimental
  */
 export class AssetApiDefinition extends ApiDefinition {
   private asset?: s3_assets.Asset;
@@ -182,7 +177,7 @@ export class AssetApiDefinition extends ApiDefinition {
     super();
   }
 
-  public bind(scope: cdk.Construct): ApiDefinitionConfig {
+  public bind(scope: Construct): ApiDefinitionConfig {
     // If the same AssetAPIDefinition is used multiple times, retain only the first instantiation.
     if (this.asset === undefined) {
       this.asset = new s3_assets.Asset(scope, 'APIDefinition', {

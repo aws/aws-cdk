@@ -3,6 +3,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { outputFromStack, AwsClients } from './aws';
+import { memoize0 } from './memoize';
+import { findYarnPackages } from './monorepo';
 import { ResourcePool } from './resource-pool';
 import { TestContext } from './test-helpers';
 
@@ -61,20 +63,17 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
 
     let success = true;
     try {
-      let modules = [
-        '@aws-cdk/core',
-        '@aws-cdk/aws-sns',
-        '@aws-cdk/aws-iam',
-        '@aws-cdk/aws-lambda',
-        '@aws-cdk/aws-ssm',
-        '@aws-cdk/aws-ecr-assets',
-        '@aws-cdk/aws-cloudformation',
-        '@aws-cdk/aws-ec2',
-      ];
-      if (FRAMEWORK_VERSION) {
-        modules = modules.map(module => `${module}@${FRAMEWORK_VERSION}`);
-      }
-      await fixture.shell(['npm', 'install', ...modules]);
+      const version = FRAMEWORK_VERSION ?? '*';
+      await installNpmPackages(fixture, {
+        '@aws-cdk/core': version,
+        '@aws-cdk/aws-sns': version,
+        '@aws-cdk/aws-iam': version,
+        '@aws-cdk/aws-lambda': version,
+        '@aws-cdk/aws-ssm': version,
+        '@aws-cdk/aws-ecr-assets': version,
+        '@aws-cdk/aws-cloudformation': version,
+        '@aws-cdk/aws-ec2': version,
+      });
 
       await ensureBootstrapped(fixture);
 
@@ -117,11 +116,9 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
 
     let success = true;
     try {
-      let module = uberPackage;
-      if (FRAMEWORK_VERSION) {
-        module = `${module}@${FRAMEWORK_VERSION}`;
-      }
-      await fixture.shell(['npm', 'install', 'constructs', module]);
+      await installNpmPackages(fixture, {
+        [uberPackage]: FRAMEWORK_VERSION ?? '*',
+      });
 
       await block(fixture);
     } catch (e) {
@@ -192,6 +189,63 @@ export async function cloneDirectory(source: string, target: string, output?: No
   await shell(['cp', '-R', source + '/*', target], { output });
 }
 
+interface CommonCdkBootstrapCommandOptions {
+  readonly toolkitStackName: string;
+
+  /**
+   * @default false
+   */
+  readonly verbose?: boolean;
+
+  /**
+   * @default - auto-generated CloudFormation name
+   */
+  readonly bootstrapBucketName?: string;
+
+  readonly cliOptions?: CdkCliOptions;
+
+  /**
+   * @default - none
+   */
+  readonly tags?: string;
+}
+
+export interface CdkLegacyBootstrapCommandOptions extends CommonCdkBootstrapCommandOptions {
+  /**
+   * @default false
+   */
+  readonly noExecute?: boolean;
+
+  /**
+   * @default true
+   */
+  readonly publicAccessBlockConfiguration?: boolean;
+}
+
+export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapCommandOptions {
+  /**
+   * @default false
+   */
+  readonly force?: boolean;
+
+  /**
+   * @default - none
+   */
+  readonly cfnExecutionPolicy?: string;
+
+  /**
+   * @default false
+   */
+  readonly showTemplate?: boolean;
+
+  readonly template?: string;
+
+  /**
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
+}
+
 export class TestFixture {
   public readonly qualifier = randomString().substr(0, 10);
   private readonly bucketsToDelete = new Array<string>();
@@ -242,6 +296,78 @@ export class TestFixture {
       ...this.fullStackName(stackNames)], options);
   }
 
+  public async cdkBootstrapLegacy(options: CdkLegacyBootstrapCommandOptions): Promise<string> {
+    const args = ['bootstrap'];
+
+    if (options.verbose) {
+      args.push('-v');
+    }
+    args.push('--toolkit-stack-name', options.toolkitStackName);
+    if (options.bootstrapBucketName) {
+      args.push('--bootstrap-bucket-name', options.bootstrapBucketName);
+    }
+    if (options.noExecute) {
+      args.push('--no-execute');
+    }
+    if (options.publicAccessBlockConfiguration !== undefined) {
+      args.push('--public-access-block-configuration', options.publicAccessBlockConfiguration.toString());
+    }
+    if (options.tags) {
+      args.push('--tags', options.tags);
+    }
+
+    return this.cdk(args, {
+      ...options.cliOptions,
+      modEnv: {
+        ...options.cliOptions?.modEnv,
+        // so that this works for V2,
+        // where the "new" bootstrap is the default
+        CDK_LEGACY_BOOTSTRAP: '1',
+      },
+    });
+  }
+
+  public async cdkBootstrapModern(options: CdkModernBootstrapCommandOptions): Promise<string> {
+    const args = ['bootstrap'];
+
+    if (options.verbose) {
+      args.push('-v');
+    }
+    if (options.showTemplate) {
+      args.push('--show-template');
+    }
+    if (options.template) {
+      args.push('--template', options.template);
+    }
+    args.push('--toolkit-stack-name', options.toolkitStackName);
+    if (options.bootstrapBucketName) {
+      args.push('--bootstrap-bucket-name', options.bootstrapBucketName);
+    }
+    args.push('--qualifier', this.qualifier);
+    if (options.cfnExecutionPolicy) {
+      args.push('--cloudformation-execution-policies', options.cfnExecutionPolicy);
+    }
+    if (options.terminationProtection !== undefined) {
+      args.push('--termination-protection', options.terminationProtection.toString());
+    }
+    if (options.force) {
+      args.push('--force');
+    }
+    if (options.tags) {
+      args.push('--tags', options.tags);
+    }
+
+    return this.cdk(args, {
+      ...options.cliOptions,
+      modEnv: {
+        ...options.cliOptions?.modEnv,
+        // so that this works for V1,
+        // where the "old" bootstrap is the default
+        CDK_NEW_BOOTSTRAP: '1',
+      },
+    });
+  }
+
   public async cdk(args: string[], options: CdkCliOptions = {}) {
     const verbose = options.verbose ?? true;
 
@@ -254,6 +380,10 @@ export class TestFixture {
         ...options.modEnv,
       },
     });
+  }
+
+  public get bootstrapStackName() {
+    return this.fullStackName('bootstrap-stack');
   }
 
   public fullStackName(stackName: string): string;
@@ -281,6 +411,8 @@ export class TestFixture {
    */
   public async dispose(success: boolean) {
     const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
+
+    this.sortBootstrapStacksToTheEnd(stacksToDelete);
 
     // Bootstrap stacks have buckets that need to be cleaned
     const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
@@ -332,6 +464,18 @@ export class TestFixture {
       .filter(s => statusFilter.includes(s.StackStatus))
       .filter(s => s.RootId === undefined); // Only delete parent stacks. Nested stacks are deleted in the process
   }
+
+  private sortBootstrapStacksToTheEnd(stacks: AWS.CloudFormation.Stack[]) {
+    stacks.sort((a, b) => {
+      const aBs = a.StackName.startsWith(this.bootstrapStackName);
+      const bBs = b.StackName.startsWith(this.bootstrapStackName);
+
+      return aBs != bBs
+        // '+' converts a boolean to 0 or 1
+        ? (+aBs) - (+bBs)
+        : a.StackName.localeCompare(b.StackName);
+    });
+  }
 }
 
 /**
@@ -368,8 +512,9 @@ let sanityChecked: boolean | undefined;
  * by hand so let's just mass-automate it.
  */
 async function ensureBootstrapped(fixture: TestFixture) {
-  // Old-style bootstrap stack with default name
+  // Use the default name for the bootstrap stack
   if (await fixture.aws.stackStatus('CDKToolkit') === undefined) {
+    // use whatever version of bootstrap is the default for this particular version of the CLI
     await fixture.cdk(['bootstrap', `aws://${await fixture.aws.account()}/${fixture.aws.region}`]);
   }
 }
@@ -454,3 +599,64 @@ export function randomString() {
   // Crazy
   return Math.random().toString(36).replace(/[^a-z0-9]+/g, '');
 }
+
+/**
+ * Install the given NPM packages, identified by their names and versions
+ *
+ * Works by writing the packages to a `package.json` file, and
+ * then running NPM7's "install" on it. The use of NPM7 will automatically
+ * install required peerDependencies.
+ *
+ * If we're running in REPO mode and we find the package in the set of local
+ * packages in the repository, we'll write the directory name to `package.json`
+ * so that NPM will create a symlink (this allows running tests against
+ * built-but-unpackaged modules, and saves dev cycle time).
+ *
+ * Be aware you MUST install all the packages you directly depend upon! In the case
+ * of a repo/symlinking install, transitive dependencies WILL NOT be installed in the
+ * current directory's `node_modules` directory, because they will already have been
+ * symlinked from the TARGET directory's `node_modules` directory (which is sufficient
+ * for Node's dependency lookup mechanism).
+ */
+async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
+  if (process.env.REPO_ROOT) {
+    const monoRepo = await findYarnPackages(process.env.REPO_ROOT);
+
+    // Replace the install target with the physical location of this package
+    for (const key of Object.keys(packages)) {
+      if (key in monoRepo) {
+        packages[key] = monoRepo[key];
+      }
+    }
+  }
+
+  fs.writeFileSync(path.join(fixture.integTestDir, 'package.json'), JSON.stringify({
+    name: 'cdk-integ-tests',
+    private: true,
+    version: '0.0.1',
+    devDependencies: packages,
+  }, undefined, 2), { encoding: 'utf-8' });
+
+  // Now install that `package.json` using NPM7
+  const npm7 = await installNpm7();
+  await fixture.shell([npm7, 'install']);
+}
+
+/**
+ * Install NPM7 somewhere on the machine and return the path to its binary.
+ *
+ * - We install NPM7 explicitly so we don't have to depend on the environment.
+ * - The install is cached so we don't have to install it over and over again
+ *   for every test.
+ */
+const installNpm7 = memoize0(async (): Promise<string> => {
+  const installDir = path.join(os.tmpdir(), 'cdk-integ-npm7');
+  await shell(['rm', '-rf', installDir]);
+  await shell(['mkdir', '-p', installDir]);
+
+  await shell(['npm', 'install',
+    '--prefix', installDir,
+    'npm@7']);
+
+  return path.join(installDir, 'node_modules', '.bin', 'npm');
+});

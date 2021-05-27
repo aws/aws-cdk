@@ -1,12 +1,11 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
-import { ClientPolicy } from './client-policy';
 import { IMesh, Mesh } from './mesh';
 import { ServiceDiscovery } from './service-discovery';
-import { AccessLog } from './shared-interfaces';
+import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
-import { IVirtualService } from './virtual-service';
 
 /**
  * Interface which all VirtualNode based classes must implement
@@ -35,6 +34,10 @@ export interface IVirtualNode extends cdk.IResource {
    */
   readonly mesh: IMesh;
 
+  /**
+   * Grants the given entity `appmesh:StreamAggregatedResources`.
+   */
+  grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -61,7 +64,7 @@ export interface VirtualNodeBaseProps {
    *
    * @default - No backends
    */
-  readonly backends?: IVirtualService[];
+  readonly backends?: Backend[];
 
   /**
    * Initial listener for the virtual node
@@ -82,7 +85,7 @@ export interface VirtualNodeBaseProps {
    *
    * @default - No Config
    */
-  readonly backendsDefaultClientPolicy?: ClientPolicy;
+  readonly backendDefaults?: BackendDefaults;
 }
 
 /**
@@ -110,6 +113,14 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    * The Mesh which the VirtualNode belongs to
    */
   public abstract readonly mesh: IMesh;
+
+  public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['appmesh:StreamAggregatedResources'],
+      resourceArns: [this.virtualNodeArn],
+    });
+  }
 }
 
 /**
@@ -183,9 +194,13 @@ export class VirtualNode extends VirtualNodeBase {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
-        backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
-        listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: props.backendsDefaultClientPolicy?.bind(this),
+        backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
+        listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
+        backendDefaults: props.backendDefaults !== undefined
+          ? {
+            clientPolicy: props.backendDefaults?.clientPolicy?.bind(this).clientPolicy,
+          }
+          : undefined,
         serviceDiscovery: {
           dns: serviceDiscovery?.dns,
           awsCloudMap: serviceDiscovery?.cloudmap,
@@ -206,6 +221,13 @@ export class VirtualNode extends VirtualNodeBase {
 
   /**
    * Utility method to add an inbound listener for this VirtualNode
+   *
+   * Note: At this time, Virtual Nodes support at most one listener. Adding
+   * more than one will result in a failure to deploy the CloudFormation stack.
+   * However, the App Mesh team has plans to add support for multiple listeners
+   * on Virtual Nodes and Virtual Routers.
+   *
+   * @see https://github.com/aws/aws-app-mesh-roadmap/issues/120
    */
   public addListener(listener: VirtualNodeListener) {
     this.listeners.push(listener.bind(this));
@@ -214,13 +236,8 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Add a Virtual Services that this node is expected to send outbound traffic to
    */
-  public addBackend(virtualService: IVirtualService) {
-    this.backends.push({
-      virtualService: {
-        virtualServiceName: virtualService.virtualServiceName,
-        clientPolicy: virtualService.clientPolicy?.bind(this).clientPolicy,
-      },
-    });
+  public addBackend(backend: Backend) {
+    this.backends.push(backend.bind(this).virtualServiceBackend);
   }
 }
 

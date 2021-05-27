@@ -3,21 +3,13 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
 <!--END STABILITY BANNER-->
 
 This library provides constructs for Node.js Lambda functions.
-
-To use this module, you will need to have Docker installed.
 
 ## Node.js Function
 
@@ -54,10 +46,9 @@ when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` pr
 
 ## Lock file
 
-The `NodejsFunction` requires a dependencies lock file (`yarn.lock` or
-`package-lock.json`). When bundling in a Docker container, the path containing this
-lock file is used as the source (`/asset-input`) for the volume mounted in the
-container.
+The `NodejsFunction` requires a dependencies lock file (`yarn.lock`, `pnpm-lock.yaml` or
+`package-lock.json`). When bundling in a Docker container, the path containing this lock file is
+used as the source (`/asset-input`) for the volume mounted in the container.
 
 By default, the construct will try to automatically determine your project lock file.
 Alternatively, you can specify the `depsLockFilePath` prop manually. In this
@@ -67,7 +58,7 @@ used by your function. Otherwise bundling will fail.
 ## Local bundling
 
 If `esbuild` is available it will be used to bundle your code in your environment. Otherwise,
-bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
+bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs12.x).
 
 For macOS the recommendend approach is to install `esbuild` as Docker volume performance is really poor.
 
@@ -122,8 +113,9 @@ new lambda.NodejsFunction(this, 'my-handler', {
 ```
 
 The modules listed in `nodeModules` must be present in the `package.json`'s dependencies or
-installed. The same version will be used for installation. The lock file (`yarn.lock` or
-`package-lock.json`) will be used along with the right installer (`yarn` or `npm`).
+installed. The same version will be used for installation. The lock file (`yarn.lock`,
+`pnpm-lock.yaml` or `package-lock.json`) will be used along with the right installer (`yarn`,
+`pnpm` or `npm`).
 
 When working with `nodeModules` using native dependencies, you might want to force bundling in a
 Docker container even if `esbuild` is available in your environment. This can be done by setting
@@ -145,13 +137,15 @@ new lambda.NodejsFunction(this, 'my-handler', {
     },
     define: { // Replace strings during build time
       'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx'),
+      'process.env.PRODUCTION': JSON.stringify(true),
+      'process.env.NUMBER': JSON.stringify(123),
     },
     logLevel: LogLevel.SILENT, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false
-    tsconfig: 'custom-tsconfig.json' // use custom-tsconfig.json instead of default, 
+    tsconfig: 'custom-tsconfig.json', // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false
-    banner : '/* comments */', // by default no comments are passed
-    footer : '/* comments */', // by default no comments are passed
+    banner : '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    footer : '/* comments */', // requires esbuild >= 0.9.0, defaults to none
   },
 });
 ```
@@ -162,10 +156,13 @@ It is possible to run additional commands by specifying the `commandHooks` prop:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler-with-commands', {
-  commandHooks: {
-    // Copy a file so that it will be included in the bundled asset
-    afterBundling(inputDir: string, outputDir: string): string[] {
-      return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+  bundling: {
+    commandHooks: {
+      // Copy a file so that it will be included in the bundled asset
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+      }
+      // ...
     }
     // ...
   }
@@ -216,13 +213,13 @@ Use `bundling.dockerImage` to use a custom Docker bundling image:
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
   bundling: {
-    dockerImage: cdk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+    dockerImage: cdk.DockerImage.fromBuild('/path/to/Dockerfile'),
   },
 });
 ```
 
 This image should have `esbuild` installed **globally**. If you plan to use `nodeModules` it
-should also have `npm` or `yarn` depending on the lock file you're using.
+should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
 
 Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.

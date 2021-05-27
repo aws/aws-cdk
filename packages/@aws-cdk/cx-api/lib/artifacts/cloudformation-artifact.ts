@@ -83,9 +83,23 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly requiresBootstrapStackVersion?: number;
 
   /**
+   * Name of SSM parameter with bootstrap stack version
+   *
+   * @default - Discover SSM parameter by reading stack
+   */
+  public readonly bootstrapStackVersionSsmParameter?: string;
+
+  /**
    * Whether termination protection is enabled for this stack.
    */
   public readonly terminationProtection?: boolean;
+
+  /**
+   * Whether this stack should be validated by the CLI after synthesis
+   *
+   * @default - false
+   */
+  public readonly validateOnSynth?: boolean;
 
   private _template: any | undefined;
 
@@ -110,7 +124,9 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
+    this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
     this.terminationProtection = properties.terminationProtection;
+    this.validateOnSynth = properties.validateOnSynth;
 
     this.stackName = properties.stackName || artifactId;
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);

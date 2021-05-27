@@ -4,8 +4,8 @@
       "Type": "AWS::SecretsManager::Secret",
       "Properties": {
         "GenerateSecretString": {
-          "GenerateStringKey": "password",
           "ExcludeCharacters": "{}'\\*[]()`",
+          "GenerateStringKey": "password",
           "SecretStringTemplate": "{\"username\":\"admin\"}"
         }
       }
@@ -54,24 +54,13 @@
         "EncryptionAtRestOptions": {
           "Enabled": true
         },
-        "LogPublishingOptions": {
-          "AUDIT_LOGS": {
-            "Enabled": false
-          },
-          "ES_APPLICATION_LOGS": {
-            "Enabled": false
-          },
-          "SEARCH_SLOW_LOGS": {
-            "Enabled": false
-          },
-          "INDEX_SLOW_LOGS": {
-            "Enabled": false
-          }
-        },
+        "LogPublishingOptions": {},
         "NodeToNodeEncryptionOptions": {
           "Enabled": true
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DomainESAccessPolicyCustomResourcePolicy9747FC42": {
       "Type": "AWS::IAM::Policy",
@@ -112,80 +101,50 @@
           ]
         },
         "Create": {
-          "action": "updateElasticsearchDomainConfig",
-          "service": "ES",
-          "parameters": {
-            "DomainName": {
-              "Ref": "Domain66AC69E0"
-            },
-            "AccessPolicies": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"",
-                  {
-                    "Fn::GetAtt": [
-                      "Domain66AC69E0",
-                      "Arn"
-                    ]
-                  },
-                  "/*\"}],\"Version\":\"2012-10-17\"}"
+          "Fn::Join": [
+            "",
+            [
+              "{\"action\":\"updateElasticsearchDomainConfig\",\"service\":\"ES\",\"parameters\":{\"DomainName\":\"",
+              {
+                "Ref": "Domain66AC69E0"
+              },
+              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":\\\"*\\\",\\\"Resource\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "Domain66AC69E0",
+                  "Arn"
                 ]
-              ]
-            }
-          },
-          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
-          "physicalResourceId": {
-            "id": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "Domain66AC69E0"
-                  },
-                  "AccessPolicy"
-                ]
-              ]
-            }
-          }
+              },
+              "/*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              {
+                "Ref": "Domain66AC69E0"
+              },
+              "AccessPolicy\"}}"
+            ]
+          ]
         },
         "Update": {
-          "action": "updateElasticsearchDomainConfig",
-          "service": "ES",
-          "parameters": {
-            "DomainName": {
-              "Ref": "Domain66AC69E0"
-            },
-            "AccessPolicies": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"",
-                  {
-                    "Fn::GetAtt": [
-                      "Domain66AC69E0",
-                      "Arn"
-                    ]
-                  },
-                  "/*\"}],\"Version\":\"2012-10-17\"}"
+          "Fn::Join": [
+            "",
+            [
+              "{\"action\":\"updateElasticsearchDomainConfig\",\"service\":\"ES\",\"parameters\":{\"DomainName\":\"",
+              {
+                "Ref": "Domain66AC69E0"
+              },
+              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":\\\"*\\\",\\\"Resource\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "Domain66AC69E0",
+                  "Arn"
                 ]
-              ]
-            }
-          },
-          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
-          "physicalResourceId": {
-            "id": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "Domain66AC69E0"
-                  },
-                  "AccessPolicy"
-                ]
-              ]
-            }
-          }
+              },
+              "/*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              {
+                "Ref": "Domain66AC69E0"
+              },
+              "AccessPolicy\"}}"
+            ]
+          ]
         },
         "InstallLatestAwsSdk": true
       },
@@ -232,7 +191,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E"
+            "Ref": "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3BucketD609D0D9"
           },
           "S3Key": {
             "Fn::Join": [
@@ -245,7 +204,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
+                          "Ref": "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3VersionKey77CF589B"
                         }
                       ]
                     }
@@ -258,7 +217,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
+                          "Ref": "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3VersionKey77CF589B"
                         }
                       ]
                     }
@@ -268,13 +227,13 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x",
         "Timeout": 120
       },
@@ -284,17 +243,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E": {
+    "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3BucketD609D0D9": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "S3 bucket for asset \"4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02c\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0": {
+    "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3VersionKey77CF589B": {
       "Type": "String",
-      "Description": "S3 key for asset version \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "S3 key for asset version \"4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02c\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94ArtifactHash782948FC": {
+    "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cArtifactHash86CFA15D": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "Artifact hash for asset \"4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02c\""
     }
   }
 }

@@ -275,7 +275,7 @@ DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
 ### Accessing the Internet Gateway
 
-If you need access to the internet gateway, you can get it's ID like so:
+If you need access to the internet gateway, you can get its ID like so:
 
 ```ts
 const igwId = vpc.internetGatewayId;
@@ -382,9 +382,44 @@ otherwise. Subnet names will be determined from the `aws-cdk:subnet-name` tag
 on the subnet if it exists, or will mirror the subnet type otherwise (i.e.
 a public subnet will have the name `"Public"`).
 
+The result of the `Vpc.fromLookup()` operation will be written to a file
+called `cdk.context.json`. You must commit this file to source control so
+that the lookup values are available in non-privileged environments such
+as CI build steps, and to ensure your template builds are repeatable.
+
 Here's how `Vpc.fromLookup()` can be used:
 
 [importing existing VPCs](test/integ.import-default-vpc.lit.ts)
+
+`Vpc.fromLookup` is the recommended way to import VPCs. If for whatever
+reason you do not want to use the context mechanism to look up a VPC at
+synthesis time, you can also use `Vpc.fromVpcAttributes`. This has the
+following limitations:
+
+* Every subnet group in the VPC must have a subnet in each availability zone
+  (for example, each AZ must have both a public and private subnet). Asymmetric
+  VPCs are not supported.
+* All VpcId, SubnetId, RouteTableId, ... parameters must either be known at
+  synthesis time, or they must come from deploy-time list parameters whose
+  deploy-time lengths are known at synthesis time.
+
+Using `Vpc.fromVpcAttributes()` looks like this:
+
+```ts
+const vpc = ec2.Vpc.fromVpcAttributes(stack, 'VPC', {
+  vpcId: 'vpc-1234',
+  availabilityZones: ['us-east-1a', 'us-east-1b'],
+
+  // Either pass literals for all IDs
+  publicSubnetIds: ['s-12345', 's-67890'],
+
+  // OR: import a list of known length
+  privateSubnetIds: Fn.importListValue('PrivateSubnetIds', 2),
+
+  // OR: split an imported string to a list of known length
+  isolatedSubnetIds: Fn.split(',', ssm.StringParameter.valueForStringParameter(stack, `MyParameter`), 2),
+});
+```
 
 ## Allowing Connections
 
@@ -485,6 +520,27 @@ listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 appFleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
 ```
 
+### Security group rules
+
+By default, security group wills be added inline to the security group in the output cloud formation
+template, if applicable.  This includes any static rules by ip address and port range.  This
+optimization helps to minimize the size of the template.
+
+In some environments this is not desirable, for example if your security group access is controlled
+via tags. You can disable inline rules per security group or globally via the context key
+`@aws-cdk/aws-ec2.securityGroupDisableInlineRules`.
+
+```ts fixture=with-vpc
+const mySecurityGroupWithoutInlineRules = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Allow ssh access to ec2 instances',
+  allowAllOutbound: true,
+  disableInlineRules: true
+});
+//This will add the rule as an external cloud formation construct
+mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
@@ -503,6 +559,9 @@ examples of things you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
+>
+> `MachineImage.genericLinux()`, `MachineImage.genericWindows()` will use `CfnMapping` in
+> an agnostic stack.
 
 ## Special VPC configurations
 
@@ -613,13 +672,13 @@ Alternatively, existing security groups can be used by specifying the `securityG
 
 ### VPC endpoint services
 
-A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
+A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via allowed principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
 
 ```ts
 new VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
   acceptanceRequired: true,
-  whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
+  allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
 });
 ```
 
@@ -639,6 +698,71 @@ new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
 Note: The domain name must be owned (registered through Route53) by the account the endpoint service is in, or delegated to the account.
 The VpcEndpointServiceDomainName will handle the AWS side of domain verification, the process for which can be found
 [here](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-dns-validation.html)
+
+### Client VPN endpoint
+
+AWS Client VPN is a managed client-based VPN service that enables you to securely access your AWS
+resources and resources in your on-premises network. With Client VPN, you can access your resources
+from any location using an OpenVPN-based VPN client.
+
+Use the `addClientVpnEndpoint()` method to add a client VPN endpoint to a VPC:
+
+```ts fixture=client-vpn
+vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  // Mutual authentication
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
+  // User-based authentication
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
+});
+```
+
+The endpoint must use at least one [authentication method](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/client-authentication.html):
+
+* Mutual authentication with a client certificate
+* User-based authentication (directory or federated)
+
+If user-based authentication is used, the [self-service portal URL](https://docs.aws.amazon.com/vpn/latest/clientvpn-user/self-service-portal.html)
+is made available via a CloudFormation output.
+
+By default, a new security group is created and logging is enabled. Moreover, a rule to
+authorize all users to the VPC CIDR is created.
+
+To customize authorization rules, set the `authorizeAllUsersToVpcCidr` prop to `false`
+and use `addaddAuthorizationRule()`:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
+  authorizeAllUsersToVpcCidr: false,
+});
+
+endpoint.addAuthorizationRule('Rule', {
+  cidr: '10.0.10.0/32',
+  groupId: 'group-id',
+});
+```
+
+Use `addRoute()` to configure network routes:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
+});
+
+// Client-to-client access
+endpoint.addRoute('Route', {
+  cidr: '10.100.0.0/16',
+  target: ec2.ClientVpnRouteTarget.local(),
+});
+```
+
+Use the `connections` object of the endpoint to allow traffic to other security groups.
 
 ## Instances
 
@@ -838,8 +962,12 @@ const instance = new ec2.Instance(this, 'Instance', {
 volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 const targetDevice = '/dev/xvdz';
 instance.userData.addCommands(
+  // Retrieve token for accessing EC2 instance metadata (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-data-retrieval.html)
+  `TOKEN=$(curl -SsfX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")`,
+  // Retrieve the instance Id of the current EC2 instance
+  `INSTANCE_ID=$(curl -SsfH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)`,
   // Attach the volume to /dev/xvdz
-  `aws --region ${Stack.of(this).region} ec2 attach-volume --volume-id ${volume.volumeId} --instance-id ${instance.instanceId} --device ${targetDevice}`,
+  `aws --region ${Stack.of(this).region} ec2 attach-volume --volume-id ${volume.volumeId} --instance-id $INSTANCE_ID --device ${targetDevice}`,
   // Wait until the volume has attached
   `while ! test -e ${targetDevice}; do sleep 1; done`
   // The volume will now be mounted. You may have to add additional code to format the volume if it has not been prepared.
@@ -943,6 +1071,51 @@ instance.userData.addExecuteFileCommand({
 asset.grantRead( instance.role );
 ```
 
+### Multipart user data
+
+In addition, to above the `MultipartUserData` can be used to change instance startup behavior. Multipart user data are composed
+from separate parts forming archive. The most common parts are scripts executed during instance set-up. However, there are other
+kinds, too.
+
+The advantage of multipart archive is in flexibility when it's needed to add additional parts or to use specialized parts to
+fine tune instance startup. Some services (like AWS Batch) supports only `MultipartUserData`.
+
+The parts can be executed at different moment of instance start-up and can serve a different purposes. This is controlled by `contentType` property.
+For common scripts, `text/x-shellscript; charset="utf-8"` can be used as content type.
+
+In order to create archive the `MultipartUserData` has to be instantiated. Than, user can add parts to multipart archive using `addPart`. The `MultipartBody` contains methods supporting creation of body parts.
+
+If the very custom part is required, it can be created using `MultipartUserData.fromRawBody`, in this case full control over content type,
+transfer encoding, and body properties is given to the user.
+
+Below is an example for creating multipart user data with single body part responsible for installing `awscli` and configuring maximum size
+of storage used by Docker containers:
+
+```ts
+const bootHookConf = ec2.UserData.forLinux();
+bootHookConf.addCommands('cloud-init-per once docker_options echo \'OPTIONS="${OPTIONS} --storage-opt dm.basesize=40G"\' >> /etc/sysconfig/docker');
+
+const setupCommands = ec2.UserData.forLinux();
+setupCommands.addCommands('sudo yum install awscli && echo Packages installed らと > /var/tmp/setup');
+
+const multipartUserData = new ec2.MultipartUserData();
+// The docker has to be configured at early stage, so content type is overridden to boothook
+multipartUserData.addPart(ec2.MultipartBody.fromUserData(bootHookConf, 'text/cloud-boothook; charset="us-ascii"'));
+// Execute the rest of setup
+multipartUserData.addPart(ec2.MultipartBody.fromUserData(setupCommands));
+
+new ec2.LaunchTemplate(stack, '', {
+  userData: multipartUserData,
+  blockDevices: [
+    // Block device configuration rest
+  ]
+});
+```
+
+For more information see
+[Specifying Multiple User Data Blocks Using a MIME Multi Part Archive](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#multi-part_user_data)
+
+
 ## Importing existing subnet
 
 To import an existing Subnet, call `Subnet.fromSubnetAttributes()` or
@@ -963,4 +1136,25 @@ const subnet = Subnet.fromSubnetAttributes(this, 'SubnetFromAttributes', {
 
 // Supply only subnet id
 const subnet = Subnet.fromSubnetId(this, 'SubnetFromId', 's-1234');
+```
+
+## Launch Templates
+
+A Launch Template is a standardized template that contains the configuration information to launch an instance.
+They can be used when launching instances on their own, through Amazon EC2 Auto Scaling, EC2 Fleet, and Spot Fleet.
+Launch templates enable you to store launch parameters so that you do not have to specify them every time you launch
+an instance. For information on Launch Templates please see the
+[official documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html).
+
+The following demonstrates how to create a launch template with an Amazon Machine Image, and security group.
+
+```ts
+const vpc = new ec2.Vpc(...);
+// ...
+const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  machineImage: new ec2.AmazonMachineImage(),
+  securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
+    vpc: vpc,
+  }),
+});
 ```

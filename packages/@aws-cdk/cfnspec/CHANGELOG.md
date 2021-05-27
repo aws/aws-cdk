@@ -1,3 +1,2332 @@
+# CloudFormation Resource Specification v37.0.0
+
+## New Resource Types
+
+* AWS::AppRunner::Service
+* AWS::EC2::TransitGatewayPeeringAttachment
+* AWS::IoTCoreDeviceAdvisor::SuiteDefinition
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::MediaPackage::Channel EgressAccessLogs (__added__)
+* AWS::MediaPackage::Channel IngressAccessLogs (__added__)
+* AWS::MediaPackage::OriginEndpoint Id.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaPackage::PackagingConfiguration Id.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaPackage::PackagingGroup EgressAccessLogs (__added__)
+
+## Property Type Changes
+
+* AWS::MediaPackage::Channel.LogConfiguration (__added__)
+* AWS::MediaPackage::PackagingGroup.LogConfiguration (__added__)
+* AWS::MediaPackage::OriginEndpoint.CmafEncryption ConstantInitializationVector (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage UtcTiming (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage UtcTimingUri (__added__)
+* AWS::MediaPackage::PackagingConfiguration.CmafPackage IncludeEncoderConfigurationInSegments (__added__)
+* AWS::MediaPackage::PackagingConfiguration.DashPackage IncludeEncoderConfigurationInSegments (__added__)
+
+
+# CloudFormation Resource Specification v36.0.0
+
+## New Resource Types
+
+* AWS::DynamoDB::GlobalTable
+* AWS::SSMContacts::Contact
+* AWS::SSMContacts::ContactChannel
+* AWS::SSMIncidents::ReplicationSet
+* AWS::SSMIncidents::ResponsePlan
+
+## Attribute Changes
+
+* AWS::ApiGateway::RequestValidator RequestValidatorId (__added__)
+
+## Property Changes
+
+* AWS::CloudFormation::StackSet CallAs (__added__)
+* AWS::CustomerProfiles::Integration FlowDefinition (__added__)
+* AWS::CustomerProfiles::Integration ObjectTypeName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ECS::TaskDefinition EphemeralStorage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Elasticsearch::Domain EncryptionAtRestOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Elasticsearch::Domain NodeToNodeEncryptionOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Lambda::EventSourceMapping PartialBatchResponse (__deleted__)
+* AWS::Lambda::LayerVersion CompatibleArchitectures (__added__)
+* AWS::SSM::Association CalendarNames (__added__)
+
+## Property Type Changes
+
+* AWS::AppFlow::Flow.ZendeskDestinationProperties (__added__)
+* AWS::CustomerProfiles::Integration.ConnectorOperator (__added__)
+* AWS::CustomerProfiles::Integration.FlowDefinition (__added__)
+* AWS::CustomerProfiles::Integration.IncrementalPullConfig (__added__)
+* AWS::CustomerProfiles::Integration.MarketoSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.S3SourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.SalesforceSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.ScheduledTriggerProperties (__added__)
+* AWS::CustomerProfiles::Integration.ServiceNowSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.SourceConnectorProperties (__added__)
+* AWS::CustomerProfiles::Integration.SourceFlowConfig (__added__)
+* AWS::CustomerProfiles::Integration.Task (__added__)
+* AWS::CustomerProfiles::Integration.TaskPropertiesMap (__added__)
+* AWS::CustomerProfiles::Integration.TriggerConfig (__added__)
+* AWS::CustomerProfiles::Integration.TriggerProperties (__added__)
+* AWS::CustomerProfiles::Integration.ZendeskSourceProperties (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties Zendesk (__added__)
+* AWS::CloudFront::Distribution.Origin OriginShield.Type (__added__)
+* AWS::ECS::CapacityProvider.ManagedScaling InstanceWarmupPeriod (__added__)
+* AWS::ECS::TaskDefinition.EphemeralStorage SizeInGiB.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Elasticsearch::Domain.EncryptionAtRestOptions Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Elasticsearch::Domain.NodeToNodeEncryptionOptions Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::S3::Bucket.Rule ExpiredObjectDeleteMarker (__added__)
+
+
+# CloudFormation Resource Specification v35.2.0
+
+## New Resource Types
+
+* AWS::CloudFront::Function
+* AWS::FinSpace::Environment
+* AWS::FraudDetector::Detector
+* AWS::FraudDetector::EntityType
+* AWS::FraudDetector::EventType
+* AWS::FraudDetector::Label
+* AWS::FraudDetector::Outcome
+* AWS::FraudDetector::Variable
+* AWS::XRay::Group
+* AWS::XRay::SamplingRule
+
+## Attribute Changes
+
+* AWS::CloudFront::Distribution Id (__added__)
+* AWS::Config::ConfigurationAggregator ConfigurationAggregatorArn (__added__)
+* AWS::ECR::Repository RepositoryUri (__added__)
+* AWS::ECS::Service ServiceArn (__added__)
+
+## Property Changes
+
+* AWS::ACMPCA::CertificateAuthority KeyStorageSecurityStandard (__added__)
+* AWS::CloudFront::Distribution Tags.DuplicatesAllowed (__added__)
+* AWS::CloudWatch::MetricStream OutputFormat.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Config::ConfigurationAggregator AccountAggregationSources.DuplicatesAllowed (__added__)
+* AWS::Config::ConfigurationAggregator ConfigurationAggregatorName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Config::ConfigurationAggregator Tags.DuplicatesAllowed (__added__)
+* AWS::DataBrew::Job JobSample.PrimitiveType (__deleted__)
+* AWS::DataBrew::Job JobSample.Type (__added__)
+* AWS::DataBrew::Job OutputLocation.PrimitiveType (__deleted__)
+* AWS::DataBrew::Job OutputLocation.Type (__added__)
+* AWS::DataBrew::Job Recipe.Type (__added__)
+* AWS::DataBrew::Project Sample.PrimitiveType (__deleted__)
+* AWS::DataBrew::Project Sample.Type (__added__)
+* AWS::ECR::Repository EncryptionConfiguration (__added__)
+* AWS::ECS::Service ServiceArn (__deleted__)
+* AWS::ECS::TaskDefinition EphemeralStorage (__added__)
+* AWS::EKS::Nodegroup Taints (__added__)
+* AWS::GameLift::Fleet Locations (__added__)
+* AWS::GameLift::GameSessionQueue FilterConfiguration (__added__)
+* AWS::GameLift::GameSessionQueue PriorityConfiguration (__added__)
+* AWS::Lambda::Function Id (__added__)
+* AWS::Lambda::Function FileSystemConfigs.DuplicatesAllowed (__deleted__)
+* AWS::Lambda::Function Layers.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lambda::Function Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateActionItemParameterMap (__removed__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateActionItemTargetMap (__removed__)
+* AWS::FIS::ExperimentTemplate.TagMap (__removed__)
+* AWS::CloudFront::Distribution.FunctionAssociation (__added__)
+* AWS::CloudFront::Distribution.LegacyCustomOrigin (__added__)
+* AWS::CloudFront::Distribution.LegacyS3Origin (__added__)
+* AWS::DataBrew::Job.JobSample (__added__)
+* AWS::DataBrew::Job.OutputLocation (__added__)
+* AWS::DataBrew::Job.Recipe (__added__)
+* AWS::DataBrew::Project.Sample (__added__)
+* AWS::ECS::TaskDefinition.EphemeralStorage (__added__)
+* AWS::EKS::Nodegroup.Taint (__added__)
+* AWS::GameLift::Fleet.LocationCapacity (__added__)
+* AWS::GameLift::Fleet.LocationConfiguration (__added__)
+* AWS::GameLift::GameSessionQueue.FilterConfiguration (__added__)
+* AWS::GameLift::GameSessionQueue.PriorityConfiguration (__added__)
+* AWS::MSK::Cluster.Iam (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior FunctionAssociations (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior AllowedMethods.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior CachedMethods.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior LambdaFunctionAssociations.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior TrustedKeyGroups.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior TrustedSigners.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.Cookies WhitelistedNames.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.CustomOriginConfig OriginSSLProtocols.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior FunctionAssociations (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior AllowedMethods.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior CachedMethods.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior LambdaFunctionAssociations.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior TrustedKeyGroups.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior TrustedSigners.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig CNAMEs (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig CustomOrigin (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig S3Origin (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig Aliases.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig CacheBehaviors.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig CustomErrorResponses.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig Origins.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.ForwardedValues Headers.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.ForwardedValues QueryStringCacheKeys.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.GeoRestriction Locations.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.Origin OriginCustomHeaders.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.Origin OriginShield.Type (__deleted__)
+* AWS::CloudFront::Distribution.OriginGroupMembers Items.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.OriginGroups Items.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.OriginShield Enabled.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudFront::Distribution.StatusCodes Items.DuplicatesAllowed (__added__)
+* AWS::Config::ConfigurationAggregator.AccountAggregationSource AccountIds.DuplicatesAllowed (__added__)
+* AWS::Config::ConfigurationAggregator.AccountAggregationSource AwsRegions.DuplicatesAllowed (__added__)
+* AWS::Config::ConfigurationAggregator.OrganizationAggregationSource AwsRegions.DuplicatesAllowed (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Parameters.PrimitiveItemType (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Parameters.Type (__changed__)
+  * Old: ExperimentTemplateActionItemParameterMap
+  * New: Map
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Targets.PrimitiveItemType (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Targets.Type (__changed__)
+  * Old: ExperimentTemplateActionItemTargetMap
+  * New: Map
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget ResourceTags.PrimitiveItemType (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget ResourceTags.Type (__changed__)
+  * Old: TagMap
+  * New: Map
+* AWS::Lambda::Function.Environment Variables.DuplicatesAllowed (__deleted__)
+* AWS::Lambda::Function.VpcConfig SecurityGroupIds.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lambda::Function.VpcConfig SecurityGroupIds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::Function.VpcConfig SubnetIds.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lambda::Function.VpcConfig SubnetIds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MSK::Cluster.Sasl Iam (__added__)
+* AWS::MSK::Cluster.Sasl Scram.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v35.1.0
+
+## New Resource Types
+
+* AWS::IoTFleetHub::Application
+* AWS::IoTWireless::PartnerAccount
+* AWS::IoTWireless::TaskDefinition
+* AWS::NimbleStudio::LaunchProfile
+* AWS::NimbleStudio::StreamingImage
+* AWS::NimbleStudio::Studio
+* AWS::NimbleStudio::StudioComponent
+* AWS::SES::ContactList
+
+## Attribute Changes
+
+* AWS::EKS::Cluster OpenIdConnectIssuerUrl (__added__)
+
+## Property Changes
+
+* AWS::AppIntegrations::EventIntegration EventFilter.PrimitiveType (__deleted__)
+* AWS::Detective::Graph Tags (__added__)
+* AWS::ResourceGroups::Group Configuration (__added__)
+* AWS::ResourceGroups::Group Resources (__added__)
+
+## Property Type Changes
+
+* AWS::ResourceGroups::Group.ConfigurationItem (__added__)
+* AWS::ResourceGroups::Group.ConfigurationParameter (__added__)
+* AWS::GroundStation::Config.DecodeConfig UnvalidatedJson (__deleted__)
+* AWS::GroundStation::Config.DecodeConfig UnvalidatedJSON (__added__)
+* AWS::GroundStation::Config.DemodulationConfig UnvalidatedJson (__deleted__)
+* AWS::GroundStation::Config.DemodulationConfig UnvalidatedJSON (__added__)
+
+
+# CloudFormation Resource Specification v35.0.0
+
+## New Resource Types
+
+* AWS::AppIntegrations::EventIntegration
+* AWS::AutoScaling::WarmPool
+* AWS::Budgets::BudgetsAction
+* AWS::CustomerProfiles::Domain
+* AWS::CustomerProfiles::Integration
+* AWS::CustomerProfiles::ObjectType
+* AWS::EC2::EnclaveCertificateIamRoleAssociation
+* AWS::GroundStation::Config
+* AWS::GroundStation::DataflowEndpointGroup
+* AWS::GroundStation::MissionProfile
+* AWS::IVS::RecordingConfiguration
+* AWS::Logs::QueryDefinition
+* AWS::LookoutMetrics::Alert
+* AWS::LookoutMetrics::AnomalyDetector
+* AWS::QuickSight::DataSet
+* AWS::QuickSight::DataSource
+* AWS::Route53Resolver::FirewallDomainList
+* AWS::Route53Resolver::FirewallRuleGroup
+* AWS::Route53Resolver::FirewallRuleGroupAssociation
+
+## Attribute Changes
+
+* AWS::CloudFront::CloudFrontOriginAccessIdentity Id (__added__)
+* AWS::FIS::ExperimentTemplate id (__deleted__)
+* AWS::FIS::ExperimentTemplate Id (__added__)
+* AWS::GameLift::Fleet FleetId (__added__)
+* AWS::ImageBuilder::Component Name (__added__)
+* AWS::ImageBuilder::ContainerRecipe Name (__added__)
+* AWS::ImageBuilder::DistributionConfiguration Name (__added__)
+* AWS::ImageBuilder::ImagePipeline Name (__added__)
+* AWS::ImageBuilder::ImageRecipe Name (__added__)
+* AWS::ImageBuilder::InfrastructureConfiguration Name (__added__)
+* AWS::WAFv2::RuleGroup AvailableLabels (__added__)
+* AWS::WAFv2::RuleGroup ConsumedLabels (__added__)
+* AWS::WAFv2::RuleGroup LabelNamespace (__added__)
+* AWS::WAFv2::WebACL LabelNamespace (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::RestApi DisableExecuteApiEndpoint (__added__)
+* AWS::AppSync::GraphQLApi LambdaAuthorizerConfig (__deleted__)
+* AWS::Batch::ComputeEnvironment ServiceRole.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CE::CostCategory DefaultValue (__added__)
+* AWS::CloudFormation::ResourceVersion ExecutionRoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ResourceVersion LoggingConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ResourceVersion SchemaHandlerPackage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ResourceVersion TypeName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Config::DeliveryChannel S3KmsKeyArn (__added__)
+* AWS::DMS::Endpoint ResourceIdentifier (__added__)
+* AWS::DMS::ReplicationInstance ResourceIdentifier (__added__)
+* AWS::DMS::ReplicationTask ResourceIdentifier (__added__)
+* AWS::DataBrew::Dataset PathOptions (__added__)
+* AWS::DataBrew::Dataset FormatOptions.PrimitiveType (__deleted__)
+* AWS::DataBrew::Dataset FormatOptions.Type (__added__)
+* AWS::DataBrew::Dataset Input.PrimitiveType (__deleted__)
+* AWS::DataBrew::Dataset Input.Type (__added__)
+* AWS::DynamoDB::Table KinesisStreamSpecification (__added__)
+* AWS::EC2::LaunchTemplate TagSpecifications.ItemType (__changed__)
+  * Old: TagSpecification
+  * New: LaunchTemplateTagSpecification
+* AWS::EFS::FileSystem BypassPolicyLockoutSafetyCheck (__added__)
+* AWS::ElastiCache::CacheCluster LogDeliveryConfigurations (__added__)
+* AWS::ElastiCache::ParameterGroup Tags (__added__)
+* AWS::ElastiCache::ParameterGroup CacheParameterGroupFamily.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ElastiCache::ReplicationGroup LogDeliveryConfigurations (__added__)
+* AWS::ElastiCache::SecurityGroup Tags (__added__)
+* AWS::ElastiCache::SubnetGroup Tags (__added__)
+* AWS::ElasticBeanstalk::Environment OperationsRole (__added__)
+* AWS::FIS::ExperimentTemplate actions (__deleted__)
+* AWS::FIS::ExperimentTemplate description (__deleted__)
+* AWS::FIS::ExperimentTemplate roleArn (__deleted__)
+* AWS::FIS::ExperimentTemplate stopConditions (__deleted__)
+* AWS::FIS::ExperimentTemplate tags (__deleted__)
+* AWS::FIS::ExperimentTemplate targets (__deleted__)
+* AWS::FIS::ExperimentTemplate Actions (__added__)
+* AWS::FIS::ExperimentTemplate Description (__added__)
+* AWS::FIS::ExperimentTemplate RoleArn (__added__)
+* AWS::FIS::ExperimentTemplate StopConditions (__added__)
+* AWS::FIS::ExperimentTemplate Tags (__added__)
+* AWS::FIS::ExperimentTemplate Targets (__added__)
+* AWS::GameLift::Fleet LogPaths (__deleted__)
+* AWS::GameLift::Fleet ServerLaunchParameters (__deleted__)
+* AWS::GameLift::Fleet ServerLaunchPath (__deleted__)
+* AWS::GameLift::Fleet EC2InboundPermissions.DuplicatesAllowed (__deleted__)
+* AWS::GameLift::Fleet EC2InstanceType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GameLift::Fleet MetricGroups.DuplicatesAllowed (__deleted__)
+* AWS::GameLift::Fleet Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GameLift::GameSessionQueue CustomEventData (__added__)
+* AWS::GameLift::GameSessionQueue NotificationTarget (__added__)
+* AWS::IVS::Channel RecordingConfigurationArn (__added__)
+* AWS::ImageBuilder::ContainerRecipe InstanceConfiguration (__added__)
+* AWS::IoT::TopicRule Tags (__added__)
+* AWS::IoTEvents::DetectorModel DetectorModelDefinition.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel RoleArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel Tags.DuplicatesAllowed (__added__)
+* AWS::IoTEvents::Input InputDefinition.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::Input Tags.DuplicatesAllowed (__added__)
+* AWS::MWAA::Environment MinWorkers (__added__)
+* AWS::MWAA::Environment AirflowConfigurationOptions.Type (__deleted__)
+* AWS::MWAA::Environment AirflowConfigurationOptions.PrimitiveType (__added__)
+* AWS::SSM::Association Parameters.ItemType (__changed__)
+  * Old: ParameterValues
+  * New: List
+* AWS::SSM::Document Attachments (__added__)
+* AWS::SSM::Document DocumentFormat (__added__)
+* AWS::SSM::Document Requires (__added__)
+* AWS::SSM::Document TargetType (__added__)
+* AWS::SSM::Document VersionName (__added__)
+* AWS::SSM::Document Tags.DuplicatesAllowed (__deleted__)
+* AWS::WAFv2::IPSet Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::WAFv2::IPSet Scope.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::WAFv2::RegexPatternSet Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::WAFv2::RegexPatternSet Scope.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::WAFv2::RuleGroup CustomResponseBodies (__added__)
+* AWS::WAFv2::RuleGroup Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::WAFv2::RuleGroup Scope.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::WAFv2::WebACL CustomResponseBodies (__added__)
+* AWS::WAFv2::WebACL Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::WAFv2::WebACL Scope.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.CertificatePolicyList (__removed__)
+* AWS::ACMPCA::Certificate.ExtendedKeyUsageList (__removed__)
+* AWS::ACMPCA::Certificate.GeneralNameList (__removed__)
+* AWS::ACMPCA::Certificate.PolicyQualifierInfoList (__removed__)
+* AWS::ACMPCA::CertificateAuthority.SubjectInformationAccess (__removed__)
+* AWS::AppFlow::Flow.IdFieldNamesList (__removed__)
+* AWS::AppSync::GraphQLApi.LambdaAuthorizerConfig (__removed__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateActionItemStartAfterList (__removed__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTargetFilterList (__removed__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTargetFilterValues (__removed__)
+* AWS::FIS::ExperimentTemplate.ResourceArnList (__removed__)
+* AWS::Kendra::DataSource.ChangeDetectingColumns (__removed__)
+* AWS::Kendra::DataSource.ConfluenceAttachmentFieldMappingsList (__removed__)
+* AWS::Kendra::DataSource.ConfluenceBlogFieldMappingsList (__removed__)
+* AWS::Kendra::DataSource.ConfluencePageFieldMappingsList (__removed__)
+* AWS::Kendra::DataSource.ConfluenceSpaceFieldMappingsList (__removed__)
+* AWS::Kendra::DataSource.ConfluenceSpaceList (__removed__)
+* AWS::Kendra::DataSource.DataSourceInclusionsExclusionsStrings (__removed__)
+* AWS::Kendra::DataSource.DataSourceToIndexFieldMappingList (__removed__)
+* AWS::Kendra::DataSource.ExcludeMimeTypesList (__removed__)
+* AWS::Kendra::DataSource.ExcludeSharedDrivesList (__removed__)
+* AWS::Kendra::DataSource.ExcludeUserAccountsList (__removed__)
+* AWS::Kendra::DataSource.OneDriveUserList (__removed__)
+* AWS::Kendra::DataSource.SalesforceChatterFeedIncludeFilterTypes (__removed__)
+* AWS::Kendra::DataSource.SalesforceCustomKnowledgeArticleTypeConfigurationList (__removed__)
+* AWS::Kendra::DataSource.SalesforceKnowledgeArticleStateList (__removed__)
+* AWS::Kendra::DataSource.SalesforceStandardObjectConfigurationList (__removed__)
+* AWS::Kendra::Index.ValueImportanceItems (__removed__)
+* AWS::MWAA::Environment.AirflowConfigurationOptions (__removed__)
+* AWS::SSM::Association.ParameterValues (__removed__)
+* AWS::SSO::InstanceAccessControlAttributeConfiguration.AccessControlAttributeValueSourceList (__removed__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringInputs (__removed__)
+* AWS::WAFv2::RuleGroup.AndStatementOne (__removed__)
+* AWS::WAFv2::RuleGroup.AndStatementTwo (__removed__)
+* AWS::WAFv2::RuleGroup.NotStatementOne (__removed__)
+* AWS::WAFv2::RuleGroup.NotStatementTwo (__removed__)
+* AWS::WAFv2::RuleGroup.OrStatementOne (__removed__)
+* AWS::WAFv2::RuleGroup.OrStatementTwo (__removed__)
+* AWS::WAFv2::RuleGroup.RateBasedStatementOne (__removed__)
+* AWS::WAFv2::RuleGroup.RateBasedStatementTwo (__removed__)
+* AWS::WAFv2::RuleGroup.StatementOne (__removed__)
+* AWS::WAFv2::RuleGroup.StatementThree (__removed__)
+* AWS::WAFv2::RuleGroup.StatementTwo (__removed__)
+* AWS::WAFv2::WebACL.AndStatementOne (__removed__)
+* AWS::WAFv2::WebACL.AndStatementTwo (__removed__)
+* AWS::WAFv2::WebACL.NotStatementOne (__removed__)
+* AWS::WAFv2::WebACL.NotStatementTwo (__removed__)
+* AWS::WAFv2::WebACL.OrStatementOne (__removed__)
+* AWS::WAFv2::WebACL.OrStatementTwo (__removed__)
+* AWS::WAFv2::WebACL.RateBasedStatementOne (__removed__)
+* AWS::WAFv2::WebACL.RateBasedStatementTwo (__removed__)
+* AWS::WAFv2::WebACL.StatementOne (__removed__)
+* AWS::WAFv2::WebACL.StatementThree (__removed__)
+* AWS::WAFv2::WebACL.StatementTwo (__removed__)
+* AWS::AppFlow::Flow.LookoutMetricsDestinationProperties (__added__)
+* AWS::Batch::JobDefinition.AuthorizationConfig (__added__)
+* AWS::Batch::JobDefinition.EfsVolumeConfiguration (__added__)
+* AWS::DataBrew::Dataset.CsvOptions (__added__)
+* AWS::DataBrew::Dataset.DataCatalogInputDefinition (__added__)
+* AWS::DataBrew::Dataset.DatabaseInputDefinition (__added__)
+* AWS::DataBrew::Dataset.DatasetParameter (__added__)
+* AWS::DataBrew::Dataset.DatetimeOptions (__added__)
+* AWS::DataBrew::Dataset.ExcelOptions (__added__)
+* AWS::DataBrew::Dataset.FilesLimit (__added__)
+* AWS::DataBrew::Dataset.FilterExpression (__added__)
+* AWS::DataBrew::Dataset.FilterValue (__added__)
+* AWS::DataBrew::Dataset.FormatOptions (__added__)
+* AWS::DataBrew::Dataset.Input (__added__)
+* AWS::DataBrew::Dataset.JsonOptions (__added__)
+* AWS::DataBrew::Dataset.PathOptions (__added__)
+* AWS::DataBrew::Dataset.PathParameter (__added__)
+* AWS::DataBrew::Dataset.S3Location (__added__)
+* AWS::DynamoDB::Table.KinesisStreamSpecification (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateTagSpecification (__added__)
+* AWS::ElastiCache::CacheCluster.CloudWatchLogsDestinationDetails (__added__)
+* AWS::ElastiCache::CacheCluster.DestinationDetails (__added__)
+* AWS::ElastiCache::CacheCluster.KinesisFirehoseDestinationDetails (__added__)
+* AWS::ElastiCache::CacheCluster.LogDeliveryConfigurationRequest (__added__)
+* AWS::ElastiCache::ReplicationGroup.CloudWatchLogsDestinationDetails (__added__)
+* AWS::ElastiCache::ReplicationGroup.DestinationDetails (__added__)
+* AWS::ElastiCache::ReplicationGroup.KinesisFirehoseDestinationDetails (__added__)
+* AWS::ElastiCache::ReplicationGroup.LogDeliveryConfigurationRequest (__added__)
+* AWS::ImageBuilder::ContainerRecipe.EbsInstanceBlockDeviceSpecification (__added__)
+* AWS::ImageBuilder::ContainerRecipe.InstanceBlockDeviceMapping (__added__)
+* AWS::ImageBuilder::ContainerRecipe.InstanceConfiguration (__added__)
+* AWS::ImageBuilder::DistributionConfiguration.LaunchTemplateConfiguration (__added__)
+* AWS::IoT::TopicRule.CloudwatchLogsAction (__added__)
+* AWS::IoT::TopicRule.KafkaAction (__added__)
+* AWS::IoT::TopicRule.TimestreamAction (__added__)
+* AWS::IoT::TopicRule.TimestreamDimension (__added__)
+* AWS::IoT::TopicRule.TimestreamTimestamp (__added__)
+* AWS::MediaLive::Channel.ArchiveCdnSettings (__added__)
+* AWS::MediaLive::Channel.ArchiveS3Settings (__added__)
+* AWS::MediaLive::Channel.CaptionRectangle (__added__)
+* AWS::MediaLive::Channel.FrameCaptureCdnSettings (__added__)
+* AWS::MediaLive::Channel.FrameCaptureHlsSettings (__added__)
+* AWS::MediaLive::Channel.FrameCaptureS3Settings (__added__)
+* AWS::MediaLive::Channel.HlsS3Settings (__added__)
+* AWS::MediaLive::Channel.HtmlMotionGraphicsSettings (__added__)
+* AWS::MediaLive::Channel.MotionGraphicsConfiguration (__added__)
+* AWS::MediaLive::Channel.MotionGraphicsSettings (__added__)
+* AWS::MediaLive::Channel.VideoSelectorColorSpaceSettings (__added__)
+* AWS::SSM::Document.AttachmentsSource (__added__)
+* AWS::SSM::Document.DocumentRequires (__added__)
+* AWS::WAFv2::RuleGroup.AndStatement (__added__)
+* AWS::WAFv2::RuleGroup.CustomResponseBody (__added__)
+* AWS::WAFv2::RuleGroup.JsonBody (__added__)
+* AWS::WAFv2::RuleGroup.JsonMatchPattern (__added__)
+* AWS::WAFv2::RuleGroup.Label (__added__)
+* AWS::WAFv2::RuleGroup.LabelMatchStatement (__added__)
+* AWS::WAFv2::RuleGroup.LabelSummary (__added__)
+* AWS::WAFv2::RuleGroup.NotStatement (__added__)
+* AWS::WAFv2::RuleGroup.OrStatement (__added__)
+* AWS::WAFv2::RuleGroup.RateBasedStatement (__added__)
+* AWS::WAFv2::RuleGroup.Statement (__added__)
+* AWS::WAFv2::WebACL.AllowAction (__added__)
+* AWS::WAFv2::WebACL.AndStatement (__added__)
+* AWS::WAFv2::WebACL.BlockAction (__added__)
+* AWS::WAFv2::WebACL.CountAction (__added__)
+* AWS::WAFv2::WebACL.CustomHTTPHeader (__added__)
+* AWS::WAFv2::WebACL.CustomRequestHandling (__added__)
+* AWS::WAFv2::WebACL.CustomResponse (__added__)
+* AWS::WAFv2::WebACL.CustomResponseBody (__added__)
+* AWS::WAFv2::WebACL.JsonBody (__added__)
+* AWS::WAFv2::WebACL.JsonMatchPattern (__added__)
+* AWS::WAFv2::WebACL.Label (__added__)
+* AWS::WAFv2::WebACL.LabelMatchStatement (__added__)
+* AWS::WAFv2::WebACL.NotStatement (__added__)
+* AWS::WAFv2::WebACL.OrStatement (__added__)
+* AWS::WAFv2::WebACL.RateBasedStatement (__added__)
+* AWS::WAFv2::WebACL.Statement (__added__)
+* AWS::ACMPCA::Certificate.Extensions CertificatePolicies.ItemType (__added__)
+* AWS::ACMPCA::Certificate.Extensions CertificatePolicies.Type (__changed__)
+  * Old: CertificatePolicyList
+  * New: List
+* AWS::ACMPCA::Certificate.Extensions ExtendedKeyUsage.ItemType (__added__)
+* AWS::ACMPCA::Certificate.Extensions ExtendedKeyUsage.Type (__changed__)
+  * Old: ExtendedKeyUsageList
+  * New: List
+* AWS::ACMPCA::Certificate.Extensions SubjectAlternativeNames.ItemType (__added__)
+* AWS::ACMPCA::Certificate.Extensions SubjectAlternativeNames.Type (__changed__)
+  * Old: GeneralNameList
+  * New: List
+* AWS::ACMPCA::Certificate.PolicyInformation PolicyQualifiers.ItemType (__added__)
+* AWS::ACMPCA::Certificate.PolicyInformation PolicyQualifiers.Type (__changed__)
+  * Old: PolicyQualifierInfoList
+  * New: List
+* AWS::ACMPCA::CertificateAuthority.CsrExtensions SubjectInformationAccess.ItemType (__added__)
+* AWS::ACMPCA::CertificateAuthority.CsrExtensions SubjectInformationAccess.Type (__changed__)
+  * Old: SubjectInformationAccess
+  * New: List
+* AWS::AppFlow::Flow.DestinationConnectorProperties LookoutMetrics (__added__)
+* AWS::AppFlow::Flow.SalesforceDestinationProperties IdFieldNames.PrimitiveItemType (__added__)
+* AWS::AppFlow::Flow.SalesforceDestinationProperties IdFieldNames.Type (__changed__)
+  * Old: IdFieldNamesList
+  * New: List
+* AWS::AppSync::GraphQLApi.AdditionalAuthenticationProvider LambdaAuthorizerConfig (__deleted__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType EnableContinuousBackup (__added__)
+* AWS::Batch::JobDefinition.Volumes EfsVolumeConfiguration (__added__)
+* AWS::CloudFormation::ResourceVersion.LoggingConfig LogGroupName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ResourceVersion.LoggingConfig LogRoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::StackSet.OperationPreferences RegionConcurrencyType (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction actionId (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction description (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction parameters (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction startAfter (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction targets (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction ActionId (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Description (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Parameters (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction StartAfter (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Targets (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateStopCondition source (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateStopCondition value (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateStopCondition Source (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateStopCondition Value (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget filters (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget resourceArns (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget resourceTags (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget resourceType (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget selectionMode (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget Filters (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget ResourceArns (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget ResourceTags (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget ResourceType (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget SelectionMode (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTargetFilter path (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTargetFilter values (__deleted__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTargetFilter Path (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTargetFilter Values (__added__)
+* AWS::GameLift::Fleet.IpPermission FromPort.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-gamelift-fleet-ec2inboundpermission.html#cfn-gamelift-fleet-ec2inboundpermissions-fromport
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-gamelift-fleet-ippermission.html#cfn-gamelift-fleet-ippermission-fromport
+* AWS::GameLift::Fleet.IpPermission IpRange.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-gamelift-fleet-ec2inboundpermission.html#cfn-gamelift-fleet-ec2inboundpermissions-iprange
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-gamelift-fleet-ippermission.html#cfn-gamelift-fleet-ippermission-iprange
+* AWS::GameLift::Fleet.IpPermission Protocol.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-gamelift-fleet-ec2inboundpermission.html#cfn-gamelift-fleet-ec2inboundpermissions-protocol
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-gamelift-fleet-ippermission.html#cfn-gamelift-fleet-ippermission-protocol
+* AWS::GameLift::Fleet.IpPermission ToPort.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-gamelift-fleet-ec2inboundpermission.html#cfn-gamelift-fleet-ec2inboundpermissions-toport
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-gamelift-fleet-ippermission.html#cfn-gamelift-fleet-ippermission-toport
+* AWS::GameLift::Fleet.RuntimeConfiguration ServerProcesses.DuplicatesAllowed (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration.Distribution LaunchTemplateConfigurations (__added__)
+* AWS::IoT::TopicRule.Action CloudwatchLogs (__added__)
+* AWS::IoT::TopicRule.Action Kafka (__added__)
+* AWS::IoT::TopicRule.Action Timestream (__added__)
+* AWS::IoT::TopicRule.FirehoseAction BatchMode (__added__)
+* AWS::IoT::TopicRule.IotAnalyticsAction BatchMode (__added__)
+* AWS::IoT::TopicRule.IotEventsAction BatchMode (__added__)
+* AWS::IoTEvents::DetectorModel.AssetPropertyTimestamp TimeInSeconds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.AssetPropertyValue Value.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.ClearTimer TimerName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.DetectorModelDefinition InitialStateName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.DetectorModelDefinition States.DuplicatesAllowed (__added__)
+* AWS::IoTEvents::DetectorModel.DetectorModelDefinition States.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.DynamoDB HashKeyField.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.DynamoDB HashKeyValue.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.DynamoDB TableName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.DynamoDBv2 TableName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.Event Actions.DuplicatesAllowed (__added__)
+* AWS::IoTEvents::DetectorModel.Event EventName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.Firehose DeliveryStreamName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.IotEvents InputName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.IotSiteWise PropertyValue.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.IotTopicPublish MqttTopic.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.Lambda FunctionArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.OnEnter Events.DuplicatesAllowed (__added__)
+* AWS::IoTEvents::DetectorModel.OnExit Events.DuplicatesAllowed (__added__)
+* AWS::IoTEvents::DetectorModel.OnInput Events.DuplicatesAllowed (__added__)
+* AWS::IoTEvents::DetectorModel.OnInput TransitionEvents.DuplicatesAllowed (__added__)
+* AWS::IoTEvents::DetectorModel.Payload ContentExpression.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.Payload Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.ResetTimer TimerName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.SetTimer TimerName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.SetVariable Value.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.SetVariable VariableName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.Sns TargetArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.Sqs QueueUrl.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.State StateName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.TransitionEvent Actions.DuplicatesAllowed (__added__)
+* AWS::IoTEvents::DetectorModel.TransitionEvent Condition.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.TransitionEvent EventName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::DetectorModel.TransitionEvent NextState.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::Input.Attribute JsonPath.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTEvents::Input.InputDefinition Attributes.DuplicatesAllowed (__added__)
+* AWS::IoTEvents::Input.InputDefinition Attributes.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Kendra::DataSource.ColumnConfiguration ChangeDetectingColumns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.ColumnConfiguration ChangeDetectingColumns.Type (__changed__)
+  * Old: ChangeDetectingColumns
+  * New: List
+* AWS::Kendra::DataSource.ColumnConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.ColumnConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.ConfluenceAttachmentConfiguration AttachmentFieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.ConfluenceAttachmentConfiguration AttachmentFieldMappings.Type (__changed__)
+  * Old: ConfluenceAttachmentFieldMappingsList
+  * New: List
+* AWS::Kendra::DataSource.ConfluenceBlogConfiguration BlogFieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.ConfluenceBlogConfiguration BlogFieldMappings.Type (__changed__)
+  * Old: ConfluenceBlogFieldMappingsList
+  * New: List
+* AWS::Kendra::DataSource.ConfluenceConfiguration ExclusionPatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.ConfluenceConfiguration ExclusionPatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.ConfluenceConfiguration InclusionPatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.ConfluenceConfiguration InclusionPatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.ConfluencePageConfiguration PageFieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.ConfluencePageConfiguration PageFieldMappings.Type (__changed__)
+  * Old: ConfluencePageFieldMappingsList
+  * New: List
+* AWS::Kendra::DataSource.ConfluenceSpaceConfiguration ExcludeSpaces.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceConfiguration ExcludeSpaces.Type (__changed__)
+  * Old: ConfluenceSpaceList
+  * New: List
+* AWS::Kendra::DataSource.ConfluenceSpaceConfiguration IncludeSpaces.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceConfiguration IncludeSpaces.Type (__changed__)
+  * Old: ConfluenceSpaceList
+  * New: List
+* AWS::Kendra::DataSource.ConfluenceSpaceConfiguration SpaceFieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceConfiguration SpaceFieldMappings.Type (__changed__)
+  * Old: ConfluenceSpaceFieldMappingsList
+  * New: List
+* AWS::Kendra::DataSource.GoogleDriveConfiguration ExcludeMimeTypes.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.GoogleDriveConfiguration ExcludeMimeTypes.Type (__changed__)
+  * Old: ExcludeMimeTypesList
+  * New: List
+* AWS::Kendra::DataSource.GoogleDriveConfiguration ExcludeSharedDrives.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.GoogleDriveConfiguration ExcludeSharedDrives.Type (__changed__)
+  * Old: ExcludeSharedDrivesList
+  * New: List
+* AWS::Kendra::DataSource.GoogleDriveConfiguration ExcludeUserAccounts.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.GoogleDriveConfiguration ExcludeUserAccounts.Type (__changed__)
+  * Old: ExcludeUserAccountsList
+  * New: List
+* AWS::Kendra::DataSource.GoogleDriveConfiguration ExclusionPatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.GoogleDriveConfiguration ExclusionPatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.GoogleDriveConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.GoogleDriveConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.GoogleDriveConfiguration InclusionPatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.GoogleDriveConfiguration InclusionPatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.OneDriveConfiguration ExclusionPatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.OneDriveConfiguration ExclusionPatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.OneDriveConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.OneDriveConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.OneDriveConfiguration InclusionPatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.OneDriveConfiguration InclusionPatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.OneDriveUsers OneDriveUserList.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.OneDriveUsers OneDriveUserList.Type (__changed__)
+  * Old: OneDriveUserList
+  * New: List
+* AWS::Kendra::DataSource.S3DataSourceConfiguration ExclusionPatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.S3DataSourceConfiguration ExclusionPatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.S3DataSourceConfiguration InclusionPatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.S3DataSourceConfiguration InclusionPatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.S3DataSourceConfiguration InclusionPrefixes.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.S3DataSourceConfiguration InclusionPrefixes.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.SalesforceChatterFeedConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceChatterFeedConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.SalesforceChatterFeedConfiguration IncludeFilterTypes.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceChatterFeedConfiguration IncludeFilterTypes.Type (__changed__)
+  * Old: SalesforceChatterFeedIncludeFilterTypes
+  * New: List
+* AWS::Kendra::DataSource.SalesforceConfiguration ExcludeAttachmentFilePatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceConfiguration ExcludeAttachmentFilePatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.SalesforceConfiguration IncludeAttachmentFilePatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceConfiguration IncludeAttachmentFilePatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.SalesforceConfiguration StandardObjectConfigurations.ItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceConfiguration StandardObjectConfigurations.Type (__changed__)
+  * Old: SalesforceStandardObjectConfigurationList
+  * New: List
+* AWS::Kendra::DataSource.SalesforceCustomKnowledgeArticleTypeConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceCustomKnowledgeArticleTypeConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.SalesforceKnowledgeArticleConfiguration CustomKnowledgeArticleTypeConfigurations.ItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceKnowledgeArticleConfiguration CustomKnowledgeArticleTypeConfigurations.Type (__changed__)
+  * Old: SalesforceCustomKnowledgeArticleTypeConfigurationList
+  * New: List
+* AWS::Kendra::DataSource.SalesforceKnowledgeArticleConfiguration IncludedStates.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceKnowledgeArticleConfiguration IncludedStates.Type (__changed__)
+  * Old: SalesforceKnowledgeArticleStateList
+  * New: List
+* AWS::Kendra::DataSource.SalesforceStandardKnowledgeArticleTypeConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceStandardKnowledgeArticleTypeConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.SalesforceStandardObjectAttachmentConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceStandardObjectAttachmentConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.SalesforceStandardObjectConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.SalesforceStandardObjectConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.ServiceNowKnowledgeArticleConfiguration ExcludeAttachmentFilePatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.ServiceNowKnowledgeArticleConfiguration ExcludeAttachmentFilePatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.ServiceNowKnowledgeArticleConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.ServiceNowKnowledgeArticleConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.ServiceNowKnowledgeArticleConfiguration IncludeAttachmentFilePatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.ServiceNowKnowledgeArticleConfiguration IncludeAttachmentFilePatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.ServiceNowServiceCatalogConfiguration ExcludeAttachmentFilePatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.ServiceNowServiceCatalogConfiguration ExcludeAttachmentFilePatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.ServiceNowServiceCatalogConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.ServiceNowServiceCatalogConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.ServiceNowServiceCatalogConfiguration IncludeAttachmentFilePatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.ServiceNowServiceCatalogConfiguration IncludeAttachmentFilePatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.SharePointConfiguration ExclusionPatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.SharePointConfiguration ExclusionPatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::DataSource.SharePointConfiguration FieldMappings.ItemType (__added__)
+* AWS::Kendra::DataSource.SharePointConfiguration FieldMappings.Type (__changed__)
+  * Old: DataSourceToIndexFieldMappingList
+  * New: List
+* AWS::Kendra::DataSource.SharePointConfiguration InclusionPatterns.PrimitiveItemType (__added__)
+* AWS::Kendra::DataSource.SharePointConfiguration InclusionPatterns.Type (__changed__)
+  * Old: DataSourceInclusionsExclusionsStrings
+  * New: List
+* AWS::Kendra::Index.Relevance ValueImportanceItems.ItemType (__added__)
+* AWS::Kendra::Index.Relevance ValueImportanceItems.Type (__changed__)
+  * Old: ValueImportanceItems
+  * New: List
+* AWS::MediaLive::Channel.ArchiveGroupSettings ArchiveCdnSettings (__added__)
+* AWS::MediaLive::Channel.EbuTtDDestinationSettings CopyrightHolder (__added__)
+* AWS::MediaLive::Channel.EncoderSettings MotionGraphicsConfiguration (__added__)
+* AWS::MediaLive::Channel.FrameCaptureGroupSettings FrameCaptureCdnSettings (__added__)
+* AWS::MediaLive::Channel.HlsCdnSettings HlsS3Settings (__added__)
+* AWS::MediaLive::Channel.HlsSettings FrameCaptureHlsSettings (__added__)
+* AWS::MediaLive::Channel.TeletextSourceSettings OutputRectangle (__added__)
+* AWS::MediaLive::Channel.VideoSelector ColorSpaceSettings (__added__)
+* AWS::SSO::InstanceAccessControlAttributeConfiguration.AccessControlAttributeValue Source.PrimitiveItemType (__added__)
+* AWS::SSO::InstanceAccessControlAttributeConfiguration.AccessControlAttributeValue Source.Type (__changed__)
+  * Old: AccessControlAttributeValueSourceList
+  * New: List
+* AWS::SageMaker::MonitoringSchedule.MonitoringJobDefinition MonitoringInputs.ItemType (__added__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringJobDefinition MonitoringInputs.Type (__changed__)
+  * Old: MonitoringInputs
+  * New: List
+* AWS::WAFv2::RuleGroup.FieldToMatch JsonBody (__added__)
+* AWS::WAFv2::RuleGroup.Rule RuleLabels (__added__)
+* AWS::WAFv2::RuleGroup.Rule Statement.Type (__changed__)
+  * Old: StatementOne
+  * New: Statement
+* AWS::WAFv2::WebACL.DefaultAction Allow.PrimitiveType (__deleted__)
+* AWS::WAFv2::WebACL.DefaultAction Allow.Type (__added__)
+* AWS::WAFv2::WebACL.DefaultAction Block.PrimitiveType (__deleted__)
+* AWS::WAFv2::WebACL.DefaultAction Block.Type (__added__)
+* AWS::WAFv2::WebACL.FieldToMatch JsonBody (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement ScopeDownStatement (__added__)
+* AWS::WAFv2::WebACL.Rule RuleLabels (__added__)
+* AWS::WAFv2::WebACL.Rule Statement.Type (__changed__)
+  * Old: StatementOne
+  * New: Statement
+* AWS::WAFv2::WebACL.RuleAction Allow.PrimitiveType (__deleted__)
+* AWS::WAFv2::WebACL.RuleAction Allow.Type (__added__)
+* AWS::WAFv2::WebACL.RuleAction Block.PrimitiveType (__deleted__)
+* AWS::WAFv2::WebACL.RuleAction Block.Type (__added__)
+* AWS::WAFv2::WebACL.RuleAction Count.PrimitiveType (__deleted__)
+* AWS::WAFv2::WebACL.RuleAction Count.Type (__added__)
+
+
+# CloudFormation Resource Specification v31.1.0
+
+## New Resource Types
+
+* AWS::FIS::ExperimentTemplate
+* AWS::S3ObjectLambda::AccessPoint
+* AWS::S3ObjectLambda::AccessPointPolicy
+
+## Attribute Changes
+
+* AWS::Backup::BackupSelection Id (__added__)
+* AWS::RDS::DBProxy VpcId (__added__)
+
+## Property Changes
+
+* AWS::EC2::LaunchTemplate TagSpecifications.ItemType (__added__)
+* AWS::EC2::LaunchTemplate TagSpecifications.Type (__changed__)
+  * Old: TagSpecifications
+  * New: List
+* AWS::ServiceCatalogAppRegistry::AttributeGroup Attributes.Type (__deleted__)
+* AWS::ServiceCatalogAppRegistry::AttributeGroup Attributes.PrimitiveType (__added__)
+* AWS::ServiceDiscovery::Service Type (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::LaunchTemplate.TagSpecifications (__removed__)
+* AWS::ServiceCatalogAppRegistry::AttributeGroup.Attributes (__removed__)
+* AWS::Backup::BackupSelection.BackupSelectionResourceType IamRoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Backup::BackupSelection.BackupSelectionResourceType ListOfTags.DuplicatesAllowed (__added__)
+* AWS::Backup::BackupSelection.BackupSelectionResourceType ListOfTags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Backup::BackupSelection.BackupSelectionResourceType Resources.DuplicatesAllowed (__added__)
+* AWS::Backup::BackupSelection.BackupSelectionResourceType Resources.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Backup::BackupSelection.BackupSelectionResourceType SelectionName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Backup::BackupSelection.ConditionResourceType ConditionKey.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Backup::BackupSelection.ConditionResourceType ConditionType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Backup::BackupSelection.ConditionResourceType ConditionValue.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SSM::MaintenanceWindowTarget.Targets Values.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SSM::MaintenanceWindowTask.Target Values.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v31.0.0
+
+## New Resource Types
+
+* AWS::CE::AnomalyMonitor
+* AWS::CE::AnomalySubscription
+* AWS::CertificateManager::Account
+* AWS::ECS::ClusterCapacityProviderAssociations
+* AWS::RDS::DBProxyEndpoint
+
+## Attribute Changes
+
+* AWS::SSM::ResourceDataSync SyncName (__added__)
+
+## Property Changes
+
+* AWS::AppSync::GraphQLApi LambdaAuthorizerConfig (__added__)
+* AWS::Backup::BackupPlan BackupPlanTags.PrimitiveType (__deleted__)
+* AWS::Backup::BackupPlan BackupPlanTags.PrimitiveItemType (__added__)
+* AWS::Backup::BackupPlan BackupPlanTags.Type (__added__)
+* AWS::DynamoDB::Table KinesisStreamSpecification (__deleted__)
+* AWS::DynamoDB::Table ContributorInsightsSpecification (__added__)
+* AWS::EC2::LaunchTemplate TagSpecifications (__added__)
+* AWS::ECS::CapacityProvider AutoScalingGroupProvider.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Cluster Configuration (__added__)
+* AWS::ECS::Service EnableExecuteCommand (__added__)
+* AWS::EFS::FileSystem AvailabilityZoneName (__added__)
+
+## Property Type Changes
+
+* AWS::DynamoDB::Table.KinesisStreamSpecification (__removed__)
+* AWS::AppSync::GraphQLApi.LambdaAuthorizerConfig (__added__)
+* AWS::DynamoDB::Table.ContributorInsightsSpecification (__added__)
+* AWS::EC2::LaunchTemplate.TagSpecifications (__added__)
+* AWS::ECS::Cluster.ClusterConfiguration (__added__)
+* AWS::ECS::Cluster.ExecuteCommandConfiguration (__added__)
+* AWS::ECS::Cluster.ExecuteCommandLogConfiguration (__added__)
+* AWS::AppSync::GraphQLApi.AdditionalAuthenticationProvider LambdaAuthorizerConfig (__added__)
+* AWS::Backup::BackupPlan.BackupPlanResourceType AdvancedBackupSettings.DuplicatesAllowed (__added__)
+* AWS::Backup::BackupPlan.BackupPlanResourceType BackupPlanRule.DuplicatesAllowed (__added__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType CopyActions.DuplicatesAllowed (__added__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType RecoveryPointTags.PrimitiveType (__deleted__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType RecoveryPointTags.PrimitiveItemType (__added__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType RecoveryPointTags.Type (__added__)
+* AWS::DynamoDB::Table.GlobalSecondaryIndex ContributorInsightsSpecification (__added__)
+* AWS::ECS::CapacityProvider.AutoScalingGroupProvider ManagedScaling.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::CapacityProvider.AutoScalingGroupProvider ManagedTerminationProtection.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::CapacityProvider.ManagedScaling MaximumScalingStepSize.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::CapacityProvider.ManagedScaling MinimumScalingStepSize.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::CapacityProvider.ManagedScaling Status.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::CapacityProvider.ManagedScaling TargetCapacity.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::GameLift::Alias.RoutingStrategy Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoT::TopicRule.S3Action CannedAcl (__added__)
+* AWS::IoT::TopicRule.TopicRulePayload Actions.DuplicatesAllowed (__deleted__)
+* AWS::IoT::TopicRule.TopicRulePayload RuleDisabled.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::ResourceDataSync.AwsOrganizationsSource OrganizationSourceType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::ResourceDataSync.AwsOrganizationsSource OrganizationalUnits.DuplicatesAllowed (__added__)
+* AWS::SSM::ResourceDataSync.SyncSource SourceRegions.DuplicatesAllowed (__added__)
+* AWS::SSM::ResourceDataSync.SyncSource SourceType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v30.1.0
+
+## New Resource Types
+
+* AWS::Events::ApiDestination
+* AWS::Events::Connection
+* AWS::IoT::AccountAuditConfiguration
+* AWS::IoT::CustomMetric
+* AWS::IoT::Dimension
+* AWS::IoT::MitigationAction
+* AWS::IoT::ScheduledAudit
+* AWS::IoT::SecurityProfile
+* AWS::S3Outposts::AccessPoint
+* AWS::S3Outposts::Bucket
+* AWS::S3Outposts::BucketPolicy
+* AWS::S3Outposts::Endpoint
+
+## Attribute Changes
+
+* AWS::Athena::WorkGroup EffectiveEngineVersion (__added__)
+
+## Property Changes
+
+* AWS::Backup::BackupVault BackupVaultTags.PrimitiveType (__deleted__)
+* AWS::Backup::BackupVault BackupVaultTags.PrimitiveItemType (__added__)
+* AWS::Backup::BackupVault BackupVaultTags.Type (__added__)
+* AWS::Cloud9::EnvironmentEC2 ImageId (__added__)
+* AWS::CloudFormation::ModuleVersion ModuleName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ModuleVersion ModulePackage.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DataBrew::Dataset Format (__added__)
+* AWS::Detective::MemberInvitation DisableEmailNotification (__added__)
+* AWS::IVS::Channel RecordingConfigurationArn (__deleted__)
+* AWS::SecretsManager::Secret ReplicaRegions (__added__)
+* AWS::ServiceDiscovery::HttpNamespace Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PrivateDnsNamespace Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PublicDnsNamespace Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::Service Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Athena::WorkGroup.EngineVersion (__added__)
+* AWS::SecretsManager::Secret.ReplicaRegion (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration EngineVersion (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfigurationUpdates EngineVersion (__added__)
+* AWS::Backup::BackupVault.NotificationObjectType BackupVaultEvents.DuplicatesAllowed (__added__)
+
+
+# CloudFormation Resource Specification v30.0.0
+
+## New Resource Types
+
+* AWS::EC2::TransitGatewayConnect
+* AWS::EKS::Addon
+* AWS::EMR::Studio
+* AWS::EMR::StudioSessionMapping
+* AWS::IAM::OIDCProvider
+* AWS::IAM::SAMLProvider
+* AWS::IAM::ServerCertificate
+* AWS::IAM::VirtualMFADevice
+* AWS::SageMaker::Image
+* AWS::SageMaker::ImageVersion
+
+## Attribute Changes
+
+* AWS::IoTSiteWise::Portal PortalStatus (__deleted__)
+* AWS::MediaPackage::Channel HlsIngest (__deleted__)
+* AWS::QuickSight::Dashboard Version (__deleted__)
+* AWS::QuickSight::Template Version (__deleted__)
+* AWS::QuickSight::Theme Version (__deleted__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::SageMaker::Project ServiceCatalogProvisionedProductDetails (__deleted__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct Outputs (__deleted__)
+
+## Property Changes
+
+* AWS::ECR::PublicRepository Tags (__added__)
+* AWS::IVS::Channel RecordingConfigurationArn (__added__)
+* AWS::IoTSiteWise::AssetModel AssetModelCompositeModels (__added__)
+* AWS::IoTSiteWise::Portal PortalAuthMode (__added__)
+* AWS::SageMaker::Model InferenceExecutionConfig (__added__)
+
+## Property Type Changes
+
+* AWS::IoTSiteWise::Portal.MonitorErrorDetails (__removed__)
+* AWS::IoTSiteWise::Portal.PortalStatus (__removed__)
+* AWS::MediaPackage::Channel.HlsIngest (__removed__)
+* AWS::MediaPackage::Channel.IngestEndpoint (__removed__)
+* AWS::QuickSight::Dashboard.DashboardError (__removed__)
+* AWS::QuickSight::Dashboard.DashboardVersion (__removed__)
+* AWS::QuickSight::Dashboard.Sheet (__removed__)
+* AWS::QuickSight::Template.ColumnGroupColumnSchema (__removed__)
+* AWS::QuickSight::Template.ColumnGroupSchema (__removed__)
+* AWS::QuickSight::Template.ColumnSchema (__removed__)
+* AWS::QuickSight::Template.DataSetConfiguration (__removed__)
+* AWS::QuickSight::Template.DataSetSchema (__removed__)
+* AWS::QuickSight::Template.Sheet (__removed__)
+* AWS::QuickSight::Template.TemplateError (__removed__)
+* AWS::QuickSight::Template.TemplateVersion (__removed__)
+* AWS::QuickSight::Theme.ThemeError (__removed__)
+* AWS::QuickSight::Theme.ThemeVersion (__removed__)
+* AWS::IoTSiteWise::AccessPolicy.IamRole (__added__)
+* AWS::IoTSiteWise::AccessPolicy.IamUser (__added__)
+* AWS::IoTSiteWise::AssetModel.AssetModelCompositeModel (__added__)
+* AWS::SageMaker::Model.InferenceExecutionConfig (__added__)
+* AWS::ACMPCA::Certificate.Validity Value.PrimitiveType (__changed__)
+  * Old: Integer
+  * New: Double
+* AWS::CodeBuild::ReportGroup.S3ReportExportConfig BucketOwner (__added__)
+* AWS::IoTSiteWise::AccessPolicy.AccessPolicyIdentity IamRole (__added__)
+* AWS::IoTSiteWise::AccessPolicy.AccessPolicyIdentity IamUser (__added__)
+* AWS::IoTSiteWise::AssetModel.AssetModelProperty DataTypeSpec (__added__)
+* AWS::Pinpoint::Campaign.CampaignSmsMessage EntityId (__added__)
+* AWS::Pinpoint::Campaign.CampaignSmsMessage TemplateId (__added__)
+* AWS::Synthetics::Canary.Code Handler.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Synthetics::Canary.RunConfig TimeoutInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v29.0.0
+
+## New Resource Types
+
+## Attribute Changes
+
+* AWS::EC2::TransitGatewayMulticastDomainAssociation State (__added__)
+* AWS::EC2::TransitGatewayMulticastGroupMember TransitGatewayAttachmentId (__added__)
+* AWS::EC2::TransitGatewayMulticastGroupSource TransitGatewayAttachmentId (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWANResponse (__deleted__)
+* AWS::IoTWireless::ServiceProfile ChannelMask (__added__)
+* AWS::IoTWireless::ServiceProfile DevStatusReqFreq (__added__)
+* AWS::IoTWireless::ServiceProfile DlBucketSize (__added__)
+* AWS::IoTWireless::ServiceProfile DlRate (__added__)
+* AWS::IoTWireless::ServiceProfile DlRatePolicy (__added__)
+* AWS::IoTWireless::ServiceProfile DrMax (__added__)
+* AWS::IoTWireless::ServiceProfile DrMin (__added__)
+* AWS::IoTWireless::ServiceProfile HrAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile MinGwDiversity (__added__)
+* AWS::IoTWireless::ServiceProfile NwkGeoLoc (__added__)
+* AWS::IoTWireless::ServiceProfile PrAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile RaAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile ReportDevStatusBattery (__added__)
+* AWS::IoTWireless::ServiceProfile ReportDevStatusMargin (__added__)
+* AWS::IoTWireless::ServiceProfile TargetPer (__added__)
+* AWS::IoTWireless::ServiceProfile UlBucketSize (__added__)
+* AWS::IoTWireless::ServiceProfile UlRate (__added__)
+* AWS::IoTWireless::ServiceProfile UlRatePolicy (__added__)
+* AWS::IoTWireless::WirelessDevice ThingArn (__deleted__)
+* AWS::IoTWireless::WirelessGateway ThingArn (__deleted__)
+* AWS::IoTWireless::WirelessGateway ThingName (__added__)
+
+## Property Changes
+
+* AWS::CodeBuild::Project ConcurrentBuildLimit (__added__)
+* AWS::DataBrew::Job JobSample (__added__)
+* AWS::DynamoDB::Table KinesisStreamSpecification (__added__)
+* AWS::EC2::TransitGatewayMulticastDomain TransitGatewayId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastDomainAssociation State (__deleted__)
+* AWS::EC2::TransitGatewayMulticastDomainAssociation SubnetId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastDomainAssociation TransitGatewayAttachmentId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastDomainAssociation TransitGatewayMulticastDomainId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupMember TransitGatewayAttachmentId (__deleted__)
+* AWS::EC2::TransitGatewayMulticastGroupMember GroupIpAddress.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupMember NetworkInterfaceId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupMember TransitGatewayMulticastDomainId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupSource TransitGatewayAttachmentId (__deleted__)
+* AWS::EC2::TransitGatewayMulticastGroupSource GroupIpAddress.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupSource NetworkInterfaceId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupSource TransitGatewayMulticastDomainId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::GlobalReplicationGroup CacheParameterGroupName (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup ProtocolVersion (__added__)
+* AWS::ImageBuilder::Image ContainerRecipeArn (__added__)
+* AWS::ImageBuilder::Image ImageRecipeArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ImageBuilder::ImagePipeline ContainerRecipeArn (__added__)
+* AWS::ImageBuilder::ImagePipeline ImageRecipeArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Dataset LateDataRules (__added__)
+* AWS::IoTWireless::WirelessDevice ThingArn (__added__)
+* AWS::IoTWireless::WirelessGateway ThingName (__deleted__)
+* AWS::IoTWireless::WirelessGateway ThingArn (__added__)
+* AWS::StepFunctions::StateMachine Definition (__added__)
+
+## Property Type Changes
+
+* AWS::IoTWireless::ServiceProfile.LoRaWANGetServiceProfileInfo (__removed__)
+* AWS::DynamoDB::Table.KinesisStreamSpecification (__added__)
+* AWS::IoTAnalytics::Dataset.DeltaTimeSessionWindowConfiguration (__added__)
+* AWS::IoTAnalytics::Dataset.LateDataRule (__added__)
+* AWS::IoTAnalytics::Dataset.LateDataRuleConfiguration (__added__)
+* AWS::StepFunctions::StateMachine.Definition (__added__)
+* AWS::CodeCommit::Repository.Code BranchName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ElasticLoadBalancingV2::TargetGroup.Matcher GrpcCode (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration Aliases (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration ThroughputCapacity.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile ChannelMask (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DevStatusReqFreq (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DlBucketSize (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DlRate (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DlRatePolicy (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DrMax (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DrMin (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile HrAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile MinGwDiversity (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile NwkGeoLoc (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile PrAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile RaAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile ReportDevStatusBattery (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile ReportDevStatusMargin (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile TargetPer (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile UlBucketSize (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile UlRate (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile UlRatePolicy (__added__)
+* AWS::Pinpoint::Campaign.CampaignSmsMessage OriginationNumber (__added__)
+
+
+# CloudFormation Resource Specification v28.0.0
+
+## New Resource Types
+
+* AWS::CloudFormation::ResourceDefaultVersion
+* AWS::CloudFormation::ResourceVersion
+* AWS::EC2::TransitGatewayMulticastDomain
+* AWS::EC2::TransitGatewayMulticastDomainAssociation
+* AWS::EC2::TransitGatewayMulticastGroupMember
+* AWS::EC2::TransitGatewayMulticastGroupSource
+* AWS::SageMaker::App
+* AWS::SageMaker::AppImageConfig
+* AWS::SageMaker::Domain
+* AWS::SageMaker::UserProfile
+* AWS::ServiceCatalog::ServiceAction
+* AWS::ServiceCatalog::ServiceActionAssociation
+
+## Attribute Changes
+
+* AWS::ApiGateway::ApiKey APIKeyId (__added__)
+
+## Property Changes
+
+* AWS::DMS::Endpoint DocDbSettings (__added__)
+* AWS::DMS::Endpoint IbmDb2Settings (__added__)
+* AWS::DMS::Endpoint MicrosoftSqlServerSettings (__added__)
+* AWS::DMS::Endpoint MySqlSettings (__added__)
+* AWS::DMS::Endpoint OracleSettings (__added__)
+* AWS::DMS::Endpoint PostgreSqlSettings (__added__)
+* AWS::DMS::Endpoint RedshiftSettings (__added__)
+* AWS::DMS::Endpoint SybaseSettings (__added__)
+* AWS::ECS::Cluster Configuration (__deleted__)
+* AWS::ECS::Service EnableExecuteCommand (__deleted__)
+* AWS::ManagedBlockchain::Node MemberId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MediaLive::Channel Vpc (__added__)
+
+## Property Type Changes
+
+* AWS::ECS::Cluster.ClusterConfiguration (__removed__)
+* AWS::ECS::Cluster.ExecuteCommandConfiguration (__removed__)
+* AWS::ECS::Cluster.ExecuteCommandLogConfiguration (__removed__)
+* AWS::AppMesh::VirtualGateway.SubjectAlternativeNameMatchers (__added__)
+* AWS::AppMesh::VirtualGateway.SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayClientTlsCertificate (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsSdsCertificate (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsValidationContext (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsValidationContextTrust (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayTlsValidationContextSdsTrust (__added__)
+* AWS::AppMesh::VirtualNode.ClientTlsCertificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsSdsCertificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsValidationContext (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsValidationContextTrust (__added__)
+* AWS::AppMesh::VirtualNode.SubjectAlternativeNameMatchers (__added__)
+* AWS::AppMesh::VirtualNode.SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContextSdsTrust (__added__)
+* AWS::DMS::Endpoint.DocDbSettings (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings (__added__)
+* AWS::DMS::Endpoint.MySqlSettings (__added__)
+* AWS::DMS::Endpoint.OracleSettings (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings (__added__)
+* AWS::DMS::Endpoint.SybaseSettings (__added__)
+* AWS::MediaLive::Channel.VpcOutputSettings (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayClientPolicyTls Certificate (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTls Validation (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsCertificate SDS (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayTlsValidationContext SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayTlsValidationContextTrust SDS (__added__)
+* AWS::AppMesh::VirtualNode.ClientPolicyTls Certificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTls Validation (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsCertificate SDS (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContext SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContextTrust SDS (__added__)
+* AWS::DMS::Endpoint.MongoDbSettings SecretsManagerAccessRoleArn (__added__)
+* AWS::DMS::Endpoint.MongoDbSettings SecretsManagerSecretId (__added__)
+
+
+# CloudFormation Resource Specification v27.0.0
+
+## New Resource Types
+
+* AWS::ECR::RegistryPolicy
+* AWS::ECR::ReplicationConfiguration
+* AWS::ElastiCache::GlobalReplicationGroup
+* AWS::ImageBuilder::ContainerRecipe
+
+## Attribute Changes
+
+* AWS::IoTWireless::ServiceProfile LoRaWANResponse (__added__)
+* AWS::MWAA::Environment CreatedAt (__deleted__)
+* AWS::MWAA::Environment LastUpdate (__deleted__)
+* AWS::MWAA::Environment Name (__deleted__)
+* AWS::MWAA::Environment ServiceRoleArn (__deleted__)
+* AWS::MWAA::Environment Status (__deleted__)
+* AWS::MWAA::Environment WebserverUrl (__added__)
+
+## Property Changes
+
+* AWS::AppMesh::GatewayRoute GatewayRouteName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::Mesh MeshName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::Route RouteName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::VirtualGateway VirtualGatewayName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::VirtualNode VirtualNodeName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::VirtualRouter VirtualRouterName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Cassandra::Keyspace Tags (__added__)
+* AWS::Cassandra::Table PointInTimeRecoveryEnabled (__added__)
+* AWS::Cassandra::Table Tags (__added__)
+* AWS::CloudWatch::MetricStream OutputFormat (__added__)
+* AWS::ECS::Service EnableExecuteCommand (__added__)
+* AWS::ECS::Service PlatformVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::IoTWireless::Destination NextToken (__deleted__)
+* AWS::IoTWireless::Destination Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::IoTWireless::DeviceProfile LoRaWANDeviceProfile (__deleted__)
+* AWS::IoTWireless::DeviceProfile NextToken (__deleted__)
+* AWS::IoTWireless::DeviceProfile LoRaWAN (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWANGetServiceProfileInfo (__deleted__)
+* AWS::IoTWireless::ServiceProfile LoRaWANServiceProfile (__deleted__)
+* AWS::IoTWireless::ServiceProfile NextToken (__deleted__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN (__added__)
+* AWS::IoTWireless::WirelessDevice LoRaWANDevice (__deleted__)
+* AWS::IoTWireless::WirelessDevice NextToken (__deleted__)
+* AWS::IoTWireless::WirelessDevice LastUplinkReceivedAt (__added__)
+* AWS::IoTWireless::WirelessDevice LoRaWAN (__added__)
+* AWS::IoTWireless::WirelessGateway LoRaWANGateway (__deleted__)
+* AWS::IoTWireless::WirelessGateway NextToken (__deleted__)
+* AWS::IoTWireless::WirelessGateway LastUplinkReceivedAt (__added__)
+* AWS::IoTWireless::WirelessGateway LoRaWAN (__added__)
+* AWS::MWAA::Environment WebserverUrl (__deleted__)
+* AWS::MWAA::Environment Name (__added__)
+* AWS::MWAA::Environment KmsKey.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MWAA::Environment NetworkConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::Model InferenceExecutionConfig (__deleted__)
+
+## Property Type Changes
+
+* AWS::IoTWireless::WirelessDevice.AbpV10X (__removed__)
+* AWS::IoTWireless::WirelessDevice.OtaaV10X (__removed__)
+* AWS::IoTWireless::WirelessDevice.SessionKeysAbpV10X (__removed__)
+* AWS::MWAA::Environment.LastUpdate (__removed__)
+* AWS::MWAA::Environment.SecurityGroupList (__removed__)
+* AWS::MWAA::Environment.SubnetList (__removed__)
+* AWS::MWAA::Environment.UpdateError (__removed__)
+* AWS::SageMaker::Model.InferenceExecutionConfig (__removed__)
+* AWS::DataBrew::Job.CsvOutputOptions (__added__)
+* AWS::DataBrew::Job.OutputFormatOptions (__added__)
+* AWS::IoTWireless::WirelessDevice.AbpV10x (__added__)
+* AWS::IoTWireless::WirelessDevice.OtaaV10x (__added__)
+* AWS::IoTWireless::WirelessDevice.SessionKeysAbpV10x (__added__)
+* AWS::Cognito::UserPoolClient.AnalyticsConfiguration ApplicationArn (__added__)
+* AWS::DataBrew::Job.Output FormatOptions (__added__)
+* AWS::IoTWireless::WirelessDevice.LoRaWANDevice AbpV10X (__deleted__)
+* AWS::IoTWireless::WirelessDevice.LoRaWANDevice OtaaV10X (__deleted__)
+* AWS::IoTWireless::WirelessDevice.LoRaWANDevice AbpV10x (__added__)
+* AWS::IoTWireless::WirelessDevice.LoRaWANDevice OtaaV10x (__added__)
+* AWS::MWAA::Environment.NetworkConfiguration SecurityGroupIds.PrimitiveItemType (__added__)
+* AWS::MWAA::Environment.NetworkConfiguration SecurityGroupIds.Type (__changed__)
+  * Old: SecurityGroupList
+  * New: List
+* AWS::MWAA::Environment.NetworkConfiguration SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MWAA::Environment.NetworkConfiguration SubnetIds.PrimitiveItemType (__added__)
+* AWS::MWAA::Environment.NetworkConfiguration SubnetIds.Type (__changed__)
+  * Old: SubnetList
+  * New: List
+* AWS::MediaPackage::PackagingConfiguration.CmafEncryption SpekeKeyProvider.Type (__added__)
+* AWS::MediaPackage::PackagingConfiguration.DashEncryption SpekeKeyProvider.Type (__added__)
+* AWS::MediaPackage::PackagingConfiguration.HlsEncryption SpekeKeyProvider.Type (__added__)
+* AWS::MediaPackage::PackagingConfiguration.MssEncryption SpekeKeyProvider.Type (__added__)
+
+
+# CloudFormation Resource Specification v26.0.0
+
+## New Resource Types
+
+* AWS::LookoutVision::Project
+* AWS::SageMaker::FeatureGroup
+
+## Attribute Changes
+
+* AWS::MediaConnect::FlowVpcInterface FlowArn (__deleted__)
+* AWS::MediaConnect::FlowVpcInterface Name (__deleted__)
+* AWS::S3::AccessPoint NetworkOrigin (__added__)
+* AWS::S3::AccessPoint PolicyStatus (__added__)
+
+## Property Changes
+
+* AWS::ACMPCA::Certificate ApiPassthrough (__added__)
+* AWS::ACMPCA::Certificate ValidityNotBefore (__added__)
+* AWS::AmazonMQ::Configuration AuthenticationStrategy (__added__)
+* AWS::ApiGatewayV2::Stage AccessPolicyId (__added__)
+* AWS::ECS::Cluster Configuration (__added__)
+* AWS::Kinesis::Stream Tags.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaConnect::FlowVpcInterface FlowArn (__added__)
+* AWS::MediaConnect::FlowVpcInterface Name (__added__)
+* AWS::S3::AccessPoint NetworkOrigin (__deleted__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::SSM::MaintenanceWindowTask MaxConcurrency.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask MaxErrors.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask Targets.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSO::InstanceAccessControlAttributeConfiguration InstanceAccessControlAttributeConfiguration (__deleted__)
+* AWS::SageMaker::Device Tags.ItemType (__changed__)
+  * Old: Json
+  * New: Tag
+* AWS::SageMaker::Device Tags.Type (__changed__)
+  * Old: Tag
+  * New: List
+* AWS::SageMaker::DeviceFleet Tags.ItemType (__changed__)
+  * Old: Json
+  * New: Tag
+* AWS::SageMaker::DeviceFleet Tags.Type (__changed__)
+  * Old: Tag
+  * New: List
+* AWS::SageMaker::Model InferenceExecutionConfig (__added__)
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.ApiPassthrough (__added__)
+* AWS::ACMPCA::Certificate.CertificatePolicyList (__added__)
+* AWS::ACMPCA::Certificate.EdiPartyName (__added__)
+* AWS::ACMPCA::Certificate.ExtendedKeyUsage (__added__)
+* AWS::ACMPCA::Certificate.ExtendedKeyUsageList (__added__)
+* AWS::ACMPCA::Certificate.Extensions (__added__)
+* AWS::ACMPCA::Certificate.GeneralName (__added__)
+* AWS::ACMPCA::Certificate.GeneralNameList (__added__)
+* AWS::ACMPCA::Certificate.KeyUsage (__added__)
+* AWS::ACMPCA::Certificate.OtherName (__added__)
+* AWS::ACMPCA::Certificate.PolicyInformation (__added__)
+* AWS::ACMPCA::Certificate.PolicyQualifierInfo (__added__)
+* AWS::ACMPCA::Certificate.PolicyQualifierInfoList (__added__)
+* AWS::ACMPCA::Certificate.Qualifier (__added__)
+* AWS::ACMPCA::Certificate.Subject (__added__)
+* AWS::AppFlow::Flow.IdFieldNamesList (__added__)
+* AWS::ECS::Cluster.ClusterConfiguration (__added__)
+* AWS::ECS::Cluster.ExecuteCommandConfiguration (__added__)
+* AWS::ECS::Cluster.ExecuteCommandLogConfiguration (__added__)
+* AWS::SageMaker::Model.InferenceExecutionConfig (__added__)
+* AWS::AppFlow::Flow.SalesforceDestinationProperties IdFieldNames (__added__)
+* AWS::AppFlow::Flow.SalesforceDestinationProperties WriteOperationType (__added__)
+* AWS::DLM::LifecyclePolicy.CreateRule Location (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule Target (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule TargetRegion.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.PolicyDetails ResourceLocations (__added__)
+
+
+# CloudFormation Resource Specification v24.0.0
+
+## New Resource Types
+
+* AWS::EMRContainers::VirtualCluster
+* AWS::QuickSight::Analysis
+* AWS::QuickSight::Dashboard
+* AWS::QuickSight::Template
+* AWS::QuickSight::Theme
+* AWS::ServiceCatalogAppRegistry::Application
+* AWS::ServiceCatalogAppRegistry::AttributeGroup
+* AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation
+* AWS::ServiceCatalogAppRegistry::ResourceAssociation
+
+## Attribute Changes
+
+* AWS::LicenseManager::Grant Version (__added__)
+* AWS::LicenseManager::License Version (__added__)
+
+## Property Changes
+
+* AWS::ElastiCache::User Authentication (__deleted__)
+* AWS::ElastiCache::User UserGroupIds (__deleted__)
+* AWS::ElastiCache::UserGroup PendingChanges (__deleted__)
+* AWS::ElastiCache::UserGroup ReplicationGroupIds (__deleted__)
+* AWS::IoTAnalytics::Datastore FileFormatConfiguration (__added__)
+* AWS::Kinesis::Stream Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::LicenseManager::Grant ClientToken (__deleted__)
+* AWS::LicenseManager::Grant Filters (__deleted__)
+* AWS::LicenseManager::Grant GrantArns (__deleted__)
+* AWS::LicenseManager::Grant GrantStatus (__deleted__)
+* AWS::LicenseManager::Grant GrantedOperations (__deleted__)
+* AWS::LicenseManager::Grant GranteePrincipalArn (__deleted__)
+* AWS::LicenseManager::Grant MaxResults (__deleted__)
+* AWS::LicenseManager::Grant NextToken (__deleted__)
+* AWS::LicenseManager::Grant ParentArn (__deleted__)
+* AWS::LicenseManager::Grant SourceVersion (__deleted__)
+* AWS::LicenseManager::Grant StatusReason (__deleted__)
+* AWS::LicenseManager::Grant Tags (__deleted__)
+* AWS::LicenseManager::Grant Version (__deleted__)
+* AWS::LicenseManager::License ClientToken (__deleted__)
+* AWS::LicenseManager::License Filters (__deleted__)
+* AWS::LicenseManager::License LicenseArns (__deleted__)
+* AWS::LicenseManager::License MaxResults (__deleted__)
+* AWS::LicenseManager::License NextToken (__deleted__)
+* AWS::LicenseManager::License SourceVersion (__deleted__)
+* AWS::LicenseManager::License Tags (__deleted__)
+* AWS::LicenseManager::License Version (__deleted__)
+* AWS::LicenseManager::License LicenseName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::LicenseManager::License ProductName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MSK::Cluster BrokerNodeGroupInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint CreationDate (__deleted__)
+* AWS::ServiceCatalog::PortfolioShare ShareTagOptions (__added__)
+
+## Property Type Changes
+
+* AWS::ElastiCache::User.Authentication (__removed__)
+* AWS::ElastiCache::UserGroup.UserGroupPendingChanges (__removed__)
+* AWS::LicenseManager::Grant.Filter (__removed__)
+* AWS::LicenseManager::Grant.StringList (__removed__)
+* AWS::LicenseManager::License.Filter (__removed__)
+* AWS::LicenseManager::License.Rule (__removed__)
+* AWS::LicenseManager::License.RuleList (__removed__)
+* AWS::LicenseManager::License.StringList (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.CustomActions (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.Dimensions (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.StatefulRuleGroupReferences (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.StatelessActions (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.StatelessRuleGroupReferences (__removed__)
+* AWS::NetworkFirewall::LoggingConfiguration.LogDestinationConfigs (__removed__)
+* AWS::NetworkFirewall::RuleGroup.Addresses (__removed__)
+* AWS::NetworkFirewall::RuleGroup.CustomActions (__removed__)
+* AWS::NetworkFirewall::RuleGroup.Dimensions (__removed__)
+* AWS::NetworkFirewall::RuleGroup.Flags (__removed__)
+* AWS::NetworkFirewall::RuleGroup.PortRanges (__removed__)
+* AWS::NetworkFirewall::RuleGroup.ProtocolNumbers (__removed__)
+* AWS::NetworkFirewall::RuleGroup.RuleOptions (__removed__)
+* AWS::NetworkFirewall::RuleGroup.StatefulRules (__removed__)
+* AWS::NetworkFirewall::RuleGroup.StatelessRules (__removed__)
+* AWS::NetworkFirewall::RuleGroup.TCPFlags (__removed__)
+* AWS::NetworkFirewall::RuleGroup.TargetTypes (__removed__)
+* AWS::NetworkFirewall::RuleGroup.VariableDefinitionList (__removed__)
+* AWS::IoTAnalytics::Datastore.Column (__added__)
+* AWS::IoTAnalytics::Datastore.FileFormatConfiguration (__added__)
+* AWS::IoTAnalytics::Datastore.JsonConfiguration (__added__)
+* AWS::IoTAnalytics::Datastore.ParquetConfiguration (__added__)
+* AWS::IoTAnalytics::Datastore.SchemaDefinition (__added__)
+* AWS::Kendra::DataSource.ExcludeMimeTypesList (__added__)
+* AWS::Kendra::DataSource.ExcludeSharedDrivesList (__added__)
+* AWS::Kendra::DataSource.ExcludeUserAccountsList (__added__)
+* AWS::Kendra::DataSource.GoogleDriveConfiguration (__added__)
+* AWS::Kendra::DataSource.DataSourceConfiguration GoogleDriveConfiguration (__added__)
+* AWS::LicenseManager::License.Entitlement CheckoutRules (__deleted__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo InstanceType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatefulRuleGroupReferences.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatefulRuleGroupReferences.ItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatefulRuleGroupReferences.Type (__changed__)
+  * Old: StatefulRuleGroupReferences
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessCustomActions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessCustomActions.ItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessCustomActions.Type (__changed__)
+  * Old: CustomActions
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessDefaultActions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessDefaultActions.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessDefaultActions.Type (__changed__)
+  * Old: StatelessActions
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessFragmentDefaultActions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessFragmentDefaultActions.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessFragmentDefaultActions.Type (__changed__)
+  * Old: StatelessActions
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessRuleGroupReferences.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessRuleGroupReferences.ItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessRuleGroupReferences.Type (__changed__)
+  * Old: StatelessRuleGroupReferences
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy.PublishMetricAction Dimensions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.PublishMetricAction Dimensions.ItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.PublishMetricAction Dimensions.Type (__changed__)
+  * Old: Dimensions
+  * New: List
+* AWS::NetworkFirewall::LoggingConfiguration.LoggingConfiguration LogDestinationConfigs.ItemType (__added__)
+* AWS::NetworkFirewall::LoggingConfiguration.LoggingConfiguration LogDestinationConfigs.Type (__changed__)
+  * Old: LogDestinationConfigs
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.IPSet Definition.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.IPSet Definition.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.IPSet Definition.Type (__changed__)
+  * Old: VariableDefinitionList
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes DestinationPorts.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes DestinationPorts.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes DestinationPorts.Type (__changed__)
+  * Old: PortRanges
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Destinations.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Destinations.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Destinations.Type (__changed__)
+  * Old: Addresses
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Protocols.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Protocols.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Protocols.Type (__changed__)
+  * Old: ProtocolNumbers
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes SourcePorts.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes SourcePorts.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes SourcePorts.Type (__changed__)
+  * Old: PortRanges
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Sources.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Sources.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Sources.Type (__changed__)
+  * Old: Addresses
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes TCPFlags.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes TCPFlags.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes TCPFlags.Type (__changed__)
+  * Old: TCPFlags
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.PortSet Definition.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.PortSet Definition.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.PortSet Definition.Type (__changed__)
+  * Old: VariableDefinitionList
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.PublishMetricAction Dimensions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.PublishMetricAction Dimensions.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.PublishMetricAction Dimensions.Type (__changed__)
+  * Old: Dimensions
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.RulesSource StatefulRules.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.RulesSource StatefulRules.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.RulesSource StatefulRules.Type (__changed__)
+  * Old: StatefulRules
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.RulesSourceList TargetTypes.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.RulesSourceList TargetTypes.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.RulesSourceList TargetTypes.Type (__changed__)
+  * Old: TargetTypes
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.StatefulRule RuleOptions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatefulRule RuleOptions.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatefulRule RuleOptions.Type (__changed__)
+  * Old: RuleOptions
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions CustomActions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions CustomActions.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions CustomActions.Type (__changed__)
+  * Old: CustomActions
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions StatelessRules.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions StatelessRules.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions StatelessRules.Type (__changed__)
+  * Old: StatelessRules
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Flags.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Flags.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Flags.Type (__changed__)
+  * Old: Flags
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Masks.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Masks.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Masks.Type (__changed__)
+  * Old: Flags
+  * New: List
+
+
+# CloudFormation Resource Specification v23.0.0
+
+## New Resource Types
+
+* AWS::Config::StoredQuery
+* AWS::DataSync::Agent
+* AWS::DataSync::LocationEFS
+* AWS::DataSync::LocationFSxWindows
+* AWS::DataSync::LocationNFS
+* AWS::DataSync::LocationObjectStorage
+* AWS::DataSync::LocationS3
+* AWS::DataSync::LocationSMB
+* AWS::DataSync::Task
+* AWS::MediaConnect::Flow
+* AWS::MediaConnect::FlowEntitlement
+* AWS::MediaConnect::FlowOutput
+* AWS::MediaConnect::FlowSource
+* AWS::MediaConnect::FlowVpcInterface
+* AWS::Route53::DNSSEC
+* AWS::Route53::KeySigningKey
+* AWS::Route53Resolver::ResolverDNSSECConfig
+
+## Attribute Changes
+
+* AWS::ApiGateway::ClientCertificate ClientCertificateId (__added__)
+* AWS::AuditManager::Assessment arn (__deleted__)
+* AWS::AuditManager::Assessment assessmentId (__deleted__)
+* AWS::AuditManager::Assessment creationTime (__deleted__)
+* AWS::AuditManager::Assessment delegations (__deleted__)
+* AWS::AuditManager::Assessment frameworkId (__deleted__)
+* AWS::AuditManager::Assessment Arn (__added__)
+* AWS::AuditManager::Assessment AssessmentId (__added__)
+* AWS::AuditManager::Assessment CreationTime (__added__)
+* AWS::AuditManager::Assessment Delegations (__added__)
+* AWS::AuditManager::Assessment FrameworkId (__added__)
+* AWS::EC2::NetworkInsightsAnalysis StatusMessage (__added__)
+* AWS::ElastiCache::User Authentication (__deleted__)
+* AWS::ElastiCache::User UserGroupIds (__deleted__)
+* AWS::ElastiCache::UserGroup PendingChanges (__deleted__)
+* AWS::ElastiCache::UserGroup ReplicationGroupIds (__deleted__)
+* AWS::ElasticLoadBalancingV2::ListenerRule IsDefault (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule RuleArn (__added__)
+* AWS::SageMaker::Device DeviceFleetName (__deleted__)
+* AWS::SageMaker::DeviceFleet DeviceFleetName (__deleted__)
+
+## Property Changes
+
+* AWS::ACMPCA::CertificateAuthority CsrExtensions (__added__)
+* AWS::ApiGatewayV2::Integration ResponseParameters (__added__)
+* AWS::Athena::DataCatalog Tags.ItemType (__added__)
+* AWS::Athena::DataCatalog Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::Athena::WorkGroup Tags.ItemType (__added__)
+* AWS::Athena::WorkGroup Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::AuditManager::Assessment assessmentReportsDestination (__deleted__)
+* AWS::AuditManager::Assessment awsAccount (__deleted__)
+* AWS::AuditManager::Assessment description (__deleted__)
+* AWS::AuditManager::Assessment frameworkId (__deleted__)
+* AWS::AuditManager::Assessment name (__deleted__)
+* AWS::AuditManager::Assessment roles (__deleted__)
+* AWS::AuditManager::Assessment scope (__deleted__)
+* AWS::AuditManager::Assessment status (__deleted__)
+* AWS::AuditManager::Assessment tags (__deleted__)
+* AWS::AuditManager::Assessment AssessmentReportsDestination (__added__)
+* AWS::AuditManager::Assessment AwsAccount (__added__)
+* AWS::AuditManager::Assessment Description (__added__)
+* AWS::AuditManager::Assessment FrameworkId (__added__)
+* AWS::AuditManager::Assessment Name (__added__)
+* AWS::AuditManager::Assessment Roles (__added__)
+* AWS::AuditManager::Assessment Scope (__added__)
+* AWS::AuditManager::Assessment Status (__added__)
+* AWS::AuditManager::Assessment Tags (__added__)
+* AWS::EC2::CarrierGateway Tags.DuplicatesAllowed (__added__)
+* AWS::EC2::CarrierGateway Tags.ItemType (__added__)
+* AWS::EC2::CarrierGateway Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::EC2::LocalGatewayRouteTableVPCAssociation Tags.DuplicatesAllowed (__added__)
+* AWS::EC2::LocalGatewayRouteTableVPCAssociation Tags.ItemType (__added__)
+* AWS::EC2::LocalGatewayRouteTableVPCAssociation Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::EC2::NetworkInsightsAnalysis StatusMessage (__deleted__)
+* AWS::ECR::PublicRepository RepositoryPolicyText.PrimitiveType (__added__)
+* AWS::ECR::Repository RepositoryPolicyText.PrimitiveType (__added__)
+* AWS::ElastiCache::User Authentication (__added__)
+* AWS::ElastiCache::User UserGroupIds (__added__)
+* AWS::ElastiCache::User Passwords.DuplicatesAllowed (__added__)
+* AWS::ElastiCache::User Passwords.PrimitiveItemType (__added__)
+* AWS::ElastiCache::User Passwords.Type (__changed__)
+  * Old: PasswordList
+  * New: List
+* AWS::ElastiCache::UserGroup PendingChanges (__added__)
+* AWS::ElastiCache::UserGroup ReplicationGroupIds (__added__)
+* AWS::ElastiCache::UserGroup UserIds.DuplicatesAllowed (__added__)
+* AWS::ElastiCache::UserGroup UserIds.PrimitiveItemType (__added__)
+* AWS::ElastiCache::UserGroup UserIds.Type (__changed__)
+  * Old: UserIdList
+  * New: List
+* AWS::GameLift::GameServerGroup InstanceDefinitions.ItemType (__added__)
+* AWS::GameLift::GameServerGroup InstanceDefinitions.Type (__changed__)
+  * Old: InstanceDefinitions
+  * New: List
+* AWS::GameLift::GameServerGroup Tags.ItemType (__added__)
+* AWS::GameLift::GameServerGroup Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::GameLift::GameServerGroup VpcSubnets.PrimitiveItemType (__added__)
+* AWS::GameLift::GameServerGroup VpcSubnets.Type (__changed__)
+  * Old: VpcSubnets
+  * New: List
+* AWS::IoT::Authorizer Tags.ItemType (__added__)
+* AWS::IoT::Authorizer Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::IoT::Authorizer TokenSigningPublicKeys.PrimitiveItemType (__added__)
+* AWS::IoT::Authorizer TokenSigningPublicKeys.Type (__changed__)
+  * Old: TokenSigningPublicKeys
+  * New: Map
+* AWS::IoT::DomainConfiguration Tags.ItemType (__added__)
+* AWS::IoT::DomainConfiguration Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::IoT::ProvisioningTemplate Tags.ItemType (__added__)
+* AWS::IoT::ProvisioningTemplate Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::KMS::Key KeyPolicy.PrimitiveType (__added__)
+* AWS::Kendra::DataSource Tags.ItemType (__added__)
+* AWS::Kendra::DataSource Tags.Type (__changed__)
+  * Old: TagList
+  * New: List
+* AWS::Kendra::Faq Tags.ItemType (__added__)
+* AWS::Kendra::Faq Tags.Type (__changed__)
+  * Old: TagList
+  * New: List
+* AWS::Kendra::Index DocumentMetadataConfigurations.ItemType (__added__)
+* AWS::Kendra::Index DocumentMetadataConfigurations.Type (__changed__)
+  * Old: DocumentMetadataConfigurationList
+  * New: List
+* AWS::Kendra::Index Tags.ItemType (__added__)
+* AWS::Kendra::Index Tags.Type (__changed__)
+  * Old: TagList
+  * New: List
+* AWS::Kendra::Index UserTokenConfigurations.ItemType (__added__)
+* AWS::Kendra::Index UserTokenConfigurations.Type (__changed__)
+  * Old: UserTokenConfigurationList
+  * New: List
+* AWS::LicenseManager::Grant AllowedOperations.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::Grant AllowedOperations.PrimitiveItemType (__added__)
+* AWS::LicenseManager::Grant AllowedOperations.Type (__changed__)
+  * Old: AllowedOperationList
+  * New: List
+* AWS::LicenseManager::Grant Filters.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::Grant Filters.ItemType (__added__)
+* AWS::LicenseManager::Grant Filters.Type (__changed__)
+  * Old: FilterList
+  * New: List
+* AWS::LicenseManager::Grant GrantArns.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::Grant GrantArns.PrimitiveItemType (__added__)
+* AWS::LicenseManager::Grant GrantArns.Type (__changed__)
+  * Old: ArnList
+  * New: List
+* AWS::LicenseManager::Grant GrantedOperations.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::Grant GrantedOperations.PrimitiveItemType (__added__)
+* AWS::LicenseManager::Grant GrantedOperations.Type (__changed__)
+  * Old: AllowedOperationList
+  * New: List
+* AWS::LicenseManager::Grant Principals.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::Grant Principals.PrimitiveItemType (__added__)
+* AWS::LicenseManager::Grant Principals.Type (__changed__)
+  * Old: ArnList
+  * New: List
+* AWS::LicenseManager::Grant Tags.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::Grant Tags.ItemType (__added__)
+* AWS::LicenseManager::Grant Tags.Type (__changed__)
+  * Old: TagList
+  * New: List
+* AWS::LicenseManager::License Entitlements.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::License Entitlements.ItemType (__added__)
+* AWS::LicenseManager::License Entitlements.Type (__changed__)
+  * Old: EntitlementList
+  * New: List
+* AWS::LicenseManager::License Filters.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::License Filters.ItemType (__added__)
+* AWS::LicenseManager::License Filters.Type (__changed__)
+  * Old: FilterList
+  * New: List
+* AWS::LicenseManager::License LicenseArns.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::License LicenseArns.PrimitiveItemType (__added__)
+* AWS::LicenseManager::License LicenseArns.Type (__changed__)
+  * Old: ArnList
+  * New: List
+* AWS::LicenseManager::License LicenseMetadata.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::License LicenseMetadata.ItemType (__added__)
+* AWS::LicenseManager::License LicenseMetadata.Type (__changed__)
+  * Old: MetadataList
+  * New: List
+* AWS::LicenseManager::License Tags.DuplicatesAllowed (__added__)
+* AWS::LicenseManager::License Tags.ItemType (__added__)
+* AWS::LicenseManager::License Tags.Type (__changed__)
+  * Old: TagList
+  * New: List
+* AWS::MediaLive::Channel CdiInputSpecification (__added__)
+* AWS::SSO::InstanceAccessControlAttributeConfiguration AccessControlAttributes (__added__)
+* AWS::SSO::InstanceAccessControlAttributeConfiguration InstanceAccessControlAttributeConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSO::InstanceAccessControlAttributeConfiguration InstanceArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SSO::PermissionSet InlinePolicy.PrimitiveType (__changed__)
+  * Old: String
+  * New: Json
+* AWS::SageMaker::Device DeviceFleetName (__added__)
+* AWS::SageMaker::DeviceFleet DeviceFleetName (__added__)
+* AWS::SageMaker::ModelPackageGroup ModelPackageGroupPolicy.PrimitiveType (__added__)
+* AWS::StepFunctions::StateMachine DefinitionSubstitutions.PrimitiveItemType (__added__)
+* AWS::StepFunctions::StateMachine DefinitionSubstitutions.Type (__changed__)
+  * Old: DefinitionSubstitutions
+  * New: Map
+* AWS::Transfer::Server Domain (__added__)
+* AWS::Transfer::User PosixProfile (__added__)
+
+## Property Type Changes
+
+* AWS::Athena::DataCatalog.Tags (__removed__)
+* AWS::Athena::WorkGroup.Tags (__removed__)
+* AWS::AuditManager::Assessment.AWSAccounts (__removed__)
+* AWS::AuditManager::Assessment.AWSServices (__removed__)
+* AWS::AuditManager::Assessment.Delegations (__removed__)
+* AWS::AuditManager::Assessment.Roles (__removed__)
+* AWS::AuditManager::Assessment.Tags (__removed__)
+* AWS::EC2::CarrierGateway.Tags (__removed__)
+* AWS::EC2::LocalGatewayRouteTableVPCAssociation.Tags (__removed__)
+* AWS::ElastiCache::User.PasswordList (__removed__)
+* AWS::ElastiCache::User.UserGroupIdList (__removed__)
+* AWS::ElastiCache::UserGroup.ReplicationGroupIdList (__removed__)
+* AWS::ElastiCache::UserGroup.UserIdList (__removed__)
+* AWS::GameLift::GameServerGroup.InstanceDefinitions (__removed__)
+* AWS::GameLift::GameServerGroup.Tags (__removed__)
+* AWS::GameLift::GameServerGroup.VpcSubnets (__removed__)
+* AWS::IoT::Authorizer.Tags (__removed__)
+* AWS::IoT::Authorizer.TokenSigningPublicKeys (__removed__)
+* AWS::IoT::DomainConfiguration.Tags (__removed__)
+* AWS::IoT::ProvisioningTemplate.Tags (__removed__)
+* AWS::Kendra::DataSource.TagList (__removed__)
+* AWS::Kendra::Faq.TagList (__removed__)
+* AWS::Kendra::Index.DocumentMetadataConfigurationList (__removed__)
+* AWS::Kendra::Index.TagList (__removed__)
+* AWS::Kendra::Index.UserTokenConfigurationList (__removed__)
+* AWS::LicenseManager::Grant.AllowedOperationList (__removed__)
+* AWS::LicenseManager::Grant.ArnList (__removed__)
+* AWS::LicenseManager::Grant.FilterList (__removed__)
+* AWS::LicenseManager::Grant.TagList (__removed__)
+* AWS::LicenseManager::License.ArnList (__removed__)
+* AWS::LicenseManager::License.EntitlementList (__removed__)
+* AWS::LicenseManager::License.FilterList (__removed__)
+* AWS::LicenseManager::License.MetadataList (__removed__)
+* AWS::LicenseManager::License.TagList (__removed__)
+* AWS::StepFunctions::StateMachine.DefinitionSubstitutions (__removed__)
+* AWS::ACMPCA::CertificateAuthority.AccessDescription (__added__)
+* AWS::ACMPCA::CertificateAuthority.AccessMethod (__added__)
+* AWS::ACMPCA::CertificateAuthority.CsrExtensions (__added__)
+* AWS::ACMPCA::CertificateAuthority.EdiPartyName (__added__)
+* AWS::ACMPCA::CertificateAuthority.GeneralName (__added__)
+* AWS::ACMPCA::CertificateAuthority.KeyUsage (__added__)
+* AWS::ACMPCA::CertificateAuthority.OtherName (__added__)
+* AWS::ACMPCA::CertificateAuthority.SubjectInformationAccess (__added__)
+* AWS::ApiGatewayV2::Integration.ResponseParameter (__added__)
+* AWS::ApiGatewayV2::Integration.ResponseParameterList (__added__)
+* AWS::MediaLive::Channel.AncillarySourceSettings (__added__)
+* AWS::MediaLive::Channel.AudioSilenceFailoverSettings (__added__)
+* AWS::MediaLive::Channel.CdiInputSpecification (__added__)
+* AWS::MediaLive::Channel.FailoverCondition (__added__)
+* AWS::MediaLive::Channel.FailoverConditionSettings (__added__)
+* AWS::MediaLive::Channel.InputLossFailoverSettings (__added__)
+* AWS::MediaLive::Channel.Mpeg2FilterSettings (__added__)
+* AWS::MediaLive::Channel.Mpeg2Settings (__added__)
+* AWS::MediaLive::Channel.RawSettings (__added__)
+* AWS::MediaLive::Channel.VideoBlackFailoverSettings (__added__)
+* AWS::MediaLive::Channel.WavSettings (__added__)
+* AWS::SSO::InstanceAccessControlAttributeConfiguration.AccessControlAttribute (__added__)
+* AWS::SSO::InstanceAccessControlAttributeConfiguration.AccessControlAttributeValue (__added__)
+* AWS::SSO::InstanceAccessControlAttributeConfiguration.AccessControlAttributeValueSourceList (__added__)
+* AWS::Transfer::User.PosixProfile (__added__)
+* AWS::AuditManager::Assessment.AWSAccount emailAddress (__deleted__)
+* AWS::AuditManager::Assessment.AWSAccount id (__deleted__)
+* AWS::AuditManager::Assessment.AWSAccount name (__deleted__)
+* AWS::AuditManager::Assessment.AWSAccount EmailAddress (__added__)
+* AWS::AuditManager::Assessment.AWSAccount Id (__added__)
+* AWS::AuditManager::Assessment.AWSAccount Name (__added__)
+* AWS::AuditManager::Assessment.AWSService serviceName (__deleted__)
+* AWS::AuditManager::Assessment.AWSService ServiceName (__added__)
+* AWS::AuditManager::Assessment.AssessmentReportsDestination destination (__deleted__)
+* AWS::AuditManager::Assessment.AssessmentReportsDestination destinationType (__deleted__)
+* AWS::AuditManager::Assessment.AssessmentReportsDestination Destination (__added__)
+* AWS::AuditManager::Assessment.AssessmentReportsDestination DestinationType (__added__)
+* AWS::AuditManager::Assessment.Delegation assessmentId (__deleted__)
+* AWS::AuditManager::Assessment.Delegation assessmentName (__deleted__)
+* AWS::AuditManager::Assessment.Delegation comment (__deleted__)
+* AWS::AuditManager::Assessment.Delegation controlSetId (__deleted__)
+* AWS::AuditManager::Assessment.Delegation createdBy (__deleted__)
+* AWS::AuditManager::Assessment.Delegation creationTime (__deleted__)
+* AWS::AuditManager::Assessment.Delegation id (__deleted__)
+* AWS::AuditManager::Assessment.Delegation lastUpdated (__deleted__)
+* AWS::AuditManager::Assessment.Delegation roleArn (__deleted__)
+* AWS::AuditManager::Assessment.Delegation roleType (__deleted__)
+* AWS::AuditManager::Assessment.Delegation status (__deleted__)
+* AWS::AuditManager::Assessment.Delegation AssessmentId (__added__)
+* AWS::AuditManager::Assessment.Delegation AssessmentName (__added__)
+* AWS::AuditManager::Assessment.Delegation Comment (__added__)
+* AWS::AuditManager::Assessment.Delegation ControlSetId (__added__)
+* AWS::AuditManager::Assessment.Delegation CreatedBy (__added__)
+* AWS::AuditManager::Assessment.Delegation CreationTime (__added__)
+* AWS::AuditManager::Assessment.Delegation Id (__added__)
+* AWS::AuditManager::Assessment.Delegation LastUpdated (__added__)
+* AWS::AuditManager::Assessment.Delegation RoleArn (__added__)
+* AWS::AuditManager::Assessment.Delegation RoleType (__added__)
+* AWS::AuditManager::Assessment.Delegation Status (__added__)
+* AWS::AuditManager::Assessment.Role roleArn (__deleted__)
+* AWS::AuditManager::Assessment.Role roleType (__deleted__)
+* AWS::AuditManager::Assessment.Role RoleArn (__added__)
+* AWS::AuditManager::Assessment.Role RoleType (__added__)
+* AWS::AuditManager::Assessment.Scope awsAccounts (__deleted__)
+* AWS::AuditManager::Assessment.Scope awsServices (__deleted__)
+* AWS::AuditManager::Assessment.Scope AwsAccounts (__added__)
+* AWS::AuditManager::Assessment.Scope AwsServices (__added__)
+* AWS::EC2::LaunchTemplate.Ebs Throughput (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action AuthenticateCognitoConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-actions.html#cfn-elasticloadbalancingv2-listenerrule-action-authenticatecognitoconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-action.html#cfn-elasticloadbalancingv2-listenerrule-action-authenticatecognitoconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action AuthenticateOidcConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-actions.html#cfn-elasticloadbalancingv2-listenerrule-action-authenticateoidcconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-action.html#cfn-elasticloadbalancingv2-listenerrule-action-authenticateoidcconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action FixedResponseConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-actions.html#cfn-elasticloadbalancingv2-listenerrule-action-fixedresponseconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-action.html#cfn-elasticloadbalancingv2-listenerrule-action-fixedresponseconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action ForwardConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-actions.html#cfn-elasticloadbalancingv2-listenerrule-action-forwardconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-action.html#cfn-elasticloadbalancingv2-listenerrule-action-forwardconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action Order.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-actions.html#cfn-elasticloadbalancingv2-listenerrule-action-order
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-action.html#cfn-elasticloadbalancingv2-listenerrule-action-order
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action RedirectConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-actions.html#cfn-elasticloadbalancingv2-listenerrule-action-redirectconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-action.html#cfn-elasticloadbalancingv2-listenerrule-action-redirectconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action TargetGroupArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-actions.html#cfn-elasticloadbalancingv2-listener-actions-targetgrouparn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-action.html#cfn-elasticloadbalancingv2-listenerrule-action-targetgrouparn
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action Type.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-actions.html#cfn-elasticloadbalancingv2-listener-actions-type
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-action.html#cfn-elasticloadbalancingv2-listenerrule-action-type
+* AWS::ElasticLoadBalancingV2::ListenerRule.AuthenticateCognitoConfig AuthenticationRequestExtraParams.DuplicatesAllowed (__deleted__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.AuthenticateCognitoConfig SessionTimeout.PrimitiveType (__changed__)
+  * Old: Long
+  * New: Integer
+* AWS::ElasticLoadBalancingV2::ListenerRule.AuthenticateOidcConfig UseExistingClientSecret (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.AuthenticateOidcConfig AuthenticationRequestExtraParams.DuplicatesAllowed (__deleted__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.AuthenticateOidcConfig SessionTimeout.PrimitiveType (__changed__)
+  * Old: Long
+  * New: Integer
+* AWS::ElasticLoadBalancingV2::ListenerRule.RuleCondition Field.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-conditions.html#cfn-elasticloadbalancingv2-listenerrule-conditions-field
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-rulecondition.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-field
+* AWS::ElasticLoadBalancingV2::ListenerRule.RuleCondition HostHeaderConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-conditions.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-hostheaderconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-rulecondition.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-hostheaderconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.RuleCondition HttpHeaderConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-conditions.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-httpheaderconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-rulecondition.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-httpheaderconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.RuleCondition HttpRequestMethodConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-conditions.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-httprequestmethodconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-rulecondition.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-httprequestmethodconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.RuleCondition PathPatternConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-conditions.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-pathpatternconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-rulecondition.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-pathpatternconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.RuleCondition QueryStringConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-conditions.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-querystringconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-rulecondition.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-querystringconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.RuleCondition SourceIpConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-conditions.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-sourceipconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-rulecondition.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-sourceipconfig
+* AWS::ElasticLoadBalancingV2::ListenerRule.RuleCondition Values.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-conditions.html#cfn-elasticloadbalancingv2-listenerrule-conditions-values
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-rulecondition.html#cfn-elasticloadbalancingv2-listenerrule-rulecondition-values
+* AWS::ImageBuilder::DistributionConfiguration.Distribution ContainerDistributionConfiguration (__added__)
+* AWS::IoTWireless::WirelessDevice.AbpV10X DevAddr.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.AbpV10X SessionKeys.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.AbpV11 DevAddr.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.AbpV11 SessionKeys.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.OtaaV10X AppEui.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.OtaaV10X AppKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.OtaaV11 AppKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.OtaaV11 JoinEui.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.OtaaV11 NwkKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.SessionKeysAbpV10X AppSKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.SessionKeysAbpV10X NwkSKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.SessionKeysAbpV11 AppSKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.SessionKeysAbpV11 FNwkSIntKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.SessionKeysAbpV11 NwkSEncKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessDevice.SessionKeysAbpV11 SNwkSIntKey.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessGateway.LoRaWANGateway GatewayEui.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::WirelessGateway.LoRaWANGateway RfRegion.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaLive::Channel.ArchiveContainerSettings RawSettings (__added__)
+* AWS::MediaLive::Channel.AudioCodecSettings WavSettings (__added__)
+* AWS::MediaLive::Channel.AutomaticInputFailoverSettings ErrorClearTimeMsec (__added__)
+* AWS::MediaLive::Channel.AutomaticInputFailoverSettings FailoverConditions (__added__)
+* AWS::MediaLive::Channel.CaptionSelectorSettings AncillarySourceSettings (__added__)
+* AWS::MediaLive::Channel.HlsGroupSettings DiscontinuityTags (__added__)
+* AWS::MediaLive::Channel.HlsGroupSettings IncompleteSegmentBehavior (__added__)
+* AWS::MediaLive::Channel.RtmpGroupSettings AdMarkers (__added__)
+* AWS::MediaLive::Channel.VideoCodecSettings Mpeg2Settings (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::LayerVersion ContentUri.PrimitiveType (__deleted__)
+* AWS::Serverless::LayerVersion ContentUri.PrimitiveTypes (__added__)
+* AWS::Serverless::LayerVersion ContentUri.Types (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::LayerVersion.S3Location (__added__)
+
 # CloudFormation Resource Specification v22.0.0
 
 ## New Resource Types

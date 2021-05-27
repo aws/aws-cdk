@@ -6,6 +6,10 @@ import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig,
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 export type DimensionHash = {[dim: string]: any};
 
 /**
@@ -212,7 +216,9 @@ export class Metric implements IMetric {
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
       throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
-
+    if (props.dimensions) {
+      this.validateDimensions(props.dimensions);
+    }
     this.dimensions = props.dimensions;
     this.namespace = props.namespace;
     this.metricName = props.metricName;
@@ -302,6 +308,7 @@ export class Metric implements IMetric {
     };
   }
 
+  /** @deprecated use toMetricConfig() */
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
@@ -320,6 +327,9 @@ export class Metric implements IMetric {
     };
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
@@ -351,7 +361,7 @@ export class Metric implements IMetric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
+  public createAlarm(scope: Construct, id: string, props: CreateAlarmOptions): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         statistic: props.statistic,
@@ -386,6 +396,26 @@ export class Metric implements IMetric {
     const list = Object.keys(dims).sort().map(key => ({ name: key, value: dims[key] }));
 
     return list;
+  }
+
+  private validateDimensions(dims: DimensionHash): void {
+    var dimsArray = Object.keys(dims);
+    if (dimsArray?.length > 10) {
+      throw new Error(`The maximum number of dimensions is 10, received ${dimsArray.length}`);
+    }
+
+    dimsArray.map(key => {
+      if (dims[key] === undefined || dims[key] === null) {
+        throw new Error(`Dimension value of '${dims[key]}' is invalid`);
+      };
+      if (key.length < 1 || key.length > 255) {
+        throw new Error(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
+      };
+
+      if (dims[key].length < 1 || dims[key].length > 255) {
+        throw new Error(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
+      };
+    });
   }
 }
 
@@ -475,10 +505,16 @@ export class MathExpression implements IMetric {
     });
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toAlarmConfig(): MetricAlarmConfig {
     throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toGraphConfig(): MetricGraphConfig {
     throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
@@ -503,7 +539,7 @@ export class MathExpression implements IMetric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
+  public createAlarm(scope: Construct, id: string, props: CreateAlarmOptions): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         period: props.period,

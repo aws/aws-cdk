@@ -1,35 +1,39 @@
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
- * Setting for the main application container of a service
+ * Setting for the main application container of a service.
  */
 export interface ContainerExtensionProps {
   /**
-   * How much CPU the container requires
+   * How much CPU the container requires.
    */
   readonly cpu: number,
 
   /**
-   * How much memory in megabytes the container requires
+   * How much memory in megabytes the container requires.
    */
   readonly memoryMiB: number,
 
   /**
-   * The image to run
+   * The image to run.
    */
   readonly image: ecs.ContainerImage,
 
   /**
-   * What port the image listen for traffic on
+   * What port the image listen for traffic on.
    */
   readonly trafficPort: number,
 
   /**
-   * Environment variables to pass into the container
-   * @default - No environment variables
+   * Environment variables to pass into the container.
+   *
+   * @default - No environment variables.
    */
   readonly environment?: {
     [key: string]: string,
@@ -48,7 +52,7 @@ export class Container extends ServiceExtension {
   public readonly trafficPort: number;
 
   /**
-   * The settings for the container
+   * The settings for the container.
    */
   private props: ContainerExtensionProps;
 
@@ -59,7 +63,7 @@ export class Container extends ServiceExtension {
   }
 
   // @ts-ignore - Ignore unused params that are required for abstract class extend
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
   }
 

@@ -3,13 +3,7 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -70,6 +64,37 @@ By default, the contents of the destination bucket will **not** be deleted when 
 changed. You can use the option `retainOnDelete: false` to disable this behavior,
 in which case the contents will be deleted.
 
+Configuring this has a few implications you should be aware of:
+
+- **Logical ID Changes**
+
+  Changing the logical ID of the `BucketDeployment` construct, without changing the destination
+  (for example due to refactoring, or intentional ID change) **will result in the deletion of the objects**.
+  This is because CloudFormation will first create the new resource, which will have no affect,
+  followed by a deletion of the old resource, which will cause a deletion of the objects,
+  since the destination hasn't changed, and `retainOnDelete` is `false`.
+
+- **Destination Changes**
+
+  When the destination bucket or prefix is changed, all files in the previous destination will **first** be
+  deleted and then uploaded to the new destination location. This could have availability implications
+  on your users.
+
+### General Recommendations
+
+#### Shared Bucket
+
+If the destination bucket **is not** dedicated to the specific `BucketDeployment` construct (i.e shared by other entities),
+we recommend to always configure the `destinationKeyPrefix` property. This will prevent the deployment from
+accidentally deleting data that wasn't uploaded by it.
+
+#### Dedicated Bucket
+
+If the destination bucket **is** dedicated, it might be reasonable to skip the prefix configuration,
+in which case, we recommend to remove `retainOnDelete: false`, and instead, configure the
+[`autoDeleteObjects`](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-s3-readme.html#bucket-deletion)
+property on the destination bucket. This will avoid the logical ID problem mentioned above.
+
 ## Prune
 
 By default, files in the destination bucket that don't exist in the source will be deleted
@@ -90,7 +115,7 @@ based on file extensions:
 
 ```ts
 new BucketDeployment(this, 'BucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['index.html' })],
+  sources: [Source.asset('./website', { exclude: ['index.html'] })],
   destinationBucket: bucket,
   cacheControl: [CacheControl.fromString('max-age=31536000,public,immutable')],
   prune: false,
@@ -109,7 +134,7 @@ new BucketDeployment(this, 'HTMLBucketDeployment', {
 You can specify metadata to be set on all the objects in your deployment.
 There are 2 types of metadata in S3: system-defined metadata and user-defined metadata.
 System-defined metadata have a special purpose, for example cache-control defines how long to keep an object cached.
-User-defined metadata are not used by S3 and keys always begin with `x-amzn-meta-` (if this is not provided, it is added automatically).
+User-defined metadata are not used by S3 and keys always begin with `x-amz-meta-` (this prefix is added automatically).
 
 System defined metadata keys include the following:
 
@@ -156,39 +181,15 @@ import * as origins from '@aws-cdk/aws-cloudfront-origins';
 
 const bucket = new s3.Bucket(this, 'Destination');
 
-// Option 1 (Experimental): Handles buckets whether or not they are configured for website hosting.
+// Handles buckets whether or not they are configured for website hosting.
 const distribution = new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin: new origins.S3Origin(bucket) },
-});
-
-// Option 2 (Stable): Use this if the bucket has website hosting enabled.
-const distribution_for_website_bucket = new cloudfront.CloudFrontWebDistribution(this, 'DistributionForWebBucket', {
-  originConfigs: [
-    {
-      customOriginSource: {
-        domainName: bucket.bucketWebsiteDomainName,
-      },
-      behaviors : [ {isDefaultBehavior: true}]
-    }
-  ]
-});
-
-// Option 3 (Stable): Use this version if the bucket does not have website hosting enabled.
-const distribution_for_bucket = new cloudfront.CloudFrontWebDistribution(this, 'DistributionForBucket', {
-  originConfigs: [
-    {
-      s3OriginSource: {
-        s3BucketSource: bucket
-      },
-      behaviors : [ {isDefaultBehavior: true}]
-    }
-  ]
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
   sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: bucket,
-  distribution, // or distribution_for_website_bucket or distribution_for_bucket
+  distribution,
   distributionPaths: ['/images/*.png'],
 });
 ```
@@ -229,5 +230,4 @@ might be tricky to build on Windows.
 
 ## Roadmap
 
- - [ ] Support "progressive" mode (no `--delete`) ([#953](https://github.com/aws/aws-cdk/issues/953))
  - [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))

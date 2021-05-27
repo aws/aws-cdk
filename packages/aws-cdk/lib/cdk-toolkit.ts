@@ -110,7 +110,7 @@ export class CdkToolkit {
   public async deploy(options: DeployOptions) {
     const stacks = await this.selectStacksForDeploy(options.stackNames, options.exclusively);
 
-    const requireApproval = options.requireApproval !== undefined ? options.requireApproval : RequireApproval.Broadening;
+    const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
     const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
     for (const key in options.parameters) {
@@ -186,6 +186,7 @@ export class CdkToolkit {
           notificationArns: options.notificationArns,
           tags,
           execute: options.execute,
+          changeSetName: options.changeSetName,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
@@ -239,7 +240,7 @@ export class CdkToolkit {
 
     if (!options.force) {
       // eslint-disable-next-line max-len
-      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.stackArtifacts.map(s => s.id).join(', '))} (y/n)?`);
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.stackArtifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
@@ -280,7 +281,7 @@ export class CdkToolkit {
 
     // just print stack IDs
     for (const stack of stacks.stackArtifacts) {
-      data(stack.id);
+      data(stack.hierarchicalId);
     }
 
     return 0; // exit-code
@@ -393,14 +394,18 @@ export class CdkToolkit {
 
   private async selectStacksForDiff(stackNames: string[], exclusively?: boolean) {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(stackNames, {
+
+    const selectedForDiff = await assembly.selectStacks(stackNames, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
-      defaultBehavior: DefaultSelection.AllStacks,
+      defaultBehavior: DefaultSelection.MainAssembly,
     });
 
-    await this.validateStacks(stacks);
+    const allStacks = await this.selectStacksForList([]);
+    const flaggedStacks = allStacks.filter(art => art.validateOnSynth ?? false);
 
-    return stacks;
+    await this.validateStacks(selectedForDiff.concat(flaggedStacks));
+
+    return selectedForDiff;
   }
 
   private async selectStacksForDestroy(stackNames: string[], exclusively?: boolean) {
@@ -553,6 +558,12 @@ export interface DeployOptions {
    * @default true
    */
   execute?: boolean;
+
+  /**
+   * Optional name to use for the CloudFormation change set.
+   * If not provided, a name will be generated automatically.
+   */
+  changeSetName?: string;
 
   /**
    * Always deploy, even if templates are identical.

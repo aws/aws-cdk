@@ -1,6 +1,10 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports
+import { FeatureFlags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
@@ -122,7 +126,8 @@ export interface FileSystemProps {
   /**
    * Defines if the data at rest in the file system is encrypted or not.
    *
-   * @default false
+   * @default - If your application has the '@aws-cdk/aws-efs:defaultEncryptionAtRest' feature flag set, the default is true, otherwise, the default is false.
+   * @link https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html
    */
   readonly encrypted?: boolean;
 
@@ -249,8 +254,13 @@ export class FileSystem extends Resource implements IFileSystem {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
     }
 
+    // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
+    // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
+    const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
+      cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
+
     const filesystem = new CfnFileSystem(this, 'Resource', {
-      encrypted: props.encrypted,
+      encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
       lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
       performanceMode: props.performanceMode,
@@ -272,7 +282,7 @@ export class FileSystem extends Resource implements IFileSystem {
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    const subnets = props.vpc.selectSubnets(props.vpcSubnets);
+    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { onePerAz: true });
 
     // We now have to create the mount target for each of the mentioned subnet
     let mountTargetCount = 0;

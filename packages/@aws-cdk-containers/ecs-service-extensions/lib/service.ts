@@ -1,80 +1,94 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
- * The settings for an ECS Service
+ * The settings for an ECS Service.
  */
 export interface ServiceProps {
   /**
-   * A service description to use in building out the service
+   * The ServiceDescription used to build the service.
    */
   readonly serviceDescription: ServiceDescription;
 
   /**
-   * The environment to launch the service in
+   * The environment to launch the service in.
    */
   readonly environment: IEnvironment
+
+  /**
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   *
+   * @default - A task role is automatically created for you.
+   */
+  readonly taskRole?: iam.IRole;
 }
 
 /**
- * A service builder class. This construct support various extensions
- * which can construct an ECS service progressively.
+ * This Service construct serves as a Builder class for an ECS service. It
+ * supports various extensions and keeps track of any mutating state, allowing
+ * it to build up an ECS service progressively.
  */
-export class Service extends cdk.Construct {
+export class Service extends Construct {
   /**
-   * The underlying ECS service that was created
+   * The underlying ECS service that was created.
    */
   public ecsService!: ecs.Ec2Service | ecs.FargateService;
 
   /**
-   * The name of this service
+   * The name of the service.
    */
   public readonly id: string;
 
   /**
-   * The VPC into which this service should be placed
+   * The VPC where this service should be placed.
    */
   public readonly vpc: ec2.IVpc;
 
   /**
-   * The cluster that is providing capacity for this service
+   * The cluster that is providing capacity for this service.
    * [disable-awslint:ref-via-interface]
    */
   public readonly cluster: ecs.ICluster;
 
   /**
-   * The capacity type that this service will use
+   * The capacity type that this service will use.
+   * Valid values are EC2 or FARGATE.
    */
   public readonly capacityType: EnvironmentCapacityType;
 
   /**
-   * The service description used to build this service
+   * The ServiceDescription used to build this service.
    */
   public readonly serviceDescription: ServiceDescription;
 
   /**
-   * The environment this service was launched in
+   * The environment where this service was launched.
    */
   public readonly environment: IEnvironment;
 
   /**
-   * The generated task definition for this service, is only
-   * generated once .prepare() has been executed
+   * The generated task definition for this service. It is only
+   * generated after .prepare() has been executed.
    */
   protected taskDefinition!: ecs.TaskDefinition;
 
   /**
-   * The list of URL's associated with this service
+   * The list of URLs associated with this service.
    */
   private urls: Record<string, string> = {};
 
   private readonly scope: cdk.Construct;
 
-  constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
+  constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
     this.scope = scope;
@@ -113,6 +127,10 @@ export class Service extends cdk.Construct {
       // Default CPU and memory
       cpu: '256',
       memory: '512',
+
+      // Allow user to pre-define the taskRole so that it can be used in resource policies that may
+      // be defined before the ECS service exists in a CDK application
+      taskRole: props.taskRole,
 
       // Ensure that the task definition supports both EC2 and Fargate
       compatibility: ecs.Compatibility.EC2_AND_FARGATE,
@@ -211,7 +229,8 @@ export class Service extends cdk.Construct {
 
   /**
    * Tell extensions from one service to connect to extensions from
-   * another sevice if they have implemented a hook for that.
+   * another sevice if they have implemented a hook for it.
+   *
    * @param service
    */
   public connectTo(service: Service) {
@@ -223,9 +242,10 @@ export class Service extends cdk.Construct {
   }
 
   /**
-   * This method adds a new URL for the service. This allows extensions
-   * to submit a URL for the service, for example LB might add its URL
-   * or App Mesh can add its DNS name for the service.
+   * This method adds a new URL for the service. This allows extensions to
+   * submit a URL for the service. For example, a load balancer might add its
+   * URL, or App Mesh can add its DNS name for the service.
+   *
    * @param urlName - The identifier name for this URL
    * @param url - The URL itself.
    */
@@ -236,6 +256,7 @@ export class Service extends cdk.Construct {
   /**
    * Retrieve a URL for the service. The URL must have previously been
    * stored by one of the URL providing extensions.
+   *
    * @param urlName - The URL to look up.
    */
   public getURL(urlName: string) {

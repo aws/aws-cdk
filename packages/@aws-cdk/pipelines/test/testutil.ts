@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { annotateMatcher, InspectionFailure, PropertyMatcher } from '@aws-cdk/assert-internal';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
-import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, AppProps, Environment, SecretValue, Stack, StackProps, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -46,7 +46,6 @@ export class TestGitHubNpmPipeline extends cdkp.CdkPipeline {
         sourceArtifact,
         cloudAssemblyArtifact,
       }),
-      vpc: new ec2.Vpc(scope, 'TestVpc'),
       cloudAssemblyArtifact,
       ...props,
     });
@@ -112,4 +111,20 @@ export function stackTemplate(stack: Stack) {
   const stage = Stage.of(stack);
   if (!stage) { throw new Error('stack not in a Stage'); }
   return stage.synth().getStackArtifact(stack.artifactId);
+}
+
+export function stringNoLongerThan(length: number): PropertyMatcher {
+  return annotateMatcher({ $stringIsNoLongerThan: length }, (value: any, failure: InspectionFailure) => {
+    if (typeof value !== 'string') {
+      failure.failureReason = `Expected a string, but got '${typeof value}'`;
+      return false;
+    }
+
+    if (value.length > length) {
+      failure.failureReason = `String is ${value.length} characters long. Expected at most ${length} characters`;
+      return false;
+    }
+
+    return true;
+  });
 }

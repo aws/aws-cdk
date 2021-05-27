@@ -43,7 +43,7 @@ new Bucket(this, 'MyFirstBucket');
 Define a KMS-encrypted bucket:
 
 ```ts
-const bucket = new Bucket(this, 'MyUnencryptedBucket', {
+const bucket = new Bucket(this, 'MyEncryptedBucket', {
     encryption: BucketEncryption.KMS
 });
 
@@ -62,6 +62,17 @@ const bucket = new Bucket(this, 'MyEncryptedBucket', {
 });
 
 assert(bucket.encryptionKey === myKmsKey);
+```
+
+Enable KMS-SSE encryption via [S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-key.html):
+
+```ts
+const bucket = new Bucket(this, 'MyEncryptedBucket', {
+    encryption: BucketEncryption.KMS,
+    bucketKeyEnabled: true
+});
+
+assert(bucket.bucketKeyEnabled === true);
 ```
 
 Use `BucketEncryption.ManagedKms` to use the S3 master KMS key:
@@ -108,6 +119,18 @@ bucket.grantReadWrite(lambda);
 
 Will give the Lambda's execution role permissions to read and write
 from the bucket.
+
+## AWS Foundational Security Best Practices
+
+### Enforcing SSL
+
+To require all requests use Secure Socket Layer (SSL):
+
+```ts
+const bucket = new Bucket(this, 'Bucket', {
+    enforceSSL: true
+});
+```
 
 ## Sharing buckets between stacks
 

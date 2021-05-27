@@ -62,6 +62,28 @@ export interface AwsCloudFormationStackProperties {
    * @default - No bootstrap stack required
    */
   readonly requiresBootstrapStackVersion?: number;
+
+  /**
+   * SSM parameter where the bootstrap stack version number can be found
+   *
+   * Only used if `requiresBootstrapStackVersion` is set.
+   *
+   * - If this value is not set, the bootstrap stack name must be known at
+   *   deployment time so the stack version can be looked up from the stack
+   *   outputs.
+   * - If this value is set, the bootstrap stack can have any name because
+   *   we won't need to look it up.
+   *
+   * @default - Bootstrap stack version number looked up
+   */
+  readonly bootstrapStackVersionSsmParameter?: string;
+
+  /**
+   * Whether this stack should be validated by the CLI after synthesis
+   *
+   * @default - false
+   */
+  readonly validateOnSynth?: boolean;
 }
 
 /**
@@ -79,6 +101,19 @@ export interface AssetManifestProperties {
    * @default - Version 1 (basic modern bootstrap stack)
    */
   readonly requiresBootstrapStackVersion?: number;
+
+  /**
+   * SSM parameter where the bootstrap stack version number can be found
+   *
+   * - If this value is not set, the bootstrap stack name must be known at
+   *   deployment time so the stack version can be looked up from the stack
+   *   outputs.
+   * - If this value is set, the bootstrap stack can have any name because
+   *   we won't need to look it up.
+   *
+   * @default - Bootstrap stack version number looked up
+   */
+  readonly bootstrapStackVersionSsmParameter?: string;
 }
 
 /**

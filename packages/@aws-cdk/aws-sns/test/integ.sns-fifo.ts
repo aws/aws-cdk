@@ -6,7 +6,7 @@ class SNSFifoInteg extends Stack {
     super(scope, id, props);
 
     new Topic(this, 'MyTopic', {
-      topicName: 'fooTopic.fifo',
+      topicName: 'fooTopic',
       displayName: 'fooDisplayName',
       contentBasedDeduplication: true,
       fifo: true,

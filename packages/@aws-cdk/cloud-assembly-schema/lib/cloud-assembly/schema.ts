@@ -98,6 +98,13 @@ export interface ArtifactManifest {
    * @default - no properties.
    */
   readonly properties?: ArtifactProperties;
+
+  /**
+   * A string that represents this artifact. Should only be used in user interfaces.
+   *
+   * @default - no display name
+   */
+  readonly displayName?: string;
 }
 
 /**

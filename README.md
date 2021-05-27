@@ -6,6 +6,7 @@
 [![PyPI version](https://badge.fury.io/py/aws-cdk.core.svg)](https://badge.fury.io/py/aws-cdk.core)
 [![NuGet version](https://badge.fury.io/nu/Amazon.CDK.svg)](https://badge.fury.io/nu/Amazon.CDK)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/core)
+[![Go Reference](https://pkg.go.dev/badge/github.com/aws/aws-cdk-go/awscdk.svg)](https://pkg.go.dev/github.com/aws/aws-cdk-go/awscdk)
 [![Mergify](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/aws/aws-cdk&style=flat)](https://mergify.io)
 
 The **AWS Cloud Development Kit (AWS CDK)** is an open-source software development
@@ -24,6 +25,8 @@ The CDK is available in the following languages:
 * Python ([Python ≥ 3.6](https://www.python.org/downloads/))
 * Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
 * .NET ([.NET Core ≥ 3.1](https://dotnet.microsoft.com/download))
+* Go ([Go ≥ 1.16.4](https://golang.org/))
+  - Go is currently in developer preview and is not recommended for production use.
 
 \
 Jump To:
@@ -133,7 +136,7 @@ You may also find help on these community resources:
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
   and tag it with `aws-cdk`
 
-### Roadmap
+## Roadmap
 
 The [AWS CDK Roadmap project board](https://github.com/orgs/aws/projects/7) lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP.md](https://github.com/aws/aws-cdk/blob/master/ROADMAP.md) for more information and FAQs.
 
@@ -142,6 +145,12 @@ The [AWS CDK Roadmap project board](https://github.com/orgs/aws/projects/7) lets
 We welcome community contributions and pull requests. See
 [CONTRIBUTING.md](./CONTRIBUTING.md) for information on how to set up a development
 environment and submit code.
+
+## Metrics collection
+This solution collects anonymous operational metrics to help AWS improve the
+quality and features of the CDK. For more information, including how to disable
+this capability, please see the 
+[developer guide](https://docs.aws.amazon.com/cdk/latest/guide/cli.html#version_reporting).
 
 ## More Resources
 * [CDK Workshop](https://cdkworkshop.com/)

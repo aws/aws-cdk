@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
@@ -88,6 +88,35 @@ describe('method', () => {
     });
 
 
+  });
+
+  test('integration can be set for a service in the provided region', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+
+    // WHEN
+    new apigw.Method(stack, 'my-method', {
+      httpMethod: 'POST',
+      resource: api.root,
+      integration: new apigw.AwsIntegration({ service: 'sqs', path: 'queueName', region: 'eu-west-1' }),
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      Integration: {
+        IntegrationHttpMethod: 'POST',
+        Type: 'AWS',
+        Uri: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:', { Ref: 'AWS::Partition' }, ':apigateway:eu-west-1:sqs:path/queueName',
+            ],
+          ],
+        },
+      },
+    });
   });
 
   test('integration with a custom http method can be set via a property', () => {

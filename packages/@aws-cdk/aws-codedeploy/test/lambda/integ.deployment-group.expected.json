@@ -85,7 +85,7 @@
         "HandlerServiceRoleFCDC14AE"
       ]
     },
-    "HandlerVersion1F237F6D0": {
+    "HandlerCurrentVersion93FB80BFb2de9794fd0f0df5e5c01c16ba4b05cf": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -101,7 +101,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "HandlerVersion1F237F6D0",
+            "HandlerCurrentVersion93FB80BFb2de9794fd0f0df5e5c01c16ba4b05cf",
             "Version"
           ]
         },

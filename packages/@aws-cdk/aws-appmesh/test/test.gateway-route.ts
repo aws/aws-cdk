@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
@@ -21,7 +21,7 @@ export = {
       });
 
       const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
-        mesh: mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
         virtualServiceName: 'target.local',
       });
 
@@ -121,7 +121,9 @@ export = {
         meshName: 'test-mesh',
       });
 
-      const virtualService = mesh.addVirtualService('testVirtualService');
+      const virtualService = new appmesh.VirtualService(stack, 'testVirtualService', {
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+      });
       test.throws(() => appmesh.GatewayRouteSpec.http({
         routeTarget: virtualService,
         match: {

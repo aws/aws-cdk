@@ -9,7 +9,7 @@ import { EventSourceMapping, EventSourceMappingOptions } from './event-source-ma
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
-import { addAlias } from './util';
+import { addAlias, flatMap } from './util';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -65,7 +65,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * Adds a permission to the Lambda resource policy.
-   * @param id The id ƒor the permission construct
+   * @param id The id for the permission construct
    * @param permission The permission to grant to this Lambda function. @see Permission for details.
    */
   addPermission(id: string, permission: Permission): void;
@@ -175,7 +175,7 @@ export interface FunctionAttributes {
   readonly sameEnvironment?: boolean;
 }
 
-export abstract class FunctionBase extends Resource implements IFunction {
+export abstract class FunctionBase extends Resource implements IFunction, ec2.IClientVpnConnectionHandler {
   /**
    * The principal this Lambda Function is running as
    */
@@ -229,7 +229,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
   /**
    * Adds a permission to the Lambda resource policy.
-   * @param id The id ƒor the permission construct
+   * @param id The id for the permission construct
    * @param permission The permission to grant to this Lambda function. @see Permission for details.
    */
   public addPermission(id: string, permission: Permission) {
@@ -239,16 +239,17 @@ export abstract class FunctionBase extends Resource implements IFunction {
     }
 
     const principal = this.parsePermissionPrincipal(permission.principal);
-    const action = permission.action || 'lambda:InvokeFunction';
-    const scope = permission.scope || this;
+    const { sourceAccount, sourceArn } = this.parseConditions(permission.principal) ?? {};
+    const action = permission.action ?? 'lambda:InvokeFunction';
+    const scope = permission.scope ?? this;
 
     new CfnPermission(scope, id, {
       action,
       principal,
       functionName: this.functionArn,
       eventSourceToken: permission.eventSourceToken,
-      sourceAccount: permission.sourceAccount,
-      sourceArn: permission.sourceArn,
+      sourceAccount: permission.sourceAccount ?? sourceAccount,
+      sourceArn: permission.sourceArn ?? sourceArn,
     });
   }
 
@@ -260,7 +261,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return;
     }
 
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -326,7 +327,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
             const permissionNode = this._functionNode().tryFindChild(identifier);
             if (!permissionNode) {
               throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version. '
-                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `allowPermissions` flag.');
+                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.');
             }
             return { statementAdded: true, policyDependable: permissionNode };
           },
@@ -395,14 +396,15 @@ export abstract class FunctionBase extends Resource implements IFunction {
    * Try to recognize some specific Principal classes first, then try a generic
    * fallback.
    */
-  private parsePermissionPrincipal(principal?: iam.IPrincipal) {
-    if (!principal) {
-      return undefined;
-    }
-
+  private parsePermissionPrincipal(principal: iam.IPrincipal) {
     // Try some specific common classes first.
     // use duck-typing, not instance of
     // @deprecated: after v2, we can change these to 'instanceof'
+    if ('conditions' in principal) {
+      // eslint-disable-next-line dot-notation
+      principal = principal['principal'];
+    }
+
     if ('accountId' in principal) {
       return (principal as iam.AccountPrincipal).accountId;
     }
@@ -430,6 +432,39 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
       'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
+  }
+
+  private parseConditions(principal: iam.IPrincipal): { sourceAccount: string, sourceArn: string } | null {
+    if (this.isPrincipalWithConditions(principal)) {
+      const conditions: iam.Conditions = principal.policyFragment.conditions;
+      const conditionPairs = flatMap(
+        Object.entries(conditions),
+        ([operator, conditionObjs]) => Object.keys(conditionObjs as object).map(key => { return { operator, key }; }),
+      );
+      const supportedPrincipalConditions = [{ operator: 'ArnLike', key: 'aws:SourceArn' }, { operator: 'StringEquals', key: 'aws:SourceAccount' }];
+
+      const unsupportedConditions = conditionPairs.filter(
+        (condition) => !supportedPrincipalConditions.some(
+          (supportedCondition) => supportedCondition.operator === condition.operator && supportedCondition.key === condition.key,
+        ),
+      );
+
+      if (unsupportedConditions.length == 0) {
+        return {
+          sourceAccount: conditions.StringEquals['aws:SourceAccount'],
+          sourceArn: conditions.ArnLike['aws:SourceArn'],
+        };
+      } else {
+        throw new Error(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${JSON.stringify(unsupportedConditions)}. ` +
+          `Supported operator/condition pairs: ${JSON.stringify(supportedPrincipalConditions)}`);
+      }
+    } else {
+      return null;
+    }
+  }
+
+  private isPrincipalWithConditions(principal: iam.IPrincipal): principal is iam.PrincipalWithConditions {
+    return 'conditions' in principal;
   }
 }
 

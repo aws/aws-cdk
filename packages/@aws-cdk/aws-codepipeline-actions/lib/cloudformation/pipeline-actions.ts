@@ -4,6 +4,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Action } from '../action';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Properties common to all CloudFormation actions
  */
@@ -82,7 +86,7 @@ abstract class CloudFormationAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
 
@@ -123,7 +127,7 @@ export class CloudFormationExecuteChangeSetAction extends CloudFormationAction {
     this.props2 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     SingletonPolicy.forRole(options.role).grantExecuteChangeSet(this.props2);
 
@@ -164,8 +168,24 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    * @default None, unless `adminPermissions` is true
+   * @deprecated use {@link cfnCapabilities} instead
    */
   readonly capabilities?: cloudformation.CloudFormationCapabilities[];
+
+  /**
+   * Acknowledge certain changes made as part of deployment.
+   *
+   * For stacks that contain certain resources,
+   * explicit acknowledgement is required that AWS CloudFormation might create or update those resources.
+   * For example, you must specify `ANONYMOUS_IAM` or `NAMED_IAM` if your stack template contains AWS
+   * Identity and Access Management (IAM) resources.
+   * For more information, see the link below.
+   *
+   * @default None, unless `adminPermissions` is true
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
+   */
+  readonly cfnCapabilities?: cdk.CfnCapabilities[];
 
   /**
    * Whether to grant full permissions to CloudFormation while deploying this template.
@@ -259,7 +279,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
     return this.getDeploymentRole('property role()');
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     if (this.props2.deploymentRole) {
       this._deploymentRole = this.props2.deploymentRole;
@@ -297,9 +317,18 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
 
     SingletonPolicy.forRole(options.role).grantPassRole(this._deploymentRole);
 
-    const capabilities = this.props2.adminPermissions && this.props2.capabilities === undefined
-      ? [cloudformation.CloudFormationCapabilities.NAMED_IAM]
-      : this.props2.capabilities;
+    const providedCapabilities = this.props2.cfnCapabilities ??
+      this.props2.capabilities?.map(c => {
+        switch (c) {
+          case cloudformation.CloudFormationCapabilities.NONE: return cdk.CfnCapabilities.NONE;
+          case cloudformation.CloudFormationCapabilities.ANONYMOUS_IAM: return cdk.CfnCapabilities.ANONYMOUS_IAM;
+          case cloudformation.CloudFormationCapabilities.NAMED_IAM: return cdk.CfnCapabilities.NAMED_IAM;
+          case cloudformation.CloudFormationCapabilities.AUTO_EXPAND: return cdk.CfnCapabilities.AUTO_EXPAND;
+        }
+      });
+    const capabilities = this.props2.adminPermissions && providedCapabilities === undefined
+      ? [cdk.CfnCapabilities.NAMED_IAM]
+      : providedCapabilities;
 
     const actionConfig = super.bound(scope, stage, options);
     return {
@@ -359,7 +388,7 @@ export class CloudFormationCreateReplaceChangeSetAction extends CloudFormationDe
     this.props3 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
@@ -428,7 +457,7 @@ export class CloudFormationCreateUpdateStackAction extends CloudFormationDeployA
     this.props3 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
@@ -467,7 +496,7 @@ export class CloudFormationDeleteStackAction extends CloudFormationDeployAction 
     this.props3 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
@@ -493,7 +522,7 @@ export class CloudFormationDeleteStackAction extends CloudFormationDeployAction 
  * Statements created outside of this class are not considered when adding new
  * permissions.
  */
-class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
+class SingletonPolicy extends Construct implements iam.IGrantable {
   /**
    * Obtain a SingletonPolicy for a given role.
    * @param role the Role this policy is bound to.
@@ -616,7 +645,7 @@ interface StatementTemplate {
 
 type StatementCondition = { [op: string]: { [attribute: string]: string } };
 
-function parseCapabilities(capabilities: cloudformation.CloudFormationCapabilities[] | undefined): string | undefined {
+function parseCapabilities(capabilities: cdk.CfnCapabilities[] | undefined): string | undefined {
   if (capabilities === undefined) {
     return undefined;
   } else if (capabilities.length === 1) {

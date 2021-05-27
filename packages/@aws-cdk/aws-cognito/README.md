@@ -87,9 +87,9 @@ new cognito.UserPool(this, 'myuserpool', {
   selfSignUpEnabled: true,
   userVerification: {
     emailSubject: 'Verify your email for our awesome app!',
-    emailBody: 'Hello {username}, Thanks for signing up to our awesome app! Your verification code is {####}',
+    emailBody: 'Thanks for signing up to our awesome app! Your verification code is {####}',
     emailStyle: cognito.VerificationEmailStyle.CODE,
-    smsMessage: 'Hello {username}, Thanks for signing up to our awesome app! Your verification code is {####}',
+    smsMessage: 'Thanks for signing up to our awesome app! Your verification code is {####}',
   }
 });
 ```
@@ -213,6 +213,12 @@ Custom attributes cannot be marked as required.
 
 All custom attributes share the property `mutable` that specifies whether the value of the attribute can be changed.
 The default value is `false`.
+
+User pools come with two 'built-in' attributes - `email_verified` and `phone_number_verified`. These cannot be
+configured (required-ness or mutability) as part of user pool creation. However, user pool administrators can modify
+them for specific users using the [AdminUpdateUserAttributes API].
+
+[AdminUpdateUserAttributes API]: https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminUpdateUserAttributes.html
 
 ### Security
 
@@ -343,9 +349,9 @@ on the construct, as so -
 
 ```ts
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
-  code: lambda.Code.fromInline('auth challenge'),
+  code: lambda.Code.fromAsset(/* path to lambda asset */),
 });
 
 const userpool = new cognito.UserPool(this, 'myuserpool', {
@@ -357,9 +363,9 @@ const userpool = new cognito.UserPool(this, 'myuserpool', {
 });
 
 userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
-  code: lambda.Code.fromInline('user migration'),
+  code: lambda.Code.fromAsset(/* path to lambda asset */),
 }));
 ```
 
@@ -418,6 +424,7 @@ The following third-party identity providers are currently supported in the CDK 
 - [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
 - [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
 - [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
+- [Sign In With Apple](https://developer.apple.com/sign-in-with-apple/get-started/)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
@@ -484,7 +491,7 @@ new cognito.UserPoolClient(this, 'customer-app-client', {
 ```
 
 Clients can be configured with authentication flows. Authentication flows allow users on a client to be authenticated
-with a user pool. Cognito user pools provide several several different types of authentication, such as, SRP (Secure
+with a user pool. Cognito user pools provide several different types of authentication, such as, SRP (Secure
 Remote Password) authentication, username-and-password authentication, etc. Learn more about this at [UserPool Authentication
 Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html).
 
@@ -569,6 +576,30 @@ pool.addClient('app-client', {
   accessTokenValidity: Duration.minutes(60),
   idTokenValidity: Duration.minutes(60),
   refreshTokenValidity: Duration.days(30),
+});
+```
+
+Clients can (and should) be allowed to read and write relevant user attributes only. Usually every client can be allowed to read the `given_name`
+attribute but not every client should be allowed to set the `email_verified` attribute.
+The same criteria applies for both standard and custom attributes, more info is available at
+[Attribute Permissions and Scopes](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes).
+The default behaviour is to allow read and write permissions on all attributes. The following code shows how this can be configured for a client.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+
+const clientWriteAttributes = (new ClientAttributes())
+  .withStandardAttributes({fullname: true, email: true})
+  .withCustomAttributes('favouritePizza', 'favouriteBeverage');
+
+const clientReadAttributes = clientWriteAttributes
+  .withStandardAttributes({emailVerified: true})
+  .withCustomAttributes('pointsEarned');
+
+pool.addClient('app-client', {
+  // ...
+  readAttributes: clientReadAttributes,
+  writeAttributes: clientWriteAttributes,
 });
 ```
 
