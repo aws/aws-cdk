@@ -63,7 +63,7 @@ export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: HttpAuthorizerType.JWT,
+      authorizationType: 'JWT',
     };
   }
 }

@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc"
           }
         ]
       }
@@ -35,7 +35,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -132,7 +132,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -146,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -184,7 +184,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -204,7 +204,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -229,7 +229,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -243,7 +243,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -291,7 +291,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -305,7 +305,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -339,7 +339,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc"
+            "Value": "aws-ecs-integ-alb-fg-https/Vpc"
           }
         ]
       }
@@ -394,7 +394,7 @@
     "myServiceLBSecurityGroupFE0ED608": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Automatically created Security Group for ELB awsecsintegmyServiceLB1F7A535D",
+        "GroupDescription": "Automatically created Security Group for ELB awsecsintegalbfghttpsmyServiceLB8BEE3C49",
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -416,7 +416,7 @@
         }
       }
     },
-    "myServiceLBSecurityGrouptoawsecsintegmyServiceSecurityGroup8DAB521180B6703B07": {
+    "myServiceLBSecurityGrouptoawsecsintegalbfghttpsmyServiceSecurityGroup49C558AD803FB613FF": {
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
@@ -451,15 +451,15 @@
         "LoadBalancerArn": {
           "Ref": "myServiceLB168895E1"
         },
-        "Port": 443,
-        "Protocol": "HTTPS",
         "Certificates": [
           {
             "CertificateArn": {
               "Ref": "myServiceCertificate152F9DDA"
             }
           }
-        ]
+        ],
+        "Port": 443,
+        "Protocol": "HTTPS"
       }
     },
     "myServiceLBPublicListenerECSGroup17E9BBC1": {
@@ -513,8 +513,7 @@
         "Type": "A",
         "AliasTarget": {
           "DNSName": {
-            "Fn::Join": 
-            [
+            "Fn::Join": [
               "",
               [
                 "dualstack.",
@@ -589,7 +588,7 @@
             "Arn"
           ]
         },
-        "Family": "awsecsintegmyServiceTaskDefA3A33D18",
+        "Family": "awsecsintegalbfghttpsmyServiceTaskDefD8ABFBF2",
         "Memory": "512",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
@@ -710,7 +709,7 @@
     "myServiceSecurityGroupC3B9D4E0": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-ecs-integ/myService/Service/SecurityGroup",
+        "GroupDescription": "aws-ecs-integ-alb-fg-https/myService/Service/SecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -723,7 +722,7 @@
         }
       }
     },
-    "myServiceSecurityGroupfromawsecsintegmyServiceLBSecurityGroupFA544FE5800A81885C": {
+    "myServiceSecurityGroupfromawsecsintegalbfghttpsmyServiceLBSecurityGroupA934AF89808E9FB7A3": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",

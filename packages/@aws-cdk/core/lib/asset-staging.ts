@@ -332,6 +332,15 @@ export class AssetStaging extends Construct {
     const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension));
 
     this.stageAsset(bundledAsset.path, stagedPath, 'move');
+
+    // If bundling produced a single archive file we "touch" this file in the bundling
+    // directory after it has been moved to the staging directory. This way if bundling
+    // is skipped because the bundling directory already exists we can still determine
+    // the correct packaging type.
+    if (bundledAsset.packaging === FileAssetPackaging.FILE) {
+      fs.closeSync(fs.openSync(bundledAsset.path, 'w'));
+    }
+
     return {
       assetHash,
       stagedPath,
