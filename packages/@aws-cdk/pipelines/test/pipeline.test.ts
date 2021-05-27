@@ -334,7 +334,7 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
           build: {
-            commands: arrayWith('cdk -a assembly-PipelineStage deploy PipelineStage-PipelineStack --require-approval=never --verbose'),
+            commands: arrayWith('cdk -a assembly-PipelineStage deploy PipelineStage/PipelineStack --require-approval=never --verbose'),
           },
         },
       })),

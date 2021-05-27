@@ -41,6 +41,12 @@ export interface ITaskDefinition extends IResource {
   readonly isFargateCompatible: boolean;
 
   /**
+   * Return true if the task definition can be run on a ECS Anywhere cluster
+   */
+  readonly isExternalCompatible: boolean;
+
+
+  /**
    * The networking mode to use for the containers in the task.
    */
   readonly networkMode: NetworkMode;
@@ -104,7 +110,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * On Fargate, the only supported networking mode is AwsVpc.
    *
-   * @default - NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
+   * @default - NetworkMode.Bridge for EC2 & External tasks, AwsVpc for Fargate tasks.
    */
   readonly networkMode?: NetworkMode;
 
@@ -252,6 +258,13 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   public get isFargateCompatible(): boolean {
     return isFargateCompatible(this.compatibility);
   }
+
+  /**
+   * Return true if the task definition can be run on a ECS anywhere cluster
+   */
+  public get isExternalCompatible(): boolean {
+    return isExternalCompatible(this.compatibility);
+  }
 }
 
 /**
@@ -372,6 +385,10 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
+    if (this.isExternalCompatible && this.networkMode !== NetworkMode.BRIDGE) {
+      throw new Error(`External tasks can only have Bridge network mode, got: ${this.networkMode}`);
+    }
+
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
@@ -391,6 +408,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       requiresCompatibilities: [
         ...(isEc2Compatible(props.compatibility) ? ['EC2'] : []),
         ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
+        ...(isExternalCompatible(props.compatibility) ? ['EXTERNAL'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.any({
@@ -994,7 +1012,12 @@ export enum Compatibility {
   /**
    * The task can specify either the EC2 or Fargate launch types.
    */
-  EC2_AND_FARGATE
+  EC2_AND_FARGATE,
+
+  /**
+   * The task should specify the External launch type.
+   */
+  EXTERNAL
 }
 
 /**
@@ -1027,4 +1050,11 @@ export function isEc2Compatible(compatibility: Compatibility): boolean {
  */
 export function isFargateCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.FARGATE, Compatibility.EC2_AND_FARGATE].includes(compatibility);
+}
+
+/**
+ * Return true if the given task definition can be run on a ECS Anywhere cluster
+ */
+export function isExternalCompatible(compatibility: Compatibility): boolean {
+  return [Compatibility.EXTERNAL].includes(compatibility);
 }
