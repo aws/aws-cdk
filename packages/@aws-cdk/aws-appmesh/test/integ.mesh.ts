@@ -207,11 +207,13 @@ new appmesh.VirtualGateway(stack, 'gateway2', {
     healthCheck: appmesh.HealthCheck.http({
       interval: cdk.Duration.seconds(10),
     }),
-    tlsCertificate: appmesh.TlsCertificate.file({
-      certificateChainPath: 'path/to/certChain',
-      privateKeyPath: 'path/to/privateKey',
-      tlsMode: appmesh.TlsMode.STRICT,
-    }),
+    tls: {
+      mode: appmesh.TlsMode.STRICT,
+      certificate: appmesh.TlsCertificate.file({
+        certificateChainPath: 'path/to/certChain',
+        privateKeyPath: 'path/to/privateKey',
+      }),
+    },
   })],
 });
 
