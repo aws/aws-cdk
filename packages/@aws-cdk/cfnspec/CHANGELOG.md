@@ -1,3 +1,104 @@
+# CloudFormation Resource Specification v37.0.0
+
+## New Resource Types
+
+* AWS::AppRunner::Service
+* AWS::EC2::TransitGatewayPeeringAttachment
+* AWS::IoTCoreDeviceAdvisor::SuiteDefinition
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::MediaPackage::Channel EgressAccessLogs (__added__)
+* AWS::MediaPackage::Channel IngressAccessLogs (__added__)
+* AWS::MediaPackage::OriginEndpoint Id.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaPackage::PackagingConfiguration Id.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaPackage::PackagingGroup EgressAccessLogs (__added__)
+
+## Property Type Changes
+
+* AWS::MediaPackage::Channel.LogConfiguration (__added__)
+* AWS::MediaPackage::PackagingGroup.LogConfiguration (__added__)
+* AWS::MediaPackage::OriginEndpoint.CmafEncryption ConstantInitializationVector (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage UtcTiming (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage UtcTimingUri (__added__)
+* AWS::MediaPackage::PackagingConfiguration.CmafPackage IncludeEncoderConfigurationInSegments (__added__)
+* AWS::MediaPackage::PackagingConfiguration.DashPackage IncludeEncoderConfigurationInSegments (__added__)
+
+
+# CloudFormation Resource Specification v36.0.0
+
+## New Resource Types
+
+* AWS::DynamoDB::GlobalTable
+* AWS::SSMContacts::Contact
+* AWS::SSMContacts::ContactChannel
+* AWS::SSMIncidents::ReplicationSet
+* AWS::SSMIncidents::ResponsePlan
+
+## Attribute Changes
+
+* AWS::ApiGateway::RequestValidator RequestValidatorId (__added__)
+
+## Property Changes
+
+* AWS::CloudFormation::StackSet CallAs (__added__)
+* AWS::CustomerProfiles::Integration FlowDefinition (__added__)
+* AWS::CustomerProfiles::Integration ObjectTypeName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ECS::TaskDefinition EphemeralStorage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Elasticsearch::Domain EncryptionAtRestOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Elasticsearch::Domain NodeToNodeEncryptionOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Lambda::EventSourceMapping PartialBatchResponse (__deleted__)
+* AWS::Lambda::LayerVersion CompatibleArchitectures (__added__)
+* AWS::SSM::Association CalendarNames (__added__)
+
+## Property Type Changes
+
+* AWS::AppFlow::Flow.ZendeskDestinationProperties (__added__)
+* AWS::CustomerProfiles::Integration.ConnectorOperator (__added__)
+* AWS::CustomerProfiles::Integration.FlowDefinition (__added__)
+* AWS::CustomerProfiles::Integration.IncrementalPullConfig (__added__)
+* AWS::CustomerProfiles::Integration.MarketoSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.S3SourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.SalesforceSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.ScheduledTriggerProperties (__added__)
+* AWS::CustomerProfiles::Integration.ServiceNowSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.SourceConnectorProperties (__added__)
+* AWS::CustomerProfiles::Integration.SourceFlowConfig (__added__)
+* AWS::CustomerProfiles::Integration.Task (__added__)
+* AWS::CustomerProfiles::Integration.TaskPropertiesMap (__added__)
+* AWS::CustomerProfiles::Integration.TriggerConfig (__added__)
+* AWS::CustomerProfiles::Integration.TriggerProperties (__added__)
+* AWS::CustomerProfiles::Integration.ZendeskSourceProperties (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties Zendesk (__added__)
+* AWS::CloudFront::Distribution.Origin OriginShield.Type (__added__)
+* AWS::ECS::CapacityProvider.ManagedScaling InstanceWarmupPeriod (__added__)
+* AWS::ECS::TaskDefinition.EphemeralStorage SizeInGiB.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Elasticsearch::Domain.EncryptionAtRestOptions Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Elasticsearch::Domain.NodeToNodeEncryptionOptions Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::S3::Bucket.Rule ExpiredObjectDeleteMarker (__added__)
+
+
 # CloudFormation Resource Specification v35.2.0
 
 ## New Resource Types

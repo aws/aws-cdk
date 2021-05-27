@@ -1,6 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, CfnResource, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
 import { calculateFunctionHash, trimFromStart } from '../lib/function-hash';
@@ -35,7 +35,7 @@ describe('function hash', () => {
         handler: 'index.handler',
       });
 
-      const stack2 = new Stack(app);
+      const stack2 = new Stack(app, 'Stack2');
       const fn2 = new lambda.Function(stack2, 'MyFunction1', {
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -199,6 +199,105 @@ describe('function hash', () => {
       new CfnOutput(stack2, 'VersionArn', { value: fn2.currentVersion.functionArn });
 
       expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
+    });
+  });
+
+  describe('corrected function hash', () => {
+    let app: App;
+    beforeEach(() => {
+      app = new App({
+        context: {
+          [cxapi.LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+          [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+        },
+      });
+    });
+
+    test('DependsOn does not impact function hash', () => {
+      const stack1 = new Stack(app, 'Stack1');
+      const fn1 = new lambda.Function(stack1, 'MyFunction1', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'index.handler',
+      });
+
+      const stack2 = new Stack(app, 'Stack2');
+      const fn2 = new lambda.Function(stack2, 'MyFunction1', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'index.handler',
+      });
+      const res = new CfnResource(stack2, 'MyResource', {
+        type: 'AWS::Foo::Bar',
+        properties: {
+          Name: 'Value',
+        },
+      });
+      fn2.node.addDependency(res);
+
+      expect(calculateFunctionHash(fn1)).toEqual('e5235e3cb7a9b70c42c1a665a3ebd77c');
+      expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
+    });
+
+    test('properties not locked to the version do not impact function hash', () => {
+      const stack1 = new Stack(app, 'Stack1');
+      const fn1 = new lambda.Function(stack1, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'index.handler',
+      });
+
+      const stack2 = new Stack(app, 'Stack2');
+      const fn2 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'index.handler',
+
+        reservedConcurrentExecutions: 5, // property not locked to the version
+      });
+
+      // expect(calculateFunctionHash(fn1)).toEqual('b0d8729d597bdde2d79312fbf619c974');
+      expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
+    });
+
+    test('unclassified property throws an error', () => {
+      const stack = new Stack(app);
+      const fn1 = new lambda.Function(stack, 'MyFunction1', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'index.handler',
+      });
+      (fn1.node.defaultChild as CfnResource).addPropertyOverride('UnclassifiedProp', 'Value');
+
+      expect(() => calculateFunctionHash(fn1)).toThrow(/properties are not recognized/);
+    });
+
+    test('manual classification as version locked', () => {
+      const stack = new Stack(app);
+      const fn1 = new lambda.Function(stack, 'MyFunction1', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'index.handler',
+      });
+
+      const original = calculateFunctionHash(fn1);
+      lambda.Function.classifyVersionProperty('UnclassifiedProp', true);
+      (fn1.node.defaultChild as CfnResource).addPropertyOverride('UnclassifiedProp', 'Value');
+      expect(calculateFunctionHash(fn1)).not.toEqual(original);
+    });
+
+    test('manual classification as not version locked', () => {
+      const stack = new Stack(app);
+      const fn1 = new lambda.Function(stack, 'MyFunction1', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'index.handler',
+      });
+
+      const original = calculateFunctionHash(fn1);
+      lambda.Function.classifyVersionProperty('UnclassifiedProp', false);
+      (fn1.node.defaultChild as CfnResource).addPropertyOverride('UnclassifiedProp', 'Value');
+      expect(calculateFunctionHash(fn1)).toEqual(original);
     });
   });
 });

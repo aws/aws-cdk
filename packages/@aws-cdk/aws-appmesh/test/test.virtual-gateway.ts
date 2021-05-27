@@ -1,5 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
@@ -169,10 +170,12 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.http({
           port: 8080,
-          tlsCertificate: appmesh.TlsCertificate.acm({
-            tlsMode: appmesh.TlsMode.STRICT,
-            certificate: cert,
-          }),
+          tls: {
+            mode: appmesh.TlsMode.STRICT,
+            certificate: appmesh.TlsCertificate.acm({
+              certificate: cert,
+            }),
+          },
         })],
       });
 
@@ -213,11 +216,13 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 8080,
-          tlsCertificate: appmesh.TlsCertificate.file({
-            certificateChainPath: 'path/to/certChain',
-            privateKeyPath: 'path/to/privateKey',
-            tlsMode: appmesh.TlsMode.STRICT,
-          }),
+          tls: {
+            mode: appmesh.TlsMode.STRICT,
+            certificate: appmesh.TlsCertificate.file({
+              certificateChainPath: 'path/to/certChain',
+              privateKeyPath: 'path/to/privateKey',
+            }),
+          },
         })],
       });
 
@@ -257,11 +262,13 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 8080,
-          tlsCertificate: appmesh.TlsCertificate.file({
-            certificateChainPath: 'path/to/certChain',
-            privateKeyPath: 'path/to/privateKey',
-            tlsMode: appmesh.TlsMode.PERMISSIVE,
-          }),
+          tls: {
+            mode: appmesh.TlsMode.PERMISSIVE,
+            certificate: appmesh.TlsCertificate.file({
+              certificateChainPath: 'path/to/certChain',
+              privateKeyPath: 'path/to/privateKey',
+            }),
+          },
         })],
       });
 
@@ -563,6 +570,7 @@ export = {
     test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
     test.done();
   },
+
   'Can import VirtualGateways using attributes'(test: Test) {
     const app = new cdk.App();
     // GIVEN
@@ -580,6 +588,38 @@ export = {
     // THEN
     test.equal(virtualGateway.mesh.meshName, meshName);
     test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
+
+    test.done();
+  },
+
+  'Can grant an identity StreamAggregatedResources for a given VirtualGateway'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const gateway = new appmesh.VirtualGateway(stack, 'testGateway', {
+      mesh: mesh,
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    gateway.grantStreamAggregatedResources(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:StreamAggregatedResources',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'testGatewayF09EC349',
+            },
+          },
+        ],
+      },
+    }));
 
     test.done();
   },
