@@ -771,11 +771,13 @@ export = {
       mesh,
       listeners: [appmesh.VirtualNodeListener.http({
         port: 80,
-        tlsCertificate: appmesh.TlsCertificate.file({
-          certificateChainPath: 'path/to/certChain',
-          privateKeyPath: 'path/to/privateKey',
-          tlsMode: appmesh.TlsMode.PERMISSIVE,
-        }),
+        tls: {
+          mode: appmesh.TlsMode.PERMISSIVE,
+          certificate: appmesh.TlsCertificate.file({
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
+          }),
+        },
       })],
     });
 
