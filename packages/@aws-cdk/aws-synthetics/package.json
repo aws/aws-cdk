@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-synthetics",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::Synthetics",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -85,16 +86,18 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

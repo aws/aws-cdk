@@ -1,7 +1,7 @@
 // Helper functions for integration tests
 import { spawnSync } from 'child_process';
 import * as path from 'path';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS } from '@aws-cdk/cx-api';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 
 const CDK_OUTDIR = 'cdk-integ.out';
@@ -300,11 +300,18 @@ export class IntegrationTest {
   }
 }
 
+const futureFlags: {[key: string]: any} = {};
+Object.entries(cxapi.FUTURE_FLAGS)
+  .filter(([k, _]) => !cxapi.FUTURE_FLAGS_EXPIRED.includes(k))
+  .forEach(([k, v]) => futureFlags[k] = v);
+
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.
 export const DEFAULT_SYNTH_OPTIONS = {
   context: {
-    [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: ['test-region-1a', 'test-region-1b', 'test-region-1c'],
+    // use old-style synthesis in snapshot tests
+    [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    [cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: ['test-region-1a', 'test-region-1b', 'test-region-1c'],
     'availability-zones:account=12345678:region=test-region': ['test-region-1a', 'test-region-1b', 'test-region-1c'],
     'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
     'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
@@ -337,8 +344,7 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
-    // Enable feature flags for all integ tests
-    ...FUTURE_FLAGS,
+    ...futureFlags,
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',

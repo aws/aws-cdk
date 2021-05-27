@@ -1,11 +1,8 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { ClientPolicy } from './client-policy';
 import { IVirtualService } from './virtual-service';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Represents timeouts for HTTP protocols.
