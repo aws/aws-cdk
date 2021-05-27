@@ -56,14 +56,14 @@ export interface TaskEnvironmentVariable {
   /**
    * Name for the environment variable
    *
-   * Exactly one of `name` and `namePath` must be specified.
+   * Use `JsonPath` class's static methods to specify name from a JSON path.
    */
   readonly name: string;
 
   /**
    * Value of the environment variable
    *
-   * Exactly one of `value` and `valuePath` must be specified.
+   * Use `JsonPath` class's static methods to specify value from a JSON path.
    */
   readonly value: string;
 }

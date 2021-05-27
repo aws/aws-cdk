@@ -1,9 +1,13 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { Construct } from 'constructs';
+import * as iam from '@aws-cdk/aws-iam';
 import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
 
 /**
  * The settings for an ECS Service.
@@ -18,6 +22,13 @@ export interface ServiceProps {
    * The environment to launch the service in.
    */
   readonly environment: IEnvironment
+
+  /**
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   *
+   * @default - A task role is automatically created for you.
+   */
+  readonly taskRole?: iam.IRole;
 }
 
 /**
@@ -115,6 +126,10 @@ export class Service extends Construct {
       // Default CPU and memory
       cpu: '256',
       memory: '512',
+
+      // Allow user to pre-define the taskRole so that it can be used in resource policies that may
+      // be defined before the ECS service exists in a CDK application
+      taskRole: props.taskRole,
 
       // Ensure that the task definition supports both EC2 and Fargate
       compatibility: ecs.Compatibility.EC2_AND_FARGATE,

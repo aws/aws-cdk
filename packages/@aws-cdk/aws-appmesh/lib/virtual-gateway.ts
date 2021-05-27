@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
@@ -33,6 +34,11 @@ export interface IVirtualGateway extends cdk.IResource {
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
   addGatewayRoute(id: string, route: GatewayRouteBaseProps): GatewayRoute;
+
+  /**
+   * Grants the given entity `appmesh:StreamAggregatedResources`.
+   */
+  grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -101,6 +107,14 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
     return new GatewayRoute(this, id, {
       ...props,
       virtualGateway: this,
+    });
+  }
+
+  public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['appmesh:StreamAggregatedResources'],
+      resourceArns: [this.virtualGatewayArn],
     });
   }
 }

@@ -1,6 +1,7 @@
-const GitHub = require('github-api');
+import * as GitHub from 'github-api';
+import * as linter from '../lint';
+
 jest.mock('github-api');
-const linter = require('../index');
 
 beforeEach(() => {
   GitHub.mockClear();
@@ -47,7 +48,7 @@ describe('breaking changes format', () => {
   });
 });
 
-function configureMock(issue, prFiles) {
+function configureMock(issue: any, prFiles: any[] | undefined) {
   GitHub.mockImplementation(() => {
     return {
       getIssues: () => {

@@ -16,6 +16,9 @@ on:
 jobs:
   # Run yarn pkglint on merge forward PRs and commit the results
   pkglint:
+    permissions:
+      pull-requests: write
+      contents: write
     if: contains(github.event.pull_request.labels.*.name, 'pr/forward-merge')
     runs-on: ubuntu-latest
     steps:

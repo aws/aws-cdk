@@ -214,6 +214,12 @@ Custom attributes cannot be marked as required.
 All custom attributes share the property `mutable` that specifies whether the value of the attribute can be changed.
 The default value is `false`.
 
+User pools come with two 'built-in' attributes - `email_verified` and `phone_number_verified`. These cannot be
+configured (required-ness or mutability) as part of user pool creation. However, user pool administrators can modify
+them for specific users using the [AdminUpdateUserAttributes API].
+
+[AdminUpdateUserAttributes API]: https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminUpdateUserAttributes.html
+
 ### Security
 
 Cognito sends various messages to its users via SMS, for different actions, ranging from account verification to
@@ -485,7 +491,7 @@ new cognito.UserPoolClient(this, 'customer-app-client', {
 ```
 
 Clients can be configured with authentication flows. Authentication flows allow users on a client to be authenticated
-with a user pool. Cognito user pools provide several several different types of authentication, such as, SRP (Secure
+with a user pool. Cognito user pools provide several different types of authentication, such as, SRP (Secure
 Remote Password) authentication, username-and-password authentication, etc. Learn more about this at [UserPool Authentication
 Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html).
 
