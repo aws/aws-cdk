@@ -1411,7 +1411,7 @@ describe('custom error responses', () => {
     })).toThrow(/t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3/);
   });
 
-  test('error when any instance type other than R3 and I3 are specified without EBS enabled', () => {
+  test('error when any instance type other than R3, I3 and R6GD are specified without EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       ebs: {
@@ -1420,7 +1420,7 @@ describe('custom error responses', () => {
       capacity: {
         masterNodeInstanceType: 'm5.large.elasticsearch',
       },
-    })).toThrow(/EBS volumes are required when using instance types other than r3 or i3/);
+    })).toThrow(/EBS volumes are required when using instance types other than r3, i3 or r6gd/);
   });
 
   test('error when availabilityZoneCount is not 2 or 3', () => {
