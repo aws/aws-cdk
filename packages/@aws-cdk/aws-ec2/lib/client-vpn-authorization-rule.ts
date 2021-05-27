@@ -36,7 +36,7 @@ export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationR
   /**
    * The client VPN endpoint to which to add the rule.
    */
-  readonly clientVpnEndoint: IClientVpnEndpoint;
+  readonly clientVpnEndpoint: IClientVpnEndpoint;
 }
 
 /**
@@ -47,7 +47,7 @@ export class ClientVpnAuthorizationRule extends Resource {
     super(scope, id);
 
     new CfnClientVpnAuthorizationRule(this, 'Resource', {
-      clientVpnEndpointId: props.clientVpnEndoint.endpointId,
+      clientVpnEndpointId: props.clientVpnEndpoint.endpointId,
       targetNetworkCidr: props.cidr,
       accessGroupId: props.groupId,
       authorizeAllGroups: !props.groupId,
