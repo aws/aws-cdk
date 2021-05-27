@@ -62,7 +62,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
 export interface DockerImageAssetProps extends DockerImageAssetOptions {
   /**
    * The directory where the Dockerfile is stored
-   * 
+   *
    * Any directory inside with a name that matches the CDK output folder (cdk.out by default) will be excluded from the asset
    */
   readonly directory: string;
@@ -126,7 +126,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
 
     const ignore = path.join(dir, '.dockerignore');
 
-  if (fs.existsSync(ignore)) {
+    if (fs.existsSync(ignore)) {
       const dockerIgnorePatterns = fs.readFileSync(ignore).toString().split('\n').filter(e => !!e);
 
       exclude = [
@@ -149,7 +149,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     }
 
     // include build context in "extra" so it will impact the hash
-    const extraHash: { [field: string]: any } = { };
+    const extraHash: { [field: string]: any } = {};
     if (props.extraHash) { extraHash.user = props.extraHash; }
     if (props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
     if (props.target) { extraHash.target = props.target; }
