@@ -103,14 +103,11 @@ function validateBreakingChangeFormat(title: string, body: string) {
 }
 
 function assertStability(title: string, body: string) {
-  const breakingInStable = breakingModules(title, body)
-      .map(mod => [mod, findModulePath(mod)])
-      .map(([mod, modPath]) => [mod, moduleStability(modPath)])
-      .filter(([_, stability]) => stability === 'stable')
-      .map(([mod, _]) => mod);
+  const breakingStable = breakingModules(title, body)
+    .filter(mod => 'stable' === moduleStability(findModulePath(mod)))
 
-  if (breakingInStable.length > 0) {
-    throw new Error(`Breaking changes in stable modules [${breakingInStable.join(', ')}] is disallowed.`);
+  if (breakingStable.length > 0) {
+    throw new Error(`Breaking changes in stable modules [${breakingStable.join(', ')}] is disallowed.`);
   }
 }
 

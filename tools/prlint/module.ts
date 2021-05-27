@@ -16,7 +16,7 @@ export function findModulePath(fuzz: string): string {
     });
   }
   
-  const regex = new RegExp(`(?<=[-_/])${fuzz}$`)
+  const regex = new RegExp(`[-_/]${fuzz}$`)
   const matched = modules.filter(m => regex.test(m));
   if (matched.length === 0) {
     throw new Error(`No module with name '${fuzz}' in the repo`);

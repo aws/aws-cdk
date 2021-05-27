@@ -44,7 +44,7 @@ describe('breaking changes format', () => {
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
     configureMock(issue, undefined);
-    await linter.validatePr(1000); // not throw
+    await expect(linter.validatePr(1000)).resolves; // not throw
   });
 });
 
@@ -86,7 +86,7 @@ describe('ban breaking changes in stable modules', () => {
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
     configureMock(issue, undefined);
-    await linter.validatePr(1000); // not throw
+    await expect(linter.validatePr(1000)).resolves; // not throw
   });
 
   test('with additional "closes" footer', async () => {
