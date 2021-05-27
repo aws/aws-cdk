@@ -17,5 +17,4 @@ export * from './gateway-route';
 export * from './gateway-route-spec';
 export * from './client-policy';
 export * from './health-checks';
-export { TlsListener } from './tls-listener';
-export { TlsMode } from './tls-listener';
+export * from './tls-listener';
