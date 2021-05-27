@@ -1,5 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
@@ -23,9 +24,9 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.http({
           port: 443,
-          healthCheck: {
+          healthCheck: appmesh.HealthCheck.http({
             interval: cdk.Duration.seconds(10),
-          },
+          }),
         })],
       });
 
@@ -33,9 +34,7 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.http2({
           port: 443,
-          healthCheck: {
-            interval: cdk.Duration.seconds(10),
-          },
+          healthCheck: appmesh.HealthCheck.http2({ interval: cdk.Duration.seconds(10) }),
         })],
       });
 
@@ -115,8 +114,7 @@ export = {
         virtualGatewayName: 'test-gateway',
         listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 80,
-          healthCheck: {
-          },
+          healthCheck: appmesh.HealthCheck.grpc(),
         })],
         mesh: mesh,
         accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
@@ -566,6 +564,7 @@ export = {
     test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
     test.done();
   },
+
   'Can import VirtualGateways using attributes'(test: Test) {
     const app = new cdk.App();
     // GIVEN
@@ -583,6 +582,38 @@ export = {
     // THEN
     test.equal(virtualGateway.mesh.meshName, meshName);
     test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
+
+    test.done();
+  },
+
+  'Can grant an identity StreamAggregatedResources for a given VirtualGateway'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const gateway = new appmesh.VirtualGateway(stack, 'testGateway', {
+      mesh: mesh,
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    gateway.grantStreamAggregatedResources(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:StreamAggregatedResources',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'testGatewayF09EC349',
+            },
+          },
+        ],
+      },
+    }));
 
     test.done();
   },

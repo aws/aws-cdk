@@ -110,13 +110,17 @@ export interface StandardAttributes {
   readonly website?: StandardAttribute;
 
   /**
-   * Whether the email address has been verified.
+   * DEPRECATED
+   * @deprecated this is not a standard attribute and was incorrectly added to the CDK.
+   * It is a Cognito built-in attribute and cannot be controlled as part of user pool creation.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly emailVerified?: StandardAttribute;
 
   /**
-   * Whether the phone number has been verified.
+   * DEPRECATED
+   * @deprecated this is not a standard attribute and was incorrectly added to the CDK.
+   * It is a Cognito built-in attribute and cannot be controlled as part of user pool creation.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly phoneNumberVerified?: StandardAttribute;
@@ -356,9 +360,9 @@ export class DateTimeAttribute implements ICustomAttribute {
 }
 
 /**
- * This interface contains all standard attributes recognized by Cognito
+ * This interface contains standard attributes recognized by Cognito
  * from https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
- * including `email_verified` and `phone_number_verified`
+ * including built-in attributes `email_verified` and `phone_number_verified`
  */
 export interface StandardAttributesMask {
   /**
