@@ -59,13 +59,11 @@ describe('ban breaking changes in stable modules', () => {
     await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
   });
 
-  test('breaking changes mixed in stable and experimental', async () => {
+  test('breaking changes multiple in stable modules', async () => {
     const issue = {
       title: 'chore(lambda): some title',
       body: `
         BREAKING CHANGE: this breaking change
-        continued message
-        * **apigatewayv2**: another breaking change here
         continued message
         * **ecs**: further breaking in ecs
       `,
@@ -73,20 +71,6 @@ describe('ban breaking changes in stable modules', () => {
     };
     configureMock(issue, undefined);
     await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
-  });
-
-  test('breaking changes only in experimental', async () => {
-    const issue = {
-      title: 'chore(apigatewayv2): some title',
-      body: `
-        BREAKING CHANGE: this breaking change
-        continued message
-        * **lambda-python**: another breaking change here
-      `,
-      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
-    };
-    configureMock(issue, undefined);
-    await expect(linter.validatePr(1000)).resolves; // not throw
   });
 
   test('with additional "closes" footer', async () => {
