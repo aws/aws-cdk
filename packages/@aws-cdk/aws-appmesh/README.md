@@ -252,7 +252,7 @@ const node = new appmesh.VirtualNode(stack, 'node', {
   listeners: [appmesh.VirtualNodeListener.grpc({
     port: 80,
     tls: {
-      mode: TlsMode.STRICT,
+      mode: appmesh.TlsMode.STRICT,
       certificate: appmesh.TlsCertificate.acm({
         certificate: cert,
       }),
@@ -266,7 +266,7 @@ const gateway = new appmesh.VirtualGateway(this, 'gateway', {
   listeners: [appmesh.VirtualGatewayListener.grpc({
     port: 8080,
     tls: {
-      mode: TlsMode.STRICT,
+      mode: appmesh.TlsMode.STRICT,
       certificate: appmesh.TlsCertificate.file({
         certificateChainPath: 'path/to/certChain',
         privateKeyPath: 'path/to/privateKey',
