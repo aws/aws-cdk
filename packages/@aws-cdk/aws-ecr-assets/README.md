@@ -1,4 +1,5 @@
 # AWS CDK Docker Image Assets
+
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -16,10 +17,10 @@ uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
 naturally referenced in your CDK app.
 
 ```ts
-import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
+import { DockerImageAsset } from "@aws-cdk/aws-ecr-assets";
 
-const asset = new DockerImageAsset(this, 'MyBuildImage', {
-  directory: path.join(__dirname, 'my-image')
+const asset = new DockerImageAsset(this, "MyBuildImage", {
+    directory: path.join(__dirname, "my-image"),
 });
 ```
 
@@ -30,7 +31,7 @@ to an AWS ECR repository and wire the name of the repository as CloudFormation
 parameters to your stack.
 
 By default, all files in the given directory will be copied into the docker
-*build context*. If there is a large directory that you know you definitely
+_build context_. If there is a large directory that you know you definitely
 don't need in the build context you can improve the performance by adding the
 names of files and directories to ignore to a file called `.dockerignore`, or
 pass them via the `exclude` property. If both are available, the patterns
@@ -51,11 +52,11 @@ You can optionally pass build args to the `docker build` command by specifying
 the `buildArgs` property:
 
 ```ts
-const asset = new DockerImageAsset(this, 'MyBuildImage', {
-  directory: path.join(__dirname, 'my-image'),
-  buildArgs: {
-    HTTP_PROXY: 'http://10.20.30.2:1234'
-  }
+const asset = new DockerImageAsset(this, "MyBuildImage", {
+    directory: path.join(__dirname, "my-image"),
+    buildArgs: {
+        HTTP_PROXY: "http://10.20.30.2:1234",
+    },
 });
 ```
 
@@ -63,10 +64,10 @@ You can optionally pass a target to the `docker build` command by specifying
 the `target` property:
 
 ```ts
-const asset = new DockerImageAsset(this, 'MyBuildImage', {
-  directory: path.join(__dirname, 'my-image'),
-  target: 'a-target'
-})
+const asset = new DockerImageAsset(this, "MyBuildImage", {
+    directory: path.join(__dirname, "my-image"),
+    target: "a-target",
+});
 ```
 
 ## Publishing images to ECR repositories
@@ -76,30 +77,9 @@ through the CDK CLI or through CI/CD workflows. To that end, the ECR repository 
 The mechanics of where these images are published and how are intentionally kept as an implementation detail, and the construct
 does not support customizations such as specifying the ECR repository name or tags.
 
-If you are looking for a way to _publish_ image assets to an ECR repository in your control, you should consider using
-[wchaws/cdk-ecr-deployment], which is able to replicate an image asset from the CDK-controlled ECR repository to a repository of
-your choice.
-
-Here an example from the [wchaws/cdk-ecr-deployment] project:
-
-```ts
-import * as ecrdeploy from 'cdk-ecr-deployment';
-
-const image = new DockerImageAsset(this, 'CDKDockerImage', {
-  directory: path.join(__dirname, 'docker'),
-});
-
-new ecrdeploy.ECRDeployment(this, 'DeployDockerImage', {
-  src: new ecrdeploy.DockerImageName(image.imageUri),
-  dest: new ecrdeploy.DockerImageName(`${cdk.Aws.ACCOUNT_ID}.dkr.ecr.us-west-2.amazonaws.com/test:nginx`),
-});
-```
-
-⚠️ Please note that this is a 3rd-party construct library and is not officially supported by AWS.
-You are welcome to +1 [this GitHub issue](https://github.com/aws/aws-cdk/issues/12597) if you would like to see
-native support for this use-case in the AWS CDK.
-
-[wchaws/cdk-ecr-deployment]: https://github.com/wchaws/cdk-ecr-deployment
+If you are looking for a way to _publish_ image assets to an ECR repository in your control,
+You are welcome to +1 [this GitHub issue](https://github.com/aws/aws-cdk/issues/12597) to encourage implementation.
+A solution is currently being developed at [cdklabs](https://github.com/cdklabs) for this use-case.
 
 ## Pull Permissions
 
@@ -112,7 +92,7 @@ pull images from this repository.
 
 If the pulling principal is not in the same account or is an AWS service that
 doesn't assume a role in your account (e.g. AWS CodeBuild), pull permissions
-must be granted on the __resource policy__ (and not on the principal's policy).
+must be granted on the **resource policy** (and not on the principal's policy).
 To do that, you can use `asset.repository.addToResourcePolicy(statement)` to
 grant the desired principal the following permissions: "ecr:GetDownloadUrlForLayer",
 "ecr:BatchGetImage" and "ecr:BatchCheckLayerAvailability".
