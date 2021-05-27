@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.4](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.3...v2.0.0-rc.4) (2021-05-19)
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+fixes https://github.com/aws/aws-cdk/issues/11640
+
+### Features
+
+* **cfnspec:** cloudformation spec v35.2.0 ([#14610](https://github.com/aws/aws-cdk/issues/14610)) ([799ce1a](https://github.com/aws/aws-cdk/commit/799ce1a7d5fb261cae92d514b4f7e315d8f0e589))
+* **cloudwatch:** time range support for GraphWidget ([#14659](https://github.com/aws/aws-cdk/issues/14659)) ([010a6b1](https://github.com/aws/aws-cdk/commit/010a6b1a14f14be5001779644df3d3a2e27d4e71)), closes [#4649](https://github.com/aws/aws-cdk/issues/4649)
+* **cloudwatch:** validate parameters for a metric dimensions (closes [#3116](https://github.com/aws/aws-cdk/issues/3116)) ([#14365](https://github.com/aws/aws-cdk/issues/14365)) ([4a24d61](https://github.com/aws/aws-cdk/commit/4a24d61654ef77557350e35443ddab7597d61736))
+* **ecs:** add support for EC2 Capacity Providers ([#14386](https://github.com/aws/aws-cdk/issues/14386)) ([114f7cc](https://github.com/aws/aws-cdk/commit/114f7ccdaf736988834fe2be487363a992a31369))
+* **elbv2:** preserveClientIp for NetworkTargetGroup ([#14589](https://github.com/aws/aws-cdk/issues/14589)) ([d676ffc](https://github.com/aws/aws-cdk/commit/d676ffccb28d530a18d0e1630df0940632122a27))
+* **kms:** allow specifying key spec and key usage ([#14478](https://github.com/aws/aws-cdk/issues/14478)) ([10ae1a9](https://github.com/aws/aws-cdk/commit/10ae1a902383e69d15a17585268dd836ffb4087b)), closes [#5639](https://github.com/aws/aws-cdk/issues/5639)
+* **secretsmanager:** Automatically grant permissions to rotation Lambda ([#14471](https://github.com/aws/aws-cdk/issues/14471)) ([85e00fa](https://github.com/aws/aws-cdk/commit/85e00faf1e3bcc32c2f7aa881d42c6d1f6c17f63))
+
+### Bug Fixes
+
+* **cli:** synth fails if there was an error when synthesizing the stack ([#14613](https://github.com/aws/aws-cdk/issues/14613)) ([71c61e8](https://github.com/aws/aws-cdk/commit/71c61e81ca58c95979f66d7d7b8100777d3c7b99))
+* **lambda:** custom resource fails to connect to efs filesystem ([#14431](https://github.com/aws/aws-cdk/issues/14431)) ([10a633c](https://github.com/aws/aws-cdk/commit/10a633c8cda9f21b85c82f911d88641f3a362c4d))
+* **lambda-event-sources:** incorrect documented defaults for stream types ([#14562](https://github.com/aws/aws-cdk/issues/14562)) ([0ea24e9](https://github.com/aws/aws-cdk/commit/0ea24e95939412765c0e09133a7793557f779c76)), closes [#13908](https://github.com/aws/aws-cdk/issues/13908)
+* **lambda-nodejs:** handler filename missing from error message ([#14564](https://github.com/aws/aws-cdk/issues/14564)) ([256fd4c](https://github.com/aws/aws-cdk/commit/256fd4c6fcdbe6519bc70f62415557dbeae950a1))
+
 ## [2.0.0-rc.3](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.1...v2.0.0-rc.3) (2021-05-12)
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
