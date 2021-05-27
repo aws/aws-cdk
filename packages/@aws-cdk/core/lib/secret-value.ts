@@ -61,6 +61,7 @@ export class SecretValue extends Intrinsic {
       jsonField: options.jsonField,
       versionStage: options.versionStage,
       versionId: options.versionId,
+      account: options.account,
     };
     const props: SecretValueProps = { secretQualifier };
     return new SecretValue(dyref, props);
@@ -150,6 +151,13 @@ export interface SecretsManagerSecretOptions {
    * @default - returns all the content stored in the Secrets Manager secret.
    */
   readonly jsonField?: string;
+
+  /**
+   * The account which holds the Secret
+   *
+   * @default - undefined
+   */
+  readonly account?: string
 }
 
 /**
@@ -195,4 +203,11 @@ export interface SecretQualifier {
    * @default - AWSCURRENT.
    */
   readonly versionId?: string;
+
+  /**
+   * The account which holds the Secret
+   *
+   * @default - undefined
+   */
+  readonly account?: string;
 }

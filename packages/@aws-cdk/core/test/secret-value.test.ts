@@ -23,11 +23,18 @@ nodeunitShim({
       jsonField: 'json-key',
       versionStage: 'version-stage',
       versionId: '',
+      account: '123456789012',
     });
 
     // THEN
     test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:json-key:version-stage:}}');
-    test.equal(v.secretQualifier, { secretId: 'secret-id', jsonField: 'json-key', versionStage: 'version-stage', versionId: '' });
+    test.equal(v.secretQualifier, {
+      secretId: 'secret-id',
+      jsonField: 'json-key',
+      versionStage: 'version-stage',
+      versionId: '',
+      account: '123456789012',
+    });
     test.done();
   },
 

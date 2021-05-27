@@ -777,8 +777,22 @@ export class Project extends ProjectBase {
           if (Token.isUnresolved(envVariableValue)) {
             // the value of the property can be a complex string, separated by ':';
             // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
-            const secretArn = envVariableValue.split(':')[0];
+            let secretArn = envVariableValue.split(':')[0];
 
+            if (envVariable.value instanceof SecretValue && envVariable.value.secretQualifier && envVariable.value.secretQualifier.account) {
+              secretArn = envVariable.value.secretQualifier.secretId;
+              if (Token.compareStrings(stack.account, envVariable.value.secretQualifier.account) === TokenComparison.DIFFERENT) {
+                kmsIamResources.add(stack.formatArn({
+                  service: 'kms',
+                  resource: 'key',
+                  // We do not know the ID of the key, but since this is a cross-account access,
+                  // the key policies have to allow this access, so a wildcard is safe here
+                  resourceName: '*',
+                  sep: '/',
+                  account: envVariable.value.secretQualifier.account,
+                }));
+              }
+            }
             // if we are passed a Token, we should assume it's the ARN of the Secret
             // (as the name would not work anyway, because it would be the full name, which CodeBuild does not support)
             secretsManagerIamResources.add(secretArn);

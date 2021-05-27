@@ -1521,7 +1521,7 @@ export = {
         test.done();
       },
 
-      "when provided as a SecretValue pointing to a Secret from another account, adds permission to decrypt keys in the Secret's account"(test: Test) {
+      "when provided as a SecretValue from a SecretsManager imported Secret by complete ARN from another account, adds permission to decrypt keys in the Secret's account"(test: Test) {
         // GIVEN
         const app = new cdk.App();
         const stack = new cdk.Stack(app, 'ProjectStack', {
@@ -1606,12 +1606,15 @@ export = {
         test.done();
       },
 
-      'can be provided as a SecretValue with a jsonField and versionId'(test: Test) {
+      'can be provided as a SecretValue pointing to a Secret from another account with a jsonField and versionId'(test: Test) {
         // GIVEN
-        const stack = new cdk.Stack();
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
         // WHEN
         const secretValue = cdk.SecretValue.secretsManager(
-          'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456',
+          'arn:aws:secretsmanager:us-west-2:901234567890:secret:my-secret',
           { jsonField: 'json-key', versionId: 'version-id' },
         );
         new codebuild.PipelineProject(stack, 'Project', {
@@ -1630,7 +1633,7 @@ export = {
               {
                 'Name': 'ENV_VAR1',
                 'Type': 'SECRETS_MANAGER',
-                'Value': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456:json-key:version-id',
+                'Value': 'arn:aws:secretsmanager:us-west-2:901234567890:secret:my-secret:json-key:version-id',
               },
             ],
           },
@@ -1642,7 +1645,184 @@ export = {
             'Statement': arrayWith({
               'Action': 'secretsmanager:GetSecretValue',
               'Effect': 'Allow',
-              'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456*',
+              'Resource': 'arn:aws:secretsmanager:us-west-2:901234567890:secret:my-secret*',
+            }),
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
+      'can be provided as a SecretValue of a new Secret created in another stack with a different account'(test: Test) {
+        // GIVEN
+        const app = new cdk.App();
+        const secretStack = new cdk.Stack(app, 'SecretStack', {
+          env: { account: '901234567890' },
+        });
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
+
+        // WHEN
+        const secret = new secretsmanager.Secret(secretStack, 'Secret', { secretName: 'secret-name' });
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: secret.secretValue,
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { 'Ref': 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { 'Ref': 'AWS::Region' },
+                    ':901234567890:secret:secret-name',
+                  ]],
+                },
+              },
+            ],
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':secretsmanager:',
+                  { 'Ref': 'AWS::Region' },
+                  ':901234567890:secret:secret-name',
+                ]],
+              },
+            }),
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':kms:',
+                  { 'Ref': 'AWS::Region' },
+                  ':901234567890:key/*',
+                ]],
+              },
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
+      'can be provided as a SecretValue of a Secret imported by name in another stack with a different account'(test: Test) {
+        // GIVEN
+        const app = new cdk.App();
+        const secretStack = new cdk.Stack(app, 'SecretStack', {
+          env: { account: '901234567890' },
+        });
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
+
+        // WHEN
+        const secret = secretsmanager.Secret.fromSecretNameV2(secretStack, 'Secret', 'secret-name');
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: secret.secretValueFromJson('json-key'),
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { 'Ref': 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { 'Ref': 'AWS::Region' },
+                    ':901234567890:secret:secret-name:json-key',
+                  ]],
+                },
+              },
+            ],
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':secretsmanager:',
+                  { 'Ref': 'AWS::Region' },
+                  ':901234567890:secret:secret-name',
+                ]],
+              },
+            }),
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':kms:',
+                  { 'Ref': 'AWS::Region' },
+                  ':901234567890:key/*',
+                ]],
+              },
             }),
           },
         }));
