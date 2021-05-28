@@ -4,6 +4,14 @@ import * as path from 'path';
 const repoRoot = path.join(__dirname, '..', '..', '..');
 
 describe('findModulePath', () => {
+  beforeAll(() => {
+    process.env.REPO_ROOT = repoRoot;
+  });
+
+  afterAll(() => {
+    process.env.REPO_ROOT = undefined;
+  });
+
   test('single fuzzy match', () => {
     expect(relative(findModulePath('lambda'))).toEqual('packages/@aws-cdk/aws-lambda');
     expect(relative(findModulePath('s3'))).toEqual('packages/@aws-cdk/aws-s3');

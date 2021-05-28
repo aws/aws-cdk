@@ -4,18 +4,9 @@ import * as path from 'path';
 
 const modules: string[] = [];
 
-export function findModulePath(fuzz: string): string {
-  if (modules.length === 0) {
-    const repoRoot = path.join(__dirname, '..', '..');
-    const lernaConfig = require(path.join(repoRoot, 'lerna.json'));
-    const searchPaths: string[] = lernaConfig.packages;
-    searchPaths.forEach(p => {
-      const globMatches = glob.sync(path.join(repoRoot, p, 'package.json'));
-      const trimmed = globMatches.map(m => path.dirname(m));
-      modules.push(...trimmed);
-    });
-  }
-  
+export function findModulePath(fuzz: string): string { 
+  discoverModules();
+ 
   const regex = new RegExp(`[-_/]${fuzz}$`)
   const matched = modules.filter(m => regex.test(m));
   if (matched.length === 0) {
@@ -26,6 +17,22 @@ export function findModulePath(fuzz: string): string {
     return matched.find(m => path.basename(m) === fuzz) || matched[0];
   }
   return matched[0];
+}
+
+function discoverModules() {
+  if (modules.length === 0) {
+    if (!process.env.REPO_ROOT) {
+      throw new Error('env REPO_ROOT must be set');
+    }
+    const repoRoot = process.env.REPO_ROOT;
+    const lernaConfig = require(path.join(repoRoot, 'lerna.json'));
+    const searchPaths: string[] = lernaConfig.packages;
+    searchPaths.forEach(p => {
+      const globMatches = glob.sync(path.join(repoRoot, p, 'package.json'));
+      const trimmed = globMatches.map(m => path.dirname(m));
+      modules.push(...trimmed);
+    });
+  }
 }
 
 export function moduleStability(loc: string): 'stable' | 'experimental' | undefined {

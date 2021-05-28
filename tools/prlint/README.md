@@ -39,6 +39,8 @@ steps:
 
   - name: Lint
     uses: ./path/to/prlint
+    env:
+      REPO_ROOT: ${{ github.workspace }}
 ```
 
 # Testing locally
@@ -46,7 +48,7 @@ steps:
 To test the linter against an actual PR locally, run
 
 ```console
-node lint.js validatePr 5857
+env REPO_ROOT=/path/to/cdk/repo node lint.js validatePr 5857
 
 Creating un-authenticated GitHub Client
 ⌛  Fetching PR number 5857

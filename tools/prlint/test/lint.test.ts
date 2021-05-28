@@ -1,10 +1,19 @@
 import * as GitHub from 'github-api';
 import * as linter from '../lint';
+import * as path from 'path';
 
 jest.mock('github-api');
 
 beforeEach(() => {
   GitHub.mockClear();
+});
+
+beforeAll(() => {
+  process.env.REPO_ROOT = path.join(__dirname, '..', '..', '..');
+});
+
+afterAll(() => {
+  process.env.REPO_ROOT = undefined;
 });
 
 describe('breaking changes format', () => {
