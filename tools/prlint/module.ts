@@ -32,6 +32,11 @@ function discoverModules() {
       const trimmed = globMatches.map(m => path.dirname(m));
       modules.push(...trimmed);
     });
+
+    if (modules.length === 0) {
+      throw new Error('unexpected: discovered no modules. ' +
+        'Check that you have set REPO_ROOT correctly.');
+    }
   }
 }
 
