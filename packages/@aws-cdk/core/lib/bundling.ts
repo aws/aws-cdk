@@ -424,6 +424,15 @@ export interface DockerBuildOptions {
    * @default `Dockerfile`
    */
   readonly file?: string;
+
+  /**
+   * Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
+   *
+   * @example 'linux/amd64'
+   *
+   * @default - no platform specified
+   */
+  readonly platform?: string;
 }
 
 function flatten(x: string[][]) {
