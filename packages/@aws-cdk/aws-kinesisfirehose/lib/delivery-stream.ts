@@ -133,6 +133,7 @@ export abstract class DeliveryStreamBase extends Resource implements IDeliverySt
     return this.grant(grantee, 'firehose:PutRecord', 'firehose:PutRecordBatch');
   }
 
+  // TODO: use canned metrics
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/Firehose',
