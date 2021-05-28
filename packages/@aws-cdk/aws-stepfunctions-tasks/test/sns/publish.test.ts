@@ -47,16 +47,18 @@ describe('Publish', () => {
     const task = new SnsPublish(stack, 'Publish', {
       topic,
       message: sfn.TaskInput.fromText('Publish this message'),
-      messageAttributes: {
-        cake: {
+      messageAttributes: [
+        {
+          name: 'cake',
           type: SnsMessageAttributeType.STRING,
           value: sfn.TaskInput.fromText('chocolate'),
         },
-        cakePic: {
-          type: SnsMessageAttributeType.BINARY,
+        {
+          name: 'cakePic',
+          type: SnsMessageAttributeType.STRING,
           value: sfn.TaskInput.fromDataAt('$.cake.pic'),
         },
-      },
+      ],
     });
 
     // THEN
@@ -84,8 +86,8 @@ describe('Publish', () => {
             StringValue: 'chocolate',
           },
           cakePic: {
-            'DataType': 'Binary',
-            'BinaryValue.$': '$.cake.pic',
+            'DataType': 'String',
+            'StringValue.$': '$.cake.pic',
           },
         },
       },

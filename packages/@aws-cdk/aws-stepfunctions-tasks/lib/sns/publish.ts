@@ -29,12 +29,17 @@ export enum SnsMessageAttributeType {
  */
 export interface SnsMessageAttribute {
   /**
+   * Name is the name of the message attribute
+   */
+  readonly name: string;
+  /**
    * MessageAttributeType is the type of data being passed.
    *
    *
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
+   * @default STRING and StringValue will be set
    */
-  readonly type: SnsMessageAttributeType;
+  readonly type?: SnsMessageAttributeType;
 
   /**
    * The value of the data being passed
@@ -70,7 +75,7 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
    * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
    * @default no attributes are sent
    */
-  readonly messageAttributes?: { [key: string]: SnsMessageAttribute };
+  readonly messageAttributes?: SnsMessageAttribute[];
 
   /**
    * Send different messages for each transport protocol.
@@ -114,6 +119,8 @@ export class SnsPublish extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
+  private readonly messageAttributes: sfn.TaskInput | undefined;
+
   constructor(scope: Construct, id: string, private readonly props: SnsPublishProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
@@ -126,6 +133,17 @@ export class SnsPublish extends sfn.TaskStateBase {
       }
     }
 
+    if (props.messageAttributes) {
+      const attributes: { [key: string]: any } = {};
+      for (const attrib of props.messageAttributes) {
+        const dataType = attrib.type || SnsMessageAttributeType.STRING;
+        attributes[attrib.name] = {
+          DataType: dataType,
+          StringValue: attrib.value.value,
+        };
+      };
+      this.messageAttributes = sfn.TaskInput.fromObject(attributes);
+    }
     this.taskPolicies = [
       new iam.PolicyStatement({
         actions: ['sns:Publish'],
@@ -141,35 +159,17 @@ export class SnsPublish extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
+
     return {
       Resource: integrationResourceArn('sns', 'publish', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         TopicArn: this.props.topic.topicArn,
         Message: this.props.message.value,
         MessageStructure: this.props.messagePerSubscriptionType ? 'json' : undefined,
-        MessageAttributes: this._renderAttributes(),
+        MessageAttributes: this.messageAttributes?.value,
         Subject: this.props.subject,
       }),
     };
   }
-  /**
-   * Provides the message attributes rendering
-   */
-  /**
-   * @internal
-   */
-  private _renderAttributes(): any {
-    if (!this.props.messageAttributes) {
-      return undefined;
-    }
-    const attrs: { [key: string]: any } = {};
-    for (const a of Object.keys(this.props.messageAttributes)) {
-      const attr = this.props.messageAttributes[a];
-      attrs[a] = { DataType: attr.type };
-      attrs[a][`${attr.type}Value`] = attr.value.value;
-    }
-    return attrs;
-  }
-
 }
 
