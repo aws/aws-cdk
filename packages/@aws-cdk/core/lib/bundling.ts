@@ -259,6 +259,7 @@ export class DockerImage extends BundlingDockerImage {
     const dockerArgs: string[] = [
       'build', '-t', tag,
       ...(options.file ? ['-f', join(path, options.file)] : []),
+      ...(options.platform ? ['-f', ['--platform', options.platform] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
