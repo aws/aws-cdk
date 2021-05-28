@@ -438,16 +438,17 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.grpc({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.acm({
-              certificate: cert,
-              tlsMode: appmesh.TlsMode.STRICT,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.acm({
+                certificate: cert,
+              }),
+            },
           },
           )],
         });
 
         // THEN
-
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
@@ -485,11 +486,13 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.http({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-              tlsMode: appmesh.TlsMode.STRICT,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.file({
+                certificateChainPath: 'path/to/certChain',
+                privateKeyPath: 'path/to/privateKey',
+              }),
+            },
           })],
         });
 
@@ -530,11 +533,13 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.http({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-              tlsMode: appmesh.TlsMode.PERMISSIVE,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.PERMISSIVE,
+              certificate: appmesh.TlsCertificate.file({
+                certificateChainPath: 'path/to/certChain',
+                privateKeyPath: 'path/to/privateKey',
+              }),
+            },
           })],
         });
 
@@ -765,11 +770,13 @@ export = {
       mesh,
       listeners: [appmesh.VirtualNodeListener.http({
         port: 80,
-        tlsCertificate: appmesh.TlsCertificate.file({
-          certificateChainPath: 'path/to/certChain',
-          privateKeyPath: 'path/to/privateKey',
-          tlsMode: appmesh.TlsMode.PERMISSIVE,
-        }),
+        tls: {
+          mode: appmesh.TlsMode.PERMISSIVE,
+          certificate: appmesh.TlsCertificate.file({
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
+          }),
+        },
       })],
     });
 
