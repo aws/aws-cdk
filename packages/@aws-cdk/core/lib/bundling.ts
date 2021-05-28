@@ -157,7 +157,7 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  protected constructor(public readonly image: string, private readonly _imageHash?: string) { }
+  protected constructor(public readonly image: string, private readonly _imageHash?: string) {}
 
   /**
    * Provides a stable representation of this image for JSON serialization.
