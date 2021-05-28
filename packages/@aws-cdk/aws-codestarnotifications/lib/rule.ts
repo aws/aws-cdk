@@ -45,7 +45,7 @@ export interface RuleProps {
    * The name for the notification rule.
    * Notification rule names must be unique in your AWS account.
    */
-  readonly ruleName: string;
+  readonly notificationRuleName: string;
 
   /**
    * The status of the notification rule.
@@ -66,7 +66,7 @@ export interface RuleProps {
 
   /**
    * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
-   * Supported sources include pipelines in AWS CodePipeline and build projects in AWS CodeBuild.
+   * Supported sources include pipeline in AWS CodePipeline and project in AWS CodeBuild.
    */
   readonly source: ValidSource;
 
@@ -83,7 +83,7 @@ export interface RuleProps {
    *
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
    */
-  readonly events: events.ProjectEvent[] | events.PipelineEvent[] | string[];
+  readonly events: events.Event[];
 }
 
 /**
@@ -107,6 +107,8 @@ abstract class RuleBase extends cdk.Resource implements IRule {
 
 /**
  * A new notification rule
+ *
+ * @resource AWS::CodeStarNotifications::NotificationRule
  */
 export class Rule extends RuleBase {
   /**
@@ -140,19 +142,19 @@ export class Rule extends RuleBase {
 
   constructor(scope: Construct, id: string, props: RuleProps) {
     super(scope, id, {
-      physicalName: props.ruleName,
+      physicalName: props.notificationRuleName,
     });
 
     this.source = this.bindSource(props.source);
 
-    this.sourceEventValidate(props);
+    this.validateSourceEvent(props);
 
     props.targets.forEach((target) => {
       this.addTarget(target);
     });
 
     this.ruleArn = new CfnNotificationRule(this, 'Resource', {
-      name: props.ruleName,
+      name: props.notificationRuleName,
       status: props?.status,
       detailType: props.detailType || DetailType.FULL,
       targets: this.targets,
@@ -169,14 +171,14 @@ export class Rule extends RuleBase {
     this.targets.push(target.bind(this));
   }
 
-  private sourceEventValidate(props: RuleProps): void {
+  private validateSourceEvent(props: RuleProps): void {
     if (props.events.length === 0) {
       throw new Error('"events" property must set at least 1 event');
     }
 
     const validationMapping = {
-      [SourceType.CODE_BUILD]: Object.values(events.ProjectEvent),
-      [SourceType.CODE_PIPELINE]: Object.values(events.PipelineEvent),
+      [SourceType.CODE_BUILD]: Object.values(events.Event).filter((e) => /^codebuild\-/.test(e)),
+      [SourceType.CODE_PIPELINE]: Object.values(events.Event).filter((e) => /^codepipeline\-/.test(e)),
     };
 
     const validEvents: string[] = validationMapping[this.source.sourceType];

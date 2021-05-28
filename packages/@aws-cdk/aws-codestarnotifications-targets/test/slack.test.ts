@@ -22,10 +22,10 @@ describe('SlackNotificationTarget', () => {
     });
 
     new notifications.Rule(stack, 'MyNotificationRule', {
-      ruleName: 'MyNotificationRule',
+      notificationRuleName: 'MyNotificationRule',
       events: [
-        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
-        notifications.ProjectEvent.BUILD_STATE_FAILED,
+        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
+        notifications.Event.PROJECT_BUILD_STATE_FAILED,
       ],
       targets: [
         new targets.SlackNotificationTarget(slackChannel),

@@ -8,6 +8,10 @@ export class FakeCodePipeline {
   readonly pipelineArn = 'arn:aws:codepipeline::1234567890:MyCodepipelineProject';
 }
 
+export class FakeIncorrectSource {
+  readonly incorrectArn = 'arn:aws:incorrect';
+}
+
 export class FakeSnsTopicTarget implements notifications.IRuleTarget {
   bind(): notifications.TargetConfig {
     return {

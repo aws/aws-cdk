@@ -4,6 +4,7 @@ import * as notifications from '../lib';
 import {
   FakeCodeBuild,
   FakeCodePipeline,
+  FakeIncorrectSource,
   FakeSnsTopicTarget,
   FakeSlackTarget,
 } from './helpers';
@@ -16,17 +17,17 @@ describe('NotificationRule', () => {
   });
 
   test('created new notification rule', () => {
-    const codeBuildSource = new FakeCodeBuild();
+    const project = new FakeCodeBuild();
     const snsTopicTarget = new FakeSnsTopicTarget();
     const slackTarget = new FakeSlackTarget();
 
     new notifications.Rule(stack, 'MyNotificationRule', {
-      ruleName: 'MyNotificationRule',
+      notificationRuleName: 'MyNotificationRule',
       events: [
-        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
-        notifications.ProjectEvent.BUILD_STATE_FAILED,
+        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
+        notifications.Event.PROJECT_BUILD_STATE_FAILED,
       ],
-      source: codeBuildSource,
+      source: project,
       targets: [
         snsTopicTarget,
         slackTarget,
@@ -55,16 +56,16 @@ describe('NotificationRule', () => {
   });
 
   test('created new notification rule with status DISABLED', () => {
-    const codeBuildSource = new FakeCodeBuild();
+    const project = new FakeCodeBuild();
     const snsTopicTarget = new FakeSnsTopicTarget();
 
     new notifications.Rule(stack, 'MyNotificationRule', {
-      ruleName: 'MyNotificationRule',
+      notificationRuleName: 'MyNotificationRule',
       events: [
-        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
-        notifications.ProjectEvent.BUILD_STATE_FAILED,
+        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
+        notifications.Event.PROJECT_BUILD_STATE_FAILED,
       ],
-      source: codeBuildSource,
+      source: project,
       targets: [
         snsTopicTarget,
       ],
@@ -90,16 +91,16 @@ describe('NotificationRule', () => {
   });
 
   test('should throw error if source events are invalid with CodeBuild ProjectEvent', () => {
-    const codeBuildSource = new FakeCodeBuild();
+    const project = new FakeCodeBuild();
     const snsTopicTarget = new FakeSnsTopicTarget();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
-      ruleName: 'MyNotificationRule',
+      notificationRuleName: 'MyNotificationRule',
       events: [
-        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
-        notifications.PipelineEvent.PIPELINE_EXECUTION_SUCCEEDED,
+        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
+        notifications.Event.PIPELINE_PIPELINE_EXECUTION_SUCCEEDED,
       ],
-      source: codeBuildSource,
+      source: project,
       targets: [
         snsTopicTarget,
       ],
@@ -109,15 +110,15 @@ describe('NotificationRule', () => {
   });
 
   test('should throw error if source events are invalid with CodePipeline PipelineEvent', () => {
-    const codepiPelineSource = new FakeCodePipeline();
+    const pipeline = new FakeCodePipeline();
     const snsTopicTarget = new FakeSnsTopicTarget();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
-      ruleName: 'MyNotificationRule',
+      notificationRuleName: 'MyNotificationRule',
       events: [
-        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
       ],
-      source: codepiPelineSource,
+      source: pipeline,
       targets: [
         snsTopicTarget,
       ],
@@ -127,17 +128,32 @@ describe('NotificationRule', () => {
   });
 
   test('should throws error if source events are not provided', () => {
-    const codeBuildSource = new FakeCodeBuild();
+    const project = new FakeCodeBuild();
     const snsTopicTarget = new FakeSnsTopicTarget();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
-      ruleName: 'MyNotificationRule',
+      notificationRuleName: 'MyNotificationRule',
       events: [],
-      source: codeBuildSource,
+      source: project,
       targets: [
         snsTopicTarget,
       ],
     })).toThrowError('"events" property must set at least 1 event');
+  });
+
+  test('should throws error if source is invalid', () => {
+    const someResource = FakeIncorrectSource;
+    const snsTopicTarget = new FakeSnsTopicTarget();
+
+    expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
+      notificationRuleName: 'MyNotificationRule',
+      events: [],
+      // @ts-ignore
+      source: someResource,
+      targets: [
+        snsTopicTarget,
+      ],
+    })).toThrowError('"source" property should be type of codebuild.Project or codepipeline.Pipeline');
   });
 
   test('from notification rule ARN', () => {
