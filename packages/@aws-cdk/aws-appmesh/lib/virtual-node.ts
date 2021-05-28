@@ -190,7 +190,6 @@ export class VirtualNode extends VirtualNodeBase {
     props.listeners?.forEach(listener => this.addListener(listener));
     const accessLogging = props.accessLog?.bind(this);
     const serviceDiscovery = props.serviceDiscovery?.bind(this);
-    const backendDefaultsTlsClientPolicy = props.backendDefaults?.tlsClientPolicy;
 
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
@@ -201,7 +200,7 @@ export class VirtualNode extends VirtualNodeBase {
         backendDefaults: props.backendDefaults !== undefined
           ? {
             clientPolicy: {
-              tls: renderTlsClientPolicy(this, backendDefaultsTlsClientPolicy, (config) => config.virtualNodeClientTlsValidationTrust),
+              tls: renderTlsClientPolicy(this, props.backendDefaults?.tlsClientPolicy, (config) => config.virtualNodeClientTlsValidationTrust),
             },
           }
           : undefined,

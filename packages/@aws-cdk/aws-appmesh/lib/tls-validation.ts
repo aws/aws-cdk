@@ -72,7 +72,6 @@ export abstract class TlsValidationTrust {
    * Returns Trust context based on trust type.
    */
   public abstract bind(scope: Construct): TlsValidationTrustConfig;
-
 }
 
 class TlsValidationAcmTrust extends TlsValidationTrust {

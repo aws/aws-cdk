@@ -1,5 +1,5 @@
 import { CfnVirtualNode } from '../appmesh.generated';
-import { TlsClientPolicy } from '../client-policy';
+import { TlsClientPolicy } from '../tls-client-policy';
 import { TlsValidationTrustConfig } from '../tls-validation';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
