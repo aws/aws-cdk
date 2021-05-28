@@ -1668,7 +1668,7 @@ export = {
         // GIVEN
         const app = new cdk.App();
         const secretStack = new cdk.Stack(app, 'SecretStack', {
-          env: { account: '901234567890' },
+          env: { account: '012345678912' },
         });
         const stack = new cdk.Stack(app, 'ProjectStack', {
           env: { account: '123456789012' },
@@ -1698,7 +1698,7 @@ export = {
                     { 'Ref': 'AWS::Partition' },
                     ':secretsmanager:',
                     { 'Ref': 'AWS::Region' },
-                    ':901234567890:secret:secret-name',
+                    ':012345678912:secret:secret-name',
                   ]],
                 },
               },
@@ -1718,7 +1718,7 @@ export = {
                   { 'Ref': 'AWS::Partition' },
                   ':secretsmanager:',
                   { 'Ref': 'AWS::Region' },
-                  ':901234567890:secret:secret-name',
+                  ':012345678912:secret:secret-name',
                 ]],
               },
             }),
@@ -1737,7 +1737,7 @@ export = {
                   { 'Ref': 'AWS::Partition' },
                   ':kms:',
                   { 'Ref': 'AWS::Region' },
-                  ':901234567890:key/*',
+                  ':012345678912:key/*',
                 ]],
               },
             }),
@@ -1751,7 +1751,7 @@ export = {
         // GIVEN
         const app = new cdk.App();
         const secretStack = new cdk.Stack(app, 'SecretStack', {
-          env: { account: '901234567890' },
+          env: { account: '012345678912' },
         });
         const stack = new cdk.Stack(app, 'ProjectStack', {
           env: { account: '123456789012' },
@@ -1781,7 +1781,7 @@ export = {
                     { 'Ref': 'AWS::Partition' },
                     ':secretsmanager:',
                     { 'Ref': 'AWS::Region' },
-                    ':901234567890:secret:secret-name:json-key',
+                    ':012345678912:secret:secret-name:json-key',
                   ]],
                 },
               },
@@ -1801,7 +1801,7 @@ export = {
                   { 'Ref': 'AWS::Partition' },
                   ':secretsmanager:',
                   { 'Ref': 'AWS::Region' },
-                  ':901234567890:secret:secret-name',
+                  ':012345678912:secret:secret-name',
                 ]],
               },
             }),
@@ -1820,7 +1820,7 @@ export = {
                   { 'Ref': 'AWS::Partition' },
                   ':kms:',
                   { 'Ref': 'AWS::Region' },
-                  ':901234567890:key/*',
+                  ':012345678912:key/*',
                 ]],
               },
             }),
