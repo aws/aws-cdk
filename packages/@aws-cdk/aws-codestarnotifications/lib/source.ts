@@ -1,14 +1,7 @@
-import { INotificationRule } from './notification-rule';
-
 /**
  * The source type of the notification rule.
  */
 export enum SourceType {
-  /**
-   * AWS CodeCommit is specified as CodeCommit.
-   */
-  CODE_COMMIT = 'CodeCommit',
-
   /**
    * AWS CodeBuild is specified as CodeBuild.
    */
@@ -18,17 +11,12 @@ export enum SourceType {
    * AWS CodePipeline is specified as CodePipeline.
    */
   CODE_PIPELINE = 'CodePipeline',
-
-  /**
-   * AWS CodeDeploy is specified as CodeDeploy.
-   */
-  CODE_DEPLOY = 'CodeDeploy',
 }
 
 /**
  * Information about the Codebuild or CodePipeline associated with a notification source.
  */
-export interface NotificationSourceConfig {
+export interface SourceConfig {
 
   /**
    * The source type. Can be an AWS CodeCommit, CodeBuild, CodePipeline or CodeDeploy.
@@ -41,14 +29,16 @@ export interface NotificationSourceConfig {
   readonly sourceAddress: string;
 }
 
-/**
- * Represents a notification source
- */
-export interface INotificationSource {
+
+export interface ValidSource {
 
   /**
-   * Binds source to notification rule
-   * @param _notificationRule The notification rule
+   * The own property of AWS CodeBuild , that means it should be type of codebuild project if the source has pipelineArn property.
    */
-  bind(_notificationRule: INotificationRule): NotificationSourceConfig;
+  readonly projectArn?: string;
+
+  /**
+   * The own property of AWS CodePipeline , that means it should be type of pipeline if the source has pipelineArn property.
+   */
+  readonly pipelineArn?: string;
 }

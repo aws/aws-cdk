@@ -1,4 +1,4 @@
-import { INotificationRule } from './notification-rule';
+import { IRule } from './rule';
 
 /**
  * The target type of the notification rule.
@@ -19,7 +19,7 @@ export enum TargetType {
 /**
  * Information about the SNS topics or AWS Chatbot client associated with a notification target.
  */
-export interface NotificationTargetConfig {
+export interface TargetConfig {
 
   /**
    * The target type. Can be an Amazon SNS topic or AWS Chatbot client.
@@ -35,11 +35,11 @@ export interface NotificationTargetConfig {
 /**
  * Represents a notification target
  */
-export interface INotificationTarget {
+export interface IRuleTarget {
 
   /**
    * Binds target to notification rule
    * @param _notificationRule The notification rule
    */
-  bind(_notificationRule: INotificationRule): NotificationTargetConfig;
+  bind(_notificationRule: IRule): TargetConfig;
 }

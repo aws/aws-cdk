@@ -2,8 +2,8 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import * as events from './event';
-import { INotificationSource, NotificationSourceConfig, SourceType } from './source';
-import { INotificationTarget, NotificationTargetConfig } from './target';
+import { SourceConfig, SourceType, ValidSource } from './source';
+import { IRuleTarget, TargetConfig } from './target';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -39,13 +39,13 @@ export enum Status {
 /**
  * The options for AWS Codebuild and AWS Codepipeline notification integration
  */
-export interface RuleOptions {
+export interface RuleProps {
 
   /**
    * The name for the notification rule.
    * Notification rule names must be unique in your AWS account.
    */
-  readonly notificationRuleName: string;
+  readonly ruleName: string;
 
   /**
    * The status of the notification rule.
@@ -65,11 +65,17 @@ export interface RuleOptions {
   readonly detailType?: DetailType;
 
   /**
+   * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
+   * Supported sources include pipelines in AWS CodePipeline and build projects in AWS CodeBuild.
+   */
+  readonly source: ValidSource;
+
+  /**
    * A list of Amazon Resource Names (ARNs) of Amazon SNS topics and AWS Chatbot clients to associate with the notification rule.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codestarnotifications-notificationrule-target.html
    */
-  readonly targets: INotificationTarget[];
+  readonly targets: IRuleTarget[];
 
   /**
    * A list of event types associated with this notification rule.
@@ -77,53 +83,41 @@ export interface RuleOptions {
    *
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
    */
-  readonly events: events.RepositoryEvent[] | events.ProjectEvent[] | events.PipelineEvent[] | events.ApplicationEvent[] | string[];
-}
-
-/**
- * Properties for a new notification rule
- */
-export interface NotificationRuleProps extends RuleOptions {
-
-  /**
-   * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
-   * Supported sources include pipelines in AWS CodePipeline and build projects in AWS CodeBuild.
-   */
-  readonly source: INotificationSource;
+  readonly events: events.ProjectEvent[] | events.PipelineEvent[] | string[];
 }
 
 /**
  * Represents a notification rule
  */
-export interface INotificationRule extends cdk.IResource {
+export interface IRule extends cdk.IResource {
 
   /**
    * The ARN of the notification rule (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
    * @attribute
    */
-  readonly notificationRuleArn: string;
+  readonly ruleArn: string;
 }
 
 /**
  * Either a new or imported notification rule
  */
-abstract class NotificationRuleBase extends cdk.Resource implements INotificationRule {
-  abstract readonly notificationRuleArn: string;
+abstract class RuleBase extends cdk.Resource implements IRule {
+  abstract readonly ruleArn: string;
 }
 
 /**
  * A new notification rule
  */
-export class NotificationRule extends NotificationRuleBase {
+export class Rule extends RuleBase {
   /**
    * Import an existing notification rule provided an ARN
    * @param scope The parent creating construct
    * @param id The construct's name
    * @param notificationRuleArn Notification rule ARN (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
    */
-  public static fromNotificationRuleArn(scope: Construct, id: string, notificationRuleArn: string): INotificationRule {
-    class Import extends NotificationRuleBase {
-      readonly notificationRuleArn = notificationRuleArn;
+  public static fromNotificationRuleArn(scope: Construct, id: string, notificationRuleArn: string): IRule {
+    class Import extends RuleBase {
+      readonly ruleArn = notificationRuleArn;
     }
 
     return new Import(scope, id);
@@ -132,24 +126,24 @@ export class NotificationRule extends NotificationRuleBase {
   /**
    * @attribute
    */
-  readonly notificationRuleArn: string;
+  readonly ruleArn: string;
 
   /**
    * The source config of notification rule
    */
-  readonly source: NotificationSourceConfig;
+  readonly source: SourceConfig;
 
   /**
    * The target config of notification rule
    */
-  readonly targets: NotificationTargetConfig[] = [];
+  readonly targets: TargetConfig[] = [];
 
-  constructor(scope: Construct, id: string, props: NotificationRuleProps) {
+  constructor(scope: Construct, id: string, props: RuleProps) {
     super(scope, id, {
-      physicalName: props.notificationRuleName,
+      physicalName: props.ruleName,
     });
 
-    this.source = props.source.bind(this);
+    this.source = this.bindSource(props.source);
 
     this.sourceEventValidate(props);
 
@@ -157,8 +151,8 @@ export class NotificationRule extends NotificationRuleBase {
       this.addTarget(target);
     });
 
-    this.notificationRuleArn = new CfnNotificationRule(this, 'Resource', {
-      name: props.notificationRuleName,
+    this.ruleArn = new CfnNotificationRule(this, 'Resource', {
+      name: props.ruleName,
       status: props?.status,
       detailType: props.detailType || DetailType.FULL,
       targets: this.targets,
@@ -171,20 +165,18 @@ export class NotificationRule extends NotificationRuleBase {
    * Adds target to notification rule
    * @param target The SNS topic or AWS Chatbot Slack target
    */
-  public addTarget(target: INotificationTarget) {
+  public addTarget(target: IRuleTarget) {
     this.targets.push(target.bind(this));
   }
 
-  private sourceEventValidate(props: NotificationRuleProps): void {
+  private sourceEventValidate(props: RuleProps): void {
     if (props.events.length === 0) {
       throw new Error('"events" property must set at least 1 event');
     }
 
     const validationMapping = {
-      [SourceType.CODE_COMMIT]: Object.values(events.RepositoryEvent),
       [SourceType.CODE_BUILD]: Object.values(events.ProjectEvent),
       [SourceType.CODE_PIPELINE]: Object.values(events.PipelineEvent),
-      [SourceType.CODE_DEPLOY]: Object.values(events.ApplicationEvent),
     };
 
     const validEvents: string[] = validationMapping[this.source.sourceType];
@@ -194,5 +186,23 @@ export class NotificationRule extends NotificationRuleBase {
         throw new Error(`${event} event id is not valid in ${this.source.sourceType}`);
       }
     });
+  }
+
+  private bindSource(source: ValidSource): SourceConfig {
+    if (source.projectArn) {
+      return {
+        sourceType: SourceType.CODE_BUILD,
+        sourceAddress: source.projectArn,
+      };
+    }
+
+    if (source.pipelineArn) {
+      return {
+        sourceType: SourceType.CODE_PIPELINE,
+        sourceAddress: source.pipelineArn,
+      };
+    }
+
+    throw new Error('"source" property should be type of codebuild.Project or codepipeline.Pipeline');
   }
 }

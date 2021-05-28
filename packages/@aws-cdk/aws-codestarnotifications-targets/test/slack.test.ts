@@ -1,9 +1,8 @@
 import * as chatbot from '@aws-cdk/aws-chatbot';
-import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../lib';
-import { FakeCodeBuildSource } from './helpers';
+import { FakeCodeBuild } from './helpers';
 import '@aws-cdk/assert/jest';
 
 describe('SlackNotificationTarget', () => {
@@ -14,9 +13,7 @@ describe('SlackNotificationTarget', () => {
   });
 
   test('notification target to slack', () => {
-    const project = codebuild.Project.fromProjectArn(stack, 'MyCodebuildProject', 'arn:aws:codebuild::1234567890:project/MyCodebuildProject');
-
-    const dummySource = new FakeCodeBuildSource(project);
+    const dummySource = new FakeCodeBuild();
 
     const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackChannelConfigurationName: 'MySlackChannel',
@@ -24,8 +21,8 @@ describe('SlackNotificationTarget', () => {
       slackChannelId: 'DEF456',
     });
 
-    new notifications.NotificationRule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+    new notifications.Rule(stack, 'MyNotificationRule', {
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
         notifications.ProjectEvent.BUILD_STATE_FAILED,

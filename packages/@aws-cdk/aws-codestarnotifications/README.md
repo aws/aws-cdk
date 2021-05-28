@@ -19,6 +19,37 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
+## Example
+
+### Codebuild
+
 ```ts
-import * as codestarnotifications from '@aws-cdk/aws-codestarnotifications';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
+import * as targets from '@aws-cdk/aws-codestarnotifications-targets';
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as sns from '@aws-cdk/aws-sns';
+import * as chatbot from '@aws-cdk/aws-chatbot';
+
+const project = new codebuild.Project(stack, 'MyProject', {});
+
+const topic = new sns.Topic(stack, 'MyTopic1', {});
+
+const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+    slackChannelConfigurationName: 'MySlackChannel',
+    slackWorkspaceId: 'ABC123',
+    slackChannelId: 'DEF456',
+});
+
+const rule = new notifications.Rule(stack, 'NotificationRule', {
+  ruleName: 'MyNotificationRule',
+  events: [
+    notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+    notifications.ProjectEvent.BUILD_STATE_FAILED,
+  ],
+  source: project,
+  targets: [
+    new targets.SnsTopicNotificationTarget(topic),
+    new targets.SlackNotificationTarget(slack),
+  ],
+});
 ```

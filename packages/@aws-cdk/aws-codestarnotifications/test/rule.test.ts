@@ -2,10 +2,8 @@ import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as notifications from '../lib';
 import {
-  FakeCodeCommitSource,
-  FakeCodeBuildSource,
-  FakeCodePipelineSource,
-  FakeCodeDeploySource,
+  FakeCodeBuild,
+  FakeCodePipeline,
   FakeSnsTopicTarget,
   FakeSlackTarget,
 } from './helpers';
@@ -18,12 +16,12 @@ describe('NotificationRule', () => {
   });
 
   test('created new notification rule', () => {
-    const codeBuildSource = new FakeCodeBuildSource();
+    const codeBuildSource = new FakeCodeBuild();
     const snsTopicTarget = new FakeSnsTopicTarget();
     const slackTarget = new FakeSlackTarget();
 
-    new notifications.NotificationRule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+    new notifications.Rule(stack, 'MyNotificationRule', {
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
         notifications.ProjectEvent.BUILD_STATE_FAILED,
@@ -57,11 +55,11 @@ describe('NotificationRule', () => {
   });
 
   test('created new notification rule with status DISABLED', () => {
-    const codeBuildSource = new FakeCodeBuildSource();
+    const codeBuildSource = new FakeCodeBuild();
     const snsTopicTarget = new FakeSnsTopicTarget();
 
-    new notifications.NotificationRule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+    new notifications.Rule(stack, 'MyNotificationRule', {
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
         notifications.ProjectEvent.BUILD_STATE_FAILED,
@@ -91,30 +89,12 @@ describe('NotificationRule', () => {
     });
   });
 
-  test('should throw error if source events are invalid with CodeCommit RepositoryEvent', () => {
-    const codeCommitSource = new FakeCodeCommitSource();
-    const snsTopicTarget = new FakeSnsTopicTarget();
-
-    expect(() => new notifications.NotificationRule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
-      events: [
-        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
-      ],
-      source: codeCommitSource,
-      targets: [
-        snsTopicTarget,
-      ],
-    })).toThrow(
-      /codebuild-project-build-state-succeeded event id is not valid in CodeCommit/,
-    );
-  });
-
   test('should throw error if source events are invalid with CodeBuild ProjectEvent', () => {
-    const codeBuildSource = new FakeCodeBuildSource();
+    const codeBuildSource = new FakeCodeBuild();
     const snsTopicTarget = new FakeSnsTopicTarget();
 
-    expect(() => new notifications.NotificationRule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+    expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
         notifications.PipelineEvent.PIPELINE_EXECUTION_SUCCEEDED,
@@ -129,47 +109,29 @@ describe('NotificationRule', () => {
   });
 
   test('should throw error if source events are invalid with CodePipeline PipelineEvent', () => {
-    const codepiPelineSource = new FakeCodePipelineSource();
+    const codepiPelineSource = new FakeCodePipeline();
     const snsTopicTarget = new FakeSnsTopicTarget();
 
-    expect(() => new notifications.NotificationRule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+    expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
+      ruleName: 'MyNotificationRule',
       events: [
-        notifications.ApplicationEvent.DEPLOYMENT_SUCCEEDED,
+        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
       ],
       source: codepiPelineSource,
       targets: [
         snsTopicTarget,
       ],
     })).toThrow(
-      /codedeploy-application-deployment-succeeded event id is not valid in CodePipeline/,
-    );
-  });
-
-  test('should throw error if source events are invalid with CodeDeploy ProjectEvent', () => {
-    const codeDeploySource = new FakeCodeDeploySource();
-    const snsTopicTarget = new FakeSnsTopicTarget();
-
-    expect(() => new notifications.NotificationRule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
-      events: [
-        notifications.PipelineEvent.PIPELINE_EXECUTION_SUCCEEDED,
-      ],
-      source: codeDeploySource,
-      targets: [
-        snsTopicTarget,
-      ],
-    })).toThrow(
-      /codepipeline-pipeline-pipeline-execution-succeeded event id is not valid in CodeDeploy/,
+      /codebuild-project-build-state-succeeded event id is not valid in CodePipeline/,
     );
   });
 
   test('should throws error if source events are not provided', () => {
-    const codeBuildSource = new FakeCodeBuildSource();
+    const codeBuildSource = new FakeCodeBuild();
     const snsTopicTarget = new FakeSnsTopicTarget();
 
-    expect(() => new notifications.NotificationRule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+    expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
+      ruleName: 'MyNotificationRule',
       events: [],
       source: codeBuildSource,
       targets: [
@@ -179,7 +141,7 @@ describe('NotificationRule', () => {
   });
 
   test('from notification rule ARN', () => {
-    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
-    expect(imported.notificationRuleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    const imported = notifications.Rule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    expect(imported.ruleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
   });
 });

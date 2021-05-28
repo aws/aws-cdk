@@ -1,66 +1,3 @@
-
-/**
- * The list of event types for AWS Codecommit
- * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-repositories
- */
-export enum RepositoryEvent {
-
-  /**
-   * Trigger notification when repository comments on commits
-   */
-  COMMENTS_ON_COMMITS = 'codecommit-repository-comments-on-commits',
-
-  /**
-   * Trigger notification when repository comments on pull requests
-   */
-  COMMENTS_ON_PULL_REQUEST = 'codecommit-repository-comments-on-pull-requests',
-
-  /**
-   * Trigger notification when repository approvals status changed
-   */
-  APPROVAL_STATUS_CHANGED = 'codecommit-repository-approvals-status-changed',
-
-  /**
-   * Trigger notification when repository approvals rule override
-   */
-  APPROVAL_RULE_OVERRIDE = 'codecommit-repository-approvals-rule-override',
-
-  /**
-   * Trigger notification when repository pull request created
-   */
-  PULL_REQUEST_CREATED = 'codecommit-repository-pull-request-created',
-
-  /**
-   * Trigger notification when repository pull request source updated
-   */
-  PULL_REQUEST_SOURCE_UPDATED = 'codecommit-repository-pull-request-source-updated',
-
-  /**
-   * Trigger notification when repository pull request status changed
-   */
-  PULL_REQUEST_STATUS_CHANGED = 'codecommit-repository-pull-request-status-changed',
-
-  /**
-   * Trigger notification when repository pull request merged
-   */
-  PULL_REQUEST_MERGED = 'codecommit-repository-pull-request-merged',
-
-  /**
-   * Trigger notification when repository branches and tags created
-   */
-  BRANCHES_AND_TAGS_CREATED = 'codecommit-repository-branches-and-tags-created',
-
-  /**
-   * Trigger notification when repository branches and tags deleted
-   */
-  BRANCHES_AND_TAGS_DELETED = 'codecommit-repository-branches-and-tags-deleted',
-
-  /**
-   * Trigger notification when repository branches and tags updated
-   */
-  BRANCHES_AND_TAGS_UPDATED = 'codecommit-repository-branches-and-tags-updated',
-}
-
 /**
  * The list of event types for AWS Codebuild
  * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject
@@ -96,28 +33,6 @@ export enum ProjectEvent {
    * Trigger notification when project build phase success
    */
   BUILD_PHASE_SUCCESS = 'codebuild-project-build-phase-success',
-}
-
-/**
- * The list of event types for AWS Codedeploy
- * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-deployapplication
- */
-export enum ApplicationEvent {
-
-  /**
-   * Trigger notification when application deployment failed
-   */
-  DEPLOYMENT_FAILED = 'codedeploy-application-deployment-failed',
-
-  /**
-   * Trigger notification when application deployment succeeded
-   */
-  DEPLOYMENT_SUCCEEDED = 'codedeploy-application-deployment-succeeded',
-
-  /**
-   * Trigger notification when application deployment started
-   */
-  DEPLOYMENT_STARTED = 'codedeploy-application-deployment-started',
 }
 
 /**
