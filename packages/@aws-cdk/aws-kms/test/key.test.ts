@@ -1,4 +1,4 @@
-import { arrayWith, expect as expectCdk, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
+import { arrayWith, countResources, expect as expectCdk, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -649,6 +649,8 @@ describe('fromCfnKey()', () => {
         Version: '2012-10-17',
       },
     }));
+
+    expectCdk(stack).to(countResources('AWS::KMS::Key', 1));
   });
 
   describe("calling 'addToResourcePolicy()' on the returned Key", () => {
