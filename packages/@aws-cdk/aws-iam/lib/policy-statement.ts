@@ -284,7 +284,7 @@ export class PolicyStatement {
   }
 
   /**
-   * Indicates if this permission as at least one resource associated with it.
+   * Indicates if this permission has at least one resource associated with it.
    */
   public get hasResource() {
     return this.resource && this.resource.length > 0;
