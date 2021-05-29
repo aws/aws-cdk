@@ -1,5 +1,3 @@
-import * as notifications from '../lib';
-
 export class FakeCodeBuild {
   readonly projectArn = 'arn:aws:codebuild::1234567890:project/MyCodebuildProject';
 }
@@ -12,20 +10,10 @@ export class FakeIncorrectSource {
   readonly incorrectArn = 'arn:aws:incorrect';
 }
 
-export class FakeSnsTopicTarget implements notifications.IRuleTarget {
-  bind(): notifications.TargetConfig {
-    return {
-      targetType: notifications.TargetType.SNS,
-      targetAddress: 'arn:aws:sns::1234567890:MyTopic',
-    };
-  }
+export class FakeSnsTopicTarget {
+  readonly topicArn = 'arn:aws:sns::1234567890:MyTopic';
 }
 
-export class FakeSlackTarget implements notifications.IRuleTarget {
-  bind(): notifications.TargetConfig {
-    return {
-      targetType: notifications.TargetType.AWS_CHATBOT_SLACK,
-      targetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
-    };
-  }
+export class FakeSlackTarget {
+  readonly slackChannelConfigurationArn = 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel';
 }

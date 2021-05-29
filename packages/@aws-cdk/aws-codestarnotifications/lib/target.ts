@@ -1,12 +1,10 @@
-import { IRule } from './rule';
-
 /**
  * The target type of the notification rule.
  */
 export enum TargetType {
 
   /**
-   * Amazon SNS topics are specified as SNS.
+   * Amazon SNS topic are specified as SNS.
    */
   SNS = 'SNS',
 
@@ -17,7 +15,7 @@ export enum TargetType {
 }
 
 /**
- * Information about the SNS topics or AWS Chatbot client associated with a notification target.
+ * Information about the SNS topic or AWS Chatbot client associated with a notification target.
  */
 export interface TargetConfig {
 
@@ -34,12 +32,25 @@ export interface TargetConfig {
 
 /**
  * Represents a notification target
+ * That allows AWS Chatbot and SNS topic to associate with this rule target.
  */
 export interface IRuleTarget {
 
   /**
-   * Binds target to notification rule
-   * @param _notificationRule The notification rule
+   * The ARN of the Slack channel configuration
+   * It's own property of Slack channel configuration in AWS Chatbot, which means it should be type of slack channel configuration in AWS Chatbot if the target has `slackChannelConfigurationArn` property.
+   * In the form of arn:aws:chatbot:{region}:{account}:chat-configuration/slack-channel/{slackChannelName}
+   *
+   * @default None
    */
-  bind(_notificationRule: IRule): TargetConfig;
+  readonly slackChannelConfigurationArn?: string;
+
+  /**
+   * The ARN of the SNS topic
+   * It's own property of SNS topic, which means it should be type of SNS topic if the target has `topicArn` property.
+   * In the form of arn:aws:sns:{region}:{account}:{topicName}
+   *
+   * @default None
+   */
+  readonly topicArn?: string;
 }

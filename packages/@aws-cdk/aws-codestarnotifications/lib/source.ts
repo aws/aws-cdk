@@ -30,19 +30,23 @@ export interface SourceConfig {
 }
 
 /**
- * The source that allows codebuild and codepipeline to associate with this rule.
+ * The source that allows CodeBuild and CodePipeline to associate with this rule.
  */
-export interface ValidSource {
+export interface IRuleSource {
 
   /**
-   * The own property of AWS CodeBuild, which means it should be type of codebuild project if the source has pipelineArn property.
+   * The ARN of AWS Codebuild Project
+   * It's own property of AWS CodeBuild, which means it should be type of codebuild project if the source has `projectArn` property.
+   * In the form of arn:aws:codebuild:{region}:{account}:project/{projectName}
    *
    * @default None
    */
   readonly projectArn?: string;
 
   /**
-   * The own property of AWS CodePipeline, which means it should be type of pipeline if the source has pipelineArn property.
+   * The ARN of AWS CodePipeline
+   * The own property of AWS CodePipeline, which means it should be type of pipeline if the source has `pipelineArn` property.
+   * In the form of arn:aws:codepipeline:{region}:{account}:{pipelineName}
    *
    * @default None
    */

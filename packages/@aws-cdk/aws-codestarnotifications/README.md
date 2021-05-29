@@ -29,7 +29,6 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ```ts
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
-import * as targets from '@aws-cdk/aws-codestarnotifications-targets';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sns from '@aws-cdk/aws-sns';
 import * as chatbot from '@aws-cdk/aws-chatbot';
@@ -52,8 +51,8 @@ const rule = new notifications.Rule(stack, 'NotificationRule', {
   ],
   source: project,
   targets: [
-    new targets.SnsTopicNotificationTarget(topic),
-    new targets.SlackNotificationTarget(slack),
+    topic,
+    slack,
   ],
 });
 ```
