@@ -3,7 +3,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../lib';
-import { FakeCodeBuildSource } from './helpers';
+// import { FakeCodeBuild } from './helpers';
 
 class SlackInteg extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -15,6 +15,8 @@ class SlackInteg extends cdk.Stack {
       slackChannelId: 'C0187JABUE9', // modify to your slack channel id
       loggingLevel: chatbot.LoggingLevel.NONE,
     });
+
+    // const project = new FakeCodeBuild();
 
     const project = new codebuild.Project(this, 'MyCodebuildProject', {
       buildSpec: codebuild.BuildSpec.fromObject({
@@ -29,12 +31,12 @@ class SlackInteg extends cdk.Stack {
       }),
     });
 
-    new notifications.NotificationRule(this, 'MyNotificationRule', {
+    new notifications.Rule(this, 'MyNotificationRule', {
       notificationRuleName: 'MyNotificationRule',
       events: [
-        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
       ],
-      source: new FakeCodeBuildSource(project),
+      source: project,
       targets: [
         new targets.SlackNotificationTarget(slackChannel),
       ],

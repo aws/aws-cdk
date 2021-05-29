@@ -1,9 +1,10 @@
+import '@aws-cdk/assert-internal/jest';
 import * as chatbot from '@aws-cdk/aws-chatbot';
+// import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../lib';
 import { FakeCodeBuild } from './helpers';
-import '@aws-cdk/assert/jest';
 
 describe('SlackNotificationTarget', () => {
   let stack: cdk.Stack;
@@ -13,7 +14,19 @@ describe('SlackNotificationTarget', () => {
   });
 
   test('notification target to slack', () => {
-    const dummySource = new FakeCodeBuild();
+    const project = new FakeCodeBuild();
+    // const project = new codebuild.Project(stack, 'MyCodebuildProject', {
+    //   buildSpec: codebuild.BuildSpec.fromObject({
+    //     version: '0.2',
+    //     phases: {
+    //       build: {
+    //         commands: [
+    //           'echo "Hello, CodeBuild!"',
+    //         ],
+    //       },
+    //     },
+    //   }),
+    // });
 
     const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackChannelConfigurationName: 'MySlackChannel',
@@ -30,7 +43,7 @@ describe('SlackNotificationTarget', () => {
       targets: [
         new targets.SlackNotificationTarget(slackChannel),
       ],
-      source: dummySource,
+      source: project,
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
@@ -40,7 +53,7 @@ describe('SlackNotificationTarget', () => {
         'codebuild-project-build-state-failed',
       ],
       Name: 'MyNotificationRule',
-      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Resource: 'arn:aws:codebuild::123456789000:project/MyCodebuildProject',
       Targets: [
         {
           TargetAddress: {

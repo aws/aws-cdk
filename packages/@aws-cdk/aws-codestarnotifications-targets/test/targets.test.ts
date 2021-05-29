@@ -1,10 +1,10 @@
+import '@aws-cdk/assert-internal/jest';
 import * as chatbot from '@aws-cdk/aws-chatbot';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../lib';
 import { FakeCodeBuild } from './helpers';
-import '@aws-cdk/assert/jest';
 
 describe('Notification Target', () => {
   let stack: cdk.Stack;
@@ -46,7 +46,7 @@ describe('Notification Target', () => {
         'codebuild-project-build-state-failed',
       ],
       Name: 'MyNotificationRule',
-      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Resource: 'arn:aws:codebuild::123456789000:project/MyCodebuildProject',
       Targets: [
         {
           TargetAddress: {

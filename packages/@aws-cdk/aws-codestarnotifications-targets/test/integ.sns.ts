@@ -3,13 +3,15 @@ import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../lib';
-import { FakeCodeBuildSource } from './helpers';
+// import { FakeCodeBuild } from './helpers';
 
 class SnsInteg extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const topic = new sns.Topic(this, 'MyTopic');
+
+    // const project = new FakeCodeBuild();
 
     const project = new codebuild.Project(this, 'MyCodebuildProject', {
       buildSpec: codebuild.BuildSpec.fromObject({
@@ -24,12 +26,12 @@ class SnsInteg extends cdk.Stack {
       }),
     });
 
-    new notifications.NotificationRule(this, 'MyNotificationRule', {
+    new notifications.Rule(this, 'MyNotificationRule', {
       notificationRuleName: 'MyNotificationRule',
       events: [
-        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
       ],
-      source: new FakeCodeBuildSource(project),
+      source: project,
       targets: [
         new targets.SnsTopicNotificationTarget(topic),
       ],

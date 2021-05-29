@@ -5,7 +5,7 @@ import * as sns from '@aws-cdk/aws-sns';
 /**
  * A SNS topic notification target
  */
-export class SnsTopicNotificationTarget implements notifications.INotificationTarget {
+export class SnsTopicNotificationTarget implements notifications.IRuleTarget {
 
   /**
    * @param topic The SNS topic
@@ -13,8 +13,8 @@ export class SnsTopicNotificationTarget implements notifications.INotificationTa
   constructor(readonly topic: sns.ITopic) {}
 
   public bind(
-    _notificationRule: notifications.INotificationRule,
-  ): notifications.NotificationTargetConfig {
+    _notificationRule: notifications.IRule,
+  ): notifications.TargetConfig {
     this.topic.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));
 
     return {
