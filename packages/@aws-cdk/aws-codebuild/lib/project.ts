@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { ArnComponents, Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
+import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -724,17 +724,7 @@ export class Project extends ProjectBase {
     const kmsIamResources = new Set<string>();
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
-      let envVariableValue: string;
-      if (envVariable.value instanceof SecretValue && envVariable.value.secretQualifier
-        && envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER) {
-        const secretQualifier = envVariable.value.secretQualifier;
-        const jsonField = secretQualifier.jsonField ? `:${secretQualifier.jsonField}` : '';
-        const versionStage = secretQualifier.versionStage ? `:${secretQualifier.versionStage}` : '';
-        const versionId = secretQualifier.versionId ? `:${secretQualifier.versionId}` : '';
-        envVariableValue = `${secretQualifier.secretId}${jsonField}${versionStage}${versionId}`;
-      } else {
-        envVariableValue = envVariable.value?.toString();
-      }
+      const envVariableValue: string = envVariable.value?.toString();
       const cfnEnvVariable: CfnProject.EnvironmentVariableProperty = {
         name,
         type: envVariable.type || BuildEnvironmentVariableType.PLAINTEXT,
@@ -774,60 +764,35 @@ export class Project extends ProjectBase {
 
         // save SecretsManager env variables
         if (envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER) {
-          if (Token.isUnresolved(envVariableValue)) {
-            // the value of the property can be a complex string, separated by ':';
-            // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
-            let secretArn = envVariableValue.split(':')[0];
-
-            if (envVariable.value instanceof SecretValue && envVariable.value.secretQualifier && envVariable.value.secretQualifier.account) {
-              secretArn = envVariable.value.secretQualifier.secretId;
-              if (Token.compareStrings(stack.account, envVariable.value.secretQualifier.account) === TokenComparison.DIFFERENT) {
-                kmsIamResources.add(stack.formatArn({
-                  service: 'kms',
-                  resource: 'key',
-                  // We do not know the ID of the key, but since this is a cross-account access,
-                  // the key policies have to allow this access, so a wildcard is safe here
-                  resourceName: '*',
-                  sep: '/',
-                  account: envVariable.value.secretQualifier.account,
-                }));
-              }
+          // We have 3 basic cases here of what envVariableValue can be:
+          // 1. A string that starts with 'arn:' (and might contain Token fragments).
+          // 2. A Token.
+          // 3. A simple value, like 'secret-id'.
+          if (envVariableValue.startsWith('arn:')) {
+            const parsedArn = stack.parseArn(envVariableValue, ':');
+            if (!parsedArn.resourceName) {
+              throw new Error('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
             }
-            // if we are passed a Token, we should assume it's the ARN of the Secret
-            // (as the name would not work anyway, because it would be the full name, which CodeBuild does not support)
-            secretsManagerIamResources.add(secretArn);
-          } else {
-            // check if the provided value is a full ARN of the Secret
-            let parsedArn: ArnComponents | undefined;
-            try {
-              parsedArn = stack.parseArn(envVariableValue, ':');
-            } catch (e) {}
-            const secretSpecifier: string = parsedArn && parsedArn.resourceName ? parsedArn.resourceName : envVariableValue;
+            const secretSpecifier: string = parsedArn.resourceName;
 
             // the value of the property can be a complex string, separated by ':';
             // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
             const secretName = secretSpecifier.split(':')[0];
-            const secretIamResourceName = parsedArn
-              // If we were given an ARN, we don't' know whether the name is full, or partial,
-              // as CodeBuild supports both ARN forms.
-              // Because of that, follow the name with a '*', which works for both
-              ? `${secretName}*`
-              // If we were given just a name, it must be partial, as CodeBuild doesn't support providing full names.
-              // In this case, we need to accommodate for the generated suffix in the IAM resource name
-              : `${secretName}-??????`;
             secretsManagerIamResources.add(stack.formatArn({
               service: 'secretsmanager',
               resource: 'secret',
-              resourceName: secretIamResourceName,
+              // since we don't know whether the ARN was full, or partial
+              // (CodeBuild supports both),
+              // stick a "*" at the end, which makes it work for both
+              resourceName: `${secretName}*`,
               sep: ':',
-              // if we were given an ARN, we need to use the provided partition/account/region
-              partition: parsedArn?.partition,
-              account: parsedArn?.account,
-              region: parsedArn?.region,
+              partition: parsedArn.partition,
+              account: parsedArn.account,
+              region: parsedArn.region,
             }));
             // if secret comes from another account, SecretsManager will need to access
             // KMS on the other account as well to be able to get the secret
-            if (parsedArn && parsedArn.account && Token.compareStrings(parsedArn.account, stack.account) === TokenComparison.DIFFERENT) {
+            if (parsedArn.account && Token.compareStrings(parsedArn.account, stack.account) === TokenComparison.DIFFERENT) {
               kmsIamResources.add(stack.formatArn({
                 service: 'kms',
                 resource: 'key',
@@ -835,12 +800,61 @@ export class Project extends ProjectBase {
                 // the key policies have to allow this access, so a wildcard is safe here
                 resourceName: '*',
                 sep: '/',
-                // if we were given an ARN, we need to use the provided partition/account/region
                 partition: parsedArn.partition,
                 account: parsedArn.account,
                 region: parsedArn.region,
               }));
             }
+          } else if (Token.isUnresolved(envVariableValue)) {
+            // the value of the property can be a complex string, separated by ':';
+            // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
+            let secretArn = envVariableValue.split(':')[0];
+
+            // parse the Token, and see if it represents a single resource
+            // (we will assume it's a Secret from SecretsManager)
+            const fragments = Tokenization.reverseString(envVariableValue);
+            if (fragments.tokens.length === 1) {
+              const iresolvable = fragments.tokens[0];
+              if (Reference.isReference(iresolvable)) {
+                // check the Stack the resource owning the reference belongs to
+                const resourceStack = Stack.of(iresolvable.target);
+                if (Token.compareStrings(stack.account, resourceStack.account) === TokenComparison.DIFFERENT) {
+                  // since this is a cross-account access,
+                  // add the appropriate KMS permissions
+                  kmsIamResources.add(stack.formatArn({
+                    service: 'kms',
+                    resource: 'key',
+                    // We do not know the ID of the key, but since this is a cross-account access,
+                    // the key policies have to allow this access, so a wildcard is safe here
+                    resourceName: '*',
+                    sep: '/',
+                    partition: resourceStack.partition,
+                    account: resourceStack.account,
+                    region: resourceStack.region,
+                  }));
+
+                  // Work around a bug in SecretsManager -
+                  // when the access is cross-environment,
+                  // Secret.secretArn returns a partial ARN!
+                  // So add a "*" at the end, so that the permissions work
+                  secretArn = `${secretArn}*`;
+                }
+              }
+            }
+
+            // if we are passed a Token, we should assume it's the ARN of the Secret
+            // (as the name would not work anyway, because it would be the full name, which CodeBuild does not support)
+            secretsManagerIamResources.add(secretArn);
+          } else {
+            // the value of the property can be a complex string, separated by ':';
+            // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
+            const secretName = envVariableValue.split(':')[0];
+            secretsManagerIamResources.add(stack.formatArn({
+              service: 'secretsmanager',
+              resource: 'secret',
+              resourceName: `${secretName}-??????`,
+              sep: ':',
+            }));
           }
         }
       }
