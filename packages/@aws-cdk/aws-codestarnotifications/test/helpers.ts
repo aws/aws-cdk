@@ -6,7 +6,7 @@ export class FakeCodePipeline {
   readonly pipelineArn = 'arn:aws:codepipeline::1234567890:MyCodepipelineProject';
 }
 
-export class FakeIncorrectSource {
+export class FakeIncorrectResource {
   readonly incorrectArn = 'arn:aws:incorrect';
 }
 

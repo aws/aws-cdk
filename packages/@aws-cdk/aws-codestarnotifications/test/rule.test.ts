@@ -4,7 +4,7 @@ import * as notifications from '../lib';
 import {
   FakeCodeBuild,
   FakeCodePipeline,
-  FakeIncorrectSource,
+  FakeIncorrectResource,
   FakeSnsTopicTarget,
   FakeSlackTarget,
 } from './helpers';
@@ -142,7 +142,7 @@ describe('NotificationRule', () => {
   });
 
   test('should throws error if source is invalid', () => {
-    const someResource = new FakeIncorrectSource();
+    const someResource = new FakeIncorrectResource();
     const topic = new FakeSnsTopicTarget();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
@@ -158,7 +158,7 @@ describe('NotificationRule', () => {
 
   test('should throws error if target is invalid', () => {
     const pipeline = new FakeCodePipeline();
-    const someResource = new FakeIncorrectSource();
+    const someResource = new FakeIncorrectResource();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
       notificationRuleName: 'MyNotificationRule',
