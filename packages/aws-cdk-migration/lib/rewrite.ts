@@ -35,12 +35,6 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
     const { location: moduleSpecifier, value } = getModuleSpecifier(node) ?? {};
     if (moduleSpecifier) {
       if (moduleSpecifier.text === '@aws-cdk/core' && value) {
-        const beginningLinePos = Array.from(sourceFile.getLineStarts())
-          .reverse()
-          .find((start) => start <= node.getStart(sourceFile))
-          ?? node.getStart(sourceFile);
-        const leadingSpaces = node.getStart(sourceFile) - beginningLinePos;
-        const newImportPrefix = `\n${' '.repeat(leadingSpaces)}`;
         if (Array.isArray(value)) {
           const constructValue = value.find((val) => (val.propertyName ?? val.name).text === 'Construct');
           if (constructValue) {
@@ -48,7 +42,7 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
             constructLookFor = {
               name: constructValue.name.text,
               replacement: constructValue.name.text,
-              newImport: `${newImportPrefix}import { Construct${aliasStatement} } from 'constructs';`,
+              newImport: `import { Construct${aliasStatement} } from 'constructs';`,
             };
             const constructIndex = value.indexOf(constructValue);
             let importSpecifierStart = constructValue.getStart(sourceFile);
@@ -71,13 +65,29 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
             });
           }
         } else if (ts.isIdentifier(value as ts.Node)) {
-          constructLookFor = {
-            name: `${(value as ts.Identifier).text}.Construct`,
-            replacement: 'constructs.Construct',
-            newImport: `${newImportPrefix}import * as constructs from 'constructs';`,
-          };
+          const name = `${(value as ts.Identifier).text}.Construct`;
+          const replacement = 'constructs.Construct';
+          if (ts.isImportDeclaration(node)) {
+            constructLookFor = {
+              name,
+              replacement,
+              newImport: 'import * as constructs from \'constructs\';',
+            };
+          } else if (ts.isImportEqualsDeclaration(node)) {
+            constructLookFor = {
+              name,
+              replacement,
+              newImport: 'import constructs = require(\'constructs\');',
+            };
+          }
         }
         if (constructLookFor) {
+          const beginningLinePos = Array.from(sourceFile.getLineStarts())
+            .reverse()
+            .find((start) => start <= node.getStart(sourceFile))
+            ?? node.getStart(sourceFile);
+          const leadingSpaces = node.getStart(sourceFile) - beginningLinePos;
+          const newImportPrefix = `\n${' '.repeat(leadingSpaces)}`;
           replacements.push({
             original: {
               getStart() {
@@ -87,7 +97,7 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
                 return node.getEnd();
               },
             } as ts.Node,
-            updated: constructLookFor.newImport,
+            updated: `${newImportPrefix}${constructLookFor.newImport}`,
           });
         }
       }

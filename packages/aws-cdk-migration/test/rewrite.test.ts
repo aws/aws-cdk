@@ -87,7 +87,7 @@ describe(rewriteImports, () => {
     console.log('Look! I did something!');`);
   });
 
-  test('correctly rewrites namespaced Construct by moving to constructs', () => {
+  test('correctly rewrites import namespaced Construct by moving to constructs', () => {
     const output = rewriteImports(`
   // something before
   import * as cdk from '@aws-cdk/core';
@@ -100,6 +100,25 @@ describe(rewriteImports, () => {
   // something before
   import * as cdk from 'aws-cdk-lib';
   import * as constructs from 'constructs';
+  // something after
+
+  ${fileBody('constructs.Construct')}
+  console.log('Look! I did something!');`);
+  });
+
+  test('correctly rewrites require namespaced Construct by moving to constructs', () => {
+    const output = rewriteImports(`
+  // something before
+  import cdk = require('@aws-cdk/core');
+  // something after
+
+  ${fileBody('cdk.Construct')}
+  console.log('Look! I did something!');`, 'subject.ts');
+
+    expect(output).toBe(`
+  // something before
+  import cdk = require('aws-cdk-lib');
+  import constructs = require('constructs');
   // something after
 
   ${fileBody('constructs.Construct')}
