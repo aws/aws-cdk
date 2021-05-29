@@ -7,7 +7,7 @@ describe(rewriteImports, () => {
     import '@aws-cdk/aws-s3/hello';
     // something after
 
-    console.log('Look! I did something!');`, 'subhect.ts');
+    console.log('Look! I did something!');`, 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -23,7 +23,7 @@ describe(rewriteImports, () => {
     require('@aws-cdk/aws-s3/hello');
     // something after
 
-    console.log('Look! I did something!');`, 'subhect.ts');
+    console.log('Look! I did something!');`, 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -77,7 +77,7 @@ describe(rewriteImports, () => {
     import '@aws-cdk/assert/jest';
     // something after
 
-    console.log('Look! I did something!');`, 'subhect.ts');
+    console.log('Look! I did something!');`, 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -93,8 +93,7 @@ describe(rewriteImports, () => {
   import * as cdk from '@aws-cdk/core';
   // something after
 
-  function f(c: cdk.Construct) {
-  }
+  ${fileBody('cdk.Construct')}
   console.log('Look! I did something!');`, 'subject.ts');
 
     expect(output).toBe(`
@@ -103,8 +102,7 @@ describe(rewriteImports, () => {
   import * as constructs from 'constructs';
   // something after
 
-  function f(c: constructs.Construct) {
-  }
+  ${fileBody('constructs.Construct')}
   console.log('Look! I did something!');`);
   });
 
@@ -132,7 +130,7 @@ describe(rewriteImports, () => {
   test('correctly rewrites aliased barrel Construct by moving to constructs', () => {
     const output = rewriteImports(`
   // something before
-  import { Construct as CoreConstruct, Stack } from '@aws-cdk/core';
+  import { App, Construct as CoreConstruct } from '@aws-cdk/core';
   // something after
 
   function f(c: CoreConstruct) {
@@ -141,7 +139,7 @@ describe(rewriteImports, () => {
 
     expect(output).toBe(`
   // something before
-  import { Stack } from 'aws-cdk-lib';
+  import { App } from 'aws-cdk-lib';
   import { Construct as CoreConstruct } from 'constructs';
   // something after
 
@@ -150,3 +148,17 @@ describe(rewriteImports, () => {
   console.log('Look! I did something!');`);
   });
 });
+
+function fileBody(identifier: string) {
+  return `
+interface I {
+    c: ${identifier};
+}
+class C {
+    constructor(c: ${identifier}) {}
+}
+function f(c: ${identifier}) {
+    new ${identifier}(c as ${identifier}, 'id')
+}
+`;
+}

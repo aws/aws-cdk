@@ -13,7 +13,6 @@ import * as ts from 'typescript';
  * - `import { Type } from '@aws-cdk/lib';`
  * - `import '@aws-cdk/lib';`
  * - `import lib = require('@aws-cdk/lib');`
- * - `import { Type } = require('@aws-cdk/lib');
  * - `require('@aws-cdk/lib');
  *
  * @param sourceText the source code where imports should be re-written.
@@ -23,65 +22,121 @@ import * as ts from 'typescript';
  */
 export function rewriteImports(sourceText: string, fileName: string = 'index.ts'): string {
   const sourceFile = ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.ES2018);
-  const program = ts.createProgram([fileName], {});
-  const typeChecker = program.getTypeChecker();
 
-  const replacements = new Array<{ original: ts.Node, updatedLocation: string }>();
+  const replacements = new Array<{ original: ts.Node, updated: string }>();
+
+  let constructLookFor: {
+    name: string,
+    replacement: string,
+    newImport: string,
+  } | undefined;
 
   const visitor = <T extends ts.Node>(node: T): ts.VisitResult<T> => {
     const { location: moduleSpecifier, value } = getModuleSpecifier(node) ?? {};
     if (moduleSpecifier) {
       if (moduleSpecifier.text === '@aws-cdk/core' && value) {
-        let lookForName: string | undefined;
-        let lookForQualifier: string | undefined;
+        const beginningLinePos = Array.from(sourceFile.getLineStarts())
+          .reverse()
+          .find((start) => start <= node.getStart(sourceFile))
+          ?? node.getStart(sourceFile);
+        const leadingSpaces = node.getStart(sourceFile) - beginningLinePos;
+        const newImportPrefix = `\n${' '.repeat(leadingSpaces)}`;
         if (Array.isArray(value)) {
-          lookForName = value.find(({ property }) => property.text === 'Construct')?.alias.text;
-        } else if (ts.isIdentifier(value)) {
-          lookForName = 'Construct';
-          lookForQualifier = value.text;
+          const constructValue = value.find((val) => (val.propertyName ?? val.name).text === 'Construct');
+          if (constructValue) {
+            const aliasStatement = constructValue.propertyName ? ` as ${constructValue.name.text}` : '';
+            constructLookFor = {
+              name: constructValue.name.text,
+              replacement: constructValue.name.text,
+              newImport: `${newImportPrefix}import { Construct${aliasStatement} } from 'constructs';`,
+            };
+            const constructIndex = value.indexOf(constructValue);
+            let importSpecifierStart = constructValue.getStart(sourceFile);
+            let importSpecifierEnd = constructValue.getEnd();
+            if (constructIndex > 0) {
+              importSpecifierStart = value[constructIndex - 1].getEnd();
+            } else if (constructIndex < value.length - 1) {
+              importSpecifierEnd = value[constructIndex + 1].getStart(sourceFile);
+            }
+            replacements.push({
+              original: {
+                getStart() {
+                  return importSpecifierStart;
+                },
+                getEnd() {
+                  return importSpecifierEnd;
+                },
+              } as ts.Node,
+              updated: '',
+            });
+          }
+        } else if (ts.isIdentifier(value as ts.Node)) {
+          constructLookFor = {
+            name: `${(value as ts.Identifier).text}.Construct`,
+            replacement: 'constructs.Construct',
+            newImport: `${newImportPrefix}import * as constructs from 'constructs';`,
+          };
         }
-        lookForName ?? '' + lookForQualifier ?? '';
+        if (constructLookFor) {
+          replacements.push({
+            original: {
+              getStart() {
+                return node.getEnd();
+              },
+              getEnd() {
+                return node.getEnd();
+              },
+            } as ts.Node,
+            updated: constructLookFor.newImport,
+          });
+        }
       }
 
       const newTarget = updatedLocationOf(moduleSpecifier.text);
       if (newTarget != null) {
-        replacements.push({ original: moduleSpecifier, updatedLocation: newTarget });
-      }
-
-      // eslint-disable-next-line no-console
-      console.log(node);
-      const symbol = typeChecker.getSymbolAtLocation(node);
-      if (symbol) {
-        // eslint-disable-next-line no-console
-        console.log(typeChecker.getFullyQualifiedName(symbol));
+        replacements.push({
+          original: {
+            getStart() {
+              return moduleSpecifier.getStart(sourceFile) + 1;
+            },
+            getEnd() {
+              return moduleSpecifier.getEnd() - 1;
+            },
+          } as ts.Node,
+          updated: newTarget,
+        });
       }
     }
 
-    return node;
+    if (
+      constructLookFor
+        && (ts.isTypeReferenceNode(node) || ts.isPropertyAccessExpression(node)) && node.getText(sourceFile) === constructLookFor.name
+    ) {
+      replacements.push({ original: node, updated: constructLookFor.replacement });
+    }
+
+    node.forEachChild(visitor);
+
+    return undefined;
   };
 
-  ts.forEachChild(sourceFile, node => visitor(node));
+  sourceFile.forEachChild(visitor);
 
   let updatedSourceText = sourceText;
   // Applying replacements in reverse order, so node positions remain valid.
   for (const replacement of replacements.sort(({ original: l }, { original: r }) => r.getStart(sourceFile) - l.getStart(sourceFile))) {
-    const prefix = updatedSourceText.substring(0, replacement.original.getStart(sourceFile) + 1);
-    const suffix = updatedSourceText.substring(replacement.original.getEnd() - 1);
+    const prefix = updatedSourceText.substring(0, replacement.original.getStart(sourceFile));
+    const suffix = updatedSourceText.substring(replacement.original.getEnd());
 
-    updatedSourceText = prefix + replacement.updatedLocation + suffix;
+    updatedSourceText = prefix + replacement.updated + suffix;
   }
 
   return updatedSourceText;
 }
 
-interface ImportName {
-  property: ts.Identifier;
-  alias: ts.Identifier;
-}
-
 interface Import {
   location: ts.StringLiteral;
-  value?: ts.Identifier | ImportName[];
+  value?: ts.Identifier | ts.NodeArray<ts.ImportSpecifier>;
 }
 
 function getModuleSpecifier(node: ts.Node): Import | undefined {
@@ -98,11 +153,13 @@ function getModuleSpecifier(node: ts.Node): Import | undefined {
       } else if (ts.isNamedImports(node.importClause.namedBindings)) {
         return {
           location: location,
-          value: node.importClause.namedBindings.elements.map((element) => {
-            return { property: element.propertyName ?? element.name, alias: element.name };
-          }),
+          value: node.importClause.namedBindings.elements,
         };
       }
+    } else {
+      return {
+        location: location,
+      };
     }
   } else if (
     ts.isImportEqualsDeclaration(node)
@@ -127,34 +184,24 @@ function getModuleSpecifier(node: ts.Node): Import | undefined {
         location: argument,
       };
     }
-  } else if (ts.isExpressionStatement(node) && ts.isCallExpression(node.expression)) {
-    // require('location'); // This is an alternate AST version of it
-    return getModuleSpecifier(node.expression);
   }
   return undefined;
 }
 
 const EXEMPTIONS = new Set([
   '@aws-cdk/cloudformation-diff',
+  '@aws-cdk/assert',
+  '@aws-cdk/assert/jest',
 ]);
 
 function updatedLocationOf(modulePath: string): string | undefined {
+  let updated: string | undefined;
   if (!modulePath.startsWith('@aws-cdk/') || EXEMPTIONS.has(modulePath)) {
-    return undefined;
+    updated = undefined;
+  } else if (modulePath === '@aws-cdk/core') {
+    updated = 'aws-cdk-lib';
+  } else {
+    updated = `aws-cdk-lib/${modulePath.substring(9)}`;
   }
-
-  if (modulePath === '@aws-cdk/core') {
-    return 'aws-cdk-lib';
-  }
-
-  // These 2 are unchanged
-  if (modulePath === '@aws-cdk/assert') {
-    return '@aws-cdk/assert';
-  }
-
-  if (modulePath === '@aws-cdk/assert/jest') {
-    return '@aws-cdk/assert/jest';
-  }
-
-  return `aws-cdk-lib/${modulePath.substring(9)}`;
+  return updated;
 }
