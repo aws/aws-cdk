@@ -9,11 +9,3 @@ export class FakeCodePipeline {
 export class FakeIncorrectResource {
   readonly incorrectArn = 'arn:aws:incorrect';
 }
-
-export class FakeSnsTopicTarget {
-  readonly topicArn = 'arn:aws:sns::1234567890:MyTopic';
-}
-
-export class FakeSlackTarget {
-  readonly slackChannelConfigurationArn = 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel';
-}

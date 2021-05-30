@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import * as events from './event';
 import { SourceConfig, SourceType, IRuleSource } from './source';
-import { IRuleTarget, TargetConfig, TargetType } from './target';
+import { IRuleTarget, TargetConfig } from './target';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -168,7 +168,7 @@ export class Rule extends RuleBase {
    * @param target The SNS topic or AWS Chatbot Slack target
    */
   public addTarget(target: IRuleTarget) {
-    this.targets.push(this.bindTarget(target));
+    this.targets.push(target.bind(this));
   }
 
   private validateSourceEvent(props: RuleProps): void {
@@ -188,24 +188,6 @@ export class Rule extends RuleBase {
         throw new Error(`${event} event id is not valid in ${this.source.sourceType}`);
       }
     });
-  }
-
-  private bindTarget(target: IRuleTarget): TargetConfig {
-    if (target.topicArn) {
-      return {
-        targetType: TargetType.SNS,
-        targetAddress: target.topicArn,
-      }
-    }
-
-    if (target.slackChannelConfigurationArn) {
-      return {
-        targetType: TargetType.AWS_CHATBOT_SLACK,
-        targetAddress: target.slackChannelConfigurationArn,
-      }
-    }
-
-    throw new Error('"target" property must have "topicArn" or "slackChannelConfigurationArn"');
   }
 
   private bindSource(source: IRuleSource): SourceConfig {

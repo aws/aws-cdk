@@ -1,3 +1,9 @@
+import * as chatbot from '@aws-cdk/aws-chatbot';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
+import * as notifications from './rule';
+
+
 /**
  * The target type of the notification rule.
  */
@@ -35,22 +41,52 @@ export interface TargetConfig {
  * That allows AWS Chatbot and SNS topic to associate with this rule target.
  */
 export interface IRuleTarget {
-
   /**
-   * The ARN of the Slack channel configuration
-   * It's own property of Slack channel configuration in AWS Chatbot, which means it should be type of slack channel configuration in AWS Chatbot if the target has `slackChannelConfigurationArn` property.
-   * In the form of arn:aws:chatbot:{region}:{account}:chat-configuration/slack-channel/{slackChannelName}
-   *
-   * @default None
+   * Binds target to notification rule
+   * @param _notificationRule The notification rule
    */
-  readonly slackChannelConfigurationArn?: string;
+  bind(_notificationRule: notifications.IRule): TargetConfig;
+}
 
+/**
+ * A Slack notification target
+ */
+export class SlackNotificationTarget implements IRuleTarget {
   /**
-   * The ARN of the SNS topic
-   * It's own property of SNS topic, which means it should be type of SNS topic if the target has `topicArn` property.
-   * In the form of arn:aws:sns:{region}:{account}:{topicName}
-   *
-   * @default None
+   * @param slackChannel The Slack channel configuration
    */
-  readonly topicArn?: string;
+  constructor(readonly slackChannel: chatbot.ISlackChannelConfiguration) {}
+
+  public bind(
+    _notificationRule: notifications.IRule,
+  ): TargetConfig {
+    return {
+      targetType: TargetType.AWS_CHATBOT_SLACK,
+      targetAddress: this.slackChannel.slackChannelConfigurationArn,
+    };
+  }
+}
+
+/**
+ * A SNS topic notification target
+ */
+export class SnsTopicNotificationTarget implements IRuleTarget {
+  /**
+   * @param topic The SNS topic
+   */
+  constructor(readonly topic: sns.ITopic) {}
+
+  public bind(
+    _notificationRule: notifications.IRule,
+  ): TargetConfig {
+
+    // SNS topic need grant codestar-notifications service to publish
+    // @see https://docs.aws.amazon.com/dtconsole/latest/userguide/set-up-sns.html
+    this.topic.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));
+
+    return {
+      targetType: TargetType.SNS,
+      targetAddress: this.topic.topicArn,
+    };
+  }
 }
