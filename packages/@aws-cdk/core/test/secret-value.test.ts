@@ -21,34 +21,24 @@ nodeunitShim({
     // WHEN
     const v = SecretValue.secretsManager('secret-id', {
       jsonField: 'json-key',
-      versionStage: 'version-stage',
       versionId: '',
-      account: '123456789012',
+      versionStage: 'version-stage',
     });
 
     // THEN
     test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:json-key:version-stage:}}');
-    test.equal(v.secretQualifier, {
-      secretId: 'secret-id',
-      jsonField: 'json-key',
-      versionStage: 'version-stage',
-      versionId: '',
-      account: '123456789012',
-    });
     test.done();
   },
 
   'secretsManager with defaults'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const secretId = 'secret-id';
 
     // WHEN
-    const v = SecretValue.secretsManager(secretId);
+    const v = SecretValue.secretsManager('secret-id');
 
     // THEN
     test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:::}}');
-    test.equal(v.secretQualifier, { secretId: secretId });
     test.done();
   },
 

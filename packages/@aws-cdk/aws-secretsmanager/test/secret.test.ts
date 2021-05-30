@@ -426,8 +426,6 @@ test('secretValue', () => {
       ]],
     },
   });
-
-  expect(secret.secretValue.secretQualifier).toEqual({ secretId: secret.secretArn, jsonField: '', account: stack.account });
 });
 
 describe('secretName', () => {

@@ -253,7 +253,7 @@ abstract class SecretBase extends Resource implements ISecret {
   }
 
   public secretValueFromJson(jsonField: string) {
-    return SecretValue.secretsManager(this.secretArn, { jsonField, account: this.env.account });
+    return SecretValue.secretsManager(this.secretArn, { jsonField });
   }
 
   public addRotationSchedule(id: string, options: RotationScheduleOptions): RotationSchedule {

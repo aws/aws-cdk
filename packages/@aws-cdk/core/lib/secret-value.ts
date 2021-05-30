@@ -1,6 +1,6 @@
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
 import { CfnParameter } from './cfn-parameter';
-import { Intrinsic, IntrinsicProps } from './private/intrinsic';
+import { Intrinsic } from './private/intrinsic';
 
 /**
  * Work with secret values in the CDK
@@ -56,15 +56,7 @@ export class SecretValue extends Intrinsic {
     ];
 
     const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
-    const secretQualifier: SecretQualifier = {
-      secretId,
-      jsonField: options.jsonField,
-      versionStage: options.versionStage,
-      versionId: options.versionId,
-      account: options.account,
-    };
-    const props: SecretValueProps = { secretQualifier };
-    return new SecretValue(dyref, props);
+    return this.cfnDynamicReference(dyref);
   }
 
   /**
@@ -108,18 +100,6 @@ export class SecretValue extends Intrinsic {
 
     return new SecretValue(param.value);
   }
-
-  /**
-   * Specifies the secret qualifiers when they were provided for a value from SecretsManager
-   */
-  readonly secretQualifier?: SecretQualifier;
-
-  constructor(value: any, props?: IntrinsicProps)
-  constructor(value: any, props: SecretValueProps = {}) {
-    super(value, props);
-
-    this.secretQualifier = props.secretQualifier;
-  }
 }
 
 /**
@@ -151,63 +131,4 @@ export interface SecretsManagerSecretOptions {
    * @default - returns all the content stored in the Secrets Manager secret.
    */
   readonly jsonField?: string;
-
-  /**
-   * The account which holds the Secret
-   *
-   * @default - undefined
-   */
-  readonly account?: string
-}
-
-/**
- * Properties for a Secret Value
- */
-export interface SecretValueProps extends IntrinsicProps {
-  /**
-   * The qualifiers of a Secret from SecretsManager
-   *
-   * @default - no qualifiers will be defined.
-   */
-  readonly secretQualifier?: SecretQualifier;
-}
-
-/**
- * Qualifiers of a Secret from SecretsManager
- */
-export interface SecretQualifier {
-  /**
-   * The Arn of the Secret
-   *
-   * @default - the ID or Arn of the secret.
-   */
-  readonly secretId: string;
-
-  /**
-   * The key of a JSON field to retrieve.
-   *
-   * @default - all the content stored in the Secrets Manager secret.
-   */
-  readonly jsonField?: string;
-
-  /**
-   * Specifies the secret version that you want to retrieve by the staging label attached to the version.
-   *
-   * @default - AWSCURRENT.
-   */
-  readonly versionStage?: string;
-
-  /**
-   * Specifies the unique identifier of the version of the secret you want to use.
-   *
-   * @default - AWSCURRENT.
-   */
-  readonly versionId?: string;
-
-  /**
-   * The account which holds the Secret
-   *
-   * @default - undefined
-   */
-  readonly account?: string;
 }
