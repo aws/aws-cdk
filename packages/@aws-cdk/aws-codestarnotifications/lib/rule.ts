@@ -195,7 +195,7 @@ export class Rule extends RuleBase {
 
     // should throw error if multiple sources are specified
     if ([projectArn, pipelineArn].filter(arn => arn !== undefined).length > 1) {
-      throw new Error(`only one source can be specified`);
+      throw new Error('only one source can be specified');
     }
 
     if (projectArn) {
