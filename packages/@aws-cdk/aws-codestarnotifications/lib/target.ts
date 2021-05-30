@@ -80,7 +80,7 @@ export class SnsTopicNotificationTarget implements IRuleTarget {
     _notificationRule: notifications.IRule,
   ): TargetConfig {
 
-    // SNS topic need grant codestar-notifications service to publish
+    // SNS topic need to grant codestar-notifications service to publish
     // @see https://docs.aws.amazon.com/dtconsole/latest/userguide/set-up-sns.html
     this.topic.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));
 

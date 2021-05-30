@@ -191,6 +191,10 @@ export class Rule extends RuleBase {
   }
 
   private bindSource(source: IRuleSource): SourceConfig {
+    if (Object.values(source).length > 1) {
+      throw new Error(`only one source can be specified`);
+    }
+
     if (source.projectArn) {
       return {
         sourceType: SourceType.CODE_BUILD,

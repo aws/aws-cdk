@@ -23,9 +23,10 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-## Example
+## Rule
 
-### Codebuild
+The `Rule` construct defines an AWS CodeStarNotifications rule.
+The rule specifies the events you want notifications about and the targets (such as Amazon SNS topics or AWS Chatbot clients configured for Slack) where you want to receive them. notification targets are objects that implement the `IRuleTarget` interface and notification source is object that implement the `IRuleSource` interface.
 
 ```ts
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
@@ -38,9 +39,9 @@ const project = new codebuild.Project(stack, 'MyProject', {});
 const topic = new sns.Topic(stack, 'MyTopic1', {});
 
 const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-    slackChannelConfigurationName: 'MySlackChannel',
-    slackWorkspaceId: 'ABC123',
-    slackChannelId: 'DEF456',
+    slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+    slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+    slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
 });
 
 const rule = new notifications.Rule(stack, 'NotificationRule', {
@@ -51,8 +52,91 @@ const rule = new notifications.Rule(stack, 'NotificationRule', {
   ],
   source: project,
   targets: [
-    topic,
-    slack,
+    new notifications.SnsTopicNotificationTarget(topic),
+    new notifications.SlackNotificationTarget(slack),
   ],
 });
 ```
+
+## Notification Targets
+
+This module includes classes that implement the `IRuleTarget` interface for SNS and slack in AWS Chatbot.
+
+The following targets are supported:
+
+* `SNS`: specify event and notify to SNS topic.
+* `AWS Chatbot`: specify event and notify to slack channel and only support `SlackChannelConfiguration`.
+
+```ts
+const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {});
+
+const topic = new sns.Topic(stack, 'MyTopic1', {});
+
+const rule = new notifications.Rule(stack, 'NotificationRule', {
+  ruleName: 'MyNotificationRule',
+  events: [
+    notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+    notifications.ProjectEvent.BUILD_STATE_FAILED,
+  ],
+  source: pipeline,
+  targets: [
+    new notifications.SnsTopicNotificationTarget(topic),
+  ],
+});
+
+const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+    slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+    slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+    slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+});
+
+rule.addTarget(new notifications.SlackNotificationTarget(slack));
+```
+
+## Notification Source
+
+This module includes classes that implement the `IRuleSource` interface for AWS CodeBuild, AWS CodePipeline and will support AWS CodeCommit, AWS CodeDeploy in future.
+
+The following sources are supported:
+
+* `AWS CodeBuild`: support codebuild project to trigger notification when event specified.
+* `AWS CodePipeline`: support codepipeline to trigger notification when event specified.
+
+```ts
+// You can also pass the `projectArn` or `pipelineArn`
+const rule = new notifications.Rule(stack, 'NotificationRule', {
+  ruleName: 'MyNotificationRule',
+  events: [
+    notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+    notifications.ProjectEvent.BUILD_STATE_FAILED,
+  ],
+  source: {
+    projectArn: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+  },
+  targets: [
+    new notifications.SnsTopicNotificationTarget(topic),
+  ],
+});
+
+const rule = new notifications.Rule(stack, 'NotificationRule', {
+  ruleName: 'MyNotificationRule',
+  events: [
+    notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+    notifications.ProjectEvent.BUILD_STATE_FAILED,
+  ],
+  source: {
+    pipelineArn: 'arn:aws:codepipeline::1234567890:MyCodepipelineProject',
+  },
+  targets: [
+    new notifications.SnsTopicNotificationTarget(topic),
+  ],
+});
+```
+
+## Events
+
+The list of event types for AWS Codebuild and AWS CodePipeline, for more information, see the
+
+[Events for notification rules on build projects](https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject).
+
+[Events for notification rules on pipelines](https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline).
