@@ -9,7 +9,7 @@ import {
   FakeIncorrectResource,
 } from './helpers';
 
-describe('NotificationRule', () => {
+describe('Rule', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {

@@ -191,21 +191,24 @@ export class Rule extends RuleBase {
   }
 
   private bindSource(source: IRuleSource): SourceConfig {
-    if (Object.values(source).length > 1) {
+    const { projectArn, pipelineArn } = source;
+
+    // should throw error if multiple sources are specified
+    if ([projectArn, pipelineArn].filter(arn => arn !== undefined).length > 1) {
       throw new Error(`only one source can be specified`);
     }
 
-    if (source.projectArn) {
+    if (projectArn) {
       return {
         sourceType: SourceType.CODE_BUILD,
-        sourceAddress: source.projectArn,
+        sourceAddress: projectArn,
       };
     }
 
-    if (source.pipelineArn) {
+    if (pipelineArn) {
       return {
         sourceType: SourceType.CODE_PIPELINE,
-        sourceAddress: source.pipelineArn,
+        sourceAddress: pipelineArn,
       };
     }
 
