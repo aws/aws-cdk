@@ -299,7 +299,7 @@ test('Local bundling', () => {
     expect.arrayContaining(['-c', expect.stringContaining(entry)]),
     expect.objectContaining({
       env: expect.objectContaining({ KEY: 'value' }),
-      cwd: '/project/lib',
+      cwd: '/project',
     }),
   );
 
