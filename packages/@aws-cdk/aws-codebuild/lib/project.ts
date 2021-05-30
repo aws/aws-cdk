@@ -732,11 +732,11 @@ export class Project extends ProjectBase {
       };
       ret.push(cfnEnvVariable);
 
+      // validate that the plain-text environment variables don't contain any secrets in them
       if (validateNoPlainTextSecrets && cfnEnvVariable.type === BuildEnvironmentVariableType.PLAINTEXT) {
         const fragments = Tokenization.reverseString(cfnEnvVariable.value);
         for (const token of fragments.tokens) {
           if (token instanceof SecretValue) {
-            // validate that the plain-text environment variables don't contain any secrets in them
             throw new Error(`Plaintext environment variable '${name}' contains a secret value! ` +
               'This means the value of this variable will be visible in plain text in the AWS Console. ' +
               "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
