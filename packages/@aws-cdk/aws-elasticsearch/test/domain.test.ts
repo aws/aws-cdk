@@ -1368,7 +1368,7 @@ describe('custom error responses', () => {
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3 instance types do not support EBS storage volumes/);
+    })).toThrow(/I3 and R6GD instance types do not support EBS storage volumes/);
   });
 
   test('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {
