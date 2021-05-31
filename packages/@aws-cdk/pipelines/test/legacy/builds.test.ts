@@ -14,8 +14,11 @@ let pipelineStack: Stack;
 let sourceArtifact: codepipeline.Artifact;
 let cloudAssemblyArtifact: codepipeline.Artifact;
 
+// Must be unique across all test files, but preferably also consistent
+const OUTDIR = 'testcdk0.out';
+
 beforeEach(() => {
-  app = new TestApp({ outdir: 'testcdk.out' });
+  app = new TestApp({ outdir: OUTDIR });
   pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   sourceArtifact = new codepipeline.Artifact();
   cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
@@ -466,7 +469,7 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
   expect(hash3).not.toEqual(hash4);
 
   function synthWithAction(cb: (sourceArtifact: codepipeline.Artifact, cloudAssemblyArtifact: codepipeline.Artifact) => codepipeline.IAction) {
-    const _app = new TestApp({ outdir: 'testcdk.out' });
+    const _app = new TestApp({ outdir: OUTDIR });
     const _pipelineStack = new Stack(_app, 'PipelineStack', { env: PIPELINE_ENV });
     const _sourceArtifact = new codepipeline.Artifact();
     const _cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');

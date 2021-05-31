@@ -1,14 +1,43 @@
 import { addAll, extract, flatMap, flatten } from '../_util';
 import { topoSort } from './toposort';
 
-export abstract class ExecutionNode {
-  public readonly dependencies: ExecutionNode[] = [];
-  private _parentGraph?: ExecutionGraph;
 
-  constructor(public readonly name: string) {
+/**
+ * Role of this node in the workflow
+ *
+ * This is to distinguish the function of multiple nodes of the
+ * same type (primarily multiple Workflows and ShellActions).
+ */
+export enum WorkflowRole {
+  ROOT,
+  GROUP,
+  GENERIC,
+  BUILD,
+  DEPLOY_STACK,
+  DEPLOY_STAGE,
+  PUBLISH_ASSET,
+  PREPARE_CHANGESET,
+  EXECUTE_CHANGESET,
+}
+
+export interface WorkflowNodeProps {
+  /**
+   * Optional role for the workflow node
+   *
+   * @default WorkflowRole.GENERIC
+   */
+  readonly role?: WorkflowRole;
+}
+export abstract class WorkflowNode {
+  public readonly dependencies: WorkflowNode[] = [];
+  public readonly role: WorkflowRole;
+  private _parentGraph?: Workflow;
+
+  constructor(public readonly name: string, props: WorkflowNodeProps={}) {
+    this.role = props.role ?? WorkflowRole.GENERIC;
   }
 
-  public dependOn(...dependencies: ExecutionNode[]) {
+  public dependOn(...dependencies: WorkflowNode[]) {
     if (dependencies.includes(this)) {
       throw new Error(`Cannot add dependency on self: ${this}`);
     }
@@ -22,7 +51,7 @@ export abstract class ExecutionNode {
   /**
    * @internal
    */
-  public _setParentGraph(parentGraph: ExecutionGraph) {
+  public _setParentGraph(parentGraph: Workflow) {
     if (this._parentGraph) {
       throw new Error('Node already has a parent');
     }
@@ -34,35 +63,50 @@ export abstract class ExecutionNode {
   }
 }
 
-export class ExecutionGraph extends ExecutionNode {
-  private readonly nodes = new Set<ExecutionNode>();
+export interface WorkflowProps extends WorkflowNodeProps{
+  /**
+   * Initial nodes in the workflow
+   */
+  readonly nodes?: WorkflowNode[];
+}
 
-  constructor(name: string, nodes?: ExecutionNode[]) {
-    super(name);
-    if (nodes) {
-      this.add(...nodes);
+export class Workflow extends WorkflowNode {
+  private readonly nodes = new Set<WorkflowNode>();
+
+  constructor(name: string, props: WorkflowProps={}) {
+    super(name, props);
+
+    if (props.nodes) {
+      this.add(...props.nodes);
     }
   }
 
-  public contains(node: ExecutionNode) {
+  public tryGetChild(name: string) {
+    for (const n of this.nodes) {
+      if (n.name === name) { return n; }
+    }
+    return undefined;
+  }
+
+  public contains(node: WorkflowNode) {
     return this.nodes.has(node);
   }
 
-  public add(...nodes: ExecutionNode[]) {
+  public add(...nodes: Array<WorkflowNode>) {
     for (const node of nodes) {
       node._setParentGraph(this);
       this.nodes.add(node);
     }
   }
 
-  public absorb(other: ExecutionGraph) {
+  public absorb(other: Workflow) {
     this.add(...other.nodes);
   }
 
   /**
    * Return topologically sorted tranches of nodes at this graph level
    */
-  public sortedChildren(): ExecutionNode[][] {
+  public sortedChildren(): WorkflowNode[][] {
     // Project dependencies to current children
     const projectedDependencies = projectDependencies(this.deepDependencies(), (node) => {
       while (!this.nodes.has(node) && node.parentGraph) {
@@ -77,15 +121,15 @@ export class ExecutionGraph extends ExecutionNode {
   /**
    * Return a topologically sorted list of non-Graph nodes in the entire subgraph
    */
-  public sortedLeaves(): ExecutionNode[][] {
+  public sortedLeaves(): WorkflowNode[][] {
     // Project dependencies to leaf nodes
-    const descendantsMap = new Map<ExecutionNode, ExecutionNode[]>();
+    const descendantsMap = new Map<WorkflowNode, WorkflowNode[]>();
     findDescendants(this);
 
-    function findDescendants(node: ExecutionNode): ExecutionNode[] {
-      const ret: ExecutionNode[] = [];
+    function findDescendants(node: WorkflowNode): WorkflowNode[] {
+      const ret: WorkflowNode[] = [];
 
-      if (node instanceof ExecutionGraph) {
+      if (node instanceof Workflow) {
         for (const child of node.nodes) {
           ret.push(...findDescendants(child));
         }
@@ -105,7 +149,7 @@ export class ExecutionGraph extends ExecutionNode {
     // eslint-disable-next-line no-console
     console.log(' '.repeat(indent) + this + depString(this));
     for (const node of this.nodes) {
-      if (node instanceof ExecutionGraph) {
+      if (node instanceof Workflow) {
         node.consoleLog(indent + 2);
       } else {
         // eslint-disable-next-line no-console
@@ -113,7 +157,7 @@ export class ExecutionGraph extends ExecutionNode {
       }
     }
 
-    function depString(node: ExecutionNode) {
+    function depString(node: WorkflowNode) {
       if (node.dependencies.length > 0) {
         return ` -> ${Array.from(node.dependencies).join(', ')}`;
       }
@@ -125,13 +169,13 @@ export class ExecutionGraph extends ExecutionNode {
    * Return the union of all dependencies of the descendants of this graph
    */
   private deepDependencies() {
-    const ret = new Map<ExecutionNode, Set<ExecutionNode>>();
+    const ret = new Map<WorkflowNode, Set<WorkflowNode>>();
     for (const node of this.nodes) {
       recurse(node);
     }
     return ret;
 
-    function recurse(node: ExecutionNode) {
+    function recurse(node: WorkflowNode) {
       let deps = ret.get(node);
       if (!deps) {
         ret.set(node, deps = new Set());
@@ -139,7 +183,7 @@ export class ExecutionGraph extends ExecutionNode {
       for (let dep of node.dependencies) {
         deps.add(dep);
       }
-      if (node instanceof ExecutionGraph) {
+      if (node instanceof Workflow) {
         for (const child of node.nodes) {
           recurse(child);
         }
@@ -148,32 +192,22 @@ export class ExecutionGraph extends ExecutionNode {
   }
 }
 
-export class PipelineGraph extends ExecutionGraph {
-  public readonly sourceStage = new ExecutionGraph('Source');
-  public readonly synthStage = new ExecutionGraph('Synth');
-  private _cloudAssemblyArtifact?: ExecutionArtifact;
+export class RolloutWorkflow extends Workflow {
+  public readonly sourceStage = new Workflow('Source');
+  public readonly buildStage = new Workflow('Synth');
+  private _cloudAssemblyArtifact?: WorkflowArtifact;
 
   constructor() {
-    super('Pipeline');
+    super('Pipeline', { role: WorkflowRole.ROOT });
     this.add(this.sourceStage);
-    this.add(this.synthStage);
+    this.add(this.buildStage);
   }
 
   /**
    * Return sorted list of non-predefined stages
    */
   public get sortedAdditionalStages() {
-    return Array.from(flatten(this.sortedChildren())).filter(n => n !== this.sourceStage && n !== this.synthStage);
-  }
-
-  public get sourceArtifacts() {
-    const ret: ExecutionArtifact[] = [];
-    for (const node of flatten(this.sourceStage.sortedLeaves())) {
-      if (node instanceof ExecutionSourceAction) {
-        ret.push(node.outputArtifact);
-      }
-    }
-    return ret;
+    return Array.from(flatten(this.sortedChildren())).filter(n => n !== this.sourceStage && n !== this.buildStage);
   }
 
   public get cloudAssemblyArtifact() {
@@ -183,31 +217,31 @@ export class PipelineGraph extends ExecutionGraph {
     return this._cloudAssemblyArtifact;
   }
 
-  public recordCloudAssemblyArtifact(artifact: ExecutionArtifact) {
+  public recordCloudAssemblyArtifact(artifact: WorkflowArtifact) {
     this._cloudAssemblyArtifact = artifact;
   }
 }
 
-export class ExecutionAction extends ExecutionNode {
+export class WorkflowAction extends WorkflowNode {
 }
 
-export class ExecutionArtifact {
-  private _producer?: ExecutionAction;
+export class WorkflowArtifact {
+  private _producer?: WorkflowNode;
 
-  constructor(public readonly name: string, producer?: ExecutionAction) {
+  constructor(public readonly name: string, producer?: WorkflowNode) {
     this._producer = producer;
   }
 
   public get producer() {
     if (!this._producer) {
-      throw new Error('Artifact doesn\'t have a producer');
+      throw new Error(`Artifact '${this.name}' doesn\'t have a producer; call 'artifact.producedBy()'`);
     }
     return this._producer;
   }
 
-  public producedBy(producer?: ExecutionAction) {
+  public producedBy(producer?: WorkflowNode) {
     if (this._producer) {
-      throw new Error(`Artifact already has a producer (${this._producer}) while setting producer: ${producer}`);
+      throw new Error(`Artifact '${this.name}' already has a producer (${this._producer}) while setting producer: ${producer}`);
     }
     this._producer = producer;
   }
@@ -218,7 +252,7 @@ export class ExecutionArtifact {
  *
  * Guaranteed to return an entry in the map for every node in the current graph.
  */
-function projectDependencies(dependencies: Map<ExecutionNode, Set<ExecutionNode>>, project: (x: ExecutionNode) => ExecutionNode[]) {
+function projectDependencies(dependencies: Map<WorkflowNode, Set<WorkflowNode>>, project: (x: WorkflowNode) => WorkflowNode[]) {
   // Project keys
   for (const node of dependencies.keys()) {
     const projectedNodes = project(node);
@@ -243,8 +277,8 @@ function projectDependencies(dependencies: Map<ExecutionNode, Set<ExecutionNode>
 /**
  * Returns the graph node that's shared between these nodes
  */
-export function commonAncestor(xs: Iterable<ExecutionNode>) {
-  const paths = new Array<ExecutionNode[]>();
+export function commonAncestor(xs: Iterable<WorkflowNode>) {
+  const paths = new Array<WorkflowNode[]>();
   for (const x of xs) {
     paths.push(rootPath(x));
   }
@@ -282,7 +316,7 @@ export function commonAncestor(xs: Iterable<ExecutionNode>) {
   return paths[0][0];
 }
 
-export function ancestorPath(x: ExecutionNode, upTo: ExecutionNode): ExecutionNode[] {
+export function ancestorPath(x: WorkflowNode, upTo: WorkflowNode): WorkflowNode[] {
   const ret = [x];
   while (x.parentGraph && x.parentGraph !== upTo) {
     x = x.parentGraph;
@@ -291,7 +325,7 @@ export function ancestorPath(x: ExecutionNode, upTo: ExecutionNode): ExecutionNo
   return ret;
 }
 
-function rootPath(x: ExecutionNode): ExecutionNode[] {
+function rootPath(x: WorkflowNode): WorkflowNode[] {
   const ret = [x];
   while (x.parentGraph) {
     x = x.parentGraph;
@@ -300,9 +334,11 @@ function rootPath(x: ExecutionNode): ExecutionNode[] {
   return ret;
 }
 
+export function isWorkflow(x: WorkflowNode): x is Workflow {
+  return x instanceof Workflow;
+}
+
 // eslint-disable-next-line import/order
-import { ExecutionSourceAction } from './source-actions';
-export * from './source-actions';
 export * from './shell-action';
 export * from './cloudformation-actions';
 export * from './manual-approval-action';

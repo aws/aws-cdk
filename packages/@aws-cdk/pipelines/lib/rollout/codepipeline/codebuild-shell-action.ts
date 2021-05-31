@@ -1,3 +1,4 @@
+
 import * as crypto from 'crypto';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -6,11 +7,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { mapValues, noEmptyObject } from '../../_util';
-import { ExecutionShellAction, ShellArtifact } from '../../graph';
-import { CommandImage, ComputeType } from '../../shared';
+import { mapValues, noEmptyObject } from '../_util';
+import { WorkflowShellAction, ShellArtifact } from '../workflow';
 import { ArtifactMap } from './artifact-map';
-import { CodePipelineImage } from './codepipeline-image';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -20,11 +19,6 @@ import { Construct } from '@aws-cdk/core';
  * Construction props for SimpleSynthAction
  */
 export interface CodePipelineShellActionProps {
-  /**
-   * Execution node the shell action's configuration will be based on
-   */
-  readonly actionBase: ExecutionShellAction;
-
   /**
    * Name of the action
    */
@@ -78,25 +72,53 @@ export interface CodePipelineShellActionProps {
   readonly includeBuildHashInPipeline?: boolean;
 
   /**
-   * Compute type
-   *
-   * @default - CodeBuild default
+   * Install commands
    */
-  readonly computeType?: ComputeType;
+  readonly installCommands?: string[];
 
   /**
-   * Command image
-   *
-   * @default - CodeBuild default
+   * Build commands
    */
-  readonly commandImage?: CommandImage;
+  readonly buildCommands: string[];
 
+
+  /**
+   * Build environment
+   */
+  readonly buildEnvironment?: codebuild.BuildEnvironment;
+
+
+  /**
+   * The environment variables that your builds can use.
+   */
+  readonly environmentVariables?: Record<string, string>;
+
+  /**
+   * Inputs
+   */
+  readonly inputs?: ShellArtifact[];
+
+  /**
+   * Outputs
+   */
+  readonly outputs?: ShellArtifact[];
 }
 
 /**
  * A standard synth with a generated buildspec
  */
-export class CodePipelineShellAction implements codepipeline.IAction, iam.IGrantable {
+export class CodeBuildShellAction implements codepipeline.IAction, iam.IGrantable {
+  public static propsFromWorkflowAction(wf: WorkflowShellAction) {
+    return {
+      installCommands: wf.installCommands,
+      buildCommands: wf.commands,
+      commands: wf.commands,
+      environmentVariables: wf.environmentVariables,
+      inputs: wf.inputs,
+      outputs: wf.outputs,
+    } as const;
+  }
+
   private _action?: codepipeline_actions.CodeBuildAction;
   private _actionProperties: codepipeline.ActionProperties;
   private _project?: codebuild.IProject;
@@ -109,18 +131,19 @@ export class CodePipelineShellAction implements codepipeline.IAction, iam.IGrant
   private readonly outputArtifacts: codepipeline.Artifact[];
 
   constructor(private readonly props: CodePipelineShellActionProps) {
-    const base = props.actionBase;
+    const inputs = props.inputs ?? [];
+    const outputs = props.outputs ?? [];
 
-    const mainInputs = base.inputs.filter(x => x.directory === '.');
+    const mainInputs = inputs.filter(x => x.directory === '.');
     if (mainInputs.length !== 1) {
       throw new Error('CodeBuild action must have exactly one input with directory \'.\'');
     }
     this.mainInput = mainInputs[0];
-    this.extraInputs = base.inputs.filter(x => x !== this.mainInput);
+    this.extraInputs = inputs.filter(x => x !== this.mainInput);
 
     this.inputArtifact = props.artifactMap.toCodePipeline(this.mainInput.artifact);
     this.extraInputArtifacts = this.extraInputs.map(x => props.artifactMap.toCodePipeline(x.artifact));
-    this.outputArtifacts = base.outputs.map(x => props.artifactMap.toCodePipeline(x.artifact));
+    this.outputArtifacts = outputs.map(x => props.artifactMap.toCodePipeline(x.artifact));
 
     // A number of actionProperties get read before bind() is even called (so before we
     // have made the Project and can construct the actual CodeBuildAction)
@@ -163,25 +186,20 @@ export class CodePipelineShellAction implements codepipeline.IAction, iam.IGrant
    * Exists to implement IAction
    */
   public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
-    const base = this.props.actionBase;
-
     const buildSpec = codebuild.BuildSpec.fromObject({
       version: '0.2',
       phases: {
-        install: base.installCommands.length > 0 ? { commands: base.installCommands } : undefined,
-        build: base.buildCommands.length > 0 ? { commands: base.buildCommands } : undefined,
+        install: (this.props.installCommands?.length ?? 0) > 0 ? { commands: this.props.installCommands } : undefined,
+        build: this.props.buildCommands.length > 0 ? { commands: this.props.buildCommands } : undefined,
       },
-      artifacts: this.renderArtifactsBuildSpec(),
+      artifacts: this.renderArtifactsBuildSpec(this.props.outputs ?? []),
     });
 
-    // TODO: Change image
-    // TODO: Customize ComputeType
-    const environment: codebuild.BuildEnvironment = {
-      buildImage: translateBuildImage(base.image),
-      computeType: translateComputeType(base.computeType),
-      privileged: base.buildsDockerImages ? true : undefined,
-      environmentVariables: noEmptyObject(mapValues(base.environmentVariables, value => ({ value }))),
-    };
+    const environment = mergeBuildEnvironments(
+      this.props.buildEnvironment ?? {},
+      {
+        environmentVariables: noEmptyObject(mapValues(this.props.environmentVariables ?? {}, value => ({ value }))),
+      });
 
     // A hash over the values that make the CodeBuild Project unique (and necessary
     // to restart the pipeline if one of them changes). projectName is not necessary to include
@@ -248,12 +266,11 @@ export class CodePipelineShellAction implements codepipeline.IAction, iam.IGrant
     return this._action.onStateChange(name, target, options);
   }
 
-  private renderArtifactsBuildSpec() {
+  private renderArtifactsBuildSpec(outputs: ShellArtifact[]) {
     // save the generated files in the output artifact
     // This part of the buildspec has to look completely different depending on whether we're
     // using secondary artifacts or not.
 
-    const outputs = this.props.actionBase.outputs;
     if (outputs.length === 0) { return undefined; }
 
     if (outputs.length === 1) {
@@ -301,24 +318,23 @@ function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
   };
 }
 
-function translateComputeType(computeType: ComputeType): codebuild.ComputeType | undefined {
-  switch (computeType.computeTypeClass) {
-    case 'default': return undefined;
-    case 'large': return codebuild.ComputeType.LARGE;
-    case 'medium': return codebuild.ComputeType.MEDIUM;
-    case 'small': return codebuild.ComputeType.SMALL;
-    default:
-      throw new Error(`Unrecognized compute type for CodeBuild pipelines: ${computeType.computeTypeClass}`);
+export function mergeBuildEnvironments(env: codebuild.BuildEnvironment, ...envs: codebuild.BuildEnvironment[]) {
+  envs.unshift(env);
+  while (envs.length > 1) {
+    const [a, b] = envs.splice(envs.length - 2, 2);
+    envs.push(merge2(a, b));
   }
-}
+  return envs[0];
 
-function translateBuildImage(image: CommandImage): codebuild.IBuildImage {
-  if (image === CommandImage.GENERIC_LINUX) { return codebuild.LinuxBuildImage.STANDARD_4_0; }
-  if (image === CommandImage.GENERIC_WINDOWS) { return codebuild.WindowsBuildImage.WINDOWS_BASE_2_0; }
-
-  if (image instanceof CodePipelineImage) {
-    if (image.codeBuildImage) { return image.codeBuildImage; }
+  function merge2(a: codebuild.BuildEnvironment, b: codebuild.BuildEnvironment): codebuild.BuildEnvironment {
+    return {
+      buildImage: b.buildImage ?? a.buildImage,
+      computeType: b.computeType ?? a.computeType,
+      environmentVariables: {
+        ...a.environmentVariables,
+        ...b.environmentVariables,
+      },
+      privileged: b.privileged ?? a.privileged,
+    };
   }
-
-  throw new Error(`Don't know how to get CodeBuild image from: ${image}`);
 }

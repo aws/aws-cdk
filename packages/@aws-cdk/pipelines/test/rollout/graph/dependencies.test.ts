@@ -1,10 +1,10 @@
-import { ExecutionGraph, ExecutionNode } from '../../../lib/rollout/graph';
+import { Workflow, WorkflowNode } from '../../../lib';
 
-class PlainNode extends ExecutionNode { }
+class PlainNode extends WorkflowNode { }
 
 describe('with nested graphs', () => {
   const graph = mkGraph('G', G => {
-    let aa: ExecutionNode;
+    let aa: WorkflowNode;
 
     const A = G.graph('A', [], GA => {
       aa = GA.node('aa');
@@ -53,7 +53,7 @@ describe('with nested graphs', () => {
 });
 
 function mkGraph(name: string, block: (b: GraphBuilder) => void) {
-  const graph = new ExecutionGraph(name);
+  const graph = new Workflow(name);
   block({
     graph(name2, deps, block2) {
       const innerG = mkGraph(name2, block2);
@@ -73,16 +73,16 @@ function mkGraph(name: string, block: (b: GraphBuilder) => void) {
 
 
 interface GraphBuilder {
-  graph(name: string, deps: ExecutionNode[], block: (b: GraphBuilder) => void): ExecutionGraph;
-  node(name: string, deps?: ExecutionNode[]): ExecutionNode;
+  graph(name: string, deps: WorkflowNode[], block: (b: GraphBuilder) => void): Workflow;
+  node(name: string, deps?: WorkflowNode[]): WorkflowNode;
 }
 
 
-function nodeNames(n: ExecutionNode): string;
-function nodeNames(ns: ExecutionNode[]): string[];
-function nodeNames(ns: ExecutionNode[][]): string[][];
+function nodeNames(n: WorkflowNode): string;
+function nodeNames(ns: WorkflowNode[]): string[];
+function nodeNames(ns: WorkflowNode[][]): string[][];
 function nodeNames(n: any): any {
-  if (n instanceof ExecutionNode) { return n.name; }
+  if (n instanceof WorkflowNode) { return n.name; }
   if (Array.isArray(n)) { return n.map(nodeNames); }
   throw new Error('oh no');
 }

@@ -7,14 +7,17 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../../lib';
-import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from '../testutil';
+import * as testutil from '../testutil';
 
-let app: TestApp;
+let app: testutil.TestApp;
 let pipelineStack: Stack;
 
+// Must be unique across all test files, but preferably also consistent
+const OUTDIR = 'testcdk1.out';
+
 beforeEach(() => {
-  app = new TestApp({ outdir: 'testcdk.out' });
-  pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  app = new testutil.TestApp({ outdir: OUTDIR });
+  pipelineStack = new Stack(app, 'PipelineStack', { env: testutil.PIPELINE_ENV });
 });
 
 afterEach(() => {
@@ -23,19 +26,15 @@ afterEach(() => {
 
 test('SimpleSynthAction takes arrays of commands', () => {
   // WHEN
-  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    synth: cdkp.Synth.generic({
-      installCommands: ['install1', 'install2'],
-      buildCommands: ['build1', 'build2'],
-      testCommands: ['test1', 'test2'],
-      synthCommands: ['cdk synth'],
-    }),
+  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    installCommands: ['install1', 'install2'],
+    buildCommands: ['build1', 'build2'],
   });
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -50,9 +49,6 @@ test('SimpleSynthAction takes arrays of commands', () => {
             commands: [
               'build1',
               'build2',
-              'test1',
-              'test2',
-              'cdk synth',
             ],
           },
         },
@@ -63,19 +59,18 @@ test('SimpleSynthAction takes arrays of commands', () => {
 
 test('synth automatically determines artifact base-directory', () => {
   // WHEN
-  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    synth: cdkp.Synth.standardNpm(),
+  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
   });
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         artifacts: {
-          'base-directory': 'testcdk.out',
+          'base-directory': 'cdk.out',
         },
       })),
     },
@@ -84,16 +79,14 @@ test('synth automatically determines artifact base-directory', () => {
 
 test('synth build respects subdirectory', () => {
   // WHEN
-  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    synth: cdkp.Synth.standardNpm({
-      subdirectory: 'subdir',
-    }),
+  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    subdirectory: 'subdir',
   });
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -103,7 +96,7 @@ test('synth build respects subdirectory', () => {
           },
         },
         artifacts: {
-          'base-directory': 'subdir/testcdk.out',
+          'base-directory': 'subdir/cdk.out',
         },
       })),
     },
@@ -112,14 +105,13 @@ test('synth build respects subdirectory', () => {
 
 test('synth assumes no build step by default', () => {
   // WHEN
-  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    synth: cdkp.Synth.standardNpm(),
+  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
   });
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -133,20 +125,24 @@ test('synth assumes no build step by default', () => {
   });
 });
 
-test('complex setup with environemnt variables still renders correct project', () => {
+test('complex setup with environment variables still renders correct project', () => {
   // WHEN
-  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    synth: cdkp.Synth.standardNpm({
-      environmentVariables: {
-        SOME_ENV_VAR: 'SomeValue',
-        INNER_VAR: 'InnerValue',
+  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    environmentVariables: {
+      SOME_ENV_VAR: 'SomeValue',
+    },
+    installCommands: [
+      'install1',
+      'install2',
+    ],
+    buildCommands: ['synth'],
+    backend: new cdkp.CodePipelineBackend({
+      buildEnvironment: {
+        environmentVariables: {
+          INNER_VAR: { value: 'InnerValue' },
+        },
+        privileged: true,
       },
-      synthUsesDocker: true,
-      installCommands: [
-        'install1',
-        'install2',
-      ],
-      synthCommands: ['synth'],
     }),
   });
 
@@ -154,7 +150,7 @@ test('complex setup with environemnt variables still renders correct project', (
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: objectLike({
       PrivilegedMode: true,
-      EnvironmentVariables: [
+      EnvironmentVariables: arrayWith(
         {
           Name: 'SOME_ENV_VAR',
           Type: 'PLAINTEXT',
@@ -165,7 +161,7 @@ test('complex setup with environemnt variables still renders correct project', (
           Type: 'PLAINTEXT',
           Value: 'InnerValue',
         },
-      ],
+      ),
     }),
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -184,16 +180,14 @@ test('complex setup with environemnt variables still renders correct project', (
 
 test('npm can have its install command overridden', () => {
   // WHEN
-  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    synth: cdkp.Synth.standardNpm({
-      installCommands: ['/bin/true'],
-    }),
+  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    installCommands: ['/bin/true'],
   });
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -210,30 +204,28 @@ test('npm can have its install command overridden', () => {
 test.skip('Standard (NPM) synth can output additional artifacts', () => {
   // WHEN
   // const addlArtifact = new codepipeline.Artifact('IntegTest');
-  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    synth: cdkp.Synth.standardNpm({
-      /*
-      additionalArtifacts: [
-        {
-          artifact: addlArtifact,
-          directory: 'test',
-        },
-      ],
-      */
-    }),
+  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    /*
+    additionalArtifacts: [
+      {
+        artifact: addlArtifact,
+        directory: 'test',
+      },
+    ],
+    */
   });
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         artifacts: {
           'secondary-artifacts': {
             CloudAsm: {
-              'base-directory': 'testcdk.out',
+              'base-directory': 'cdk.out',
               'files': '**/*',
             },
             IntegTest: {
@@ -249,9 +241,8 @@ test.skip('Standard (NPM) synth can output additional artifacts', () => {
 
 test('Standard (NPM) synth can run in a VPC', () => {
   // WHEN
-  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    synth: cdkp.Synth.standardNpm(),
-    backend: cdkp.Backend.codePipeline({
+  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    backend: new cdkp.CodePipelineBackend({
       vpc: new ec2.Vpc(pipelineStack, 'NpmSynthTestVpc'),
     }),
   });
@@ -286,18 +277,24 @@ test('Standard (NPM) synth can run in a VPC', () => {
 });
 
 test('Pipeline action contains a hash that changes as the buildspec changes', () => {
-  const hash1 = synthWithAction(() => cdkp.Synth.standardNpm());
+  const hash1 = synthWithAction(() => ({ buildCommands: ['asdf'] }));
 
   // To make sure the hash is not just random :)
-  const hash1prime = synthWithAction(() => cdkp.Synth.standardNpm());
+  const hash1prime = synthWithAction(() => ({ buildCommands: ['asdf'] }));
 
-  const hash2 = synthWithAction(() => cdkp.Synth.standardNpm({
+  const hash2 = synthWithAction(() => ({
     installCommands: ['do install'],
   }));
-  const hash3 = synthWithAction(() => cdkp.Synth.standardNpm({
-    computeType: cdkp.ComputeType.large,
+  const hash3 = synthWithAction(() => ({
+    buildCommands: ['asdf'],
+    backend: new cdkp.CodePipelineBackend({
+      buildEnvironment: {
+        computeType: cbuild.ComputeType.LARGE,
+      },
+    }),
   }));
-  const hash4 = synthWithAction(() => cdkp.Synth.standardNpm({
+
+  const hash4 = synthWithAction(() => ({
     environmentVariables: {
       xyz: 'SOME-VALUE',
     },
@@ -312,13 +309,11 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
   expect(hash2).not.toEqual(hash4);
   expect(hash3).not.toEqual(hash4);
 
-  function synthWithAction(cb: () => cdkp.Synth) {
-    const _app = new TestApp({ outdir: 'testcdk.out' });
-    const _pipelineStack = new Stack(_app, 'PipelineStack', { env: PIPELINE_ENV });
+  function synthWithAction(cb: () => testutil.TestGitHubNpmPipelineProps) {
+    const _app = new testutil.TestApp({ outdir: OUTDIR });
+    const _pipelineStack = new Stack(_app, 'PipelineStack', { env: testutil.PIPELINE_ENV });
 
-    new TestGitHubNpmPipeline(_pipelineStack, 'Cdk', {
-      synth: cb(),
-    });
+    new testutil.TestGitHubNpmPipeline(_pipelineStack, 'Cdk', cb());
 
     const theHash = Capture.aString();
     expect(_pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -345,15 +340,17 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
   }
 });
 
-test.skip('SimpleSynthAction is IGrantable', () => {
+test('SimpleSynthAction is IGrantable', () => {
   // GIVEN
-  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    synth: cdkp.Synth.standardNpm(),
+  const backend = new cdkp.CodePipelineBackend();
+  const pipe = new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    backend,
   });
   const bucket = new s3.Bucket(pipelineStack, 'Bucket');
+  pipe.renderToBackend();
 
   // WHEN
-  // bucket.grantRead(synthAction);
+  bucket.grantRead(backend.buildProject);
   Array.isArray(bucket);
 
   // THEN
@@ -366,16 +363,17 @@ test.skip('SimpleSynthAction is IGrantable', () => {
   });
 });
 
-test.skip('SimpleSynthAction can reference an imported ECR repo', () => {
+test('SimpleSynthAction can reference an imported ECR repo', () => {
   // Repro from https://github.com/aws/aws-cdk/issues/10535
 
   // WHEN
-  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    synth: cdkp.Synth.standardNpm({
-      // FIXME: This is not great
-      image: cdkp.CodePipelineImage.fromCodeBuildImage(cbuild.LinuxBuildImage.fromEcrRepository(
-        ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),
-      )),
+  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    backend: new cdkp.CodePipelineBackend({
+      buildEnvironment: {
+        buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
+          ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),
+        ),
+      },
     }),
   });
 

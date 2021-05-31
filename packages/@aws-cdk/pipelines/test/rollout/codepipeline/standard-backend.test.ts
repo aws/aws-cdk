@@ -202,7 +202,7 @@ test('pipeline has self-mutation stage', () => {
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -228,7 +228,7 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
   // THEN
   expect(stackTemplate(nestedPipelineStack)).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -246,7 +246,7 @@ test('selfmutation feature can be turned off', () => {
   const stack = new Stack();
   // WHEN
   new TestGitHubNpmPipeline(stack, 'Cdk', {
-    backend: cdkp.Backend.codePipeline({
+    backend: new cdkp.CodePipelineBackend({
       selfMutating: false,
     }),
   });
@@ -298,10 +298,14 @@ test('changing CLI version leads to a different pipeline structure (restarting i
 
   // WHEN
   new TestGitHubNpmPipeline(stack2, 'Cdk', {
-    cdkCliVersion: '1.2.3',
+    backend: new cdkp.CodePipelineBackend({
+      cdkCliVersion: '1.2.3',
+    }),
   });
   new TestGitHubNpmPipeline(stack3, 'Cdk', {
-    cdkCliVersion: '4.5.6',
+    backend: new cdkp.CodePipelineBackend({
+      cdkCliVersion: '4.5.6',
+    }),
   });
 
   // THEN

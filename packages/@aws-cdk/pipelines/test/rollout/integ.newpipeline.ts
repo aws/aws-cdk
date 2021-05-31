@@ -9,8 +9,14 @@ class PipelineStack extends Stack {
     super(scope, id, props);
 
     const pipeline = new pipelines.Pipeline(this, 'Pipeline', {
-      source: pipelines.Source.gitHub('rix0rrr/cdk-pipelines-demo'),
-      synth: pipelines.Synth.standardNpm(),
+      buildStep: new pipelines.CdkBuild({
+        input: pipelines.CodePipelineSource.gitHub('rix0rrr/cdk-pipelines-demo'),
+        buildCommands: [
+          'npm ci',
+          'npm run build',
+          'npx cdk synth',
+        ],
+      }),
     });
 
     pipeline.addApplicationStage(new AppStage(this, 'Beta'));

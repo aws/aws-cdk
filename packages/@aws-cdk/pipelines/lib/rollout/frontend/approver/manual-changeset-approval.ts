@@ -1,12 +1,12 @@
 import { flatten } from '../../_util';
-import { ManualApprovalAction } from '../../graph';
-import { CreateChangeSetAction, ExecuteChangeSetAction } from '../../graph/cloudformation-actions';
-import { AddApproverToGraphOptions, Approver } from './index';
+import { ManualApprovalAction } from '../../workflow';
+import { CreateChangeSetAction, ExecuteChangeSetAction } from '../../workflow/cloudformation-actions';
+import { AddApproverToWorkflowOptions, IApprover } from '../artifactable';
 
-export class ManualChangeSetApproval extends Approver {
-  public addToExecutionGraph(options: AddApproverToGraphOptions): void {
+export class ManualChangeSetApproval implements IApprover {
+  public addToWorkflow(options: AddApproverToWorkflowOptions): void {
     // Insert a manual approval step between ever related `Prepare` and `Deploy` action.
-    for (const leaf of flatten(options.deploymentGraph.sortedLeaves())) {
+    for (const leaf of flatten(options.deploymentWorkflow.sortedLeaves())) {
       // Find every "Deploy" action, the related Prepare action will be in its dependencies
       if (!(leaf instanceof ExecuteChangeSetAction)) { continue; }
 

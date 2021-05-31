@@ -1,16 +1,18 @@
+import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, SecretValue, Stack } from '@aws-cdk/core';
+import { Aws, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { embeddedAsmPath } from '../../private/construct-internals';
-import { enumerate, expectProp, flatten, maybeSuffix } from '../_util';
-import { ExecutionAction, ExecutionGraph, ExecutionNode, ExecutionSourceAction, commonAncestor, SourceType, ancestorPath, ExecutionShellAction, PipelineGraph, CreateChangeSetAction, ExecuteChangeSetAction, ManualApprovalAction } from '../graph';
-import { ArtifactMap } from './codepipeline/artifact-map';
-import { CodePipelineShellAction } from './codepipeline/shell-action';
-import { Backend, RenderBackendOptions } from './index';
+import { enumerate, flatten, maybeSuffix } from '../_util';
+import { Backend, RenderBackendOptions } from '../frontend';
+import { WorkflowAction, Workflow, WorkflowNode, commonAncestor, ancestorPath, WorkflowShellAction, CreateChangeSetAction, ExecuteChangeSetAction, ManualApprovalAction, RolloutWorkflow, WorkflowRole } from '../workflow';
+import { ArtifactMap } from './artifact-map';
+import { mergeBuildEnvironments, CodeBuildShellAction } from './codebuild-shell-action';
+import { CodePipelineActionFactory } from './codepipeline-action';
 
 export interface CodePipelineBackendProps {
   // Legacy and tweaking props
@@ -31,15 +33,36 @@ export interface CodePipelineBackendProps {
   // The following 2 should probably go on the asset/synth/selfmutating strategies
   readonly vpc?: ec2.IVpc;
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * CodeBuild environment for the build job
+   *
+   * @default - non-privileged build, SMALL instance
+   */
+  readonly buildEnvironment?: cb.BuildEnvironment;
+
+  /**
+   * Default image for CodeBuild projects
+   *
+   * @default LinuxBuildImage.STANDARD_5_0
+   */
+  readonly defaultCodeBuildImage?: cb.IBuildImage;
 }
 
 
 export class CodePipelineBackend extends Backend {
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
+  private readonly defaultCodeBuildEnv: cb.BuildEnvironment;
+  private _buildAction?: CodeBuildShellAction;
 
-  constructor(private readonly props: CodePipelineBackendProps) {
+  constructor(private readonly props: CodePipelineBackendProps = {}) {
     super();
+
+    this.defaultCodeBuildEnv = {
+      buildImage: props.defaultCodeBuildImage ?? cb.LinuxBuildImage.STANDARD_5_0,
+      computeType: cb.ComputeType.SMALL,
+    };
   }
 
   public renderBackend(options: RenderBackendOptions): void {
@@ -55,19 +78,26 @@ export class CodePipelineBackend extends Backend {
 
     const selfMutating = this.props.selfMutating ?? true;
 
-    this.addStageFromGraphNode(options.executionGraph.sourceStage, selfMutating);
-    this.addStageFromGraphNode(options.executionGraph.synthStage, selfMutating);
+    this.addStageFromGraphNode(options.workflow.sourceStage, selfMutating);
+    this.addStageFromGraphNode(options.workflow.buildStage, selfMutating);
 
     if (selfMutating) {
-      this.addSelfMutateStage(options.executionGraph);
+      this.addSelfMutateStage(options.workflow);
     }
 
-    for (const node of options.executionGraph.sortedAdditionalStages) {
-      if (!(node instanceof ExecutionGraph)) {
+    for (const node of options.workflow.sortedAdditionalStages) {
+      if (!(node instanceof Workflow)) {
         throw new Error('For CodePipeline, top-level children of execution graph must be subgraphs');
       }
       this.addStageFromGraphNode(node, false);
     }
+  }
+
+  public get buildProject(): cb.IProject {
+    if (!this._buildAction) {
+      throw new Error('Call pipeline.build() before reading this property');
+    }
+    return this._buildAction.project;
   }
 
   public get pipeline(): cp.Pipeline {
@@ -77,30 +107,31 @@ export class CodePipelineBackend extends Backend {
     return this._pipeline;
   }
 
-  private addSelfMutateStage(executionGraph: PipelineGraph) {
+  private addSelfMutateStage(executionGraph: RolloutWorkflow) {
     const installSuffix = this.props.cdkCliVersion ? `@${this.props.cdkCliVersion}` : '';
     const pipelineStackName = Stack.of(this.pipeline).stackName;
 
     this.pipeline.addStage({
       stageName: 'UpdatePipeline',
       actions: [
-        new CodePipelineShellAction({
+        new CodeBuildShellAction({
           runOrder: 1,
           actionName: 'SelfMutate',
           projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
           vpc: this.props.vpc,
           subnetSelection: this.props.subnetSelection,
           artifactMap: this.artifacts,
-          actionBase: new ExecutionShellAction('SelfMutate', {
-            inputs: [{ directory: '.', artifact: executionGraph.cloudAssemblyArtifact }],
-            buildsDockerImages: this.props.pipelineUsesAssets,
-            installCommands: [
-              `npm install -g aws-cdk${installSuffix}`,
-            ],
-            buildCommands: [
-              `cdk -a ${embeddedAsmPath(this.pipeline)} deploy ${pipelineStackName} --require-approval=never --verbose`,
-            ],
-          }),
+          inputs: [{ directory: '.', artifact: executionGraph.cloudAssemblyArtifact }],
+          buildEnvironment: mergeBuildEnvironments(
+            this.defaultCodeBuildEnv,
+            this.props.pipelineUsesAssets ? { privileged: true } : {},
+          ),
+          installCommands: [
+            `npm install -g aws-cdk${installSuffix}`,
+          ],
+          buildCommands: [
+            `cdk -a ${embeddedAsmPath(this.pipeline)} deploy ${pipelineStackName} --require-approval=never --verbose`,
+          ],
           rolePolicyStatements: [
             // allow the self-mutating project permissions to assume the bootstrap Action role
             new iam.PolicyStatement({
@@ -124,10 +155,12 @@ export class CodePipelineBackend extends Backend {
     });
   }
 
-  private addStageFromGraphNode(graph: ExecutionGraph, beforeSelfUpdate: boolean) {
+  private addStageFromGraphNode(graph: Workflow, beforeSelfUpdate: boolean) {
+    const tranches = graph.sortedLeaves();
+    if (tranches.length === 0) { return; }
+
     const stage = this.pipeline.addStage({ stageName: graph.name });
 
-    const tranches = graph.sortedLeaves();
     const sharedParent = commonAncestor(flatten(tranches));
 
     for (const [i, tranche] of enumerate(tranches)) {
@@ -144,15 +177,18 @@ export class CodePipelineBackend extends Backend {
   }
 
   private makeAction(options: MakeActionOptions): cp.IAction {
-    if (options.node instanceof ExecutionSourceAction) {
-      return this.makeSourceAction(options.node, options);
-    }
-
-    if (options.node instanceof ExecutionShellAction) {
-      return new CodePipelineShellAction({
+    if (options.node instanceof CodePipelineActionFactory) {
+      return options.node.produce({
         actionName: actionName(options.node, options.sharedParent),
         runOrder: options.runOrder,
-        actionBase: options.node,
+        artifacts: this.artifacts,
+      });
+    }
+
+    if (options.node instanceof WorkflowShellAction) {
+      const shellAction = new CodeBuildShellAction({
+        actionName: actionName(options.node, options.sharedParent),
+        runOrder: options.runOrder,
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
         artifactMap: this.artifacts,
@@ -160,7 +196,15 @@ export class CodePipelineBackend extends Backend {
         // If this CodeBuild job is before the self-update stage, we need to include a hash of
         // its definition in the pipeline (to force the pipeline to restart if the definition changes)
         includeBuildHashInPipeline: options.beforeSelfUpdate,
+        ...CodeBuildShellAction.propsFromWorkflowAction(options.node),
+        buildEnvironment: this.codeBuildEnvironmentForNode(options.node),
       });
+
+      if (options.node.role === WorkflowRole.BUILD) {
+        this._buildAction = shellAction;
+      }
+
+      return shellAction;
     }
 
     const changeSetName = 'PipelineChange';
@@ -208,27 +252,6 @@ export class CodePipelineBackend extends Backend {
     throw new Error(`Execution node ${options.node} is not supported for CodePipeline-backed pipelines`);
   }
 
-  private makeSourceAction(source: ExecutionSourceAction, options: MakeActionOptions): cp.IAction {
-    const sourceProps = source.props;
-    switch (sourceProps.type) {
-      case SourceType.GITHUB:
-        const gitHubProps = expectProp(sourceProps, 'gitHubSource');
-        return new cpa.GitHubSourceAction({
-          runOrder: options.runOrder,
-          trigger: cpa.GitHubTrigger.WEBHOOK,
-          repo: gitHubProps.repo,
-          owner: gitHubProps.owner,
-          branch: gitHubProps.branch,
-          output: this.artifacts.toCodePipeline(source.outputArtifact),
-          actionName: actionName(source, options.sharedParent),
-          oauthToken: SecretValue.secretsManager(gitHubProps.authentication.tokenName),
-        });
-
-      default:
-        throw new Error(`Don't know how to make CodePipeline Source Action for ${sourceProps.type}`);
-    }
-  }
-
   private roleFromPlaceholderArn(scope: Construct, region: string | undefined,
     account: string | undefined, arn: string): iam.IRole;
   private roleFromPlaceholderArn(scope: Construct, region: string | undefined,
@@ -255,21 +278,30 @@ export class CodePipelineBackend extends Backend {
     });
     return iam.Role.fromRoleArn(scope, id, arnToImport, { mutable: false });
   }
+
+  private codeBuildEnvironmentForNode(node: WorkflowShellAction): cb.BuildEnvironment | undefined {
+    switch (node.role) {
+      case WorkflowRole.BUILD:
+        return mergeBuildEnvironments(this.defaultCodeBuildEnv, this.props.buildEnvironment ?? {});
+    }
+
+    return this.defaultCodeBuildEnv;
+  }
 }
 
 interface MakeActionOptions {
   readonly runOrder: number;
-  readonly node: ExecutionAction;
-  readonly sharedParent: ExecutionNode;
+  readonly node: WorkflowAction;
+  readonly sharedParent: WorkflowNode;
   readonly beforeSelfUpdate: boolean;
 }
 
-function isExecutionAction(node: ExecutionNode): node is ExecutionAction {
-  return node instanceof ExecutionAction;
+function isExecutionAction(node: WorkflowNode): node is WorkflowAction {
+  return node instanceof WorkflowAction;
 }
 
-function actionName(node: ExecutionNode, parent: ExecutionNode) {
-  const names = ancestorPath(node, parent).map(n => n.name);
+function actionName(node: WorkflowNode, parent: WorkflowNode) {
+  const names = ancestorPath(node, parent).filter(n => n.role !== WorkflowRole.GROUP).map(n => n.name);
   return names.map(sanitizeName).join('.');
 }
 

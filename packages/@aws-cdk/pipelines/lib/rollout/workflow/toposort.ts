@@ -1,6 +1,6 @@
-import { ExecutionNode } from './index';
+import { WorkflowNode } from './index';
 
-export function printDependencyMap(dependencies: Map<ExecutionNode, Set<ExecutionNode>>) {
+export function printDependencyMap(dependencies: Map<WorkflowNode, Set<WorkflowNode>>) {
   const lines = ['---'];
   for (const [k, vs] of dependencies.entries()) {
     lines.push(`${k} -> ${Array.from(vs)}`);
@@ -9,10 +9,10 @@ export function printDependencyMap(dependencies: Map<ExecutionNode, Set<Executio
   console.log(lines.join('\n'));
 }
 
-export function topoSort(nodes: Set<ExecutionNode>, dependencies: Map<ExecutionNode, Set<ExecutionNode>>): ExecutionNode[][] {
-  const remaining = new Set<ExecutionNode>(nodes);
+export function topoSort(nodes: Set<WorkflowNode>, dependencies: Map<WorkflowNode, Set<WorkflowNode>>): WorkflowNode[][] {
+  const remaining = new Set<WorkflowNode>(nodes);
 
-  const ret: ExecutionNode[][] = [];
+  const ret: WorkflowNode[][] = [];
   while (remaining.size > 0) {
     // All elements with no more deps in the set can be ordered
     const selectable = Array.from(remaining.values()).filter(e => {
@@ -47,14 +47,14 @@ export function topoSort(nodes: Set<ExecutionNode>, dependencies: Map<ExecutionN
  *
  * Not the fastest, but effective and should be rare
  */
-function findCycle(deps: Map<ExecutionNode, Set<ExecutionNode>>): ExecutionNode[] {
+function findCycle(deps: Map<WorkflowNode, Set<WorkflowNode>>): WorkflowNode[] {
   for (const node of deps.keys()) {
     const cycle = recurse(node, [node]);
     if (cycle) { return cycle; }
   }
   throw new Error('No cycle found. Assertion failure!');
 
-  function recurse(node: ExecutionNode, path: ExecutionNode[]): ExecutionNode[] | undefined {
+  function recurse(node: WorkflowNode, path: WorkflowNode[]): WorkflowNode[] | undefined {
     for (const dep of deps.get(node) ?? []) {
       if (dep === path[0]) { return [...path, dep]; }
 

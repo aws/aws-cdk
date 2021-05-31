@@ -1,12 +1,9 @@
 import { Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Backend } from './backend';
-import { Approver } from './frontend/approver';
-import { AssetPublishingStrategy } from './frontend/asset-publishing';
-import { Deployment, CdkStageDeployment } from './frontend/deployment';
-import { Source } from './frontend/source';
-import { Synth } from './frontend/synth';
-import { ExecutionGraph, PipelineGraph } from './graph';
+import { CodePipelineBackend } from './codepipeline';
+import { AssetPublisher, Backend, CdkStageDeployment } from './frontend';
+import { IApprover, IArtifactable, IDeployment } from './frontend/artifactable';
+import { Workflow, RolloutWorkflow } from './workflow';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -25,26 +22,19 @@ export interface AddApplicationOptions {
    *
    * Run after the app is deployed
    */
-  readonly approvers?: Approver[];
+  readonly approvers?: IApprover[];
 }
 
 export interface PipelineProps {
   /**
-   * Source (GitHub, ...)
-   *
-   * Sources are optional for some backends.
+   * Build step
    */
-  readonly source?: Source;
-
-  /**
-   * Synth commands
-   */
-  readonly synth: Synth;
+  readonly buildStep: IArtifactable;
 
   /**
    * Asset publishing strategy
    */
-  readonly assetPublishing?: AssetPublishingStrategy;
+  readonly assetPublishing?: AssetPublisher;
 
   /**
    * Deployment backend
@@ -52,29 +42,21 @@ export interface PipelineProps {
    * @default CodePipeline
    */
   readonly backend?: Backend;
-
-  /**
-   * CLI version to use
-   *
-   * @default - Latest
-   */
-  readonly cdkCliVersion?: string;
 }
 
 export class Pipeline extends CoreConstruct {
-  private readonly graph = new PipelineGraph();
+  private readonly workflow = new RolloutWorkflow();
   private readonly backend: Backend;
-  private readonly assetPublishing: AssetPublishingStrategy;
+  private readonly assetPublishing: AssetPublisher;
   private built = false;
 
   constructor(scope: Construct, id: string, props: PipelineProps) {
     super(scope, id);
 
-    this.backend = props.backend ?? Backend.codePipeline();
-    this.assetPublishing = props.assetPublishing ?? AssetPublishingStrategy.prepublishAll();
+    this.backend = props.backend ?? new CodePipelineBackend();
+    this.assetPublishing = props.assetPublishing ?? AssetPublisher.prepublishAll();
 
-    props.source?.addToExecutionGraph({ root: this.graph, parent: this.graph.sourceStage });
-    props.synth.addToExecutionGraph({ parent: this.graph.synthStage, root: this.graph, scope: this });
+    props.buildStep.addToWorkflow({ parent: this.workflow.buildStage, workflow: this.workflow, scope: this });
   }
 
   public addApplicationStage(stage: Stage, options?: AddApplicationOptions): void {
@@ -89,8 +71,8 @@ export class Pipeline extends CoreConstruct {
     if (this.built) {
       throw new Error('Immutable');
     }
-    const phase = new ExecutionGraph(name);
-    this.graph.add(phase);
+    const phase = new Workflow(name);
+    this.workflow.add(phase);
 
     const self = this;
     return new class extends PipelineDeploymentGroup {
@@ -98,8 +80,13 @@ export class Pipeline extends CoreConstruct {
         this.addDeployment(new CdkStageDeployment(stage, options));
       }
 
-      public addDeployment(deployment: Deployment): void {
-        phase.add(deployment.produceExecutionGraph({ scope: self, pipelineGraph: self.graph, assetPublishing: self.assetPublishing }));
+      public addDeployment(deployment: IDeployment): void {
+        deployment.addToWorkflow({
+          scope: self,
+          workflow: self.workflow,
+          assetPublisher: self.assetPublishing,
+          parent: self.workflow,
+        });
       }
     }();
   }
@@ -108,7 +95,7 @@ export class Pipeline extends CoreConstruct {
     if (this.built) {
       throw new Error('Can only call build() once');
     }
-    this.backend.renderBackend({ scope: this, executionGraph: this.graph });
+    this.backend.renderBackend({ scope: this, workflow: this.workflow });
     this.built = true;
   }
 
@@ -118,9 +105,14 @@ export class Pipeline extends CoreConstruct {
     }
   }
 
-  private addDeployment(deployment: Deployment) {
+  private addDeployment(deployment: IDeployment) {
     // Deployments are expected to add an ExecutionGraph of their own
-    this.graph.add(deployment.produceExecutionGraph({ scope: this, pipelineGraph: this.graph, assetPublishing: this.assetPublishing }));
+    deployment.addToWorkflow({
+      scope: this,
+      workflow: this.workflow,
+      assetPublisher: this.assetPublishing,
+      parent: this.workflow,
+    });
   }
 }
 

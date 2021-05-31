@@ -6,9 +6,8 @@ import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from
 import { appOf, assemblyBuilderOf } from '../../../private/construct-internals';
 import { toPosixPath } from '../../../private/fs';
 import { AssetType } from '../../../types/asset-type';
-import { CreateChangeSetAction, ExecuteChangeSetAction, ExecutionGraph } from '../../graph';
-import { Approver } from '../approver';
-import { AddDeploymentToGraphOptions, Deployment } from './index';
+import { CreateChangeSetAction, ExecuteChangeSetAction, Workflow, WorkflowArtifact, WorkflowRole } from '../../workflow';
+import { AddDeploymentToWorkflowOptions, IApprover, IDeployment } from '../artifactable';
 
 export interface CdkStageDeploymentProps {
   /**
@@ -16,15 +15,23 @@ export interface CdkStageDeploymentProps {
    *
    * Run after the app is deployed
    */
-  readonly approvers?: Approver[];
+  readonly approvers?: IApprover[];
+
+  /**
+   * Artifact that contains the Cloud Assembly
+   *
+   * You only need to pass this if you want to preprocess the Cloud
+   * Assembly artifact.
+   *
+   * @default - The primary output artifact of the 'build' step.
+   */
+  readonly cloudAssemblyArtifact?: WorkflowArtifact;
 }
 
-export class CdkStageDeployment extends Deployment {
+export class CdkStageDeployment implements IDeployment {
   private readonly assembly: cxapi.CloudAssembly;
 
   constructor(private readonly stage: Stage, private readonly options: CdkStageDeploymentProps = {}) {
-    super();
-
     this.assembly = this.stage.synth();
     if (this.assembly.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
@@ -33,15 +40,18 @@ export class CdkStageDeployment extends Deployment {
     }
   }
 
-  public produceExecutionGraph(options: AddDeploymentToGraphOptions): ExecutionGraph {
-    const graph = new ExecutionGraph(this.stage.stageName);
+  public addToWorkflow(options: AddDeploymentToWorkflowOptions): void {
+    const graph = new Workflow(this.stage.stageName, { role: WorkflowRole.DEPLOY_STAGE });
 
-    const stackGraphs = new Map<cxapi.CloudFormationStackArtifact, ExecutionGraph>();
+    const deploymentWorkflow = new Workflow('Deploy', { role: WorkflowRole.GROUP });
+    graph.add(deploymentWorkflow);
+
+    const stackGraphs = new Map<cxapi.CloudFormationStackArtifact, Workflow>();
 
     for (const stackArtifact of this.assembly.stacks) {
-      const stackGraph = new ExecutionGraph(this.simplifyStackName(stackArtifact.stackName));
+      const stackGraph = new Workflow(this.simplifyStackName(stackArtifact.stackName), { role: WorkflowRole.DEPLOY_STACK });
       stackGraphs.set(stackArtifact, stackGraph);
-      graph.add(stackGraph);
+      deploymentWorkflow.add(stackGraph);
 
       // We need the path of the template relative to the root Cloud Assembly
       // It should be easier to get this, but for now it is what it is.
@@ -68,7 +78,7 @@ export class CdkStageDeployment extends Deployment {
 
       const prepareAction = new CreateChangeSetAction('Prepare', {
         stackName: stackArtifact.stackName,
-        templateArtifact: options.pipelineGraph.cloudAssemblyArtifact,
+        templateArtifact: this.options.cloudAssemblyArtifact ?? options.workflow.cloudAssemblyArtifact,
         templatePath: toPosixPath(path.relative(appAsmRoot, fullTemplatePath)),
         templateConfigurationPath: fullConfigPath ? toPosixPath(path.relative(appAsmRoot, fullConfigPath)) : undefined,
         region,
@@ -87,7 +97,7 @@ export class CdkStageDeployment extends Deployment {
       stackGraph.add(prepareAction, executeAction);
       executeAction.dependOn(prepareAction);
 
-      this.publishAssetDependencies(stackArtifact, graph, options);
+      this.publishAssetDependencies(stackArtifact, deploymentWorkflow, options);
     }
 
     // Translate stack dependencies into graph dependencies
@@ -100,11 +110,20 @@ export class CdkStageDeployment extends Deployment {
       }
     }
 
+    const approvalWorkflow = new Workflow('Approve', { role: WorkflowRole.GROUP });
+    graph.add(approvalWorkflow);
+    approvalWorkflow.dependOn(deploymentWorkflow);
+
     for (const approver of this.options.approvers ?? []) {
-      approver.addToExecutionGraph({ pipelineGraph: options.pipelineGraph, deploymentGraph: graph });
+      approver.addToWorkflow({
+        deploymentWorkflow,
+        parent: approvalWorkflow,
+        scope: options.scope,
+        workflow: options.workflow,
+      });
     }
 
-    return graph;
+    options.parent.add(graph);
   }
 
   /**
@@ -116,8 +135,8 @@ export class CdkStageDeployment extends Deployment {
 
   private publishAssetDependencies(
     stackArtifact: cxapi.CloudFormationStackArtifact,
-    deploymentGraph: ExecutionGraph,
-    options: AddDeploymentToGraphOptions) {
+    deploymentWorkflow: Workflow,
+    options: AddDeploymentToWorkflowOptions) {
     const assetManifests = stackArtifact.dependencies.filter(isAssetManifest);
 
     for (const manifestArtifact of assetManifests) {
@@ -138,9 +157,9 @@ export class CdkStageDeployment extends Deployment {
           throw new Error(`Unrecognized asset type: ${entry.type}`);
         }
 
-        options.assetPublishing.publishAsset({
-          pipelineGraph: options.pipelineGraph,
-          deploymentGraph,
+        options.assetPublisher.publishAsset({
+          workflow: options.workflow,
+          deploymentWorkflow,
           assetManifestPath: manifestArtifact.file,
           assetId: entry.id.assetId,
           assetSelector: entry.id.toString(),

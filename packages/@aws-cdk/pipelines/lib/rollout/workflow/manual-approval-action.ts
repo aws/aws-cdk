@@ -1,10 +1,10 @@
-import { ExecutionAction } from './index';
+import { WorkflowAction } from './index';
 
 export interface ManualApprovalActionProps {
   readonly comment?: string;
 }
 
-export class ManualApprovalAction extends ExecutionAction {
+export class ManualApprovalAction extends WorkflowAction {
   public readonly comment?: string;
 
   constructor(name: string, public readonly props: ManualApprovalActionProps) {

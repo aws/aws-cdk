@@ -1,14 +1,14 @@
 import * as cp from '@aws-cdk/aws-codepipeline';
-import { ExecutionArtifact } from '../../graph';
+import { WorkflowArtifact } from '../workflow';
 
 /**
  * Translate Graph Artifacts to CodePipeline Artifacts
  */
 export class ArtifactMap {
-  private artifacts = new Map<ExecutionArtifact, cp.Artifact>();
+  private artifacts = new Map<WorkflowArtifact, cp.Artifact>();
   private usedNames = new Set<string>();
 
-  public toCodePipeline(x: ExecutionArtifact): cp.Artifact {
+  public toCodePipeline(x: WorkflowArtifact): cp.Artifact {
     let ret = this.artifacts.get(x);
     if (!ret) {
       // They all need a name

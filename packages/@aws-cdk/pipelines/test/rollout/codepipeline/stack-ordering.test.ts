@@ -61,7 +61,7 @@ test('manual approval is inserted in correct location', () => {
   // WHEN
   pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'), {
     approvers: [
-      cdkp.Approver.manualChangeSetApproval(),
+      new cdkp.ManualChangeSetApproval(),
     ],
   });
 

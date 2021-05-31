@@ -1,21 +1,21 @@
 import { AssetType } from '../../../types/asset-type';
-import { ExecutionGraph, PipelineGraph } from '../../graph';
+import { Workflow, RolloutWorkflow } from '../../workflow';
 
-export abstract class AssetPublishingStrategy {
-  public static prepublishAll(): AssetPublishingStrategy {
+export abstract class AssetPublisher {
+  public static prepublishAll(): AssetPublisher {
     return new PrepublishAssets();
   }
 
-  public static jitPublishing(): AssetPublishingStrategy {
+  public static jitPublishing(): AssetPublisher {
     throw new Error('Method not implemented.');
   }
   public abstract publishAsset(options: PublishAssetOptions): void;
 }
 
 export interface PublishAssetOptions {
-  readonly deploymentGraph: ExecutionGraph;
+  readonly deploymentWorkflow: Workflow;
 
-  readonly pipelineGraph: PipelineGraph;
+  readonly workflow: RolloutWorkflow;
 
   /**
    * Asset manifest path
