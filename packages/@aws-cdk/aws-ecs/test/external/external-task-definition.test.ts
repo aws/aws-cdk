@@ -7,9 +7,6 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-//import * as cdk from '@aws-cdk/core';
-//import * as cxapi from '@aws-cdk/cx-api';
-//import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as ecs from '../../lib';
 
 nodeunitShim({

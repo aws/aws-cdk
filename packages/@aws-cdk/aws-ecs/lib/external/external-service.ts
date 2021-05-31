@@ -3,7 +3,7 @@ import { Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
-import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { Compatibility, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 /**
  * The properties for defining a service using the External launch type.
@@ -99,14 +99,21 @@ export class ExternalService extends BaseService implements IExternalService {
       throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
     }
 
+    if (props.taskDefinition.compatibility !== Compatibility.EXTERNAL) {
+      throw new Error('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
+    }
+
     if (props.propagateTags && props.propagateTaskTagsFrom) {
       throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
     }
 
-    if (props.taskDefinition.networkMode !== NetworkMode.BRIDGE) {
-      throw new Error(`External tasks can only have Bridge network mode, got: ${props.taskDefinition.networkMode}`);
+    if (props.cluster.defaultCloudMapNamespace !== undefined) {
+      throw new Error (`Cloud map integration is not supported for External service ${props.cluster.defaultCloudMapNamespace}`);
     }
 
+    if (props.cloudMapOptions !== undefined) {
+      throw new Error ('Cloud map options are not supported for External service');
+    }
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
 
