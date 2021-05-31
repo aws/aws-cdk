@@ -201,18 +201,16 @@ test('npm can have its install command overridden', () => {
   });
 });
 
-test.skip('Standard (NPM) synth can output additional artifacts', () => {
+test('Standard (NPM) synth can output additional artifacts', () => {
   // WHEN
-  // const addlArtifact = new codepipeline.Artifact('IntegTest');
+  const buildStep = new cdkp.CdkBuild({
+    input: cdkp.CodePipelineSource.gitHub('test/test'),
+    additionalOutputs: {
+      IntegTest: cdkp.AdditionalBuildOutput.fromDirectory('test'),
+    },
+  });
   new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    /*
-    additionalArtifacts: [
-      {
-        artifact: addlArtifact,
-        directory: 'test',
-      },
-    ],
-    */
+    buildStep,
   });
 
   // THEN
@@ -224,11 +222,11 @@ test.skip('Standard (NPM) synth can output additional artifacts', () => {
       BuildSpec: encodedJson(deepObjectLike({
         artifacts: {
           'secondary-artifacts': {
-            CloudAsm: {
+            Synth_CloudAssemblyArtifact: {
               'base-directory': 'cdk.out',
               'files': '**/*',
             },
-            IntegTest: {
+            Synth_Build_IntegTest: {
               'base-directory': 'test',
               'files': '**/*',
             },
