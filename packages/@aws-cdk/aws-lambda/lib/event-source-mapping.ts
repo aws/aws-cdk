@@ -121,11 +121,13 @@ export interface EventSourceMappingOptions {
   readonly startingPosition?: StartingPosition;
 
   /**
-   * A list of current response types applied to the event source mapping.
+   * Allow functions to return partially successful responses for a batch of records.
    *
-   * @default - None
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
+   *
+   * @default - false
    */
-  readonly functionResponseTypes?: FunctionResponseType[];
+  readonly reportBatchItemFailures?: boolean;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
@@ -313,7 +315,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
-      functionResponseTypes: props.functionResponseTypes,
+      functionResponseTypes: props.reportBatchItemFailures ? ['ReportBatchItemFailures'] : undefined,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
@@ -343,15 +345,4 @@ export enum StartingPosition {
    * always read the most recent data in the shard
    */
   LATEST = 'LATEST',
-}
-
-/**
- * Response types applied to the event source mapping.
- */
-export enum FunctionResponseType {
-  /**
-   * Use to allow for partial successes while processing batches from a stream.
-   * @see https://docs.aws.amazon.com/en_en/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
-   */
-  REPORT_BATCH_ITEM_FAILURES = 'ReportBatchItemFailures',
 }

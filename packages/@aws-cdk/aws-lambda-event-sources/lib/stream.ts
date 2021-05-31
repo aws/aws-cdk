@@ -71,11 +71,13 @@ export interface StreamEventSourceProps {
   readonly startingPosition: lambda.StartingPosition;
 
   /**
-   * A list of current response types applied to the event source mapping.
+   * Allow functions to return partially successful responses for a batch of records.
    *
-   * @default - None
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
+   *
+   * @default - false
    */
-  readonly functionResponseTypes?: lambda.FunctionResponseType[];
+  readonly reportBatchItemFailures?: boolean;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
@@ -116,7 +118,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       batchSize: this.props.batchSize || 100,
       bisectBatchOnError: this.props.bisectBatchOnError,
       startingPosition: this.props.startingPosition,
-      functionResponseTypes: this.props.functionResponseTypes,
+      reportBatchItemFailures: this.props.reportBatchItemFailures,
       maxBatchingWindow: this.props.maxBatchingWindow,
       maxRecordAge: this.props.maxRecordAge,
       retryAttempts: this.props.retryAttempts,

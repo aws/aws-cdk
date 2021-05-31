@@ -639,7 +639,7 @@ export = {
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       startingPosition: lambda.StartingPosition.LATEST,
-      functionResponseTypes: [lambda.FunctionResponseType.REPORT_BATCH_ITEM_FAILURES],
+      reportBatchItemFailures: true,
     }));
 
     // THEN
