@@ -149,6 +149,7 @@
       "props-physical-name:@aws-cdk/aws-ecs.TaskDefinitionProps",
       "props-physical-name:@aws-cdk/aws-ecs.Ec2TaskDefinitionProps",
       "props-physical-name:@aws-cdk/aws-ecs.FargateTaskDefinitionProps",
+      "props-physical-name:@aws-cdk/aws-ecs.ExternalTaskDefinitionProps",
       "docs-public-apis:@aws-cdk/aws-ecs.GelfCompressionType.GZIP",
       "docs-public-apis:@aws-cdk/aws-ecs.WindowsOptimizedVersion.SERVER_2016",
       "docs-public-apis:@aws-cdk/aws-ecs.WindowsOptimizedVersion.SERVER_2019",
