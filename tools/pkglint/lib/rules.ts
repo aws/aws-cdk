@@ -818,27 +818,6 @@ export class NodeCompatibility extends ValidationRule {
   }
 }
 
-/**
- * Verifies that the ``@types/`` dependencies are correctly recorded in ``devDependencies`` and not ``dependencies``.
- */
-export class NoAtTypesInDependencies extends ValidationRule {
-  public readonly name = 'dependencies/at-types';
-
-  public validate(pkg: PackageJson): void {
-    const predicate = (s: string) => s.startsWith('@types/');
-    for (const dependency of pkg.getDependencies(predicate)) {
-      pkg.report({
-        ruleName: this.name,
-        message: `dependency on ${dependency.name}@${dependency.version} must be in devDependencies`,
-        fix: () => {
-          pkg.addDevDependency(dependency.name, dependency.version);
-          pkg.removeDependency(predicate);
-        },
-      });
-    }
-  }
-}
-
 function isCdkModuleName(name: string) {
   return !!name.match(/^@aws-cdk\//);
 }
@@ -1568,6 +1547,15 @@ export class JestSetup extends ValidationRule {
     }
     fileShouldContain(this.name, pkg, '.gitignore', '!jest.config.js');
     fileShouldContain(this.name, pkg, '.npmignore', 'jest.config.js');
+
+    if (!(pkg.json.devDependencies ?? {})['@types/jest']) {
+      pkg.report({
+        ruleName: `${this.name}.types`,
+        message: 'There must be a devDependency on \'@types/jest\' if you use jest testing',
+      });
+    }
+
+
   }
 }
 

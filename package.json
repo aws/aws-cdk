@@ -20,7 +20,7 @@
     "conventional-changelog-cli": "^2.1.1",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.6",
-    "jest-junit": "^12.0.0",
+    "jest-junit": "^12.1.0",
     "jsii-diff": "^1.29.0",
     "jsii-pacmak": "^1.29.0",
     "jsii-reflect": "^1.29.0",
@@ -32,7 +32,8 @@
   },
   "tap-mocha-reporter-resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
   "resolutions": {
-    "tap-mocha-reporter": "^5.0.1"
+    "tap-mocha-reporter": "^5.0.1",
+    "string-width": "^4.2.2"
   },
   "repository": {
     "type": "git",

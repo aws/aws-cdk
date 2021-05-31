@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
-import { ClientPolicy } from './client-policy';
+import { renderTlsClientPolicy } from './private/utils';
+import { TlsClientPolicy } from './tls-client-policy';
 import { IVirtualService } from './virtual-service';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -59,69 +60,14 @@ export interface TcpTimeout {
 
 /**
  * Enum of supported AppMesh protocols
+ *
+ * @deprecated not for use outside package
  */
 export enum Protocol {
   HTTP = 'http',
   TCP = 'tcp',
   HTTP2 = 'http2',
   GRPC = 'grpc',
-}
-
-/**
- * Properties used to define healthchecks when creating virtual nodes.
- * All values have a default if only specified as {} when creating.
- * If property not set, then no healthchecks will be defined.
- */
-export interface HealthCheck {
-  /**
-   * Number of successful attempts before considering the node UP
-   *
-   * @default 2
-   */
-  readonly healthyThreshold?: number;
-
-  /**
-   * Interval in milliseconds to re-check
-   *
-   * @default 5 seconds
-   */
-  readonly interval?: cdk.Duration;
-
-  /**
-   * The path where the application expects any health-checks, this can also be the application path.
-   *
-   * @default /
-   */
-  readonly path?: string;
-
-  /**
-   * The TCP port number for the healthcheck
-   *
-   * @default - same as corresponding port mapping
-   */
-  readonly port?: number;
-
-  /**
-   * The protocol to use for the healthcheck, for convinience a const enum has been defined.
-   * Protocol.HTTP or Protocol.TCP
-   *
-   * @default - same as corresponding port mapping
-   */
-  readonly protocol?: Protocol;
-
-  /**
-   * Timeout in milli-seconds for the healthcheck to be considered a fail.
-   *
-   * @default 2 seconds
-   */
-  readonly timeout?: cdk.Duration;
-
-  /**
-   * Number of failed attempts before considering the node DOWN.
-   *
-   * @default 2
-   */
-  readonly unhealthyThreshold?: number;
 }
 
 /**
@@ -229,9 +175,9 @@ export interface BackendDefaults {
   /**
    * Client policy for backend defaults
    *
-   * @default none
+   * @default - none
    */
-  readonly clientPolicy?: ClientPolicy;
+  readonly tlsClientPolicy?: TlsClientPolicy;
 }
 
 /**
@@ -242,9 +188,9 @@ export interface VirtualServiceBackendOptions {
   /**
    * Client policy for the backend
    *
-   * @default none
+   * @default - none
    */
-  readonly clientPolicy?: ClientPolicy;
+  readonly tlsClientPolicy?: TlsClientPolicy;
 }
 
 /**
@@ -266,7 +212,7 @@ export abstract class Backend {
    * Construct a Virtual Service backend
    */
   public static virtualService(virtualService: IVirtualService, props: VirtualServiceBackendOptions = {}): Backend {
-    return new VirtualServiceBackend(virtualService, props.clientPolicy);
+    return new VirtualServiceBackend(virtualService, props.tlsClientPolicy);
   }
 
   /**
@@ -281,19 +227,23 @@ export abstract class Backend {
 class VirtualServiceBackend extends Backend {
 
   constructor (private readonly virtualService: IVirtualService,
-    private readonly clientPolicy: ClientPolicy | undefined) {
+    private readonly tlsClientPolicy: TlsClientPolicy | undefined) {
     super();
   }
 
   /**
    * Return config for a Virtual Service backend
    */
-  public bind(_scope: Construct): BackendConfig {
+  public bind(scope: Construct): BackendConfig {
     return {
       virtualServiceBackend: {
         virtualService: {
           virtualServiceName: this.virtualService.virtualServiceName,
-          clientPolicy: this.clientPolicy?.bind(_scope).clientPolicy,
+          clientPolicy: this.tlsClientPolicy
+            ? {
+              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy, (config) => config.virtualNodeClientTlsValidationTrust),
+            }
+            : undefined,
         },
       },
     };

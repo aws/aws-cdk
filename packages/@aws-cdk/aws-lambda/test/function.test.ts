@@ -191,6 +191,64 @@ describe('function', () => {
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
     });
 
+    test('applies source account/ARN conditions if the principal has conditions', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+      const sourceAccount = 'some-account';
+      const sourceArn = 'some-arn';
+      const service = 'my-service';
+      const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
+        ArnLike: {
+          'aws:SourceArn': sourceArn,
+        },
+        StringEquals: {
+          'aws:SourceAccount': sourceAccount,
+        },
+      });
+
+      fn.addPermission('S1', { principal: principal });
+
+      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Principal: service,
+        SourceAccount: sourceAccount,
+        SourceArn: sourceArn,
+      });
+    });
+
+    test('fails if the principal has conditions that are not supported', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+
+      expect(() => fn.addPermission('F1', {
+        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+          ArnEquals: {
+            'aws:SourceArn': 'source-arn',
+          },
+        }),
+      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+      expect(() => fn.addPermission('F2', {
+        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+          StringLike: {
+            'aws:SourceAccount': 'source-account',
+          },
+        }),
+      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+      expect(() => fn.addPermission('F3', {
+        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+          ArnLike: {
+            's3:DataAccessPointArn': 'data-access-point-arn',
+          },
+        }),
+      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+    });
+
     test('BYORole', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1841,6 +1899,7 @@ describe('function', () => {
       const accessPoint = fs.addAccessPoint('AccessPoint');
       // WHEN
       new lambda.Function(stack, 'MyFunction', {
+        vpc,
         handler: 'foo',
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -1878,6 +1937,69 @@ describe('function', () => {
           },
         ],
       });
+    });
+
+    test('throw error mounting efs with no vpc', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          handler: 'foo',
+          runtime: lambda.Runtime.NODEJS_12_X,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+        });
+      }).toThrow();
+    });
+
+    test('verify deps when mounting efs', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+      // WHEN
+      new lambda.Function(stack, 'MyFunction', {
+        vpc,
+        handler: 'foo',
+        securityGroups: [securityGroup],
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        DependsOn: [
+          'EfsEfsMountTarget195B2DD2E',
+          'EfsEfsMountTarget2315C927F',
+          'EfsEfsSecurityGroupfromLambdaSG20491B2F751D',
+          'LambdaSGtoEfsEfsSecurityGroupFCE2954020499719694A',
+          'MyFunctionServiceRoleDefaultPolicyB705ABD4',
+          'MyFunctionServiceRole3C357FF2',
+        ],
+      }, ResourcePart.CompleteDefinition);
     });
   });
 
