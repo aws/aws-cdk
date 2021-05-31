@@ -293,7 +293,7 @@
                   "ProjectName": {
                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                   },
-                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"a0d828d64c88aa603631eb7a08bc4748769f45d4b84d1b550cc85f41e49dc87e\"}]"
+                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"da8c1ee6d645a5802d25355fec94a3f22a961102b74ac3846898d6b14e3a2c30\"}]"
                 },
                 "InputArtifacts": [
                   {
@@ -739,6 +739,13 @@
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
+          "EnvironmentVariables": [
+            {
+              "Name": "NPM_CONFIG_UNSAFE_PERM",
+              "Type": "PLAINTEXT",
+              "Value": "true"
+            }
+          ],
           "Image": "aws/codebuild/standard:5.0",
           "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,

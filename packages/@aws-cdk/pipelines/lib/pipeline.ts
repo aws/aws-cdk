@@ -128,6 +128,7 @@ export interface CdkPipelineProps {
    */
   readonly singlePublisherPerType?: boolean;
 
+  /**
    * Whether the pipeline needs to build Docker images in the UpdatePipeline stage.
    *
    * If the UpdatePipeline stage tries to build a Docker image and this flag is not
@@ -341,7 +342,7 @@ export class CdkPipeline extends CoreConstruct {
     return flatMap(this._pipeline.stages, s => s.actions.filter(isDeployAction));
   }
 
-  private* validateDeployOrder(): IterableIterator<string> {
+  private * validateDeployOrder(): IterableIterator<string> {
     const stackActions = this.stackActions;
     for (const stackAction of stackActions) {
       // For every dependency, it must be executed in an action before this one is prepared.
@@ -359,7 +360,7 @@ export class CdkPipeline extends CoreConstruct {
     }
   }
 
-  private* validateRequestedOutputs(): IterableIterator<string> {
+  private * validateRequestedOutputs(): IterableIterator<string> {
     const artifactIds = this.stackActions.map(s => s.stackArtifactId);
 
     for (const artifactId of Object.keys(this._outputArtifacts)) {
