@@ -20,7 +20,9 @@
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "build+test+package": "yarn build+test",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "author": {
     "name": "Amazon Web Services",

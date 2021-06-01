@@ -141,7 +141,9 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudFormation",
@@ -221,7 +223,18 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["rm", "tar", "grep", "xargs", "head", "cut", "touch", "diff", "echo", "gzip"]
+    "ostools": [
+      "rm",
+      "tar",
+      "grep",
+      "xargs",
+      "head",
+      "cut",
+      "touch",
+      "diff",
+      "echo",
+      "gzip"
+    ]
   },
   "maturity": "stable",
   "publishConfig": {
