@@ -25,7 +25,7 @@ export abstract class FunctionCode {
 /**
  * Represents the function's source code as inline code
  */
-export class InlineCode extends FunctionCode {
+class InlineCode extends FunctionCode {
 
   constructor(private code: string) {
     super();
@@ -80,7 +80,7 @@ export interface FunctionProps {
 
   /**
    * A comment to describe the function.
-   * @default - no comment
+   * @default - same as `functionName`
    */
   readonly comment?: string;
 
