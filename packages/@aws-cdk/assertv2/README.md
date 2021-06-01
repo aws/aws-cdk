@@ -1,6 +1,14 @@
 # Assert v2
+<!--BEGIN STABILITY BANNER-->
 
-----
+---
+
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+
+---
+
+<!--END STABILITY BANNER-->
+
 > NOTE: This module contains *beta APIs*.
 >
 > All beta symbols are suffixed with the `Beta<n>`. When we have backwards

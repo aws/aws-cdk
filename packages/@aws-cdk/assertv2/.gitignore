@@ -1,4 +1,4 @@
-lib/assert-internal/
+lib/vendored/
 
 *.d.ts
 *.generated.ts
