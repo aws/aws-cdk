@@ -59,6 +59,9 @@ if [ "$check_prereqs" == "true" ]; then
   /bin/bash ./scripts/check-build-prerequisites.sh
 fi
 
+# Check that the yarn.lock is consistent
+node ./scripts/check-yarn-lock.js
+
 # Prepare for build with references
 /bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
 
