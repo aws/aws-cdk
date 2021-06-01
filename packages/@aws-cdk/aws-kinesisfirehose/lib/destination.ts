@@ -166,11 +166,3 @@ export interface DestinationProps {
    */
   readonly backupPrefix?: string;
 }
-
-/**
- * Abstract base class that destination types can extend to benefit from generic properties.
- */
-export abstract class Destination implements IDestination {
-
-  abstract bind(scope: Construct, deliveryStream: IDeliveryStream): DestinationConfig
-}

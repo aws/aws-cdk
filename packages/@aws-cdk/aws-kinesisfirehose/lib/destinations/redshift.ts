@@ -4,7 +4,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, SecretValue, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDeliveryStream } from '../delivery-stream';
-import { Compression, Destination, DestinationConfig, DestinationProps, DestinationType } from '../destination';
+import { Compression, DestinationConfig, DestinationProps, DestinationType, IDestination } from '../destination';
 
 /**
  * The Redshift user Firehose will assume to deliver data to Redshift
@@ -122,9 +122,8 @@ export interface RedshiftDestinationProps extends DestinationProps {
 /**
  * Redshift delivery stream destination.
  */
-export class RedshiftDestination extends Destination {
+export class RedshiftDestination implements IDestination {
   constructor(_props: RedshiftDestinationProps) {
-    super();
   }
 
   public bind(_scope: Construct, _deliveryStream: IDeliveryStream): DestinationConfig {
