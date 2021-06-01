@@ -1,4 +1,5 @@
 import { Stack, Stage } from '@aws-cdk/core';
+import * as fs from 'fs-extra';
 import * as assert from './assert-internal';
 
 /**
@@ -28,10 +29,26 @@ export enum ResourcePartBeta1 {
  * CloudFormation template has expected resources and properties.
  */
 export class StackAssertionsBeta1 {
+
+  /**
+   * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
+   */
+  public static fromStackBeta1(stack: Stack) {
+    return new StackAssertionsBeta1(toTemplate(stack));
+  }
+
+  /**
+   * Base your assertions from an existing CloudFormation template file.
+   */
+  public static fromTemplateFileBeta1(file: string) {
+    const contents = fs.readFileSync(file);
+    return new StackAssertionsBeta1(contents);
+  }
+
   private readonly inspector: assert.StackInspector;
 
-  constructor(stack: Stack) {
-    this.inspector = new assert.StackInspector(template(stack));
+  private constructor(template: any) {
+    this.inspector = new assert.StackInspector(template);
   }
 
   /**
@@ -64,7 +81,7 @@ export class StackAssertionsBeta1 {
   }
 }
 
-function template(stack: Stack): any {
+function toTemplate(stack: Stack): any {
   const root = stack.node.root;
   if (!Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
