@@ -4,22 +4,22 @@ import * as assert from './assert-internal';
 /**
  * A number of options to customize the `StackAssertions.assertResource()` API.
  */
-export interface AssertResourceOptions {
+export interface AssertResourceOptionsBeta1 {
   /**
    * The part of the CloudFormation Resource that the assertion should match against.
    * @default ResourcePart.PROPERTIES
    */
-  readonly part?: ResourcePart;
+  readonly part?: ResourcePartBeta1;
 }
 
 /**
  * See `AssertResourceOptions.part`
  */
-export enum ResourcePart {
+export enum ResourcePartBeta1 {
   /** The entire resource definition in the template, excluding the 'Type' */
-  COMPLETE,
+  COMPLETE_BETA1,
   /** The 'Properties' section of the resource definition in the template */
-  PROPERTIES,
+  PROPERTIES_BETA1,
 }
 
 /**
@@ -27,7 +27,7 @@ export enum ResourcePart {
  * Typically used, as part of unit tests, to validate that the rendered
  * CloudFormation template has expected resources and properties.
  */
-export class StackAssertions {
+export class StackAssertionsBeta1 {
   private readonly inspector: assert.StackInspector;
 
   constructor(stack: Stack) {
@@ -40,7 +40,7 @@ export class StackAssertions {
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param count number of expected instances
    */
-  public assertResourceCount(type: string, count: number): void {
+  public assertResourceCountBeta1(type: string, count: number): void {
     const assertion = assert.countResources(type, count);
     assertion.assertOrThrow(this.inspector);
   }
@@ -52,13 +52,13 @@ export class StackAssertions {
    * @param props the properties of the resource
    * @param options customize how the matching should be performed
    */
-  public assertResource(type: string, props: any, options?: AssertResourceOptions): void {
-    const part = assertResourcePart(options?.part ?? ResourcePart.PROPERTIES);
+  public assertResourceBeta1(type: string, props: any, options?: AssertResourceOptionsBeta1): void {
+    const part = assertResourcePart(options?.part ?? ResourcePartBeta1.PROPERTIES_BETA1);
     const assertion = assert.haveResource(type, props, part);
     assertion.assertOrThrow(this.inspector);
   }
 
-  public assertMatchTemplate(expected: {[key: string]: any}) {
+  public assertMatchTemplateBeta1(expected: {[key: string]: any}) {
     const assertion = assert.matchTemplate(expected);
     assertion.assertOrThrow(this.inspector);
   }
@@ -73,11 +73,11 @@ function template(stack: Stack): any {
   return assembly.getStackArtifact(stack.artifactId).template;
 }
 
-function assertResourcePart(part: ResourcePart) {
+function assertResourcePart(part: ResourcePartBeta1) {
   switch (part) {
-    case ResourcePart.PROPERTIES:
+    case ResourcePartBeta1.PROPERTIES_BETA1:
       return assert.ResourcePart.Properties;
-    case ResourcePart.COMPLETE:
+    case ResourcePartBeta1.COMPLETE_BETA1:
       return assert.ResourcePart.CompleteDefinition;
     default:
       throw new Error(`unexpected: unrecognized resource part type [${part}]`);
