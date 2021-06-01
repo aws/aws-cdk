@@ -6,21 +6,6 @@ import { Construct } from 'constructs';
 import { IDeliveryStream } from './delivery-stream';
 
 /**
- * Possible destination types for Firehose delivery streams
- */
-export enum DestinationType {
-  /**
-   * Redshift cluster
-   */
-  REDSHIFT,
-
-  /**
-   * S3 bucket
-   */
-  S3
-}
-
-/**
  * Possible compression options Firehose can use to compress data on delivery
  */
 export enum Compression {
@@ -55,18 +40,13 @@ export enum Compression {
  */
 export interface DestinationConfig {
   /**
-   * The type of destination being configured.
-   */
-  readonly destinationType: DestinationType;
-
-  /**
    * Schema-less properties that will be injected directly into `CfnDeliveryStream`.
    */
   readonly properties: object;
 }
 
 /**
- * Each destination type should implement this interface and register its `DestinationType` in `DeliveryStream`.
+ * Each destination type should implement this interface and register its in `DeliveryStream`.
  */
 export interface IDestination {
   /**
