@@ -8,8 +8,8 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ContainerDefinition, Protocol } from '../container-definition';
 import { ICluster, CapacityProviderStrategy } from '../cluster';
+import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -203,7 +203,7 @@ export interface BaseServiceProps extends BaseServiceOptions {
    *
    * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
    *
-   * Valid values are: LaunchType.ECS or LaunchType.FARGATE
+   * Valid values are: LaunchType.ECS or LaunchType.FARGATE or LaunchType.EXTERNAL
    */
   readonly launchType: LaunchType;
 }
@@ -415,6 +415,8 @@ export abstract class BaseService extends Resource
     if (props.cloudMapOptions) {
       this.enableCloudMap(props.cloudMapOptions);
     }
+
+    this.node.defaultChild = this.resource;
   }
 
   /**
@@ -637,7 +639,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * This method returns the CloudWatch metric for this clusters memory utilization.
+   * This method returns the CloudWatch metric for this service's memory utilization.
    *
    * @default average over 5 minutes
    */
@@ -646,7 +648,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * This method returns the CloudWatch metric for this clusters CPU utilization.
+   * This method returns the CloudWatch metric for this service's CPU utilization.
    *
    * @default average over 5 minutes
    */
@@ -905,7 +907,12 @@ export enum LaunchType {
   /**
    * The service will be launched using the FARGATE launch type
    */
-  FARGATE = 'FARGATE'
+  FARGATE = 'FARGATE',
+
+  /**
+   * The service will be launched using the EXTERNAL launch type
+   */
+  EXTERNAL = 'EXTERNAL'
 }
 
 /**

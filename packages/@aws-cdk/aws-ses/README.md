@@ -98,10 +98,10 @@ new ses.ReceiptFilter(this, 'Filter', {
 })
 ```
 
-A white list filter is also available:
+An allow list filter is also available:
 
 ```ts
-new ses.WhiteListReceiptFilter(this, 'WhiteList', {
+new ses.AllowListReceiptFilter(this, 'AllowList', {
   ips: [
     '10.0.0.0/16',
     '1.2.3.4/16',

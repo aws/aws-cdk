@@ -168,7 +168,7 @@ the connection has already been created.
 
 ```ts
 const sourceOutput = new codepipeline.Artifact();
-const sourceAction = new codepipeline_actions.BitBucketSourceAction({
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
   actionName: 'BitBucket_Source',
   owner: 'aws',
   repo: 'aws-cdk',
@@ -177,9 +177,8 @@ const sourceAction = new codepipeline_actions.BitBucketSourceAction({
 });
 ```
 
-**Note**: as this feature is still in Beta in CodePipeline,
-the above class `BitBucketSourceAction` is experimental -
-we reserve the right to make breaking changes to it.
+You can also use the `CodeStarConnectionsSourceAction` to connect to GitHub, in the same way
+(you just have to select GitHub as the source when creating the connection in the console).
 
 ### AWS S3 Source
 
@@ -829,24 +828,16 @@ new codepipeline_actions.AlexaSkillDeployAction({
 
 ### AWS Service Catalog
 
-You can deploy a CloudFormation template to an existing Service Catalog product with the following action:
+You can deploy a CloudFormation template to an existing Service Catalog product with the following Action:
 
 ```ts
-new codepipeline.Pipeline(this, 'Pipeline', {
-      stages: [
-          {
-            stageName: 'ServiceCatalogDeploy',
-            actions: [
-            new codepipeline_actions.ServiceCatalogDeployAction({
-                actionName: 'ServiceCatalogDeploy',
-                templatePath: cdkBuildOutput.atPath("Sample.template.json"),
-                productVersionName: "Version - " + Date.now.toString,
-                productType: "CLOUD_FORMATION_TEMPLATE",
-                productVersionDescription: "This is a version from the pipeline with a new description.",
-                productId: "prod-XXXXXXXX",
-            }),
-          },
-        ],
+const serviceCatalogDeployAction = new codepipeline_actions.ServiceCatalogDeployActionBeta1({
+  actionName: 'ServiceCatalogDeploy',
+  templatePath: cdkBuildOutput.atPath("Sample.template.json"),
+  productVersionName: "Version - " + Date.now.toString,
+  productType: "CLOUD_FORMATION_TEMPLATE",
+  productVersionDescription: "This is a version from the pipeline with a new description.",
+  productId: "prod-XXXXXXXX",
 });
 ```
 

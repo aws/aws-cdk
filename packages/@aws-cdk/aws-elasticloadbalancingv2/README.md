@@ -283,6 +283,10 @@ const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
   port: 50051,
   protocol: elbv2.ApplicationProtocol.HTTP,
   protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
+  healthCheck: {
+    enabled: true,
+    healthyGrpcCodes: '0-99',
+  },
   vpc,
 });
 ```

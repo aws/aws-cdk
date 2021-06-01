@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
@@ -25,6 +25,7 @@ nodeunitShim({
         logRetention: logs.RetentionDays.ONE_MONTH,
         multilinePattern: 'pattern',
         streamPrefix: 'hello',
+        mode: ecs.AwsLogDriverMode.NON_BLOCKING,
       }),
     });
 
@@ -44,6 +45,7 @@ nodeunitShim({
               'awslogs-region': { Ref: 'AWS::Region' },
               'awslogs-datetime-format': 'format',
               'awslogs-multiline-pattern': 'pattern',
+              'mode': 'non-blocking',
             },
           },
         },

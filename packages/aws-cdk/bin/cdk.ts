@@ -4,11 +4,12 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as yargs from 'yargs';
 
-import { ToolkitInfo, BootstrapSource, Bootstrapper } from '../lib';
 import { SdkProvider } from '../lib/api/aws-auth';
+import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
+import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
@@ -57,7 +58,7 @@ async function parseCommandLineArguments() {
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
-    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that user assets (enabled by default)', default: true })
+    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
@@ -256,24 +257,7 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
-        // Use new bootstrapping if it's requested via environment variable, or if
-        // new style stack synthesis has been configured in `cdk.json`.
-        //
-        // In code it's optimistically called "default" bootstrapping but that is in
-        // anticipation of flipping the switch, in user messaging we still call it
-        // "new" bootstrapping.
-        let source: BootstrapSource = { source: 'legacy' };
-        const newStyleStackSynthesis = isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
-        if (args.template) {
-          print(`Using bootstrapping template from ${args.template}`);
-          source = { source: 'custom', templateFile: args.template };
-        } else if (process.env.CDK_NEW_BOOTSTRAP) {
-          print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
-          source = { source: 'default' };
-        } else if (newStyleStackSynthesis) {
-          print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
-          source = { source: 'default' };
-        }
+        const source: BootstrapSource = determineBootsrapVersion(args, configuration);
 
         const bootstrapper = new Bootstrapper(source);
 
@@ -359,6 +343,48 @@ async function initCommandLine() {
   function toJsonOrYaml(object: any): string {
     return serializeStructure(object, argv.json);
   }
+}
+
+/**
+ * Determine which version of bootstrapping
+ * (legacy, or "new") should be used.
+ */
+function determineBootsrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
+  const isV1 = version.DISPLAY_VERSION.startsWith('1.');
+  return isV1 ? determineV1BootstrapSource(args, configuration) : determineV2BootstrapSource(args);
+}
+
+function determineV1BootstrapSource(args: { template?: string }, configuration: Configuration): BootstrapSource {
+  let source: BootstrapSource;
+  if (args.template) {
+    print(`Using bootstrapping template from ${args.template}`);
+    source = { source: 'custom', templateFile: args.template };
+  } else if (process.env.CDK_NEW_BOOTSTRAP) {
+    print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
+    source = { source: 'default' };
+  } else if (isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
+    print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
+    source = { source: 'default' };
+  } else {
+    // in V1, the "legacy" bootstrapping is the default
+    source = { source: 'legacy' };
+  }
+  return source;
+}
+
+function determineV2BootstrapSource(args: { template?: string }): BootstrapSource {
+  let source: BootstrapSource;
+  if (args.template) {
+    print(`Using bootstrapping template from ${args.template}`);
+    source = { source: 'custom', templateFile: args.template };
+  } else if (process.env.CDK_LEGACY_BOOTSTRAP) {
+    print('CDK_LEGACY_BOOTSTRAP set, using legacy-style bootstrapping');
+    source = { source: 'legacy' };
+  } else {
+    // in V2, the "new" bootstrapping is the default
+    source = { source: 'default' };
+  }
+  return source;
 }
 
 function isFeatureEnabled(configuration: Configuration, featureFlag: string) {

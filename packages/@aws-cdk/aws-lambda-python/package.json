@@ -62,10 +62,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^26.0.23",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -90,6 +91,9 @@
   },
   "cdk-build": {
     "jest": true
+  },
+  "nozem": {
+    "ostools": ["docker"]
   },
   "publishConfig": {
     "tag": "latest"

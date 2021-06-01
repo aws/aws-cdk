@@ -74,7 +74,6 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@types/nodeunit": "^0.0.31",
@@ -83,7 +82,8 @@
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
@@ -100,11 +100,15 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^3.3.69",
+    "yaml": "1.10.2"
   },
+  "bundledDependencies": [
+    "yaml"
+  ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -119,7 +123,6 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
     "constructs": "^3.3.69"
   },
   "engines": {

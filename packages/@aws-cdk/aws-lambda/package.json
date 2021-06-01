@@ -75,15 +75,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
-    "@types/aws-lambda": "^8.10.73",
-    "@types/lodash": "^4.14.168",
+    "@types/jest": "^26.0.23",
+    "@types/aws-lambda": "^8.10.76",
+    "@types/lodash": "^4.14.170",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "jest": "^26.6.3",
     "lodash": "^4.17.21",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
@@ -144,7 +145,6 @@
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily.NODEJS",
       "docs-public-apis:@aws-cdk/aws-lambda.Alias.lambda",
       "docs-public-apis:@aws-cdk/aws-lambda.Alias.fromAliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-lambda.Function.fromFunctionArn",
       "docs-public-apis:@aws-cdk/aws-lambda.FunctionBase",
       "docs-public-apis:@aws-cdk/aws-lambda.QualifiedFunctionBase",
       "docs-public-apis:@aws-cdk/aws-lambda.QualifiedFunctionBase.lambda",
@@ -178,6 +178,11 @@
   "stability": "stable",
   "awscdkio": {
     "announce": false
+  },
+  "nozem": {
+    "ostools": [
+      "docker"
+    ]
   },
   "maturity": "stable",
   "publishConfig": {
