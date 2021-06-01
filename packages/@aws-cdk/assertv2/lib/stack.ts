@@ -1,6 +1,5 @@
 import { Stack, Stage } from '@aws-cdk/core';
-import * as fs from 'fs-extra';
-import * as assert from './assert-internal';
+import * as assert from './vendored/assert';
 
 /**
  * A number of options to customize the `StackAssertions.assertResource()` API.
@@ -38,11 +37,10 @@ export class StackAssertionsBeta1 {
   }
 
   /**
-   * Base your assertions from an existing CloudFormation template file.
+   * Base your assertions from an existing CloudFormation template.
    */
-  public static fromTemplateFileBeta1(file: string) {
-    const contents = fs.readFileSync(file);
-    return new StackAssertionsBeta1(contents);
+  public static fromTemplateBeta1(template: string) {
+    return new StackAssertionsBeta1(JSON.parse(template));
   }
 
   private readonly inspector: assert.StackInspector;
