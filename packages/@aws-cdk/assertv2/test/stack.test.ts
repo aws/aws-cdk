@@ -10,7 +10,7 @@ describe('StackAssertions', () => {
         type: 'Foo::Bar',
       });
 
-      const inspect = new StackAssertionsBeta1(stack);
+      const inspect = StackAssertionsBeta1.fromStackBeta1(stack);
       inspect.assertResourceCountBeta1('Foo::Bar', 1);
 
       expect(() => inspect.assertResourceCountBeta1('Foo::Bar', 0)).toThrow(/has 1 resource of type Foo::Bar/);
@@ -22,7 +22,7 @@ describe('StackAssertions', () => {
     test('no resource', () => {
       const stack = new Stack();
 
-      const inspect = new StackAssertionsBeta1(stack);
+      const inspect = StackAssertionsBeta1.fromStackBeta1(stack);
       inspect.assertResourceCountBeta1('Foo::Bar', 0);
 
       expect(() => inspect.assertResourceCountBeta1('Foo::Bar', 1)).toThrow(/has 0 resource of type Foo::Bar/);
@@ -39,7 +39,7 @@ describe('StackAssertions', () => {
         },
       });
 
-      const inspect = new StackAssertionsBeta1(stack);
+      const inspect = StackAssertionsBeta1.fromStackBeta1(stack);
       inspect.assertResourceBeta1('Foo::Bar', { baz: 'qux' });
 
       expect(() => inspect.assertResourceBeta1('Foo::Bar', { fred: 'waldo' })).toThrow(/None .* matches resource 'Foo::Bar'/);
@@ -52,7 +52,7 @@ describe('StackAssertions', () => {
         type: 'Foo::Bar',
       });
 
-      const inspect = new StackAssertionsBeta1(stack);
+      const inspect = StackAssertionsBeta1.fromStackBeta1(stack);
       expect(() => inspect.assertResourceBeta1('Foo::Baz', {})).toThrow(/None .* matches resource 'Foo::Baz'/);
     });
 
@@ -62,7 +62,7 @@ describe('StackAssertions', () => {
       const baz = new CfnResource(stack, 'Baz', { type: 'Foo::Baz' });
       bar.node.addDependency(baz);
 
-      const inspect = new StackAssertionsBeta1(stack);
+      const inspect = StackAssertionsBeta1.fromStackBeta1(stack);
       inspect.assertResourceBeta1('Foo::Bar', {
         Properties: { baz: 'qux' },
         DependsOn: ['Baz'],
@@ -80,7 +80,7 @@ describe('StackAssertions', () => {
         properties: { baz: 'qux' },
       });
 
-      const inspect = new StackAssertionsBeta1(stack);
+      const inspect = StackAssertionsBeta1.fromStackBeta1(stack);
       inspect.assertMatchTemplateBeta1({
         Resources: {
           Foo: {
@@ -98,7 +98,7 @@ describe('StackAssertions', () => {
         properties: { baz: 'qux' },
       });
 
-      const inspect = new StackAssertionsBeta1(stack);
+      const inspect = StackAssertionsBeta1.fromStackBeta1(stack);
       expect(() => inspect.assertMatchTemplateBeta1({
         Resources: {
           Foo: {
