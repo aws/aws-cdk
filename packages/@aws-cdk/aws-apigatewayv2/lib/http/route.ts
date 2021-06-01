@@ -59,7 +59,7 @@ export class HttpRouteKey {
    */
   public static with(path: string, method?: HttpMethod) {
     if (path !== '/' && (!path.startsWith('/') || path.endsWith('/'))) {
-      throw new Error(`A route path must always start with a "/" and not end with a "/"`);
+      throw new Error('A route path must always start with a "/" and not end with a "/"');
     }
     return new HttpRouteKey(`${method ?? HttpMethod.ANY} ${path}`, path);
   }
