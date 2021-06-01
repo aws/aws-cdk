@@ -6,6 +6,26 @@ import { Construct } from 'constructs';
 import { IDeliveryStream } from './delivery-stream';
 
 /**
+ * Options for S3 record backup of a delivery stream
+ */
+export enum BackupMode {
+  /**
+   * All records are backed up.
+   */
+  ENABLED,
+
+  /**
+   * Only records that failed to deliver or transform are backed up.
+   */
+  FAILED_ONLY,
+
+  /**
+   * No records are backed up.
+   */
+  DISABLED
+}
+
+/**
  * Possible compression options Firehose can use to compress data on delivery
  */
 export enum Compression {
@@ -126,16 +146,18 @@ export interface DestinationProps {
   readonly processors?: DataProcessor[];
 
   /**
-   * If true, source records will be backed up to an S3 bucket before being transformed by data processors.
+   * Indicates the mode by which incoming records should be backed up to S3, if any.
    *
-   * @default false - source records are not backed up to S3.
+   * If `backupBucket` is provided, this will be implicitly set to `ENABLED`.
+   *
+   * @default BackupMode.DISABLED - source records are not backed up to S3.
    */
-  readonly s3Backup?: boolean;
+  readonly backup?: BackupMode;
 
   /**
-   * The S3 bucket where source records will be written as backup.
+   * The S3 bucket that will store data and failed records.
    *
-   * @default - if `s3Backup` is set to `true`, a bucket will be created for you.
+   * @default - if `backup` is set to `ENABLED` or `FAILED_ONLY`, a bucket will be created for you.
    */
   readonly backupBucket?: s3.IBucket;
 

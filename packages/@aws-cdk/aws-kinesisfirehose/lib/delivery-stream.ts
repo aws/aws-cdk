@@ -89,16 +89,16 @@ export interface DeliveryStreamProps {
   /**
    * The IAM role assumed by Kinesis Firehose to read from sources, invoke processors, and write to destinations
    *
-   * @default - a role will be created with default permissions
+   * @default - a role will be created with default permissions.
    */
   readonly role?: iam.IRole;
 
   /**
-   * Indicates the type of customer master key (CMK) to use for server-side encryption.
+   * Indicates the type of customer master key (CMK) to use for server-side encryption, if any.
    *
    * If `encryptionKey` is provided, this will be implicitly set to `CUSTOMER_MANAGED`.
    *
-   * @default - unencrypted.
+   * @default StreamEncryption.UNENCRYPTED.
    */
   readonly encryption?: StreamEncryption;
 
