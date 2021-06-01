@@ -12,7 +12,7 @@ export abstract class FunctionCode {
    * @returns `InlineCode` with inline code.
    * @param code The actual function code
    */
-  public static fromInline(code: string): InlineCode {
+  public static fromInline(code: string): FunctionCode {
     return new InlineCode(code);
   }
 
