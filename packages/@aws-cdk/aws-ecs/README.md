@@ -60,6 +60,7 @@ one to run tasks on AWS Fargate.
 - Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on Amazon EC2 instances running in your account.
 - Use the `FargateTaskDefinition` and `FargateService` constructs to run tasks on
   instances that are managed for you by AWS.
+- Use the `ExternalTaskDefinition` and `ExternalService` constructs to run tasks on self managed infrastructure managed by AWS ECS Anywhere
 
 Here are the main differences:
 
@@ -73,10 +74,14 @@ Here are the main differences:
   Application/Network Load Balancers. Only the AWS log driver is supported.
   Many host features are not supported such as adding kernel capabilities
   and mounting host devices/volumes inside the container.
+- **AWS ECSAnywhere**: tasks run on customers self managed infrastructure managed by
+  AWS ECS anywhere. Only support Bridge networking mode, doesn't support autoscaling,
+  load balancing, cloudmap discovery and attachment of volumes
 
-For more information on Amazon EC2 vs AWS Fargate and networking see the AWS Documentation:
-[AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html) and
-[Task Networking](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html).
+For more information on Amazon EC2 vs AWS Fargate, networking and ECS Anywhere see the AWS Documentation:
+[AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html),
+[Task Networking](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html),
+[ECS Anywhere](https://aws.amazon.com/ecs/anywhere/)
 
 ## Clusters
 
@@ -211,7 +216,7 @@ some supporting containers which are used to support the main container,
 doings things like upload logs or metrics to monitoring services.
 
 To run a task or service with Amazon EC2 launch type, use the `Ec2TaskDefinition`. For AWS Fargate tasks/services, use the
-`FargateTaskDefinition`. These classes provide a simplified API that only contain
+`FargateTaskDefinition` and for AWS ECS Anywhere use the `ExternalTaskDefinition`. These classes provide a simplified API that only contain
 properties relevant for that specific launch type.
 
 For a `FargateTaskDefinition`, specify the task size (`memoryLimitMiB` and `cpu`):
@@ -241,6 +246,19 @@ const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
 });
 
 const container = ec2TaskDefinition.addContainer("WebContainer", {
+  // Use an image from DockerHub
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024
+  // ... other options here ...
+});
+```
+
+For a `ExternalTaskDefinition`:
+
+```ts
+const externalTaskDefinition = new ecs.ExternalTaskDefinition(this, 'TaskDef');
+
+const container = externalTaskDefinition.addContainer("WebContainer", {
   // Use an image from DockerHub
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024
@@ -283,7 +301,9 @@ const volume = {
 const container = fargateTaskDefinition.addVolume("mydatavolume");
 ```
 
-To use a TaskDefinition that can be used with either Amazon EC2 or
+> Note: ECS Anywhere doesn't support volume attachment part of the task definition.
+
+To use a TaskDefinition that can be used with either Amazon EC2, 
 AWS Fargate launch types, use the `TaskDefinition` construct.
 
 When creating a task definition you have to specify what kind of
@@ -359,6 +379,18 @@ const service = new ecs.FargateService(this, 'Service', {
 });
 ```
 
+ECS Anywhere service definition looks like:
+
+```ts
+const taskDefinition;
+
+const service = new ecs.ExternalService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  desiredCount: 5
+});
+```
+
 `Services` by default will create a security group if not provided.
 If you'd like to specify which security groups to use you can override the `securityGroups` property.
 
@@ -376,6 +408,8 @@ const service = new ecs.FargateService(stack, 'Service', {
   circuitBreaker: { rollback: true },
 });
 ```
+
+> Note: ECS Anywhere doesn't support Deployment circuit breaker and rollback
 
 ### Include an application/network load balancer
 
@@ -400,6 +434,8 @@ const targetGroup2 = listener.addTargets('ECS2', {
   })]
 });
 ```
+
+> Note: ECS Anywhere doesn't support application/network load balancer
 
 Note that in the example above, the default `service` only allows you to register the first essential container or the first mapped port on the container as a target and add it to a new target group. To have more control over which container and port to register as targets, you can use `service.loadBalancerTarget()` to return a load balancing target for a specific container and port.
 
