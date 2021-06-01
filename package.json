@@ -7,7 +7,6 @@
   },
   "scripts": {
     "pkglint": "lerna --scope pkglint run build && lerna run pkglint",
-    "prebuild": "node ./scripts/check-yarn-lock.js",
     "build": "./build.sh",
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
