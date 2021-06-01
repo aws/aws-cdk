@@ -418,10 +418,6 @@
                             "$ref": "#/definitions/SecurityGroupContextQuery"
                         }
                     ]
-                },
-                "lookupRoleArn": {
-                    "description": "The ARN of the role that should be used to look up\nthe missing values in this context. (Default - None)",
-                    "type": "string"
                 }
             },
             "required": [
@@ -455,6 +451,10 @@
                 },
                 "region": {
                     "description": "Region to query",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
                     "type": "string"
                 },
                 "owners": {
@@ -492,6 +492,10 @@
                 "region": {
                     "description": "Query region",
                     "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
+                    "type": "string"
                 }
             },
             "required": [
@@ -509,6 +513,10 @@
                 },
                 "region": {
                     "description": "Query region",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
                     "type": "string"
                 },
                 "domainName": {
@@ -543,6 +551,10 @@
                     "description": "Query region",
                     "type": "string"
                 },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
+                    "type": "string"
+                },
                 "parameterName": {
                     "description": "Parameter name to query",
                     "type": "string"
@@ -564,6 +576,10 @@
                 },
                 "region": {
                     "description": "Query region",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
                     "type": "string"
                 },
                 "filter": {
@@ -601,6 +617,10 @@
                     "description": "Query region",
                     "type": "string"
                 },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
+                    "type": "string"
+                },
                 "serviceName": {
                     "description": "Query service name",
                     "type": "string"
@@ -622,6 +642,10 @@
                 },
                 "region": {
                     "description": "Query region",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
                     "type": "string"
                 },
                 "loadBalancerType": {
@@ -664,6 +688,10 @@
                 },
                 "region": {
                     "description": "Query region",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
                     "type": "string"
                 },
                 "listenerArn": {
@@ -718,6 +746,10 @@
                 },
                 "region": {
                     "description": "Query region",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
                     "type": "string"
                 },
                 "securityGroupId": {

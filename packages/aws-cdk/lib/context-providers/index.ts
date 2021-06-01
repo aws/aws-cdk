@@ -27,7 +27,7 @@ export async function provideContextValues(
   for (const missingContext of missingValues) {
     const key = missingContext.key;
     const constructor = availableContextProviders[missingContext.provider];
-    const lookupRoleArn = missingContext.lookupRoleArn;
+    const lookupRoleArn = missingContext.props.lookupRoleArn;
     if (!constructor) {
       // eslint-disable-next-line max-len
       throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);

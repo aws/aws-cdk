@@ -117,7 +117,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.equals(enrichedContext.lookupRoleArn, 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}');
+    test.equals(enrichedContext.props.lookupRoleArn, 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}');
 
     test.done();
   },

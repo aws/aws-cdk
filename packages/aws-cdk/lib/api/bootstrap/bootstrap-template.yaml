@@ -6,6 +6,11 @@ Parameters:
       stacks to this environment
     Default: ''
     Type: CommaDelimitedList
+  TrustedAccountsForLookup:
+    Description: List of AWS accounts that are trusted to look up values in this
+      environment
+    Default: ''
+    Type: CommaDelimitedList
   CloudFormationExecutionPolicies:
     Description: List of the ManagedPolicy ARN(s) to attach to the CloudFormation
       deployment role
@@ -45,6 +50,13 @@ Conditions:
           - Fn::Join:
               - ''
               - Ref: TrustedAccounts
+  HasTrustedAccountsForLookup:
+    Fn::Not:
+      - Fn::Equals:
+          - ''
+          - Fn::Join:
+              - ''
+              - Ref: TrustedAccountsForLookup
   HasCloudFormationExecutionPolicies:
     Fn::Not:
       - Fn::Equals:
@@ -244,12 +256,12 @@ Resources:
               AWS:
                 Ref: AWS::AccountId
           - Fn::If:
-              - HasTrustedAccounts
+              - HasTrustedAccountsForLookup
               - Action: sts:AssumeRole
                 Effect: Allow
                 Principal:
                   AWS:
-                    Ref: TrustedAccounts
+                    Ref: TrustedAccountsForLookup
               - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}

@@ -8,6 +8,7 @@ import { DeployStackResult } from '../deploy-stack';
 import { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
 import { BootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap';
 import { legacyBootstrapTemplate } from './legacy-template';
+import { firstNonEmpty } from '../util/arrays';
 
 /* eslint-disable max-len */
 
@@ -91,8 +92,14 @@ export class Bootstrapper {
     // Ideally we'd do this inside the template, but the `Rules` section of CFN
     // templates doesn't seem to be able to express the conditions that we need
     // (can't use Fn::Join or reference Conditions) so we do it here instead.
-    const trustedAccounts = params.trustedAccounts ?? splitCfnArray(current.parameters.TrustedAccounts);
-    info(`Trusted accounts:   ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
+    const trustedAccounts = firstNonEmpty(params.trustedAccounts, splitCfnArray(current.parameters.TrustedAccounts));
+    info(`Trusted accounts for deployment: ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
+
+    // If a lookup trusted account was not provided or doesn't exist yet in the stack,
+    // we fall back to the trusted account for deployment since it has already been
+    // granted broader permissions.
+    const trustedAccountsForLookup = firstNonEmpty(params.trustedAccountsForLookup, splitCfnArray(current.parameters.TrustedAccountsForLookup), trustedAccounts);
+    info(`Trusted accounts for lookup: ${trustedAccountsForLookup.length > 0 ? trustedAccountsForLookup.join(', ') : '(none)'}`);
 
     const cloudFormationExecutionPolicies = params.cloudFormationExecutionPolicies ?? splitCfnArray(current.parameters.CloudFormationExecutionPolicies);
     if (trustedAccounts.length === 0 && cloudFormationExecutionPolicies.length === 0) {
@@ -137,6 +144,7 @@ export class Bootstrapper {
         FileAssetsBucketKmsKeyId: kmsKeyId,
         // Empty array becomes empty string
         TrustedAccounts: trustedAccounts.join(','),
+        TrustedAccountsForLookup: trustedAccountsForLookup.join(','),
         CloudFormationExecutionPolicies: cloudFormationExecutionPolicies.join(','),
         Qualifier: params.qualifier,
         PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',

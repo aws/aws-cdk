@@ -628,6 +628,17 @@ $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
     aws://222222222222/us-east-2
 ```
 
+If you only want to trust an account to do lookups (e.g, when your CDK application has a 
+`Vpc.fromLookup()` call), use the option `--trust-for-lookup`:
+
+```console
+$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+    [--profile admin-profile-2] \
+    --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+    --trust-for-lookup 11111111111 \
+    aws://222222222222/us-east-2
+```
+
 These command lines explained:
 
 * `npx`: means to use the CDK CLI from the current NPM install. If you are using
@@ -643,6 +654,9 @@ These command lines explained:
   CDK applications into this account. In this case we indicate the Pipeline's account,
   but you could also use this for developer accounts (don't do that for production
   application accounts though!).
+* `--trust-for-lookup`: similar to `--trust`, but gives a more limited set of permissions to the 
+  trusted account, allowing it to only look up missing values, such as availability zones, EC2 
+  images and VPCs.
 * `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
 
 > **Security tip**: we recommend that you use administrative credentials to an

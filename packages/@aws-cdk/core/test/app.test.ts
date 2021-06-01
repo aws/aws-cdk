@@ -225,18 +225,18 @@ nodeunitShim({
     test.deepEqual(assembly.manifest.missing, [
       {
         key: 'missing-context-key',
-        lookupRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}',
         provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
+          lookupRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}',
           account: '12345689012',
           region: 'ab-north-1',
         },
       },
       {
         key: 'missing-context-key-2',
-        lookupRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}',
         provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
+          lookupRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}',
           account: '12345689012',
           region: 'ab-south-1',
         },
