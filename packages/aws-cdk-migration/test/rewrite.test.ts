@@ -93,7 +93,7 @@ describe(rewriteImports, () => {
   import * as cdk from '@aws-cdk/core';
   // something after
 
-  ${fileBody('cdk.Construct')}
+  ${constructFileBody('cdk.Construct')}
   console.log('Look! I did something!');`, 'subject.ts');
 
     expect(output).toBe(`
@@ -102,7 +102,7 @@ describe(rewriteImports, () => {
   import * as constructs from 'constructs';
   // something after
 
-  ${fileBody('constructs.Construct')}
+  ${constructFileBody('constructs.Construct')}
   console.log('Look! I did something!');`);
   });
 
@@ -112,7 +112,7 @@ describe(rewriteImports, () => {
   import cdk = require('@aws-cdk/core');
   // something after
 
-  ${fileBody('cdk.Construct')}
+  ${constructFileBody('cdk.Construct')}
   console.log('Look! I did something!');`, 'subject.ts');
 
     expect(output).toBe(`
@@ -121,7 +121,7 @@ describe(rewriteImports, () => {
   import constructs = require('constructs');
   // something after
 
-  ${fileBody('constructs.Construct')}
+  ${constructFileBody('constructs.Construct')}
   console.log('Look! I did something!');`);
   });
 
@@ -131,8 +131,7 @@ describe(rewriteImports, () => {
   import { Construct, Stack } from '@aws-cdk/core';
   // something after
 
-  function f(c: Construct) {
-  }
+  ${constructFileBody('Construct')}
   console.log('Look! I did something!');`, 'subject.ts');
 
     expect(output).toBe(`
@@ -141,8 +140,7 @@ describe(rewriteImports, () => {
   import { Construct } from 'constructs';
   // something after
 
-  function f(c: Construct) {
-  }
+  ${constructFileBody('Construct')}
   console.log('Look! I did something!');`);
   });
 
@@ -152,8 +150,7 @@ describe(rewriteImports, () => {
   import { App, Construct as CoreConstruct } from '@aws-cdk/core';
   // something after
 
-  function f(c: CoreConstruct) {
-  }
+  ${constructFileBody('CoreConstruct')}
   console.log('Look! I did something!');`, 'subject.ts');
 
     expect(output).toBe(`
@@ -162,13 +159,12 @@ describe(rewriteImports, () => {
   import { Construct as CoreConstruct } from 'constructs';
   // something after
 
-  function f(c: CoreConstruct) {
-  }
+  ${constructFileBody('CoreConstruct')}
   console.log('Look! I did something!');`);
   });
 });
 
-function fileBody(identifier: string) {
+function constructFileBody(identifier: string) {
   return `
 interface I {
     c: ${identifier};
