@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.107.0](https://github.com/aws/aws-cdk/compare/v1.106.1...v1.107.0) (2021-06-02)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **appmesh:** the creation property `clientPolicy` in `VirtualNode` has been renamed to `tlsClientPolicy`, and its type changed to `TlsClientPolicy`
+- **appmesh**: the creation property `clientPolicy` in `VirtualGateway` has been renamed to `tlsClientPolicy`, and its type changed to `TlsClientPolicy`
+- **appmesh**: to create `TlsClientPolicy`, `validation` property must be defined.
+* **appmesh:** the creation property `tlsCertificate` in `VirtualNode` has been renamed to `tls`, and its type changed to `TlsListener`
+- **appmesh**: the creation property `tlsCertificate` in `VirtualGatewayListener` has been renamed to `tls`, and its type changed to `TlsListener`
+- **appmesh**: the `tlsMode` property has been removed from the options when creating a `TlsCertificate`, moved to the new `TlsListener` interface, and renamed `mode`
+
+### Features
+
+* **cfnspec:** cloudformation spec v37.0.0 ([#14873](https://github.com/aws/aws-cdk/issues/14873)) ([8bb4357](https://github.com/aws/aws-cdk/commit/8bb4357036f549af1235de81f2f5c528f5fa80f8))
+* **cloudfront:** add L2 support for CloudFront functions ([#14511](https://github.com/aws/aws-cdk/issues/14511)) ([40d2ff9](https://github.com/aws/aws-cdk/commit/40d2ff964c97954c70d79a09d60fcb795ef16791))
+* **eks:** support Kubernetes 1.20 ([#14758](https://github.com/aws/aws-cdk/issues/14758)) ([1956ef6](https://github.com/aws/aws-cdk/commit/1956ef6708d59329da61fbdd6056de4727e1e2e1)), closes [#14756](https://github.com/aws/aws-cdk/issues/14756)
+* **pipelines:** allow switching to one CodeBuild action for same-typed assets ([#13803](https://github.com/aws/aws-cdk/issues/13803)) ([ed72ad3](https://github.com/aws/aws-cdk/commit/ed72ad322a2739709cad91759ea18e159f28f795))
+
+
+### Bug Fixes
+
+* **appmesh:** introduce the TlsClientPolicy and TlsValidation concepts ([#14782](https://github.com/aws/aws-cdk/issues/14782)) ([8263c78](https://github.com/aws/aws-cdk/commit/8263c788a8e71006a4b2dce0f37444199de9c435)), closes [issue#12733](https://github.com/aws/issue/issues/12733) [#12733](https://github.com/aws/aws-cdk/issues/12733)
+* **appmesh:** TLS mode is set on the Certificate class ([#14856](https://github.com/aws/aws-cdk/issues/14856)) ([061fd55](https://github.com/aws/aws-cdk/commit/061fd558a3327b805bb5fe0abc72de7c21bbbdb9)), closes [issue#12733](https://github.com/aws/issue/issues/12733) [/github.com/aws/aws-cdk/pull/14782#discussion_r636334863](https://github.com/aws//github.com/aws/aws-cdk/pull/14782/issues/discussion_r636334863)
+* **elasticsearch:** 'r6gd' not marked as supported type for instance storage ([#14894](https://github.com/aws/aws-cdk/issues/14894)) ([d07a49f](https://github.com/aws/aws-cdk/commit/d07a49ff00ae07ea013ce6cc83d768e7729225a8)), closes [#14773](https://github.com/aws/aws-cdk/issues/14773)
+* **lambda-nodejs:** cannot bundle locally when consuming a node module with a NodejsFunction ([#14914](https://github.com/aws/aws-cdk/issues/14914)) ([52da59c](https://github.com/aws/aws-cdk/commit/52da59c34c4be74d696af0637521eeb0d6e69fa9)), closes [#14739](https://github.com/aws/aws-cdk/issues/14739)
+* **rds:** Add exception throw when az is defined for multi-az db instance ([#14837](https://github.com/aws/aws-cdk/issues/14837)) ([fd8445f](https://github.com/aws/aws-cdk/commit/fd8445ff1bf94b3dde26211c497bda7211b54dc0)), closes [#10949](https://github.com/aws/aws-cdk/issues/10949) [#10949](https://github.com/aws/aws-cdk/issues/10949)
+
 ## [1.106.1](https://github.com/aws/aws-cdk/compare/v1.106.0...v1.106.1) (2021-05-26)
 
 
