@@ -3,7 +3,7 @@ import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
 import { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
-import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible } from './task-definition';
+import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible, isExternalCompatible } from './task-definition';
 
 /**
  * The properties of ImportedTaskDefinition
@@ -104,5 +104,12 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
    */
   public get isFargateCompatible(): boolean {
     return isFargateCompatible(this.compatibility);
+  }
+
+  /**
+   * Return true if the task definition can be run on a ECS Anywhere cluster
+   */
+  public get isExternalCompatible(): boolean {
+    return isExternalCompatible(this.compatibility);
   }
 }

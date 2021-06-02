@@ -13,33 +13,74 @@ This library provides constructs for Node.js Lambda functions.
 
 ## Node.js Function
 
-Define a `NodejsFunction`:
+The `NodejsFunction` construct creates a Lambda function with automatic transpiling and bundling
+of TypeScript or Javascript code. This results in smaller Lambda packages that contain only the
+code and dependencies needed to run the function.
 
-```ts
-new lambda.NodejsFunction(this, 'my-handler');
-```
+It uses [esbuild](https://esbuild.github.io/) under the hood.
 
-By default, the construct will use the name of the defining file and the construct's id to look
-up the entry file:
+## Reference project architecture
+
+The `NodejsFunction` allows you to define your CDK and runtime dependencies in a single
+package.json and to collocate your runtime code with your infrastructure code:
 
 ```plaintext
 .
-├── stack.ts # defines a 'NodejsFunction' with 'my-handler' as id
-├── stack.my-handler.ts # exports a function named 'handler'
+├── lib
+│   ├── my-construct.api.ts # Lambda handler for API
+│   ├── my-construct.auth.ts # Lambda handler for Auth
+│   └── my-construct.ts # CDK construct with two Lambda functions
+├── package-lock.json # single lock file
+├── package.json # CDK and runtime dependencies defined in a single package.json
+└── tsconfig.json
 ```
 
-This file is used as "entry" for [esbuild](https://esbuild.github.io/). This means that your code is automatically transpiled and bundled whether it's written in JavaScript or TypeScript.
+By default, the construct will use the name of the defining file and the construct's
+id to look up the entry file. In `my-construct.ts` above we have:
+
+```ts
+// automatic entry look up
+const apiHandler = new lambda.NodejsFunction(this, 'api');
+const authHandler = new lambda.NodejsFunction(this, 'auth');
+```
 
 Alternatively, an entry file and handler can be specified:
 
 ```ts
 new lambda.NodejsFunction(this, 'MyFunction', {
   entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts and .tsx files
-  handler: 'myExportedFunc'
+  handler: 'myExportedFunc', // defaults to 'handler'
 });
 ```
 
-All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
+For monorepos, the reference architecture becomes:
+
+```plaintext
+.
+├── packages
+│   ├── cool-package
+│   │   ├── lib
+│   │   │   ├── cool-construct.api.ts
+│   │   │   ├── cool-construct.auth.ts
+│   │   │   └── cool-construct.ts
+│   │   ├── package.json # CDK and runtime dependencies for cool-package
+│   │   └── tsconfig.json
+│   └── super-package
+│       ├── lib
+│       │   ├── super-construct.handler.ts
+│       │   └── super-construct.ts
+│       ├── package.json # CDK and runtime dependencies for super-package
+│       └── tsconfig.json
+├── package-lock.json # single lock file
+├── package.json # root dependencies
+└── tsconfig.json
+```
+
+## Customizing the underlying Lambda function
+
+All properties of `lambda.Function` can be used to customize the underlying `lambda.Function`.
+
+See also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
 
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.

@@ -331,10 +331,14 @@ export = {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           backendDefaults: {
-            clientPolicy: appmesh.ClientPolicy.acmTrust({
-              certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+            tlsClientPolicy: {
               ports: [8080, 8081],
-            }),
+              validation: {
+                trust: appmesh.TlsValidationTrust.acm({
+                  certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+                }),
+              },
+            },
           },
         });
 
@@ -383,10 +387,14 @@ export = {
         });
 
         node.addBackend(appmesh.Backend.virtualService(service1, {
-          clientPolicy: appmesh.ClientPolicy.fileTrust({
-            certificateChain: 'path-to-certificate',
+          tlsClientPolicy: {
             ports: [8080, 8081],
-          }),
+            validation: {
+              trust: appmesh.TlsValidationTrust.file({
+                certificateChain: 'path-to-certificate',
+              }),
+            },
+          },
         }));
 
         // THEN
@@ -438,16 +446,17 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.grpc({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.acm({
-              certificate: cert,
-              tlsMode: appmesh.TlsMode.STRICT,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.acm({
+                certificate: cert,
+              }),
+            },
           },
           )],
         });
 
         // THEN
-
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
@@ -485,11 +494,13 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.http({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-              tlsMode: appmesh.TlsMode.STRICT,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.file({
+                certificateChainPath: 'path/to/certChain',
+                privateKeyPath: 'path/to/privateKey',
+              }),
+            },
           })],
         });
 
@@ -530,11 +541,13 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.http({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-              tlsMode: appmesh.TlsMode.PERMISSIVE,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.PERMISSIVE,
+              certificate: appmesh.TlsCertificate.file({
+                certificateChainPath: 'path/to/certChain',
+                privateKeyPath: 'path/to/privateKey',
+              }),
+            },
           })],
         });
 
@@ -765,11 +778,13 @@ export = {
       mesh,
       listeners: [appmesh.VirtualNodeListener.http({
         port: 80,
-        tlsCertificate: appmesh.TlsCertificate.file({
-          certificateChainPath: 'path/to/certChain',
-          privateKeyPath: 'path/to/privateKey',
-          tlsMode: appmesh.TlsMode.PERMISSIVE,
-        }),
+        tls: {
+          mode: appmesh.TlsMode.PERMISSIVE,
+          certificate: appmesh.TlsCertificate.file({
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
+          }),
+        },
       })],
     });
 

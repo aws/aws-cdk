@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
-import { ClientPolicy } from './client-policy';
+import { renderTlsClientPolicy } from './private/utils';
+import { TlsClientPolicy } from './tls-client-policy';
 import { IVirtualService } from './virtual-service';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -174,9 +175,9 @@ export interface BackendDefaults {
   /**
    * Client policy for backend defaults
    *
-   * @default none
+   * @default - none
    */
-  readonly clientPolicy?: ClientPolicy;
+  readonly tlsClientPolicy?: TlsClientPolicy;
 }
 
 /**
@@ -187,9 +188,9 @@ export interface VirtualServiceBackendOptions {
   /**
    * Client policy for the backend
    *
-   * @default none
+   * @default - none
    */
-  readonly clientPolicy?: ClientPolicy;
+  readonly tlsClientPolicy?: TlsClientPolicy;
 }
 
 /**
@@ -211,7 +212,7 @@ export abstract class Backend {
    * Construct a Virtual Service backend
    */
   public static virtualService(virtualService: IVirtualService, props: VirtualServiceBackendOptions = {}): Backend {
-    return new VirtualServiceBackend(virtualService, props.clientPolicy);
+    return new VirtualServiceBackend(virtualService, props.tlsClientPolicy);
   }
 
   /**
@@ -226,19 +227,23 @@ export abstract class Backend {
 class VirtualServiceBackend extends Backend {
 
   constructor (private readonly virtualService: IVirtualService,
-    private readonly clientPolicy: ClientPolicy | undefined) {
+    private readonly tlsClientPolicy: TlsClientPolicy | undefined) {
     super();
   }
 
   /**
    * Return config for a Virtual Service backend
    */
-  public bind(_scope: Construct): BackendConfig {
+  public bind(scope: Construct): BackendConfig {
     return {
       virtualServiceBackend: {
         virtualService: {
           virtualServiceName: this.virtualService.virtualServiceName,
-          clientPolicy: this.clientPolicy?.bind(_scope).clientPolicy,
+          clientPolicy: this.tlsClientPolicy
+            ? {
+              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy, (config) => config.virtualNodeClientTlsValidationTrust),
+            }
+            : undefined,
         },
       },
     };

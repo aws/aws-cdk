@@ -72,6 +72,11 @@ export interface ILogGroup extends IResource {
    * Give the indicated permissions on this log group and all streams
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Public method to get the physical name of this log group
+   */
+  logGroupPhysicalName(): string;
 }
 
 /**
@@ -172,6 +177,14 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       resourceArns: [this.logGroupArn],
       scope: this,
     });
+  }
+
+  /**
+   * Public method to get the physical name of this log group
+   * @returns Physical name of log group
+   */
+  public logGroupPhysicalName(): string {
+    return this.physicalName;
   }
 }
 
