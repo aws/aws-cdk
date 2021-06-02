@@ -210,7 +210,7 @@ export interface BaseServiceProps extends BaseServiceOptions {
    *
    * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
    *
-   * Valid values are: LaunchType.ECS or LaunchType.FARGATE
+   * Valid values are: LaunchType.ECS or LaunchType.FARGATE or LaunchType.EXTERNAL
    */
   readonly launchType: LaunchType;
 }
@@ -1017,7 +1017,12 @@ export enum LaunchType {
   /**
    * The service will be launched using the FARGATE launch type
    */
-  FARGATE = 'FARGATE'
+  FARGATE = 'FARGATE',
+
+  /**
+   * The service will be launched using the EXTERNAL launch type
+   */
+  EXTERNAL = 'EXTERNAL'
 }
 
 /**
