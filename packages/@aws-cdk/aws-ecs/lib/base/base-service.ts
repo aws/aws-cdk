@@ -455,7 +455,7 @@ export abstract class BaseService extends Resource
       resources: ['*'],
     }));
 
-    const logGroupArn = logConfiguration?.cloudWatchLogGroupName ? `arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroupName}:*` : '*';
+    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
     this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'logs:CreateLogStream',
@@ -465,7 +465,7 @@ export abstract class BaseService extends Resource
       resources: [logGroupArn],
     }));
 
-    if (logConfiguration?.s3BucketName) {
+    if (logConfiguration?.s3Bucket?.bucketName) {
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
           's3:GetBucketLocation',
@@ -476,14 +476,14 @@ export abstract class BaseService extends Resource
         actions: [
           's3:PutObject',
         ],
-        resources: [`arn:aws:s3:::${logConfiguration.s3BucketName}/*`],
+        resources: [`arn:aws:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
       }));
       if (logConfiguration.s3EncryptionEnabled) {
         this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
           actions: [
             's3:GetEncryptionConfiguration',
           ],
-          resources: [`arn:aws:s3:::${logConfiguration.s3BucketName}`],
+          resources: [`arn:aws:s3:::${logConfiguration.s3Bucket.bucketName}`],
         }));
       }
     }

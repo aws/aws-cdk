@@ -3,6 +3,8 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, IConstruct } from '@aws-cdk/core';
@@ -247,16 +249,16 @@ export class Cluster extends Resource implements ICluster {
 
   private renderExecuteCommandLogConfiguration(): CfnCluster.ExecuteCommandLogConfigurationProperty {
     const logConfiguration = this._executeCommandConfiguration?.logConfiguration;
-    if (logConfiguration?.s3EncryptionEnabled && !logConfiguration?.s3BucketName) {
+    if (logConfiguration?.s3EncryptionEnabled && !logConfiguration?.s3Bucket) {
       throw new Error('S3EncryptionEnabled cannot be specified without an S3 bucket name in execute command log configuration.');
     }
-    if (logConfiguration?.cloudWatchEncryptionEnabled && !logConfiguration?.cloudWatchLogGroupName) {
+    if (logConfiguration?.cloudWatchEncryptionEnabled && !logConfiguration?.cloudWatchLogGroup) {
       throw new Error('CloudWatchEncryptionEnabled cannot be specified without a CloudWatch log group in execute command log configuration.');
     }
     return {
       cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
-      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroupName,
-      s3BucketName: logConfiguration?.s3BucketName,
+      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroup?.logGroupName,
+      s3BucketName: logConfiguration?.s3Bucket?.bucketName,
       s3EncryptionEnabled: logConfiguration?.s3EncryptionEnabled,
       s3KeyPrefix: logConfiguration?.s3KeyPrefix,
     };
@@ -1206,17 +1208,16 @@ export interface ExecuteCommandLogConfiguration {
 
   /**
    * The name of the CloudWatch log group to send logs to. The CloudWatch log group must already be created.
-   *
    * @default - none
    */
-  readonly cloudWatchLogGroupName?: string,
+  readonly cloudWatchLogGroup?: logs.ILogGroup,
 
   /**
    * The name of the S3 bucket to send logs to. The S3 bucket must already be created.
    *
    * @default - none
    */
-  readonly s3BucketName?: string,
+  readonly s3Bucket?: s3.IBucket,
 
   /**
    * Whether or not to enable encryption on the CloudWatch logs.

@@ -25,9 +25,9 @@ const cluster = new ecs.Cluster(stack, 'FargateCluster', {
   executeCommandConfiguration: {
     kmsKey,
     logConfiguration: {
-      cloudWatchLogGroupName: logGroup.logGroupName,
+      cloudWatchLogGroup: logGroup,
       cloudWatchEncryptionEnabled: true,
-      s3BucketName: execBucket.bucketName,
+      s3Bucket: execBucket,
       s3EncryptionEnabled: true,
       s3KeyPrefix: 'exec-output',
     },

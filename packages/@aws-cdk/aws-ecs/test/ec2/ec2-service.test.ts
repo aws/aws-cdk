@@ -207,8 +207,8 @@ nodeunitShim({
         vpc,
         executeCommandConfiguration: {
           logConfiguration: {
-            cloudWatchLogGroupName: logGroup.logGroupName,
-            s3BucketName: execBucket.bucketName,
+            cloudWatchLogGroup: logGroup,
+            s3Bucket: execBucket,
             s3KeyPrefix: 'exec-output',
           },
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
@@ -327,8 +327,8 @@ nodeunitShim({
         executeCommandConfiguration: {
           kmsKey,
           logConfiguration: {
-            cloudWatchLogGroupName: logGroup.logGroupName,
-            s3BucketName: execBucket.bucketName,
+            cloudWatchLogGroup: logGroup,
+            s3Bucket: execBucket,
           },
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
@@ -530,9 +530,9 @@ nodeunitShim({
         executeCommandConfiguration: {
           kmsKey,
           logConfiguration: {
-            cloudWatchLogGroupName: logGroup.logGroupName,
+            cloudWatchLogGroup: logGroup,
             cloudWatchEncryptionEnabled: true,
-            s3BucketName: execBucket.bucketName,
+            s3Bucket: execBucket,
             s3EncryptionEnabled: true,
             s3KeyPrefix: 'exec-output',
           },

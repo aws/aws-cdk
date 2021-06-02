@@ -873,24 +873,29 @@ the `executeCommandConfiguration` property for your cluster accordingly. The def
 logs to the CloudWatch Logs using the `awslogs` log driver that is configured in your task definition. Please note,
 when using your own `logConfiguration` the log group or S3 Bucket specified must already be created. 
 
-To encrypt data using your own KMS Customer Key (CMK), you must create a CMK and provide the key ARN in the `kmsKeyId` field
-of the `executeCommandConfiguration`.
+To encrypt data using your own KMS Customer Key (CMK), you must create a CMK and provide the key in the `kmsKeyId` field
+of the `executeCommandConfiguration`. To use this key for encrypting CloudWatch log data or S3 bucket, make sure to associate the key
+to these resources while creation. 
 
 ```ts
-const logGroup = new logs.LogGroup(stack, 'LogGroup');
-
 const kmsKey = new kms.Key(stack, 'KmsKey');
 
-const execBucket = new s3.Bucket(stack, 'EcsExecBucket');
+const logGroup = new logs.LogGroup(stack, 'LogGroup', {
+  encryptionKey: kmsKey,
+});
+
+const execBucket = new s3.Bucket(stack, 'EcsExecBucket', {
+  encryptionKey: kmsKey,
+});
 
 const cluster = new ecs.Cluster(stack, 'Cluster', {
   vpc,
   executeCommandConfiguration: {
     kmsKeyId: kmsKey,
     logConfiguration: {
-      cloudWatchLogGroupName: logGroup.logGroupName,
+      cloudWatchLogGroup: logGroup,
       cloudWatchEncryptionEnabled: true,
-      s3BucketName: execBucket.bucketName,
+      s3Bucket: execBucket,
       s3EncryptionEnabled: true,
       s3KeyPrefix: 'exec-command-output',
     },
