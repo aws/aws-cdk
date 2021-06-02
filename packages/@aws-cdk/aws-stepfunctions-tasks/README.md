@@ -978,6 +978,46 @@ new tasks.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
   });
 ```
 
+## EventBridge 
+
+Step Functions supports [Amazon
+EventBridge](https://docs.aws.amazon.com/step-functions/latest/dg/connect-eventbridge.html) through the service integration pattern.
+
+You can call [`Put Events`](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEvents.html) from a `Task` to put events on an EventBridge bus.
+
+```ts
+// Publish event and wait for task token reply
+const task = new EventBridgePutEvent(this, 'PutAndWait', {
+  integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+  entries: [
+    sfn.TaskInput.fromObject({
+      Detail: { Message: sfn.JsonPath.taskToken },
+      DetailType: 'MyDetailType',
+      EventBusName: 'MyEventBusName',
+      Source: 'MySource',
+    }),
+  ],
+});
+
+// Put multiple events using literal strings or state data
+const task = new EventBridgePutEvent(this, 'PutEvents', {
+  entries: [
+    sfn.TaskInput.fromObject({
+      Detail: { Message: 'Hello from Step Functions' },
+      DetailType: 'MyDetailType',
+      EventBusName: 'MyEventBusName',
+      Source: 'MySource',
+    }),
+    sfn.TaskInput.fromObject({
+      Detail: { Message: sfn.TaskInput.fromDataAt('$.input.message') },
+      DetailType: 'MyDetailType',
+      EventBusName: 'MyEventBusName',
+      Source: 'MySource',
+    }),
+  ],
+});
+
+```
 ## SNS
 
 Step Functions supports [Amazon SNS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sns.html) through the service integration pattern.
