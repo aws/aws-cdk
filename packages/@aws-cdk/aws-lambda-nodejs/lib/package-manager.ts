@@ -26,7 +26,7 @@ export class PackageManager {
   public static PNPM = new PackageManager({
     lockFile: 'pnpm-lock.yaml',
     installCommand: ['pnpm', 'install'],
-    runCommand: ['pnpm', 'run'],
+    runCommand: ['pnpm', 'exec'],
   });
 
   public static fromLockFile(lockFilePath: string): PackageManager {
@@ -60,6 +60,7 @@ export class PackageManager {
       os.platform() === 'win32' ? `${runCommand}.cmd` : runCommand,
       ...runArgs,
       bin,
+      ...(this.lockFile === PackageManager.PNPM.lockFile ? ['--'] : []),
     ].join(' ');
   }
 }
