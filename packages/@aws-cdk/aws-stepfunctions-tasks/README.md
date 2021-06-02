@@ -980,8 +980,7 @@ new tasks.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
 
 ## EventBridge 
 
-Step Functions supports [Amazon
-EventBridge](https://docs.aws.amazon.com/step-functions/latest/dg/connect-eventbridge.html) through the service integration pattern.
+Step Functions supports [Amazon EventBridge](https://docs.aws.amazon.com/step-functions/latest/dg/connect-eventbridge.html) through the service integration pattern.
 
 You can call [`Put Events`](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEvents.html) from a `Task` to put events on an EventBridge bus.
 
@@ -1016,8 +1015,8 @@ const task = new EventBridgePutEvent(this, 'PutEvents', {
     }),
   ],
 });
-
 ```
+
 ## SNS
 
 Step Functions supports [Amazon SNS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sns.html) through the service integration pattern.
