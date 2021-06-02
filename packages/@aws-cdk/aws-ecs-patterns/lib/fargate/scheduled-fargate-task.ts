@@ -93,7 +93,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
    * The Fargate task definition in this construct.
    */
   public readonly taskDefinition: FargateTaskDefinition;
-  
+
   /**
    * The ECS task in this construct.
    */
