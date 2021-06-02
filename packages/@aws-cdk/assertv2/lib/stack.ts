@@ -31,6 +31,7 @@ export class StackAssertionsBeta1 {
 
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
+   * @param stack the CDK Stack to run assertions on
    */
   public static fromStackBeta1(stack: Stack) {
     return new StackAssertionsBeta1(toTemplate(stack));
@@ -38,6 +39,7 @@ export class StackAssertionsBeta1 {
 
   /**
    * Base your assertions from an existing CloudFormation template.
+   * @param template the CloudFormation template in JSON format as a string
    */
   public static fromTemplateBeta1(template: string) {
     return new StackAssertionsBeta1(JSON.parse(template));
@@ -73,6 +75,10 @@ export class StackAssertionsBeta1 {
     assertion.assertOrThrow(this.inspector);
   }
 
+  /**
+   * Assert that the CloudFormation template matches the given value
+   * @param expected the expected CloudFormation template as key-value pairs.
+   */
   public assertMatchTemplateBeta1(expected: {[key: string]: any}) {
     const assertion = assert.matchTemplate(expected);
     assertion.assertOrThrow(this.inspector);

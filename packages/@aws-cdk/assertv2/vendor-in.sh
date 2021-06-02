@@ -25,11 +25,10 @@ find $dest/assert -name '*.ts' -exec sed -i '' "s^'@aws-cdk/cloudformation-diff'
 cat > $dest/README.md <<EOF
 This folder contains vendored in CDK packages.
 
-Since the assert-internal package is not public and not jsii-able,
-we cannot a declare a dependency on it. 
-The same applies for cloudformation-diff.
+Some dependencies of this package are not jsii packages.
+They also cannot be bundled since they are part of the monorepo.
 
-Instead it is vendored into the assertv2 library.
+Instead vendor them directly into the assertv2 library.
 EOF
 
 echo "✅ Vendoring complete"

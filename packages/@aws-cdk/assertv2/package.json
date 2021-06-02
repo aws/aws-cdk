@@ -12,7 +12,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "compat": "cdk-compat"
   },
   "jsii": {
     "outdir": "dist",
@@ -21,7 +23,7 @@
         "package": "software.amazon.awscdk.assertv2",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "assertv2"
+          "artifactId": "cdk-assertv2"
         }
       },
       "dotnet": {
@@ -102,5 +104,8 @@
   "maturity": "stable",
   "publishConfig": {
     "tag": "latest"
+  },
+  "awscdkio": {
+    "announce": false
   }
 }
