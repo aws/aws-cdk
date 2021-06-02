@@ -836,7 +836,7 @@ export class Project extends ProjectBase {
                   // when the access is cross-environment,
                   // Secret.secretArn returns a partial ARN!
                   // So add a "*" at the end, so that the permissions work
-                  secretArn = `${secretArn}*`;
+                  secretArn = `${secretArn}-??????`;
                 }
               }
             }
