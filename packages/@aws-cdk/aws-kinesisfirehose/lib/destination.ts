@@ -34,27 +34,27 @@ export enum Compression {
   /**
    * gzip
    */
-  GZIP,
+  GZIP = 'GZIP',
 
   /**
    * Hadoop-compatible Snappy
    */
-  HADOOP_SNAPPY,
+  HADOOP_SNAPPY = 'HADOOP_SNAPPY',
 
   /**
    * Snappy
    */
-  SNAPPY,
+  SNAPPY = 'Snappy',
 
   /**
    * Uncompressed
    */
-  UNCOMPRESSED,
+  UNCOMPRESSED = 'UNCOMPRESSED',
 
   /**
    * ZIP
    */
-  ZIP
+  ZIP = 'ZIP'
 }
 
 /**
@@ -174,22 +174,26 @@ export interface DestinationProps {
   readonly backupPrefix?: string;
 }
 
+/**
+ * Abstract base class that destination types can extend to benefit from methods that create generic configuration.
+ */
 export abstract class DestinationBase implements IDestination {
-  constructor(protected readonly props: DestinationProps) {
-  }
+  private logGroup?: logs.ILogGroup;
+
+  constructor(protected readonly props: DestinationProps) {}
 
   abstract bind(scope: Construct, deliveryStream: IDeliveryStream): DestinationConfig;
 
   protected createLoggingOptions(scope: Construct, deliveryStream: IDeliveryStream): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
     if (this.props.logging || this.props.logGroup) {
-      const logGroup = this.props.logGroup ?? (!this.props.logStream ? new logs.LogGroup(scope, 'Log Group') : undefined);
-      if (!logGroup) {
+      this.logGroup = this.logGroup ?? this.props.logGroup ?? (!this.props.logStream ? new logs.LogGroup(scope, 'Log Group') : undefined);
+      if (!this.logGroup) {
         throw new Error('Log stream was provided to Destination but log group was not');
       }
-      logGroup.grantWrite(deliveryStream); // TODO: too permissive? add a new grant on the stream resource if it's passed in?
+      this.logGroup.grantWrite(deliveryStream); // TODO: too permissive? add a new grant on the stream resource if it's passed in?
       return {
         enabled: true,
-        logGroupName: logGroup.logGroupName,
+        logGroupName: this.logGroup.logGroupName,
         logStreamName: this.props.logStream?.logStreamName,
       };
     }
@@ -203,7 +207,7 @@ export abstract class DestinationBase implements IDestination {
         processor.lambdaFunction.grantInvoke(deliveryStream);
         const parameters = [
           { parameterName: 'LambdaArn', parameterValue: processor.lambdaFunction.functionArn },
-          { parameterName: 'RoleArn', parameterValue: (deliveryStream.grantPrincipal as iam.Role).roleArn }
+          { parameterName: 'RoleArn', parameterValue: (deliveryStream.grantPrincipal as iam.Role).roleArn },
         ];
         if (processor.bufferInterval) {
           parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.bufferInterval.toSeconds().toString() });
@@ -217,7 +221,7 @@ export abstract class DestinationBase implements IDestination {
         return {
           type: 'Lambda',
           parameters: parameters,
-        }
+        };
       });
       return {
         enabled: true,

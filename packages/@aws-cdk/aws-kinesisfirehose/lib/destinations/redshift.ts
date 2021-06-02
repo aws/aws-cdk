@@ -1,10 +1,12 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as redshift from '@aws-cdk/aws-redshift';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Duration, SecretValue, Size } from '@aws-cdk/core';
+import { Duration, SecretValue, Size, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDeliveryStream } from '../delivery-stream';
-import { Compression, DestinationConfig, DestinationProps, IDestination } from '../destination';
+import { BackupMode, Compression, DestinationBase, DestinationConfig, DestinationProps } from '../destination';
+import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
 /**
  * The Redshift user Firehose will assume to deliver data to Redshift
@@ -71,6 +73,8 @@ export interface RedshiftDestinationProps extends DestinationProps {
   /**
    * Parameters given to the COPY command that is used to move data from S3 to Redshift.
    *
+   * @see https://docs.aws.amazon.com/firehose/latest/APIReference/API_CopyCommand.html // TODO: proper annotation
+   *
    * @default '' - no extra parameters are provided to the Redshift COPY command
    */
   readonly copyOptions?: string;
@@ -122,13 +126,82 @@ export interface RedshiftDestinationProps extends DestinationProps {
 /**
  * Redshift delivery stream destination.
  */
-export class RedshiftDestination implements IDestination {
-  constructor(_props: RedshiftDestinationProps) {
+export class RedshiftDestination extends DestinationBase {
+  protected readonly redshiftProps: RedshiftDestinationProps;
+
+  constructor(redshiftProps: RedshiftDestinationProps) {
+    super(redshiftProps);
+
+    this.redshiftProps = redshiftProps;
+
+    if (this.redshiftProps.backup === BackupMode.FAILED_ONLY) {
+      throw new Error(`Redshift delivery stream destination only supports ENABLED and DISABLED BackupMode, given ${this.redshiftProps.backup}`);
+    }
   }
 
-  public bind(_scope: Construct, _deliveryStream: IDeliveryStream): DestinationConfig {
+  public bind(scope: Construct, deliveryStream: IDeliveryStream): DestinationConfig {
     return {
-      properties: {},
+      properties: {
+        redshiftDestinationConfiguration: this.createRedshiftConfig(scope, deliveryStream),
+      },
+    };
+  }
+
+  private createRedshiftConfig(scope: Construct, deliveryStream: IDeliveryStream): CfnDeliveryStream.RedshiftDestinationConfigurationProperty {
+    const endpoint = this.redshiftProps.cluster.clusterEndpoint;
+    const jdbcUrl = `jdbc:redshift://${endpoint.hostname}:${Token.asString(endpoint.port)}/${this.redshiftProps.database}`;
+
+    const user = (() => {
+      if (this.redshiftProps.user.password) {
+        return {
+          username: this.redshiftProps.user.username,
+          password: this.redshiftProps.user.password,
+        };
+      } else {
+        const secret = new redshift.DatabaseSecret(scope, 'Firehose User', {
+          username: this.redshiftProps.user.username,
+          encryptionKey: this.redshiftProps.user.encryptionKey,
+        });
+        return {
+          username: secret.secretValueFromJson('username'),
+          password: secret.secretValueFromJson('password'),
+        };
+      };
+    })();
+
+    const intermediateBucket = this.redshiftProps.intermediateBucket ?? new s3.Bucket(scope, 'Intermediate Bucket');
+    intermediateBucket.grantReadWrite(deliveryStream);
+    const compression = this.redshiftProps.compression;
+    const intermediateS3Config: CfnDeliveryStream.S3DestinationConfigurationProperty = {
+      bucketArn: intermediateBucket.bucketArn,
+      roleArn: (deliveryStream.grantPrincipal as iam.Role).roleArn,
+      bufferingHints: {
+        intervalInSeconds: this.redshiftProps.bufferingInterval?.toSeconds(),
+        sizeInMBs: this.redshiftProps.bufferingSize?.toMebibytes(),
+      },
+      cloudWatchLoggingOptions: this.createLoggingOptions(scope, deliveryStream),
+      compressionFormat: compression ?? Compression.UNCOMPRESSED,
+    };
+    // TODO: encryptionConfiguration? why need to provide if bucket has encryption
+
+    return {
+      clusterJdbcurl: jdbcUrl,
+      copyCommand: {
+        dataTableName: this.redshiftProps.tableName,
+        dataTableColumns: this.redshiftProps.tableColumns?.join(),
+        copyOptions: this.redshiftProps.copyOptions,
+      },
+      password: user.password.toString(),
+      username: user.username.toString(),
+      s3Configuration: intermediateS3Config,
+      roleArn: (deliveryStream.grantPrincipal as iam.Role).roleArn,
+      cloudWatchLoggingOptions: this.createLoggingOptions(scope, deliveryStream),
+      processingConfiguration: this.createProcessingConfig(deliveryStream),
+      retryOptions: {
+        durationInSeconds: this.redshiftProps.retryTimeout?.toSeconds(),
+      },
+      s3BackupConfiguration: this.createBackupConfig(scope, deliveryStream),
+      s3BackupMode: (this.redshiftProps.backup === BackupMode.ENABLED) ? 'Enabled' : 'Disabled',
     };
   }
 }
