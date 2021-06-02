@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { expect as assertExpect, ResourcePart } from '@aws-cdk/assert-internal';
+import { expect as assertExpect, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -696,6 +696,8 @@ test('fromSecretCompleteArn - can be assigned to a property with type number', (
     runtime: lambda.Runtime.NODEJS,
     memorySize: cdk.Token.asNumber(secret.secretValueFromJson('LambdaFunctionMemorySize')),
   });
+
+  SynthUtils.synthesize(stack);
 });
 
 test('fromSecretPartialArn', () => {
