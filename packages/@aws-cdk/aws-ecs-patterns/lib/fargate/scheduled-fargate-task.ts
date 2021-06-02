@@ -93,6 +93,11 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
    * The Fargate task definition in this construct.
    */
   public readonly taskDefinition: FargateTaskDefinition;
+  
+  /**
+   * The ECS task in this construct.
+   */
+  public readonly task: EcsTask;
 
   /**
    * Constructs a new instance of the ScheduledFargateTask class.
@@ -122,7 +127,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     }
 
     // Use the EcsTask as the target of the EventRule
-    const eventRuleTarget = new EcsTask( {
+    this.task = new EcsTask( {
       cluster: this.cluster,
       taskDefinition: this.taskDefinition,
       taskCount: this.desiredTaskCount,
@@ -130,6 +135,6 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       platformVersion: props.platformVersion,
     });
 
-    this.addTaskAsTarget(eventRuleTarget);
+    this.addTaskAsTarget(this.task);
   }
 }
