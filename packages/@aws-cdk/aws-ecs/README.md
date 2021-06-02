@@ -854,10 +854,10 @@ taskDefinition.addContainer('cont', {
 ## ECS Exec command
 
 Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite for the exec command
-to work you need to install SSM plugin for the AWS CLI. For more information, see
+to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
 [Install Session Manager plugin for AWS CLI] (https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
 
-To enable ECS Exec feature for your containers, set the boolean flag `enableExecuteCommand` to `true` in
+To enable the ECS Exec feature for your containers, set the boolean flag `enableExecuteCommand` to `true` in
 your `Ec2Service` or `FargateService`.
 
 ```ts
@@ -868,14 +868,15 @@ const service = new ecs.Ec2Service(stack, 'Service', {
 });
 ```
 
-Further, enable logging of the execute session results to a CloudWatch log group or S3 bucket by setting
-the `executeCommandConfiguration` property for your cluster accordingly. The default configuration will send the
+### Enabling logging
+You can enable sending logs of your execute session commands to a CloudWatch log group or S3 bucket by configuring
+the `executeCommandConfiguration` property for your cluster. The default configuration will send the
 logs to the CloudWatch Logs using the `awslogs` log driver that is configured in your task definition. Please note,
 when using your own `logConfiguration` the log group or S3 Bucket specified must already be created. 
 
 To encrypt data using your own KMS Customer Key (CMK), you must create a CMK and provide the key in the `kmsKeyId` field
 of the `executeCommandConfiguration`. To use this key for encrypting CloudWatch log data or S3 bucket, make sure to associate the key
-to these resources while creation. 
+to these resources on creation. 
 
 ```ts
 const kmsKey = new kms.Key(stack, 'KmsKey');

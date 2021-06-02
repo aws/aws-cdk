@@ -516,7 +516,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Getter for execute command configuration associated with the cluster
+   * Getter for execute command configuration associated with the cluster.
    */
   public get executeCommandConfiguration(): ExecuteCommandConfiguration | undefined {
     return this._executeCommandConfiguration;
@@ -911,7 +911,7 @@ export interface ClusterAttributes {
   /**
    * The execute command configuration for the cluster
    *
-   * @default - no configuration will be provided.
+   * @default - none.
    */
   readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
 }
@@ -1161,20 +1161,20 @@ export interface ExecuteCommandConfiguration {
   /**
    * The log configuration for the results of the execute command actions. The logs can be sent to CloudWatch Logs or an Amazon S3 bucket.
    *
-   * @default - No log configuration
+   * @default - none
    */
   readonly logConfiguration?: ExecuteCommandLogConfiguration,
 
   /**
-   * The log setting to use for redirecting logs for the execute command results.
+   * The log settings to use for logging the execute command session.
    *
-   * @default - No log setting
+   * @default - none
    */
   readonly logging?: ExecuteCommandLogging,
 }
 
 /**
- * The log setting to use for redirecting logs for the execute command results. For more information, see
+ * The log settings to use to for logging the execute command session. For more information, see
  * [Logging] https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-executecommandconfiguration.html#cfn-ecs-cluster-executecommandconfiguration-logging
  */
 export enum ExecuteCommandLogging {
