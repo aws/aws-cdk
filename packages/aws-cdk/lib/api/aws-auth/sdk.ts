@@ -159,7 +159,8 @@ export class SDK implements ISDK {
           ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
           : [],
         e.message,
-        '. Please make sure that this role exists in the account. If it doesn\'t exist, re-bootstrap the environment with the right \'--trust\'',
+        '. Please make sure that this role exists in the account. If it doesn\'t exist, (re)-bootstrap the environment ' +
+        'with the right \'--trust\', using the latest version of the CDK CLI.',
       ].join(' '));
     }
   }

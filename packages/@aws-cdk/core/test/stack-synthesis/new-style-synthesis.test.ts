@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, Aws, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';
 
 const CFN_CONTEXT = {
@@ -101,23 +101,25 @@ nodeunitShim({
     test.done();
   },
 
-  'enrich context'(test: Test) {
+  'generates missing context with the lookup role ARN as one of the missing context properties'(test: Test) {
     // GIVEN
-    stack = new Stack(app, 'Stack3', {
+    stack = new Stack(app, 'Stack2', {
       synthesizer: new DefaultStackSynthesizer({
         generateBootstrapVersionRule: false,
       }),
+      env: {
+        account: '111111111111', region: 'us-east-1',
+      },
     });
-
-    // WHEN
-    const enrichedContext = stack.synthesizer.enrichContext({
-      key: 'foo',
-      props: { account: '123456', region: 'bermuda-triangle-1' },
-      provider: cxschema.ContextProvider.AMI_PROVIDER,
-    });
+    ContextProvider.getValue(stack, {
+      provider: cxschema.ContextProvider.VPC_PROVIDER,
+      props: {},
+      dummyValue: undefined,
+    }).value;
 
     // THEN
-    test.equals(enrichedContext.props.lookupRoleArn, 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}');
+    const assembly = app.synth();
+    test.equal(assembly.manifest.missing![0].props.lookupRoleArn, 'arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
 
     test.done();
   },

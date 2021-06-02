@@ -376,8 +376,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     };
   }
 
-  public enrichContext(ctx: cxschema.MissingContext): cxschema.MissingContext {
-    return { ...ctx, props: { ...ctx.props, lookupRoleArn: this.lookupRoleArn } };
+  protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
+    stack._synthesizeTemplate(session, this.lookupRoleArn);
   }
 
   /**

@@ -3,7 +3,6 @@ import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { addStackArtifactToAssembly } from './_shared';
 import { IStackSynthesizer } from './types';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * Base class for implementing an IStackSynthesizer
@@ -56,10 +55,6 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    */
   protected emitStackArtifact(stack: Stack, session: ISynthesisSession, options: SynthesizeStackArtifactOptions = {}) {
     addStackArtifactToAssembly(session, stack, options ?? {}, options.additionalDependencies ?? []);
-  }
-
-  public enrichContext(ctx: cxschema.MissingContext): cxschema.MissingContext {
-    return ctx;
   }
 }
 

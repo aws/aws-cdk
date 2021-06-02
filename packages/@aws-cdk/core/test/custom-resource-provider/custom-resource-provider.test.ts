@@ -3,7 +3,6 @@ import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
 
@@ -144,10 +143,6 @@ nodeunitShim({
         },
 
         synthesize(_session: ISynthesisSession): void { },
-
-        enrichContext(ctx: cxschema.MissingContext): cxschema.MissingContext {
-          return ctx;
-        },
       },
     });
 

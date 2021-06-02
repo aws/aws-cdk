@@ -263,6 +263,14 @@ Resources:
                   AWS:
                     Ref: TrustedAccountsForLookup
               - Ref: AWS::NoValue
+          - Fn::If:
+              - HasTrustedAccounts
+              - Action: sts:AssumeRole
+                Effect: Allow
+                Principal:
+                  AWS:
+                    Ref: TrustedAccounts
+              - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}
       Policies:

@@ -8,14 +8,14 @@ import { ContextProviderPlugin } from './provider';
  * Plugin to retrieve the Availability Zones for the current account
  */
 export class AZContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider, private readonly assumeRoleArn?: string) {
+  constructor(private readonly aws: SdkProvider) {
   }
 
   public async getValue(args: cxschema.AvailabilityZonesContextQuery) {
     const region = args.region;
     const account = args.account;
     debug(`Reading AZs for ${account}:${region}`);
-    const options = { assumeRoleArn: this.assumeRoleArn };
+    const options = { assumeRoleArn: args.lookupRoleArn };
     const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
     const response = await ec2.describeAvailabilityZones().promise();
     if (!response.AvailabilityZones) { return []; }

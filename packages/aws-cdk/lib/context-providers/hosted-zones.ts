@@ -6,7 +6,7 @@ import { ContextProviderPlugin } from './provider';
 
 export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
 
-  constructor(private readonly aws: SdkProvider, private readonly assumeRoleArn?: string) {
+  constructor(private readonly aws: SdkProvider) {
   }
 
   public async getValue(args: cxschema.HostedZoneContextQuery): Promise<object> {
@@ -17,7 +17,7 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
     }
     const domainName = args.domainName;
     debug(`Reading hosted zone ${account}:${region}:${domainName}`);
-    const options = { assumeRoleArn: this.assumeRoleArn };
+    const options = { assumeRoleArn: args.lookupRoleArn };
     const r53 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).route53();
     const response = await r53.listHostedZonesByName({ DNSName: domainName }).promise();
     if (!response.HostedZones) {

@@ -4,7 +4,6 @@ import { Stack } from '../stack';
 import { assertBound } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
 import { IStackSynthesizer } from './types';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * Deployment environment for a nested stack
@@ -42,9 +41,5 @@ export class NestedStackSynthesizer extends StackSynthesizer {
     // Synthesize the template, but don't emit as a cloud assembly artifact.
     // It will be registered as an S3 asset of its parent instead.
     this.synthesizeStackTemplate(this.stack, session);
-  }
-
-  enrichContext(ctx: cxschema.MissingContext): cxschema.MissingContext {
-    return this.parentDeployment.enrichContext(ctx);
   }
 }

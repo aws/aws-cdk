@@ -659,8 +659,9 @@ These command lines explained:
   but you could also use this for developer accounts (don't do that for production
   application accounts though!).
 * `--trust-for-lookup`: similar to `--trust`, but gives a more limited set of permissions to the 
-  trusted account, allowing it to only look up missing values, such as availability zones, EC2 
-  images and VPCs.
+  trusted account, allowing it to only look up values, such as availability zones, EC2 images and 
+  VPCs. Note that if you provide an account using `--trust`, that account can also do lookups. 
+  So you only need to pass `--trust-for-lookup` if you need to use a different account.
 * `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
 
 > **Security tip**: we recommend that you use administrative credentials to an
