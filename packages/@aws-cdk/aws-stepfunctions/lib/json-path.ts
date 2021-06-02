@@ -1,5 +1,6 @@
 import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '@aws-cdk/core';
 
+import { TaskInput } from '../lib/input';
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
 export class JsonPathToken implements IResolvable {
@@ -75,10 +76,10 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
 }
 
 interface FieldHandlers {
-  handleString(key: string, x: string): {[key: string]: string};
-  handleList(key: string, x: string[]): {[key: string]: string[] | string };
-  handleNumber(key: string, x: number): {[key: string]: number | string};
-  handleBoolean(key: string, x: boolean): {[key: string]: boolean};
+  handleString(key: string, x: string): { [key: string]: string };
+  handleList(key: string, x: string[]): { [key: string]: string[] | string };
+  handleNumber(key: string, x: number): { [key: string]: number | string };
+  handleBoolean(key: string, x: boolean): { [key: string]: boolean };
 }
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
@@ -90,7 +91,8 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
   }
 
   const ret: any = {};
-  for (const [key, value] of Object.entries(obj)) {
+  for (const [key, val] of Object.entries(obj)) {
+    const value = (val instanceof TaskInput) ? val.value : val;
     if (typeof value === 'string') {
       Object.assign(ret, handlers.handleString(key, value));
     } else if (typeof value === 'number') {
@@ -112,7 +114,7 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
 /**
  * Render an array that may or may not contain a string list token
  */
-function recurseArray(key: string, arr: any[], handlers: FieldHandlers, visited: object[] = []): {[key: string]: any[] | string} {
+function recurseArray(key: string, arr: any[], handlers: FieldHandlers, visited: object[] = []): { [key: string]: any[] | string } {
   if (isStringArray(arr)) {
     const path = jsonPathStringList(arr);
     if (path !== undefined) {
@@ -147,7 +149,7 @@ function isStringArray(x: any): x is string[] {
  *
  * If the string value starts with '$.', render it as a path string, otherwise as a direct string.
  */
-function renderString(key: string, value: string): {[key: string]: string} {
+function renderString(key: string, value: string): { [key: string]: string } {
   const path = jsonPathString(value);
   if (path !== undefined) {
     return { [key + '.$']: path };
@@ -161,7 +163,7 @@ function renderString(key: string, value: string): {[key: string]: string} {
  *
  * If the string value starts with '$.', render it as a path string, otherwise as a direct string.
  */
-function renderStringList(key: string, value: string[]): {[key: string]: string[] | string} {
+function renderStringList(key: string, value: string[]): { [key: string]: string[] | string } {
   const path = jsonPathStringList(value);
   if (path !== undefined) {
     return { [key + '.$']: path };
@@ -175,7 +177,7 @@ function renderStringList(key: string, value: string[]): {[key: string]: string[
  *
  * If the string value starts with '$.', render it as a path string, otherwise as a direct string.
  */
-function renderNumber(key: string, value: number): {[key: string]: number | string} {
+function renderNumber(key: string, value: number): { [key: string]: number | string } {
   const path = jsonPathNumber(value);
   if (path !== undefined) {
     return { [key + '.$']: path };
@@ -187,7 +189,7 @@ function renderNumber(key: string, value: number): {[key: string]: number | stri
 /**
  * Render a parameter boolean
  */
-function renderBoolean(key: string, value: boolean): {[key: string]: boolean} {
+function renderBoolean(key: string, value: boolean): { [key: string]: boolean } {
   return { [key]: value };
 }
 
