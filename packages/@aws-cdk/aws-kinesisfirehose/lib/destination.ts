@@ -1,9 +1,11 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDeliveryStream } from './delivery-stream';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 /**
  * Options for S3 record backup of a delivery stream
@@ -93,7 +95,7 @@ export interface DataProcessor {
    *
    * @default Duration.minutes(1)
    */
-  readonly bufferInterval: Duration;
+  readonly bufferInterval?: Duration;
 
   /**
    * The amount of incoming data Firehose will buffer before calling the processor.
@@ -117,12 +119,16 @@ export interface DestinationProps {
   /**
    * If true, log errors when Lambda invocation for data transformation or data delivery fails.
    *
+   * If `logGroup` is provided, this will be implicitly set to `true`.
+   *
    * @default false - do not log errors.
    */
   readonly logging?: boolean;
 
   /**
    * The CloudWatch log group where log streams will be created to hold error logs.
+   *
+   * If `logStream` is provided, this must be provided.
    *
    * @default - if `logging` is set to `true`, a log group will be created for you.
    */
@@ -131,14 +137,13 @@ export interface DestinationProps {
   /**
    * The CloudWatch log stream where error logs will be written.
    *
-   * @default - if `logging` is set to true, a log stream will be created for you.
+   * @default - if `logging` is set to true or `logGroup` is provided, a log stream will be created for you.
    */
   readonly logStream?: logs.ILogStream;
 
   /**
    * The series of data transformations that should be performed on the data before writing to the destination.
    *
-   * TODO: this seems to only allow a single transformation but seems to accept an array?
    * TODO: add connection to Lambda VPC from fixed Firehose CIDR
    *
    * @default [] - no data transformation will occur.
@@ -167,4 +172,70 @@ export interface DestinationProps {
    * @default 'source'
    */
   readonly backupPrefix?: string;
+}
+
+export abstract class DestinationBase implements IDestination {
+  constructor(protected readonly props: DestinationProps) {
+  }
+
+  abstract bind(scope: Construct, deliveryStream: IDeliveryStream): DestinationConfig;
+
+  protected createLoggingOptions(scope: Construct, deliveryStream: IDeliveryStream): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
+    if (this.props.logging || this.props.logGroup) {
+      const logGroup = this.props.logGroup ?? (!this.props.logStream ? new logs.LogGroup(scope, 'Log Group') : undefined);
+      if (!logGroup) {
+        throw new Error('Log stream was provided to Destination but log group was not');
+      }
+      logGroup.grantWrite(deliveryStream); // TODO: too permissive? add a new grant on the stream resource if it's passed in?
+      return {
+        enabled: true,
+        logGroupName: logGroup.logGroupName,
+        logStreamName: this.props.logStream?.logStreamName,
+      };
+    }
+    return undefined;
+  }
+
+  protected createProcessingConfig(deliveryStream: IDeliveryStream): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
+    // TODO: this seems (by the UI) to only allow a single transformation but seems to accept an array?
+    if (this.props.processors && this.props.processors.length > 0) {
+      const processors = this.props.processors.map((processor) => {
+        processor.lambdaFunction.grantInvoke(deliveryStream);
+        const parameters = [
+          { parameterName: 'LambdaArn', parameterValue: processor.lambdaFunction.functionArn },
+          { parameterName: 'RoleArn', parameterValue: (deliveryStream.grantPrincipal as iam.Role).roleArn }
+        ];
+        if (processor.bufferInterval) {
+          parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.bufferInterval.toSeconds().toString() });
+        }
+        if (processor.bufferSize) {
+          parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.bufferSize.toMebibytes().toString() });
+        }
+        if (processor.retries) {
+          parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.retries.toString() });
+        }
+        return {
+          type: 'Lambda',
+          parameters: parameters,
+        }
+      });
+      return {
+        enabled: true,
+        processors: processors,
+      };
+    }
+    return undefined;
+  }
+
+  protected createBackupConfig(scope: Construct, deliveryStream: IDeliveryStream): CfnDeliveryStream.S3DestinationConfigurationProperty | undefined {
+    if (this.props.backup || this.props.backupBucket) {
+      const bucket = this.props.backupBucket ?? new s3.Bucket(scope, 'Backup Bucket');
+      return {
+        bucketArn: bucket.bucketArn,
+        roleArn: (deliveryStream.grantPrincipal as iam.Role).roleArn,
+        prefix: this.props.backupPrefix,
+      };
+    }
+    return undefined;
+  }
 }
