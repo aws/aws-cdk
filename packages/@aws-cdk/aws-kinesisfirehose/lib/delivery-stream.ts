@@ -108,6 +108,8 @@ export interface DeliveryStreamProps {
    * @default - if `encryption` is set to `CUSTOMER_MANAGED`, a KMS key will be created for you.
    */
   readonly encryptionKey?: kms.IKey;
+
+  // TODO: tags?
 }
 
 /**
@@ -181,7 +183,32 @@ export class DeliveryStream extends DeliveryStreamBase {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
 
-    const resource = new CfnDeliveryStream(this, 'Resource');
+    const role = props.role ?? new iam.Role(this, 'Role', {
+      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+    });
+
+    const encryptionKey = props.encryptionKey ?? (props.encryption === StreamEncryption.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
+    const encryptionConfig = (encryptionKey || (props.encryption === StreamEncryption.AWS_OWNED)) ? {
+      keyArn: encryptionKey?.keyArn,
+      keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
+    } : undefined;
+    // TODO: we definitely need to grant access to the role
+
+    props.sourceStream?.grantRead(role); // TODO: may need to be DescribeStream instead of DescribeStreamSummary
+    const streamSourceConfig = props.sourceStream ? {
+      kinesisStreamArn: props.sourceStream?.streamArn,
+      roleArn: role.roleArn,
+    } : undefined;
+
+    const destination = props.destination.bind(this, this);
+
+    const resource = new CfnDeliveryStream(this, 'Resource', {
+      deliveryStreamEncryptionConfigurationInput: encryptionConfig,
+      deliveryStreamName: props.deliveryStreamName,
+      deliveryStreamType: props.sourceStream ? 'KinesisStreamAsSource' : 'DirectPut',
+      kinesisStreamSourceConfiguration: streamSourceConfig,
+      ...destination.properties,
+    });
 
     this.deliveryStreamName = resource.ref;
     this.deliveryStreamArn = resource.attrArn;
