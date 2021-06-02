@@ -27,7 +27,8 @@ describe('Rule', () => {
     });
 
     new notifications.Rule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+      ruleName: 'MyNotificationRule',
+      detailType: notifications.DetailType.FULL,
       events: [
         notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
         notifications.Event.PROJECT_BUILD_STATE_FAILED,
@@ -64,12 +65,146 @@ describe('Rule', () => {
     });
   });
 
+  test('created new notification rule without name and will generate from the `id`', () => {
+    const project = new FakeCodeBuild();
+    const topic = new sns.Topic(stack, 'MyTopic');
+    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackChannelConfigurationName: 'test-channel',
+      slackWorkspaceId: 'T49239U4W', // modify to your slack workspace id
+      slackChannelId: 'C0187JABUE9', // modify to your slack channel id
+      loggingLevel: chatbot.LoggingLevel.NONE,
+    });
+
+    new notifications.Rule(stack, 'MyNotificationRuleGeneratedFromId', {
+      detailType: notifications.DetailType.FULL,
+      events: [
+        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
+        notifications.Event.PROJECT_BUILD_STATE_FAILED,
+      ],
+      source: project,
+      targets: [
+        new notifications.SnsTopicNotificationTarget(topic),
+        new notifications.SlackNotificationTarget(slackChannel),
+      ],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      DetailType: 'FULL',
+      EventTypeIds: [
+        'codebuild-project-build-state-succeeded',
+        'codebuild-project-build-state-failed',
+      ],
+      Name: 'MyNotificationRuleGeneratedFromId',
+      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Targets: [
+        {
+          TargetAddress: {
+            Ref: 'MyTopic86869434',
+          },
+          TargetType: 'SNS',
+        },
+        {
+          TargetAddress: {
+            Ref: 'MySlackChannelA8E0B56C',
+          },
+          TargetType: 'AWSChatbotSlack',
+        },
+      ],
+    });
+  });
+
+  test('generating name will cut if id length is over than 64 charts', () => {
+    const project = new FakeCodeBuild();
+    const topic = new sns.Topic(stack, 'MyTopic');
+    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackChannelConfigurationName: 'test-channel',
+      slackWorkspaceId: 'T49239U4W', // modify to your slack workspace id
+      slackChannelId: 'C0187JABUE9', // modify to your slack channel id
+      loggingLevel: chatbot.LoggingLevel.NONE,
+    });
+
+    new notifications.Rule(stack, 'MyNotificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong', {
+      detailType: notifications.DetailType.FULL,
+      events: [
+        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
+        notifications.Event.PROJECT_BUILD_STATE_FAILED,
+      ],
+      source: project,
+      targets: [
+        new notifications.SnsTopicNotificationTarget(topic),
+        new notifications.SlackNotificationTarget(slackChannel),
+      ],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      DetailType: 'FULL',
+      EventTypeIds: [
+        'codebuild-project-build-state-succeeded',
+        'codebuild-project-build-state-failed',
+      ],
+      Name: 'MyNotificationRuleGeneratedFromIdIsTooooooooooooooooooooooooooo',
+      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Targets: [
+        {
+          TargetAddress: {
+            Ref: 'MyTopic86869434',
+          },
+          TargetType: 'SNS',
+        },
+        {
+          TargetAddress: {
+            Ref: 'MySlackChannelA8E0B56C',
+          },
+          TargetType: 'AWSChatbotSlack',
+        },
+      ],
+    });
+  });
+
+  test('created new notification rule without detailType', () => {
+    const project = new FakeCodeBuild();
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    new notifications.Rule(stack, 'MyNotificationRule', {
+      ruleName: 'MyNotificationRule',
+      events: [
+        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
+        notifications.Event.PROJECT_BUILD_STATE_FAILED,
+      ],
+      source: project,
+      targets: [
+        new notifications.SnsTopicNotificationTarget(topic),
+      ],
+      status: notifications.Status.DISABLED,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      DetailType: 'FULL',
+      EventTypeIds: [
+        'codebuild-project-build-state-succeeded',
+        'codebuild-project-build-state-failed',
+      ],
+      Name: 'MyNotificationRule',
+      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Targets: [
+        {
+          TargetAddress: {
+            Ref: 'MyTopic86869434',
+          },
+          TargetType: 'SNS',
+        },
+      ],
+      Status: 'DISABLED',
+    });
+  });
+
   test('created new notification rule with status DISABLED', () => {
     const project = new FakeCodeBuild();
     const topic = new sns.Topic(stack, 'MyTopic');
 
     new notifications.Rule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+      detailType: notifications.DetailType.FULL,
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
         notifications.Event.PROJECT_BUILD_STATE_FAILED,
@@ -111,7 +246,8 @@ describe('Rule', () => {
     });
 
     new notifications.Rule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+      detailType: notifications.DetailType.FULL,
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
         notifications.Event.PROJECT_BUILD_STATE_FAILED,
@@ -160,7 +296,8 @@ describe('Rule', () => {
     });
 
     new notifications.Rule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+      detailType: notifications.DetailType.FULL,
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.Event.PIPELINE_ACTION_EXECUTION_SUCCEEDED,
       ],
@@ -208,7 +345,8 @@ describe('Rule', () => {
     });
 
     const rule = new notifications.Rule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+      detailType: notifications.DetailType.FULL,
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
         notifications.Event.PROJECT_BUILD_STATE_FAILED,
@@ -258,7 +396,7 @@ describe('Rule', () => {
     const topic = new sns.Topic(stack, 'MyTopic');
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
         notifications.Event.PIPELINE_PIPELINE_EXECUTION_SUCCEEDED,
@@ -280,7 +418,7 @@ describe('Rule', () => {
     const topic = new sns.Topic(stack, 'MyTopic');
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
         notifications.Event.PIPELINE_PIPELINE_EXECUTION_SUCCEEDED,
@@ -299,7 +437,7 @@ describe('Rule', () => {
     const topic = new sns.Topic(stack, 'MyTopic');
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+      ruleName: 'MyNotificationRule',
       events: [
         notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
       ],
@@ -317,7 +455,7 @@ describe('Rule', () => {
     const topic = new sns.Topic(stack, 'MyTopic');
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+      ruleName: 'MyNotificationRule',
       events: [],
       source: project,
       targets: [
@@ -331,7 +469,7 @@ describe('Rule', () => {
     const topic = new sns.Topic(stack, 'MyTopic');
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
-      notificationRuleName: 'MyNotificationRule',
+      ruleName: 'MyNotificationRule',
       events: [notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED],
       // @ts-ignore
       source: someResource,
