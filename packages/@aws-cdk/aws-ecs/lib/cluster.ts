@@ -190,7 +190,7 @@ export class Cluster extends Resource implements ICluster {
       clusterName: this.physicalName,
       clusterSettings,
       capacityProviders: Lazy.list({ produce: () => this._fargateCapacityProviders }, { omitEmpty: true }),
-      configuration: this.renderConfiguration(),
+      configuration: this._executeCommandConfiguration && this.renderExecuteCommandConfiguration(),
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -230,30 +230,23 @@ export class Cluster extends Resource implements ICluster {
     }
   }
 
-  private renderConfiguration() : CfnCluster.ClusterConfigurationProperty | undefined {
-    if (this._executeCommandConfiguration) {
-      return {
-        executeCommandConfiguration: this.renderExecuteCommandConfiguration(),
-      };
-    }
-    return undefined;
-  }
-
-  private renderExecuteCommandConfiguration() : CfnCluster.ExecuteCommandConfigurationProperty {
+  private renderExecuteCommandConfiguration() : CfnCluster.ClusterConfigurationProperty {
     return {
-      kmsKeyId: this._executeCommandConfiguration?.kmsKey?.keyArn,
-      logConfiguration: this._executeCommandConfiguration?.logConfiguration ? this.renderExecuteCommandLogConfiguration() : undefined,
-      logging: this._executeCommandConfiguration?.logging,
+      executeCommandConfiguration: {
+        kmsKeyId: this._executeCommandConfiguration?.kmsKey?.keyArn,
+        logConfiguration: this._executeCommandConfiguration?.logConfiguration && this.renderExecuteCommandLogConfiguration(),
+        logging: this._executeCommandConfiguration?.logging,
+      },
     };
   }
 
   private renderExecuteCommandLogConfiguration(): CfnCluster.ExecuteCommandLogConfigurationProperty {
     const logConfiguration = this._executeCommandConfiguration?.logConfiguration;
     if (logConfiguration?.s3EncryptionEnabled && !logConfiguration?.s3Bucket) {
-      throw new Error('S3EncryptionEnabled cannot be specified without an S3 bucket name in execute command log configuration.');
+      throw new Error('You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption.');
     }
     if (logConfiguration?.cloudWatchEncryptionEnabled && !logConfiguration?.cloudWatchLogGroup) {
-      throw new Error('CloudWatchEncryptionEnabled cannot be specified without a CloudWatch log group in execute command log configuration.');
+      throw new Error('You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption.');
     }
     return {
       cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,

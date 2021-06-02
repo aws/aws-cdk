@@ -427,7 +427,7 @@ export abstract class BaseService extends Resource
     if (props.enableExecuteCommand) {
       this.enableExecuteCommand();
 
-      const logging = this.cluster.executeCommandConfiguration?.logging || ExecuteCommandLogging.DEFAULT;
+      const logging = this.cluster.executeCommandConfiguration?.logging ?? ExecuteCommandLogging.DEFAULT;
 
       if (logging !== ExecuteCommandLogging.NONE) {
         if (this.cluster.executeCommandConfiguration?.kmsKey) {

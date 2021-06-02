@@ -2063,7 +2063,7 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-    }, /CloudWatchEncryptionEnabled cannot be specified without a CloudWatch log group in execute command log configuration./);
+    }, /You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption./);
 
     test.done();
   },
@@ -2083,7 +2083,7 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-    }, /S3EncryptionEnabled cannot be specified without an S3 bucket name in execute command log configuration./);
+    }, /You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption./);
 
     test.done();
   },
