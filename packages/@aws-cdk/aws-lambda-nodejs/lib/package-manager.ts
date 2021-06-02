@@ -5,6 +5,7 @@ interface PackageManagerProps {
   readonly lockFile: string;
   readonly installCommand: string[];
   readonly runCommand: string[];
+  readonly argsSeparator?: string
 }
 
 /**
@@ -27,6 +28,7 @@ export class PackageManager {
     lockFile: 'pnpm-lock.yaml',
     installCommand: ['pnpm', 'install'],
     runCommand: ['pnpm', 'exec'],
+    argsSeparator: '--',
   });
 
   public static fromLockFile(lockFilePath: string): PackageManager {
@@ -47,11 +49,13 @@ export class PackageManager {
   public readonly lockFile: string;
   public readonly installCommand: string[];
   public readonly runCommand: string[];
+  public readonly argsSeparator?: string;
 
   constructor(props: PackageManagerProps) {
     this.lockFile = props.lockFile;
     this.installCommand = props.installCommand;
     this.runCommand = props.runCommand;
+    this.argsSeparator = props.argsSeparator;
   }
 
   public runBinCommand(bin: string): string {
@@ -60,7 +64,7 @@ export class PackageManager {
       os.platform() === 'win32' ? `${runCommand}.cmd` : runCommand,
       ...runArgs,
       bin,
-      ...(this.lockFile === PackageManager.PNPM.lockFile ? ['--'] : []),
+      ...(this.argsSeparator ? [this.argsSeparator] : []),
     ].join(' ');
   }
 }
