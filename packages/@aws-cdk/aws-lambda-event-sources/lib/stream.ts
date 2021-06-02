@@ -75,7 +75,7 @@ export interface StreamEventSourceProps {
    *
    * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
    *
-   * @default - false
+   * @default false
    */
   readonly reportBatchItemFailures?: boolean;
 
