@@ -21,7 +21,6 @@ nodeunitShim({
     // WHEN
     const v = SecretValue.secretsManager('secret-id', {
       jsonField: 'json-key',
-      versionId: '',
       versionStage: 'version-stage',
     });
 
@@ -48,7 +47,14 @@ nodeunitShim({
   },
 
   'secretsManager with versionStage and versionId'(test: Test) {
-    test.throws(() => SecretValue.secretsManager('secret-id', { versionStage: 'version-stage', versionId: 'version-id' }), /were both provided but only one is allowed/);
+    test.throws(() => {
+      SecretValue.secretsManager('secret-id',
+        {
+          versionStage: 'version-stage',
+          versionId: 'version-id',
+        });
+    }, /were both provided but only one is allowed/);
+
     test.done();
   },
 

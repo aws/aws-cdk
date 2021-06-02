@@ -724,7 +724,7 @@ export class Project extends ProjectBase {
     const kmsIamResources = new Set<string>();
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
-      const envVariableValue: string = envVariable.value?.toString();
+      const envVariableValue = envVariable.value?.toString();
       const cfnEnvVariable: CfnProject.EnvironmentVariableProperty = {
         name,
         type: envVariable.type || BuildEnvironmentVariableType.PLAINTEXT,
@@ -773,11 +773,10 @@ export class Project extends ProjectBase {
             if (!parsedArn.resourceName) {
               throw new Error('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
             }
-            const secretSpecifier: string = parsedArn.resourceName;
 
             // the value of the property can be a complex string, separated by ':';
             // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
-            const secretName = secretSpecifier.split(':')[0];
+            const secretName = parsedArn.resourceName.split(':')[0];
             secretsManagerIamResources.add(stack.formatArn({
               service: 'secretsmanager',
               resource: 'secret',
@@ -814,10 +813,10 @@ export class Project extends ProjectBase {
             // (we will assume it's a Secret from SecretsManager)
             const fragments = Tokenization.reverseString(envVariableValue);
             if (fragments.tokens.length === 1) {
-              const iresolvable = fragments.tokens[0];
-              if (Reference.isReference(iresolvable)) {
+              const resolvable = fragments.tokens[0];
+              if (Reference.isReference(resolvable)) {
                 // check the Stack the resource owning the reference belongs to
-                const resourceStack = Stack.of(iresolvable.target);
+                const resourceStack = Stack.of(resolvable.target);
                 if (Token.compareStrings(stack.account, resourceStack.account) === TokenComparison.DIFFERENT) {
                   // since this is a cross-account access,
                   // add the appropriate KMS permissions
@@ -1938,8 +1937,8 @@ export interface BuildEnvironmentVariable {
    * The value of the environment variable.
    * For plain-text variables (the default), this is the literal value of variable.
    * For SSM parameter variables, pass the name of the parameter here (`parameterName` property of `IParameter`).
-   * For SecretsManager variables, pass the SecretValue (`secretValue` property of `ISecret`) or pass either
-   * the secret name (`secretName` property of `ISecret`) or the secret ARN (`secretArn` property of `ISecret`) here,
+   * For SecretsManager variables secrets, pass either the secret name (`secretName` property of `ISecret`)
+   * or the secret ARN (`secretArn` property of `ISecret`) here,
    * along with optional SecretsManager qualifiers separated by ':', like the JSON key, or the version or stage
    * (see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager for details).
    */

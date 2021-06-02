@@ -1628,9 +1628,28 @@ export = {
 
         test.done();
       },
+
+      'should fail when the parsed Arn does not contain a secret name'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environmentVariables: {
+              'ENV_VAR1': {
+                type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+                value: 'arn:aws:secretsmanager:us-west-2:123456789012:secret',
+              },
+            },
+          });
+        }, /SecretManager ARN is missing the name of the secret:/);
+
+        test.done();
+      },
     },
 
-    'should fail creating when using a secret value as token in a plaintext variable'(test: Test) {
+    'should fail creating when using a secret value in a plaintext variable'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
 
