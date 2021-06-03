@@ -225,6 +225,9 @@ Resources:
               - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}
+      Tags:
+        - Key: aws-cdk:bootstrap-role
+          Value: file-publishing
   ImagePublishingRole:
     Type: AWS::IAM::Role
     Properties:
@@ -296,6 +299,9 @@ Resources:
             Version: '2012-10-17'
           PolicyName:
             Fn::Sub: cdk-${Qualifier}-lookup-role-default-policy-${AWS::AccountId}-${AWS::Region}
+      Tags:
+        - Key: aws-cdk:bootstrap-role
+          Value: image-publishing
   FilePublishingRoleDefaultPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -426,6 +432,9 @@ Resources:
           PolicyName: default
       RoleName:
         Fn::Sub: cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}
+      Tags:
+        - Key: aws-cdk:bootstrap-role
+          Value: deploy-artifacts
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
     Properties:
