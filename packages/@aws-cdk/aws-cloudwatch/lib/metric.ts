@@ -8,9 +8,9 @@ import { normalizeStatistic, parseStatistic } from './private/statistic';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct, Reference } from '@aws-cdk/core';
 
-export type DimensionHash = {[dim: string]: any};
+export type DimensionHash = {[dim: string]: string | Reference};
 
 /**
  * Options shared by most methods accepting metric options

@@ -52,36 +52,6 @@ export = {
     test.done();
   },
 
-  'cannot use null dimension value'(test: Test) {
-    test.throws(() => {
-      new Metric({
-        namespace: 'Test',
-        metricName: 'ACount',
-        period: cdk.Duration.minutes(10),
-        dimensions: {
-          DimensionWithNull: null,
-        },
-      });
-    }, /Dimension value of 'null' is invalid/);
-
-    test.done();
-  },
-
-  'cannot use undefined dimension value'(test: Test) {
-    test.throws(() => {
-      new Metric({
-        namespace: 'Test',
-        metricName: 'ACount',
-        period: cdk.Duration.minutes(10),
-        dimensions: {
-          DimensionWithUndefined: undefined,
-        },
-      });
-    }, /Dimension value of 'undefined' is invalid/);
-
-    test.done();
-  },
-
   'cannot use long dimension values'(test: Test) {
     const arr = new Array(256);
     const invalidDimensionValue = arr.fill('A', 0).join('');
