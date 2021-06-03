@@ -2,6 +2,61 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.107.0](https://github.com/aws/aws-cdk/compare/v1.106.1...v1.107.0) (2021-06-02)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **appmesh:** the creation property `clientPolicy` in `VirtualNode` has been renamed to `tlsClientPolicy`, and its type changed to `TlsClientPolicy`
+* **appmesh:** to create `TlsClientPolicy`, `validation` property must be defined.
+* **appmesh:** the creation property `tlsCertificate` in `VirtualNode` has been renamed to `tls`, and its type changed to `TlsListener`
+* **appmesh:** the `tlsMode` property has been removed from the options when creating a `TlsCertificate`, moved to the new `TlsListener` interface, and renamed `mode`
+
+### Features
+
+* **cfnspec:** cloudformation spec v37.0.0 ([#14873](https://github.com/aws/aws-cdk/issues/14873)) ([8bb4357](https://github.com/aws/aws-cdk/commit/8bb4357036f549af1235de81f2f5c528f5fa80f8))
+* **cloudfront:** add L2 support for CloudFront functions ([#14511](https://github.com/aws/aws-cdk/issues/14511)) ([40d2ff9](https://github.com/aws/aws-cdk/commit/40d2ff964c97954c70d79a09d60fcb795ef16791))
+* **eks:** support Kubernetes 1.20 ([#14758](https://github.com/aws/aws-cdk/issues/14758)) ([1956ef6](https://github.com/aws/aws-cdk/commit/1956ef6708d59329da61fbdd6056de4727e1e2e1)), closes [#14756](https://github.com/aws/aws-cdk/issues/14756)
+* **pipelines:** allow switching to one CodeBuild action for same-typed assets ([#13803](https://github.com/aws/aws-cdk/issues/13803)) ([ed72ad3](https://github.com/aws/aws-cdk/commit/ed72ad322a2739709cad91759ea18e159f28f795))
+
+
+### Bug Fixes
+
+* **appmesh:** introduce the TlsClientPolicy and TlsValidation concepts ([#14782](https://github.com/aws/aws-cdk/issues/14782)) ([8263c78](https://github.com/aws/aws-cdk/commit/8263c788a8e71006a4b2dce0f37444199de9c435)), closes [#12733](https://github.com/aws/aws-cdk/issues/12733)
+* **appmesh:** TLS mode is set on the Certificate class ([#14856](https://github.com/aws/aws-cdk/issues/14856)) ([061fd55](https://github.com/aws/aws-cdk/commit/061fd558a3327b805bb5fe0abc72de7c21bbbdb9))
+* **elasticsearch:** 'r6gd' not marked as supported type for instance storage ([#14894](https://github.com/aws/aws-cdk/issues/14894)) ([d07a49f](https://github.com/aws/aws-cdk/commit/d07a49ff00ae07ea013ce6cc83d768e7729225a8)), closes [#14773](https://github.com/aws/aws-cdk/issues/14773)
+* **lambda-nodejs:** cannot bundle locally when consuming a node module with a NodejsFunction ([#14914](https://github.com/aws/aws-cdk/issues/14914)) ([52da59c](https://github.com/aws/aws-cdk/commit/52da59c34c4be74d696af0637521eeb0d6e69fa9)), closes [#14739](https://github.com/aws/aws-cdk/issues/14739)
+* **rds:** Add exception throw when az is defined for multi-az db instance ([#14837](https://github.com/aws/aws-cdk/issues/14837)) ([fd8445f](https://github.com/aws/aws-cdk/commit/fd8445ff1bf94b3dde26211c497bda7211b54dc0)), closes [#10949](https://github.com/aws/aws-cdk/issues/10949)
+
+## [1.106.1](https://github.com/aws/aws-cdk/compare/v1.106.0...v1.106.1) (2021-05-26)
+
+
+### Bug Fixes
+
+* **secretsmanager**: revert "Automatically grant permissions to rotation Lambda ([#14471](https://github.com/aws/aws-cdk/issues/14471))",
+  fixes [#14868](https://github.com/aws/aws-cdk/issues/14868)
+
+## [1.106.0](https://github.com/aws/aws-cdk/compare/v1.105.0...v1.106.0) (2021-05-25)
+
+
+### Features
+
+* **ecs-service-extensions**: allow taskRole to be passed in on creation of an ECS service ([3e257a0](https://github.com/aws/aws-cdk/commit/3e257a0e554851b7393f52bbbea2f5187673e8a7))
+* **appmesh:** add IAM grants for StreamAggregatedResources ([#13596](https://github.com/aws/aws-cdk/issues/13596)) ([f4a2938](https://github.com/aws/aws-cdk/commit/f4a2938cf6773bf80e3316abda82d03aed051108)), closes [#11639](https://github.com/aws/aws-cdk/issues/11639)
+* **cfnspec:** cloudformation spec v36.0.0 ([#14791](https://github.com/aws/aws-cdk/issues/14791)) ([3a9f56d](https://github.com/aws/aws-cdk/commit/3a9f56d5167aab6a1bd0bf8b29b53dd8658a2313))
+* **dynamodb:** add ability to enable contributor insights on Table ([#14742](https://github.com/aws/aws-cdk/issues/14742)) ([3c7a89d](https://github.com/aws/aws-cdk/commit/3c7a89de6edaf7a1910bf716419dbe5568d79374))
+* **lambda:** support Principal conditions in Permission ([#14674](https://github.com/aws/aws-cdk/issues/14674)) ([b78a1bb](https://github.com/aws/aws-cdk/commit/b78a1bbf445743d96c8e4f54e7d2e7cac204342a)), closes [#8116](https://github.com/aws/aws-cdk/issues/8116)
+* **lambda-nodejs:** pnpm support ([#14772](https://github.com/aws/aws-cdk/issues/14772)) ([b02311c](https://github.com/aws/aws-cdk/commit/b02311cd55b5bdbe408085488dd17816f181fd2c)), closes [#14757](https://github.com/aws/aws-cdk/issues/14757)
+
+
+### Bug Fixes
+
+* **cognito:** user pool - phoneNumberVerified attribute fails deployment ([#14699](https://github.com/aws/aws-cdk/issues/14699)) ([cd2589f](https://github.com/aws/aws-cdk/commit/cd2589f560600294cc50988a98e69b091c42e3f8)), closes [#14175](https://github.com/aws/aws-cdk/issues/14175)
+* **iam:** permissions boundaries not added to custom resource roles ([#14754](https://github.com/aws/aws-cdk/issues/14754)) ([f36feb5](https://github.com/aws/aws-cdk/commit/f36feb52a750a326842903ac4dc23be83e4aee1a)), closes [#13310](https://github.com/aws/aws-cdk/issues/13310)
+* **lambda:** changing reserved concurrency fails lambda version deployment ([#14586](https://github.com/aws/aws-cdk/issues/14586)) ([f47d5cb](https://github.com/aws/aws-cdk/commit/f47d5cb48e641515b503bae092cd32071dae2ed9)), closes [#11537](https://github.com/aws/aws-cdk/issues/11537)
+* **lambda-nodejs:** esbuild detection with Yarn 2 in PnP mode ([#14739](https://github.com/aws/aws-cdk/issues/14739)) ([5c84696](https://github.com/aws/aws-cdk/commit/5c84696a88f9319af1b2782b747e10f408c4c8fb))
+* **pipelines:** self-update build fails with named pipeline stack ([#14729](https://github.com/aws/aws-cdk/issues/14729)) ([eff9c75](https://github.com/aws/aws-cdk/commit/eff9c7504710929da58eab96c45d7b925132f73e)), closes [#10782](https://github.com/aws/aws-cdk/issues/10782)
+
 ## [1.105.0](https://github.com/aws/aws-cdk/compare/v1.104.0...v1.105.0) (2021-05-19)
 
 
