@@ -179,13 +179,10 @@ export class DeliveryStream extends DeliveryStreamBase {
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {
     super(scope, id);
 
-    this.grantPrincipal = props.role ?? new iam.Role(this, 'Service Role', {
+    const role = props.role ?? new iam.Role(this, 'Service Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
-
-    const role = props.role ?? new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
-    });
+    this.grantPrincipal = role;
 
     const encryptionKey = props.encryptionKey ?? (props.encryption === StreamEncryption.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
     const encryptionConfig = (encryptionKey || (props.encryption === StreamEncryption.AWS_OWNED)) ? {
