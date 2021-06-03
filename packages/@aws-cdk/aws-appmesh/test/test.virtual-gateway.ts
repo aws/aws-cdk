@@ -397,9 +397,13 @@ export = {
         virtualGatewayName: 'virtual-gateway',
         mesh: mesh,
         backendDefaults: {
-          clientPolicy: appmesh.ClientPolicy.fileTrust({
-            certificateChain: 'path-to-certificate',
-          }),
+          tlsClientPolicy: {
+            validation: {
+              trust: appmesh.TlsValidationTrust.file({
+                certificateChain: 'path-to-certificate',
+              }),
+            },
+          },
         },
       });
 
