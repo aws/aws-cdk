@@ -3,7 +3,6 @@ plugins {
 	id("java")
     id "application"
 	id("org.jetbrains.kotlin.jvm") version "1.5.10"
-	id("org.jetbrains.kotlin.kapt") version "1.5.10"
 }
 
 repositories {
