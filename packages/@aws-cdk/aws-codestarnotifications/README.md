@@ -18,7 +18,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 The `Rule` construct defines an AWS CodeStarNotifications rule.
 The rule specifies the events you want notifications about and the targets (such as Amazon SNS topics or AWS Chatbot clients configured for Slack) where you want to receive them. notification targets are objects that implement the `IRuleTarget` interface and notification source is object that implement the `IRuleSource` interface.
 
-# Notification Targets
+## Notification Targets
 
 This module includes classes that implement the `IRuleTarget` interface for SNS and slack in AWS Chatbot.
 
@@ -27,7 +27,7 @@ The following targets are supported:
 * `SNS`: specify event and notify to SNS topic.
 * `AWS Chatbot`: specify event and notify to slack channel and only support `SlackChannelConfiguration`.
 
-# Examples:
+## Examples:
 
 ```ts
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
