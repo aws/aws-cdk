@@ -530,7 +530,7 @@ export interface UserPoolProps {
   /**
    * The SMS message template sent during MFA verification.
    * Use '{####}' in the template where Cognito should insert the verification code.
-   * @default - 'Your authentication code is {####}.'
+   * @default 'Your authentication code is {####}.'
    */
   readonly mfaMessage?: string;
 
