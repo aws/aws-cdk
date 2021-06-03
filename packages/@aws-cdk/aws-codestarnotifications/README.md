@@ -27,7 +27,7 @@ The following targets are supported:
 * `SNS`: specify event and notify to SNS topic.
 * `AWS Chatbot`: specify event and notify to slack channel and only support `SlackChannelConfiguration`.
 
-## Examples:
+## Examples
 
 ```ts
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
