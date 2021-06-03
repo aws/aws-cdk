@@ -71,6 +71,16 @@ export interface LoadBalancerProps {
    * @default - Public subnets if internetFacing, Private subnets otherwise
    */
   readonly subnetSelection?: SubnetSelection;
+
+  
+  /**
+   * Enable Loadbalancer logs
+   * Can be used to avoid manual work as aws console
+   * Required S3 bucket name
+   * @default - disabled
+   */
+  readonly accessLogPolicy?:CfnLoadBalancer.AccessLoggingPolicyProperty;
+
 }
 
 /**
@@ -260,6 +270,10 @@ export class LoadBalancer extends Resource implements IConnectable {
     });
     if (props.internetFacing) {
       this.elb.node.addDependency(selectedSubnets.internetConnectivityEstablished);
+    }
+
+    if(props?.accessLogPolicy?.enabled){
+      this.elb.accessLoggingPolicy = Object.assign( props.accessLogPolicy, { enabled : true} );
     }
 
     ifUndefined(props.listeners, []).forEach(b => this.addListener(b));
