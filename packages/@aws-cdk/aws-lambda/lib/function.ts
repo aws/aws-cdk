@@ -336,7 +336,7 @@ export interface FunctionProps extends FunctionOptions {
 }
 
 /**
- * Deploys a file from from inside the construct library as a function.
+ * Deploys a file from inside the construct library as a function.
  *
  * The supplied file is subject to the 4096 bytes limit of being embedded in a
  * CloudFormation template.
