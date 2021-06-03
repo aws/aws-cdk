@@ -186,7 +186,7 @@
         "EventTypeIds": [
           "codebuild-project-build-state-succeeded"
         ],
-        "Name": "MyNotificationRule",
+        "Name": "SnsIntegMyNotificationRule65418723",
         "Resource": {
           "Fn::GetAtt": [
             "MyCodebuildProjectB0479580",
@@ -200,8 +200,7 @@
             },
             "TargetType": "SNS"
           }
-        ],
-        "Status": "ENABLED"
+        ]
       }
     }
   }

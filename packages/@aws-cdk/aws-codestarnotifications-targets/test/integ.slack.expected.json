@@ -189,7 +189,7 @@
         "EventTypeIds": [
           "codebuild-project-build-state-succeeded"
         ],
-        "Name": "MyNotificationRule",
+        "Name": "SlackIntegMyNotificationRuleFB8BAB4D",
         "Resource": {
           "Fn::GetAtt": [
             "MyCodebuildProjectB0479580",
@@ -203,8 +203,7 @@
             },
             "TargetType": "AWSChatbotSlack"
           }
-        ],
-        "Status": "ENABLED"
+        ]
       }
     }
   }
