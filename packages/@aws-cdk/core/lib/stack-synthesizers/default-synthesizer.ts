@@ -85,6 +85,13 @@ export interface DefaultStackSynthesizerProps {
   readonly imageAssetPublishingRoleArn?: string;
 
   /**
+   * The role to use to look up values from the target AWS account during synthesis
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
    * External ID to use when assuming role for image asset publishing
    *
    * @default - No external ID
@@ -196,6 +203,11 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   public static readonly DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-image-publishing-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
+   * Default lookup role ARN for missing values.
+   */
+  public static readonly DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
+
+  /**
    * Default image assets repository name
    */
   public static readonly DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME = 'cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}';
@@ -222,8 +234,9 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private _cloudFormationExecutionRoleArn?: string;
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
+  private lookupRoleArn?: string;
   private qualifier?: string;
-  private bucketPrefix?: string
+  private bucketPrefix?: string;
 
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
   private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
@@ -282,6 +295,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
+    this.lookupRoleArn = specialize(this.props.lookupRoleArn ?? DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
     this.bucketPrefix = specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
     /* eslint-enable max-len */
   }
@@ -360,6 +374,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       repositoryName: cfnify(this.repositoryName),
       imageUri: cfnify(`${account}.dkr.ecr.${region}.${urlSuffix}/${this.repositoryName}:${imageTag}`),
     };
+  }
+
+  protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
+    stack._synthesizeTemplate(session, this.lookupRoleArn);
   }
 
   /**
