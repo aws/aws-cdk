@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-stepfunctions-tasks",
   "version": "0.0.0",
+  "private": true,
   "description": "Task integrations for AWS StepFunctions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -101,7 +102,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -122,7 +123,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
