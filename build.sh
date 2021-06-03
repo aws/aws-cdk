@@ -40,7 +40,7 @@ while [[ "${1:-}" != "" ]]; do
 done
 
 export PATH=$(npm bin):$PATH
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTIONS:-}"
 
 if ! [ -x "$(command -v yarn)" ]; then
   echo "yarn is not installed. Install it from here- https://yarnpkg.com/en/docs/install."
