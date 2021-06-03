@@ -87,13 +87,6 @@ export interface SynthesizeStackArtifactOptions {
   readonly assumeRoleArn?: string;
 
   /**
-   * The role that needs to be assumed to lookup missing values
-   *
-   * @default - No role is assumed (current credentials are used)
-   */
-  readonly lookupRoleArn?: string;
-
-  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)
