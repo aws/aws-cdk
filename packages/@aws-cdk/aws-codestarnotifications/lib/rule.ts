@@ -1,7 +1,6 @@
-import * as cdk from '@aws-cdk/core';
+import { Stack, IResource, Resource, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
-import * as events from './event';
 import { RuleSourceConfig, SourceType, IRuleSource } from './source';
 import { IRuleTarget, RuleTargetConfig } from './target';
 
@@ -76,7 +75,7 @@ export interface RuleProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codestarnotifications-notificationrule-target.html
    */
-  readonly targets: IRuleTarget[];
+  readonly targets?: IRuleTarget[];
 
   /**
    * A list of event types associated with this notification rule.
@@ -84,13 +83,13 @@ export interface RuleProps {
    *
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
    */
-  readonly events: events.Event[];
+  readonly events?: string[];
 }
 
 /**
  * Represents a notification rule
  */
-export interface IRule extends cdk.IResource {
+export interface IRule extends IResource {
 
   /**
    * The ARN of the notification rule (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
@@ -110,7 +109,7 @@ export interface IRule extends cdk.IResource {
  *
  * @resource AWS::CodeStarNotifications::NotificationRule
  */
-export class Rule extends cdk.Resource implements IRule {
+export class Rule extends Resource implements IRule {
   /**
    * Import an existing notification rule provided an ARN
    * @param scope The parent creating construct
@@ -118,8 +117,8 @@ export class Rule extends cdk.Resource implements IRule {
    * @param notificationRuleArn Notification rule ARN (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
    */
   public static fromNotificationRuleArn(scope: Construct, id: string, notificationRuleArn: string): IRule {
-    const parts = cdk.Stack.of(scope).parseArn(notificationRuleArn);
-    class Import extends cdk.Resource implements IRule {
+    const parts = Stack.of(scope).parseArn(notificationRuleArn);
+    class Import extends Resource implements IRule {
       readonly ruleArn = notificationRuleArn;
       readonly ruleName = parts.resourceName || '';
     }
@@ -147,14 +146,21 @@ export class Rule extends cdk.Resource implements IRule {
    */
   readonly targets: RuleTargetConfig[] = [];
 
+  /**
+   * The events of notification rule
+   */
+  readonly events: string[] = [];
+
   constructor(scope: Construct, id: string, props: RuleProps) {
     super(scope, id);
 
     this.source = this.bindSource(props.source);
 
-    this.validateSourceEvent(props);
+    if (props.events) {
+      this.addEvents(props.events);
+    }
 
-    props.targets.forEach((target) => {
+    props.targets?.forEach((target) => {
       this.addTarget(target);
     });
 
@@ -165,7 +171,7 @@ export class Rule extends cdk.Resource implements IRule {
       status: props?.status,
       detailType: props.detailType || DetailType.FULL,
       targets: this.targets,
-      eventTypeIds: props.events,
+      eventTypeIds: this.events,
       resource: this.source.sourceAddress,
     }).ref;
   }
@@ -174,26 +180,33 @@ export class Rule extends cdk.Resource implements IRule {
    * Adds target to notification rule
    * @param target The SNS topic or AWS Chatbot Slack target
    */
-  public addTarget(target: IRuleTarget) {
+  public addTarget(target: IRuleTarget): void {
     this.targets.push(target.bind(this));
   }
 
-  private validateSourceEvent(props: RuleProps): void {
-    if (props.events.length === 0) {
-      throw new Error('"events" property must set at least 1 event');
-    }
-
-    const validationMapping = {
-      [SourceType.CODE_BUILD]: Object.values(events.Event).filter((e) => /^codebuild\-/.test(e)),
-      [SourceType.CODE_PIPELINE]: Object.values(events.Event).filter((e) => /^codepipeline\-/.test(e)),
+  /**
+   * Adds events to notification rule
+   *
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject
+   * @param events The list of event types for AWS Codebuild and AWS CodePipeline
+   */
+  public addEvents(events: string[]): void {
+    const re = {
+      [SourceType.CODE_BUILD]: /^codebuild\-/,
+      [SourceType.CODE_PIPELINE]: /^codepipeline\-/,
     };
 
-    const validEvents: string[] = validationMapping[this.source.sourceType];
-
-    Object.values(props.events).forEach(event => {
-      if (!validEvents.includes(event)) {
+    events.forEach((event) => {
+      if (!re[this.source.sourceType].test(event)) {
         throw new Error(`${event} event id is not valid in ${this.source.sourceType}`);
       }
+
+      if (this.events.includes(event)) {
+        return;
+      }
+
+      this.events.push(event);
     });
   }
 
@@ -229,7 +242,7 @@ export class Rule extends cdk.Resource implements IRule {
    * @returns string
    */
   private generateName(): string {
-    const name = cdk.Names.uniqueId(this);
+    const name = Names.uniqueId(this);
     if (name.length > 64) {
       return name.substring(0, 63);
     }
