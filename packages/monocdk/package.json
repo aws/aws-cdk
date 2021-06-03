@@ -160,6 +160,7 @@
     "@aws-cdk/aws-codestar": "0.0.0",
     "@aws-cdk/aws-codestarconnections": "0.0.0",
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
+    "@aws-cdk/aws-codestarnotifications-targets": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
     "@aws-cdk/aws-customerprofiles": "0.0.0",

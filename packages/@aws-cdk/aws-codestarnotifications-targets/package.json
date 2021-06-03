@@ -1,27 +1,27 @@
 {
-  "name": "@aws-cdk/aws-codestarnotifications",
+  "name": "@aws-cdk/aws-codestarnotifications-targets",
   "version": "0.0.0",
-  "description": "The CDK Construct Library for AWS::CodeStarNotifications",
+  "description": "CodeStar Notification targets for AWS CodeStar Notification CDK library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CodeStarNotifications",
-        "packageId": "Amazon.CDK.AWS.CodeStarNotifications",
+        "namespace": "Amazon.CDK.AWS.CodeStarNotifications.Targets",
+        "packageId": "Amazon.CDK.AWS.CodeStarNotifications.Targets",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.codestarnotifications",
+        "package": "software.amazon.awscdk.services.codestarnotifications.targets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "codestarnotifications"
+          "artifactId": "codestarnotifications-targets"
         }
       },
       "python": {
-        "distName": "aws-cdk.aws-codestarnotifications",
-        "module": "aws_cdk.aws_codestarnotifications",
+        "distName": "aws-cdk.aws-codestarnotifications-targets",
+        "module": "aws_cdk.aws_codestarnotifications_targets",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
@@ -33,7 +33,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-codestarnotifications"
+    "directory": "packages/@aws-cdk/aws-codestarnotifications-targets"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
@@ -45,25 +45,18 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
-    "cfn2ts": "cfn2ts",
     "compat": "cdk-compat",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
-    "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CodeStarNotifications",
-    "jest": true,
-    "env": {
-      "AWSLINT_BASE_CONSTRUCT": true
-    }
+    "jest": true
   },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "AWS::CodeStarNotifications",
     "aws-codestarnotifications"
   ],
   "author": {
@@ -76,16 +69,27 @@
     "@types/jest": "^26.0.23",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
     "pkglint": "0.0.0",
+    "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-chatbot": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "constructs": "^3.3.69"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-codepipeline": "0.0.0",
+    "@aws-cdk/aws-chatbot": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "constructs": "^3.3.69"
   },
   "engines": {
@@ -93,11 +97,6 @@
   },
   "stability": "stable",
   "maturity": "stable",
-  "awslint": {
-    "exclude": [
-      "props-physical-name:@aws-cdk/aws-codestarnotifications.RuleProps"
-    ]
-  },
   "awscdkio": {
     "announce": false
   },

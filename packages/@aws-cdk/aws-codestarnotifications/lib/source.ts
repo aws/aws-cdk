@@ -16,7 +16,7 @@ export enum SourceType {
 /**
  * Information about the Codebuild or CodePipeline associated with a notification source.
  */
-export interface SourceConfig {
+export interface RuleSourceConfig {
 
   /**
    * The source type. Can be an AWS CodeCommit, CodeBuild, CodePipeline or CodeDeploy.

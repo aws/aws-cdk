@@ -2,8 +2,8 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import * as events from './event';
-import { SourceConfig, SourceType, IRuleSource } from './source';
-import { IRuleTarget, TargetConfig } from './target';
+import { RuleSourceConfig, SourceType, IRuleSource } from './source';
+import { IRuleTarget, RuleTargetConfig } from './target';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -106,19 +106,11 @@ export interface IRule extends cdk.IResource {
 }
 
 /**
- * Either a new or imported notification rule
- */
-abstract class RuleBase extends cdk.Resource implements IRule {
-  abstract readonly ruleArn: string;
-  abstract readonly ruleName: string;
-}
-
-/**
  * A new notification rule
  *
  * @resource AWS::CodeStarNotifications::NotificationRule
  */
-export class Rule extends RuleBase {
+export class Rule extends cdk.Resource implements IRule {
   /**
    * Import an existing notification rule provided an ARN
    * @param scope The parent creating construct
@@ -127,7 +119,7 @@ export class Rule extends RuleBase {
    */
   public static fromNotificationRuleArn(scope: Construct, id: string, notificationRuleArn: string): IRule {
     const parts = cdk.Stack.of(scope).parseArn(notificationRuleArn);
-    class Import extends RuleBase {
+    class Import extends cdk.Resource implements IRule {
       readonly ruleArn = notificationRuleArn;
       readonly ruleName = parts.resourceName || '';
     }
@@ -148,12 +140,12 @@ export class Rule extends RuleBase {
   /**
    * The source config of notification rule
    */
-  readonly source: SourceConfig;
+  readonly source: RuleSourceConfig;
 
   /**
    * The target config of notification rule
    */
-  readonly targets: TargetConfig[] = [];
+  readonly targets: RuleTargetConfig[] = [];
 
   constructor(scope: Construct, id: string, props: RuleProps) {
     super(scope, id);
@@ -167,8 +159,6 @@ export class Rule extends RuleBase {
     });
 
     this.ruleName = props.ruleName || this.generateName();
-
-    console.log('props.ruleName:', props.ruleName, 'this.ruleName:', this.ruleName);
 
     this.ruleArn = new CfnNotificationRule(this, 'Resource', {
       name: this.ruleName,
@@ -207,7 +197,7 @@ export class Rule extends RuleBase {
     });
   }
 
-  private bindSource(source: IRuleSource): SourceConfig {
+  private bindSource(source: IRuleSource): RuleSourceConfig {
     const { projectArn, pipelineArn } = source;
 
     // should throw error if multiple sources are specified

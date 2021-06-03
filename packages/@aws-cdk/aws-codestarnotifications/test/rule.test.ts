@@ -1,12 +1,12 @@
 import '@aws-cdk/assert-internal/jest';
-import * as chatbot from '@aws-cdk/aws-chatbot';
-import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as notifications from '../lib';
 import {
   FakeCodeBuild,
   FakeCodePipeline,
   FakeIncorrectResource,
+  FakeSlackTarget,
+  FakeSnsTopicTarget,
 } from './helpers';
 
 describe('Rule', () => {
@@ -18,13 +18,8 @@ describe('Rule', () => {
 
   test('created new notification rule', () => {
     const project = new FakeCodeBuild();
-    const topic = new sns.Topic(stack, 'MyTopic');
-    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-      slackChannelConfigurationName: 'test-channel',
-      slackWorkspaceId: 'T49239U4W', // modify to your slack workspace id
-      slackChannelId: 'C0187JABUE9', // modify to your slack channel id
-      loggingLevel: chatbot.LoggingLevel.NONE,
-    });
+    const topic = new FakeSnsTopicTarget();
+    const slack = new FakeSlackTarget();
 
     new notifications.Rule(stack, 'MyNotificationRule', {
       ruleName: 'MyNotificationRule',
@@ -35,8 +30,8 @@ describe('Rule', () => {
       ],
       source: project,
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
-        new notifications.SlackNotificationTarget(slackChannel),
+        topic,
+        slack,
       ],
     });
 
@@ -50,15 +45,11 @@ describe('Rule', () => {
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       Targets: [
         {
-          TargetAddress: {
-            Ref: 'MyTopic86869434',
-          },
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
           TargetType: 'SNS',
         },
         {
-          TargetAddress: {
-            Ref: 'MySlackChannelA8E0B56C',
-          },
+          TargetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
           TargetType: 'AWSChatbotSlack',
         },
       ],
@@ -67,13 +58,8 @@ describe('Rule', () => {
 
   test('created new notification rule without name and will generate from the `id`', () => {
     const project = new FakeCodeBuild();
-    const topic = new sns.Topic(stack, 'MyTopic');
-    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-      slackChannelConfigurationName: 'test-channel',
-      slackWorkspaceId: 'T49239U4W', // modify to your slack workspace id
-      slackChannelId: 'C0187JABUE9', // modify to your slack channel id
-      loggingLevel: chatbot.LoggingLevel.NONE,
-    });
+    const topic = new FakeSnsTopicTarget();
+    const slack = new FakeSlackTarget();
 
     new notifications.Rule(stack, 'MyNotificationRuleGeneratedFromId', {
       detailType: notifications.DetailType.FULL,
@@ -83,8 +69,8 @@ describe('Rule', () => {
       ],
       source: project,
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
-        new notifications.SlackNotificationTarget(slackChannel),
+        topic,
+        slack,
       ],
     });
 
@@ -98,15 +84,11 @@ describe('Rule', () => {
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       Targets: [
         {
-          TargetAddress: {
-            Ref: 'MyTopic86869434',
-          },
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
           TargetType: 'SNS',
         },
         {
-          TargetAddress: {
-            Ref: 'MySlackChannelA8E0B56C',
-          },
+          TargetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
           TargetType: 'AWSChatbotSlack',
         },
       ],
@@ -115,13 +97,8 @@ describe('Rule', () => {
 
   test('generating name will cut if id length is over than 64 charts', () => {
     const project = new FakeCodeBuild();
-    const topic = new sns.Topic(stack, 'MyTopic');
-    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-      slackChannelConfigurationName: 'test-channel',
-      slackWorkspaceId: 'T49239U4W', // modify to your slack workspace id
-      slackChannelId: 'C0187JABUE9', // modify to your slack channel id
-      loggingLevel: chatbot.LoggingLevel.NONE,
-    });
+    const topic = new FakeSnsTopicTarget();
+    const slack = new FakeSlackTarget();
 
     new notifications.Rule(stack, 'MyNotificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong', {
       detailType: notifications.DetailType.FULL,
@@ -131,8 +108,8 @@ describe('Rule', () => {
       ],
       source: project,
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
-        new notifications.SlackNotificationTarget(slackChannel),
+        topic,
+        slack,
       ],
     });
 
@@ -146,15 +123,11 @@ describe('Rule', () => {
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       Targets: [
         {
-          TargetAddress: {
-            Ref: 'MyTopic86869434',
-          },
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
           TargetType: 'SNS',
         },
         {
-          TargetAddress: {
-            Ref: 'MySlackChannelA8E0B56C',
-          },
+          TargetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
           TargetType: 'AWSChatbotSlack',
         },
       ],
@@ -163,7 +136,7 @@ describe('Rule', () => {
 
   test('created new notification rule without detailType', () => {
     const project = new FakeCodeBuild();
-    const topic = new sns.Topic(stack, 'MyTopic');
+    const topic = new FakeSnsTopicTarget();
 
     new notifications.Rule(stack, 'MyNotificationRule', {
       ruleName: 'MyNotificationRule',
@@ -173,7 +146,7 @@ describe('Rule', () => {
       ],
       source: project,
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
+        topic,
       ],
       status: notifications.Status.DISABLED,
     });
@@ -188,9 +161,7 @@ describe('Rule', () => {
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       Targets: [
         {
-          TargetAddress: {
-            Ref: 'MyTopic86869434',
-          },
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
           TargetType: 'SNS',
         },
       ],
@@ -200,7 +171,7 @@ describe('Rule', () => {
 
   test('created new notification rule with status DISABLED', () => {
     const project = new FakeCodeBuild();
-    const topic = new sns.Topic(stack, 'MyTopic');
+    const topic = new FakeSnsTopicTarget();
 
     new notifications.Rule(stack, 'MyNotificationRule', {
       detailType: notifications.DetailType.FULL,
@@ -211,7 +182,7 @@ describe('Rule', () => {
       ],
       source: project,
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
+        topic,
       ],
       status: notifications.Status.DISABLED,
     });
@@ -226,9 +197,7 @@ describe('Rule', () => {
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       Targets: [
         {
-          TargetAddress: {
-            Ref: 'MyTopic86869434',
-          },
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
           TargetType: 'SNS',
         },
       ],
@@ -237,13 +206,8 @@ describe('Rule', () => {
   });
 
   test('created new notification rule with projectArn inside object', () => {
-    const topic = new sns.Topic(stack, 'MyTopic');
-    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-      slackChannelConfigurationName: 'test-channel',
-      slackWorkspaceId: 'T49239U4W', // modify to your slack workspace id
-      slackChannelId: 'C0187JABUE9', // modify to your slack channel id
-      loggingLevel: chatbot.LoggingLevel.NONE,
-    });
+    const topic = new FakeSnsTopicTarget();
+    const slack = new FakeSlackTarget();
 
     new notifications.Rule(stack, 'MyNotificationRule', {
       detailType: notifications.DetailType.FULL,
@@ -256,8 +220,8 @@ describe('Rule', () => {
         projectArn: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       },
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
-        new notifications.SlackNotificationTarget(slackChannel),
+        topic,
+        slack,
       ],
     });
 
@@ -271,15 +235,11 @@ describe('Rule', () => {
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       Targets: [
         {
-          TargetAddress: {
-            Ref: 'MyTopic86869434',
-          },
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
           TargetType: 'SNS',
         },
         {
-          TargetAddress: {
-            Ref: 'MySlackChannelA8E0B56C',
-          },
+          TargetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
           TargetType: 'AWSChatbotSlack',
         },
       ],
@@ -287,13 +247,8 @@ describe('Rule', () => {
   });
 
   test('created new notification rule with pipelineArn inside object', () => {
-    const topic = new sns.Topic(stack, 'MyTopic');
-    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-      slackChannelConfigurationName: 'test-channel',
-      slackWorkspaceId: 'T49239U4W', // modify to your slack workspace id
-      slackChannelId: 'C0187JABUE9', // modify to your slack channel id
-      loggingLevel: chatbot.LoggingLevel.NONE,
-    });
+    const topic = new FakeSnsTopicTarget();
+    const slack = new FakeSlackTarget();
 
     new notifications.Rule(stack, 'MyNotificationRule', {
       detailType: notifications.DetailType.FULL,
@@ -305,8 +260,8 @@ describe('Rule', () => {
         pipelineArn: 'arn:aws:codepipeline::1234567890:MyCodepipelineProject',
       },
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
-        new notifications.SlackNotificationTarget(slackChannel),
+        topic,
+        slack,
       ],
     });
 
@@ -319,15 +274,11 @@ describe('Rule', () => {
       Resource: 'arn:aws:codepipeline::1234567890:MyCodepipelineProject',
       Targets: [
         {
-          TargetAddress: {
-            Ref: 'MyTopic86869434',
-          },
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
           TargetType: 'SNS',
         },
         {
-          TargetAddress: {
-            Ref: 'MySlackChannelA8E0B56C',
-          },
+          TargetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
           TargetType: 'AWSChatbotSlack',
         },
       ],
@@ -336,13 +287,19 @@ describe('Rule', () => {
 
   test('notification added targets', () => {
     const project = new FakeCodeBuild();
-    const target1 = new sns.Topic(stack, 'MyTopic1', {});
-    const target2 = new sns.Topic(stack, 'MyTopic2', {});
-    const target3 = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-      slackChannelConfigurationName: 'MySlackChannel',
-      slackWorkspaceId: 'ABC123',
-      slackChannelId: 'DEF456',
-    });
+    const topic1: notifications.IRuleTarget = {
+      bind: () => ({
+        targetType: notifications.TargetType.SNS,
+        targetAddress: 'arn:aws:sns::1234567890:MyTopic1',
+      }),
+    };
+    const topic2: notifications.IRuleTarget = {
+      bind: () => ({
+        targetType: notifications.TargetType.SNS,
+        targetAddress: 'arn:aws:sns::1234567890:MyTopic2',
+      }),
+    };
+    const slack = new FakeSlackTarget();
 
     const rule = new notifications.Rule(stack, 'MyNotificationRule', {
       detailType: notifications.DetailType.FULL,
@@ -355,9 +312,9 @@ describe('Rule', () => {
       source: project,
     });
 
-    rule.addTarget(new notifications.SnsTopicNotificationTarget(target1));
-    rule.addTarget(new notifications.SnsTopicNotificationTarget(target2));
-    rule.addTarget(new notifications.SlackNotificationTarget(target3));
+    rule.addTarget(topic1);
+    rule.addTarget(topic2);
+    rule.addTarget(slack);
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       DetailType: 'FULL',
@@ -369,21 +326,15 @@ describe('Rule', () => {
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       Targets: [
         {
-          TargetAddress: {
-            Ref: 'MyTopic13BD94FE8',
-          },
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic1',
           TargetType: 'SNS',
         },
         {
-          TargetAddress: {
-            Ref: 'MyTopic288CE2107',
-          },
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic2',
           TargetType: 'SNS',
         },
         {
-          TargetAddress: {
-            Ref: 'MySlackChannelA8E0B56C',
-          },
+          TargetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
           TargetType: 'AWSChatbotSlack',
         },
       ],
@@ -393,7 +344,7 @@ describe('Rule', () => {
   test('should throw error if specify multiple sources', () => {
     const project = new FakeCodeBuild();
     const pipeline = new FakeCodePipeline();
-    const topic = new sns.Topic(stack, 'MyTopic');
+    const topic = new FakeSnsTopicTarget();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
       ruleName: 'MyNotificationRule',
@@ -406,7 +357,7 @@ describe('Rule', () => {
         pipelineArn: pipeline.pipelineArn,
       },
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
+        topic,
       ],
     })).toThrow(
       /only one source can be specified/,
@@ -415,7 +366,7 @@ describe('Rule', () => {
 
   test('should throw error if source events are invalid with CodeBuild ProjectEvent', () => {
     const project = new FakeCodeBuild();
-    const topic = new sns.Topic(stack, 'MyTopic');
+    const topic = new FakeSnsTopicTarget();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
       ruleName: 'MyNotificationRule',
@@ -425,7 +376,7 @@ describe('Rule', () => {
       ],
       source: project,
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
+        topic,
       ],
     })).toThrow(
       /codepipeline-pipeline-pipeline-execution-succeeded event id is not valid in CodeBuild/,
@@ -434,7 +385,7 @@ describe('Rule', () => {
 
   test('should throw error if source events are invalid with CodePipeline PipelineEvent', () => {
     const pipeline = new FakeCodePipeline();
-    const topic = new sns.Topic(stack, 'MyTopic');
+    const topic = new FakeSnsTopicTarget();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
       ruleName: 'MyNotificationRule',
@@ -443,7 +394,7 @@ describe('Rule', () => {
       ],
       source: pipeline,
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
+        topic,
       ],
     })).toThrow(
       /codebuild-project-build-state-succeeded event id is not valid in CodePipeline/,
@@ -452,21 +403,21 @@ describe('Rule', () => {
 
   test('should throws error if source events are not provided', () => {
     const project = new FakeCodeBuild();
-    const topic = new sns.Topic(stack, 'MyTopic');
+    const topic = new FakeSnsTopicTarget();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
       ruleName: 'MyNotificationRule',
       events: [],
       source: project,
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
+        topic,
       ],
     })).toThrowError('"events" property must set at least 1 event');
   });
 
   test('should throws error if source is invalid', () => {
     const someResource = new FakeIncorrectResource();
-    const topic = new sns.Topic(stack, 'MyTopic');
+    const topic = new FakeSnsTopicTarget();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
       ruleName: 'MyNotificationRule',
@@ -474,7 +425,7 @@ describe('Rule', () => {
       // @ts-ignore
       source: someResource,
       targets: [
-        new notifications.SnsTopicNotificationTarget(topic),
+        topic,
       ],
     })).toThrowError('"source" property must have "projectArn" or "pipelineArn"');
   });
