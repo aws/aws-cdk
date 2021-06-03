@@ -429,10 +429,10 @@ export abstract class BaseService extends Resource
 
       const logging = this.cluster.executeCommandConfiguration?.logging ?? ExecuteCommandLogging.DEFAULT;
 
+      if (this.cluster.executeCommandConfiguration?.kmsKey) {
+        this.enableExecuteCommandEncryption(logging);
+      }
       if (logging !== ExecuteCommandLogging.NONE) {
-        if (this.cluster.executeCommandConfiguration?.kmsKey) {
-          this.enableExecuteCommandEncryption();
-        }
         this.executeCommandLogConfiguration();
       }
     }
@@ -489,7 +489,7 @@ export abstract class BaseService extends Resource
     }
   }
 
-  private enableExecuteCommandEncryption() {
+  private enableExecuteCommandEncryption(logging: ExecuteCommandLogging) {
     this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'kms:Decrypt',
@@ -506,8 +506,8 @@ export abstract class BaseService extends Resource
       principals: [new iam.ArnPrincipal(`arn:aws:iam::${this.stack.account}:root`)],
     }));
 
-    if (this.cluster.executeCommandConfiguration?.logConfiguration?.cloudWatchEncryptionEnabled) {
-      this.cluster.executeCommandConfiguration.kmsKey?.addToResourcePolicy(new iam.PolicyStatement({
+    if (logging === ExecuteCommandLogging.DEFAULT || this.cluster.executeCommandConfiguration?.logConfiguration?.cloudWatchEncryptionEnabled) {
+      this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(new iam.PolicyStatement({
         actions: [
           'kms:Encrypt*',
           'kms:Decrypt*',
