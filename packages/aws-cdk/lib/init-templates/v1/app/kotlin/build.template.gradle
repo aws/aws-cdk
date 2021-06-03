@@ -1,0 +1,56 @@
+plugins {
+	id("base")
+	id("java")
+    id "application"
+	id("org.jetbrains.kotlin.jvm") version "1.5.10"
+	id("org.jetbrains.kotlin.kapt") version "1.5.10"
+}
+
+repositories {
+    mavenCentral()
+}
+
+group = "com.myorg"
+
+def cdkVersion = "%cdk-version%"
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    // Needed for logging
+    implementation("org.slf4j:slf4j-simple:1.7.30")
+
+    // AWS Cloud Development Kit
+    implementation("software.amazon.awscdk:core:$cdkVersion")
+
+    // Test dependencies
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation(platform("org.junit:junit-bom:5.7.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.assertj:assertj-core:3.19.0")
+}
+
+test {
+    useJUnitPlatform()
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+}
+
+application {
+    mainClass.set("com.myorg.%name.PascalCased%AppKt")
+}
