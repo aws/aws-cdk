@@ -74,6 +74,8 @@ export interface RuleProps {
    * A list of Amazon Resource Names (ARNs) of Amazon SNS topics and AWS Chatbot clients to associate with the notification rule.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codestarnotifications-notificationrule-target.html
+   *
+   * @default - None.
    */
   readonly targets?: IRuleTarget[];
 
@@ -82,6 +84,8 @@ export interface RuleProps {
    * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
    *
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
+   *
+   * @default - None.
    */
   readonly events?: string[];
 }

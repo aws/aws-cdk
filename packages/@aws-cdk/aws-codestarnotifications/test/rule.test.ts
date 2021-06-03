@@ -27,7 +27,7 @@ describe('Rule', () => {
     });
   });
 
-  test('created new notification rule with all parameters in constructor', () => {
+  test('created new notification rule with all parameters in constructor props', () => {
     const project = new FakeCodeBuild();
     const topic = new FakeSnsTopicTarget();
     const slack = new FakeSlackTarget();
@@ -36,8 +36,8 @@ describe('Rule', () => {
       ruleName: 'MyNotificationRule',
       detailType: notifications.DetailType.FULL,
       events: [
-        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
-        notifications.Event.PROJECT_BUILD_STATE_FAILED,
+        'codebuild-project-build-state-succeeded',
+        'codebuild-project-build-state-failed',
       ],
       source: project,
       targets: [
@@ -225,8 +225,8 @@ describe('Rule', () => {
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
       ruleName: 'MyNotificationRule',
       events: [
-        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
-        notifications.Event.PIPELINE_PIPELINE_EXECUTION_SUCCEEDED,
+        'codebuild-project-build-state-succeeded',
+        'codepipeline-pipeline-pipeline-execution-succeeded',
       ],
       source: {
         projectArn: project.projectArn,

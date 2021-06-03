@@ -23,18 +23,13 @@ class SnsInteg extends cdk.Stack {
       }),
     });
 
-    new notifications.Rule(this, 'MyNotificationRule', {
-      ruleName: 'MyNotificationRule',
-      events: [
-        notifications.Event.PROJECT_BUILD_STATE_SUCCEEDED,
-      ],
+    const rule = new notifications.Rule(this, 'MyNotificationRule', {
       source: project,
-      targets: [
-        new targets.SnsTopic(topic),
-      ],
-      detailType: notifications.DetailType.FULL,
-      status: notifications.Status.ENABLED,
     });
+
+    rule.addEvents(['codebuild-project-build-state-succeeded']);
+
+    rule.addTarget(new targets.SnsTopic(topic));
   }
 }
 

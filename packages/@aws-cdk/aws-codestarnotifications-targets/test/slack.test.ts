@@ -41,7 +41,7 @@ describe('SlackNotificationTarget', () => {
       slackChannelId: 'DEF456',
     });
 
-    rule.addTarget(new targets.SlackChannelConfiguration(slack),);
+    rule.addTarget(new targets.SlackChannelConfiguration(slack));
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       DetailType: 'FULL',

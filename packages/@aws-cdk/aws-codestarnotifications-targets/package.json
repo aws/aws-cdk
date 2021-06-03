@@ -72,6 +72,8 @@
     "pkglint": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
+    "@aws-cdk/aws-codecommit": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
@@ -86,7 +88,9 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
+    "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-chatbot": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
