@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as redshift from '@aws-cdk/aws-redshift';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Duration, SecretValue, Size, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDeliveryStream } from '../delivery-stream';
@@ -129,6 +130,11 @@ export interface RedshiftDestinationProps extends DestinationProps {
 export class RedshiftDestination extends DestinationBase {
   protected readonly redshiftProps: RedshiftDestinationProps;
 
+  /**
+   * The secret Firehose will use to access the Redshift cluster.
+   */
+  public secret?: secretsmanager.ISecret;
+
   constructor(redshiftProps: RedshiftDestinationProps) {
     super(redshiftProps);
 
@@ -162,9 +168,10 @@ export class RedshiftDestination extends DestinationBase {
           username: this.redshiftProps.user.username,
           encryptionKey: this.redshiftProps.user.encryptionKey,
         });
+        this.secret = secret.attach(this.redshiftProps.cluster);
         return {
-          username: secret.secretValueFromJson('username'),
-          password: secret.secretValueFromJson('password'),
+          username: this.secret.secretValueFromJson('username'),
+          password: this.secret.secretValueFromJson('password'),
         };
       };
     })();
