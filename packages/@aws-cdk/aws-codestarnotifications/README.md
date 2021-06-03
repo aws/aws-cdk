@@ -18,8 +18,20 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 The `Rule` construct defines an AWS CodeStarNotifications rule.
 The rule specifies the events you want notifications about and the targets (such as Amazon SNS topics or AWS Chatbot clients configured for Slack) where you want to receive them. notification targets are objects that implement the `IRuleTarget` interface and notification source is object that implement the `IRuleSource` interface.
 
+# Notification Targets
+
+This module includes classes that implement the `IRuleTarget` interface for SNS and slack in AWS Chatbot.
+
+The following targets are supported:
+
+* `SNS`: specify event and notify to SNS topic.
+* `AWS Chatbot`: specify event and notify to slack channel and only support `SlackChannelConfiguration`.
+
+# Examples:
+
 ```ts
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
+import * as targets from '@aws-cdk/aws-codestarnotifications-targets';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sns from '@aws-cdk/aws-sns';
 import * as chatbot from '@aws-cdk/aws-chatbot';
@@ -35,52 +47,13 @@ const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
 });
 
 const rule = new notifications.Rule(stack, 'NotificationRule', {
-  ruleName: 'MyNotificationRule',
-  events: [
-    notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
-    notifications.ProjectEvent.BUILD_STATE_FAILED,
-  ],
   source: project,
-  targets: [
-    new notifications.SnsTopicNotificationTarget(topic),
-    new notifications.SlackNotificationTarget(slack),
-  ],
-});
-```
-
-## Notification Targets
-
-This module includes classes that implement the `IRuleTarget` interface for SNS and slack in AWS Chatbot.
-
-The following targets are supported:
-
-* `SNS`: specify event and notify to SNS topic.
-* `AWS Chatbot`: specify event and notify to slack channel and only support `SlackChannelConfiguration`.
-
-```ts
-const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {});
-
-const topic = new sns.Topic(stack, 'MyTopic1', {});
-
-const rule = new notifications.Rule(stack, 'NotificationRule', {
-  ruleName: 'MyNotificationRule',
-  events: [
-    notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
-    notifications.ProjectEvent.BUILD_STATE_FAILED,
-  ],
-  source: pipeline,
-  targets: [
-    new notifications.SnsTopicNotificationTarget(topic),
-  ],
 });
 
-const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-    slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
-    slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
-    slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
-});
+rule.addEvents(['codebuild-project-build-state-succeeded']);
 
-rule.addTarget(new notifications.SlackNotificationTarget(slack));
+rule.addTarget(new targets.SlackChannelConfiguration(slack));
+rule.addTarget(new targets.SnsTopic(slack));
 ```
 
 ## Notification Source
