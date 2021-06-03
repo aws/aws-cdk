@@ -1,0 +1,147 @@
+{
+  "Resources": {
+    "TestRole6C9272DF": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TestRole25D98AB21": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TestPortfolio4AC794EB": {
+      "Type": "AWS::ServiceCatalog::Portfolio",
+      "Properties": {
+        "DisplayName": "TestPortfolio",
+        "ProviderName": "TestProvider"
+      }
+    },
+    "TestPortfolioPortolioPrincipalAssociationfa92a5c8d0cc9418b80d589a4fa1e67c8C5748C0": {
+      "Type": "AWS::ServiceCatalog::PortfolioPrincipalAssociation",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "PrincipalARN": {
+          "Fn::GetAtt": [
+            "TestRole6C9272DF",
+            "Arn"
+          ]
+        },
+        "PrincipalType": "IAM"
+      }
+    },
+    "TestPortfolioPortolioPrincipalAssociation7d995236fc436cba499e16f66ec32c5c6F70E328": {
+      "Type": "AWS::ServiceCatalog::PortfolioPrincipalAssociation",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "PrincipalARN": {
+          "Fn::GetAtt": [
+            "TestRole25D98AB21",
+            "Arn"
+          ]
+        },
+        "PrincipalType": "IAM"
+      }
+    },
+    "TestPortfolioPortfolioProductAssociation9ea3c8c8e40da9e21cfa5183f2b8e28453DE32F8": {
+      "Type": "AWS::ServiceCatalog::PortfolioProductAssociation",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "ProductId": {
+          "Ref": "TestProduct7606930B"
+        }
+      }
+    },
+    "TestPortfolioResourceUpdateConstraint9ea3c8c8e40da9e21cfa5183f2b8e2843B66BF71": {
+      "Type": "AWS::ServiceCatalog::ResourceUpdateConstraint",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "ProductId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagUpdateOnProvisionedProduct": "ALLOWED",
+        "AcceptLanguage": "en",
+        "Description": ""
+      },
+      "DependsOn": [
+        "TestPortfolioPortfolioProductAssociation9ea3c8c8e40da9e21cfa5183f2b8e28453DE32F8"
+      ]
+    },
+    "TestProduct7606930B": {
+      "Type": "AWS::ServiceCatalog::CloudFormationProduct",
+      "Properties": {
+        "Name": "TestProduct",
+        "Owner": "Test Owner",
+        "ProvisioningArtifactParameters": [
+          {
+            "Info": {
+              "LoadTemplateFromURL": "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
