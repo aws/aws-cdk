@@ -17,9 +17,9 @@ export interface AssertResourceOptionsBeta1 {
  */
 export enum ResourcePartBeta1 {
   /** The entire resource definition in the template, excluding the 'Type' */
-  COMPLETE_BETA1,
+  COMPLETE,
   /** The 'Properties' section of the resource definition in the template */
-  PROPERTIES_BETA1,
+  PROPERTIES,
 }
 
 /**
@@ -27,22 +27,22 @@ export enum ResourcePartBeta1 {
  * Typically used, as part of unit tests, to validate that the rendered
  * CloudFormation template has expected resources and properties.
  */
-export class StackAssertionsBeta1 {
+export class TemplateAssertionsBeta1 {
 
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
    */
-  public static fromStackBeta1(stack: Stack) {
-    return new StackAssertionsBeta1(toTemplate(stack));
+  public static fromStack(stack: Stack) {
+    return new TemplateAssertionsBeta1(toTemplate(stack));
   }
 
   /**
    * Base your assertions from an existing CloudFormation template.
    * @param template the CloudFormation template in JSON format as a string
    */
-  public static fromTemplateBeta1(template: string) {
-    return new StackAssertionsBeta1(JSON.parse(template));
+  public static fromTemplate(template: string) {
+    return new TemplateAssertionsBeta1(JSON.parse(template));
   }
 
   private readonly inspector: assert.StackInspector;
@@ -57,7 +57,7 @@ export class StackAssertionsBeta1 {
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param count number of expected instances
    */
-  public assertResourceCountBeta1(type: string, count: number): void {
+  public assertResourceCountIs(type: string, count: number): void {
     const assertion = assert.countResources(type, count);
     assertion.assertOrThrow(this.inspector);
   }
@@ -69,8 +69,8 @@ export class StackAssertionsBeta1 {
    * @param props the properties of the resource
    * @param options customize how the matching should be performed
    */
-  public assertResourceBeta1(type: string, props: any, options?: AssertResourceOptionsBeta1): void {
-    const part = assertResourcePart(options?.part ?? ResourcePartBeta1.PROPERTIES_BETA1);
+  public assertHasResource(type: string, props: any, options?: AssertResourceOptionsBeta1): void {
+    const part = assertResourcePart(options?.part ?? ResourcePartBeta1.PROPERTIES);
     const assertion = assert.haveResource(type, props, part);
     assertion.assertOrThrow(this.inspector);
   }
@@ -79,7 +79,7 @@ export class StackAssertionsBeta1 {
    * Assert that the CloudFormation template matches the given value
    * @param expected the expected CloudFormation template as key-value pairs.
    */
-  public assertMatchTemplateBeta1(expected: {[key: string]: any}) {
+  public assertTemplateMatches(expected: {[key: string]: any}) {
     const assertion = assert.matchTemplate(expected);
     assertion.assertOrThrow(this.inspector);
   }
@@ -96,9 +96,9 @@ function toTemplate(stack: Stack): any {
 
 function assertResourcePart(part: ResourcePartBeta1) {
   switch (part) {
-    case ResourcePartBeta1.PROPERTIES_BETA1:
+    case ResourcePartBeta1.PROPERTIES:
       return assert.ResourcePart.Properties;
-    case ResourcePartBeta1.COMPLETE_BETA1:
+    case ResourcePartBeta1.COMPLETE:
       return assert.ResourcePart.CompleteDefinition;
     default:
       throw new Error(`unexpected: unrecognized resource part type [${part}]`);
