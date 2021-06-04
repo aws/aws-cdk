@@ -1,7 +1,6 @@
 import * as chatbot from '@aws-cdk/aws-chatbot';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -32,7 +31,7 @@ class MockAction implements codepipeline.IAction {
   }
 }
 
-class SlackAndPipelineInteg extends cdk.Stack {
+class WithSourcePipelineInteg extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -76,17 +75,14 @@ class SlackAndPipelineInteg extends cdk.Stack {
       loggingLevel: chatbot.LoggingLevel.NONE,
     });
 
-    const rule = new notifications.Rule(this, 'MyNotificationRule', {
-      source: pipeline,
-    });
+    const rule = pipeline.notifyOnActionStateChange('NotifyOnActionStateChange');
 
-    rule.addEvents(['codepipeline-pipeline-action-execution-succeeded']);
     rule.addTarget(new targets.SlackChannelConfiguration(slack));
   }
 }
 
 const app = new cdk.App();
 
-new SlackAndPipelineInteg(app, 'SlackAndPipelineInteg');
+new WithSourcePipelineInteg(app, 'SlackAndPipelineInteg');
 
 app.synth();

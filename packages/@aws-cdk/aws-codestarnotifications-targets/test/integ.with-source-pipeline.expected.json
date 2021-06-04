@@ -337,46 +337,17 @@
         }
       }
     },
-    "MySlackChannelConfigurationRole1D3F23AE": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "chatbot.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "MySlackChannelA8E0B56C": {
-      "Type": "AWS::Chatbot::SlackChannelConfiguration",
-      "Properties": {
-        "ConfigurationName": "test-channel",
-        "IamRoleArn": {
-          "Fn::GetAtt": [
-            "MySlackChannelConfigurationRole1D3F23AE",
-            "Arn"
-          ]
-        },
-        "SlackChannelId": "C0187JABUE9",
-        "SlackWorkspaceId": "T49239U4W",
-        "LoggingLevel": "NONE"
-      }
-    },
-    "MyNotificationRuleE8F95AAB": {
+    "pipelinePipeline22F2A91DNotifyOnActionStateChange22D05FCB": {
       "Type": "AWS::CodeStarNotifications::NotificationRule",
       "Properties": {
         "DetailType": "FULL",
         "EventTypeIds": [
-          "codepipeline-pipeline-action-execution-succeeded"
+          "codepipeline-pipeline-action-execution-succeeded",
+          "codepipeline-pipeline-action-execution-failed",
+          "codepipeline-pipeline-action-execution-canceled",
+          "codepipeline-pipeline-action-execution-started"
         ],
-        "Name": "SlackAndPipelineIntegMyNotificationRule934D8006",
+        "Name": "SlackAndPipelineIntegpipelinePipeline22F2A91DNotifyOnActionStat",
         "Resource": {
           "Fn::Join": [
             "",
@@ -408,6 +379,38 @@
             "TargetType": "AWSChatbotSlack"
           }
         ]
+      }
+    },
+    "MySlackChannelConfigurationRole1D3F23AE": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "chatbot.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MySlackChannelA8E0B56C": {
+      "Type": "AWS::Chatbot::SlackChannelConfiguration",
+      "Properties": {
+        "ConfigurationName": "test-channel",
+        "IamRoleArn": {
+          "Fn::GetAtt": [
+            "MySlackChannelConfigurationRole1D3F23AE",
+            "Arn"
+          ]
+        },
+        "SlackChannelId": "C0187JABUE9",
+        "SlackWorkspaceId": "T49239U4W",
+        "LoggingLevel": "NONE"
       }
     }
   }
