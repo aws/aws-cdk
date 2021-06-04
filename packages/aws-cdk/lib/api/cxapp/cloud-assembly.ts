@@ -121,7 +121,7 @@ export class CloudAssembly {
         if (minimatch(hierarchicalId, pattern) && !selectedStacks.has(hierarchicalId)) {
           selectedStacks.set(hierarchicalId, stack);
           found = true;
-        } else if (minimatch(stack.id, pattern) && !selectedStacks.has(hierarchicalId) && semver.major(versionNumber()) < 2) {
+        } else if (stack.id === pattern && !selectedStacks.has(hierarchicalId) && semver.major(versionNumber()) < 2) {
           warning('Selecting stack by identifier "%s". This identifier is deprecated and will be removed in v2. Please use "%s" instead.', colors.bold(stack.id), colors.bold(stack.hierarchicalId));
           warning('Run "cdk ls" to see a list of all stack identifiers');
           selectedStacks.set(hierarchicalId, stack);

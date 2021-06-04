@@ -104,6 +104,17 @@ test('select behavior with nested assemblies: single', async () => {
     .rejects.toThrow('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`');
 });
 
+test('select behavior with nested assemblies: single + wildcard', async () => {
+  // GIVEN
+  const cxasm = await testNestedCloudAssembly();
+
+  // WHEN
+  const x = await cxasm.selectStacks(['*'], { defaultBehavior: DefaultSelection.OnlySingle });
+
+  // THEN
+  expect(x.stackCount).toBe(2);
+});
+
 test('select behavior with nested assemblies: repeat', async() => {
   // GIVEN
   const cxasm = await testNestedCloudAssembly();
@@ -116,6 +127,7 @@ test('select behavior with nested assemblies: repeat', async() => {
   // THEN
   expect(x.stackCount).toBe(2);
 });
+
 
 async function testCloudAssembly({ env }: { env?: string, versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
