@@ -1,6 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
@@ -330,10 +331,14 @@ export = {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           backendDefaults: {
-            clientPolicy: appmesh.ClientPolicy.acmTrust({
-              certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+            tlsClientPolicy: {
               ports: [8080, 8081],
-            }),
+              validation: {
+                trust: appmesh.TlsValidationTrust.acm({
+                  certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+                }),
+              },
+            },
           },
         });
 
@@ -382,10 +387,14 @@ export = {
         });
 
         node.addBackend(appmesh.Backend.virtualService(service1, {
-          clientPolicy: appmesh.ClientPolicy.fileTrust({
-            certificateChain: 'path-to-certificate',
+          tlsClientPolicy: {
             ports: [8080, 8081],
-          }),
+            validation: {
+              trust: appmesh.TlsValidationTrust.file({
+                certificateChain: 'path-to-certificate',
+              }),
+            },
+          },
         }));
 
         // THEN
@@ -437,16 +446,17 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.grpc({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.acm({
-              certificate: cert,
-              tlsMode: appmesh.TlsMode.STRICT,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.acm({
+                certificate: cert,
+              }),
+            },
           },
           )],
         });
 
         // THEN
-
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
@@ -484,11 +494,13 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.http({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-              tlsMode: appmesh.TlsMode.STRICT,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.file({
+                certificateChainPath: 'path/to/certChain',
+                privateKeyPath: 'path/to/privateKey',
+              }),
+            },
           })],
         });
 
@@ -529,11 +541,13 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.http({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-              tlsMode: appmesh.TlsMode.PERMISSIVE,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.PERMISSIVE,
+              certificate: appmesh.TlsCertificate.file({
+                certificateChainPath: 'path/to/certChain',
+                privateKeyPath: 'path/to/privateKey',
+              }),
+            },
           })],
         });
 
@@ -736,6 +750,7 @@ export = {
 
     test.done();
   },
+
   'Can import Virtual Nodes using attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -749,6 +764,48 @@ export = {
     // THEN
     test.equal(virtualNode.mesh.meshName, meshName);
     test.equal(virtualNode.virtualNodeName, virtualNodeName);
+
+    test.done();
+  },
+
+  'Can grant an identity StreamAggregatedResources for a given VirtualNode'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const node = new appmesh.VirtualNode(stack, 'test-node', {
+      mesh,
+      listeners: [appmesh.VirtualNodeListener.http({
+        port: 80,
+        tls: {
+          mode: appmesh.TlsMode.PERMISSIVE,
+          certificate: appmesh.TlsCertificate.file({
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
+          }),
+        },
+      })],
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    node.grantStreamAggregatedResources(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:StreamAggregatedResources',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'testnode3EE2776E',
+            },
+          },
+        ],
+      },
+    }));
 
     test.done();
   },
