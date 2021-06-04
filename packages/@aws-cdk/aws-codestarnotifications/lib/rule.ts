@@ -187,7 +187,11 @@ export class Rule extends Resource implements IRule {
    * Adds target to notification rule
    * @param target The SNS topic or AWS Chatbot Slack target
    */
-  public addTarget(target: IRuleTarget): void {
+  public addTarget(target?: IRuleTarget): void {
+    if (!target) {
+      return;
+    }
+
     this.targets.push(target.bind(this));
   }
 

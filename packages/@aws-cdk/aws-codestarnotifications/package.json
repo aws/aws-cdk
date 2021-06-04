@@ -95,6 +95,7 @@
   "maturity": "stable",
   "awslint": {
     "exclude": [
+      "no-unused-type:@aws-cdk/aws-codestarnotifications.NotifyOnEventOptions",
       "props-physical-name:@aws-cdk/aws-codestarnotifications.RuleProps"
     ]
   },

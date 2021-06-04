@@ -47,12 +47,12 @@ describe('Rule', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      Name: 'MyNotificationRule',
       DetailType: 'FULL',
       EventTypeIds: [
         'codebuild-project-build-state-succeeded',
         'codebuild-project-build-state-failed',
       ],
-      Name: 'MyNotificationRule',
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       Targets: [
         {
