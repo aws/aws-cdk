@@ -800,6 +800,26 @@ After turning on `privilegedMode: true`, you will need to do a one-time manual c
 pipeline to get it going again (as with a broken 'synth' the pipeline will not be able to self 
 update to the right state). 
 
+### S3 error: Access Denied
+
+Some constructs, such as EKS clusters, generate nested stacks. When CloudFormation tries 
+to deploy those stacks, it may fail with this error:
+
+```console
+S3 error: Access Denied For more information check http://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html
+```
+
+This happens because the pipeline is not self-mutating and, as a consequence, the `FileAssetX` 
+build projects get out-of-sync with the generated templates. To fix this, make sure the 
+`selfMutating` property is set to `true`:
+
+```typescript
+const pipeline = new CdkPipeline(this, 'MyPipeline', {
+  selfMutating: true,
+  ...
+});
+```
+
 ## Current Limitations
 
 Limitations that we are aware of and will address:
