@@ -73,7 +73,7 @@ export interface LoadBalancerProps {
   readonly subnetSelection?: SubnetSelection;
 
   /**
-   * Enable Loadbalancer logs
+   * Enable Loadbalancer access logs
    * Can be used to avoid manual work as aws console
    * Required S3 bucket name
    * @default - disabled
