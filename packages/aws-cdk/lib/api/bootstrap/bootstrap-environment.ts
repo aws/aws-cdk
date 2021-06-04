@@ -40,7 +40,6 @@ export class Bootstrapper {
   /**
    * Deploy legacy bootstrap stack
    *
-   * @experimental
    */
   private async legacyBootstrap(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions = {}): Promise<DeployStackResult> {
     const params = options.parameters ?? {};
@@ -68,7 +67,6 @@ export class Bootstrapper {
   /**
    * Deploy CI/CD-ready bootstrap stack from template
    *
-   * @experimental
    */
   private async modernBootstrap(
     environment: cxapi.Environment,
@@ -94,7 +92,10 @@ export class Bootstrapper {
     // templates doesn't seem to be able to express the conditions that we need
     // (can't use Fn::Join or reference Conditions) so we do it here instead.
     const trustedAccounts = params.trustedAccounts ?? splitCfnArray(current.parameters.TrustedAccounts);
-    info(`Trusted accounts:   ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
+    info(`Trusted accounts for deployment: ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
+
+    const trustedAccountsForLookup = params.trustedAccountsForLookup ?? splitCfnArray(current.parameters.TrustedAccountsForLookup);
+    info(`Trusted accounts for lookup: ${trustedAccountsForLookup.length > 0 ? trustedAccountsForLookup.join(', ') : '(none)'}`);
 
     const cloudFormationExecutionPolicies = params.cloudFormationExecutionPolicies ?? splitCfnArray(current.parameters.CloudFormationExecutionPolicies);
     if (trustedAccounts.length === 0 && cloudFormationExecutionPolicies.length === 0) {
@@ -139,6 +140,7 @@ export class Bootstrapper {
         FileAssetsBucketKmsKeyId: kmsKeyId,
         // Empty array becomes empty string
         TrustedAccounts: trustedAccounts.join(','),
+        TrustedAccountsForLookup: trustedAccountsForLookup.join(','),
         CloudFormationExecutionPolicies: cloudFormationExecutionPolicies.join(','),
         Qualifier: params.qualifier,
         PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',

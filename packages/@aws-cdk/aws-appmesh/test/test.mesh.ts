@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -213,13 +213,13 @@ export = {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
-            healthCheck: {
+            healthCheck: appmesh.HealthCheck.http({
               healthyThreshold: 3,
               path: '/',
               interval: cdk.Duration.seconds(5), // min
               timeout: cdk.Duration.seconds(2), // min
               unhealthyThreshold: 2,
-            },
+            }),
           })],
         });
 

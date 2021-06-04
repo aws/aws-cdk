@@ -27,7 +27,7 @@ App Mesh gives you consistent visibility and network traffic controls for every 
 
 App Mesh supports microservice applications that use service discovery naming for their components. To use App Mesh, you must have an existing application running on AWS Fargate, Amazon ECS, Amazon EKS, Kubernetes on AWS, or Amazon EC2.
 
-For futher information on **AWS AppMesh** visit the [AWS Docs for AppMesh](https://docs.aws.amazon.com/app-mesh/index.html).
+For further information on **AWS AppMesh** visit the [AWS Docs for AppMesh](https://docs.aws.amazon.com/app-mesh/index.html).
 
 ## Create the App and Stack
 
@@ -149,15 +149,13 @@ const node = mesh.addVirtualNode('virtual-node', {
   }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8081,
-    healthCheck: {
+    healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
       interval: Duration.seconds(5), // minimum
       path: `/health-check-path`,
-      port: 8080,
-      protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
-    },
+    }),
   })],
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
@@ -173,23 +171,25 @@ const node = new VirtualNode(this, 'node', {
   }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8080,
-    healthCheck: {
+    healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
       interval: Duration.seconds(5), // min
       path: '/ping',
-      port: 8080,
-      protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // min
       unhealthyThreshold: 2,
-    },
+    }),
     timeout: {
       idle: cdk.Duration.seconds(5),
     },
   })],
   backendDefaults: {
-    clientPolicy: appmesh.ClientPolicy.fileTrust({
-      certificateChain: '/keys/local_cert_chain.pem',
-    }),
+    tlsClientPolicy: {
+      validation: {
+        trust: appmesh.TlsValidationTrust.file({
+          certificateChain: '/keys/local_cert_chain.pem',
+        }),
+      },
+    },
   },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
@@ -207,15 +207,13 @@ const node = new VirtualNode(this, 'node', {
   }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8080,
-    healthCheck: {
+    healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
       interval: Duration.seconds(5), // min
       path: '/ping',
-      port: 8080,
-      protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // min
       unhealthyThreshold: 2,
-    },
+    }),
     timeout: {
       idle: cdk.Duration.seconds(5),
     },
@@ -224,12 +222,8 @@ const node = new VirtualNode(this, 'node', {
 });
 
 const virtualService = new appmesh.VirtualService(stack, 'service-1', {
-  serviceDiscovery: appmesh.ServiceDiscovery.dns('service1.domain.local'),
-  mesh,
-  clientPolicy: appmesh.ClientPolicy.fileTrust({
-    certificateChain: '/keys/local_cert_chain.pem',
-    ports: [8080, 8081],
-  }),
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
+  virtualServiceName: 'service1.domain.local',
 });
 
 node.addBackend(appmesh.Backend.virtualService(virtualService));
@@ -254,13 +248,15 @@ const cert = new certificatemanager.Certificate(this, 'cert', {...});
 
 const node = new appmesh.VirtualNode(stack, 'node', {
   mesh,
-  dnsHostName: 'node',
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('node'),
   listeners: [appmesh.VirtualNodeListener.grpc({
     port: 80,
-    tlsCertificate: appmesh.TlsCertificate.acm({
-      certificate: cert,
-      tlsMode: TlsMode.STRICT,
-    }),
+    tls: {
+      mode: appmesh.TlsMode.STRICT,
+      certificate: appmesh.TlsCertificate.acm({
+        certificate: cert,
+      }),
+    },
   })],
 });
 
@@ -269,11 +265,72 @@ const gateway = new appmesh.VirtualGateway(this, 'gateway', {
   mesh: mesh,
   listeners: [appmesh.VirtualGatewayListener.grpc({
     port: 8080,
-    tlsCertificate: appmesh.TlsCertificate.file({
-      certificateChain: 'path/to/certChain',
-      privateKey: 'path/to/privateKey',
-      tlsMode: TlsMode.STRICT,
-    }),
+    tls: {
+      mode: appmesh.TlsMode.STRICT,
+      certificate: appmesh.TlsCertificate.file({
+        certificateChainPath: 'path/to/certChain',
+        privateKeyPath: 'path/to/privateKey',
+      }),
+    },
+  })],
+  virtualGatewayName: 'gateway',
+});
+```
+
+## Adding outlier detection to a Virtual Node listener
+
+The `outlierDetection` property can be added to a Virtual Node listener to add outlier detection. The 4 parameters 
+(`baseEjectionDuration`, `interval`, `maxEjectionPercent`, `maxServerErrors`) are required.
+
+```typescript
+// Cloud Map service discovery is currently required for host ejection by outlier detection
+const vpc = new ec2.Vpc(stack, 'vpc');
+const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace', {
+    vpc,
+    name: 'domain.local',
+});
+const service = namespace.createService('Svc');
+
+const node = mesh.addVirtualNode('virtual-node', {
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
+    service: service,
+  }),
+  outlierDetection: {
+    baseEjectionDuration: cdk.Duration.seconds(10),
+    interval: cdk.Duration.seconds(30),
+    maxEjectionPercent: 50,
+    maxServerErrors: 5,
+  },
+});
+```
+
+## Adding a connection pool to a listener
+
+The `connectionPool` property can be added to a Virtual Node listener or Virtual Gateway listener to add a request connection pool. There are different 
+connection pool properties per listener protocol types.
+
+```typescript
+// A Virtual Node with a gRPC listener with a connection pool set
+const node = new appmesh.VirtualNode(stack, 'node', {
+  mesh,
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('node'),
+  listeners: [appmesh.VirtualNodeListener.http({
+    port: 80,
+    connectionPool: {
+      maxConnections: 100,
+      maxPendingRequests: 10,
+    },
+  })],
+});
+
+// A Virtual Gateway with a gRPC listener with a connection pool set
+const gateway = new appmesh.VirtualGateway(this, 'gateway', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.grpc({
+    port: 8080,
+    connectionPool: {
+      maxRequests: 10,
+    },
   })],
   virtualGatewayName: 'gateway',
 });
@@ -435,15 +492,19 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
   mesh: mesh,
   listeners: [appmesh.VirtualGatewayListener.http({
     port: 443,
-    healthCheck: {
+    healthCheck: appmesh.HealthCheck.http({
       interval: cdk.Duration.seconds(10),
-    },
+    }),
   })],
   backendDefaults: {
-    clientPolicy: appmesh.ClientPolicy.acmTrust({
-      certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+    tlsClientPolicy: {
       ports: [8080, 8081],
-    }),
+      validation: {
+        trust: appmesh.TlsValidationTrust.acm({
+          certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+        }),
+      },
+    },
   },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
@@ -458,9 +519,9 @@ const gateway = mesh.addVirtualGateway('gateway', {
   virtualGatewayName: 'virtualGateway',
     listeners: [appmesh.VirtualGatewayListener.http({
       port: 443,
-      healthCheck: {
+      healthCheck: appmesh.HealthCheck.http({
         interval: cdk.Duration.seconds(10),
-      },
+      }),
   })],
 });
 ```
@@ -531,3 +592,18 @@ appmesh.Mesh.fromMeshArn(stack, 'imported-mesh', arn);
 ```ts
 appmesh.Mesh.fromMeshName(stack, 'imported-mesh', 'abc');
 ```
+
+## IAM Grants
+
+Virtual Node and Virtual Gateway implement `grantStreamAggregatedResources` that will grant identities that are running 
+Envoy access to stream generated config from App Mesh.
+
+```ts
+const gateway = new appmesh.VirtualGateway(stack, 'testGateway', { mesh: mesh });
+const envoyUser = new iam.User(stack, 'envoyUser');
+
+/**
+ * This will grant `grantStreamAggregatedResources` ONLY for this gateway.
+ */
+gateway.grantStreamAggregatedResources(envoyUser)
+``` 

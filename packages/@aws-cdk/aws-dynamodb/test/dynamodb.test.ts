@@ -1,5 +1,5 @@
-import { arrayWith, ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -20,6 +20,7 @@ import {
   Operation,
   CfnTable,
 } from '../lib';
+import { ReplicaProvider } from '../lib/replica-provider';
 
 jest.mock('@aws-cdk/custom-resources');
 
@@ -330,6 +331,7 @@ test('when specifying every property', () => {
     timeToLiveAttribute: 'timeToLive',
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
+    contributorInsightsEnabled: true,
   });
   Tags.of(table).add('Environment', 'Production');
 
@@ -353,6 +355,7 @@ test('when specifying every property', () => {
       TableName: 'MyTable',
       Tags: [{ Key: 'Environment', Value: 'Production' }],
       TimeToLiveSpecification: { AttributeName: 'timeToLive', Enabled: true },
+      ContributorInsightsSpecification: { Enabled: true },
     },
   );
 });
@@ -2279,6 +2282,10 @@ describe('import', () => {
 });
 
 describe('global', () => {
+  beforeEach(() => {
+    (ReplicaProvider as any).getOrCreateCalls.clear();
+  });
+
   test('create replicas', () => {
     // GIVEN
     const stack = new Stack();
@@ -2824,6 +2831,29 @@ describe('global', () => {
     expect(cr.Provider).toHaveBeenCalledWith(expect.anything(), expect.any(String), expect.objectContaining({
       totalTimeout: Duration.hours(1),
     }));
+  });
+
+  test('throws when reaching the maximum table with replication limit', () => {
+    // GIVEN
+    const stack = new Stack();
+    for (let i = 1; i <= 10; i++) {
+      new Table(stack, `Table${i}`, {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING,
+        },
+        replicationRegions: ['eu-central-1'],
+      });
+    }
+
+    // THEN
+    expect(() => new Table(stack, 'OverLimit', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: ['eu-central-1'],
+    })).toThrow(/cannot have more than 10 global tables/);
   });
 });
 

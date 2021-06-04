@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert/lib/assertions/have-resource';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal/lib/assertions/have-resource';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
@@ -29,6 +29,7 @@ describe('User Pool', () => {
         EmailSubject: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },
+      SmsAuthenticationMessage: ABSENT,
       SmsConfiguration: ABSENT,
       lambdaTriggers: ABSENT,
     });
@@ -79,6 +80,49 @@ describe('User Pool', () => {
       },
     });
   }),
+
+  test('mfa authentication message is configured correctly', () => {
+    // GIVEN
+    const stack = new Stack();
+    const message = 'The authentication code to your account is {####}';
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      mfaMessage: message,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      SmsAuthenticationMessage: message,
+    });
+  }),
+
+  test('mfa authentication message is validated', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      mfaMessage: '{####',
+    })).toThrow(/MFA message must contain the template string/);
+
+    expect(() => new UserPool(stack, 'Pool2', {
+      mfaMessage: '{####}',
+    })).not.toThrow();
+
+    expect(() => new UserPool(stack, 'Pool3', {
+      mfaMessage: `{####}${'x'.repeat(135)}`,
+    })).toThrow(/MFA message must be between 6 and 140 characters/);
+
+    expect(() => new UserPool(stack, 'Pool4', {
+      mfaMessage: `{####}${'x'.repeat(134)}`,
+    })).not.toThrow();
+
+    // Validation is skipped for tokens.
+    const parameter = new CfnParameter(stack, 'Parameter');
+
+    expect(() => new UserPool(stack, 'Pool5', {
+      mfaMessage: parameter.valueAsString,
+    })).not.toThrow();
+  });
 
   test('email and sms verification messages are validated', () => {
     const stack = new Stack();
@@ -211,17 +255,36 @@ describe('User Pool', () => {
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
-    expect(stack.resolve(pool.userPoolArn)).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':cognito-idp:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':userpool/test-user-pool',
-      ]],
+    expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+  });
+
+  test('import using arn without resourceName fails', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:*';
+
+    // WHEN
+    expect(() => {
+      UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    }).toThrowError(/invalid user pool ARN/);
+  });
+
+  test('import from different account region using arn', () => {
+    // GIVEN
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
+
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '111111111111',
+        region: 'us-east-2',
+      },
     });
+
+    // WHEN
+    const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    expect(pool.env.account).toEqual('0123456789012');
+    expect(pool.env.region).toEqual('us-east-1');
+    expect(pool.userPoolArn).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
   });
 
   test('support tags', () => {

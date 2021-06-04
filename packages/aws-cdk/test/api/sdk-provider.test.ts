@@ -4,9 +4,9 @@ import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
-import { PluginHost } from '../../lib';
 import { ISDK, Mode, SDK, SdkProvider } from '../../lib/api/aws-auth';
 import * as logging from '../../lib/logging';
+import { PluginHost } from '../../lib/plugin';
 import * as bockfs from '../bockfs';
 import { withMocked } from '../util';
 import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
@@ -312,7 +312,7 @@ describe('with intercepted network calls', () => {
       });
 
       // THEN - error message contains both a helpful hint and the underlying AssumeRole message
-      await expect(promise).rejects.toThrow('did you bootstrap');
+      await expect(promise).rejects.toThrow('(re)-bootstrap the environment');
       await expect(promise).rejects.toThrow('doesnotexist.role.arn');
     });
 

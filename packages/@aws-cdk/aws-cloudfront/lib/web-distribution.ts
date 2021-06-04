@@ -6,6 +6,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
 import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
@@ -422,6 +423,13 @@ export interface Behavior {
    */
   readonly lambdaFunctionAssociations?: LambdaFunctionAssociation[];
 
+  /**
+   * The CloudFront functions to invoke before serving the contents.
+   *
+   * @default - no functions will be invoked
+   */
+  readonly functionAssociations?: FunctionAssociation[];
+
 }
 
 export interface LambdaFunctionAssociation {
@@ -769,8 +777,14 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
   constructor(scope: Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
 
+    // Comments have an undocumented limit of 128 characters
+    const trimmedComment =
+      props.comment && props.comment.length > 128
+        ? `${props.comment.substr(0, 128 - 3)}...`
+        : props.comment;
+
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
-      comment: props.comment,
+      comment: trimmedComment,
       enabled: true,
       defaultRootObject: props.defaultRootObject ?? 'index.html',
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
@@ -951,6 +965,14 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     if (!input.isDefaultBehavior) {
       toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });
     }
+    if (input.functionAssociations) {
+      toReturn = Object.assign(toReturn, {
+        functionAssociations: input.functionAssociations.map(association => ({
+          functionArn: association.function.functionArn,
+          eventType: association.eventType.toString(),
+        })),
+      });
+    }
     if (input.lambdaFunctionAssociations) {
       const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
       if (input.lambdaFunctionAssociations.some(fna => fna.includeBody && !includeBodyEventTypes.includes(fna.eventType))) {
@@ -1063,23 +1085,23 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         : originConfig.customOriginSource!.domainName,
       originPath: originConfig.originPath ?? originConfig.customOriginSource?.originPath ?? originConfig.s3OriginSource?.originPath,
       originCustomHeaders:
-          originHeaders.length > 0 ? originHeaders : undefined,
+        originHeaders.length > 0 ? originHeaders : undefined,
       s3OriginConfig,
       customOriginConfig: originConfig.customOriginSource
         ? {
           httpPort: originConfig.customOriginSource.httpPort || 80,
           httpsPort: originConfig.customOriginSource.httpsPort || 443,
           originKeepaliveTimeout:
-                (originConfig.customOriginSource.originKeepaliveTimeout &&
-                  originConfig.customOriginSource.originKeepaliveTimeout.toSeconds()) ||
-                5,
+            (originConfig.customOriginSource.originKeepaliveTimeout &&
+              originConfig.customOriginSource.originKeepaliveTimeout.toSeconds()) ||
+            5,
           originReadTimeout:
-                (originConfig.customOriginSource.originReadTimeout &&
-                  originConfig.customOriginSource.originReadTimeout.toSeconds()) ||
-                30,
+            (originConfig.customOriginSource.originReadTimeout &&
+              originConfig.customOriginSource.originReadTimeout.toSeconds()) ||
+            30,
           originProtocolPolicy:
-                originConfig.customOriginSource.originProtocolPolicy ||
-                OriginProtocolPolicy.HTTPS_ONLY,
+            originConfig.customOriginSource.originProtocolPolicy ||
+            OriginProtocolPolicy.HTTPS_ONLY,
           originSslProtocols: originConfig.customOriginSource
             .allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2],
         }
