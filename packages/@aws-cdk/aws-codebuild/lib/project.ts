@@ -1,9 +1,9 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
 import * as events from '@aws-cdk/aws-events';
-import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
