@@ -1656,6 +1656,7 @@ export class Bucket extends BucketBase {
           transitionDate: t.transitionDate,
           transitionInDays: t.transitionAfter && t.transitionAfter.toDays(),
         })),
+        expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
       };
 
