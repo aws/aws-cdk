@@ -8,7 +8,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster, CapacityProviderStrategy } from '../cluster';
+import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
@@ -189,6 +189,13 @@ export interface BaseServiceOptions {
    *
    */
   readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
+   * Whether to enable the ability to execute into a container
+   *
+   *  @default - undefined
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -203,7 +210,7 @@ export interface BaseServiceProps extends BaseServiceOptions {
    *
    * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
    *
-   * Valid values are: LaunchType.ECS or LaunchType.FARGATE
+   * Valid values are: LaunchType.ECS or LaunchType.FARGATE or LaunchType.EXTERNAL
    */
   readonly launchType: LaunchType;
 }
@@ -391,6 +398,7 @@ export abstract class BaseService extends Resource
         type: DeploymentControllerType.ECS,
       } : props.deploymentController,
       launchType: launchType,
+      enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
@@ -415,6 +423,20 @@ export abstract class BaseService extends Resource
     if (props.cloudMapOptions) {
       this.enableCloudMap(props.cloudMapOptions);
     }
+
+    if (props.enableExecuteCommand) {
+      this.enableExecuteCommand();
+
+      const logging = this.cluster.executeCommandConfiguration?.logging ?? ExecuteCommandLogging.DEFAULT;
+
+      if (this.cluster.executeCommandConfiguration?.kmsKey) {
+        this.enableExecuteCommandEncryption(logging);
+      }
+      if (logging !== ExecuteCommandLogging.NONE) {
+        this.executeCommandLogConfiguration();
+      }
+    }
+    this.node.defaultChild = this.resource;
   }
 
   /**
@@ -422,6 +444,84 @@ export abstract class BaseService extends Resource
    */
   public get cloudMapService(): cloudmap.IService | undefined {
     return this.cloudmapService;
+  }
+
+  private executeCommandLogConfiguration() {
+    const logConfiguration = this.cluster.executeCommandConfiguration?.logConfiguration;
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:DescribeLogGroups',
+      ],
+      resources: ['*'],
+    }));
+
+    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:CreateLogStream',
+        'logs:DescribeLogStreams',
+        'logs:PutLogEvents',
+      ],
+      resources: [logGroupArn],
+    }));
+
+    if (logConfiguration?.s3Bucket?.bucketName) {
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          's3:GetBucketLocation',
+        ],
+        resources: ['*'],
+      }));
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          's3:PutObject',
+        ],
+        resources: [`arn:aws:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
+      }));
+      if (logConfiguration.s3EncryptionEnabled) {
+        this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+          actions: [
+            's3:GetEncryptionConfiguration',
+          ],
+          resources: [`arn:aws:s3:::${logConfiguration.s3Bucket.bucketName}`],
+        }));
+      }
+    }
+  }
+
+  private enableExecuteCommandEncryption(logging: ExecuteCommandLogging) {
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'kms:Decrypt',
+        'kms:GenerateDataKey',
+      ],
+      resources: [`${this.cluster.executeCommandConfiguration?.kmsKey?.keyArn}`],
+    }));
+
+    this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        'kms:*',
+      ],
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal(`arn:aws:iam::${this.stack.account}:root`)],
+    }));
+
+    if (logging === ExecuteCommandLogging.DEFAULT || this.cluster.executeCommandConfiguration?.logConfiguration?.cloudWatchEncryptionEnabled) {
+      this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(new iam.PolicyStatement({
+        actions: [
+          'kms:Encrypt*',
+          'kms:Decrypt*',
+          'kms:ReEncrypt*',
+          'kms:GenerateDataKey*',
+          'kms:Describe*',
+        ],
+        resources: ['*'],
+        principals: [new iam.ServicePrincipal(`logs.${this.stack.region}.amazonaws.com`)],
+        conditions: {
+          ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:aws:logs:${this.stack.region}:${this.stack.account}:*` },
+        },
+      }));
+    }
   }
 
   /**
@@ -788,6 +888,18 @@ export abstract class BaseService extends Resource
       produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
     });
   }
+
+  private enableExecuteCommand() {
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'ssmmessages:CreateControlChannel',
+        'ssmmessages:CreateDataChannel',
+        'ssmmessages:OpenControlChannel',
+        'ssmmessages:OpenDataChannel',
+      ],
+      resources: ['*'],
+    }));
+  }
 }
 
 /**
@@ -905,7 +1017,12 @@ export enum LaunchType {
   /**
    * The service will be launched using the FARGATE launch type
    */
-  FARGATE = 'FARGATE'
+  FARGATE = 'FARGATE',
+
+  /**
+   * The service will be launched using the EXTERNAL launch type
+   */
+  EXTERNAL = 'EXTERNAL'
 }
 
 /**

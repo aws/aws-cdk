@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, Aws, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';
 
 const CFN_CONTEXT = {
@@ -124,6 +124,29 @@ nodeunitShim({
 
     // THEN - the asset manifest has an SSM parameter entry
     expect(manifestArtifact.bootstrapStackVersionSsmParameter).toEqual('stack-version-parameter');
+
+    test.done();
+  },
+
+  'generates missing context with the lookup role ARN as one of the missing context properties'(test: Test) {
+    // GIVEN
+    stack = new Stack(app, 'Stack2', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+      }),
+      env: {
+        account: '111111111111', region: 'us-east-1',
+      },
+    });
+    ContextProvider.getValue(stack, {
+      provider: cxschema.ContextProvider.VPC_PROVIDER,
+      props: {},
+      dummyValue: undefined,
+    }).value;
+
+    // THEN
+    const assembly = app.synth();
+    test.equal(assembly.manifest.missing![0].props.lookupRoleArn, 'arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
 
     test.done();
   },

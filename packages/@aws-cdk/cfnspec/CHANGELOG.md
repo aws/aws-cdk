@@ -1,3 +1,246 @@
+# CloudFormation Resource Specification v37.0.0
+
+## New Resource Types
+
+* AWS::AppRunner::Service
+* AWS::EC2::TransitGatewayPeeringAttachment
+* AWS::IoTCoreDeviceAdvisor::SuiteDefinition
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::MediaPackage::Channel EgressAccessLogs (__added__)
+* AWS::MediaPackage::Channel IngressAccessLogs (__added__)
+* AWS::MediaPackage::OriginEndpoint Id.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaPackage::PackagingConfiguration Id.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaPackage::PackagingGroup EgressAccessLogs (__added__)
+
+## Property Type Changes
+
+* AWS::MediaPackage::Channel.LogConfiguration (__added__)
+* AWS::MediaPackage::PackagingGroup.LogConfiguration (__added__)
+* AWS::MediaPackage::OriginEndpoint.CmafEncryption ConstantInitializationVector (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage UtcTiming (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage UtcTimingUri (__added__)
+* AWS::MediaPackage::PackagingConfiguration.CmafPackage IncludeEncoderConfigurationInSegments (__added__)
+* AWS::MediaPackage::PackagingConfiguration.DashPackage IncludeEncoderConfigurationInSegments (__added__)
+
+
+# CloudFormation Resource Specification v36.0.0
+
+## New Resource Types
+
+* AWS::DynamoDB::GlobalTable
+* AWS::SSMContacts::Contact
+* AWS::SSMContacts::ContactChannel
+* AWS::SSMIncidents::ReplicationSet
+* AWS::SSMIncidents::ResponsePlan
+
+## Attribute Changes
+
+* AWS::ApiGateway::RequestValidator RequestValidatorId (__added__)
+
+## Property Changes
+
+* AWS::CloudFormation::StackSet CallAs (__added__)
+* AWS::CustomerProfiles::Integration FlowDefinition (__added__)
+* AWS::CustomerProfiles::Integration ObjectTypeName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ECS::TaskDefinition EphemeralStorage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Elasticsearch::Domain EncryptionAtRestOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Elasticsearch::Domain NodeToNodeEncryptionOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Lambda::EventSourceMapping PartialBatchResponse (__deleted__)
+* AWS::Lambda::LayerVersion CompatibleArchitectures (__added__)
+* AWS::SSM::Association CalendarNames (__added__)
+
+## Property Type Changes
+
+* AWS::AppFlow::Flow.ZendeskDestinationProperties (__added__)
+* AWS::CustomerProfiles::Integration.ConnectorOperator (__added__)
+* AWS::CustomerProfiles::Integration.FlowDefinition (__added__)
+* AWS::CustomerProfiles::Integration.IncrementalPullConfig (__added__)
+* AWS::CustomerProfiles::Integration.MarketoSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.S3SourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.SalesforceSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.ScheduledTriggerProperties (__added__)
+* AWS::CustomerProfiles::Integration.ServiceNowSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.SourceConnectorProperties (__added__)
+* AWS::CustomerProfiles::Integration.SourceFlowConfig (__added__)
+* AWS::CustomerProfiles::Integration.Task (__added__)
+* AWS::CustomerProfiles::Integration.TaskPropertiesMap (__added__)
+* AWS::CustomerProfiles::Integration.TriggerConfig (__added__)
+* AWS::CustomerProfiles::Integration.TriggerProperties (__added__)
+* AWS::CustomerProfiles::Integration.ZendeskSourceProperties (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties Zendesk (__added__)
+* AWS::CloudFront::Distribution.Origin OriginShield.Type (__added__)
+* AWS::ECS::CapacityProvider.ManagedScaling InstanceWarmupPeriod (__added__)
+* AWS::ECS::TaskDefinition.EphemeralStorage SizeInGiB.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Elasticsearch::Domain.EncryptionAtRestOptions Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Elasticsearch::Domain.NodeToNodeEncryptionOptions Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::S3::Bucket.Rule ExpiredObjectDeleteMarker (__added__)
+
+
+# CloudFormation Resource Specification v35.2.0
+
+## New Resource Types
+
+* AWS::CloudFront::Function
+* AWS::FinSpace::Environment
+* AWS::FraudDetector::Detector
+* AWS::FraudDetector::EntityType
+* AWS::FraudDetector::EventType
+* AWS::FraudDetector::Label
+* AWS::FraudDetector::Outcome
+* AWS::FraudDetector::Variable
+* AWS::XRay::Group
+* AWS::XRay::SamplingRule
+
+## Attribute Changes
+
+* AWS::CloudFront::Distribution Id (__added__)
+* AWS::Config::ConfigurationAggregator ConfigurationAggregatorArn (__added__)
+* AWS::ECR::Repository RepositoryUri (__added__)
+* AWS::ECS::Service ServiceArn (__added__)
+
+## Property Changes
+
+* AWS::ACMPCA::CertificateAuthority KeyStorageSecurityStandard (__added__)
+* AWS::CloudFront::Distribution Tags.DuplicatesAllowed (__added__)
+* AWS::CloudWatch::MetricStream OutputFormat.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Config::ConfigurationAggregator AccountAggregationSources.DuplicatesAllowed (__added__)
+* AWS::Config::ConfigurationAggregator ConfigurationAggregatorName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Config::ConfigurationAggregator Tags.DuplicatesAllowed (__added__)
+* AWS::DataBrew::Job JobSample.PrimitiveType (__deleted__)
+* AWS::DataBrew::Job JobSample.Type (__added__)
+* AWS::DataBrew::Job OutputLocation.PrimitiveType (__deleted__)
+* AWS::DataBrew::Job OutputLocation.Type (__added__)
+* AWS::DataBrew::Job Recipe.Type (__added__)
+* AWS::DataBrew::Project Sample.PrimitiveType (__deleted__)
+* AWS::DataBrew::Project Sample.Type (__added__)
+* AWS::ECR::Repository EncryptionConfiguration (__added__)
+* AWS::ECS::Service ServiceArn (__deleted__)
+* AWS::ECS::TaskDefinition EphemeralStorage (__added__)
+* AWS::EKS::Nodegroup Taints (__added__)
+* AWS::GameLift::Fleet Locations (__added__)
+* AWS::GameLift::GameSessionQueue FilterConfiguration (__added__)
+* AWS::GameLift::GameSessionQueue PriorityConfiguration (__added__)
+* AWS::Lambda::Function Id (__added__)
+* AWS::Lambda::Function FileSystemConfigs.DuplicatesAllowed (__deleted__)
+* AWS::Lambda::Function Layers.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lambda::Function Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateActionItemParameterMap (__removed__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateActionItemTargetMap (__removed__)
+* AWS::FIS::ExperimentTemplate.TagMap (__removed__)
+* AWS::CloudFront::Distribution.FunctionAssociation (__added__)
+* AWS::CloudFront::Distribution.LegacyCustomOrigin (__added__)
+* AWS::CloudFront::Distribution.LegacyS3Origin (__added__)
+* AWS::DataBrew::Job.JobSample (__added__)
+* AWS::DataBrew::Job.OutputLocation (__added__)
+* AWS::DataBrew::Job.Recipe (__added__)
+* AWS::DataBrew::Project.Sample (__added__)
+* AWS::ECS::TaskDefinition.EphemeralStorage (__added__)
+* AWS::EKS::Nodegroup.Taint (__added__)
+* AWS::GameLift::Fleet.LocationCapacity (__added__)
+* AWS::GameLift::Fleet.LocationConfiguration (__added__)
+* AWS::GameLift::GameSessionQueue.FilterConfiguration (__added__)
+* AWS::GameLift::GameSessionQueue.PriorityConfiguration (__added__)
+* AWS::MSK::Cluster.Iam (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior FunctionAssociations (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior AllowedMethods.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior CachedMethods.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior LambdaFunctionAssociations.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior TrustedKeyGroups.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior TrustedSigners.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.Cookies WhitelistedNames.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.CustomOriginConfig OriginSSLProtocols.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior FunctionAssociations (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior AllowedMethods.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior CachedMethods.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior LambdaFunctionAssociations.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior TrustedKeyGroups.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior TrustedSigners.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig CNAMEs (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig CustomOrigin (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig S3Origin (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig Aliases.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig CacheBehaviors.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig CustomErrorResponses.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig Origins.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.ForwardedValues Headers.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.ForwardedValues QueryStringCacheKeys.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.GeoRestriction Locations.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.Origin OriginCustomHeaders.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.Origin OriginShield.Type (__deleted__)
+* AWS::CloudFront::Distribution.OriginGroupMembers Items.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.OriginGroups Items.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Distribution.OriginShield Enabled.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudFront::Distribution.StatusCodes Items.DuplicatesAllowed (__added__)
+* AWS::Config::ConfigurationAggregator.AccountAggregationSource AccountIds.DuplicatesAllowed (__added__)
+* AWS::Config::ConfigurationAggregator.AccountAggregationSource AwsRegions.DuplicatesAllowed (__added__)
+* AWS::Config::ConfigurationAggregator.OrganizationAggregationSource AwsRegions.DuplicatesAllowed (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Parameters.PrimitiveItemType (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Parameters.Type (__changed__)
+  * Old: ExperimentTemplateActionItemParameterMap
+  * New: Map
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Targets.PrimitiveItemType (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateAction Targets.Type (__changed__)
+  * Old: ExperimentTemplateActionItemTargetMap
+  * New: Map
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget ResourceTags.PrimitiveItemType (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget ResourceTags.Type (__changed__)
+  * Old: TagMap
+  * New: Map
+* AWS::Lambda::Function.Environment Variables.DuplicatesAllowed (__deleted__)
+* AWS::Lambda::Function.VpcConfig SecurityGroupIds.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lambda::Function.VpcConfig SecurityGroupIds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::Function.VpcConfig SubnetIds.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lambda::Function.VpcConfig SubnetIds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MSK::Cluster.Sasl Iam (__added__)
+* AWS::MSK::Cluster.Sasl Scram.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v35.1.0
 
 ## New Resource Types
