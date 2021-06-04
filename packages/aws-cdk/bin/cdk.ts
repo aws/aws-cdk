@@ -58,7 +58,7 @@ async function parseCommandLineArguments() {
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
-    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that user assets (enabled by default)', default: true })
+    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
@@ -79,6 +79,7 @@ async function parseCommandLineArguments() {
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
+      .option('trust-for-lookup', { type: 'array', desc: 'The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
       .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
@@ -279,6 +280,7 @@ async function initCommandLine() {
             qualifier: args.qualifier,
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
             trustedAccounts: arrayFromYargs(args.trust),
+            trustedAccountsForLookup: arrayFromYargs(args.trustForLookup),
             cloudFormationExecutionPolicies: arrayFromYargs(args.cloudformationExecutionPolicies),
           },
         });
