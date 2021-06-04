@@ -8,6 +8,7 @@ import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAct
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
 
+const CODE_BUILD_LENGTH_LIMIT = 100;
 /**
  * Properties for a CdkPipeline
  */
@@ -115,6 +116,22 @@ export interface CdkPipelineProps {
    * @default true
    */
   readonly selfMutating?: boolean;
+
+  /**
+   * Whether the pipeline needs to build Docker images in the UpdatePipeline stage.
+   *
+   * If the UpdatePipeline stage tries to build a Docker image and this flag is not
+   * set to `true`, the build step will run in non-privileged mode and consequently
+   * will fail with a message like:
+   *
+   * > Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
+   * > Is the docker daemon running?
+   *
+   * This flag has an effect only if `selfMutating` is also `true`.
+   *
+   * @default - false
+   */
+  readonly supportDockerAssets?: boolean;
 }
 
 /**
@@ -193,9 +210,10 @@ export class CdkPipeline extends Construct {
         stageName: 'UpdatePipeline',
         actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
           cloudAssemblyInput: this._cloudAssemblyArtifact,
-          pipelineStackName: pipelineStack.stackName,
+          pipelineStackHierarchicalId: pipelineStack.node.path,
           cdkCliVersion: props.cdkCliVersion,
           projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+          privileged: props.supportDockerAssets,
         })],
       });
     }
@@ -284,7 +302,9 @@ export class CdkPipeline extends Construct {
     if (!this._outputArtifacts[stack.artifactId]) {
       // We should have stored the ArtifactPath in the map, but its Artifact
       // property isn't publicly readable...
-      this._outputArtifacts[stack.artifactId] = new codepipeline.Artifact(`Artifact_${stack.artifactId}_Outputs`);
+      const artifactName = `${stack.artifactId}_Outputs`;
+      const compactName = artifactName.slice(artifactName.length - Math.min(artifactName.length, CODE_BUILD_LENGTH_LIMIT));
+      this._outputArtifacts[stack.artifactId] = new codepipeline.Artifact(compactName);
     }
 
     return new StackOutput(this._outputArtifacts[stack.artifactId].atPath('outputs.json'), cfnOutput.logicalId);

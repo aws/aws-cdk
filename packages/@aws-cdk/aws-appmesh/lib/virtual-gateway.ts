@@ -1,8 +1,10 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 import { IMesh, Mesh } from './mesh';
+import { renderTlsClientPolicy } from './private/utils';
 import { AccessLog, BackendDefaults } from './shared-interfaces';
 import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-gateway-listener';
 
@@ -33,6 +35,11 @@ export interface IVirtualGateway extends cdk.IResource {
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
   addGatewayRoute(id: string, route: GatewayRouteBaseProps): GatewayRoute;
+
+  /**
+   * Grants the given entity `appmesh:StreamAggregatedResources`.
+   */
+  grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -101,6 +108,14 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
     return new GatewayRoute(this, id, {
       ...props,
       virtualGateway: this,
+    });
+  }
+
+  public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['appmesh:StreamAggregatedResources'],
+      resourceArns: [this.virtualGatewayArn],
     });
   }
 }
@@ -181,7 +196,9 @@ export class VirtualGateway extends VirtualGatewayBase {
         listeners: this.listeners.map(listener => listener.listener),
         backendDefaults: props.backendDefaults !== undefined
           ? {
-            clientPolicy: props.backendDefaults?.clientPolicy?.bind(this).clientPolicy,
+            clientPolicy: {
+              tls: renderTlsClientPolicy(this, props.backendDefaults?.tlsClientPolicy, (config) => config.virtualGatewayClientTlsValidationTrust),
+            },
           }
           : undefined,
         logging: accessLogging !== undefined ? {
