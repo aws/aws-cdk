@@ -187,6 +187,7 @@ async function testNestedCloudAssembly({ env }: { env?: string, versionReporting
             },
           ],
         },
+        displayName: 'toplevel/nested',
       }],
     }],
   });
