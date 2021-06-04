@@ -312,7 +312,7 @@ describe('with intercepted network calls', () => {
       });
 
       // THEN - error message contains both a helpful hint and the underlying AssumeRole message
-      await expect(promise).rejects.toThrow('did you bootstrap');
+      await expect(promise).rejects.toThrow('(re)-bootstrap the environment');
       await expect(promise).rejects.toThrow('doesnotexist.role.arn');
     });
 
