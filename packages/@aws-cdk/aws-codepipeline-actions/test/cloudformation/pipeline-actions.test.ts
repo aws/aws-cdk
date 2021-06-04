@@ -1,4 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import { NotifyOnEventOptions, Rule } from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -341,6 +342,22 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
     throw new Error('Method not implemented.');
   }
   public onStateChange(_id: string, _options: events.OnEventOptions): events.Rule {
+    throw new Error('Method not implemented.');
+  }
+  public notifyOnEvent(_id: string, _options?: NotifyOnEventOptions): Rule {
+    throw new Error('Method not implemented.');
+  }
+  public notifyOnActionStateChange(_id: string, _options?: NotifyOnEventOptions): Rule {
+    throw new Error('Method not implemented.');
+  }
+  public notifyOnStageStateChange(_id: string, _options?: NotifyOnEventOptions): Rule {
+    throw new Error('Method not implemented.');
+  }
+  public notifyOnPipelineStateChange(_id: string, _options?: NotifyOnEventOptions): Rule {
+    throw new Error('Method not implemented.');
+  }
+
+  notifyOnApprovalStateChange(_id: string, _options?: NotifyOnEventOptions): Rule {
     throw new Error('Method not implemented.');
   }
 }
