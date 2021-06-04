@@ -344,7 +344,6 @@ Resources:
               - ecr:DescribeImages
               - ecr:BatchGetImage
               - ecr:GetDownloadUrlForLayer
-              - ecr:InitiateLayerUpload
             Resource:
               Fn::Sub: "${ContainerAssetsRepository.Arn}"
             Effect: Allow
