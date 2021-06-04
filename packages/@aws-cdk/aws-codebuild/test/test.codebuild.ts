@@ -1,5 +1,6 @@
 import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -1475,6 +1476,67 @@ export = {
         },
       },
       'State': 'ENABLED',
+    }));
+
+    test.done();
+  },
+
+  'notifications'(test: Test) {
+    const stack = new cdk.Stack();
+    const project = new codebuild.Project(stack, 'MyCodebuildProject', {
+      buildSpec: codebuild.BuildSpec.fromObject({
+        version: '0.2',
+        phases: {
+          build: {
+            commands: [
+              'echo "Hello, CodeBuild!"',
+            ],
+          },
+        },
+      }),
+    });
+
+    project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', { target: { bind: () => ({ targetType: notifications.TargetType.AWS_CHATBOT_SLACK, targetAddress: 'SlackID' }) } });
+    project.notifyOnBuildFailed('NotifyOnBuildFailed', { target: { bind: () => ({ targetType: notifications.TargetType.SNS, targetAddress: 'TopicID' }) } });
+
+    expect(stack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
+      'Name': 'MyCodebuildProjectNotifyOnBuildSucceeded77719592',
+      'DetailType': 'FULL',
+      'EventTypeIds': [
+        'codebuild-project-build-state-succeeded',
+      ],
+      'Resource': {
+        'Fn::GetAtt': [
+          'MyCodebuildProjectB0479580',
+          'Arn',
+        ],
+      },
+      'Targets': [
+        {
+          'TargetAddress': 'SlackID',
+          'TargetType': 'AWSChatbotSlack',
+        },
+      ],
+    }));
+
+    expect(stack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
+      'Name': 'MyCodebuildProjectNotifyOnBuildFailedF680E310',
+      'DetailType': 'FULL',
+      'EventTypeIds': [
+        'codebuild-project-build-state-failed',
+      ],
+      'Resource': {
+        'Fn::GetAtt': [
+          'MyCodebuildProjectB0479580',
+          'Arn',
+        ],
+      },
+      'Targets': [
+        {
+          'TargetAddress': 'TopicID',
+          'TargetType': 'SNS',
+        },
+      ],
     }));
 
     test.done();

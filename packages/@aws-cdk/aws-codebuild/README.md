@@ -466,6 +466,19 @@ const rule = project.onStateChange('BuildStateChange', {
 });
 ```
 
+## CodeStar Notifications
+
+CodeBuild projects can be used as a source for notification.
+To define CodeStar Notification rules for build projects, use one of the `notifyOnXxx` methods, it very similar to Amazon CloudWatch event `onXxx` method.
+
+For example:
+
+```ts
+const rule = project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', {
+  target: new targets.SlackChannelConfiguration(slack),
+});
+```
+
 ## Secondary sources and artifacts
 
 CodeBuild Projects can get their sources from multiple places, and produce

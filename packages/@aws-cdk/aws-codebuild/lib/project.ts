@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
 import * as events from '@aws-cdk/aws-events';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -170,6 +171,27 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    * @default sum over 5 minutes
    */
   metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Defines a Codestar notification rule triggered when the build project events occurs by you specified.
+   * It very similar to `onEvent` API
+   * You can also use the methods `notifyOnBuildSucceeded` and `notifyOnBuildFailed` to define rules for these specific event occurs.
+   *
+   * @param id The id of the Codestar notification rule
+   * @param options Customization options for Codestar notification rule
+   * @returns Codestar notification rule associated with this build project.
+   */
+  notifyOnEvent(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+
+  /**
+   * Defines a Codestar notification rule which triggers when a build completes successfully.
+   */
+  notifyOnBuildSucceeded(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+
+  /**
+   * Defines a Codestar notification rule which triggers when a build fails.
+   */
+  notifyOnBuildFailed(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
 }
 
 /**
@@ -403,6 +425,41 @@ abstract class ProjectBase extends Resource implements IProject {
    */
   public metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(CodeBuildMetrics.failedBuildsSum, props);
+  }
+
+  /**
+   * Defines a Codestar notification rule triggered when the build project events occurs by you specified.
+   * It very similar to `onEvent` API
+   * You can also use the methods `notifyOnBuildSucceeded` and `notifyOnBuildFailed` to define rules for these specific event occurs.
+   *
+   * @param id The id of the Codestar notification rule
+   * @param options Customization options for Codestar notification rule
+   * @returns Codestar notification rule associated with this build project.
+   */
+  public notifyOnEvent(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
+    const rule = new notifications.Rule(this, id, {
+      ...options, source: this,
+    });
+    rule.addTarget(options.target);
+    return rule;
+  }
+
+  /**
+   * Defines a Codestar notification rule which triggers when a build completes successfully.
+   */
+  public notifyOnBuildSucceeded(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
+    const rule = this.notifyOnEvent(id, options);
+    rule.addEvents(['codebuild-project-build-state-succeeded']);
+    return rule;
+  }
+
+  /**
+   * Defines a Codestar notification rule which triggers when a build fails.
+   */
+  public notifyOnBuildFailed(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
+    const rule = this.notifyOnEvent(id, options);
+    rule.addEvents(['codebuild-project-build-state-failed']);
+    return rule;
   }
 
   private cannedMetric(
