@@ -22,17 +22,30 @@ beforeEach(() => {
 
 nodeunitShim({
   'instance is created correctly'(test: Test) {
-    // WHEN
-    new Instance(stack, 'Instance', {
-      vpc,
-      machineImage: new AmazonLinuxImage(),
-      instanceType: InstanceType.of(InstanceClass.BURSTABLE4_GRAVITON, InstanceSize.LARGE),
-    });
+    // GIVEN
+    const sampleInstances = [{
+      instanceClass: InstanceClass.BURSTABLE4_GRAVITON,
+      instanceSize: InstanceSize.LARGE,
+      instanceType: 't4g.large',
+    }, {
+      instanceClass: InstanceClass.HIGH_COMPUTE_MEMORY1,
+      instanceSize: InstanceSize.XLARGE3,
+      instanceType: 'z1d.3xlarge',
+    }];
 
-    // THEN
-    cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
-      InstanceType: 't4g.large',
-    }));
+    for (const [i, sampleInstance] of sampleInstances.entries()) {
+      // WHEN
+      new Instance(stack, `Instance${i}`, {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(sampleInstance.instanceClass, sampleInstance.instanceSize),
+      });
+
+      // THEN
+      cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
+        InstanceType: sampleInstance.instanceType,
+      }));
+    }
 
     test.done();
   },
@@ -135,6 +148,39 @@ nodeunitShim({
 
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
+    }
+
+    test.done();
+  },
+  'instances with local NVME drive are correctly named'(test: Test) {
+    // GIVEN
+    const sampleInstanceClassKeys = [{
+      key: 'R5D',
+      value: 'r5d',
+    }, {
+      key: 'MEMORY5_NVME_DRIVE',
+      value: 'r5d',
+    }, {
+      key: 'R5AD',
+      value: 'r5ad',
+    }, {
+      key: 'MEMORY5_AMD_NVME_DRIVE',
+      value: 'r5ad',
+    }, {
+      key: 'M5AD',
+      value: 'm5ad',
+    }, {
+      key: 'STANDARD5_AMD_NVME_DRIVE',
+      value: 'm5ad',
+    }]; // A sample of instances with NVME drives
+
+    for (const instanceClass of sampleInstanceClassKeys) {
+      // WHEN
+      const key = instanceClass.key as keyof(typeof InstanceClass);
+      const instanceType = InstanceClass[key];
+
+      // THEN
+      expect(instanceType).toBe(instanceClass.value);
     }
 
     test.done();

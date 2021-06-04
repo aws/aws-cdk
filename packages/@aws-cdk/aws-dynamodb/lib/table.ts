@@ -215,7 +215,6 @@ export interface TableOptions {
    * Regions where replica tables will be created
    *
    * @default - no replica tables are created
-   * @experimental
    */
   readonly replicationRegions?: string[];
 
@@ -225,6 +224,13 @@ export interface TableOptions {
    * @default Duration.minutes(30)
    */
   readonly replicationTimeout?: Duration;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled.
+   *
+   * @default false
+   */
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -1115,6 +1121,7 @@ export class Table extends TableBase {
       sseSpecification,
       streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 

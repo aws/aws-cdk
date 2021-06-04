@@ -205,6 +205,10 @@ const cdkPipeline = new CdkPipeline(app, 'CdkPipeline', {
 });
 ```
 
+If you use assets for files or Docker images, every asset will get its own upload action during the asset stage. 
+By setting the value `singlePublisherPerType` to `true`, only one action for files and one action for 
+Docker images is created that handles all assets of the respective type.
+
 ## Initial pipeline deployment
 
 You provision this pipeline by making sure the target environment has been
@@ -596,7 +600,7 @@ to create it in. If you are deploying your application to different environments
 also have to bootstrap those and be sure to add a *trust* relationship.
 
 > This library requires a newer version of the bootstrapping stack which has
-> been updated specifically to support cross-account continous delivery. In the future,
+> been updated specifically to support cross-account continuous delivery. In the future,
 > this new bootstrapping stack will become the default, but for now it is still
 > opt-in.
 >
@@ -628,6 +632,17 @@ $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
     aws://222222222222/us-east-2
 ```
 
+If you only want to trust an account to do lookups (e.g, when your CDK application has a 
+`Vpc.fromLookup()` call), use the option `--trust-for-lookup`:
+
+```console
+$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+    [--profile admin-profile-2] \
+    --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+    --trust-for-lookup 11111111111 \
+    aws://222222222222/us-east-2
+```
+
 These command lines explained:
 
 * `npx`: means to use the CDK CLI from the current NPM install. If you are using
@@ -643,6 +658,10 @@ These command lines explained:
   CDK applications into this account. In this case we indicate the Pipeline's account,
   but you could also use this for developer accounts (don't do that for production
   application accounts though!).
+* `--trust-for-lookup`: similar to `--trust`, but gives a more limited set of permissions to the 
+  trusted account, allowing it to only look up values, such as availability zones, EC2 images and 
+  VPCs. Note that if you provide an account using `--trust`, that account can also do lookups. 
+  So you only need to pass `--trust-for-lookup` if you need to use a different account.
 * `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
 
 > **Security tip**: we recommend that you use administrative credentials to an
@@ -760,6 +779,41 @@ leading NPM 6 reading that same file to not install all required packages anymor
 
 Make sure you are using the same NPM version everywhere, either downgrade your
 workstation's version or upgrade the CodeBuild version.
+
+### Cannot connect to the Docker daemon at unix:///var/run/docker.sock
+
+If, in the 'Synth' action (inside the 'Build' stage) of your pipeline, you get an error like this:
+
+```console
+stderr: docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?.   
+See 'docker run --help'. 
+```
+
+It means that the AWS CodeBuild project for 'Synth' is not configured to run in privileged mode, 
+which prevents Docker builds from happening. This typically happens if you use a CDK construct 
+that bundles asset using tools run via Docker, like `aws-lambda-nodejs`, `aws-lambda-python`, 
+`aws-lambda-go` and others. 
+
+Make sure you set the `privileged` environment variable to `true` in the synth definition:
+
+```typescript
+    const pipeline = new CdkPipeline(this, 'MyPipeline', {
+      ...
+      
+      synthAction: SimpleSynthAction.standardNpmSynth({
+        sourceArtifact: ...,
+        cloudAssemblyArtifact: ...,
+
+        environment: {
+          privileged: true,
+        },
+      }),
+    });
+```
+
+After turning on `privilegedMode: true`, you will need to do a one-time manual cdk deploy of your 
+pipeline to get it going again (as with a broken 'synth' the pipeline will not be able to self 
+update to the right state). 
 
 ## Current Limitations
 

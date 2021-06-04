@@ -640,6 +640,11 @@ export class KubernetesVersion {
   public static readonly V1_19 = KubernetesVersion.of('1.19');
 
   /**
+   * Kubernetes version 1.20
+   */
+  public static readonly V1_20 = KubernetesVersion.of('1.20');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -1264,7 +1269,7 @@ export class Cluster extends ClusterBase {
     if (bootstrapEnabled) {
       const userData = options.machineImageType === MachineImageType.BOTTLEROCKET ?
         renderBottlerocketUserData(this) :
-        renderAmazonLinuxUserData(this.clusterName, autoScalingGroup, options.bootstrapOptions);
+        renderAmazonLinuxUserData(this, autoScalingGroup, options.bootstrapOptions);
       autoScalingGroup.addUserData(...userData);
     }
 

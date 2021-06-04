@@ -199,6 +199,17 @@ describe('instance', () => {
 
   });
 
+  test('throws when create database with specific AZ and multiAZ enabled', () => {
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        multiAz: true,
+        availabilityZone: 'ew-west-1a',
+      });
+    }).toThrow(/Requesting a specific availability zone is not valid for Multi-AZ instances/);
+  });
+
   test('instance with option and parameter group', () => {
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
@@ -1306,7 +1317,8 @@ describe('instance', () => {
 
   test( 'does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
     // GIVEN
-    stack = new cdk.Stack();
+    const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
+    stack = new cdk.Stack(app);
     vpc = new ec2.Vpc( stack, 'VPC' );
 
     // WHEN
@@ -1356,4 +1368,49 @@ test.each([
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
   }, ResourcePart.CompleteDefinition);
+});
+
+describe('cross-account instance', () => {
+  test.each([
+    ['MyInstance', 'MyInstance', 'myinstance'],
+    ['PhysicalName.GENERATE_IF_NEEDED', cdk.PhysicalName.GENERATE_IF_NEEDED, 'instancestackncestackinstancec830ba83756a6dfc7154'],
+  ])("with database identifier '%s' can be referenced from a Stack in a different account", (_, providedInstanceId, expectedInstanceId) => {
+    const app = new cdk.App();
+    const instanceStack = new cdk.Stack(app, 'InstanceStack', {
+      env: { account: '123', region: 'my-region' },
+    });
+    const instance = new rds.DatabaseInstance(instanceStack, 'Instance', {
+      vpc: new ec2.Vpc(instanceStack, 'Vpc'),
+      engine: rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_5 }),
+      // physical name set
+      instanceIdentifier: providedInstanceId,
+    });
+
+    const outputStack = new cdk.Stack(app, 'OutputStack', {
+      env: { account: '456', region: 'my-region' },
+    });
+    new cdk.CfnOutput(outputStack, 'DatabaseInstanceArn', {
+      value: instance.instanceArn,
+    });
+    new cdk.CfnOutput(outputStack, 'DatabaseInstanceName', {
+      value: instance.instanceIdentifier,
+    });
+
+    expect(outputStack).toMatchTemplate({
+      Outputs: {
+        DatabaseInstanceArn: {
+          Value: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              `:rds:my-region:123:db:${expectedInstanceId}`,
+            ]],
+          },
+        },
+        DatabaseInstanceName: {
+          Value: expectedInstanceId,
+        },
+      },
+    });
+  });
 });

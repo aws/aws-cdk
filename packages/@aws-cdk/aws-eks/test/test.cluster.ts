@@ -17,7 +17,7 @@ import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_20;
 
 export = {
 
@@ -85,7 +85,7 @@ export = {
           vpc: vpc,
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }],
           defaultCapacity: 0,
-          version: eks.KubernetesVersion.V1_19,
+          version: eks.KubernetesVersion.V1_20,
         }), /cannot select multiple subnet groups/);
 
         test.done();
@@ -97,7 +97,7 @@ export = {
           vpc: vpc,
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
           defaultCapacity: 0,
-          version: eks.KubernetesVersion.V1_19,
+          version: eks.KubernetesVersion.V1_20,
         });
 
         // THEN
@@ -629,7 +629,7 @@ export = {
     expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.19',
+        version: '1.20',
         resourcesVpcConfig: {
           securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
@@ -1294,7 +1294,7 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
         test.done();
       },
 
@@ -1333,7 +1333,7 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
         test.done();
       },
 
@@ -1353,7 +1353,7 @@ export = {
           // THEN
           const template = app.synth().getStackByName(stack.stackName).template;
           const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
           test.done();
         },
 
@@ -1462,7 +1462,7 @@ export = {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.EksOptimizedImage({ kubernetesVersion: '1.19' }).getImage(stack);
+      new eks.EksOptimizedImage({ kubernetesVersion: '1.20' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1473,7 +1473,7 @@ export = {
       ), 'EKS STANDARD AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.19/'),
+          (v as any).Default.includes('/1.20/'),
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
@@ -1611,7 +1611,7 @@ export = {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new BottleRocketImage({ kubernetesVersion: '1.19' }).getImage(stack);
+      new BottleRocketImage({ kubernetesVersion: '1.20' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1622,7 +1622,7 @@ export = {
       ), 'BottleRocket AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.19/'),
+          (v as any).Default.includes('/aws-k8s-1.20/'),
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
@@ -1643,7 +1643,7 @@ export = {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: '1.19',
+          version: '1.20',
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
