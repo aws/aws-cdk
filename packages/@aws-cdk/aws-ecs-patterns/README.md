@@ -322,7 +322,7 @@ const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTa
     memoryLimitMiB: 512,
   },
   schedule: events.Schedule.expression('rate(1 minute)'),
-  platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+  platformVersion: ecs.FargatePlatformVersion.LATEST,
 });
 ```
 
