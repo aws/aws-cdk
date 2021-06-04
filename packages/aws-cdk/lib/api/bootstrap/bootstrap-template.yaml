@@ -342,6 +342,8 @@ Resources:
               - ecr:BatchCheckLayerAvailability
               - ecr:DescribeRepositories
               - ecr:DescribeImages
+              - ecr:BatchGetImage
+              - ecr:GetDownloadUrlForLayer
             Resource:
               Fn::Sub: "${ContainerAssetsRepository.Arn}"
             Effect: Allow
