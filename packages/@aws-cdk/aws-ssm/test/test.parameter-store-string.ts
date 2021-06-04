@@ -1,3 +1,4 @@
+import { expect } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ssm from '../lib';
@@ -29,7 +30,16 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.resolve(ref.stringValue), '{{resolve:ssm:/some/key}}');
+    expect(stack).toMatch({
+      Parameters: {
+        RefParameter: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: '/some/key',
+        },
+      },
+    });
+
+    test.deepEqual(stack.resolve(ref.stringValue), { Ref: 'RefParameter' });
 
     test.done();
   },

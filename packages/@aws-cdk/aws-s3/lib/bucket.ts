@@ -530,7 +530,7 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
-    const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
+    const prefix = `https://s3.${this.env.region}.${stack.urlSuffix}/`;
     if (typeof key !== 'string') {
       return this.urlJoin(prefix, this.bucketName);
     }
@@ -1656,6 +1656,7 @@ export class Bucket extends BucketBase {
           transitionDate: t.transitionDate,
           transitionInDays: t.transitionAfter && t.transitionAfter.toDays(),
         })),
+        expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
       };
 

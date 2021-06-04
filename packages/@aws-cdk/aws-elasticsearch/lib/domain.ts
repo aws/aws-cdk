@@ -74,6 +74,9 @@ export class ElasticsearchVersion {
   /** AWS Elasticsearch 7.9 */
   public static readonly V7_9 = ElasticsearchVersion.of('7.9');
 
+  /** AWS Elasticsearch 7.10 */
+  public static readonly V7_10 = ElasticsearchVersion.of('7.10');
+
   /**
    * Custom Elasticsearch version
    * @param version custom version number
@@ -1451,8 +1454,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html
-    if (isInstanceType('i3') && ebsEnabled) {
-      throw new Error('I3 instance types do not support EBS storage volumes.');
+    if (isSomeInstanceType('i3', 'r6gd') && ebsEnabled) {
+      throw new Error('I3 and R6GD instance types do not support EBS storage volumes.');
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
@@ -1467,10 +1470,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('T2 and T3 instance types do not support UltraWarm storage.');
     }
 
-    // Only R3 and I3 support instance storage, per
+    // Only R3, I3 and r6gd support instance storage, per
     // https://aws.amazon.com/elasticsearch-service/pricing/
-    if (!ebsEnabled && !isEveryInstanceType('r3', 'i3')) {
-      throw new Error('EBS volumes are required when using instance types other than r3 or i3.');
+    if (!ebsEnabled && !isEveryInstanceType('r3', 'i3', 'r6gd')) {
+      throw new Error('EBS volumes are required when using instance types other than r3, i3 or r6gd.');
     }
 
     // Fine-grained access control requires node-to-node encryption, encryption at rest,

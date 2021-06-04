@@ -97,7 +97,9 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Instance', {
-      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}',
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
     }));
 
     test.done();
@@ -115,7 +117,9 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Instance', {
-      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-arm64-gp2}}',
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
     }));
 
     test.done();

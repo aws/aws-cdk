@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { Key } from '../lib';
+import { Key, KeySpec, KeyUsage } from '../lib';
 
 const app = new App();
 
@@ -15,5 +15,11 @@ key.addToResourcePolicy(new iam.PolicyStatement({
 }));
 
 key.addAlias('alias/bar');
+
+new Key(stack, 'AsymmetricKey', {
+  keySpec: KeySpec.ECC_NIST_P256,
+  keyUsage: KeyUsage.SIGN_VERIFY,
+  removalPolicy: RemovalPolicy.DESTROY,
+});
 
 app.synth();
