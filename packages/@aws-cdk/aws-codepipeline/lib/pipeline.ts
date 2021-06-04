@@ -1,3 +1,4 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -162,6 +163,100 @@ abstract class PipelineBase extends Resource implements IPipeline {
     return rule;
   }
 
+  /**
+   * Defines a Codestar notification rule triggered when the pipeline
+   * events emitted by you specified, it very similar to `onEvent` API.
+   *
+   * You can also use the methods `notifyOnActionStateChange`,
+   * `notifyOnStageStateChange`, `notifyOnPipelineStateChange`
+   * and `notifyOnApprovalStateChange` to define rules for
+   * these specific event emitted.
+   *
+   * @param id The id of the Codestar notification rule
+   * @param options Customization options for Codestar notification rule
+   * @returns Codestar notification rule associated with this build project.
+   */
+  public notifyOnEvent(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
+    const rule = new notifications.Rule(this, id, {
+      ...options, source: this,
+    });
+    rule.addTarget(options.target);
+    return rule;
+  }
+
+  /**
+   * Define an notification rule triggered by the set of the "Action execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  public notifyOnActionStateChange(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
+    const rule = this.notifyOnEvent(id, options);
+    rule.addEvents([
+      'codepipeline-pipeline-action-execution-succeeded',
+      'codepipeline-pipeline-action-execution-failed',
+      'codepipeline-pipeline-action-execution-canceled',
+      'codepipeline-pipeline-action-execution-started',
+    ]);
+    return rule;
+  }
+
+  /**
+   * Define an notification rule triggered by the set of the "Stage execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  public notifyOnStageStateChange(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
+    const rule = this.notifyOnEvent(id, options);
+    rule.addEvents([
+      'codepipeline-pipeline-stage-execution-started',
+      'codepipeline-pipeline-stage-execution-succeeded',
+      'codepipeline-pipeline-stage-execution-resumed',
+      'codepipeline-pipeline-stage-execution-canceled',
+      'codepipeline-pipeline-stage-execution-failed',
+    ]);
+    return rule;
+  }
+
+  /**
+   * Define an notification rule triggered by the set of the "Pipeline execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnPipelineStateChange(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
+    const rule = this.notifyOnEvent(id, options);
+    rule.addEvents([
+      'codepipeline-pipeline-pipeline-execution-failed',
+      'codepipeline-pipeline-pipeline-execution-canceled',
+      'codepipeline-pipeline-pipeline-execution-started',
+      'codepipeline-pipeline-pipeline-execution-resumed',
+      'codepipeline-pipeline-pipeline-execution-succeeded',
+      'codepipeline-pipeline-pipeline-execution-superseded',
+    ]);
+    return rule;
+  }
+
+  /**
+   * Define an notification rule triggered by the set of the "Manual approval" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnApprovalStateChange(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
+    const rule = this.notifyOnEvent(id, options);
+    rule.addEvents([
+      'codepipeline-pipeline-manual-approval-failed',
+      'codepipeline-pipeline-manual-approval-needed',
+      'codepipeline-pipeline-manual-approval-succeeded',
+    ]);
+    return rule;
+  }
 }
 
 /**

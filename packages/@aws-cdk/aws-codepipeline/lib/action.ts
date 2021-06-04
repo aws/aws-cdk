@@ -1,3 +1,4 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -188,6 +189,57 @@ export interface IPipeline extends IResource {
    * @param options Additional options to pass to the event rule.
    */
   onStateChange(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Defines a Codestar notification rule triggered when the pipeline
+   * events emitted by you specified, it very similar to `onEvent` API.
+   *
+   * You can also use the methods `notifyOnActionStateChange`,
+   * `notifyOnStageStateChange`, `notifyOnPipelineStateChange`
+   * and `notifyOnApprovalStateChange` to define rules for
+   * these specific event emitted.
+   *
+   * @param id The id of the Codestar notification rule
+   * @param options Customization options for Codestar notification rule
+   * @returns Codestar notification rule associated with this build project.
+   */
+  notifyOnEvent(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Action execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnActionStateChange(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Stage execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnStageStateChange(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Pipeline execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnPipelineStateChange(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Manual approval" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnApprovalStateChange(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
 }
 
 /**
