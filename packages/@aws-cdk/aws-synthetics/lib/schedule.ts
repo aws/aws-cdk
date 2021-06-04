@@ -13,7 +13,7 @@ export class Schedule {
   }
 
   /**
-   * Construct a schedule from a literal schedule expression. The expression must be in a `rate(number units)` or `cron(0 12 * * * *)` format.
+   * Construct a schedule from a literal schedule expression. The expression must be in a `rate(number units)` or cron format.
    * With a `rate()` expression only intervals of <= 60 minutes can be used.
    * For example:
    * `Schedule.expression('rate(10 minutes)')`
