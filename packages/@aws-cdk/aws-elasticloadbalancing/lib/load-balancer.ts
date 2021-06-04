@@ -74,10 +74,8 @@ export interface LoadBalancerProps {
 
   /**
    * Enable Loadbalancer logs
-   * 
    * Can be used to avoid manual work as aws console
    * Required S3 bucket name
-   * 
    * @default - disabled
    */
   readonly accessLogPolicy?: CfnLoadBalancer.AccessLoggingPolicyProperty;
