@@ -1,6 +1,6 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const linter = require('prlint')
+import * as core from '@actions/core';
+import * as github from '@actions/github';
+import * as linter from './lint';
 
 async function run() {
     const number = github.context.issue.number;
