@@ -1,6 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
 import { BackupVault, BackupVaultEvents } from '../lib';
@@ -132,6 +133,89 @@ test('defaults to all notifications', () => {
         Ref: 'TopicBFC7AF6E',
       },
     },
+  });
+});
+
+test('import from arn', () => {
+  // WHEN
+  let vaultArn = stack.formatArn({
+    service: 'backup',
+    resource: 'backup-vault',
+    resourceName: 'myVaultName',
+    sep: ':',
+  });
+  let vault = BackupVault.fromBackupVaultArn(stack, 'Vault', vaultArn);
+
+  // THEN
+  expect(vault.backupVaultName).toEqual('myVaultName');
+  expect(vault.backupVaultArn).toEqual(vaultArn);
+});
+
+test('import from name', () => {
+  // WHEN
+  let vaultName = 'myVaultName';
+  let vault = BackupVault.fromBackupVaultName(stack, 'Vault', vaultName);
+
+  // THEN
+  expect(vault.backupVaultName).toEqual(vaultName);
+  expect(vault.backupVaultArn).toEqual(stack.formatArn({
+    service: 'backup',
+    resource: 'backup-vault',
+    resourceName: 'myVaultName',
+    sep: ':',
+  }));
+});
+
+test('grant action', () => {
+  // GIVEN
+  let vaultName = 'myVaultName';
+  let vault = BackupVault.fromBackupVaultName(stack, 'Vault', vaultName);
+  let fn = new lambda.Function(stack, 'function', {
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('boom'),
+    runtime: lambda.Runtime.NODEJS_12_X,
+  });
+
+  // WHEN
+  vault.grant(fn, 'backup:StartBackupJob');
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'backup:StartBackupJob',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':backup:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':backup-vault:myVaultName',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'functionServiceRoleDefaultPolicy5ACF569A',
+    Roles: [
+      {
+        Ref: 'functionServiceRoleEF216095',
+      },
+    ],
   });
 });
 

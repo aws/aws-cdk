@@ -85,3 +85,26 @@ const vault = new BackupVault(stack, 'Vault', {
 
 A vault has a default `RemovalPolicy` set to `RETAIN`. Note that removing a vault
 that contains recovery points will fail.
+
+
+## Importing existing backup vault
+
+To import an existing backup vault into your CDK application, use the `BackupVault.fromBackupVaultArn` or `BackupVault.fromBackupVaultName` 
+factory method. Here is an example of giving a lambda role permission to start a backup job:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import { Stack } from '@aws-cdk/core';
+
+let stack = new Stack();
+
+let vault = BackupVault.fromBackupVaultName(stack, 'Vault', 'myVaultName');
+
+let fn = new lambda.Function(stack, 'function', {
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('boom'),
+  runtime: lambda.Runtime.NODEJS_12_X,
+});
+
+vault.grant(fn, 'backup:StartBackupJob');
+```

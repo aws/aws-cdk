@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
-import { IResource, Names, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { IResource, Names, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnBackupVault } from './backup.generated';
 
@@ -15,6 +15,19 @@ export interface IBackupVault extends IResource {
    * @attribute
    */
   readonly backupVaultName: string;
+
+  /**
+   * The ARN of the backup vault.
+   *
+   * @attribute
+   */
+  readonly backupVaultArn: string;
+
+  /**
+   * Grant the actions defined in actions to the given grantee
+   * on this Backup Vault resource.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -108,27 +121,71 @@ export enum BackupVaultEvents {
   BACKUP_PLAN_MODIFIED = 'BACKUP_PLAN_MODIFIED',
 }
 
+abstract class BackupVaultBase extends Resource implements IBackupVault {
+  // The name of a logical container where backups are stored.
+  public abstract readonly backupVaultName: string;
+  // The ARN of the backup vault.
+  public abstract readonly backupVaultArn: string;
+
+  /**
+   * Grant the actions defined in actions to the given grantee
+   * on this Backup Vault resource.
+   *
+   * @param grantee Principal to grant right to
+   * @param actions The actions to grant
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: grantee,
+      actions: actions,
+      resourceArns: [this.backupVaultArn],
+    });
+  }
+}
+
+
 /**
  * A backup vault
  */
-export class BackupVault extends Resource implements IBackupVault {
+export class BackupVault extends BackupVaultBase {
   /**
-   * Import an existing backup vault
+   * Import an existing backup vault by name
    */
   public static fromBackupVaultName(scope: Construct, id: string, backupVaultName: string): IBackupVault {
-    class Import extends Resource implements IBackupVault {
-      public readonly backupVaultName = backupVaultName;
+    let backupVaultArn = Stack.of(scope).formatArn({
+      service: 'backup',
+      resource: 'backup-vault',
+      resourceName: backupVaultName,
+      sep: ':',
+    });
+
+    return BackupVault.fromBackupVaultArn(scope, id, backupVaultArn);
+  }
+
+  /**
+   * Import an existing backup vault by arn
+   */
+  public static fromBackupVaultArn(scope: Construct, id: string, backupVaultArn: string): IBackupVault {
+    const parsedArn = Stack.of(scope).parseArn(backupVaultArn);
+
+    if (!parsedArn.resourceName) {
+      throw new Error('Invalid Backup Vault Arn.');
     }
-    return new Import(scope, id);
+
+    const backupVaultName = parsedArn.resourceName;
+
+    class Import extends BackupVaultBase {
+      public readonly backupVaultName = backupVaultName;
+      public readonly backupVaultArn = backupVaultArn;
+    }
+
+    return new Import(scope, id, {
+      account: parsedArn.account,
+      region: parsedArn.region,
+    });
   }
 
   public readonly backupVaultName: string;
-
-  /**
-   * The ARN of the backup vault
-   *
-   * @attribute
-   */
   public readonly backupVaultArn: string;
 
   constructor(scope: Construct, id: string, props: BackupVaultProps = {}) {
