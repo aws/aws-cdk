@@ -258,17 +258,17 @@ describe('tests', () => {
     // WHEN
     new LoadBalancer(stack, 'LB', {
       vpc,
-      accessLoggingPolicy:{
-        enabled:true,
-        s3BucketName:"fakeBucket"
+      accessLoggingPolicy: {
+        enabled: true,
+        s3BucketName: 'fakeBucket',
       },
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
-      "AccessLoggingPolicy": {
-        "Enabled": true,
-        "S3BucketName": "fakeBucket"
+      AccessLoggingPolicy: {
+        Enabled: true,
+        S3BucketName: 'fakeBucket',
       },
     });
   });
@@ -281,17 +281,17 @@ describe('tests', () => {
     // WHEN
     new LoadBalancer(stack, 'LB', {
       vpc,
-      accessLoggingPolicy:{
-        enabled:false,
-        s3BucketName:"fakeBucket"
+      accessLoggingPolicy: {
+        enabled: false,
+        s3BucketName: 'fakeBucket',
       },
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
-      "AccessLoggingPolicy": {
-        "Enabled": false,
-        "S3BucketName": "fakeBucket"
+      AccessLoggingPolicy: {
+        Enabled: false,
+        S3BucketName: 'fakeBucket',
       },
     });
   });
