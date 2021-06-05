@@ -1,5 +1,6 @@
 import { ABSENT, expect as expectCDK, haveResource, ResourcePart, countResources } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -191,7 +192,7 @@ test('file system is created correctly with provisioned throughput mode', () => 
   }));
 });
 
-test('existing file system is imported correctly', () => {
+test('existing file system is imported correctly using id', () => {
   // WHEN
   const fs = FileSystem.fromFileSystemAttributes(stack, 'existingFS', {
     fileSystemId: 'fs123',
@@ -205,6 +206,84 @@ test('existing file system is imported correctly', () => {
   // THEN
   expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
     GroupId: 'sg-123456789',
+  }));
+});
+
+test('existing file system is imported correctly using arn', () => {
+  // WHEN
+  const arn = stack.formatArn({
+    service: 'elasticfilesystem',
+    resource: 'file-system',
+    resourceName: 'fs-12912923',
+  });
+  const fs = FileSystem.fromFileSystemAttributes(stack, 'existingFS', {
+    fileSystemArn: arn,
+    securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      allowAllOutbound: false,
+    }),
+  });
+
+  fs.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    GroupId: 'sg-123456789',
+  }));
+
+  expect(fs.fileSystemArn).toEqual(arn);
+  expect(fs.fileSystemId).toEqual('fs-12912923');
+});
+
+test('support granting permissions', () => {
+  const fileSystem = new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+
+  let role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AnyPrincipal(),
+  });
+
+  fileSystem.grant(role, 'elasticfilesystem:ClientWrite');
+
+  expectCDK(stack).to(haveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'elasticfilesystem:ClientWrite',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':elasticfilesystem:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':file-system/',
+                {
+                  Ref: 'EfsFileSystem37910666',
+                },
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+    Roles: [
+      {
+        Ref: 'Role1ABCC5F0',
+      },
+    ],
   }));
 });
 
