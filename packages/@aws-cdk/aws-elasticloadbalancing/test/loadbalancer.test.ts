@@ -249,7 +249,7 @@ describe('tests', () => {
         sslCertificateId: sslCertificateArn,
       })).toThrow(/"sslCertificateId" is deprecated, please use "sslCertificateArn" only./);
   });
-  
+
   test('enable load balancer access logs', () => {
     // GIVEN
     const stack = new Stack();
