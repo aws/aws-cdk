@@ -1115,6 +1115,23 @@ new ec2.LaunchTemplate(stack, '', {
 For more information see
 [Specifying Multiple User Data Blocks Using a MIME Multi Part Archive](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#multi-part_user_data)
 
+#### Using add*Command on MultipartUserData
+
+To use the `add*Command` methods, that are inherited from the `UserData` interface, on `MultipartUserData` you must add a part
+to the `MultipartUserData` and designate it as the reciever for these methods. This is accomplished by using the `addUserDataPart()`
+method on `MultipartUserData` with the `makeDefault` argument set to `true`:
+
+```ts
+const multipartUserData = new ec2.MultipartUserData();
+const commandsUserData = ec2.UserData.forLinux();
+multipartUserData.addUserDataPart(commandsUserData, MultipartBody.SHELL_SCRIPT, true);
+
+// Adding commands to the multipartUserData adds them to commandsUserData, and vice-versa.
+multipartUserData.addCommands('touch /root/multi.txt');
+commandsUserData.addCommands('touch /root/userdata.txt');
+```
+
+When used on an EC2 instance, the above `multipartUserData` will create both `multi.txt` and `userdata.txt` in `/root`.
 
 ## Importing existing subnet
 
