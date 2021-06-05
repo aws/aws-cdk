@@ -80,7 +80,7 @@ export interface LoadBalancerProps {
    * Can set bucket prefix in order to provide folder name inside bucket
    * @default - disabled
    */
-  readonly accessLogPolicy?: CfnLoadBalancer.AccessLoggingPolicyProperty;
+  readonly accessLoggingPolicy?: CfnLoadBalancer.AccessLoggingPolicyProperty;
 
 }
 
@@ -273,8 +273,8 @@ export class LoadBalancer extends Resource implements IConnectable {
       this.elb.node.addDependency(selectedSubnets.internetConnectivityEstablished);
     }
 
-    if (props?.accessLogPolicy?.enabled) {
-      this.elb.accessLoggingPolicy = Object.assign(props.accessLogPolicy, { enabled: true } );
+    if (props.accessLoggingPolicy !== undefined) {
+      this.elb.accessLoggingPolicy = props.accessLoggingPolicy;
     }
 
     ifUndefined(props.listeners, []).forEach(b => this.addListener(b));

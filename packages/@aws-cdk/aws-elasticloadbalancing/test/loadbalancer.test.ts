@@ -249,6 +249,52 @@ describe('tests', () => {
         sslCertificateId: sslCertificateArn,
       })).toThrow(/"sslCertificateId" is deprecated, please use "sslCertificateArn" only./);
   });
+  
+  test('enable load balancer access logs', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    new LoadBalancer(stack, 'LB', {
+      vpc,
+      accessLoggingPolicy:{
+        enabled:true,
+        s3BucketName:"fakeBucket"
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      "AccessLoggingPolicy": {
+        "Enabled": true,
+        "S3BucketName": "fakeBucket"
+      },
+    });
+  });
+
+  test('disable load balancer access logs', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    new LoadBalancer(stack, 'LB', {
+      vpc,
+      accessLoggingPolicy:{
+        enabled:false,
+        s3BucketName:"fakeBucket"
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      "AccessLoggingPolicy": {
+        "Enabled": false,
+        "S3BucketName": "fakeBucket"
+      },
+    });
+  });
 });
 
 class FakeTarget implements ILoadBalancerTarget {
