@@ -360,7 +360,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
 export namespace EmrCreateCluster {
   /**
-   * The Cluster ScaleDownBehavior specifies the way that individual Amazon EC2 instances terminate when an automatic scale-in activity 
+   * The Cluster ScaleDownBehavior specifies the way that individual Amazon EC2 instances terminate when an automatic scale-in activity
    * occurs or an instance group is resized.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html#EMR-RunJobFlow-request-ScaleDownBehavior
