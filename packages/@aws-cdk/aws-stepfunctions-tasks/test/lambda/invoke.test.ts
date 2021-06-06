@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
@@ -109,6 +109,58 @@ describe('LambdaInvoke', () => {
         ClientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
         Qualifier: '1',
       },
+    }));
+  });
+
+  test('resultSelector', () => {
+    // WHEN
+    const task = new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      resultSelector: {
+        Result: sfn.JsonPath.stringAt('$.output.Payload'),
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::lambda:invoke',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Fn9270CBC0',
+            'Arn',
+          ],
+        },
+        'Payload.$': '$',
+      },
+      ResultSelector: {
+        'Result.$': '$.output.Payload',
+      },
+      Retry: [
+        {
+          ErrorEquals: [
+            'Lambda.ServiceException',
+            'Lambda.AWSLambdaException',
+            'Lambda.SdkClientException',
+          ],
+          IntervalSeconds: 2,
+          MaxAttempts: 6,
+          BackoffRate: 2,
+        },
+      ],
     }));
   });
 

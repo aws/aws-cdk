@@ -141,12 +141,12 @@ export enum InstanceClass {
   /**
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
-  MEMORY5_AMD_NVME_DRIVE = 'r5a',
+  MEMORY5_AMD_NVME_DRIVE = 'r5ad',
 
   /**
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
-  R5AD = 'r5a',
+  R5AD = 'r5ad',
 
   /**
    * Memory optimized instances that are also EBS-optimized, 5th generation
@@ -526,6 +526,11 @@ export enum InstanceSize {
    * Instance size XLARGE2 (2xlarge)
    */
   XLARGE2 = '2xlarge',
+
+  /**
+   * Instance size XLARGE3 (3xlarge)
+   */
+  XLARGE3 = '3xlarge',
 
   /**
    * Instance size XLARGE4 (4xlarge)

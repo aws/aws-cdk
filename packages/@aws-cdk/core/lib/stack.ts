@@ -273,7 +273,6 @@ export class Stack extends CoreConstruct implements ITaggable {
    * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
    * resource. `undefined` for top-level (non-nested) stacks.
    *
-   * @experimental
    */
   public readonly nestedStackResource?: CfnResource;
 
@@ -293,7 +292,6 @@ export class Stack extends CoreConstruct implements ITaggable {
   /**
    * Synthesis method for this stack
    *
-   * @experimental
    */
   public readonly synthesizer: IStackSynthesizer;
 
@@ -752,7 +750,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * Synthesizes the cloudformation template into a cloud assembly.
    * @internal
    */
-  public _synthesizeTemplate(session: ISynthesisSession): void {
+  public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string): void {
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
     //
@@ -779,7 +777,11 @@ export class Stack extends CoreConstruct implements ITaggable {
     fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
 
     for (const ctx of this._missingContext) {
-      builder.addMissing(ctx);
+      if (lookupRoleArn != null) {
+        builder.addMissing({ ...ctx, props: { ...ctx.props, lookupRoleArn } });
+      } else {
+        builder.addMissing(ctx);
+      }
     }
   }
 

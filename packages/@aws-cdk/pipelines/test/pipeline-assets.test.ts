@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
@@ -11,6 +11,7 @@ import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubAction, TestGitHubNpmPipeline } from './testutil';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
+const FILE_ASSET_SOURCE_HASH2 = 'ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -151,7 +152,7 @@ describe('basic pipeline', () => {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
@@ -219,7 +220,7 @@ describe('basic pipeline', () => {
       },
       Environment: objectLike({
         PrivilegedMode: false,
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
       }),
     });
 
@@ -250,7 +251,7 @@ describe('basic pipeline', () => {
         })),
       },
       Environment: objectLike({
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
         PrivilegedMode: true,
       }),
     });
@@ -276,7 +277,7 @@ describe('basic pipeline', () => {
     // THEN
     expect(stack2).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
@@ -406,6 +407,53 @@ describe('pipeline with VPC', () => {
   });
 });
 
+describe('pipeline with single asset publisher', () => {
+  beforeEach(() => {
+    app = new TestApp();
+    pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      singlePublisherPerType: true,
+    });
+  });
+
+  afterEach(() => {
+    app.cleanup();
+  });
+
+  test('multiple assets are using the same job in singlePublisherMode', () => {
+    // WHEN
+    pipeline.addApplicationStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: arrayWith({
+        Name: 'Assets',
+        Actions: [
+          // Only one file asset action
+          objectLike({ RunOrder: 1, Name: 'FileAsset' }),
+        ],
+      }),
+    });
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: {
+        Image: 'aws/codebuild/standard:5.0',
+      },
+      Source: {
+        BuildSpec: encodedJson(deepObjectLike({
+          phases: {
+            build: {
+              // Both assets are uploaded in the same action
+              commands: arrayWith(
+                `cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`,
+                `cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`,
+              ),
+            },
+          },
+        })),
+      },
+    });
+  });
+});
 class PlainStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);

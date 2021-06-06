@@ -41,6 +41,12 @@ export interface ITaskDefinition extends IResource {
   readonly isFargateCompatible: boolean;
 
   /**
+   * Return true if the task definition can be run on a ECS Anywhere cluster
+   */
+  readonly isExternalCompatible: boolean;
+
+
+  /**
    * The networking mode to use for the containers in the task.
    */
   readonly networkMode: NetworkMode;
@@ -104,7 +110,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * On Fargate, the only supported networking mode is AwsVpc.
    *
-   * @default - NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
+   * @default - NetworkMode.Bridge for EC2 & External tasks, AwsVpc for Fargate tasks.
    */
   readonly networkMode?: NetworkMode;
 
@@ -184,6 +190,15 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - PidMode used by the task is not specified
    */
   readonly pidMode?: PidMode;
+
+  /**
+   * The inference accelerators to use for the containers in the task.
+   *
+   * Not supported in Fargate.
+   *
+   * @default - No inference accelerators.
+   */
+  readonly inferenceAccelerators?: InferenceAccelerator[];
 }
 
 /**
@@ -242,6 +257,13 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
    */
   public get isFargateCompatible(): boolean {
     return isFargateCompatible(this.compatibility);
+  }
+
+  /**
+   * Return true if the task definition can be run on a ECS anywhere cluster
+   */
+  public get isExternalCompatible(): boolean {
+    return isExternalCompatible(this.compatibility);
   }
 }
 
@@ -322,6 +344,11 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
+  /**
+   * Inference accelerators for task instances
+   */
+  private readonly _inferenceAccelerators: InferenceAccelerator[] = [];
+
   private _executionRole?: iam.IRole;
 
   private _referencesSecretJsonField?: boolean;
@@ -354,11 +381,23 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
     }
 
+    if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0 && this.isFargateCompatible) {
+      throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
+    }
+
+    if (this.isExternalCompatible && this.networkMode !== NetworkMode.BRIDGE) {
+      throw new Error(`External tasks can only have Bridge network mode, got: ${this.networkMode}`);
+    }
+
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
+
+    if (props.inferenceAccelerators) {
+      props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
+    }
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
@@ -369,6 +408,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       requiresCompatibilities: [
         ...(isEc2Compatible(props.compatibility) ? ['EC2'] : []),
         ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
+        ...(isExternalCompatible(props.compatibility) ? ['EXTERNAL'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.any({
@@ -380,6 +420,10 @@ export class TaskDefinition extends TaskDefinitionBase {
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
       pidMode: props.pidMode,
+      inferenceAccelerators: Lazy.any({
+        produce: () =>
+          !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
+      }, { omitEmptyArray: true }),
     });
 
     if (props.placementConstraints) {
@@ -391,6 +435,13 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   public get executionRole(): iam.IRole | undefined {
     return this._executionRole;
+  }
+
+  /**
+   * Public getter method to access list of inference accelerators attached to the instance.
+   */
+  public get inferenceAccelerators(): InferenceAccelerator[] {
+    return this._inferenceAccelerators;
   }
 
   private renderVolumes(): CfnTaskDefinition.VolumeProperty[] {
@@ -415,6 +466,17 @@ export class TaskDefinition extends TaskDefinitionBase {
           transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
 
         },
+      };
+    }
+  }
+
+  private renderInferenceAccelerators(): CfnTaskDefinition.InferenceAcceleratorProperty[] {
+    return this._inferenceAccelerators.map(renderInferenceAccelerator);
+
+    function renderInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) : CfnTaskDefinition.InferenceAcceleratorProperty {
+      return {
+        deviceName: inferenceAccelerator.deviceName,
+        deviceType: inferenceAccelerator.deviceType,
       };
     }
   }
@@ -529,6 +591,16 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   public addExtension(extension: ITaskDefinitionExtension) {
     extension.extend(this);
+  }
+
+  /**
+   * Adds an inference accelerator to the task definition.
+   */
+  public addInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) {
+    if (isFargateCompatible(this.compatibility)) {
+      throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
+    }
+    this._inferenceAccelerators.push(inferenceAccelerator);
   }
 
   /**
@@ -681,6 +753,24 @@ export enum PidMode {
    * If task is specified, all containers within the specified task share the same process namespace.
    */
   TASK = 'task',
+}
+
+/**
+ * Elastic Inference Accelerator.
+ * For more information, see [Elastic Inference Basics](https://docs.aws.amazon.com/elastic-inference/latest/developerguide/basics.html)
+ */
+export interface InferenceAccelerator {
+  /**
+   * The Elastic Inference accelerator device name.
+   * @default - empty
+   */
+  readonly deviceName?: string;
+
+  /**
+   * The Elastic Inference accelerator type to use. The allowed values are: eia2.medium, eia2.large and eia2.xlarge.
+   * @default - empty
+   */
+  readonly deviceType?: string;
 }
 
 /**
@@ -921,7 +1011,12 @@ export enum Compatibility {
   /**
    * The task can specify either the EC2 or Fargate launch types.
    */
-  EC2_AND_FARGATE
+  EC2_AND_FARGATE,
+
+  /**
+   * The task should specify the External launch type.
+   */
+  EXTERNAL
 }
 
 /**
@@ -954,4 +1049,11 @@ export function isEc2Compatible(compatibility: Compatibility): boolean {
  */
 export function isFargateCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.FARGATE, Compatibility.EC2_AND_FARGATE].includes(compatibility);
+}
+
+/**
+ * Return true if the given task definition can be run on a ECS Anywhere cluster
+ */
+export function isExternalCompatible(compatibility: Compatibility): boolean {
+  return [Compatibility.EXTERNAL].includes(compatibility);
 }

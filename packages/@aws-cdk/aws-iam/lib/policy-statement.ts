@@ -30,7 +30,7 @@ export class PolicyStatement {
    * @param obj the PolicyStatement in object form.
    */
   public static fromJson(obj: any) {
-    return new PolicyStatement({
+    const ret = new PolicyStatement({
       sid: obj.Sid,
       actions: ensureArrayOrUndefined(obj.Action),
       resources: ensureArrayOrUndefined(obj.Resource),
@@ -41,6 +41,14 @@ export class PolicyStatement {
       principals: obj.Principal ? [new JsonPrincipal(obj.Principal)] : undefined,
       notPrincipals: obj.NotPrincipal ? [new JsonPrincipal(obj.NotPrincipal)] : undefined,
     });
+
+    // validate that the PolicyStatement has the correct shape
+    const errors = ret.validateForAnyPolicy();
+    if (errors.length > 0) {
+      throw new Error('Incorrect Policy Statement: ' + errors.join('\n'));
+    }
+
+    return ret;
   }
 
   /**
@@ -276,7 +284,7 @@ export class PolicyStatement {
   }
 
   /**
-   * Indicates if this permission as at least one resource associated with it.
+   * Indicates if this permission has at least one resource associated with it.
    */
   public get hasResource() {
     return this.resource && this.resource.length > 0;

@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { CfnParameter, Duration, Stack, App } from '@aws-cdk/core';
@@ -75,7 +75,7 @@ export = {
 
     test.throws(() => new sqs.Queue(stack, 'AnotherQueue', {
       retentionPeriod: Duration.days(15),
-    }), /message retention period must be 1209600 seconds of less/);
+    }), /message retention period must be 1209600 seconds or less/);
 
     test.done();
   },
