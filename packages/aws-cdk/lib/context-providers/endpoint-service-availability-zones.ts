@@ -10,12 +10,13 @@ export class EndpointServiceAZContextProviderPlugin implements ContextProviderPl
   constructor(private readonly aws: SdkProvider) {
   }
 
-  public async getValue(args: {[key: string]: any}) {
+  public async getValue(args: { [key: string]: any }) {
     const region = args.region;
     const account = args.account;
     const serviceName = args.serviceName;
     debug(`Reading AZs for ${account}:${region}:${serviceName}`);
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ec2();
+    const options = { assumeRoleArn: args.lookupRoleArn };
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
     const response = await ec2.describeVpcEndpointServices({ ServiceNames: [serviceName] }).promise();
 
     // expect a service in the response
