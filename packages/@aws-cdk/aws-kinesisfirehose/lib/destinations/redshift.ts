@@ -1,9 +1,11 @@
+import * as customresources from '@aws-cdk/custom-resources';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as redshift from '@aws-cdk/aws-redshift';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, SecretValue, Size, Token } from '@aws-cdk/core';
+import { CustomResource, Duration, SecretValue, Size, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDeliveryStream } from '../delivery-stream';
 import { BackupMode, Compression, DestinationBase, DestinationConfig, DestinationProps } from '../destination';
@@ -169,6 +171,19 @@ export class RedshiftDestination extends DestinationBase {
           encryptionKey: this.redshiftProps.user.encryptionKey,
         });
         this.secret = secret.attach(this.redshiftProps.cluster);
+
+        const createUser = new Construct(scope, 'Create Firehose Redshift');
+        const createUserProvider = new customresources.Provider(createUser, 'Provider', {
+          onEventHandler: new lambda.Function(createUser, 'Function', {
+            code: lambda.Code.fromInline(''),
+            runtime: lambda.Runtime.NODEJS_14_X,
+            handler: 'index.handler',
+          }),
+        });
+        new CustomResource(scope, 'Create Firehose Redshift User', {
+          serviceToken: createUserProvider.serviceToken,
+        });
+
         return {
           username: this.secret.secretValueFromJson('username'),
           password: this.secret.secretValueFromJson('password'),
