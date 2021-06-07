@@ -342,11 +342,15 @@ myAction.onStateChange('MyActionStateChange', target);
 
 ## CodeStar Notifications
 
-Pipelines can be used as a source for notification.
-To define CodeStar Notification rules for build projects, use one of the `notifyOnXxx` methods, it very similar to Amazon CloudWatch event `onXxx` method.
-
-For example:
+To define CodeStar Notification rules for Pipelines, use one of the `notifyOnXxx()` methods.
+They are very similar to `onXxx()` methods for CloudWatch events:
 
 ```ts
-pipeline.notifyOnPipelineStateChange('NotifyOnPipelineStateChange', { target });
+import * as targets from '@aws-cdk/aws-codestarnotifications-targets';
+
+pipeline.notifyOnPipelineStateChange('NotifyOnPipelineStateChange', {
+  target: new targets.SlackChannelConfiguration(slack),
+  // you can also use the resource directly:
+  target: slack,
+});
 ```

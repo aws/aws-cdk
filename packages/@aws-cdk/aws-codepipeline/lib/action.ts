@@ -158,7 +158,7 @@ export interface IAction {
  * It extends {@link events.IRuleTarget},
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends IResource {
+export interface IPipeline extends IResource, notifications.IRuleSource {
   /**
    * The name of the Pipeline.
    *
@@ -203,25 +203,7 @@ export interface IPipeline extends IResource {
    * @param options Customization options for Codestar notification rule
    * @returns Codestar notification rule associated with this build project.
    */
-  notifyOnEvent(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
-
-  /**
-   * Define an notification rule triggered by the set of the "Action execution" events emitted from this pipeline.
-   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
-   *
-   * @param id Identifier for this notification handler.
-   * @param options Additional options to pass to the notification rule.
-   */
-  notifyOnActionStateChange(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
-
-  /**
-   * Define an notification rule triggered by the set of the "Stage execution" events emitted from this pipeline.
-   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
-   *
-   * @param id Identifier for this notification handler.
-   * @param options Additional options to pass to the notification rule.
-   */
-  notifyOnStageStateChange(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+  notifyOn(id: string, options?: notifications.NotifyOptions): notifications.IRule;
 
   /**
    * Define an notification rule triggered by the set of the "Pipeline execution" events emitted from this pipeline.
@@ -230,16 +212,7 @@ export interface IPipeline extends IResource {
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnPipelineStateChange(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
-
-  /**
-   * Define an notification rule triggered by the set of the "Manual approval" events emitted from this pipeline.
-   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
-   *
-   * @param id Identifier for this notification handler.
-   * @param options Additional options to pass to the notification rule.
-   */
-  notifyOnApprovalStateChange(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+  notifyOnPipelineStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule;
 }
 
 /**

@@ -27,7 +27,14 @@ describe('pipeline with codestar notification integration', () => {
   });
 
   test('On "Action state change" events emitted notification rule', () => {
-    pipeline.notifyOnActionStateChange('NotifyOnActionStateChange', { target: { bind: () => ({ targetType: notifications.TargetType.AWS_CHATBOT_SLACK, targetAddress: 'SlackID' }) } });
+    pipeline.notifyOnActionStateChange('NotifyOnActionStateChange', {
+      target: {
+        bind: () => ({
+          targetType: 'AWSChatbotSlack',
+          targetAddress: 'SlackID',
+        }),
+      },
+    });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'PipelineNotifyOnActionStateChange5148B236',
@@ -71,7 +78,14 @@ describe('pipeline with codestar notification integration', () => {
   });
 
   test('On "Stage execution" events emitted notification rule', () => {
-    pipeline.notifyOnStageStateChange('NotifyOnStageStateChange', { target: { bind: () => ({ targetType: notifications.TargetType.AWS_CHATBOT_SLACK, targetAddress: 'SlackID' }) } });
+    pipeline.notifyOnStageStateChange('NotifyOnStageStateChange', {
+      target: {
+        bind: () => ({
+          targetType: 'AWSChatbotSlack',
+          targetAddress: 'SlackID',
+        }),
+      },
+    });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'PipelineNotifyOnStageStateChangeDAED9469',
@@ -116,7 +130,14 @@ describe('pipeline with codestar notification integration', () => {
   });
 
   test('On "Pipeline execution" events emitted notification rule', () => {
-    pipeline.notifyOnPipelineStateChange('NotifyOnPipelineStateChange', { target: { bind: () => ({ targetType: notifications.TargetType.AWS_CHATBOT_SLACK, targetAddress: 'SlackID' }) } });
+    pipeline.notifyOnPipelineStateChange('NotifyOnPipelineStateChange', {
+      target: {
+        bind: () => ({
+          targetType: 'AWSChatbotSlack',
+          targetAddress: 'SlackID',
+        }),
+      },
+    });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'PipelineNotifyOnPipelineStateChange37743E22',
@@ -162,7 +183,14 @@ describe('pipeline with codestar notification integration', () => {
   });
 
   test('On "Manual approval" events emitted notification rule', () => {
-    pipeline.notifyOnApprovalStateChange('NotifyOnApprovalStateChange', { target: { bind: () => ({ targetType: notifications.TargetType.AWS_CHATBOT_SLACK, targetAddress: 'SlackID' }) } });
+    pipeline.notifyOnApprovalStateChange('NotifyOnApprovalStateChange', {
+      target: {
+        bind: () => ({
+          targetType: 'AWSChatbotSlack',
+          targetAddress: 'SlackID',
+        }),
+      },
+    });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'PipelineNotifyOnApprovalStateChange919F4E17',
