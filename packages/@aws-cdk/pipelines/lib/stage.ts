@@ -243,17 +243,24 @@ export class CdkStage extends CoreConstruct {
 
       for (const entry of manifest.entries) {
         let assetType: AssetType;
+        let assetPublishingRoleArn: string | undefined;
         if (entry instanceof DockerImageManifestEntry) {
           assetType = AssetType.DOCKER_IMAGE;
+          assetPublishingRoleArn = entry.destination.assumeRoleArn;
         } else if (entry instanceof FileManifestEntry) {
-          // Don't publishg the template for this stack
+          // Don't publish the template for this stack
           if (entry.source.packaging === 'file' && entry.source.path === stackArtifact.templateFile) {
             continue;
           }
 
           assetType = AssetType.FILE;
+          assetPublishingRoleArn = entry.destination.assumeRoleArn;
         } else {
           throw new Error(`Unrecognized asset type: ${entry.type}`);
+        }
+
+        if (!assetPublishingRoleArn) {
+          throw new Error('assumeRoleArn is missing on asset and required');
         }
 
         this.host.publishAsset({
@@ -261,6 +268,7 @@ export class CdkStage extends CoreConstruct {
           assetId: entry.id.assetId,
           assetSelector: entry.id.toString(),
           assetType,
+          assetPublishingRoleArn,
         });
       }
     }
@@ -357,6 +365,11 @@ export interface AssetPublishingCommand {
    * Type of asset to publish
    */
   readonly assetType: AssetType;
+
+  /**
+   * ARN of the IAM Role used to publish this asset.
+   */
+  readonly assetPublishingRoleArn: string;
 }
 
 /**
