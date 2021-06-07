@@ -5,6 +5,7 @@ FROM $IMAGE
 
 # set the GOCACHE
 ENV GOCACHE=$GOPATH/.cache/go-build
+ENV GOPROXY=direct
 
 # Ensure all users can write to GOPATH
 RUN chmod -R 777 $GOPATH
