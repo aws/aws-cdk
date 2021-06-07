@@ -12,7 +12,7 @@
     "build+test": "npm run build && npm test"
   },
   "devDependencies": {
-    "@types/eslint": "^7.2.11",
+    "@types/eslint": "^7.2.13",
     "@types/fs-extra": "^8.1.1",
     "@types/jest": "^26.0.23",
     "@types/node": "^10.17.60",
@@ -22,8 +22,8 @@
     "typescript": "~3.9.9"
   },
   "dependencies": {
-    "@typescript-eslint/parser": "^4.25.0",
-    "eslint": "^7.27.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "eslint": "^7.28.0",
     "fs-extra": "^9.1.0"
   },
   "jest": {
