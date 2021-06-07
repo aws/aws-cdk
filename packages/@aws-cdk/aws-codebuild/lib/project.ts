@@ -433,18 +433,12 @@ abstract class ProjectBase extends Resource implements IProject {
     return rule;
   }
 
-  /**
-   * Defines a Codestar notification rule which triggers when a build completes successfully.
-   */
   public notifyOnBuildSucceeded(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
     const rule = this.notifyOnEvent(id, options);
     rule.addEvents(['codebuild-project-build-state-succeeded']);
     return rule;
   }
 
-  /**
-   * Defines a Codestar notification rule which triggers when a build fails.
-   */
   public notifyOnBuildFailed(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
     const rule = this.notifyOnEvent(id, options);
     rule.addEvents(['codebuild-project-build-state-failed']);
