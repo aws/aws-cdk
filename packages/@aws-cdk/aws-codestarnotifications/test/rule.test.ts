@@ -6,7 +6,6 @@ import {
   FakeCodePipeline,
   FakeIncorrectResource,
   FakeSlackTarget,
-  FakeSnsTopicTarget,
 } from './helpers';
 
 describe('Rule', () => {
@@ -29,8 +28,6 @@ describe('Rule', () => {
 
   test('created new notification rule with all parameters in constructor props', () => {
     const project = new FakeCodeBuild();
-    const topic = new FakeSnsTopicTarget();
-    const slack = new FakeSlackTarget();
 
     new notifications.Rule(stack, 'MyNotificationRule', {
       ruleName: 'MyNotificationRule',
@@ -40,10 +37,6 @@ describe('Rule', () => {
         'codebuild-project-build-state-failed',
       ],
       source: project,
-      targets: [
-        topic,
-        slack,
-      ],
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
@@ -55,16 +48,6 @@ describe('Rule', () => {
         'codebuild-project-build-state-failed',
       ],
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
-      Targets: [
-        {
-          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
-          TargetType: 'SNS',
-        },
-        {
-          TargetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
-          TargetType: 'AWSChatbotSlack',
-        },
-      ],
     });
   });
 
@@ -241,7 +224,6 @@ describe('Rule', () => {
   test('should throw error if specify multiple sources', () => {
     const project = new FakeCodeBuild();
     const pipeline = new FakeCodePipeline();
-    const topic = new FakeSnsTopicTarget();
 
     expect(() => new notifications.Rule(stack, 'MyNotificationRule', {
       ruleName: 'MyNotificationRule',
@@ -253,9 +235,6 @@ describe('Rule', () => {
         projectArn: project.projectArn,
         pipelineArn: pipeline.pipelineArn,
       },
-      targets: [
-        topic,
-      ],
     })).toThrow(
       /only one source can be specified/,
     );

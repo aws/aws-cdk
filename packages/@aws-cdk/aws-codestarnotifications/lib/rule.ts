@@ -36,9 +36,9 @@ export enum Status {
 }
 
 /**
- * The options for AWS Codebuild and AWS Codepipeline notification integration
+ * Standard set of options for `notifyOnXxx` codestar notification handler on construct
  */
-export interface RuleProps {
+export interface NotifyOnEventOptions {
   /**
    * The name for the notification rule.
    * Notification rule names must be unique in your AWS account.
@@ -48,8 +48,26 @@ export interface RuleProps {
   readonly ruleName?: string;
 
   /**
+   * The target to register for the notification destination.
+   *
+   * @default - No target is added to the rule. Use `addTarget()` to add a target.
+   */
+  readonly target?: IRuleTarget;
+
+  /**
+   * A list of event types associated with this notification rule.
+   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
+   *
+   * You must specify this property (either via props or via `addEvents`)
+   *
+   * @default - No events.
+   */
+  readonly events?: string[];
+
+  /**
    * The status of the notification rule.
-   * If the enabled is set to false, notifications aren't sent for the notification rule.
+   * If the enabled is set to DISABLED, notifications aren't sent for the notification rule.
    *
    * @default true
    */
@@ -63,34 +81,18 @@ export interface RuleProps {
    * @default DetailType.FULL
    */
   readonly detailType?: DetailType;
+}
 
+/**
+ * The options for AWS Codebuild and AWS Codepipeline notification integration
+ */
+export interface RuleProps extends NotifyOnEventOptions {
   /**
    * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
    * Currently, Supported sources include pipelines in AWS CodePipeline and build projects in AWS CodeBuild in this L2 constructor.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codestarnotifications-notificationrule.html#cfn-codestarnotifications-notificationrule-resource
    */
   readonly source: IRuleSource;
-
-  /**
-   * A list of Amazon Resource Names (ARNs) of Amazon SNS topics and AWS Chatbot clients to associate with the notification rule.
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codestarnotifications-notificationrule-target.html
-   *
-   * You must specify this property (either via props or via `addTarget`)
-   *
-   * @default - No targets.
-   */
-  readonly targets?: IRuleTarget[];
-
-  /**
-   * A list of event types associated with this notification rule.
-   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
-   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
-   *
-   * You must specify this property (either via props or via `addEvents`)
-   *
-   * @default - No events.
-   */
-  readonly events?: string[];
 }
 
 /**
@@ -165,10 +167,6 @@ export class Rule extends Resource implements IRule {
     if (props.events) {
       this.addEvents(props.events);
     }
-
-    props.targets?.forEach((target) => {
-      this.addTarget(target);
-    });
 
     this.ruleName = props.ruleName || this.generateName();
 
