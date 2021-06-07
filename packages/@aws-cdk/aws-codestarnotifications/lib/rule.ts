@@ -1,4 +1,4 @@
-import { Stack, IResource, Resource, Names } from '@aws-cdk/core';
+import { IResource, Resource, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import { RuleSourceConfig, SourceType, IRuleSource } from './source';
@@ -49,11 +49,11 @@ export interface RuleProps {
 
   /**
    * The status of the notification rule.
-   * If the status is set to DISABLED, notifications aren't sent for the notification rule.
+   * If the enabled is set to false, notifications aren't sent for the notification rule.
    *
-   * @default Status.ENABLED
+   * @default true
    */
-  readonly status?: Status;
+  readonly enabled?: boolean;
 
   /**
    * The level of detail to include in the notifications for this resource.
@@ -124,10 +124,9 @@ export class Rule extends Resource implements IRule {
    * @param notificationRuleArn Notification rule ARN (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
    */
   public static fromNotificationRuleArn(scope: Construct, id: string, notificationRuleArn: string): IRule {
-    const parts = Stack.of(scope).parseArn(notificationRuleArn);
     class Import extends Resource implements IRule {
       readonly ruleArn = notificationRuleArn;
-      readonly ruleName = parts.resourceName || '';
+      public get ruleName(): string { throw new Error('cannot retrieve "ruleName" from an imported'); }
     }
 
     return new Import(scope, id);
@@ -173,14 +172,16 @@ export class Rule extends Resource implements IRule {
 
     this.ruleName = props.ruleName || this.generateName();
 
-    this.ruleArn = new CfnNotificationRule(this, 'Resource', {
+    const resource = new CfnNotificationRule(this, 'Resource', {
       name: this.ruleName,
-      status: props?.status,
+      status: (props?.enabled === false) ? Status.DISABLED : Status.ENABLED,
       detailType: props.detailType || DetailType.FULL,
       targets: this.targets,
       eventTypeIds: this.events,
       resource: this.source.sourceAddress,
-    }).ref;
+    });
+
+    this.ruleArn = resource.ref;
   }
 
   /**
@@ -255,7 +256,7 @@ export class Rule extends Resource implements IRule {
   private generateName(): string {
     const name = Names.uniqueId(this);
     if (name.length > 64) {
-      return name.substring(0, 63);
+      return name.substring(0, 32) + name.substring(name.length - 32);
     }
     return name;
   }

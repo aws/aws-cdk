@@ -48,6 +48,7 @@ describe('Rule', () => {
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
+      Status: 'ENABLED',
       DetailType: 'FULL',
       EventTypeIds: [
         'codebuild-project-build-state-succeeded',
@@ -75,19 +76,23 @@ describe('Rule', () => {
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRuleGeneratedFromId',
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Status: 'ENABLED',
     });
   });
 
   test('generating name will cut if id length is over than 64 charts', () => {
     const project = new FakeCodeBuild();
 
-    new notifications.Rule(stack, 'MyNotificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong', {
+    const rule = new notifications.Rule(stack, 'MyNotificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong', {
       source: project,
     });
 
+    expect(rule.ruleName.length).toBe(64);
+
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
-      Name: 'MyNotificationRuleGeneratedFromIdIsTooooooooooooooooooooooooooo',
+      Name: 'MyNotificationRuleGeneratedFromIooooooooooooooooooooooooooooLong',
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Status: 'ENABLED',
     });
   });
 
@@ -103,6 +108,7 @@ describe('Rule', () => {
       DetailType: 'FULL',
       Name: 'MyNotificationRule',
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Status: 'ENABLED',
     });
   });
 
@@ -111,13 +117,28 @@ describe('Rule', () => {
 
     new notifications.Rule(stack, 'MyNotificationRule', {
       source: project,
-      status: notifications.Status.DISABLED,
+      enabled: false,
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       Status: 'DISABLED',
+    });
+  });
+
+  test('created new notification rule with status ENABLED', () => {
+    const project = new FakeCodeBuild();
+
+    new notifications.Rule(stack, 'MyNotificationRule', {
+      source: project,
+      enabled: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      Name: 'MyNotificationRule',
+      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Status: 'ENABLED',
     });
   });
 
@@ -269,6 +290,16 @@ describe('Rule', () => {
       // @ts-ignore
       source: someResource,
     })).toThrowError('"source" property must have "projectArn" or "pipelineArn"');
+  });
+
+  test('from notification rule ARN', () => {
+    const imported = notifications.Rule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    expect(imported.ruleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+  });
+
+  test('should throws error if get ruleName from imported resource', () => {
+    const imported = notifications.Rule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    expect(() => imported.ruleName).toThrowError('cannot retrieve "ruleName" from an imported');
   });
 
   test('from notification rule ARN', () => {
