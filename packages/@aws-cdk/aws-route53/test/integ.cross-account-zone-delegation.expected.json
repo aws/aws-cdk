@@ -58,6 +58,11 @@
                       ]
                     ]
                   }
+                },
+                {
+                  "Action": "route53:ListHostedZonesByName",
+                  "Effect": "Allow",
+                  "Resource": "*"
                 }
               ],
               "Version": "2012-10-17"
@@ -67,13 +72,13 @@
         ]
       }
     },
-    "ChildHostedZone4B14AC71": {
+    "ChildHostedZoneWithZoneId729259E6": {
       "Type": "AWS::Route53::HostedZone",
       "Properties": {
         "Name": "sub.myzone.com."
       }
     },
-    "DelegationCrossAccountZoneDelegationCustomResourceFADC27F0": {
+    "DelegationWithZoneIdCrossAccountZoneDelegationCustomResourceFFD766E7": {
       "Type": "Custom::CrossAccountZoneDelegation",
       "Properties": {
         "ServiceToken": {
@@ -94,7 +99,7 @@
         "DelegatedZoneName": "sub.myzone.com",
         "DelegatedZoneNameServers": {
           "Fn::GetAtt": [
-            "ChildHostedZone4B14AC71",
+            "ChildHostedZoneWithZoneId729259E6",
             "NameServers"
           ]
         },
@@ -150,7 +155,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aS3Bucket8B462894"
+            "Ref": "AssetParametersd17df4f90e07a972e8f7b00dddbae8e3eba45a212226d2b714dcd28dded69602S3Bucket200D9216"
           },
           "S3Key": {
             "Fn::Join": [
@@ -163,7 +168,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aS3VersionKeyFDEC5E1D"
+                          "Ref": "AssetParametersd17df4f90e07a972e8f7b00dddbae8e3eba45a212226d2b714dcd28dded69602S3VersionKey0E5C26F0"
                         }
                       ]
                     }
@@ -176,7 +181,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aS3VersionKeyFDEC5E1D"
+                          "Ref": "AssetParametersd17df4f90e07a972e8f7b00dddbae8e3eba45a212226d2b714dcd28dded69602S3VersionKey0E5C26F0"
                         }
                       ]
                     }
@@ -200,20 +205,54 @@
       "DependsOn": [
         "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B"
       ]
+    },
+    "ChildHostedZoneWithZoneNameBC2C15F6": {
+      "Type": "AWS::Route53::HostedZone",
+      "Properties": {
+        "Name": "anothersub.myzone.com."
+      }
+    },
+    "DelegationWithZoneNameCrossAccountZoneDelegationCustomResourceA1A1C94A": {
+      "Type": "Custom::CrossAccountZoneDelegation",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265",
+            "Arn"
+          ]
+        },
+        "AssumeRoleArn": {
+          "Fn::GetAtt": [
+            "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
+            "Arn"
+          ]
+        },
+        "ParentZoneName": "myzone.com",
+        "DelegatedZoneName": "anothersub.myzone.com",
+        "DelegatedZoneNameServers": {
+          "Fn::GetAtt": [
+            "ChildHostedZoneWithZoneNameBC2C15F6",
+            "NameServers"
+          ]
+        },
+        "TTL": 172800
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
-    "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aS3Bucket8B462894": {
+    "AssetParametersd17df4f90e07a972e8f7b00dddbae8e3eba45a212226d2b714dcd28dded69602S3Bucket200D9216": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113a\""
+      "Description": "S3 bucket for asset \"d17df4f90e07a972e8f7b00dddbae8e3eba45a212226d2b714dcd28dded69602\""
     },
-    "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aS3VersionKeyFDEC5E1D": {
+    "AssetParametersd17df4f90e07a972e8f7b00dddbae8e3eba45a212226d2b714dcd28dded69602S3VersionKey0E5C26F0": {
       "Type": "String",
-      "Description": "S3 key for asset version \"3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113a\""
+      "Description": "S3 key for asset version \"d17df4f90e07a972e8f7b00dddbae8e3eba45a212226d2b714dcd28dded69602\""
     },
-    "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aArtifactHash4F367D8C": {
+    "AssetParametersd17df4f90e07a972e8f7b00dddbae8e3eba45a212226d2b714dcd28dded69602ArtifactHash37FB4D0C": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113a\""
+      "Description": "Artifact hash for asset \"d17df4f90e07a972e8f7b00dddbae8e3eba45a212226d2b714dcd28dded69602\""
     }
   }
 }

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
 import { Connections, Peer, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
@@ -18,14 +18,14 @@ describe('tests', () => {
       internalPort: 8080,
     });
 
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       Listeners: [{
         InstancePort: '8080',
         InstanceProtocol: 'http',
         LoadBalancerPort: '8080',
         Protocol: 'http',
       }],
-    }));
+    });
   });
 
   test('add a health check', () => {
@@ -45,7 +45,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       HealthCheck: {
         HealthyThreshold: '2',
         Interval: '60',
@@ -53,7 +53,7 @@ describe('tests', () => {
         Timeout: '5',
         UnhealthyThreshold: '5',
       },
-    }));
+    });
   });
 
   test('add a listener and load balancing target', () => {
@@ -75,7 +75,7 @@ describe('tests', () => {
     elb.addTarget(new FakeTarget());
 
     // THEN: at the very least it added a security group rule for the backend
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
           Description: 'Port 8080 LB to fleet',
@@ -85,7 +85,7 @@ describe('tests', () => {
           ToPort: 8080,
         },
       ],
-    }));
+    });
   });
 
   test('enable cross zone load balancing', () => {
@@ -100,9 +100,9 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       CrossZone: true,
-    }));
+    });
   });
 
   test('disable cross zone load balancing', () => {
@@ -117,9 +117,9 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       CrossZone: false,
-    }));
+    });
   });
 
   test('cross zone load balancing enabled by default', () => {
@@ -133,9 +133,9 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       CrossZone: true,
-    }));
+    });
   });
 
   test('use specified subnet', () => {
@@ -170,11 +170,130 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       Subnets: vpc.selectSubnets({
         subnetGroupName: 'private1',
       }).subnetIds.map((subnetId: string) => stack.resolve(subnetId)),
-    }));
+    });
+  });
+
+  test('does not fail when deprecated property sslCertificateId is used', () => {
+    // GIVEN
+    const sslCertificateArn = 'arn:aws:acm:us-east-1:12345:test/12345';
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    const lb = new LoadBalancer(stack, 'LB', { vpc });
+
+    lb.addListener({
+      externalPort: 80,
+      internalPort: 8080,
+      sslCertificateId: sslCertificateArn,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      Listeners: [{
+        InstancePort: '8080',
+        InstanceProtocol: 'http',
+        LoadBalancerPort: '80',
+        Protocol: 'http',
+        SSLCertificateId: sslCertificateArn,
+      }],
+    });
+  });
+
+  test('does not fail when sslCertificateArn is used', () => {
+    // GIVEN
+    const sslCertificateArn = 'arn:aws:acm:us-east-1:12345:test/12345';
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    const lb = new LoadBalancer(stack, 'LB', { vpc });
+
+    lb.addListener({
+      externalPort: 80,
+      internalPort: 8080,
+      sslCertificateArn: sslCertificateArn,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      Listeners: [{
+        InstancePort: '8080',
+        InstanceProtocol: 'http',
+        LoadBalancerPort: '80',
+        Protocol: 'http',
+        SSLCertificateId: sslCertificateArn,
+      }],
+    });
+  });
+
+  test('throws error when both sslCertificateId and sslCertificateArn are used', () => {
+    // GIVEN
+    const sslCertificateArn = 'arn:aws:acm:us-east-1:12345:test/12345';
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    const lb = new LoadBalancer(stack, 'LB', { vpc });
+
+    // THEN
+    expect(() =>
+      lb.addListener({
+        externalPort: 80,
+        internalPort: 8080,
+        sslCertificateArn: sslCertificateArn,
+        sslCertificateId: sslCertificateArn,
+      })).toThrow(/"sslCertificateId" is deprecated, please use "sslCertificateArn" only./);
+  });
+
+  test('enable load balancer access logs', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    new LoadBalancer(stack, 'LB', {
+      vpc,
+      accessLoggingPolicy: {
+        enabled: true,
+        s3BucketName: 'fakeBucket',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      AccessLoggingPolicy: {
+        Enabled: true,
+        S3BucketName: 'fakeBucket',
+      },
+    });
+  });
+
+  test('disable load balancer access logs', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    new LoadBalancer(stack, 'LB', {
+      vpc,
+      accessLoggingPolicy: {
+        enabled: false,
+        s3BucketName: 'fakeBucket',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      AccessLoggingPolicy: {
+        Enabled: false,
+        S3BucketName: 'fakeBucket',
+      },
+    });
   });
 });
 

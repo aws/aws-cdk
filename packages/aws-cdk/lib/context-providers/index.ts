@@ -13,7 +13,7 @@ import { SecurityGroupContextProviderPlugin } from './security-groups';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
 
-type ProviderConstructor = (new (sdk: SdkProvider) => ContextProviderPlugin);
+type ProviderConstructor = (new (sdk: SdkProvider, lookupRoleArn?: string) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ProviderConstructor};
 
 /**

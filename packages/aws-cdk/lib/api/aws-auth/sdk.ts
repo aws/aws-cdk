@@ -5,7 +5,6 @@ import { cached } from '../../util/functions';
 import { AccountAccessKeyCache } from './account-cache';
 import { Account } from './sdk-provider';
 
-/** @experimental */
 export interface ISDK {
   /**
    * The region this SDK has been instantiated for
@@ -159,8 +158,9 @@ export class SDK implements ISDK {
         ...this.sdkOptions.assumeRoleCredentialsSourceDescription
           ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
           : [],
-        '(did you bootstrap the environment with the right \'--trust\'s?):',
         e.message,
+        '. Please make sure that this role exists in the account. If it doesn\'t exist, (re)-bootstrap the environment ' +
+        'with the right \'--trust\', using the latest version of the CDK CLI.',
       ].join(' '));
     }
   }

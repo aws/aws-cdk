@@ -1,3 +1,4 @@
+import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
@@ -20,6 +21,51 @@ export interface IHttpApi extends IApi {
    * @deprecated - use apiId instead
    */
   readonly httpApiId: string;
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricClientError(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricServerError(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the amount of data processed in bytes.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricDataProcessed(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * @default - SampleCount over 5 minutes
+   */
+  metricCount(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * @default - no statistic
+   */
+  metricIntegrationLatency(props?: MetricOptions): Metric;
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * @default - no statistic
+   */
+  metricLatency(props?: MetricOptions): Metric;
 
   /**
    * Add a new VpcLink
@@ -204,6 +250,30 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
   public abstract readonly apiEndpoint: string;
   private vpcLinks: Record<string, VpcLink> = {};
 
+  public metricClientError(props?: MetricOptions): Metric {
+    return this.metric('4xx', { statistic: 'Sum', ...props });
+  }
+
+  public metricServerError(props?: MetricOptions): Metric {
+    return this.metric('5xx', { statistic: 'Sum', ...props });
+  }
+
+  public metricDataProcessed(props?: MetricOptions): Metric {
+    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
+  }
+
+  public metricCount(props?: MetricOptions): Metric {
+    return this.metric('Count', { statistic: 'SampleCount', ...props });
+  }
+
+  public metricIntegrationLatency(props?: MetricOptions): Metric {
+    return this.metric('IntegrationLatency', props);
+  }
+
+  public metricLatency(props?: MetricOptions): Metric {
+    return this.metric('Latency', props);
+  }
+
   public addVpcLink(options: VpcLinkProps): VpcLink {
     const { vpcId } = options.vpc;
     if (vpcId in this.vpcLinks) {
@@ -352,6 +422,8 @@ export class HttpApi extends HttpApiBase {
         httpApi: this,
         routeKey: HttpRouteKey.DEFAULT,
         integration: props.defaultIntegration,
+        authorizer: props.defaultAuthorizer,
+        authorizationScopes: props.defaultAuthorizationScopes,
       });
     }
 

@@ -60,6 +60,13 @@ export enum RecordType {
   CNAME = 'CNAME',
 
   /**
+   * A delegation signer (DS) record refers a zone key for a delegated subdomain zone.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#DSFormat
+   */
+  DS = 'DS',
+
+  /**
    * An MX record specifies the names of your mail servers and, if you have two or more mail servers,
    * the priority order.
    *
@@ -212,14 +219,14 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
+    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
       name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone),
       type: props.recordType,
       resourceRecords: props.target.values,
-      aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this),
+      aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this, props.zone),
       ttl,
       comment: props.comment,
     });
@@ -542,6 +549,56 @@ export class MxRecord extends RecordSet {
 }
 
 /**
+ * Construction properties for a NSRecord.
+ */
+export interface NsRecordProps extends RecordSetOptions {
+  /**
+   * The NS values.
+   */
+  readonly values: string[];
+}
+
+/**
+ * A DNS NS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+export class NsRecord extends RecordSet {
+  constructor(scope: Construct, id: string, props: NsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.NS,
+      target: RecordTarget.fromValues(...props.values),
+    });
+  }
+}
+
+/**
+ * Construction properties for a DSRecord.
+ */
+export interface DsRecordProps extends RecordSetOptions {
+  /**
+   * The DS values.
+   */
+  readonly values: string[];
+}
+
+/**
+ * A DNS DS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+export class DsRecord extends RecordSet {
+  constructor(scope: Construct, id: string, props: DsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.DS,
+      target: RecordTarget.fromValues(...props.values),
+    });
+  }
+}
+
+/**
  * Construction properties for a ZoneDelegationRecord
  */
 export interface ZoneDelegationRecordProps extends RecordSetOptions {
@@ -578,9 +635,18 @@ export interface CrossAccountZoneDelegationRecordProps {
   readonly delegatedZone: IHostedZone;
 
   /**
-   * The hosted zone id in the parent account
+   * The hosted zone name in the parent account
+   *
+   * @default - no zone name
    */
-  readonly parentHostedZoneId: string;
+  readonly parentHostedZoneName?: string;
+
+  /**
+   * The hosted zone id in the parent account
+   *
+   * @default - no zone id
+   */
+  readonly parentHostedZoneId?: string;
 
   /**
    * The delegation role in the parent account
@@ -602,6 +668,14 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
   constructor(scope: Construct, id: string, props: CrossAccountZoneDelegationRecordProps) {
     super(scope, id);
 
+    if (!props.parentHostedZoneName && !props.parentHostedZoneId) {
+      throw Error('At least one of parentHostedZoneName or parentHostedZoneId is required');
+    }
+
+    if (props.parentHostedZoneName && props.parentHostedZoneId) {
+      throw Error('Only one of parentHostedZoneName and parentHostedZoneId is supported');
+    }
+
     const serviceToken = CustomResourceProvider.getOrCreate(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'cross-account-zone-delegation-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_12_X,
@@ -613,6 +687,7 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
       serviceToken,
       properties: {
         AssumeRoleArn: props.delegationRole.roleArn,
+        ParentZoneName: props.parentHostedZoneName,
         ParentZoneId: props.parentHostedZoneId,
         DelegatedZoneName: props.delegatedZone.zoneName,
         DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,

@@ -85,6 +85,13 @@ export interface DefaultStackSynthesizerProps {
   readonly imageAssetPublishingRoleArn?: string;
 
   /**
+   * The role to use to look up values from the target AWS account during synthesis
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
    * External ID to use when assuming role for image asset publishing
    *
    * @default - No external ID
@@ -158,6 +165,15 @@ export interface DefaultStackSynthesizerProps {
    * @default - DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
    */
   readonly bucketPrefix?: string;
+
+  /**
+   * Bootstrap stack version SSM parameter.
+   *
+   * The placeholder `${Qualifier}` will be replaced with the value of qualifier.
+   *
+   * @default DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER
+   */
+  readonly bootstrapStackVersionSsmParameter?: string;
 }
 
 /**
@@ -196,6 +212,11 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   public static readonly DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-image-publishing-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
+   * Default lookup role ARN for missing values.
+   */
+  public static readonly DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
+
+  /**
    * Default image assets repository name
    */
   public static readonly DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME = 'cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}';
@@ -215,6 +236,11 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
    */
   public static readonly DEFAULT_FILE_ASSET_PREFIX = '';
 
+  /**
+   * Default bootstrap stack version SSM parameter.
+   */
+  public static readonly DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER = '/cdk-bootstrap/${Qualifier}/version';
+
   private _stack?: Stack;
   private bucketName?: string;
   private repositoryName?: string;
@@ -222,8 +248,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private _cloudFormationExecutionRoleArn?: string;
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
+  private lookupRoleArn?: string;
   private qualifier?: string;
-  private bucketPrefix?: string
+  private bucketPrefix?: string;
+  private bootstrapStackVersionSsmParameter?: string;
 
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
   private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
@@ -282,7 +310,13 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
+    this.lookupRoleArn = specialize(this.props.lookupRoleArn ?? DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
     this.bucketPrefix = specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
+    this.bootstrapStackVersionSsmParameter = replaceAll(
+      this.props.bootstrapStackVersionSsmParameter ?? DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER,
+      '${Qualifier}',
+      qualifier,
+    );
     /* eslint-enable max-len */
   }
 
@@ -362,6 +396,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     };
   }
 
+  protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
+    stack._synthesizeTemplate(session, this.lookupRoleArn);
+  }
+
   /**
    * Synthesize the associated stack to the session
    */
@@ -375,7 +413,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
     // right constructs.
     if (this.props.generateBootstrapVersionRule ?? true) {
-      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this.qualifier);
+      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, <string> this.bootstrapStackVersionSsmParameter);
     }
 
     this.synthesizeStackTemplate(this.stack, session);
@@ -390,7 +428,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
-      bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this.qualifier}/version`,
+      bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [artifactId],
     });
   }
@@ -479,7 +517,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       properties: {
         file: manifestFile,
         requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
-        bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this.qualifier}/version`,
+        bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       },
     });
 
@@ -546,8 +584,8 @@ function stackLocationOrInstrinsics(stack: Stack) {
  * The CLI normally checks this, but in a pipeline the CLI is not involved
  * so we encode this rule into the template in a way that CloudFormation will check it.
  */
-function addBootstrapVersionRule(stack: Stack, requiredVersion: number, qualifier: string) {
-  // Because of https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assert/lib/synth-utils.ts#L74
+function addBootstrapVersionRule(stack: Stack, requiredVersion: number, bootstrapStackVersionSsmParameter: string) {
+  // Because of https://github.com/aws/aws-cdk/blob/master/packages/assert-internal/lib/synth-utils.ts#L74
   // synthesize() may be called more than once on a stack in unit tests, and the below would break
   // if we execute it a second time. Guard against the constructs already existing.
   if (stack.node.tryFindChild('BootstrapVersion')) { return; }
@@ -555,7 +593,7 @@ function addBootstrapVersionRule(stack: Stack, requiredVersion: number, qualifie
   const param = new CfnParameter(stack, 'BootstrapVersion', {
     type: 'AWS::SSM::Parameter::Value<String>',
     description: 'Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store.',
-    default: `/cdk-bootstrap/${qualifier}/version`,
+    default: bootstrapStackVersionSsmParameter,
   });
 
   // There is no >= check in CloudFormation, so we have to check the number

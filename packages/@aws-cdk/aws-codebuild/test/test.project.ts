@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart, arrayWith } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -1057,6 +1057,17 @@ export = {
           },
         }));
 
+        // THEN
+        expect(stack).to(not(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:123456789012:key/*',
+            }),
+          },
+        })));
+
         test.done();
       },
 
@@ -1098,6 +1109,83 @@ export = {
           },
         }));
 
+        // THEN
+        expect(stack).to(not(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:123456789012:key/*',
+            }),
+          },
+        })));
+
+        test.done();
+      },
+
+      "when provided as a verbatim partial secret ARN from another account, adds permission to decrypt keys in the Secret's account"(test: Test) {
+        // GIVEN
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
+
+        // WHEN
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret',
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
+      'when two secrets from another account are provided as verbatim partial secret ARNs, adds only one permission for decrypting'(test: Test) {
+        // GIVEN
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
+
+        // WHEN
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret',
+            },
+            'ENV_VAR2': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: 'arn:aws:secretsmanager:us-west-2:901234567890:secret:other-secret',
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
+            }),
+          },
+        }));
+
         test.done();
       },
 
@@ -1124,6 +1212,57 @@ export = {
                 'Name': 'ENV_VAR1',
                 'Type': 'SECRETS_MANAGER',
                 'Value': { 'Ref': 'SecretA720EF05' },
+              },
+            ],
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': { 'Ref': 'SecretA720EF05' },
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
+      'when the same new secret is provided with different JSON keys, only adds the resource once'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const secret = new secretsmanager.Secret(stack, 'Secret');
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: `${secret.secretArn}:json-key1`,
+            },
+            'ENV_VAR2': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: `${secret.secretArn}:json-key2`,
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': { 'Fn::Join': ['', [{ 'Ref': 'SecretA720EF05' }, ':json-key1']] },
+              },
+              {
+                'Name': 'ENV_VAR2',
+                'Type': 'SECRETS_MANAGER',
+                'Value': { 'Fn::Join': ['', [{ 'Ref': 'SecretA720EF05' }, ':json-key2']] },
               },
             ],
           },
@@ -1386,6 +1525,7 @@ export = {
 
       test.done();
     },
+
     'can override build timeout'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1403,6 +1543,43 @@ export = {
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         TimeoutInMinutes: 30,
       }));
+
+      test.done();
+    },
+  },
+
+  'Maximum concurrency': {
+    'can limit maximum concurrency'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        concurrentBuildLimit: 1,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        ConcurrentBuildLimit: 1,
+      }));
+
+      test.done();
+    },
+  },
+
+  'can be imported': {
+    'by ARN'(test: Test) {
+      const stack = new cdk.Stack();
+      const project = codebuild.Project.fromProjectArn(stack, 'Project',
+        'arn:aws:codebuild:us-west-2:123456789012:project/My-Project');
+
+      test.equal(project.projectName, 'My-Project');
+      test.equal(project.env.account, '123456789012');
+      test.equal(project.env.region, 'us-west-2');
 
       test.done();
     },

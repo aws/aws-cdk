@@ -114,7 +114,63 @@ myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWS
 myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")); // only required if your function lives in a VPC
 ```
 
-## Versions and Aliases
+## Resource-based Policies
+
+AWS Lambda supports resource-based policies for controlling access to Lambda
+functions and layers on a per-resource basis. In particular, this allows you to
+give permission to AWS services and other AWS accounts to modify and invoke your
+functions. You can also restrict permissions given to AWS services by providing
+a source account or ARN (representing the account and identifier of the resource
+that accesses the function or layer).
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+const principal = new iam.ServicePrincipal('my-service');
+
+fn.grantInvoke(principal);
+
+// Equivalent to:
+fn.addPermission('my-service Invocation', {
+  principal: principal,
+});
+```
+
+For more information, see [Resource-based
+policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html)
+in the AWS Lambda Developer Guide.
+
+Providing an unowned principal (such as account principals, generic ARN
+principals, service principals, and principals in other accounts) to a call to
+`fn.grantInvoke` will result in a resource-based policy being created. If the
+principal in question has conditions limiting the source account or ARN of the
+operation (see above), these conditions will be automatically added to the
+resource policy.
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+const servicePrincipal = new iam.ServicePrincipal('my-service');
+const sourceArn = 'arn:aws:s3:::my-bucket';
+const sourceAccount = '111122223333';
+const servicePrincipalWithConditions = servicePrincipal.withConditions({
+  ArnLike: {
+    'aws:SourceArn': sourceArn,
+  },
+  StringEquals: {
+    'aws:SourceAccount': sourceAccount,
+  },
+});
+
+fn.grantInvoke(servicePrincipalWithConditions);
+
+// Equivalent to:
+fn.addPermission('my-service Invocation', {
+  principal: servicePrincipal,
+  sourceArn: sourceArn,
+  sourceAccount: sourceAccount,
+});
+```
+
+## Versions
 
 You can use
 [versions](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html)
@@ -129,11 +185,39 @@ The function version includes the following information:
 * All of the function settings, including the environment variables.
 * A unique Amazon Resource Name (ARN) to identify this version of the function.
 
-You can define one or more
-[aliases](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html)
-for your AWS Lambda function. A Lambda alias is like a pointer to a specific
-Lambda function version. Users can access the function version using the alias
-ARN.
+You could create a version to your lambda function using the `Version` construct.
+
+```ts
+const fn = new Function(this, 'MyFunction', ...);
+const version = new Version(this, 'MyVersion', {
+  lambda: fn,
+});
+```
+
+The major caveat to know here is that a function version must always point to a
+specific 'version' of the function. When the function is modified, the version
+will continue to point to the 'then version' of the function.
+
+One way to ensure that the `lambda.Version` always points to the latest version
+of your `lambda.Function` is to set an environment variable which changes at
+least as often as your code does. This makes sure the function always has the
+latest code. For instance -
+
+```ts
+const codeVersion = "stringOrMethodToGetCodeVersion";
+const fn = new lambda.Function(this, 'MyFunction', {
+ environment: {
+   'CodeVersionString': codeVersion
+ }
+});
+```
+
+The `fn.latestVersion` property returns a `lambda.IVersion` which represents
+the `$LATEST` pseudo-version.
+
+However, most AWS services require a specific AWS Lambda version,
+and won't allow you to use `$LATEST`. Therefore, you would normally want
+to use `lambda.currentVersion`.
 
 The `fn.currentVersion` property can be used to obtain a `lambda.Version`
 resource that represents the AWS Lambda function defined in your application.
@@ -141,24 +225,56 @@ Any change to your function's code or configuration will result in the creation
 of a new version resource. You can specify options for this version through the
 `currentVersionOptions` property.
 
-> The `currentVersion` property is only supported when your AWS Lambda function
-> uses either `lambda.Code.fromAsset` or `lambda.Code.fromInline`. Other types
-> of code providers (such as `lambda.Code.fromBucket`) require that you define a
-> `lambda.Version` resource directly since the CDK is unable to determine if
-> their contents had changed.
->
-> An alternative to defining a `lambda.Version` is to set an environment variable
-> which changes at least as often as your code does. This makes sure the function
-> always has the latest code.
->
-> ```ts
-> const codeVersion = "stringOrMethodToGetCodeVersion";
-> const fn = new lambda.Function(this, 'MyFunction', {
->  environment: {
->    'CodeVersionString': codeVersion
->  }
-> });
-> ```
+NOTE: The `currentVersion` property is only supported when your AWS Lambda function
+uses either `lambda.Code.fromAsset` or `lambda.Code.fromInline`. Other types
+of code providers (such as `lambda.Code.fromBucket`) require that you define a
+`lambda.Version` resource directly since the CDK is unable to determine if
+their contents had changed.
+
+### `currentVersion`: Updated hashing logic
+
+To produce a new lambda version each time the lambda function is modified, the
+`currentVersion` property under the hood, computes a new logical id based on the
+properties of the function. This informs CloudFormation that a new
+`AWS::Lambda::Version` resource should be created pointing to the updated Lambda
+function.
+
+However, a bug was introduced in this calculation that caused the logical id to
+change when it was not required (ex: when the Function's `Tags` property, or
+when the `DependsOn` clause was modified). This caused the deployment to fail
+since the Lambda service does not allow creating duplicate versions.
+
+This has been fixed in the AWS CDK but *existing* users need to opt-in via a
+[feature flag]. Users who have run `cdk init` since this fix will be opted in,
+by default.
+
+Existing users will need to enable the [feature flag]
+`@aws-cdk/aws-lambda:recognizeVersionProps`. Since CloudFormation does not
+allow duplicate versions, they will also need to make some modification to
+their function so that a new version can be created. Any trivial change such as
+a whitespace change in the code or a no-op environment variable will suffice.
+
+When the new logic is in effect, you may rarely come across the following error:
+`The following properties are not recognized as version properties`. This will
+occur, typically when [property overrides] are used, when a new property
+introduced in `AWS::Lambda::Function` is used that CDK is still unaware of.
+
+To overcome this error, use the API `Function.classifyVersionProperty()` to
+record whether a new version should be generated when this property is changed.
+This can be typically determined by checking whether the property can be
+modified using the *[UpdateFunctionConfiguration]* API or not.
+
+[feature flag]: https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html
+[property overrides]: https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html#cfn_layer_raw
+[UpdateFunctionConfiguration]: https://docs.aws.amazon.com/lambda/latest/dg/API_UpdateFunctionConfiguration.html
+
+## Aliases
+
+You can define one or more
+[aliases](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html)
+for your AWS Lambda function. A Lambda alias is like a pointer to a specific
+Lambda function version. Users can access the function version using the alias
+ARN.
 
 The `version.addAlias()` method can be used to define an AWS Lambda alias that
 points to a specific version.
@@ -179,11 +295,6 @@ const fn = new lambda.Function(this, 'MyFunction', {
 
 fn.currentVersion.addAlias('live');
 ```
-
-> NOTE: The `fn.latestVersion` property returns a `lambda.IVersion` which
-> represents the `$LATEST` pseudo-version. Most AWS services require a specific
-> AWS Lambda version, and won't allow you to use `$LATEST`. Therefore, you would
-> normally want to use `lambda.currentVersion`.
 
 ## Layers
 
@@ -451,19 +562,19 @@ Example with Python:
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
     bundling: {
-      image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
+      image: lambda.Runtime.PYTHON_3_8.bundlingImage,
       command: [
         'bash', '-c',
         'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
   }),
-  runtime: lambda.Runtime.PYTHON_3_6,
+  runtime: lambda.Runtime.PYTHON_3_8,
   handler: 'index.handler',
 });
 ```
 
-Runtimes expose a `bundlingDockerImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
+Runtimes expose a `bundlingImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
 
 Use `cdk.DockerImage.fromRegistry(image)` to use an existing image or
 `cdk.DockerImage.fromBuild(path)` to build a specific image:

@@ -530,7 +530,7 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
-    const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
+    const prefix = `https://s3.${this.env.region}.${stack.urlSuffix}/`;
     if (typeof key !== 'string') {
       return this.urlJoin(prefix, this.bucketName);
     }
@@ -1502,7 +1502,10 @@ export class Bucket extends BucketBase {
         Bool: { 'aws:SecureTransport': 'false' },
       },
       effect: iam.Effect.DENY,
-      resources: [this.arnForObjects('*')],
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
       principals: [new iam.AnyPrincipal()],
     });
     this.addToResourcePolicy(statement);
@@ -1653,6 +1656,7 @@ export class Bucket extends BucketBase {
           transitionDate: t.transitionDate,
           transitionInDays: t.transitionAfter && t.transitionAfter.toDays(),
         })),
+        expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
       };
 
@@ -1837,7 +1841,8 @@ export class Bucket extends BucketBase {
     // objects in the bucket
     this.addToResourcePolicy(new iam.PolicyStatement({
       actions: [
-        ...perms.BUCKET_READ_ACTIONS, // list objects
+        // list objects
+        ...perms.BUCKET_READ_METADATA_ACTIONS,
         ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
       ],
       resources: [

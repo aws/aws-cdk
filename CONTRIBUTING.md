@@ -2,8 +2,13 @@
 
 Thanks for your interest in contributing to the AWS CDK! ❤️
 
-This document describes how to set up a development environment and submit your contributions. Please read it carefully
-and let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
+We highly value contributions, with roughly half of all commits to the CDK
+coming from the community. We want to recognize all your hard work
+by getting your code merged as quickly as we can, so please read the guidance
+here carefully to make sure the review process goes smoothly.
+
+This document describes how to set up a development environment and submit your changes. Please 
+let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
 - [Getting Started](#getting-started)
 - [Pull Requests](#pull-requests)
@@ -51,17 +56,19 @@ The following tools need to be installed on your system prior to installing the 
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
+- [Docker >= 19.03](https://docs.docker.com/get-docker/)
+  - the Docker daemon must also be running
 
-Run the following commands to clone the repository locally.
+First fork the repository, and then run the following commands to clone the repository locally.
 
 ```console
-$ git clone https://github.com/aws/aws-cdk.git
+$ git clone https://github.com/{your-account}/aws-cdk.git
 $ cd aws-cdk
 $ yarn install
 ```
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK.
-We use `eslint` to keep our consistent in terms of style and reducing defects. We recommend installing the
+We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing the
 the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
 
 ### Repo Layout
@@ -108,8 +115,9 @@ However, if you wish to build the the entire repository, the following command w
 
 ```console
 cd <root of the CDK repo>
-yarn build
+scripts/foreach.sh yarn build
 ```
+Note: The `foreach` command is resumable by default; you must supply `-r` or `--reset` to start a new session.
 
 You are now ready to start contributing to the CDK. See the [Pull Requests](#pull-requests) section on how to make your
 changes and submit it as a pull request.
@@ -185,18 +193,29 @@ contributing your changes.
 
 On the other hand, if you are here looking for an issue to work on, explore our [backlog of
 issues](https://github.com/aws/aws-cdk/issues) and find something that piques your interest. We have labeled all of our
-issues for easy filtration.
+issues for easy searching.
 If you are looking for your first contribution, the ['good first issue'
 label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) will be of help.
 
-### Step 2: Design (optional)
+It's a good idea to keep the priority of issues in mind when deciding what to
+work on. If we have labelled an issue as `P2`, it means it's something we won't
+get to soon, and we're waiting on more feedback from the community (in the form
+of +1s and comments) to give it a higher priority. A PR for a `P2` issue may
+take us some time to review, especially if it involves a complex
+implementation. `P1` issues impact a significant number of customers, so we are
+much more likely to give a PR for those issues prompt attention.
+
+### Step 2: Design
 
 In some cases, it is useful to seek feedback by iterating on a design document. This is useful
 when you plan a big change or feature, or you want advice on what would be the best path forward.
 
-In most cases, the GitHub issue is sufficient for such discussions, and can be sufficient to get
-clarity on what you plan to do. If the changes are significant or intrusive to the existing CDK experience,
-consider writing an RFC in our [RFC repository](https://github.com/aws/aws-cdk-rfcs) before jumping into our code base.
+In many cases, the GitHub issue is sufficient for such discussions, and can be
+sufficient to get clarity on what you plan to do. If the changes are
+significant or intrusive to the existing CDK experience, and especially for a
+brand new L2 construct implementation, please write an RFC in our [RFC
+repository](https://github.com/aws/aws-cdk-rfcs) before jumping into the code
+base.
 
 ### Step 3: Work your Magic
 
@@ -306,6 +325,8 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
   commit message.
 
 ## Breaking Changes
+
+_NOTE: Breaking changes will not be allowed in the upcoming v2 release. These instructions apply to v1._
 
 Whenever you are making changes, there is a chance for those changes to be
 *breaking* existing users of the library. A change is breaking if there are

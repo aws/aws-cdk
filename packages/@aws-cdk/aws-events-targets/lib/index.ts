@@ -12,5 +12,6 @@ export * from './state-machine';
 export * from './kinesis-stream';
 export * from './log-group';
 export * from './kinesis-firehose-stream';
+export * from './api-gateway';
 export * from './api-destination';
 export * from './util';
