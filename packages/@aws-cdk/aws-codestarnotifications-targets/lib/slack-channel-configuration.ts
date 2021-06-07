@@ -5,7 +5,6 @@ import * as notifications from '@aws-cdk/aws-codestarnotifications';
  * A Slack notification target
  */
 export class SlackChannelConfiguration implements notifications.IRuleTarget {
-
   /**
    * @param slackChannel The Slack channel configuration
    */

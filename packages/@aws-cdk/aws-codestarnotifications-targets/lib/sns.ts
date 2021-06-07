@@ -6,7 +6,6 @@ import * as sns from '@aws-cdk/aws-sns';
  * A SNS topic notification target
  */
 export class SnsTopic implements notifications.IRuleTarget {
-
   /**
    * @param topic The SNS topic
    */
