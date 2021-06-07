@@ -73,13 +73,6 @@ export interface SdkHttpOptions {
    * @default - <package-name>/<package-version>
    */
   readonly userAgent?: string;
-
-  /**
-   * The timeout in ms.
-   *
-   * @default - 120000 (SDK default)
-   */
-  readonly timeout?: number;
 }
 
 const CACHED_ACCOUNT = Symbol('cached_account');
@@ -355,6 +348,9 @@ export interface Account {
   readonly partition: string;
 }
 
+const DEFAULT_CONNECTION_TIMEOUT = 10000;
+const DEFAULT_TIMEOUT = 300000;
+
 /**
  * Get HTTP options for the SDK
  *
@@ -367,7 +363,8 @@ function parseHttpOptions(options: SdkHttpOptions) {
   const config: ConfigurationOptions = {};
   config.httpOptions = {};
 
-  config.httpOptions.timeout = options.timeout || httpTimeoutFromEnvironment();
+  config.httpOptions.connectTimeout = DEFAULT_CONNECTION_TIMEOUT;
+  config.httpOptions.timeout = DEFAULT_TIMEOUT;
 
   let userAgent = options.userAgent;
   if (userAgent == null) {
@@ -428,19 +425,6 @@ function caBundlePathFromEnvironment(): string | undefined {
   }
   if (process.env.AWS_CA_BUNDLE) {
     return process.env.AWS_CA_BUNDLE;
-  }
-  return undefined;
-}
-
-/**
- * Find and return a http timeout to be passed into the SDK.
- */
-function httpTimeoutFromEnvironment(): number | undefined {
-  if (process.env.http_timeout) {
-    return parseInt( process.env.http_timeout );
-  }
-  if (process.env.HTTP_TIMEOUT) {
-    return parseInt( process.env.HTTP_TIMEOUT );
   }
   return undefined;
 }
