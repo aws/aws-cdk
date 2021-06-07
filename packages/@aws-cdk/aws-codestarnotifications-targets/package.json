@@ -99,8 +99,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "stable",
-  "maturity": "stable",
+  "stability": "experimental",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   },
