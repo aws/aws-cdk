@@ -55,17 +55,6 @@ export interface NotifyOnEventOptions {
   readonly target?: IRuleTarget;
 
   /**
-   * A list of event types associated with this notification rule.
-   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
-   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
-   *
-   * You must specify this property (either via props or via `addEvents`)
-   *
-   * @default - No events.
-   */
-  readonly events?: string[];
-
-  /**
    * The status of the notification rule.
    * If the enabled is set to DISABLED, notifications aren't sent for the notification rule.
    *
@@ -93,6 +82,17 @@ export interface RuleProps extends NotifyOnEventOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codestarnotifications-notificationrule.html#cfn-codestarnotifications-notificationrule-resource
    */
   readonly source: IRuleSource;
+
+  /**
+   * A list of event types associated with this notification rule.
+   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
+   *
+   * You must specify this property (either via props or via `addEvents`)
+   *
+   * @default - No events.
+   */
+  readonly events?: string[];
 }
 
 /**
