@@ -536,6 +536,7 @@ export = {
         props: {
           account: '12344',
           region: 'us-east-1',
+          lookupRoleArn: 'arn:${AWS::Partition}:iam::12344:role/cdk-hnb659fds-lookup-role-12344-us-east-1',
           parameterName: 'my-param-name',
         },
         provider: 'ssm',
