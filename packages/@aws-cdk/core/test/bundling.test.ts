@@ -107,7 +107,7 @@ nodeunitShim({
     image.run();
 
     const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path', 
+      path: 'docker-path',
       platform,
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
