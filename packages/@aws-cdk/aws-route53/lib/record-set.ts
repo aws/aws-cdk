@@ -226,7 +226,7 @@ export class RecordSet extends Resource implements IRecordSet {
       name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone),
       type: props.recordType,
       resourceRecords: props.target.values,
-      aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this),
+      aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this, props.zone),
       ttl,
       comment: props.comment,
     });
