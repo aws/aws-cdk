@@ -1,7 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as chatbot from '@aws-cdk/aws-chatbot';
 import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../lib';
 
@@ -26,20 +25,13 @@ describe('SlackNotificationTarget', () => {
       }),
     });
 
-    const rule = new notifications.Rule(stack, 'MyNotificationRule', {
-      source: project,
-    });
-
-    rule.addEvents([
-      'codebuild-project-build-state-succeeded',
-      'codebuild-project-build-state-failed',
-    ]);
-
     const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackChannelConfigurationName: 'MySlackChannel',
       slackWorkspaceId: 'ABC123',
       slackChannelId: 'DEF456',
     });
+
+    const rule = project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded');
 
     rule.addTarget(new targets.SlackChannelConfiguration(slack));
 
@@ -47,9 +39,8 @@ describe('SlackNotificationTarget', () => {
       DetailType: 'FULL',
       EventTypeIds: [
         'codebuild-project-build-state-succeeded',
-        'codebuild-project-build-state-failed',
       ],
-      Name: 'MyNotificationRule',
+      Name: 'MyCodebuildProjectNotifyOnBuildSucceeded77719592',
       Resource: {
         'Fn::GetAtt': [
           'MyCodebuildProjectB0479580',
@@ -64,6 +55,7 @@ describe('SlackNotificationTarget', () => {
           TargetType: 'AWSChatbotSlack',
         },
       ],
+      Status: 'ENABLED',
     });
   });
 });

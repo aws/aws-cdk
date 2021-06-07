@@ -16,7 +16,7 @@ export class SnsTopic implements notifications.IRuleTarget {
     // @see https://docs.aws.amazon.com/dtconsole/latest/userguide/set-up-sns.html
     this.topic.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));
     return {
-      targetType: notifications.TargetType.SNS,
+      targetType: 'SNS',
       targetAddress: this.topic.topicArn,
     };
   }

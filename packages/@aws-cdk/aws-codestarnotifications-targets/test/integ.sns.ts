@@ -1,5 +1,4 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../lib';
@@ -23,11 +22,7 @@ class SnsInteg extends cdk.Stack {
       }),
     });
 
-    const rule = new notifications.Rule(this, 'MyNotificationRule', {
-      source: project,
-    });
-
-    rule.addEvents(['codebuild-project-build-state-succeeded']);
+    const rule = project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded');
 
     rule.addTarget(new targets.SnsTopic(topic));
   }

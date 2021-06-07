@@ -179,14 +179,14 @@
         "EncryptionKey": "alias/aws/s3"
       }
     },
-    "MyNotificationRuleE8F95AAB": {
+    "MyCodebuildProjectNotifyOnBuildSucceededC82D9487": {
       "Type": "AWS::CodeStarNotifications::NotificationRule",
       "Properties": {
         "DetailType": "FULL",
         "EventTypeIds": [
           "codebuild-project-build-state-succeeded"
         ],
-        "Name": "SnsIntegMyNotificationRule65418723",
+        "Name": "SnsIntegMyCodebuildProjectNotifyOnBuildSucceededC8D5E510",
         "Resource": {
           "Fn::GetAtt": [
             "MyCodebuildProjectB0479580",
@@ -200,7 +200,8 @@
             },
             "TargetType": "SNS"
           }
-        ]
+        ],
+        "Status": "ENABLED"
       }
     }
   }

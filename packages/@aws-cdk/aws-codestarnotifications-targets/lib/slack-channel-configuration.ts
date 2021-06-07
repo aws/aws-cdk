@@ -12,7 +12,7 @@ export class SlackChannelConfiguration implements notifications.IRuleTarget {
 
   public bind(_rule: notifications.IRule): notifications.RuleTargetConfig {
     return {
-      targetType: notifications.TargetType.AWS_CHATBOT_SLACK,
+      targetType: 'AWSChatbotSlack',
       targetAddress: this.slackChannel.slackChannelConfigurationArn,
     };
   }

@@ -1,6 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
 import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../lib';
@@ -26,14 +25,7 @@ describe('SnsTopicNotificationTarget', () => {
       }),
     });
 
-    const rule = new notifications.Rule(stack, 'MyNotificationRule', {
-      source: project,
-    });
-
-    rule.addEvents([
-      'codebuild-project-build-state-succeeded',
-      'codebuild-project-build-state-failed',
-    ]);
+    const rule = project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded');
 
     rule.addTarget(new targets.SnsTopic(new sns.Topic(stack, 'MyTopic')));
 
@@ -41,9 +33,8 @@ describe('SnsTopicNotificationTarget', () => {
       DetailType: 'FULL',
       EventTypeIds: [
         'codebuild-project-build-state-succeeded',
-        'codebuild-project-build-state-failed',
       ],
-      Name: 'MyNotificationRule',
+      Name: 'MyCodebuildProjectNotifyOnBuildSucceeded77719592',
       Resource: {
         'Fn::GetAtt': [
           'MyCodebuildProjectB0479580',
@@ -58,6 +49,7 @@ describe('SnsTopicNotificationTarget', () => {
           TargetType: 'SNS',
         },
       ],
+      Status: 'ENABLED',
     });
   });
 });

@@ -1,7 +1,7 @@
 import { IResource, Resource, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
-import { RuleSourceConfig, SourceType, IRuleSource } from './source';
+import { RuleSourceConfig, IRuleSource } from './source';
 import { IRuleTarget, RuleTargetConfig } from './target';
 
 /**
@@ -22,7 +22,7 @@ export enum DetailType {
 /**
  * The status of the notification rule.
  */
-export enum Status {
+enum Status {
 
   /**
    * If the status is set to DISABLED, notifications aren't sent.
@@ -111,6 +111,13 @@ export interface IRule extends IResource {
    * @attribute
    */
   readonly ruleName: string;
+
+  /**
+   * Adds target to notification rule
+   * @param target The SNS topic or AWS Chatbot Slack target
+   * @returns boolean - return true if it had any effect
+   */
+  addTarget(target?: IRuleTarget): boolean;
 }
 
 /**
@@ -129,6 +136,10 @@ export class Rule extends Resource implements IRule {
     class Import extends Resource implements IRule {
       readonly ruleArn = notificationRuleArn;
       public get ruleName(): string { throw new Error('cannot retrieve "ruleName" from an imported'); }
+
+      public addTarget(_target?: IRuleTarget) {
+        return false;
+      }
     }
 
     return new Import(scope, id);
@@ -162,10 +173,14 @@ export class Rule extends Resource implements IRule {
   constructor(scope: Construct, id: string, props: RuleProps) {
     super(scope, id);
 
-    this.source = this.bindSource(props.source);
+    this.source = props.source.bind(this);
 
     if (props.events) {
       this.addEvents(props.events);
+    }
+
+    if (props.target) {
+      this.addTarget(props.target);
     }
 
     this.ruleName = props.ruleName || this.generateName();
@@ -176,7 +191,7 @@ export class Rule extends Resource implements IRule {
       detailType: props.detailType || DetailType.FULL,
       targets: this.targets,
       eventTypeIds: this.events,
-      resource: this.source.sourceAddress,
+      resource: this.source.sourceArn,
     });
 
     this.ruleArn = resource.ref;
@@ -186,12 +201,13 @@ export class Rule extends Resource implements IRule {
    * Adds target to notification rule
    * @param target The SNS topic or AWS Chatbot Slack target
    */
-  public addTarget(target?: IRuleTarget): void {
+  public addTarget(target?: IRuleTarget): boolean {
     if (!target) {
-      return;
+      return false;
     }
 
     this.targets.push(target.bind(this));
+    return true;
   }
 
   /**
@@ -201,48 +217,14 @@ export class Rule extends Resource implements IRule {
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject
    * @param events The list of event types for AWS Codebuild and AWS CodePipeline
    */
-  public addEvents(events: string[]): void {
-    const re = {
-      [SourceType.CODE_BUILD]: /^codebuild\-/,
-      [SourceType.CODE_PIPELINE]: /^codepipeline\-/,
-    };
-
+  private addEvents(events: string[]): void {
     events.forEach((event) => {
-      if (!re[this.source.sourceType].test(event)) {
-        throw new Error(`${event} event id is not valid in ${this.source.sourceType}`);
-      }
-
       if (this.events.includes(event)) {
         return;
       }
 
       this.events.push(event);
     });
-  }
-
-  private bindSource(source: IRuleSource): RuleSourceConfig {
-    const { projectArn, pipelineArn } = source;
-
-    // should throw error if multiple sources are specified
-    if ([projectArn, pipelineArn].filter(arn => arn !== undefined).length > 1) {
-      throw new Error('only one source can be specified');
-    }
-
-    if (projectArn) {
-      return {
-        sourceType: SourceType.CODE_BUILD,
-        sourceAddress: projectArn,
-      };
-    }
-
-    if (pipelineArn) {
-      return {
-        sourceType: SourceType.CODE_PIPELINE,
-        sourceAddress: pipelineArn,
-      };
-    }
-
-    throw new Error('"source" property must have "projectArn" or "pipelineArn"');
   }
 
   /**
@@ -256,6 +238,7 @@ export class Rule extends Resource implements IRule {
     if (name.length > 64) {
       return name.substring(0, 32) + name.substring(name.length - 32);
     }
+
     return name;
   }
 }
