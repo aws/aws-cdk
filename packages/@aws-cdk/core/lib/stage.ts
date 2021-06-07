@@ -202,7 +202,7 @@ export class Stage extends CoreConstruct {
 }
 
 /**
- * Options for assemly synthesis.
+ * Options for assembly synthesis.
  */
 export interface StageSynthesisOptions {
   /**
