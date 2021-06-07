@@ -19,6 +19,7 @@ import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
+import { ProjectEvent } from './notification-events';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
 import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
@@ -37,7 +38,7 @@ export interface BatchBuildConfig {
   readonly role: iam.IRole;
 }
 
-export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.IRuleSource {
   /**
    * The ARN of this Project.
    * @attribute
@@ -179,17 +180,17 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    * @param options Customization options for Codestar notification rule
    * @returns Codestar notification rule associated with this build project.
    */
-  notifyOnEvent(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule;
 
   /**
    * Defines a Codestar notification rule which triggers when a build completes successfully.
    */
-  notifyOnBuildSucceeded(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+  notifyOnBuildSucceeded(id: string, options?: notifications.NotifyOptions): notifications.IRule;
 
   /**
    * Defines a Codestar notification rule which triggers when a build fails.
    */
-  notifyOnBuildFailed(id: string, options?: notifications.NotifyOnEventOptions): notifications.Rule;
+  notifyOnBuildFailed(id: string, options?: notifications.NotifyOptions): notifications.IRule;
 }
 
 /**
@@ -425,24 +426,35 @@ abstract class ProjectBase extends Resource implements IProject {
     return this.cannedMetric(CodeBuildMetrics.failedBuildsSum, props);
   }
 
-  public notifyOnEvent(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
+  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.IRule {
     const rule = new notifications.Rule(this, id, {
-      ...options, source: this,
+      ...options,
+      source: this,
     });
-    rule.addTarget(options.target);
     return rule;
   }
 
-  public notifyOnBuildSucceeded(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
-    const rule = this.notifyOnEvent(id, options);
-    rule.addEvents(['codebuild-project-build-state-succeeded']);
+  public notifyOnBuildSucceeded(id: string, options: notifications.NotifyOptions = {}): notifications.IRule {
+    const rule = this.notifyOn(id, {
+      ...options,
+      events: [ProjectEvent.BUILD_STATE_SUCCEEDED],
+    });
     return rule;
   }
 
-  public notifyOnBuildFailed(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.Rule {
-    const rule = this.notifyOnEvent(id, options);
-    rule.addEvents(['codebuild-project-build-state-failed']);
+  public notifyOnBuildFailed(id: string, options: notifications.NotifyOptions = {}): notifications.IRule {
+    const rule = this.notifyOn(id, {
+      ...options,
+      events: [ProjectEvent.BUILD_STATE_FAILED],
+    });
     return rule;
+  }
+
+  public bind(_rule: notifications.IRule): notifications.RuleSourceConfig {
+    return {
+      sourceType: 'CodeBuild',
+      sourceArn: this.projectArn,
+    };
   }
 
   private cannedMetric(
