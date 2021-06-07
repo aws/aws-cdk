@@ -101,20 +101,20 @@ nodeunitShim({
     const imageHash = '123456abcdef';
     const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
     fingerprintStub.callsFake(() => imageHash);
+    const platform = 'linux/someArch99';
 
-    const image = DockerImage.fromBuild('docker-path', {
-      platform: 'linux/someArch99',
-    });
+    const image = DockerImage.fromBuild('docker-path', { platform });
     image.run();
 
     const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
+      path: 'docker-path', 
+      platform,
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
     test.ok(spawnSyncStub.firstCall.calledWith('docker', [
       'build', '-t', tag,
-      '--platform', 'linux/someArch99',
+      '--platform', platform,
       'docker-path',
     ]));
 
