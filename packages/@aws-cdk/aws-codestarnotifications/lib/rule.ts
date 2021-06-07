@@ -38,7 +38,7 @@ enum Status {
 /**
  * Standard set of options for `notifyOnXxx` codestar notification handler on construct
  */
-export interface NotifyOnEventOptions {
+export interface NotifyOptions {
   /**
    * The name for the notification rule.
    * Notification rule names must be unique in your AWS account.
@@ -73,16 +73,9 @@ export interface NotifyOnEventOptions {
 }
 
 /**
- * The options for AWS Codebuild and AWS Codepipeline notification integration
+ * Standard set of options for `notifyOn` codestar notification handler on construct
  */
-export interface RuleProps extends NotifyOnEventOptions {
-  /**
-   * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
-   * Currently, Supported sources include pipelines in AWS CodePipeline and build projects in AWS CodeBuild in this L2 constructor.
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codestarnotifications-notificationrule.html#cfn-codestarnotifications-notificationrule-resource
-   */
-  readonly source: IRuleSource;
-
+export interface NotifyOnEventOptions extends NotifyOptions {
   /**
    * A list of event types associated with this notification rule.
    * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
@@ -93,6 +86,18 @@ export interface RuleProps extends NotifyOnEventOptions {
    * @default - No events.
    */
   readonly events?: string[];
+}
+
+/**
+ * Properties for a new notification rule
+ */
+export interface RuleProps extends NotifyOnEventOptions {
+  /**
+   * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
+   * Currently, Supported sources include pipelines in AWS CodePipeline and build projects in AWS CodeBuild in this L2 constructor.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codestarnotifications-notificationrule.html#cfn-codestarnotifications-notificationrule-resource
+   */
+  readonly source: IRuleSource;
 }
 
 /**
