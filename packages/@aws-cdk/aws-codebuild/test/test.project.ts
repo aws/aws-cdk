@@ -1629,69 +1629,6 @@ export = {
         test.done();
       },
 
-      'can be provided as a SecretArn of a Secret imported by complete ARN provided as a Token from a different account'(test: Test) {
-        // GIVEN
-        const app = new cdk.App();
-        const secretArnToken = cdk.Token.asString({ resolve: () => 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret' });
-        const stack = new cdk.Stack(app, 'ProjectStack', {
-          env: { account: '123456789012' },
-        });
-
-        // WHEN
-        const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArnToken);
-        new codebuild.PipelineProject(stack, 'Project', {
-          environmentVariables: {
-            'ENV_VAR1': {
-              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
-              value: `${secret.secretArn}:json-key`,
-            },
-          },
-        });
-
-        // THEN
-        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Environment': {
-            'EnvironmentVariables': [
-              {
-                'Name': 'ENV_VAR1',
-                'Type': 'SECRETS_MANAGER',
-                'Value': 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret:json-key',
-              },
-            ],
-          },
-        }));
-
-        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-          'PolicyDocument': {
-            'Statement': arrayWith({
-              'Action': 'secretsmanager:GetSecretValue',
-              'Effect': 'Allow',
-              'Resource': 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret',
-            }),
-          },
-        }));
-
-        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-          'PolicyDocument': {
-            'Statement': arrayWith({
-              'Action': 'kms:Decrypt',
-              'Effect': 'Allow',
-              'Resource': {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { 'Ref': 'AWS::Partition' },
-                  ':kms:',
-                  { 'Ref': 'AWS::Region' },
-                  ':012345678912:key/*',
-                ]],
-              },
-            }),
-          },
-        }));
-
-        test.done();
-      },
-
       'can be provided as a SecretArn of a Secret imported by complete ARN from a different account'(test: Test) {
         // GIVEN
         const app = new cdk.App();
