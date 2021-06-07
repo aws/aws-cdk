@@ -319,6 +319,7 @@ test('missing context in Stages is propagated up to root assembly', () => {
       provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
       props: {
         account: 'account',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::account:role/cdk-hnb659fds-lookup-role-account-region',
         region: 'region',
       },
     },

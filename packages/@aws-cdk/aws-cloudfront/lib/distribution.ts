@@ -5,6 +5,7 @@ import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-c
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
+import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
@@ -441,7 +442,7 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderViewerCertificate(certificate: acm.ICertificate,
-    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019) : CfnDistribution.ViewerCertificateProperty {
+    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019): CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
@@ -701,6 +702,13 @@ export interface AddBehaviorOptions {
    * @default ViewerProtocolPolicy.ALLOW_ALL
    */
   readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
+
+  /**
+   * The CloudFront functions to invoke before serving the contents.
+   *
+   * @default - no functions will be invoked
+   */
+  readonly functionAssociations?: FunctionAssociation[];
 
   /**
    * The Lambda@Edge functions to invoke before serving the contents.

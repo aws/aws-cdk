@@ -386,6 +386,28 @@ new cloudfront.Distribution(this, 'distro', {
 });
 ```
 
+### CloudFront Function
+
+You can also deploy CloudFront functions and add them to a CloudFront distribution.
+
+```ts
+const cfFunction = new cloudfront.Function(stack, 'Function', {
+  code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
+});
+
+new cloudfront.Distribution(stack, 'distro', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(s3Bucket),
+    functionAssociations: [{
+      function: cfFunction,
+      eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+    }],
+  },
+});
+```
+
+It will auto-generate the name of the function and deploy it to the `live` stage.
+
 ### Logging
 
 You can configure CloudFront to create log files that contain detailed information about every user request that CloudFront receives.

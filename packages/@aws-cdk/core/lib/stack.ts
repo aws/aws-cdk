@@ -745,7 +745,7 @@ export class Stack extends Construct implements ITaggable {
    * Synthesizes the cloudformation template into a cloud assembly.
    * @internal
    */
-  public _synthesizeTemplate(session: ISynthesisSession): void {
+  public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string): void {
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
     //
@@ -772,7 +772,11 @@ export class Stack extends Construct implements ITaggable {
     fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
 
     for (const ctx of this._missingContext) {
-      builder.addMissing(ctx);
+      if (lookupRoleArn != null) {
+        builder.addMissing({ ...ctx, props: { ...ctx.props, lookupRoleArn } });
+      } else {
+        builder.addMissing(ctx);
+      }
     }
   }
 
