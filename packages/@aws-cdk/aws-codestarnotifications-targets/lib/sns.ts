@@ -12,9 +12,7 @@ export class SnsTopic implements notifications.IRuleTarget {
    */
   constructor(readonly topic: sns.ITopic) {}
 
-  public bind(
-    _rule: notifications.IRule,
-  ): notifications.RuleTargetConfig {
+  public bind(_rule: notifications.IRule): notifications.RuleTargetConfig {
     // SNS topic need to grant codestar-notifications service to publish
     // @see https://docs.aws.amazon.com/dtconsole/latest/userguide/set-up-sns.html
     this.topic.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));
