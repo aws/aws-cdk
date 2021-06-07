@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { FeatureFlags, IResource, RemovalPolicy, Resource, Stack, Duration } from '@aws-cdk/core';
+import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
@@ -483,6 +483,55 @@ export class Key extends KeyBase {
     }
 
     return new Import(keyResourceName);
+  }
+
+  /**
+   * Create a mutable {@link IKey} based on a low-level {@link CfnKey}.
+   * This is most useful when combined with the cloudformation-include module.
+   * This method is different than {@link fromKeyArn()} because the {@link IKey}
+   * returned from this method is mutable;
+   * meaning, calling any mutating methods on it,
+   * like {@link IKey.addToResourcePolicy()},
+   * will actually be reflected in the resulting template,
+   * as opposed to the object returned from {@link fromKeyArn()},
+   * on which calling those methods would have no effect.
+   */
+  public static fromCfnKey(cfnKey: CfnKey): IKey {
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnKey';
+
+    // if fromCfnKey() was already called on this cfnKey,
+    // return the same L2
+    // (as different L2s would conflict, because of the mutation of the keyPolicy property of the L1 below)
+    const existing = cfnKey.node.tryFindChild(id);
+    if (existing) {
+      return <IKey>existing;
+    }
+
+    let keyPolicy: iam.PolicyDocument;
+    try {
+      keyPolicy = iam.PolicyDocument.fromJson(cfnKey.keyPolicy);
+    } catch (e) {
+      // If the KeyPolicy contains any CloudFormation functions,
+      // PolicyDocument.fromJson() throws an exception.
+      // In that case, because we would have to effectively make the returned IKey immutable,
+      // throw an exception suggesting to use the other importing methods instead.
+      // We might make this parsing logic smarter later,
+      // but let's start by erroring out.
+      throw new Error('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
+        'This makes it impossible to create a mutable IKey from that Policy. ' +
+        'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey');
+    }
+
+    // change the key policy of the L1, so that all changes done in the L2 are reflected in the resulting template
+    cfnKey.keyPolicy = Lazy.any({ produce: () => keyPolicy.toJSON() });
+
+    return new class extends KeyBase {
+      public readonly keyArn = cfnKey.attrArn;
+      public readonly keyId = cfnKey.ref;
+      protected readonly policy = keyPolicy;
+      protected readonly trustAccountIdentities = false;
+    }(cfnKey, id);
   }
 
   public readonly keyArn: string;
