@@ -57,7 +57,7 @@ Read more at [Creating and Managing Portfolios](https://docs.aws.amazon.com/serv
 ```ts
 import Tag from '@aws-cdk/core';
 
-const tags = Tag({'Project','Foo'})
+const tags = [new Tag('Project','Foo')];
 
 new servicecatalog.Portfolio(this, 'MyFirstPortfolio', {
   displayName: 'MyFirstPortfolioName', 
