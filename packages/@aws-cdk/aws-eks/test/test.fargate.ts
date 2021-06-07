@@ -7,7 +7,7 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_20;
 
 export = {
   'can be added to a cluster'(test: Test) {

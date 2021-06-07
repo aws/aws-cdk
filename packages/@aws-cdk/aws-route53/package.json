@@ -71,7 +71,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.76",
+    "@types/aws-lambda": "^8.10.77",
     "@types/jest": "^26.0.23",
     "@types/nodeunit": "^0.0.31",
     "aws-sdk": "^2.848.0",
@@ -112,6 +112,7 @@
       "props-physical-name:@aws-cdk/aws-route53.CaaAmazonRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.CaaRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.CnameRecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.DsRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.HostedZoneProps",
       "props-physical-name:@aws-cdk/aws-route53.MxRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.NsRecordProps",
