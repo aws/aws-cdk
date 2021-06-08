@@ -179,7 +179,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
     return rule;
   }
 
-  public notifyOnPipelineStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.IRule {
+  public notifyOnStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.IRule {
     const rule = this.notifyOn(id, {
       ...options,
       events: [

@@ -194,8 +194,7 @@ export interface IPipeline extends IResource, notifications.IRuleSource {
    * Defines a Codestar notification rule triggered when the pipeline
    * events emitted by you specified, it very similar to `onEvent` API.
    *
-   * You can also use the methods `notifyOnActionStateChange`,
-   * `notifyOnStageStateChange`, `notifyOnPipelineStateChange`
+   * You can also use the methods `notifyOnStateChange`
    * and `notifyOnApprovalStateChange` to define rules for
    * these specific event emitted.
    *
@@ -203,7 +202,7 @@ export interface IPipeline extends IResource, notifications.IRuleSource {
    * @param options Customization options for Codestar notification rule
    * @returns Codestar notification rule associated with this build project.
    */
-  notifyOn(id: string, options?: notifications.NotifyOptions): notifications.IRule;
+  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule;
 
   /**
    * Define an notification rule triggered by the set of the "Pipeline execution" events emitted from this pipeline.
@@ -212,7 +211,7 @@ export interface IPipeline extends IResource, notifications.IRuleSource {
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnPipelineStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule;
+  notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule;
 }
 
 /**
