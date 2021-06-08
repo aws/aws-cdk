@@ -1,4 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as sns from '@aws-cdk/aws-sns';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
 import { Action } from './action';
@@ -86,8 +87,45 @@ export class ManualApprovalAction extends Action {
       }),
     };
   }
+
+  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule {
+    return super.notifyOn(id, options);
+  }
+
+  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+    const rule = this.notifyOn(id, {
+      ...options,
+      events: [
+        ManualApprovalEvent.MANUAL_APPROVAL_SUCCEEDED,
+        ManualApprovalEvent.MANUAL_APPROVAL_FAILED,
+        ManualApprovalEvent.MANUAL_APPROVAL_NEEDED,
+      ],
+    });
+    return rule;
+  }
 }
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
   return Object.values(object).some(v => v !== undefined) ? object : undefined;
+}
+
+/**
+ * The list of event types for AWS Codepipeline Manual approval action
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+ */
+enum ManualApprovalEvent {
+  /**
+   * Trigger notification when pipeline manual approval failed
+   */
+  MANUAL_APPROVAL_FAILED = 'codepipeline-pipeline-manual-approval-failed',
+
+  /**
+   * Trigger notification when pipeline manual approval needed
+   */
+  MANUAL_APPROVAL_NEEDED = 'codepipeline-pipeline-manual-approval-needed',
+
+  /**
+   * Trigger notification when pipeline manual approval succeeded
+   */
+  MANUAL_APPROVAL_SUCCEEDED = 'codepipeline-pipeline-manual-approval-succeeded',
 }

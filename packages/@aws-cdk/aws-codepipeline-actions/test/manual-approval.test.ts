@@ -74,5 +74,59 @@ nodeunitShim({
 
       test.done();
     },
+    'configure notification on manual approval action'(test: Test) {
+      const stack = new Stack();
+      const manualApprovalAction = new cpactions.ManualApprovalAction({
+        actionName: 'Approval',
+        additionalInformation: 'extra info',
+        externalEntityLink: 'external link',
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new cpactions.GitHubSourceAction({
+              actionName: 'Source',
+              output: new codepipeline.Artifact(),
+              oauthToken: SecretValue.plainText('secret'),
+              owner: 'aws',
+              repo: 'aws-cdk',
+            })],
+          },
+          {
+            stageName: 'Approve',
+            actions: [manualApprovalAction],
+          },
+        ],
+      });
+
+      manualApprovalAction.notifyOnStateChange('NotifyOnManualApprovalActionStateChange');
+
+      expect(stack, true).to(haveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+        DetailType: 'FULL',
+        EventTypeIds: [
+          'codepipeline-pipeline-manual-approval-succeeded',
+          'codepipeline-pipeline-manual-approval-failed',
+          'codepipeline-pipeline-manual-approval-needed',
+        ],
+        Name: 'PipelineApproveApprovalNotifyOnMpprovalActionStateChangeBE06C510',
+        Resource: {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':codepipeline:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'PipelineC660917D' },
+          ]],
+        },
+        Targets: [],
+        Status: 'ENABLED',
+      }));
+
+      test.done();
+    },
   },
 });

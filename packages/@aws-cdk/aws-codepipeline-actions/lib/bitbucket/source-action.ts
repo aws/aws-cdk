@@ -1,4 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import { CodeStarConnectionsSourceAction, CodeStarConnectionsSourceActionProps } from '../codestar-connections/source-action';
 
@@ -36,5 +37,13 @@ export class BitBucketSourceAction implements codepipeline.IAction {
 
   public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
     return this.codeStarConnectionsSourceAction.onStateChange(name, target, options);
+  }
+
+  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule {
+    return this.codeStarConnectionsSourceAction.notifyOn(id, options);
+  }
+
+  public notifyOnStateChange(name: string, options?: notifications.NotifyOptions): notifications.IRule {
+    return this.notifyOn(name, options);
   }
 }

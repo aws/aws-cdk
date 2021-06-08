@@ -1,5 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { NotifyOnEventOptions, Rule } from '@aws-cdk/aws-codestarnotifications';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -344,20 +344,13 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public onStateChange(_id: string, _options: events.OnEventOptions): events.Rule {
     throw new Error('Method not implemented.');
   }
-  public notifyOnEvent(_id: string, _options?: NotifyOnEventOptions): Rule {
+  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.Rule {
     throw new Error('Method not implemented.');
   }
-  public notifyOnActionStateChange(_id: string, _options?: NotifyOnEventOptions): Rule {
+  public notifyOnStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.Rule {
     throw new Error('Method not implemented.');
   }
-  public notifyOnStageStateChange(_id: string, _options?: NotifyOnEventOptions): Rule {
-    throw new Error('Method not implemented.');
-  }
-  public notifyOnPipelineStateChange(_id: string, _options?: NotifyOnEventOptions): Rule {
-    throw new Error('Method not implemented.');
-  }
-
-  notifyOnApprovalStateChange(_id: string, _options?: NotifyOnEventOptions): Rule {
+  public bind(_rule: notifications.IRule): notifications.RuleSourceConfig {
     throw new Error('Method not implemented.');
   }
 }
@@ -403,6 +396,14 @@ class StageDouble implements codepipeline.IStage {
   public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps):
   events.Rule {
     throw new Error('onStateChange() is not supported on StageDouble');
+  }
+
+  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.IRule {
+    throw new Error('Method not implemented.');
+  }
+
+  public notifyOnStateChange(_name: string, _options?: notifications.NotifyOptions): notifications.IRule {
+    throw new Error('Method not implemented.');
   }
 }
 
