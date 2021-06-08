@@ -93,11 +93,6 @@ export interface RuleTargetConfig {
   readonly sqsParameters?: CfnRule.SqsParametersProperty;
 
   /**
-   * Parameters used when the rule invoke api gateway.
-   */
-  readonly httpParameters?: CfnRule.HttpParametersProperty;
-
-  /**
    * What input to send to the event target
    *
    * @default the entire event

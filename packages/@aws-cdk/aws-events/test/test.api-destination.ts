@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Stack, Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ApiDestination, HttpMethod } from '../lib/api-destination';

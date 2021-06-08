@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { AuthorizationType, Connection } from '../lib/connection';
