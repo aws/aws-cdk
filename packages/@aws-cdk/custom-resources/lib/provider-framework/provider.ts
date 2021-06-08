@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import { Duration } from '@aws-cdk/core';
@@ -102,6 +103,15 @@ export interface ProviderProps {
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
+  /**
+   * AWS Lambda execution role.
+   *
+   * The role that will be assumed by the AWS Lambda.
+   * Must be assumable by the 'lambda.amazonaws.com' service principal.
+   *
+   * @default - A default role will be created.
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -132,6 +142,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
   private readonly vpc?: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
   private readonly securityGroups?: ec2.ISecurityGroup[];
+  private readonly role?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -149,6 +160,8 @@ export class Provider extends Construct implements ICustomResourceProvider {
     this.vpcSubnets = props.vpcSubnets;
     this.securityGroups = props.securityGroups;
 
+    this.role = props.role;
+
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
 
     if (this.isCompleteHandler) {
@@ -163,7 +176,6 @@ export class Provider extends Construct implements ICustomResourceProvider {
         interval: retry.interval,
         maxAttempts: retry.maxAttempts,
       });
-
       // the on-event entrypoint is going to start the execution of the waiter
       onEventFunction.addEnvironment(consts.WAITER_STATE_MACHINE_ARN_ENV, waiterStateMachine.stateMachineArn);
       waiterStateMachine.grantStartExecution(onEventFunction);
@@ -194,6 +206,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       securityGroups: this.securityGroups,
+      role: this.role,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);

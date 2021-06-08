@@ -120,4 +120,13 @@ See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGu
   });
   ```
 
+* Route 53 record
+
+  ```ts
+  new route53.ARecord(this, 'AliasRecord', {
+    zone,
+    target: route53.RecordTarget.fromAlias(new targets.Route53RecordTarget(record)),
+  });
+  ```
+
 See the documentation of `@aws-cdk/aws-route53` for more information.
