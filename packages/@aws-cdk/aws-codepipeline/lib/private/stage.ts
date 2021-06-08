@@ -106,10 +106,17 @@ export class Stage implements IStage {
     return rule;
   }
 
-  public notifyOnStateChange(name: string, options: notifications.NotifyOptions = {}): notifications.IRule {
-    const rule = new notifications.Rule(this.scope, name, {
+  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.IRule {
+    const rule = new notifications.Rule(this.scope, id, {
       ...options,
       source: this.pipeline,
+    });
+    return rule;
+  }
+
+  public notifyOnStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.IRule {
+    const rule = this.notifyOn(id, {
+      ...options,
       events: [
         StageEvent.STAGE_EXECUTION_SUCCEEDED,
         StageEvent.STAGE_EXECUTION_FAILED,

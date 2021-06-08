@@ -153,13 +153,26 @@ export interface IAction {
   onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
+   * Defines a Codestar notification rule triggered when the pipeline
+   * events emitted by you specified, it very similar to `onEvent` API.
+   *
+   * You can also use the methods `notifyOnStateChange`
+   * to define rules for these specific event emitted.
+   *
+   * @param id The id of the Codestar notification rule
+   * @param options Customization options for Codestar notification rule
+   * @returns Codestar notification rule associated with this build project.
+   */
+  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule;
+
+  /**
    * Define an notification rule triggered by the set of the "Action execution" events emitted from this pipeline.
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
    *
-   * @param name Identifier for this notification handler.
+   * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnStateChange(name: string, options?: notifications.NotifyOptions): notifications.IRule;
+  notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule;
 }
 
 /**
@@ -204,8 +217,7 @@ export interface IPipeline extends IResource, notifications.IRuleSource {
    * events emitted by you specified, it very similar to `onEvent` API.
    *
    * You can also use the methods `notifyOnStateChange`
-   * and `notifyOnApprovalStateChange` to define rules for
-   * these specific event emitted.
+   * to define rules for these specific event emitted.
    *
    * @param id The id of the Codestar notification rule
    * @param options Customization options for Codestar notification rule
@@ -244,13 +256,27 @@ export interface IStage {
   onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
+   * Defines a Codestar notification rule triggered when the pipeline
+   * events emitted by you specified, it very similar to `onEvent` API.
+   *
+   * You can also use the methods `notifyOnStateChange`
+   * and `notifyOnApprovalStateChange` to define rules for
+   * these specific event emitted.
+   *
+   * @param id The id of the Codestar notification rule
+   * @param options Customization options for Codestar notification rule
+   * @returns Codestar notification rule associated with this build project.
+   */
+  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule;
+
+  /**
    * Define an notification rule triggered by the set of the "Stage execution" events emitted from this pipeline.
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
    *
-   * @param name Identifier for this notification handler.
+   * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnStateChange(name: string, options?: notifications.NotifyOptions): notifications.IRule;
+  notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule;
 }
 
 /**
@@ -382,10 +408,17 @@ export abstract class Action implements IAction {
     return rule;
   }
 
-  public notifyOnStateChange(name: string, options?: notifications.NotifyOptions): notifications.IRule {
-    const rule = new notifications.Rule(this._scope, name, {
+  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.IRule {
+    const rule = new notifications.Rule(this._scope, id, {
       ...options,
       source: this._pipeline,
+    });
+    return rule;
+  }
+
+  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+    const rule = this.notifyOn(id, {
+      ...options,
       events: [
         ActionEvent.ACTION_EXECUTION_STARTED,
         ActionEvent.ACTION_EXECUTION_SUCCEEDED,
