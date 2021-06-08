@@ -1,39 +1,23 @@
-
 import * as crypto from 'crypto';
+import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { mapValues, noEmptyObject } from '../_util';
-import { WorkflowShellAction, ShellArtifact } from '../workflow';
+import { FileSet, FileSetLocation, RunScript, RunScriptProps } from '../blueprint';
+import { mapValues, noEmptyObject } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Construct } from '@aws-cdk/core';
+import { ICodePipelineActionFactory, CodePipelineActionOptions } from './codepipeline-action-factory';
 
 /**
  * Construction props for SimpleSynthAction
  */
-export interface CodePipelineShellActionProps {
-  /**
-   * Name of the action
-   */
-  readonly actionName: string;
-
-  /**
-   * RunOrder for this action
-   */
-  readonly runOrder: number;
-
-  /**
-   * Artifact object translator
-   */
-  readonly artifactMap: ArtifactMap;
-
+export interface CodeBuildStepProps extends RunScriptProps {
   /**
    * Name for the generated CodeBuild project
    *
@@ -72,145 +56,96 @@ export interface CodePipelineShellActionProps {
   readonly includeBuildHashInPipeline?: boolean;
 
   /**
-   * Install commands
-   */
-  readonly installCommands?: string[];
-
-  /**
-   * Build commands
-   */
-  readonly buildCommands: string[];
-
-
-  /**
    * Build environment
    */
   readonly buildEnvironment?: codebuild.BuildEnvironment;
-
-
-  /**
-   * The environment variables that your builds can use.
-   */
-  readonly environmentVariables?: Record<string, string>;
-
-  /**
-   * Inputs
-   */
-  readonly inputs?: ShellArtifact[];
-
-  /**
-   * Outputs
-   */
-  readonly outputs?: ShellArtifact[];
 }
 
 /**
- * A standard synth with a generated buildspec
+ * Run a script as a CodeBuild Project
  */
-export class CodeBuildShellAction implements codepipeline.IAction, iam.IGrantable {
-  public static propsFromWorkflowAction(wf: WorkflowShellAction) {
+export class CodeBuildStep extends RunScript implements ICodePipelineActionFactory {
+  public static propsFromStep(wf: RunScript) {
     return {
       installCommands: wf.installCommands,
       buildCommands: wf.commands,
       commands: wf.commands,
-      environmentVariables: wf.environmentVariables,
+      environmentVariables: wf.env,
       inputs: wf.inputs,
       outputs: wf.outputs,
     } as const;
   }
 
+  public static fromStep(wf: RunScript, options: CodeBuildFromStepOptions) {
+    return new CodeBuildStep(wf.id, {
+      ...CodeBuildStep.propsFromStep(wf),
+      ...options,
+    });
+  }
+
+  public primaryOutput?: FileSet | undefined;
+  private readonly mainInput: FileSet;
   private _action?: codepipeline_actions.CodeBuildAction;
-  private _actionProperties: codepipeline.ActionProperties;
   private _project?: codebuild.IProject;
 
-  private readonly mainInput: ShellArtifact;
-  private readonly extraInputs: ShellArtifact[];
+  constructor(id: string, private readonly props: CodeBuildStepProps) {
+    super(id, props);
 
-  private readonly inputArtifact: codepipeline.Artifact;
-  private readonly extraInputArtifacts: codepipeline.Artifact[];
-  private readonly outputArtifacts: codepipeline.Artifact[];
-
-  constructor(private readonly props: CodePipelineShellActionProps) {
-    const inputs = props.inputs ?? [];
-    const outputs = props.outputs ?? [];
-
-    const mainInputs = inputs.filter(x => x.directory === '.');
-    if (mainInputs.length !== 1) {
+    const mainInput = this.inputs.find(x => x.directory === '.');
+    if (!mainInput) {
       throw new Error('CodeBuild action must have exactly one input with directory \'.\'');
     }
-    this.mainInput = mainInputs[0];
-    this.extraInputs = inputs.filter(x => x !== this.mainInput);
-
-    this.inputArtifact = props.artifactMap.toCodePipeline(this.mainInput.artifact);
-    this.extraInputArtifacts = this.extraInputs.map(x => props.artifactMap.toCodePipeline(x.artifact));
-    this.outputArtifacts = outputs.map(x => props.artifactMap.toCodePipeline(x.artifact));
-
-    // A number of actionProperties get read before bind() is even called (so before we
-    // have made the Project and can construct the actual CodeBuildAction)
-    //
-    // - actionName
-    // - resource
-    // - region
-    // - category
-    // - role
-    // - owner
-    this._actionProperties = {
-      actionName: props.actionName,
-      category: codepipeline.ActionCategory.BUILD,
-      provider: 'CodeBuild',
-      artifactBounds: { minInputs: 0, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
-      inputs: this.inputArtifact ? [this.inputArtifact, ...this.extraInputArtifacts] : undefined,
-      outputs: this.outputArtifacts,
-      runOrder: props.runOrder,
-    };
+    this.mainInput = mainInput.fileSet;
   }
 
   /**
-   * Exists to implement IAction
-   */
-  public get actionProperties(): codepipeline.ActionProperties {
-    return this._actionProperties;
-  }
-
-  /**
-   * Project generated to run the synth command
+ * Project generated to run the synth command
    */
   public get project(): codebuild.IProject {
     if (!this._project) {
-      throw new Error('Project becomes available after SimpleSynthAction has been bound to a stage');
+      throw new Error('Project becomes available after the pipeline has been built');
     }
     return this._project;
   }
 
-  /**
-   * Exists to implement IAction
-   */
-  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+  public produce(options: CodePipelineActionOptions): codepipeline.IAction {
+    const extraInputs = this.inputs.filter(x => x.directory !== '.');
+
+    const inputArtifact = options.artifacts.toCodePipeline(this.mainInput);
+    const extraInputArtifacts = extraInputs.map(x => options.artifacts.toCodePipeline(x.fileSet));
+    const outputArtifacts = this.outputs.map(x => options.artifacts.toCodePipeline(x.fileSet));
+
+
+    const installCommands = [
+      ...this.generateInputArtifactLinkCommands(options.artifacts, this.inputs.filter(x => x.directory !== '.')),
+      ...this.props.installCommands ?? [],
+    ];
+
     const buildSpec = codebuild.BuildSpec.fromObject({
       version: '0.2',
       phases: {
-        install: (this.props.installCommands?.length ?? 0) > 0 ? { commands: this.props.installCommands } : undefined,
-        build: this.props.buildCommands.length > 0 ? { commands: this.props.buildCommands } : undefined,
+        install: (installCommands.length ?? 0) > 0 ? { commands: installCommands } : undefined,
+        build: this.props.commands.length > 0 ? { commands: this.props.commands } : undefined,
       },
-      artifacts: this.renderArtifactsBuildSpec(this.props.outputs ?? []),
+      artifacts: this.renderArtifactsBuildSpec(options.artifacts, this.outputs ?? []),
     });
 
     const environment = mergeBuildEnvironments(
       this.props.buildEnvironment ?? {},
       {
-        environmentVariables: noEmptyObject(mapValues(this.props.environmentVariables ?? {}, value => ({ value }))),
+        environmentVariables: noEmptyObject(mapValues(this.props.env ?? {}, value => ({ value }))),
       });
 
     // A hash over the values that make the CodeBuild Project unique (and necessary
     // to restart the pipeline if one of them changes). projectName is not necessary to include
     // here because the pipeline will definitely restart if projectName changes.
     // (Resolve tokens)
-    const projectConfigHash = hash(Stack.of(scope).resolve({
+    const projectConfigHash = hash(Stack.of(options.scope).resolve({
       environment: serializeBuildEnvironment(environment),
       buildSpecString: buildSpec.toBuildSpec(),
     }));
 
-    const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
+    const project = new codebuild.PipelineProject(options.scope, 'CdkBuildProject', {
       projectName: this.props.projectName,
       environment,
       vpc: this.props.vpc,
@@ -227,12 +162,12 @@ export class CodeBuildShellAction implements codepipeline.IAction, iam.IGrantabl
     this._project = project;
 
     this._action = new codepipeline_actions.CodeBuildAction({
-      actionName: this.actionProperties.actionName,
-      input: this.inputArtifact,
-      extraInputs: this.extraInputArtifacts,
-      outputs: this.outputArtifacts,
+      actionName: options.actionName ?? this.id,
+      input: inputArtifact,
+      extraInputs: extraInputArtifacts,
+      outputs: outputArtifacts,
       project,
-      runOrder: this.props.runOrder,
+      runOrder: options.runOrder,
 
       // Inclusion of the hash here will lead to the pipeline structure for any changes
       // made the config of the underlying CodeBuild Project.
@@ -242,10 +177,8 @@ export class CodeBuildShellAction implements codepipeline.IAction, iam.IGrantabl
         _PROJECT_CONFIG_HASH: { value: projectConfigHash },
       } : undefined,
     });
-    this._actionProperties = this._action.actionProperties;
 
-    return this._action.bind(scope, stage, options);
-
+    return this._action;
   }
 
   /**
@@ -255,18 +188,7 @@ export class CodeBuildShellAction implements codepipeline.IAction, iam.IGrantabl
     return this.project.grantPrincipal;
   }
 
-  /**
-   * Exists to implement IAction
-   */
-  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
-    if (!this._action) {
-      throw new Error('Need bind() first');
-    }
-
-    return this._action.onStateChange(name, target, options);
-  }
-
-  private renderArtifactsBuildSpec(outputs: ShellArtifact[]) {
+  private renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLocation[]) {
     // save the generated files in the output artifact
     // This part of the buildspec has to look completely different depending on whether we're
     // using secondary artifacts or not.
@@ -282,7 +204,7 @@ export class CodeBuildShellAction implements codepipeline.IAction, iam.IGrantabl
 
     const secondary: Record<string, any> = {};
     for (const output of outputs) {
-      const art = this.props.artifactMap.toCodePipeline(output.artifact);
+      const art = artifactMap.toCodePipeline(output.fileSet);
 
       if (!art.artifactName) {
         throw new Error('You must give the output artifact a name');
@@ -294,6 +216,25 @@ export class CodeBuildShellAction implements codepipeline.IAction, iam.IGrantabl
     }
 
     return { 'secondary-artifacts': secondary };
+  }
+
+  /**
+   * Generate commands to move additional input artifacts into the right place
+   */
+  private generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileSetLocation[]): string[] {
+    return inputs.map(input => {
+      const fragments = [];
+
+      if (!['.', '..'].includes(path.dirname(input.directory))) {
+        fragments.push(`mkdir -p "${input.directory}"`);
+      }
+
+      const artifact = artifacts.toCodePipeline(input.fileSet);
+
+      fragments.push(`ln -s "$CODEBUILD_SRC_DIR_${artifact.artifactName}" "${input.directory}"`);
+
+      return fragments.join(' && ');
+    });
   }
 }
 
@@ -337,4 +278,9 @@ export function mergeBuildEnvironments(env: codebuild.BuildEnvironment, ...envs:
       privileged: b.privileged ?? a.privileged,
     };
   }
+}
+
+
+export interface CodeBuildFromStepOptions {
+  readonly actionName?: string;
 }

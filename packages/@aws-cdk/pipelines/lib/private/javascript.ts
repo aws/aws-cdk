@@ -51,6 +51,14 @@ export function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B): Record<
   return ret;
 }
 
+export function mkdict<A>(xs: Array<[string, A]>): Record<string, A> {
+  const ret: Record<string, A> = {};
+  for (const [k, v] of xs) {
+    ret[k] = v;
+  }
+  return ret;
+}
+
 export function noEmptyObject<A>(xs: Record<string, A>): Record<string, A> | undefined {
   if (Object.keys(xs).length === 0) { return undefined; }
   return xs;

@@ -1,18 +1,18 @@
 import * as cp from '@aws-cdk/aws-codepipeline';
-import { WorkflowArtifact } from '../workflow';
+import { FileSet } from '../blueprint';
 
 /**
  * Translate Graph Artifacts to CodePipeline Artifacts
  */
 export class ArtifactMap {
-  private artifacts = new Map<WorkflowArtifact, cp.Artifact>();
+  private artifacts = new Map<FileSet, cp.Artifact>();
   private usedNames = new Set<string>();
 
-  public toCodePipeline(x: WorkflowArtifact): cp.Artifact {
+  public toCodePipeline(x: FileSet): cp.Artifact {
     let ret = this.artifacts.get(x);
     if (!ret) {
       // They all need a name
-      const artifactName = this.makeUniqueName(`${x.producer.name}.${x.name}`);
+      const artifactName = this.makeUniqueName(`${x.producer.id}.${x.id}`);
       this.usedNames.add(artifactName);
       this.artifacts.set(x, ret = new cp.Artifact(artifactName));
     }

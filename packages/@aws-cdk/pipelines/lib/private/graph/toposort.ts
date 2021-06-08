@@ -1,6 +1,6 @@
-import { WorkflowNode } from './index';
+import { GraphNode } from './index';
 
-export function printDependencyMap(dependencies: Map<WorkflowNode, Set<WorkflowNode>>) {
+export function printDependencyMap<A>(dependencies: Map<GraphNode<A>, Set<GraphNode<A>>>) {
   const lines = ['---'];
   for (const [k, vs] of dependencies.entries()) {
     lines.push(`${k} -> ${Array.from(vs)}`);
@@ -9,10 +9,10 @@ export function printDependencyMap(dependencies: Map<WorkflowNode, Set<WorkflowN
   console.log(lines.join('\n'));
 }
 
-export function topoSort(nodes: Set<WorkflowNode>, dependencies: Map<WorkflowNode, Set<WorkflowNode>>): WorkflowNode[][] {
-  const remaining = new Set<WorkflowNode>(nodes);
+export function topoSort<A>(nodes: Set<GraphNode<A>>, dependencies: Map<GraphNode<A>, Set<GraphNode<A>>>): GraphNode<A>[][] {
+  const remaining = new Set<GraphNode<A>>(nodes);
 
-  const ret: WorkflowNode[][] = [];
+  const ret: GraphNode<A>[][] = [];
   while (remaining.size > 0) {
     // All elements with no more deps in the set can be ordered
     const selectable = Array.from(remaining.values()).filter(e => {
@@ -21,12 +21,12 @@ export function topoSort(nodes: Set<WorkflowNode>, dependencies: Map<WorkflowNod
       }
       return dependencies.get(e)!.size === 0;
     });
-    selectable.sort((a, b) => a.name < b.name ? -1 : b.name < a.name ? 1 : 0);
+    selectable.sort((a, b) => a.id < b.id ? -1 : b.id < a.id ? 1 : 0);
 
     // If we didn't make any progress, we got stuck
     if (selectable.length === 0) {
       const cycle = findCycle(dependencies);
-      throw new Error(`Dependency cycle in graph: ${cycle.map(n => n.name).join(' => ')}`);
+      throw new Error(`Dependency cycle in graph: ${cycle.map(n => n.id).join(' => ')}`);
     }
 
     ret.push(selectable);
@@ -47,14 +47,14 @@ export function topoSort(nodes: Set<WorkflowNode>, dependencies: Map<WorkflowNod
  *
  * Not the fastest, but effective and should be rare
  */
-function findCycle(deps: Map<WorkflowNode, Set<WorkflowNode>>): WorkflowNode[] {
+function findCycle<A>(deps: Map<GraphNode<A>, Set<GraphNode<A>>>): GraphNode<A>[] {
   for (const node of deps.keys()) {
     const cycle = recurse(node, [node]);
     if (cycle) { return cycle; }
   }
   throw new Error('No cycle found. Assertion failure!');
 
-  function recurse(node: WorkflowNode, path: WorkflowNode[]): WorkflowNode[] | undefined {
+  function recurse(node: GraphNode<A>, path: GraphNode<A>[]): GraphNode<A>[] | undefined {
     for (const dep of deps.get(node) ?? []) {
       if (dep === path[0]) { return [...path, dep]; }
 
