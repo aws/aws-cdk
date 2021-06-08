@@ -19,11 +19,11 @@ export class ContainerImageAssetHandler implements IAssetHandler {
   public async publish(): Promise<void> {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
     const ecr = await this.host.aws.ecrClient(destination);
-    const account = (await this.host.aws.discoverCurrentAccount()).accountId;
+    const account = async () => (await this.host.aws.discoverCurrentAccount())?.accountId;
     const repoUri = await repositoryUri(ecr, destination.repositoryName);
 
     if (!repoUri) {
-      throw new Error(`No ECR repository named '${destination.repositoryName}' in account ${account}. Is this account bootstrapped?`);
+      throw new Error(`No ECR repository named '${destination.repositoryName}' in account ${await account()}. Is this account bootstrapped?`);
     }
 
     const imageUri = `${repoUri}:${destination.imageTag}`;
