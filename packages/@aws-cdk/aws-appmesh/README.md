@@ -242,8 +242,11 @@ The `backendDefaults` property are added to the node while creating the virtual 
 
 ## Adding TLS to a listener
 
-The `tlsCertificate` property can be added to a Virtual Node listener or Virtual Gateway listener to add TLS configuration. 
-A certificate from AWS Certificate Manager can be incorporated or a customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
+The `tls` property can be added to a Virtual Node listener or Virtual Gateway listener to add TLS configuration. 
+App Mesh allows you to provide the TLS certificate to the proxy in the following ways:
+* A certificate from AWS Certificate Manager can be incorporated
+* A customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
+* A certificate provided by a Secrets Discovery Service (SDS) endpoint over local Unix Domain Socket can be specified with its `secretName`.
 
 ```typescript
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
@@ -279,6 +282,62 @@ const gateway = new appmesh.VirtualGateway(this, 'gateway', {
     },
   })],
   virtualGatewayName: 'gateway',
+});
+```
+
+## Adding mutual TLS authentication
+
+To enable mutual TL authentication, add `certificate` property to TLS Client Policy and/or `validation` property to TLS Listener.
+
+A certificate from AWS Certificate Manager is **not** supported for mutual TLS.
+
+```typescript
+import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
+
+const cert = new certificatemanager.Certificate(this, 'cert', {...});
+
+const node1 = new appmesh.VirtualNode(stack, 'node1', {
+  mesh,
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('node'),
+  listeners: [appmesh.VirtualNodeListener.grpc({
+    port: 80,
+    tls: {
+      mode: appmesh.TlsMode.STRICT,
+      certificate: appmesh.TlsCertificate.acm({
+        certificate: cert,
+      }),
+      // Validate a file client certificates to enable mutual TLS authentication when a client provides a certificate.
+      validation: {
+        trust: appmesh.TlsValidationTrust.file({
+          certificateChain: 'path-to-certificate',
+        }),
+      },
+    },
+  })],
+});
+
+const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
+
+const node2 = new appmesh.VirtualNode(stack, 'node2', {
+  mesh,
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('node2'),
+  backendDefaults: {
+    tlsClientPolicy: {
+      // Provide a SDS client certificate when a server requests it and enable mutual TLS authentication.
+      certificate: appmesh.TlsCertificate.sds( {
+        secretName: 'secret_certificate',
+      }),
+      ports: [8080, 8081],
+      validation: {
+        subjectAlternativeNames: {
+          exactMatch: ['mesh-endpoint.apps.local'],
+        },
+        trust: appmesh.TlsValidationTrust.acm({
+          certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+        }),
+      },
+    },
+  },
 });
 ```
 

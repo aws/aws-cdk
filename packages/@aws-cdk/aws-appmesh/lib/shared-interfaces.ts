@@ -241,7 +241,7 @@ class VirtualServiceBackend extends Backend {
           virtualServiceName: this.virtualService.virtualServiceName,
           clientPolicy: this.tlsClientPolicy
             ? {
-              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy, (config) => config.virtualNodeClientTlsValidationTrust),
+              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),
             }
             : undefined,
         },

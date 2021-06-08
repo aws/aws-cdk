@@ -84,12 +84,30 @@ const node2 = mesh.addVirtualNode('node2', {
       },
     },
   },
-  backends: [appmesh.Backend.virtualService(
-    new appmesh.VirtualService(stack, 'service-3', {
-      virtualServiceName: 'service3.domain.local',
-      virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
-    }),
-  )],
+  backends: [
+    appmesh.Backend.virtualService(
+      new appmesh.VirtualService(stack, 'service-3', {
+        virtualServiceName: 'service3.domain.local',
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+      }),
+      {
+        tlsClientPolicy: {
+          certificate: appmesh.TlsCertificate.file({
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
+          }),
+          validation: {
+            subjectAlternativeNames: {
+              exactMatch: ['mymesh.local'],
+            },
+            trust: appmesh.TlsValidationTrust.file({
+              certificateChain: 'path/to/certChain',
+            }),
+          },
+        },
+      },
+    ),
+  ],
 });
 
 const node3 = mesh.addVirtualNode('node3', {
@@ -114,6 +132,50 @@ const node3 = mesh.addVirtualNode('node3', {
   },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
+
+const node4 = mesh.addVirtualNode('node4', {
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node4.${namespace.namespaceName}`),
+  listeners: [appmesh.VirtualNodeListener.http({
+    tls: {
+      mode: appmesh.TlsMode.STRICT,
+      certificate: appmesh.TlsCertificate.sds({
+        secretName: 'spiffe://domain.local/backend-service',
+      }),
+      validation: {
+        trust: appmesh.TlsValidationTrust.sds({
+          secretName: 'spiffe://domain.local',
+        }),
+        subjectAlternativeNames: {
+          exactMatch: ['client.domain.local'],
+        },
+      },
+    },
+    healthCheck: appmesh.HealthCheck.http({
+      healthyThreshold: 3,
+      interval: cdk.Duration.seconds(5),
+      path: '/check-path3',
+      timeout: cdk.Duration.seconds(2),
+      unhealthyThreshold: 2,
+    }),
+  })],
+  backendDefaults: {
+    tlsClientPolicy: {
+      validation: {
+        trust: appmesh.TlsValidationTrust.file({
+          certificateChain: 'path-to-certificate',
+        }),
+      },
+    },
+  },
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+});
+
+node4.addBackend(appmesh.Backend.virtualService(
+  new appmesh.VirtualService(stack, 'service-4', {
+    virtualServiceName: 'service4.domain.local',
+    virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+  }),
+));
 
 router.addRoute('route-2', {
   routeSpec: appmesh.RouteSpec.http({
@@ -223,6 +285,40 @@ new appmesh.VirtualGateway(stack, 'gateway2', {
       }),
     },
   })],
+});
+
+new appmesh.VirtualGateway(stack, 'gateway3', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.http({
+    port: 443,
+    healthCheck: appmesh.HealthCheck.http({
+      interval: cdk.Duration.seconds(10),
+    }),
+    tls: {
+      mode: appmesh.TlsMode.STRICT,
+      certificate: appmesh.TlsCertificate.sds({
+        secretName: 'secret_certificate',
+      }),
+      validation: {
+        trust: appmesh.TlsValidationTrust.file({
+          certificateChain: 'path/to/certChain',
+        }),
+      },
+    },
+  })],
+  backendDefaults: {
+    tlsClientPolicy: {
+      certificate: appmesh.TlsCertificate.file({
+        certificateChainPath: 'path/to/certChain',
+        privateKeyPath: 'path/to/privateKey',
+      }),
+      validation: {
+        trust: appmesh.TlsValidationTrust.sds({
+          secretName: 'secret_validation',
+        }),
+      },
+    },
+  },
 });
 
 gateway.addGatewayRoute('gateway1-route-http', {

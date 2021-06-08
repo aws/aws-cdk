@@ -41,6 +41,16 @@ export interface FileCertificateOptions {
 }
 
 /**
+ * SDS Certificate Properties
+ */
+export interface SdsCertificateOptions {
+  /**
+   * The name of the secret for Envoy to fetch from a specific endpoint through the Secrets Discovery Protocol.
+   */
+  readonly secretName: string;
+}
+
+/**
  * Represents a TLS certificate
  */
 export abstract class TlsCertificate {
@@ -56,6 +66,13 @@ export abstract class TlsCertificate {
    */
   public static acm(props: AcmCertificateOptions): TlsCertificate {
     return new AcmTlsCertificate(props);
+  }
+
+  /**
+   * Returns an SDS TLS Certificate
+   */
+  public static sds(props: SdsCertificateOptions): TlsCertificate {
+    return new SdsTlsCertificate(props);
   }
 
   /**
@@ -116,6 +133,31 @@ class FileTlsCertificate extends TlsCertificate {
         file: {
           certificateChain: this.certificateChain,
           privateKey: this.privateKey,
+        },
+      },
+    };
+  }
+}
+
+/**
+ * Represents a SDS provided TLS certificate
+ */
+class SdsTlsCertificate extends TlsCertificate {
+  /**
+   * The name of the secret requested from the Secret Discovery Service provider.
+   */
+  readonly secretName: string;
+
+  constructor(props: SdsCertificateOptions) {
+    super();
+    this.secretName = props.secretName;
+  }
+
+  bind(_scope: Construct): TlsCertificateConfig {
+    return {
+      tlsCertificate: {
+        sds: {
+          secretName: this.secretName,
         },
       },
     };

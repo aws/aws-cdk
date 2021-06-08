@@ -971,6 +971,30 @@
           "Backends": [
             {
               "VirtualService": {
+                "ClientPolicy": {
+                  "TLS": {
+                    "Certificate": {
+                      "File": {
+                        "CertificateChain": "path/to/certChain",
+                        "PrivateKey": "path/to/privateKey"
+                      }
+                    },
+                    "Validation": {
+                      "SubjectAlternativeNames": {
+                        "Match": {
+                          "Exact": [
+                            "mymesh.local"
+                          ]
+                        }
+                      },
+                      "Trust": {
+                        "File": {
+                          "CertificateChain": "path/to/certChain"
+                        }
+                      }
+                    }
+                  }
+                },
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
                     "service3859EB104",
@@ -1060,6 +1084,96 @@
           }
         },
         "VirtualNodeName": "meshstackmeshnode3C5835BCB"
+      }
+    },
+    "meshnode4AE87F692": {
+      "Type": "AWS::AppMesh::VirtualNode",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "BackendDefaults": {
+            "ClientPolicy": {
+              "TLS": {
+                "Validation": {
+                  "Trust": {
+                    "File": {
+                      "CertificateChain": "path-to-certificate"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "Backends": [
+            {
+              "VirtualService": {
+                "VirtualServiceName": {
+                  "Fn::GetAtt": [
+                    "service4983B61EE",
+                    "VirtualServiceName"
+                  ]
+                }
+              }
+            }
+          ],
+          "Listeners": [
+            {
+              "HealthCheck": {
+                "HealthyThreshold": 3,
+                "IntervalMillis": 5000,
+                "Path": "/check-path3",
+                "Port": 8080,
+                "Protocol": "http",
+                "TimeoutMillis": 2000,
+                "UnhealthyThreshold": 2
+              },
+              "PortMapping": {
+                "Port": 8080,
+                "Protocol": "http"
+              },
+              "TLS": {
+                "Certificate": {
+                  "SDS": {
+                    "SecretName": "spiffe://domain.local/backend-service"
+                  }
+                },
+                "Mode": "STRICT",
+                "Validation": {
+                  "SubjectAlternativeNames": {
+                    "Match": {
+                      "Exact": [
+                        "client.domain.local"
+                      ]
+                    }
+                  },
+                  "Trust": {
+                    "SDS": {
+                      "SecretName": "spiffe://domain.local"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "Logging": {
+            "AccessLog": {
+              "File": {
+                "Path": "/dev/stdout"
+              }
+            }
+          },
+          "ServiceDiscovery": {
+            "DNS": {
+              "Hostname": "node4.domain.local"
+            }
+          }
+        },
+        "VirtualNodeName": "meshstackmeshnode404B014E7"
       }
     },
     "meshgateway1B02387E8": {
@@ -1257,6 +1371,19 @@
         "VirtualServiceName": "service3.domain.local"
       }
     },
+    "service4983B61EE": {
+      "Type": "AWS::AppMesh::VirtualService",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {},
+        "VirtualServiceName": "service4.domain.local"
+      }
+    },
     "gateway2BCE5C5E0": {
       "Type": "AWS::AppMesh::VirtualGateway",
       "Properties": {
@@ -1295,6 +1422,71 @@
           ]
         },
         "VirtualGatewayName": "meshstackgateway2BEC62D7C"
+      }
+    },
+    "gateway3F9F16554": {
+      "Type": "AWS::AppMesh::VirtualGateway",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "BackendDefaults": {
+            "ClientPolicy": {
+              "TLS": {
+                "Certificate": {
+                  "File": {
+                    "CertificateChain": "path/to/certChain",
+                    "PrivateKey": "path/to/privateKey"
+                  }
+                },
+                "Validation": {
+                  "Trust": {
+                    "SDS": {
+                      "SecretName": "secret_validation"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "Listeners": [
+            {
+              "HealthCheck": {
+                "HealthyThreshold": 2,
+                "IntervalMillis": 10000,
+                "Path": "/",
+                "Port": 443,
+                "Protocol": "http",
+                "TimeoutMillis": 2000,
+                "UnhealthyThreshold": 2
+              },
+              "PortMapping": {
+                "Port": 443,
+                "Protocol": "http"
+              },
+              "TLS": {
+                "Certificate": {
+                  "SDS": {
+                    "SecretName": "secret_certificate"
+                  }
+                },
+                "Mode": "STRICT",
+                "Validation": {
+                  "Trust": {
+                    "File": {
+                      "CertificateChain": "path/to/certChain"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "VirtualGatewayName": "meshstackgateway34EC5ED00"
       }
     }
   }

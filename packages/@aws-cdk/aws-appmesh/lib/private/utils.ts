@@ -1,6 +1,5 @@
 import { CfnVirtualNode } from '../appmesh.generated';
 import { TlsClientPolicy } from '../tls-client-policy';
-import { TlsValidationTrustConfig } from '../tls-validation';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -34,16 +33,30 @@ export interface ConnectionPoolConfig {
 
 /**
  * This is the helper method to render TLS property of client policy.
- *
  */
-export function renderTlsClientPolicy(scope: Construct, tlsClientPolicy: TlsClientPolicy | undefined,
-  extractor: (c: TlsValidationTrustConfig) => CfnVirtualNode.TlsValidationContextTrustProperty): CfnVirtualNode.ClientPolicyTlsProperty | undefined {
+export function renderTlsClientPolicy(scope: Construct, tlsClientPolicy: TlsClientPolicy | undefined)
+  : CfnVirtualNode.ClientPolicyTlsProperty | undefined {
+  const certificate = tlsClientPolicy?.certificate?.bind(scope).tlsCertificate;
+  if (certificate?.acm) {
+    throw new Error('ACM certificate source is currently not supported.');
+  }
+
+  const sans = tlsClientPolicy?.validation.subjectAlternativeNames;
+
   return tlsClientPolicy
     ? {
+      certificate: certificate,
       ports: tlsClientPolicy.ports,
       enforce: tlsClientPolicy.enforce,
       validation: {
-        trust: extractor(tlsClientPolicy.validation.trust.bind(scope)),
+        subjectAlternativeNames: sans
+          ? {
+            match: {
+              exact: sans.exactMatch,
+            },
+          }
+          : undefined,
+        trust: tlsClientPolicy.validation.trust.bind(scope).tlsValidationTrust,
       },
     }
     : undefined;

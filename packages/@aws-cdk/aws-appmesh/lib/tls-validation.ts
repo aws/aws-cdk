@@ -1,14 +1,22 @@
 import * as acmpca from '@aws-cdk/aws-acmpca';
-import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
+import { CfnVirtualNode } from './appmesh.generated';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
 /**
- * Represents the properties needed to define TLS validation context
+ * Represents the properties needed to define TLS Validation context
  */
 export interface TlsValidation {
+  /**
+   * Represents the subject alternative names (SANs) secured by the certificate.
+   * SANs must be in the FQDN or URI format.
+   *
+   * @default - the Envoy proxy for that node doesn't verify the SAN on a peer client certificate.
+   */
+  readonly subjectAlternativeNames?: SubjectiveAlternativeNames;
+
   /**
    * Reference to where to retrieve the trust chain.
    */
@@ -16,18 +24,13 @@ export interface TlsValidation {
 }
 
 /**
- * All Properties for TLS Validations for both Client Policy and Listener.
+ * All Properties for TLS Validation Trusts for both Client Policy and Listener.
  */
 export interface TlsValidationTrustConfig {
   /**
-   * VirtualNode CFN configuration for client policy's TLS Validation
+   * VirtualNode CFN configuration for client policy's TLS Validation Trust
    */
-  readonly virtualNodeClientTlsValidationTrust: CfnVirtualNode.TlsValidationContextTrustProperty;
-
-  /**
-   * VirtualGateway CFN configuration for client policy's TLS Validation
-   */
-  readonly virtualGatewayClientTlsValidationTrust: CfnVirtualGateway.VirtualGatewayTlsValidationContextTrustProperty;
+  readonly tlsValidationTrust: CfnVirtualNode.TlsValidationContextTrustProperty;
 }
 
 /**
@@ -51,7 +54,17 @@ export interface TlsValidationFileTrustOptions {
 }
 
 /**
- * Defines the TLS validation context trust.
+ * SDS Trust Properties
+ */
+export interface TlsValidationSdsTrustOptions {
+  /**
+   * The name of the secret for Envoy to fetch from a specific endpoint through the Secrets Discovery Protocol.
+   */
+  readonly secretName: string;
+}
+
+/**
+ * Defines the TLS Validation Context Trust.
  */
 export abstract class TlsValidationTrust {
   /**
@@ -62,10 +75,17 @@ export abstract class TlsValidationTrust {
   }
 
   /**
-   * TLS validation context trust for ACM Private Certificate Authority (CA).
+   * TLS Validation Context Trust for ACM Private Certificate Authority (CA).
    */
   public static acm(props: TlsValidationAcmTrustOptions): TlsValidationTrust {
     return new TlsValidationAcmTrust(props);
+  }
+
+  /**
+   * TLS Validation Context Trust for Envoy' service discovery service.
+   */
+  public static sds(props: TlsValidationSdsTrustOptions): TlsValidationTrust {
+    return new TlsValidationSdsTrust(props);
   }
 
   /**
@@ -90,13 +110,7 @@ class TlsValidationAcmTrust extends TlsValidationTrust {
       throw new Error('you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy');
     } else {
       return {
-        virtualNodeClientTlsValidationTrust: {
-          acm: {
-            certificateAuthorityArns: this.certificateAuthorities.map(certificateArn =>
-              certificateArn.certificateAuthorityArn),
-          },
-        },
-        virtualGatewayClientTlsValidationTrust: {
+        tlsValidationTrust: {
           acm: {
             certificateAuthorityArns: this.certificateAuthorities.map(certificateArn =>
               certificateArn.certificateAuthorityArn),
@@ -120,16 +134,43 @@ class TlsValidationFileTrust extends TlsValidationTrust {
 
   public bind(_scope: Construct): TlsValidationTrustConfig {
     return {
-      virtualNodeClientTlsValidationTrust: {
-        file: {
-          certificateChain: this.certificateChain,
-        },
-      },
-      virtualGatewayClientTlsValidationTrust: {
+      tlsValidationTrust: {
         file: {
           certificateChain: this.certificateChain,
         },
       },
     };
   }
+}
+
+class TlsValidationSdsTrust extends TlsValidationTrust {
+  /**
+   * The name of the secret for Envoy to fetch from a specific endpoint through the Secrets Discovery Protocol.
+   */
+  readonly secretName: string;
+
+  constructor (props: TlsValidationSdsTrustOptions) {
+    super();
+    this.secretName = props.secretName;
+  }
+
+  public bind(_scope: Construct): TlsValidationTrustConfig {
+    return {
+      tlsValidationTrust: {
+        sds: {
+          secretName: this.secretName,
+        },
+      },
+    };
+  }
+}
+
+/**
+ * Represents the properties needed to define subject alternative names
+ */
+export interface SubjectiveAlternativeNames {
+  /**
+   * The values of the SAN must match the specified values exactly.
+   */
+  readonly exactMatch: string[];
 }

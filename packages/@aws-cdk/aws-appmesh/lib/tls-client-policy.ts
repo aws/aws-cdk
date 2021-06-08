@@ -1,9 +1,18 @@
+import { TlsCertificate } from './tls-certificate';
 import { TlsValidation } from './tls-validation';
 
 /**
  * Represents the properties needed to define client policy
  */
 export interface TlsClientPolicy {
+  /**
+   * Represents a client TLS certificate.
+   * The certificate will be sent only if the server requests it, enabling mutual TLS.
+   *
+   * @default - client TLS certificate is not provided
+   */
+  readonly certificate?: TlsCertificate;
+
   /**
    * Whether the policy is enforced.
    *
