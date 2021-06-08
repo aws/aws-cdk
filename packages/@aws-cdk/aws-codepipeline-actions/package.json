@@ -174,11 +174,6 @@
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CodeDeployEcsDeployActionProps.containerImageInputs"
     ]
   },
-  "pkglint": {
-    "attribution": [
-      "case"
-    ]
-  },
   "awscdkio": {
     "announce": false
   },
