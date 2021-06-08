@@ -3,6 +3,8 @@ import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
 import { Stage } from '../lib/private/stage';
+import { FakeBuildAction } from './fake-build-action';
+import { FakeSourceAction } from './fake-source-action';
 
 /* eslint-disable quote-props */
 
@@ -131,6 +133,54 @@ nodeunitShim({
         stageName: 'ThirdStage',
       }, pipeline));
       test.equal(pipeline.stageCount, 2);
+
+      test.done();
+    },
+
+    'configure notification on stage level'(test: Test) {
+      const stack = new cdk.Stack();
+      const sourceArtifact = new codepipeline.Artifact();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new FakeSourceAction({ actionName: 'Fetch', output: sourceArtifact })],
+          },
+          {
+            stageName: 'Build',
+            actions: [new FakeBuildAction({ actionName: 'Gcc', input: sourceArtifact })],
+          },
+        ],
+      });
+
+      const stage = pipeline.stages[0];
+      stage?.notifyOnStateChange('NotifyOnStageStateChange');
+
+      expect(stack, true).to(haveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+        DetailType: 'FULL',
+        EventTypeIds: [
+          'codepipeline-pipeline-stage-execution-succeeded',
+          'codepipeline-pipeline-stage-execution-failed',
+          'codepipeline-pipeline-stage-execution-started',
+          'codepipeline-pipeline-stage-execution-resumed',
+          'codepipeline-pipeline-stage-execution-canceled',
+        ],
+        Name: 'PipelineSourceNotifyOnStageStateChangeC590F996',
+        Resource: {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':codepipeline:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'PipelineC660917D' },
+          ]],
+        },
+        Targets: [],
+        Status: 'ENABLED',
+      }));
 
       test.done();
     },

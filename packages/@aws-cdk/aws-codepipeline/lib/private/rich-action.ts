@@ -1,3 +1,4 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import { ResourceEnvironment, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IPipeline, IStage } from '../action';
@@ -32,6 +33,10 @@ export class RichAction implements IAction {
 
   public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
     return this.action.onStateChange(name, target, options);
+  }
+
+  public notifyOnStateChange(name: string, options?: notifications.NotifyOptions): notifications.IRule {
+    return this.action.notifyOnStateChange(name, options);
   }
 
   public get isCrossRegion(): boolean {

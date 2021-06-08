@@ -151,6 +151,15 @@ export interface IAction {
    * @param options additional options that can be used to customize the created Event
    */
   onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Action execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param name Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnStateChange(name: string, options?: notifications.NotifyOptions): notifications.IRule;
 }
 
 /**
@@ -233,6 +242,15 @@ export interface IStage {
   addAction(action: IAction): void;
 
   onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Stage execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param name Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnStateChange(name: string, options?: notifications.NotifyOptions): notifications.IRule;
 }
 
 /**
@@ -364,6 +382,20 @@ export abstract class Action implements IAction {
     return rule;
   }
 
+  public notifyOnStateChange(name: string, options?: notifications.NotifyOptions): notifications.IRule {
+    const rule = new notifications.Rule(this._scope, name, {
+      ...options,
+      source: this._pipeline,
+      events: [
+        ActionEvent.ACTION_EXECUTION_STARTED,
+        ActionEvent.ACTION_EXECUTION_SUCCEEDED,
+        ActionEvent.ACTION_EXECUTION_FAILED,
+        ActionEvent.ACTION_EXECUTION_CANCELED,
+      ],
+    });
+    return rule;
+  }
+
   protected variableExpression(variableName: string): string {
     this._variableReferenced = true;
     return `#{${this._namespaceToken}.${variableName}}`;
@@ -402,4 +434,30 @@ export abstract class Action implements IAction {
       throw new Error('Action must be added to a stage that is part of a pipeline first');
     }
   }
+}
+
+/**
+ * The list of event types for AWS Codepipeline Action
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+ */
+enum ActionEvent {
+  /**
+   * Trigger notification when pipeline action execution succeeded
+   */
+  ACTION_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-action-execution-succeeded',
+
+  /**
+   * Trigger notification when pipeline action execution failed
+   */
+  ACTION_EXECUTION_FAILED = 'codepipeline-pipeline-action-execution-failed',
+
+  /**
+   * Trigger notification when pipeline action execution canceled
+   */
+  ACTION_EXECUTION_CANCELED = 'codepipeline-pipeline-action-execution-canceled',
+
+  /**
+   * Trigger notification when pipeline action execution started
+   */
+  ACTION_EXECUTION_STARTED = 'codepipeline-pipeline-action-execution-started',
 }

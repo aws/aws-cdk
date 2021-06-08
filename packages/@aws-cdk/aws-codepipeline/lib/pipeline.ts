@@ -12,7 +12,6 @@ import { ActionCategory, IAction, IPipeline, IStage } from './action';
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
 import { FullActionDescriptor } from './private/full-action-descriptor';
-import { PipelineEvent } from './private/notification-events';
 import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
@@ -1032,4 +1031,40 @@ class PipelineLocation {
  */
 function renderEnvDimension(s: string | undefined) {
   return Token.isUnresolved(s) ? '(current)' : s;
+}
+
+/**
+ * The list of event types for AWS Codepipeline Pipeline
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+ */
+enum PipelineEvent {
+  /**
+   * Trigger notification when pipeline execution failed
+   */
+  PIPELINE_EXECUTION_FAILED = 'codepipeline-pipeline-pipeline-execution-failed',
+
+  /**
+   * Trigger notification when pipeline execution canceled
+   */
+  PIPELINE_EXECUTION_CANCELED = 'codepipeline-pipeline-pipeline-execution-canceled',
+
+  /**
+   * Trigger notification when pipeline execution started
+   */
+  PIPELINE_EXECUTION_STARTED = 'codepipeline-pipeline-pipeline-execution-started',
+
+  /**
+   * Trigger notification when pipeline execution resumed
+   */
+  PIPELINE_EXECUTION_RESUMED = 'codepipeline-pipeline-pipeline-execution-resumed',
+
+  /**
+   * Trigger notification when pipeline execution succeeded
+   */
+  PIPELINE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-pipeline-execution-succeeded',
+
+  /**
+   * Trigger notification when pipeline execution superseded
+   */
+  PIPELINE_EXECUTION_SUPERSEDED = 'codepipeline-pipeline-pipeline-execution-superseded',
 }

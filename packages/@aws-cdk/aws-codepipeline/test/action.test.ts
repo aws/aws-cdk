@@ -403,6 +403,53 @@ nodeunitShim({
 
     test.done();
   },
+
+  'configure notification on action level'(test: Test) {
+    const stack = new cdk.Stack();
+    const sourceArtifact = new codepipeline.Artifact();
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [new FakeSourceAction({ actionName: 'Fetch', output: sourceArtifact })],
+        },
+        {
+          stageName: 'Build',
+          actions: [new FakeBuildAction({ actionName: 'Gcc', input: sourceArtifact })],
+        },
+      ],
+    });
+
+    const action = pipeline.stages[0]?.actions[0];
+    action?.notifyOnStateChange('NotifyOnActionStateChange');
+
+    expect(stack, true).to(haveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      DetailType: 'FULL',
+      EventTypeIds: [
+        'codepipeline-pipeline-action-execution-started',
+        'codepipeline-pipeline-action-execution-succeeded',
+        'codepipeline-pipeline-action-execution-failed',
+        'codepipeline-pipeline-action-execution-canceled',
+      ],
+      Name: 'PipelineSourceFetchNotifyOnActionStateChangeEDEBDD5E',
+      Resource: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':codepipeline:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'PipelineC660917D' },
+        ]],
+      },
+      Targets: [],
+      Status: 'ENABLED',
+    }));
+
+    test.done();
+  },
 });
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {

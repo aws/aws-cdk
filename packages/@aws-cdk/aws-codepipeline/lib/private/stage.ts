@@ -1,3 +1,4 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import { IAction, IPipeline, IStage } from '../action';
@@ -105,6 +106,21 @@ export class Stage implements IStage {
     return rule;
   }
 
+  public notifyOnStateChange(name: string, options: notifications.NotifyOptions = {}): notifications.IRule {
+    const rule = new notifications.Rule(this.scope, name, {
+      ...options,
+      source: this.pipeline,
+      events: [
+        StageEvent.STAGE_EXECUTION_SUCCEEDED,
+        StageEvent.STAGE_EXECUTION_FAILED,
+        StageEvent.STAGE_EXECUTION_STARTED,
+        StageEvent.STAGE_EXECUTION_RESUMED,
+        StageEvent.STAGE_EXECUTION_CANCELED,
+      ],
+    });
+    return rule;
+  }
+
   public validate(): string[] {
     return [
       ...this.validateHasActions(),
@@ -173,4 +189,35 @@ function sanitizeArtifactName(artifactName: string): string {
   // strip out some characters that are legal in Stage and Action names,
   // but not in Artifact names
   return artifactName.replace(/[@.]/g, '');
+}
+
+/**
+ * The list of event types for AWS Codepipeline Stage
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+ */
+enum StageEvent {
+  /**
+   * Trigger notification when pipeline stage execution started
+   */
+  STAGE_EXECUTION_STARTED = 'codepipeline-pipeline-stage-execution-started',
+
+  /**
+   * Trigger notification when pipeline stage execution succeeded
+   */
+  STAGE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-stage-execution-succeeded',
+
+  /**
+   * Trigger notification when pipeline stage execution resumed
+   */
+  STAGE_EXECUTION_RESUMED = 'codepipeline-pipeline-stage-execution-resumed',
+
+  /**
+   * Trigger notification when pipeline stage execution canceled
+   */
+  STAGE_EXECUTION_CANCELED = 'codepipeline-pipeline-stage-execution-canceled',
+
+  /**
+   * Trigger notification when pipeline stage execution failed
+   */
+  STAGE_EXECUTION_FAILED = 'codepipeline-pipeline-stage-execution-failed',
 }
