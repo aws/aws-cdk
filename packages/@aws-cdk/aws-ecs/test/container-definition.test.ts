@@ -7,7 +7,7 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as ecs from '../lib';
 
 describe('container definition', () => {
@@ -40,7 +40,8 @@ describe('container definition', () => {
 
     test('add a container using all props', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new cdk.Stack(app);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
       const secret = new secretsmanager.Secret(stack, 'Secret');
       new ecs.ContainerDefinition(stack, 'Container', {
@@ -757,7 +758,8 @@ describe('container definition', () => {
     describe('with EC2 task definitions', () => {
       test('can add asset environment file to the container definition', () => {
         // GIVEN
-        const stack = new cdk.Stack();
+        const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+        const stack = new cdk.Stack(app);
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
         // WHEN
@@ -862,7 +864,8 @@ describe('container definition', () => {
     describe('with Fargate task definitions', () => {
       test('can add asset environment file to the container definition', () => {
         // GIVEN
-        const stack = new cdk.Stack();
+        const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+        const stack = new cdk.Stack(app);
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
         // WHEN
@@ -1864,7 +1867,17 @@ describe('container definition', () => {
     });
   });
 
-  testFutureBehavior('can use a DockerImageAsset directly for a container image', { [cxapi.DOCKER_IGNORE_SUPPORT]: true }, cdk.App, (app) => {
+  class MyApp extends cdk.App {
+    constructor() {
+      super({
+        context: {
+          [cxapi.DOCKER_IGNORE_SUPPORT]: true,
+        },
+      });
+    }
+  }
+
+  testLegacyBehavior('can use a DockerImageAsset directly for a container image', MyApp, (app) => {
     // GIVEN
     const stack = new cdk.Stack(app, 'Stack');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1930,7 +1943,7 @@ describe('container definition', () => {
 
   });
 
-  testFutureBehavior('docker image asset options can be used when using container image', { '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true }, cdk.App, (app) => {
+  testLegacyBehavior('docker image asset options can be used when using container image', MyApp, (app) => {
     // GIVEN
     const stack = new cdk.Stack(app, 'MyStack');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
