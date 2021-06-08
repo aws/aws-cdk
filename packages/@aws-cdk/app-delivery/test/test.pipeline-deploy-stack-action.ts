@@ -470,11 +470,11 @@ class FakeAction implements codepipeline.IAction {
     throw new Error('onStateChange() is not available on FakeAction');
   }
 
-  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule {
+  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.IRule {
     throw new Error('Method not implemented.');
   }
 
-  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+  public notifyOnStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.IRule {
     throw new Error('Method not implemented.');
   }
 }
