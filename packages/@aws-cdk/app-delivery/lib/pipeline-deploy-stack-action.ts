@@ -190,7 +190,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
     return this.executeChangeSetAction.onStateChange(name, target, options);
   }
 
-  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications..IRule {
+  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule {
     return this.executeChangeSetAction.notifyOn(id, options);
   }
 
