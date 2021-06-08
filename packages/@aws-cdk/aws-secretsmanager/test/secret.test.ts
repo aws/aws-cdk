@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { expect as assertExpect, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import { expect as assertExpect, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -688,8 +688,11 @@ test('fromSecretCompleteArn - grants', () => {
 });
 
 test('fromSecretCompleteArn - can be assigned to a property with type number', () => {
+  // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
   const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+
+  // WHEN
   new lambda.Function(stack, 'MyFunction', {
     code: lambda.Code.fromInline('foo'),
     handler: 'bar',
@@ -697,7 +700,10 @@ test('fromSecretCompleteArn - can be assigned to a property with type number', (
     memorySize: cdk.Token.asNumber(secret.secretValueFromJson('LambdaFunctionMemorySize')),
   });
 
-  SynthUtils.synthesize(stack);
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    MemorySize: `{{resolve:secretsmanager:${secretArn}:SecretString:LambdaFunctionMemorySize::}}`,
+  });
 });
 
 test('fromSecretPartialArn', () => {
