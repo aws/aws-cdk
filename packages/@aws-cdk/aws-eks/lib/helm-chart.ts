@@ -3,10 +3,6 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Helm Chart options.
  */
@@ -84,7 +80,7 @@ export interface HelmChartProps extends HelmChartOptions {
  *
  * Applies/deletes the resources using `kubectl` in sync with the resource.
  */
-export class HelmChart extends CoreConstruct {
+export class HelmChart extends Construct {
   /**
    * The CloudFormation resource type.
    */

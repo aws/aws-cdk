@@ -104,7 +104,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
 
   constructor(scope: Construct, id: string, props: GatewayRouteProps) {
     super(scope, id, {
-      physicalName: props.gatewayRouteName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.gatewayRouteName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.virtualGateway = props.virtualGateway;

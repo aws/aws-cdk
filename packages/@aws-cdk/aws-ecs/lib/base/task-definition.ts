@@ -431,6 +431,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.taskDefinitionArn = taskDef.ref;
+    this.node.addValidation({ validate: () => this.validateTaskDefinition() });
   }
 
   public get executionRole(): iam.IRole | undefined {
@@ -626,8 +627,8 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Validates the task definition.
    */
-  protected validate(): string[] {
-    const ret = super.validate();
+  private validateTaskDefinition(): string[] {
+    const ret = new Array<string>();
 
     if (isEc2Compatible(this.compatibility)) {
       // EC2 mode validations

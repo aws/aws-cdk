@@ -16,6 +16,7 @@ test('simple use case', () => {
   const app = new cdk.App({
     context: {
       [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: 'true',
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
     },
   });
   const stack = new cdk.Stack(app, 'MyStack');
@@ -48,7 +49,11 @@ test('simple use case', () => {
 });
 
 test('verify that the app resolves tokens in metadata', () => {
-  const app = new cdk.App();
+  const app = new cdk.App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
   const stack = new cdk.Stack(app, 'my-stack');
   const dirPath = path.resolve(__dirname, 'sample-asset-directory');
 
@@ -72,7 +77,12 @@ test('verify that the app resolves tokens in metadata', () => {
 });
 
 test('"file" assets', () => {
-  const stack = new cdk.Stack();
+  const app = new cdk.App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
+  const stack = new cdk.Stack(app);
   const filePath = path.join(__dirname, 'file-asset.txt');
   new Asset(stack, 'MyAsset', { path: filePath });
   const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
@@ -97,7 +107,12 @@ test('"file" assets', () => {
 });
 
 test('"readers" or "grantRead" can be used to grant read permissions on the asset to a principal', () => {
-  const stack = new cdk.Stack();
+  const app = new cdk.App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
+  const stack = new cdk.Stack(app);
   const user = new iam.User(stack, 'MyUser');
   const group = new iam.Group(stack, 'MyGroup');
 
@@ -383,7 +398,11 @@ describe('staging', () => {
 
   test('cdk metadata points to staged asset', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
     const stack = new cdk.Stack(app, 'stack');
     new Asset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
 

@@ -14,10 +14,6 @@ import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
-
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 
 /**
@@ -119,8 +115,7 @@ export class NestedStack extends Stack {
 
     this._parentStack = parentStack;
 
-    // @deprecate: remove this in v2.0 (redundent)
-    const parentScope = new CoreConstruct(scope, id + '.NestedStack');
+    const parentScope = new Construct(scope, id + '.NestedStack');
 
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
