@@ -40,12 +40,14 @@ export class Default {
       'config',
       'states',
       'workspaces',
+      'diode'
     ]);
 
     // Exceptions for Service Principals in us-isob-*
     const US_ISOB_EXCEPTIONS = new Set([
       'dms',
       'states',
+      'diode'
     ]);
 
     // Account for idiosyncratic Service Principals in `us-iso-*` regions
