@@ -3,6 +3,9 @@ import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -23,7 +26,7 @@ nodeunitShim({
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
-      new ecs.FargateService(stack, 'FargateService', {
+      const service = new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
       });
@@ -78,6 +81,8 @@ nodeunitShim({
           Ref: 'MyVpcF9F0CA6F',
         },
       }));
+
+      test.notEqual(service.node.defaultChild, undefined);
 
       test.done();
     },
@@ -2194,6 +2199,744 @@ nodeunitShim({
           cluster,
         });
       }, /only specify either serviceArn or serviceName/);
+
+      test.done();
+    },
+
+    'allows setting enable execute command'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'FargateTaskDefC6FB60B4',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        LaunchType: LaunchType.FARGATE,
+        EnableECSManagedTags: false,
+        EnableExecuteCommand: true,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'FargateServiceSecurityGroup0A0E79CB',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
+          },
+        },
+      }));
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'ssmmessages:CreateControlChannel',
+                'ssmmessages:CreateDataChannel',
+                'ssmmessages:OpenControlChannel',
+                'ssmmessages:OpenDataChannel',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 'logs:DescribeLogGroups',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'logs:CreateLogStream',
+                'logs:DescribeLogStreams',
+                'logs:PutLogEvents',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'FargateTaskDefTaskRoleDefaultPolicy8EB25BBD',
+        Roles: [
+          {
+            Ref: 'FargateTaskDefTaskRole0B257552',
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'no logging enabled when logging field is set to NONE'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+      // WHEN
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+        executeCommandConfiguration: {
+          logging: ecs.ExecuteCommandLogging.NONE,
+        },
+      });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const logGroup = new logs.LogGroup(stack, 'LogGroup');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        logging: ecs.LogDrivers.awsLogs({
+          logGroup,
+          streamPrefix: 'log-group',
+        }),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'ssmmessages:CreateControlChannel',
+                'ssmmessages:CreateDataChannel',
+                'ssmmessages:OpenControlChannel',
+                'ssmmessages:OpenDataChannel',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'FargateTaskDefTaskRoleDefaultPolicy8EB25BBD',
+        Roles: [
+          {
+            Ref: 'FargateTaskDefTaskRole0B257552',
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'enables execute command logging with logging field set to OVERRIDE'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+      const logGroup = new logs.LogGroup(stack, 'LogGroup');
+
+      const execBucket = new s3.Bucket(stack, 'ExecBucket');
+
+      // WHEN
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+        executeCommandConfiguration: {
+          logConfiguration: {
+            cloudWatchLogGroup: logGroup,
+            s3Bucket: execBucket,
+            s3KeyPrefix: 'exec-output',
+          },
+          logging: ecs.ExecuteCommandLogging.OVERRIDE,
+        },
+      });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'ssmmessages:CreateControlChannel',
+                'ssmmessages:CreateDataChannel',
+                'ssmmessages:OpenControlChannel',
+                'ssmmessages:OpenDataChannel',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 'logs:DescribeLogGroups',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'logs:CreateLogStream',
+                'logs:DescribeLogStreams',
+                'logs:PutLogEvents',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':log-group:',
+                    {
+                      Ref: 'LogGroupF5B46931',
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: 's3:GetBucketLocation',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:s3:::',
+                    {
+                      Ref: 'ExecBucket29559356',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'FargateTaskDefTaskRoleDefaultPolicy8EB25BBD',
+        Roles: [
+          {
+            Ref: 'FargateTaskDefTaskRole0B257552',
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'enables only execute command session encryption'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+      const kmsKey = new kms.Key(stack, 'KmsKey');
+
+      const logGroup = new logs.LogGroup(stack, 'LogGroup');
+
+      const execBucket = new s3.Bucket(stack, 'EcsExecBucket');
+
+      // WHEN
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+        executeCommandConfiguration: {
+          kmsKey,
+          logConfiguration: {
+            cloudWatchLogGroup: logGroup,
+            s3Bucket: execBucket,
+          },
+          logging: ecs.ExecuteCommandLogging.OVERRIDE,
+        },
+      });
+
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.FargateService(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'ssmmessages:CreateControlChannel',
+                'ssmmessages:CreateDataChannel',
+                'ssmmessages:OpenControlChannel',
+                'ssmmessages:OpenDataChannel',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'kms:Decrypt',
+                'kms:GenerateDataKey',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'KmsKey46693ADD',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: 'logs:DescribeLogGroups',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'logs:CreateLogStream',
+                'logs:DescribeLogStreams',
+                'logs:PutLogEvents',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':log-group:',
+                    {
+                      Ref: 'LogGroupF5B46931',
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: 's3:GetBucketLocation',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:s3:::',
+                    {
+                      Ref: 'EcsExecBucket4F468651',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'FargateTaskDefTaskRoleDefaultPolicy8EB25BBD',
+        Roles: [
+          {
+            Ref: 'FargateTaskDefTaskRole0B257552',
+          },
+        ],
+      }));
+
+      expect(stack).to(haveResource('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: [
+            {
+              Action: [
+                'kms:Create*',
+                'kms:Describe*',
+                'kms:Enable*',
+                'kms:List*',
+                'kms:Put*',
+                'kms:Update*',
+                'kms:Revoke*',
+                'kms:Disable*',
+                'kms:Get*',
+                'kms:Delete*',
+                'kms:ScheduleKeyDeletion',
+                'kms:CancelKeyDeletion',
+                'kms:GenerateDataKey',
+                'kms:TagResource',
+                'kms:UntagResource',
+              ],
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':root',
+                    ],
+                  ],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              Action: 'kms:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:aws:iam::',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':root',
+                    ],
+                  ],
+                },
+              },
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
+
+      test.done();
+    },
+
+    'enables encryption for execute command logging'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+      const kmsKey = new kms.Key(stack, 'KmsKey');
+
+      const logGroup = new logs.LogGroup(stack, 'LogGroup', {
+        encryptionKey: kmsKey,
+      });
+
+      const execBucket = new s3.Bucket(stack, 'EcsExecBucket', {
+        encryptionKey: kmsKey,
+      });
+
+      // WHEN
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+        executeCommandConfiguration: {
+          kmsKey,
+          logConfiguration: {
+            cloudWatchLogGroup: logGroup,
+            cloudWatchEncryptionEnabled: true,
+            s3Bucket: execBucket,
+            s3EncryptionEnabled: true,
+            s3KeyPrefix: 'exec-output',
+          },
+          logging: ecs.ExecuteCommandLogging.OVERRIDE,
+        },
+      });
+
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'ssmmessages:CreateControlChannel',
+                'ssmmessages:CreateDataChannel',
+                'ssmmessages:OpenControlChannel',
+                'ssmmessages:OpenDataChannel',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'kms:Decrypt',
+                'kms:GenerateDataKey',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'KmsKey46693ADD',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: 'logs:DescribeLogGroups',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'logs:CreateLogStream',
+                'logs:DescribeLogStreams',
+                'logs:PutLogEvents',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':log-group:',
+                    {
+                      Ref: 'LogGroupF5B46931',
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: 's3:GetBucketLocation',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:s3:::',
+                    {
+                      Ref: 'EcsExecBucket4F468651',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: 's3:GetEncryptionConfiguration',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:s3:::',
+                    {
+                      Ref: 'EcsExecBucket4F468651',
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'FargateTaskDefTaskRoleDefaultPolicy8EB25BBD',
+        Roles: [
+          {
+            Ref: 'FargateTaskDefTaskRole0B257552',
+          },
+        ],
+      }));
+
+      expect(stack).to(haveResource('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: [
+            {
+              Action: [
+                'kms:Create*',
+                'kms:Describe*',
+                'kms:Enable*',
+                'kms:List*',
+                'kms:Put*',
+                'kms:Update*',
+                'kms:Revoke*',
+                'kms:Disable*',
+                'kms:Get*',
+                'kms:Delete*',
+                'kms:ScheduleKeyDeletion',
+                'kms:CancelKeyDeletion',
+                'kms:GenerateDataKey',
+                'kms:TagResource',
+                'kms:UntagResource',
+              ],
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':root',
+                    ],
+                  ],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              Action: 'kms:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:aws:iam::',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':root',
+                    ],
+                  ],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              Action: [
+                'kms:Encrypt*',
+                'kms:Decrypt*',
+                'kms:ReEncrypt*',
+                'kms:GenerateDataKey*',
+                'kms:Describe*',
+              ],
+              Condition: {
+                ArnLike: {
+                  'kms:EncryptionContext:aws:logs:arn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:aws:logs:',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        ':',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        ':*',
+                      ],
+                    ],
+                  },
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'logs.',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      '.amazonaws.com',
+                    ],
+                  ],
+                },
+              },
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
 
       test.done();
     },
