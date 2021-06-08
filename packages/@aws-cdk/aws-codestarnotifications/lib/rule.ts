@@ -107,18 +107,21 @@ export interface IRule extends IResource {
 
   /**
    * The ARN of the notification rule (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
+   *
    * @attribute
    */
   readonly ruleArn: string;
 
   /**
    * The name of the notification rule
+   *
    * @attribute
    */
   readonly ruleName: string;
 
   /**
    * Adds target to notification rule
+   *
    * @param target The SNS topic or AWS Chatbot Slack target
    * @returns boolean - return true if it had any effect
    */
