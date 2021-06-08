@@ -154,6 +154,14 @@ this capability, please see the
 
 ## More Resources
 * [CDK Workshop](https://cdkworkshop.com/)
+* **CDK Construction Zone** - A Twitch live coding series hosted by the CDK team, season one episodes:
+  * [S1E1](https://www.twitch.tv/videos/917691798):cdk triggers part 1
+  * [S1E2](https://www.twitch.tv/videos/925801382): cdk triggers part 2
+  * [S1E3](https://www.twitch.tv/videos/944565768): cdk triggers part 3 (final) 
+  * [S1E4](https://www.twitch.tv/aws/video/960287598): cdk tokens
+  * [S1E5](https://www.twitch.tv/aws/video/977551207): cdk assets
+  * [S1E6](https://www.twitch.tv/aws/video/1005334364): cdk best practices
+  * [S1E7](https://www.twitch.tv/videos/1019059654): cdk tips and tricks delivered to you by the CDK team
 * [Examples](https://github.com/aws-samples/aws-cdk-examples)
 * [Changelog](./CHANGELOG.md)
 * [NOTICE](./NOTICE)
