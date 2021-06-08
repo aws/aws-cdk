@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
@@ -442,6 +443,28 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     }
 
     return this._action.onStateChange(name, target, options);
+  }
+
+  /**
+   * Exists to implement IAction
+   */
+  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule {
+    if (!this._action) {
+      throw new Error('Need bind() first');
+    }
+
+    return this._action.notifyOn(id, options);
+  }
+
+  /**
+   * Exists to implement IAction
+   */
+  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+    if (!this._action) {
+      throw new Error('Need bind() first');
+    }
+
+    return this._action.notifyOnStateChange(id, options);
   }
 }
 
