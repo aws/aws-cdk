@@ -485,7 +485,7 @@ export class Repository extends RepositoryBase {
       repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
       imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
-        ScanOnPush: true,
+        scanOnPush: true,
       },
       imageTagMutability: props.imageTagMutability || undefined,
     });

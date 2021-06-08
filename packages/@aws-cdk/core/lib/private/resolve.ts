@@ -80,6 +80,13 @@ export interface IResolveOptions {
    * @default false
    */
   allowIntrinsicKeys?: boolean;
+
+  /**
+   * Whether to remove undefined elements from arrays and objects when resolving.
+   *
+   * @default true
+   */
+  removeEmpty?: boolean;
 }
 
 /**
@@ -115,6 +122,9 @@ export function resolve(obj: any, options: IResolveOptions): any {
   if (prefix.length > 200) {
     throw new Error('Unable to resolve object tree with circular reference. Path: ' + pathName);
   }
+
+  // whether to leave the empty elements when resolving - false by default
+  const leaveEmpty = options.removeEmpty === false;
 
   //
   // undefined
@@ -184,7 +194,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
     const arr = obj
       .map((x, i) => makeContext(`${i}`)[0].resolve(x))
-      .filter(x => typeof(x) !== 'undefined');
+      .filter(x => leaveEmpty || typeof(x) !== 'undefined');
 
     return arr;
   }
@@ -217,6 +227,9 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
     // skip undefined
     if (typeof(value) === 'undefined') {
+      if (leaveEmpty) {
+        result[key] = undefined;
+      }
       continue;
     }
 
