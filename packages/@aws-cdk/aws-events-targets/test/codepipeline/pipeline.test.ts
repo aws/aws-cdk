@@ -1,5 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -198,5 +199,13 @@ class TestAction implements codepipeline.IAction {
 
   public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps): events.Rule {
     throw new Error('onStateChange() is not available on MockAction');
+  }
+
+  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.IRule {
+    throw new Error('Method not implemented.');
+  }
+
+  public notifyOnStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.IRule {
+    throw new Error('Method not implemented.');
   }
 }
