@@ -242,7 +242,7 @@ describe('synth', () => {
 
     const toolkit = defaultToolkitSetup();
 
-    await expect(toolkit.synth([MockStack.MOCK_STACK_D.stackName], undefined)).resolves.toBeDefined();
+    await expect(toolkit.synth([MockStack.MOCK_STACK_D.stackName], true, false)).resolves.toBeDefined();
   });
 });
 

@@ -296,10 +296,7 @@ export class CdkToolkit {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  public async synth(stackNames: string[], exclusively?: boolean, quiet?: boolean): Promise<any> {
-    if (exclusively === undefined) {
-      exclusively = true;
-    }
+  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean): Promise<any> {
     const stacks = await this.selectStacksForDiff(stackNames, exclusively);
 
     // if we have a single stack, print it to STDOUT

@@ -320,7 +320,12 @@ async function initCommandLine() {
 
       case 'synthesize':
       case 'synth':
-        return cli.synth(args.STACKS, args.exclusively, args.quiet);
+        if (args.exclusively) {
+          return cli.synth(args.STACKS, args.exclusively, args.quiet);
+        } else {
+          return cli.synth(args.STACKS, true, args.quiet);
+        }
+
 
       case 'metadata':
         return cli.metadata(args.STACK);
