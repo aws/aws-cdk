@@ -1,3 +1,4 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Resource, Token } from '@aws-cdk/core';
 import { TopicPolicy } from './policy';
@@ -11,7 +12,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Represents an SNS topic
  */
-export interface ITopic extends IResource {
+export interface ITopic extends IResource, notifications.IRuleTarget {
   /**
    * The ARN of the topic
    *
@@ -122,6 +123,13 @@ export abstract class TopicBase extends Resource implements ITopic {
       resourceArns: [this.topicArn],
       resource: this,
     });
+  }
+
+  public bind(_rule: notifications.IRule): notifications.RuleTargetConfig {
+    return {
+      targetType: 'SNS',
+      targetAddress: this.topicArn,
+    };
   }
 
   private nextTokenId(scope: Construct) {
