@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
+import { Annotations, App, Aws, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
@@ -12,6 +12,7 @@ import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from '
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+const CODE_BUILD_LENGTH_LIMIT = 100;
 /**
  * Properties for a CdkPipeline
  */
@@ -119,6 +120,29 @@ export interface CdkPipelineProps {
    * @default true
    */
   readonly selfMutating?: boolean;
+
+  /**
+   * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
+   *
+   * @default false
+   */
+  readonly singlePublisherPerType?: boolean;
+
+  /**
+   * Whether the pipeline needs to build Docker images in the UpdatePipeline stage.
+   *
+   * If the UpdatePipeline stage tries to build a Docker image and this flag is not
+   * set to `true`, the build step will run in non-privileged mode and consequently
+   * will fail with a message like:
+   *
+   * > Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
+   * > Is the docker daemon running?
+   *
+   * This flag has an effect only if `selfMutating` is also `true`.
+   *
+   * @default - false
+   */
+  readonly supportDockerAssets?: boolean;
 }
 
 /**
@@ -197,9 +221,10 @@ export class CdkPipeline extends CoreConstruct {
         stageName: 'UpdatePipeline',
         actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
           cloudAssemblyInput: this._cloudAssemblyArtifact,
-          pipelineStackName: pipelineStack.stackName,
+          pipelineStackHierarchicalId: pipelineStack.node.path,
           cdkCliVersion: props.cdkCliVersion,
           projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+          privileged: props.supportDockerAssets,
         })],
       });
     }
@@ -211,6 +236,7 @@ export class CdkPipeline extends CoreConstruct {
       projectName: maybeSuffix(props.pipelineName, '-publish'),
       vpc: props.vpc,
       subnetSelection: props.subnetSelection,
+      singlePublisherPerType: props.singlePublisherPerType,
     });
   }
 
@@ -286,7 +312,9 @@ export class CdkPipeline extends CoreConstruct {
     if (!this._outputArtifacts[stack.artifactId]) {
       // We should have stored the ArtifactPath in the map, but its Artifact
       // property isn't publicly readable...
-      this._outputArtifacts[stack.artifactId] = new codepipeline.Artifact(`Artifact_${stack.artifactId}_Outputs`);
+      const artifactName = `${stack.artifactId}_Outputs`;
+      const compactName = artifactName.slice(artifactName.length - Math.min(artifactName.length, CODE_BUILD_LENGTH_LIMIT));
+      this._outputArtifacts[stack.artifactId] = new codepipeline.Artifact(compactName);
     }
 
     return new StackOutput(this._outputArtifacts[stack.artifactId].atPath('outputs.json'), cfnOutput.logicalId);
@@ -314,7 +342,7 @@ export class CdkPipeline extends CoreConstruct {
     return flatMap(this._pipeline.stages, s => s.actions.filter(isDeployAction));
   }
 
-  private* validateDeployOrder(): IterableIterator<string> {
+  private * validateDeployOrder(): IterableIterator<string> {
     const stackActions = this.stackActions;
     for (const stackAction of stackActions) {
       // For every dependency, it must be executed in an action before this one is prepared.
@@ -332,7 +360,7 @@ export class CdkPipeline extends CoreConstruct {
     }
   }
 
-  private* validateRequestedOutputs(): IterableIterator<string> {
+  private * validateRequestedOutputs(): IterableIterator<string> {
     const artifactIds = this.stackActions.map(s => s.stackArtifactId);
 
     for (const artifactId of Object.keys(this._outputArtifacts)) {
@@ -358,6 +386,7 @@ interface AssetPublishingProps {
   readonly projectName?: string;
   readonly vpc?: ec2.IVpc;
   readonly subnetSelection?: ec2.SubnetSelection;
+  readonly singlePublisherPerType?: boolean;
 }
 
 /**
@@ -412,15 +441,24 @@ class AssetPublishing extends CoreConstruct {
       this.generateAssetRole(command.assetType);
     }
 
-    let action = this.publishers[command.assetId];
+    const publisherKey = this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId;
+
+    let action = this.publishers[publisherKey];
     if (!action) {
       // Dynamically create new stages as needed, with `MAX_PUBLISHERS_PER_STAGE` assets per stage.
-      const stageIndex = Math.floor((this._fileAssetCtr + this._dockerAssetCtr) / this.MAX_PUBLISHERS_PER_STAGE);
-      if (stageIndex >= this.stages.length) {
+      const stageIndex = this.props.singlePublisherPerType ? 0 :
+        Math.floor((this._fileAssetCtr + this._dockerAssetCtr) / this.MAX_PUBLISHERS_PER_STAGE);
+
+      if (!this.props.singlePublisherPerType && stageIndex >= this.stages.length) {
         const previousStage = this.stages.slice(-1)[0] ?? this.lastStageBeforePublishing;
         this.stages.push(this.pipeline.addStage({
           stageName: `Assets${stageIndex > 0 ? stageIndex + 1 : ''}`,
           placement: { justAfter: previousStage },
+        }));
+      } else if (this.props.singlePublisherPerType && this.stages.length == 0) {
+        this.stages.push(this.pipeline.addStage({
+          stageName: 'Assets',
+          placement: { justAfter: this.lastStageBeforePublishing },
         }));
       }
 
@@ -430,12 +468,14 @@ class AssetPublishing extends CoreConstruct {
       //
       // FIXME: The ultimate best solution is probably to generate a single Project per asset type
       // and reuse that for all assets.
-      const id = command.assetType === AssetType.FILE ? `FileAsset${++this._fileAssetCtr}` : `DockerAsset${++this._dockerAssetCtr}`;
+      const id = this.props.singlePublisherPerType ?
+        command.assetType === AssetType.FILE ? 'FileAsset' : 'DockerAsset' :
+        command.assetType === AssetType.FILE ? `FileAsset${++this._fileAssetCtr}` : `DockerAsset${++this._dockerAssetCtr}`;
 
       // NOTE: It's important that asset changes don't force a pipeline self-mutation.
       // This can cause an infinite loop of updates (see https://github.com/aws/aws-cdk/issues/9080).
       // For that reason, we use the id as the actionName below, rather than the asset hash.
-      action = this.publishers[command.assetId] = new PublishAssetsAction(this, id, {
+      action = this.publishers[publisherKey] = new PublishAssetsAction(this, id, {
         actionName: id,
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
@@ -515,6 +555,40 @@ class AssetPublishing extends CoreConstruct {
 
     // Artifact access
     this.pipeline.artifactBucket.grantRead(assetRole);
+
+    // VPC permissions required for CodeBuild
+    // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
+    // we need to do this.
+    if (this.props.vpc) {
+      assetRole.attachInlinePolicy(new iam.Policy(assetRole, 'VpcPolicy', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
+            actions: ['ec2:CreateNetworkInterfacePermission'],
+            conditions: {
+              StringEquals: {
+                'ec2:Subnet': this.props.vpc
+                  .selectSubnets(this.props.subnetSelection).subnetIds
+                  .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
+                'ec2:AuthorizedService': 'codebuild.amazonaws.com',
+              },
+            },
+          }),
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: [
+              'ec2:CreateNetworkInterface',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeDhcpOptions',
+              'ec2:DescribeVpcs',
+            ],
+          }),
+        ],
+      }));
+    }
 
     this.assetRoles[assetType] = assetRole.withoutPolicyUpdates();
     return this.assetRoles[assetType];

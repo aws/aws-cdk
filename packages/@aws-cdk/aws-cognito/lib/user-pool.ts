@@ -1,6 +1,6 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
@@ -528,6 +528,13 @@ export interface UserPoolProps {
   readonly mfa?: Mfa;
 
   /**
+   * The SMS message template sent during MFA verification.
+   * Use '{####}' in the template where Cognito should insert the verification code.
+   * @default 'Your authentication code is {####}.'
+   */
+  readonly mfaMessage?: string;
+
+  /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
    *
    * @default - { sms: true, oneTimePassword: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
@@ -567,6 +574,13 @@ export interface UserPoolProps {
    * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
    */
   readonly accountRecovery?: AccountRecovery;
+
+  /**
+   * Policy to apply when the user pool is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -653,22 +667,39 @@ export class UserPool extends UserPoolBase {
    * Import an existing user pool based on its id.
    */
   public static fromUserPoolId(scope: Construct, id: string, userPoolId: string): IUserPool {
-    class Import extends UserPoolBase {
-      public readonly userPoolId = userPoolId;
-      public readonly userPoolArn = Stack.of(this).formatArn({
-        service: 'cognito-idp',
-        resource: 'userpool',
-        resourceName: userPoolId,
-      });
-    }
-    return new Import(scope, id);
+    let userPoolArn = Stack.of(scope).formatArn({
+      service: 'cognito-idp',
+      resource: 'userpool',
+      resourceName: userPoolId,
+    });
+
+    return UserPool.fromUserPoolArn(scope, id, userPoolArn);
   }
 
   /**
    * Import an existing user pool based on its ARN.
    */
   public static fromUserPoolArn(scope: Construct, id: string, userPoolArn: string): IUserPool {
-    return UserPool.fromUserPoolId(scope, id, Stack.of(scope).parseArn(userPoolArn).resourceName!);
+    const arnParts = Stack.of(scope).parseArn(userPoolArn);
+
+    if (!arnParts.resourceName) {
+      throw new Error('invalid user pool ARN');
+    }
+
+    const userPoolId = arnParts.resourceName;
+
+    class ImportedUserPool extends UserPoolBase {
+      public readonly userPoolArn = userPoolArn;
+      public readonly userPoolId = userPoolId;
+      constructor() {
+        super(scope, id, {
+          account: arnParts.account,
+          region: arnParts.region,
+        });
+      }
+    }
+
+    return new ImportedUserPool();
   }
 
   /**
@@ -723,7 +754,7 @@ export class UserPool extends UserPoolBase {
       emailSubject: props.userInvitation?.emailSubject,
       smsMessage: props.userInvitation?.smsMessage,
     };
-    const selfSignUpEnabled = props.selfSignUpEnabled !== undefined ? props.selfSignUpEnabled : false;
+    const selfSignUpEnabled = props.selfSignUpEnabled ?? false;
     const adminCreateUserConfig: CfnUserPool.AdminCreateUserConfigProperty = {
       allowAdminCreateUserOnly: !selfSignUpEnabled,
       inviteMessageTemplate: props.userInvitation !== undefined ? inviteMessageTemplate : undefined,
@@ -737,6 +768,7 @@ export class UserPool extends UserPoolBase {
       aliasAttributes: signIn.aliasAttrs,
       autoVerifiedAttributes: signIn.autoVerifyAttrs,
       lambdaConfig: Lazy.any({ produce: () => undefinedIfNoKeys(this.triggers) }),
+      smsAuthenticationMessage: this.mfaMessage(props),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
       emailVerificationMessage,
@@ -756,6 +788,7 @@ export class UserPool extends UserPoolBase {
       }),
       accountRecoverySetting: this.accountRecovery(props),
     });
+    userPool.applyRemovalPolicy(props.removalPolicy);
 
     this.userPoolId = userPool.ref;
     this.userPoolArn = userPool.attrArn;
@@ -783,6 +816,24 @@ export class UserPool extends UserPoolBase {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: this.userPoolArn,
     });
+  }
+
+  private mfaMessage(props: UserPoolProps): string | undefined {
+    const CODE_TEMPLATE = '{####}';
+    const MAX_LENGTH = 140;
+    const message = props.mfaMessage;
+
+    if (message && !Token.isUnresolved(message)) {
+      if (!message.includes(CODE_TEMPLATE)) {
+        throw new Error(`MFA message must contain the template string '${CODE_TEMPLATE}'`);
+      }
+
+      if (message.length > MAX_LENGTH) {
+        throw new Error(`MFA message must be between ${CODE_TEMPLATE.length} and ${MAX_LENGTH} characters`);
+      }
+    }
+
+    return message;
   }
 
   private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {

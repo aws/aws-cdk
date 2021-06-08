@@ -30,9 +30,9 @@ export interface IVirtualService extends cdk.IResource {
 }
 
 /**
- * The base properties which all classes in VirtualService will inherit from
+ * The properties applied to the VirtualService being defined
  */
-export interface VirtualServiceBaseProps {
+export interface VirtualServiceProps {
   /**
    * The name of the VirtualService.
    *
@@ -45,28 +45,9 @@ export interface VirtualServiceBaseProps {
   readonly virtualServiceName?: string;
 
   /**
-   * The VirtualRouter which the VirtualService uses as provider
-   *
-   * @default - At most one of virtualRouter and virtualNode is allowed.
+   * The VirtualNode or VirtualRouter which the VirtualService uses as its provider
    */
-  readonly virtualRouter?: IVirtualRouter;
-
-  /**
-   * The VirtualNode attached to the virtual service
-   *
-   * @default - At most one of virtualRouter and virtualNode is allowed.
-   */
-  readonly virtualNode?: IVirtualNode;
-}
-
-/**
- * The properties applied to the VirtualService being define
- */
-export interface VirtualServiceProps extends VirtualServiceBaseProps {
-  /**
-   * The Mesh which the VirtualService belongs to
-   */
-  readonly mesh: IMesh;
+  readonly virtualServiceProvider: VirtualServiceProvider;
 }
 
 /**
@@ -119,57 +100,33 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    */
   public readonly mesh: IMesh;
 
-  private readonly virtualServiceProvider?: CfnVirtualService.VirtualServiceProviderProperty;
-
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
       physicalName: props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
-    if (props.virtualNode && props.virtualRouter) {
-      throw new Error('Must provide only one of virtualNode or virtualRouter for the provider');
-    }
-
-    this.mesh = props.mesh;
-
-    // Check which provider to use node or router (or neither)
-    if (props.virtualRouter) {
-      this.virtualServiceProvider = this.addVirtualRouter(props.virtualRouter.virtualRouterName);
-    }
-    if (props.virtualNode) {
-      this.virtualServiceProvider = this.addVirtualNode(props.virtualNode.virtualNodeName);
-    }
+    const providerConfig = props.virtualServiceProvider.bind(this);
+    this.mesh = providerConfig.mesh;
 
     const svc = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
       virtualServiceName: this.physicalName,
       spec: {
-        provider: this.virtualServiceProvider,
+        provider: providerConfig.virtualNodeProvider || providerConfig.virtualRouterProvider
+          ? {
+            virtualNode: providerConfig.virtualNodeProvider,
+            virtualRouter: providerConfig.virtualRouterProvider,
+          }
+          : undefined,
       },
     });
 
     this.virtualServiceName = this.getResourceNameAttribute(svc.attrVirtualServiceName);
     this.virtualServiceArn = this.getResourceArnAttribute(svc.ref, {
       service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualService`,
+      resource: `mesh/${this.mesh.meshName}/virtualService`,
       resourceName: this.physicalName,
     });
-  }
-
-  private addVirtualRouter(name: string): CfnVirtualService.VirtualServiceProviderProperty {
-    return {
-      virtualRouter: {
-        virtualRouterName: name,
-      },
-    };
-  }
-
-  private addVirtualNode(name: string): CfnVirtualService.VirtualServiceProviderProperty {
-    return {
-      virtualNode: {
-        virtualNodeName: name,
-      },
-    };
   }
 }
 
@@ -186,4 +143,92 @@ export interface VirtualServiceAttributes {
    * The Mesh which the VirtualService belongs to
    */
   readonly mesh: IMesh;
+}
+
+/**
+ * Properties for a VirtualService provider
+ */
+export interface VirtualServiceProviderConfig {
+  /**
+   * Virtual Node based provider
+   *
+   * @default - none
+   */
+  readonly virtualNodeProvider?: CfnVirtualService.VirtualNodeServiceProviderProperty;
+
+  /**
+   * Virtual Router based provider
+   *
+   * @default - none
+   */
+  readonly virtualRouterProvider?: CfnVirtualService.VirtualRouterServiceProviderProperty;
+
+  /**
+   * Mesh the Provider is using
+   *
+   * @default - none
+   */
+  readonly mesh: IMesh;
+}
+
+/**
+ * Represents the properties needed to define the provider for a VirtualService
+ */
+export abstract class VirtualServiceProvider {
+  /**
+   * Returns a VirtualNode based Provider for a VirtualService
+   */
+  public static virtualNode(virtualNode: IVirtualNode): VirtualServiceProvider {
+    return new VirtualServiceProviderImpl(virtualNode, undefined);
+  }
+
+  /**
+   * Returns a VirtualRouter based Provider for a VirtualService
+   */
+  public static virtualRouter(virtualRouter: IVirtualRouter): VirtualServiceProvider {
+    return new VirtualServiceProviderImpl(undefined, virtualRouter);
+  }
+
+  /**
+   * Returns an Empty Provider for a VirtualService. This provides no routing capabilities
+   * and should only be used as a placeholder
+   */
+  public static none(mesh: IMesh): VirtualServiceProvider {
+    return new VirtualServiceProviderImpl(undefined, undefined, mesh);
+  }
+
+  /**
+   * Enforces mutual exclusivity for VirtualService provider types.
+   */
+  public abstract bind(_construct: Construct): VirtualServiceProviderConfig;
+}
+
+class VirtualServiceProviderImpl extends VirtualServiceProvider {
+  private readonly virtualNode?: IVirtualNode;
+  private readonly virtualRouter?: IVirtualRouter;
+  private readonly mesh: IMesh;
+
+  constructor(virtualNode?: IVirtualNode, virtualRouter?: IVirtualRouter, mesh?: IMesh) {
+    super();
+    this.virtualNode = virtualNode;
+    this.virtualRouter = virtualRouter;
+    const providedMesh = this.virtualNode?.mesh ?? this.virtualRouter?.mesh ?? mesh!;
+    this.mesh = providedMesh;
+  }
+
+  public bind(_construct: Construct): VirtualServiceProviderConfig {
+    return {
+      mesh: this.mesh,
+      virtualNodeProvider: this.virtualNode
+        ? {
+          virtualNodeName: this.virtualNode.virtualNodeName,
+        }
+        : undefined,
+      virtualRouterProvider: this.virtualRouter
+        ? {
+          virtualRouterName: this.virtualRouter.virtualRouterName,
+        }
+        : undefined,
+    };
+  }
 }

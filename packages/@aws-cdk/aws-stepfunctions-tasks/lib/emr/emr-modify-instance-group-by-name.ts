@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as cdk from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn } from '../private/task-utils';
 import { EmrCreateCluster } from './emr-create-cluster';
@@ -9,7 +9,6 @@ import { InstanceGroupModifyConfigPropertyToJson } from './private/cluster-utils
 /**
  * Properties for EmrModifyInstanceGroupByName
  *
- * @experimental
  */
 export interface EmrModifyInstanceGroupByNameProps extends sfn.TaskStateBaseProps {
   /**
@@ -35,7 +34,6 @@ export interface EmrModifyInstanceGroupByNameProps extends sfn.TaskStateBaseProp
 /**
  * A Step Functions Task to to modify an InstanceGroup on an EMR Cluster.
  *
- * @experimental
  */
 export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
@@ -45,8 +43,17 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
     super(scope, id, props);
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['elasticmapreduce:ModifyInstanceGroups', 'elasticmapreduce:ListInstanceGroups'],
-        resources: [`arn:aws:elasticmapreduce:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:cluster/*`],
+        actions: [
+          'elasticmapreduce:ModifyInstanceGroups',
+          'elasticmapreduce:ListInstanceGroups',
+        ],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'elasticmapreduce',
+            resource: 'cluster',
+            resourceName: '*',
+          }),
+        ],
       }),
     ];
   }
@@ -72,7 +79,6 @@ export namespace EmrModifyInstanceGroupByName {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceResizePolicy.html
    *
-   * @experimental
    */
   export interface InstanceResizePolicyProperty {
     /**
@@ -94,7 +100,7 @@ export namespace EmrModifyInstanceGroupByName {
      *
      * @default cdk.Duration.seconds
      */
-    readonly instanceTerminationTimeout?: cdk.Duration;
+    readonly instanceTerminationTimeout?: Duration;
   }
 
   /**
@@ -102,7 +108,6 @@ export namespace EmrModifyInstanceGroupByName {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ShrinkPolicy.html
    *
-   * @experimental
    */
   export interface ShrinkPolicyProperty {
     /**
@@ -110,7 +115,7 @@ export namespace EmrModifyInstanceGroupByName {
      *
      * @default - EMR selected default
      */
-    readonly decommissionTimeout?: cdk.Duration;
+    readonly decommissionTimeout?: Duration;
 
     /**
      * Custom policy for requesting termination protection or termination of specific instances when shrinking an instance group.
@@ -125,7 +130,6 @@ export namespace EmrModifyInstanceGroupByName {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceGroupModifyConfig.html
    *
-   * @experimental
    */
   export interface InstanceGroupModifyConfigProperty {
     /**

@@ -33,14 +33,18 @@ the actual handler.
 ```ts
 import { CustomResource } from '@aws-cdk/core';
 import * as logs from '@aws-cdk/aws-logs';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cr from '@aws-cdk/custom-resources';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
+const myRole = new iam.Role(this, 'MyRole', { /* ... */ });
+
 const myProvider = new cr.Provider(this, 'MyProvider', {
   onEventHandler: onEvent,
   isCompleteHandler: isComplete,        // optional async "waiter"
-  logRetention: logs.RetentionDays.ONE_DAY   // default is INFINITE
+  logRetention: logs.RetentionDays.ONE_DAY,   // default is INFINITE
+  role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
 });
 
 new CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });
@@ -428,6 +432,30 @@ new AwsCustomResource(this, 'Customized', {
 })
 ```
 
+### Restricting the output of the Custom Resource
+
+CloudFormation imposes a hard limit of 4096 bytes for custom resources response
+objects. If your API call returns an object that exceeds this limit, you can restrict
+the data returned by the custom resource to specific paths in the API response:
+
+```ts
+new AwsCustomResource(stack, 'ListObjects', {
+  onCreate: {
+    service: 's3',
+    action: 'listObjectsV2',
+    parameters: {
+      Bucket: 'my-bucket',
+    },
+    physicalResourceId: PhysicalResourceId.of('id'),
+    outputPaths: ['Contents.0.Key', 'Contents.1.Key'], // Output only the two first keys
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+});
+```
+
+Note that even if you restrict the output of your custom resource you can still use any
+path in `PhysicalResourceId.fromResponse()`.
+
 ### Custom Resource Examples
 
 #### Verify a domain with SES
@@ -470,6 +498,29 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
 
 // Use the value in another construct with
 getParameter.getResponseField('Parameter.Value')
+```
+
+#### Associate a PrivateHostedZone with VPC shared from another account
+
+```ts
+const getParameter = new AwsCustomResource(this, 'AssociateVPCWithHostedZone', {
+  onCreate: {
+    assumedRoleArn: 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/ManageHostedZoneConnections',
+    service: 'Route53',
+    action: 'associateVPCWithHostedZone',
+    parameters: {
+      HostedZoneId: 'hz-123',
+      VPC: {
+		VPCId: 'vpc-123',
+		VPCRegion: 'region-for-vpc'
+      }
+    },
+    physicalResourceId: PhysicalResourceId.of('${vpcStack.SharedVpc.VpcId}-${vpcStack.Region}-${PrivateHostedZone.HostedZoneId}')
+  },
+  //Will ignore any resource and use the assumedRoleArn as resource and 'sts:AssumeRole' for service:action
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}) 
+});
+
 ```
 
 ---

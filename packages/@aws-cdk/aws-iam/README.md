@@ -264,6 +264,50 @@ const newPolicy = new Policy(stack, 'MyNewPolicy', {
 });
 ```
 
+## Permissions Boundaries
+
+[Permissions
+Boundaries](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html)
+can be used as a mechanism to prevent privilege esclation by creating new
+`Role`s. Permissions Boundaries are a Managed Policy, attached to Roles or
+Users, that represent the *maximum* set of permissions they can have. The
+effective set of permissions of a Role (or User) will be the intersection of
+the Identity Policy and the Permissions Boundary attached to the Role (or
+User). Permissions Boundaries are typically created by account
+Administrators, and their use on newly created `Role`s will be enforced by
+IAM policies.
+
+It is possible to attach Permissions Boundaries to all Roles created in a construct
+tree all at once:
+
+```ts
+// This imports an existing policy.
+const boundary = iam.ManagedPolicy.fromManagedPolicyArn(this, 'Boundary', 'arn:aws:iam::123456789012:policy/boundary');
+
+// This creates a new boundary
+const boundary2 = new iam.ManagedPolicy(this, 'Boundary2', {
+  statements: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.DENY,
+      actions: ['iam:*'],
+      resources: ['*'],
+    }),
+  ],
+});
+
+// Directly apply the boundary to a Role you create
+iam.PermissionsBoundary.of(role).apply(boundary);
+
+// Apply the boundary to an Role that was implicitly created for you
+iam.PermissionsBoundary.of(lambdaFunction).apply(boundary);
+
+// Apply the boundary to all Roles in a stack
+iam.PermissionsBoundary.of(stack).apply(boundary);
+
+// Remove a Permissions Boundary that is inherited, for example from the Stack level
+iam.PermissionsBoundary.of(customResource).clear();
+```
+
 ## OpenID Connect Providers
 
 OIDC identity providers are entities in IAM that describe an external identity
@@ -319,6 +363,87 @@ const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
 });
 const principal = new iam.OpenIdConnectPrincipal(provider);
 ```
+
+## SAML provider
+
+An IAM SAML 2.0 identity provider is an entity in IAM that describes an external
+identity provider (IdP) service that supports the SAML 2.0 (Security Assertion
+Markup Language 2.0) standard. You use an IAM identity provider when you want
+to establish trust between a SAML-compatible IdP such as Shibboleth or Active
+Directory Federation Services and AWS, so that users in your organization can
+access AWS resources. IAM SAML identity providers are used as principals in an
+IAM trust policy.
+
+```ts
+new iam.SamlProvider(this, 'Provider', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+});
+```
+
+The `SamlPrincipal` class can be used as a principal with a `SamlProvider`:
+
+```ts
+const provider = new iam.SamlProvider(this, 'Provider', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+});
+const principal = new iam.SamlPrincipal(provider, {
+  StringEquals: {
+    'SAML:iss': 'issuer',
+  },
+});
+```
+
+When creating a role for programmatic and AWS Management Console access, use the `SamlConsolePrincipal`
+class:
+
+```ts
+const provider = new iam.SamlProvider(this, 'Provider', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+});
+new iam.Role(this, 'Role', {
+  assumedBy: new iam.SamlConsolePrincipal(provider),
+});
+```
+
+## Users
+
+IAM manages users for your AWS account. To create a new user:
+
+```ts
+const user = new User(this, 'MyUser');
+```
+
+To import an existing user by name [with path](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-friendly-names):
+
+```ts
+const user = User.fromUserName(stack, 'MyImportedUserByName', 'johnsmith');
+```
+
+To import an existing user by ARN:
+
+```ts
+const user = User.fromUserArn(this, 'MyImportedUserByArn', 'arn:aws:iam::123456789012:user/johnsmith');
+```
+
+To import an existing user by attributes:
+
+```ts
+const user = User.fromUserAttributes(stack, 'MyImportedUserByAttributes', {
+  userArn: 'arn:aws:iam::123456789012:user/johnsmith',
+});
+```
+
+To add a user to a group (both for a new and imported user/group):
+
+```ts
+const user = new User(this, 'MyUser'); // or User.fromUserName(stack, 'User', 'johnsmith');
+const group = new Group(this, 'MyGroup'); // or Group.fromGroupArn(stack, 'Group', 'arn:aws:iam::account-id:group/group-name');
+
+user.addToGroup(group);
+// or
+group.addUser(user);
+```
+
 
 ## Features
 

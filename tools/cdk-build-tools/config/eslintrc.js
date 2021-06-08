@@ -16,6 +16,7 @@ module.exports = {
     '@typescript-eslint',
     'import',
     'cdk',
+    'jest',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -25,6 +26,7 @@ module.exports = {
   },
   extends: [
     'plugin:import/typescript',
+    'plugin:jest/recommended',
   ],
   settings: {
     'import/parsers': {
@@ -39,7 +41,9 @@ module.exports = {
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
+    'cdk/construct-import-order': [ 'error' ],
     'cdk/no-core-construct': [ 'error' ],
+    'cdk/no-qualified-construct': [ 'error' ],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
@@ -193,5 +197,14 @@ module.exports = {
         'method',
       ],
     }],
+
+    // Overrides for plugin:jest/recommended
+    "jest/expect-expect": "off",
+    "jest/no-conditional-expect": "off",
+    "jest/no-done-callback": "off", // Far too many of these in the codebase.
+    "jest/no-standalone-expect": "off", // nodeunitShim confuses this check.
+    "jest/valid-expect": "off", // expect from '@aws-cdk/assert' can take a second argument
+    "jest/valid-title": "off", // A little over-zealous with test('test foo') being an error.
+    "jest/no-identical-title": "off", // TEMPORARY - Disabling this until https://github.com/jest-community/eslint-plugin-jest/issues/836 is resolved
   },
 };

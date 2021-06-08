@@ -28,13 +28,13 @@ nodeunitShim({
     });
     test.deepEqual(readJson(session.directory, 'tree.json'), {
       version: 'tree-0.1',
-      tree: {
+      tree: expect.objectContaining({
         id: 'App',
         path: '',
         children: {
-          Tree: { id: 'Tree', path: 'Tree' },
+          Tree: expect.objectContaining({ id: 'Tree', path: 'Tree' }),
         },
-      },
+      }),
     });
     test.done();
   },
@@ -104,7 +104,11 @@ nodeunitShim({
         'one-stack': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://unknown-account/unknown-region',
-          properties: { templateFile: 'one-stack.template.json' },
+          properties: {
+            templateFile: 'one-stack.template.json',
+            validateOnSynth: false,
+          },
+          displayName: 'one-stack',
         },
       },
     });

@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
-import { ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
+import { Group, ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
 describe('IAM user', () => {
   test('default user', () => {
@@ -81,7 +81,7 @@ describe('IAM user', () => {
     });
   });
 
-  test('imported user has an ARN', () => {
+  test('user imported by user name has an ARN', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -92,6 +92,32 @@ describe('IAM user', () => {
     expect(stack.resolve(user.userArn)).toStrictEqual({
       'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':user/MyUserName']],
     });
+  });
+
+  test('user imported by user ARN has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', `arn:aws:iam::account-id:user/${userName}`);
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
+  test('user imported by user attributes has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserAttributes(stack, 'import', {
+      userArn: `arn:aws:iam::account-id:user/${userName}`,
+    });
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
   });
 
   test('add to policy of imported user', () => {
@@ -149,6 +175,37 @@ describe('IAM user', () => {
         ],
         Version: '2012-10-17',
       },
+    });
+  });
+
+  test('addToGroup for imported user', () => {
+    // GIVEN
+    const stack = new Stack();
+    const user = User.fromUserName(stack, 'ImportedUser', 'john');
+    const group = new Group(stack, 'Group');
+    const otherGroup = new Group(stack, 'OtherGroup');
+
+    // WHEN
+    user.addToGroup(group);
+    otherGroup.addUser(user);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::UserToGroupAddition', {
+      GroupName: {
+        Ref: 'GroupC77FDACD',
+      },
+      Users: [
+        'john',
+      ],
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::UserToGroupAddition', {
+      GroupName: {
+        Ref: 'OtherGroup85E5C653',
+      },
+      Users: [
+        'john',
+      ],
     });
   });
 });

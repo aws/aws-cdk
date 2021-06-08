@@ -39,6 +39,19 @@ test('can yarn install with non root user', () => {
   expect(proc.status).toEqual(0);
 });
 
+test('can pnpm install with non root user', () => {
+  const proc = spawnSync('docker', [
+    'run', '-u', '500:500',
+    'esbuild',
+    'bash', '-c', [
+      'mkdir /tmp/test',
+      'cd /tmp/test',
+      'pnpm add constructs',
+    ].join(' && '),
+  ]);
+  expect(proc.status).toEqual(0);
+});
+
 test('cache folders have the right permissions', () => {
   const proc = spawnSync('docker', [
     'run', 'esbuild',

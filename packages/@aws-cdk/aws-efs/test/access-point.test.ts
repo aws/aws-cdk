@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { AccessPoint, FileSystem } from '../lib';
@@ -19,7 +19,7 @@ test('addAccessPoint correctly', () => {
   // WHEN
   fileSystem.addAccessPoint('MyAccessPoint');
   // THEN
-  expectCDK(stack).to(haveResource('AWS::EFS::AccessPoint'));
+  expect(stack).toHaveResource('AWS::EFS::AccessPoint');
 });
 
 test('new AccessPoint correctly', () => {
@@ -28,7 +28,7 @@ test('new AccessPoint correctly', () => {
     fileSystem,
   });
   // THEN
-  expectCDK(stack).to(haveResource('AWS::EFS::AccessPoint'));
+  expect(stack).toHaveResource('AWS::EFS::AccessPoint');
 });
 
 test('import an AccessPoint using fromAccessPointId', () => {
@@ -41,7 +41,7 @@ test('import an AccessPoint using fromAccessPointId', () => {
   expect(imported.accessPointId).toEqual(ap.accessPointId);
 });
 
-test('import an AccessPoint using fromAccessPointId', () => {
+test('import an AccessPoint using fromAccessPointId throws when accessing fileSystem', () => {
   // WHEN
   const ap = new AccessPoint(stack, 'MyAccessPoint', {
     fileSystem,
@@ -143,7 +143,7 @@ test('custom access point is created correctly', () => {
 
   });
   // THEN
-  expectCDK(stack).to(haveResource('AWS::EFS::AccessPoint', {
+  expect(stack).toHaveResource('AWS::EFS::AccessPoint', {
     FileSystemId: {
       Ref: 'EfsFileSystem37910666',
     },
@@ -163,5 +163,5 @@ test('custom access point is created correctly', () => {
       },
       Path: '/export/share',
     },
-  }));
+  });
 });

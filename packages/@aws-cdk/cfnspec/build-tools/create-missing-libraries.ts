@@ -149,8 +149,8 @@ async function main() {
         package: 'cdk-package',
         awslint: 'cdk-awslint',
         cfn2ts: 'cfn2ts',
-        'build+test+package': 'npm run build+test && npm run package',
-        'build+test': 'npm run build && npm test',
+        'build+test': 'yarn build && yarn test',
+        'build+test+package': 'yarn build+test && yarn package',
         compat: 'cdk-compat',
         gen: 'cfn2ts',
         'rosetta:extract': 'yarn --silent jsii-rosetta extract',
@@ -176,7 +176,8 @@ async function main() {
       },
       license: 'Apache-2.0',
       devDependencies: {
-        '@aws-cdk/assert': version,
+        '@types/jest': '^26.0.22',
+        '@aws-cdk/assert-internal': version,
         'cdk-build-tools': version,
         'cfn2ts': version,
         'pkglint': version,
@@ -194,6 +195,9 @@ async function main() {
       maturity: 'cfn-only',
       awscdkio: {
         announce: false,
+      },
+      publishConfig: {
+        tag: 'latest',
       },
     });
 
@@ -256,7 +260,7 @@ async function main() {
     ]);
 
     await write(`test/${lowcaseModuleName}.test.ts`, [
-      "import '@aws-cdk/assert/jest';",
+      "import '@aws-cdk/assert-internal/jest';",
       "import {} from '../lib';",
       '',
       "test('No tests are specified for this package', () => {",
@@ -267,13 +271,17 @@ async function main() {
     await write('README.md', [
       `# ${namespace} Construct Library`,
       '<!--BEGIN STABILITY BANNER-->',
+      '',
       '---',
       '',
       '![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)',
       '',
-      '> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.',
+      '> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.',
+      '>',
+      '> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib',
       '',
       '---',
+      '',
       '<!--END STABILITY BANNER-->',
       '',
       'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',

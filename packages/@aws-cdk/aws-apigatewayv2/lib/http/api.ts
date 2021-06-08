@@ -1,9 +1,12 @@
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
-import { DefaultDomainMappingOptions } from '../http/stage';
-import { IHttpRouteIntegration } from './integration';
+import { IApi } from '../common/api';
+import { ApiBase } from '../common/base';
+import { DomainMappingOptions, IStage } from '../common/stage';
+import { IHttpRouteAuthorizer } from './authorizer';
+import { IHttpRouteIntegration, HttpIntegration, HttpRouteIntegrationConfig } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
@@ -11,24 +14,13 @@ import { VpcLink, VpcLinkProps } from './vpc-link';
 /**
  * Represents an HTTP API
  */
-export interface IHttpApi extends IResource {
+export interface IHttpApi extends IApi {
   /**
    * The identifier of this API Gateway HTTP API.
    * @attribute
+   * @deprecated - use apiId instead
    */
   readonly httpApiId: string;
-
-  /**
-   * The default stage
-   */
-  readonly defaultStage?: HttpStage;
-
-  /**
-   * Return the given named metric for this HTTP Api Gateway
-   *
-   * @default - average over 5 minutes
-   */
-  metric(metricName: string, props?: MetricOptions): Metric;
 
   /**
    * Metric for the number of client-side errors captured in a given period.
@@ -79,6 +71,12 @@ export interface IHttpApi extends IResource {
    * Add a new VpcLink
    */
   addVpcLink(options: VpcLinkProps): VpcLink
+
+  /**
+   * Add a http integration
+   * @internal
+   */
+  _addIntegration(scope: Construct, config: HttpRouteIntegrationConfig): HttpIntegration;
 }
 
 /**
@@ -121,7 +119,52 @@ export interface HttpApiProps {
    *
    * @default - no default domain mapping configured. meaningless if `createDefaultStage` is `false`.
    */
-  readonly defaultDomainMapping?: DefaultDomainMappingOptions;
+  readonly defaultDomainMapping?: DomainMappingOptions;
+
+  /**
+   * Specifies whether clients can invoke your API using the default endpoint.
+   * By default, clients can invoke your API with the default
+   * `https://{api_id}.execute-api.{region}.amazonaws.com` endpoint. Enable
+   * this if you would like clients to use your custom domain name.
+   * @default false execute-api endpoint enabled.
+   */
+  readonly disableExecuteApiEndpoint?: boolean;
+
+  /**
+   * Default Authorizer to applied to all routes in the gateway
+   *
+   * @default - No authorizer
+   */
+  readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   *
+   * @default - no default authorization scopes
+   */
+  readonly defaultAuthorizationScopes?: string[];
+}
+
+/**
+ * Supported CORS HTTP methods
+ */
+export enum CorsHttpMethod{
+  /** HTTP ANY */
+  ANY = '*',
+  /** HTTP DELETE */
+  DELETE = 'DELETE',
+  /** HTTP GET */
+  GET = 'GET',
+  /** HTTP HEAD */
+  HEAD = 'HEAD',
+  /** HTTP OPTIONS */
+  OPTIONS = 'OPTIONS',
+  /** HTTP PATCH */
+  PATCH = 'PATCH',
+  /** HTTP POST */
+  POST = 'POST',
+  /** HTTP PUT */
+  PUT = 'PUT',
 }
 
 /**
@@ -144,7 +187,7 @@ export interface CorsPreflightOptions {
    * Represents a collection of allowed HTTP methods.
    * @default - No Methods are allowed.
    */
-  readonly allowMethods?: HttpMethod[];
+  readonly allowMethods?: CorsHttpMethod[];
 
   /**
    * Represents a collection of allowed origins.
@@ -179,28 +222,40 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    * @default HttpMethod.ANY
    */
   readonly methods?: HttpMethod[];
+
+  /**
+   * Authorizer to be associated to these routes.
+   *
+   * Use NoneAuthorizer to remove the default authorizer for the api
+   *
+   * @default - uses the default authorizer if one is specified on the HttpApi
+   */
+  readonly authorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * The list of OIDC scopes to include in the authorization.
+   *
+   * These scopes will override the default authorization scopes on the gateway.
+   * Set to [] to remove default scopes
+   *
+   * @default - uses defaultAuthorizationScopes if configured on the API, otherwise none.
+   */
+  readonly authorizationScopes?: string[];
 }
 
-abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
+abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that this is not exported
 
+  public abstract readonly apiId: string;
   public abstract readonly httpApiId: string;
+  public abstract readonly apiEndpoint: string;
   private vpcLinks: Record<string, VpcLink> = {};
 
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    return new Metric({
-      namespace: 'AWS/ApiGateway',
-      metricName,
-      dimensions: { ApiId: this.httpApiId },
-      ...props,
-    }).attachTo(this);
-  }
-
   public metricClientError(props?: MetricOptions): Metric {
-    return this.metric('4XXError', { statistic: 'Sum', ...props });
+    return this.metric('4xx', { statistic: 'Sum', ...props });
   }
 
   public metricServerError(props?: MetricOptions): Metric {
-    return this.metric('5XXError', { statistic: 'Sum', ...props });
+    return this.metric('5xx', { statistic: 'Sum', ...props });
   }
 
   public metricDataProcessed(props?: MetricOptions): Metric {
@@ -231,6 +286,44 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
 
     return vpcLink;
   }
+
+  /**
+   * @internal
+   */
+  public _addIntegration(scope: Construct, config: HttpRouteIntegrationConfig): HttpIntegration {
+    const { configHash, integration: existingIntegration } = this._integrationCache.getIntegration(scope, config);
+    if (existingIntegration) {
+      return existingIntegration as HttpIntegration;
+    }
+
+    const integration = new HttpIntegration(scope, `HttpIntegration-${configHash}`, {
+      httpApi: this,
+      integrationType: config.type,
+      integrationUri: config.uri,
+      method: config.method,
+      connectionId: config.connectionId,
+      connectionType: config.connectionType,
+      payloadFormatVersion: config.payloadFormatVersion,
+    });
+    this._integrationCache.saveIntegration(scope, config, integration);
+
+    return integration;
+  }
+}
+
+/**
+ * Attributes for importing an HttpApi into the CDK
+ */
+export interface HttpApiAttributes {
+  /**
+   * The identifier of the HttpApi
+   */
+  readonly httpApiId: string;
+  /**
+   * The endpoint URL of the HttpApi
+   * @default - throws an error if apiEndpoint is accessed.
+   */
+  readonly apiEndpoint?: string;
 }
 
 /**
@@ -241,9 +334,18 @@ export class HttpApi extends HttpApiBase {
   /**
    * Import an existing HTTP API into this CDK app.
    */
-  public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
+  public static fromHttpApiAttributes(scope: Construct, id: string, attrs: HttpApiAttributes): IHttpApi {
     class Import extends HttpApiBase {
-      public readonly httpApiId = httpApiId;
+      public readonly apiId = attrs.httpApiId;
+      public readonly httpApiId = attrs.httpApiId;
+      private readonly _apiEndpoint = attrs.apiEndpoint;
+
+      public get apiEndpoint(): string {
+        if (!this._apiEndpoint) {
+          throw new Error('apiEndpoint is not configured on the imported HttpApi.');
+        }
+        return this._apiEndpoint;
+      }
     }
     return new Import(scope, id);
   }
@@ -252,24 +354,29 @@ export class HttpApi extends HttpApiBase {
    * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
    */
   public readonly httpApiName?: string;
-
+  public readonly apiId: string;
   public readonly httpApiId: string;
 
   /**
-   * The default endpoint for an API
-   * @attribute
+   * Specifies whether clients can invoke this HTTP API by using the default execute-api endpoint.
    */
-  public readonly apiEndpoint: string;
+  public readonly disableExecuteApiEndpoint?: boolean;
 
   /**
-   * default stage of the api resource
+   * The default stage of this API
    */
-  public readonly defaultStage: HttpStage | undefined;
+  public readonly defaultStage: IStage | undefined;
+
+  private readonly _apiEndpoint: string;
+
+  private readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+  private readonly defaultAuthorizationScopes?: string[];
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
 
     this.httpApiName = props?.apiName ?? id;
+    this.disableExecuteApiEndpoint = props?.disableExecuteApiEndpoint;
 
     let corsConfiguration: CfnApi.CorsProperty | undefined;
     if (props?.corsPreflight) {
@@ -300,17 +407,23 @@ export class HttpApi extends HttpApiBase {
       protocolType: 'HTTP',
       corsConfiguration,
       description: props?.description,
+      disableExecuteApiEndpoint: this.disableExecuteApiEndpoint,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);
+    this.apiId = resource.ref;
     this.httpApiId = resource.ref;
-    this.apiEndpoint = resource.attrApiEndpoint;
+    this._apiEndpoint = resource.attrApiEndpoint;
+    this.defaultAuthorizer = props?.defaultAuthorizer;
+    this.defaultAuthorizationScopes = props?.defaultAuthorizationScopes;
 
     if (props?.defaultIntegration) {
       new HttpRoute(this, 'DefaultRoute', {
         httpApi: this,
         routeKey: HttpRouteKey.DEFAULT,
         integration: props.defaultIntegration,
+        authorizer: props.defaultAuthorizer,
+        authorizationScopes: props.defaultAuthorizationScopes,
       });
     }
 
@@ -331,6 +444,16 @@ export class HttpApi extends HttpApiBase {
       throw new Error('defaultDomainMapping not supported with createDefaultStage disabled',
       );
     }
+  }
+
+  /**
+   * Get the default endpoint for this API.
+   */
+  public get apiEndpoint(): string {
+    if (this.disableExecuteApiEndpoint) {
+      throw new Error('apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.');
+    }
+    return this._apiEndpoint;
   }
 
   /**
@@ -358,10 +481,16 @@ export class HttpApi extends HttpApiBase {
    */
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
     const methods = options.methods ?? [HttpMethod.ANY];
-    return methods.map((method) => new HttpRoute(this, `${method}${options.path}`, {
-      httpApi: this,
-      routeKey: HttpRouteKey.with(options.path, method),
-      integration: options.integration,
-    }));
+    return methods.map((method) => {
+      const authorizationScopes = options.authorizationScopes ?? this.defaultAuthorizationScopes;
+
+      return new HttpRoute(this, `${method}${options.path}`, {
+        httpApi: this,
+        routeKey: HttpRouteKey.with(options.path, method),
+        integration: options.integration,
+        authorizer: options.authorizer ?? this.defaultAuthorizer,
+        authorizationScopes,
+      });
+    });
   }
 }

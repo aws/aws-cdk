@@ -4,9 +4,13 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * This extension add a public facing load balancer for sending traffic
- * to one or more replicas of the application container
+ * to one or more replicas of the application container.
  */
 export class HttpLoadBalancerExtension extends ServiceExtension {
   private loadBalancer!: alb.IApplicationLoadBalancer;
@@ -16,8 +20,8 @@ export class HttpLoadBalancerExtension extends ServiceExtension {
     super('load-balancer');
   }
 
-  // Before the service is created go ahead and create the load balancer itself.
-  public prehook(service: Service, scope: cdk.Construct) {
+  // Before the service is created, go ahead and create the load balancer itself.
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
 
     this.loadBalancer = new alb.ApplicationLoadBalancer(scope, `${this.parentService.id}-load-balancer`, {
@@ -37,7 +41,7 @@ export class HttpLoadBalancerExtension extends ServiceExtension {
   }
 
   // Minor service configuration tweaks to work better with a load balancer
-  public modifyServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild): ServiceBuild {
     return {
       ...props,
 

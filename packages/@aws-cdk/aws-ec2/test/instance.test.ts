@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -8,7 +8,7 @@ import { Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
-  EbsDeviceVolumeType, InitCommand, Instance, InstanceClass, InstanceSize, InstanceType, UserData, Vpc,
+  EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, UserData, Vpc,
 } from '../lib';
 
 
@@ -21,17 +21,30 @@ beforeEach(() => {
 
 nodeunitShim({
   'instance is created correctly'(test: Test) {
-    // WHEN
-    new Instance(stack, 'Instance', {
-      vpc,
-      machineImage: new AmazonLinuxImage(),
-      instanceType: InstanceType.of(InstanceClass.BURSTABLE4_GRAVITON, InstanceSize.LARGE),
-    });
+    // GIVEN
+    const sampleInstances = [{
+      instanceClass: InstanceClass.BURSTABLE4_GRAVITON,
+      instanceSize: InstanceSize.LARGE,
+      instanceType: 't4g.large',
+    }, {
+      instanceClass: InstanceClass.HIGH_COMPUTE_MEMORY1,
+      instanceSize: InstanceSize.XLARGE3,
+      instanceType: 'z1d.3xlarge',
+    }];
 
-    // THEN
-    cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
-      InstanceType: 't4g.large',
-    }));
+    for (const [i, sampleInstance] of sampleInstances.entries()) {
+      // WHEN
+      new Instance(stack, `Instance${i}`, {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(sampleInstance.instanceClass, sampleInstance.instanceSize),
+      });
+
+      // THEN
+      cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
+        InstanceType: sampleInstance.instanceType,
+      }));
+    }
 
     test.done();
   },
@@ -107,7 +120,89 @@ nodeunitShim({
 
     test.done();
   },
+  'instance architecture is correctly discerned for arm instances'(test: Test) {
+    // GIVEN
+    const sampleInstanceClasses = [
+      'a1', 't4g', 'c6g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd', // current Graviton-based instance classes
+      'a13', 't11g', 'y10ng', 'z11ngd', // theoretical future Graviton-based instance classes
+    ];
 
+    for (const instanceClass of sampleInstanceClasses) {
+      // WHEN
+      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.XLARGE18);
+
+      // THEN
+      expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
+    }
+
+    test.done();
+  },
+  'instance architecture is correctly discerned for x86-64 instance'(test: Test) {
+    // GIVEN
+    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a']; // A sample of x86-64 instance classes
+
+    for (const instanceClass of sampleInstanceClasses) {
+      // WHEN
+      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.XLARGE18);
+
+      // THEN
+      expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
+    }
+
+    test.done();
+  },
+  'instances with local NVME drive are correctly named'(test: Test) {
+    // GIVEN
+    const sampleInstanceClassKeys = [{
+      key: 'R5D',
+      value: 'r5d',
+    }, {
+      key: 'MEMORY5_NVME_DRIVE',
+      value: 'r5d',
+    }, {
+      key: 'R5AD',
+      value: 'r5ad',
+    }, {
+      key: 'MEMORY5_AMD_NVME_DRIVE',
+      value: 'r5ad',
+    }, {
+      key: 'M5AD',
+      value: 'm5ad',
+    }, {
+      key: 'STANDARD5_AMD_NVME_DRIVE',
+      value: 'm5ad',
+    }]; // A sample of instances with NVME drives
+
+    for (const instanceClass of sampleInstanceClassKeys) {
+      // WHEN
+      const key = instanceClass.key as keyof(typeof InstanceClass);
+      const instanceType = InstanceClass[key];
+
+      // THEN
+      expect(instanceType).toBe(instanceClass.value);
+    }
+
+    test.done();
+  },
+  'instance architecture throws an error when instance type is invalid'(test: Test) {
+    // GIVEN
+    const malformedInstanceTypes = ['t4', 't4g.nano.', 't4gnano', ''];
+
+    for (const malformedInstanceType of malformedInstanceTypes) {
+      // WHEN
+      const instanceType = new InstanceType(malformedInstanceType);
+
+      // THEN
+      try {
+        instanceType.architecture;
+        expect(true).toBe(false); // The line above should have thrown an error
+      } catch (err) {
+        expect(err.message).toBe('Malformed instance type identifier');
+      }
+    }
+
+    test.done();
+  },
   blockDeviceMappings: {
     'can set blockDeviceMappings'(test: Test) {
       // WHEN

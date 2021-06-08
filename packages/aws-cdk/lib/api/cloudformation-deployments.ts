@@ -70,6 +70,12 @@ export interface DeployStackOptions {
   execute?: boolean;
 
   /**
+   * Optional name to use for the CloudFormation change set.
+   * If not provided, a name will be generated automatically.
+   */
+  changeSetName?: string;
+
+  /**
    * Force deployment, even if the deployed template is identical to the one we are about to deploy.
    * @default false deployment will be skipped if the template is identical
    */
@@ -154,7 +160,11 @@ export class CloudFormationDeployments {
     await this.publishStackAssets(options.stack, toolkitInfo);
 
     // Do a verification of the bootstrap stack version
-    this.validateBootstrapStackVersion(options.stack.stackName, options.stack.requiresBootstrapStackVersion, toolkitInfo);
+    await this.validateBootstrapStackVersion(
+      options.stack.stackName,
+      options.stack.requiresBootstrapStackVersion,
+      options.stack.bootstrapStackVersionSsmParameter,
+      toolkitInfo);
 
     return deployStack({
       stack: options.stack,
@@ -169,6 +179,7 @@ export class CloudFormationDeployments {
       toolkitInfo,
       tags: options.tags,
       execute: options.execute,
+      changeSetName: options.changeSetName,
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,
@@ -219,9 +230,9 @@ export class CloudFormationDeployments {
       cloudFormationRoleArn: roleArn ?? stack.cloudFormationExecutionRoleArn,
     }, resolvedEnvironment);
 
-    const stackSdk = arns.assumeRoleArn
-      ? await this.sdkProvider.withAssumedRole(arns.assumeRoleArn, undefined, resolvedEnvironment, mode)
-      : await this.sdkProvider.forEnvironment(resolvedEnvironment, mode);
+    const stackSdk = await this.sdkProvider.forEnvironment(resolvedEnvironment, mode, {
+      assumeRoleArn: arns.assumeRoleArn,
+    });
 
     return {
       stackSdk,
@@ -238,12 +249,12 @@ export class CloudFormationDeployments {
       accountId: () => Promise.resolve(env.account),
       region: () => Promise.resolve(env.region),
       partition: async () => {
-        // We need to do a rather complicated dance here to get the right
-        // partition value to substitute into placeholders :(
-        const defaultAccount = await this.sdkProvider.defaultAccount();
-        return env.account === defaultAccount?.accountId
-          ? defaultAccount.partition
-          : (await (await this.sdkProvider.forEnvironment(env, Mode.ForReading)).currentAccount()).partition;
+        // There's no good way to get the partition!
+        // We should have had it already, except we don't.
+        //
+        // Best we can do is ask the "base credentials" for this environment for their partition. Cross-partition
+        // AssumeRole'ing will never work anyway, so this answer won't be wrong (it will just be slow!)
+        return (await this.sdkProvider.baseCredentialsPartition(env, Mode.ForReading)) ?? 'aws';
       },
     });
   }
@@ -251,12 +262,16 @@ export class CloudFormationDeployments {
   /**
    * Publish all asset manifests that are referenced by the given stack
    */
-  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, bootstrapStack: ToolkitInfo | undefined) {
+  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo) {
     const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
     const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
 
     for (const assetArtifact of assetArtifacts) {
-      this.validateBootstrapStackVersion(stack.stackName, assetArtifact.requiresBootstrapStackVersion, bootstrapStack);
+      await this.validateBootstrapStackVersion(
+        stack.stackName,
+        assetArtifact.requiresBootstrapStackVersion,
+        assetArtifact.bootstrapStackVersionSsmParameter,
+        toolkitInfo);
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
       await publishAssets(manifest, this.sdkProvider, stackEnv);
@@ -266,19 +281,18 @@ export class CloudFormationDeployments {
   /**
    * Validate that the bootstrap stack has the right version for this stack
    */
-  private validateBootstrapStackVersion(
+  private async validateBootstrapStackVersion(
     stackName: string,
     requiresBootstrapStackVersion: number | undefined,
-    bootstrapStack: ToolkitInfo | undefined) {
+    bootstrapStackVersionSsmParameter: string | undefined,
+    toolkitInfo: ToolkitInfo) {
 
     if (requiresBootstrapStackVersion === undefined) { return; }
 
-    if (!bootstrapStack) {
-      throw new Error(`${stackName}: publishing assets requires bootstrap stack version '${requiresBootstrapStackVersion}', no bootstrap stack found. Please run 'cdk bootstrap'.`);
-    }
-
-    if (requiresBootstrapStackVersion > bootstrapStack.version) {
-      throw new Error(`${stackName}: publishing assets requires bootstrap stack version '${requiresBootstrapStackVersion}', found '${bootstrapStack.version}'. Please run 'cdk bootstrap' with a newer CLI version.`);
+    try {
+      await toolkitInfo.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
+    } catch (e) {
+      throw new Error(`${stackName}: ${e.message}`);
     }
   }
 }

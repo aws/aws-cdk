@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
 
@@ -31,7 +31,7 @@ test('.metricXxx() methods can be used to obtain Metrics for the canary', () => 
     dimensions: { CanaryName: canary.canaryName },
     namespace: 'CloudWatchSynthetics',
     metricName: 'Failed',
-    statistic: 'Average',
+    statistic: 'Sum',
   }));
 
   expect(metricDuration).toEqual(expect.objectContaining({

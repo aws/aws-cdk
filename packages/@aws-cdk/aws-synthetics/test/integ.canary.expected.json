@@ -67,7 +67,18 @@
                     "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
-                  "Resource": "arn:aws:logs:::*"
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":logs:::*"
+                      ]
+                    ]
+                  }
                 }
               ],
               "Version": "2012-10-17"
@@ -189,7 +200,18 @@
                     "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
-                  "Resource": "arn:aws:logs:::*"
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":logs:::*"
+                      ]
+                    ]
+                  }
                 }
               ],
               "Version": "2012-10-17"
@@ -345,7 +367,18 @@
                     "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
-                  "Resource": "arn:aws:logs:::*"
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":logs:::*"
+                      ]
+                    ]
+                  }
                 }
               ],
               "Version": "2012-10-17"

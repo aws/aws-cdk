@@ -9,6 +9,10 @@ import { Service } from '../service';
 import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 // The version of the App Mesh envoy sidecar to add to the task.
 const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.1.0-prod';
 
@@ -17,7 +21,7 @@ const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.1.0-prod';
  */
 export interface MeshProps {
   /**
-   * The service mesh into which to register the service
+   * The service mesh into which to register the service.
    */
   readonly mesh: appmesh.Mesh;
 
@@ -35,9 +39,9 @@ export interface MeshProps {
  * to the container in a service mesh.
  *
  * The service will then be available to other App Mesh services at the
- * address `<service name>.<environment name>`. For example a service called
+ * address `<service name>.<environment name>`. For example, a service called
  * `orders` deploying in an environment called `production` would be accessible
- * to other App Mesh enabled services at the address `http://orders.production`
+ * to other App Mesh enabled services at the address `http://orders.production`.
  */
 export class AppMeshExtension extends ServiceExtension {
   protected virtualNode!: appmesh.VirtualNode;
@@ -63,7 +67,7 @@ export class AppMeshExtension extends ServiceExtension {
     }
   }
 
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
     this.scope = scope;
 
@@ -78,7 +82,7 @@ export class AppMeshExtension extends ServiceExtension {
     }
   }
 
-  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
+  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps): ecs.TaskDefinitionProps {
     // Find the app extension, to get its port
     const containerextension = this.parentService.serviceDescription.get('service-container') as Container;
 
@@ -161,6 +165,7 @@ export class AppMeshExtension extends ServiceExtension {
 
         'me-south-1': this.accountIdForRegion('me-south-1'),
         'ap-east-1': this.accountIdForRegion('ap-east-1'),
+        'af-south-1': this.accountIdForRegion('af-south-1'),
       },
     });
 
@@ -223,7 +228,7 @@ export class AppMeshExtension extends ServiceExtension {
   }
 
   // Enable CloudMap for the service.
-  public modifyServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild): ServiceBuild {
     return {
       ...props,
 
@@ -244,7 +249,7 @@ export class AppMeshExtension extends ServiceExtension {
     } as ServiceBuild;
   }
 
-  // Now that the service is defined we can create the AppMesh virtual service
+  // Now that the service is defined, we can create the AppMesh virtual service
   // and virtual node for the real service
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
     const containerextension = this.parentService.serviceDescription.get('service-container') as Container;
@@ -279,7 +284,11 @@ export class AppMeshExtension extends ServiceExtension {
     this.virtualNode = new appmesh.VirtualNode(this.scope, `${this.parentService.id}-virtual-node`, {
       mesh: this.mesh,
       virtualNodeName: this.parentService.id,
-      cloudMapService: service.cloudMapService,
+      serviceDiscovery: service.cloudMapService
+        ? appmesh.ServiceDiscovery.cloudMap({
+          service: service.cloudMapService,
+        })
+        : undefined,
       listeners: [addListener(this.protocol, containerextension.trafficPort)],
     });
 
@@ -308,8 +317,7 @@ export class AppMeshExtension extends ServiceExtension {
     // Now create a virtual service. Relationship goes like this:
     // virtual service -> virtual router -> virtual node
     this.virtualService = new appmesh.VirtualService(this.scope, `${this.parentService.id}-virtual-service`, {
-      mesh: this.mesh,
-      virtualRouter: this.virtualRouter,
+      virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(this.virtualRouter),
       virtualServiceName: serviceName,
     });
   }
@@ -339,7 +347,7 @@ export class AppMeshExtension extends ServiceExtension {
     // Next update the app mesh config so that the local Envoy
     // proxy on this service knows how to route traffic to
     // nodes from the other service.
-    this.virtualNode.addBackend(otherAppMesh.virtualService);
+    this.virtualNode.addBackend(appmesh.Backend.virtualService(otherAppMesh.virtualService));
   }
 
   private routeSpec(weightedTargets: appmesh.WeightedTarget[], serviceName: string): appmesh.RouteSpec {

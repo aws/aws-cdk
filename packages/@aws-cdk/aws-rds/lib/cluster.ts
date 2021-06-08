@@ -4,13 +4,14 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Annotations, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Annotations, Duration, FeatureFlags, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport } from './private/util';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
@@ -221,6 +222,14 @@ interface DatabaseClusterBaseProps {
    * @default - a new subnet group will be created.
    */
   readonly subnetGroup?: ISubnetGroup;
+
+  /**
+   * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
+   * to database accounts.
+   *
+   * @default false
+   */
+  readonly iamAuthentication?: boolean;
 }
 
 /**
@@ -289,8 +298,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * Never undefined.
    */
   public readonly engine?: IClusterEngine;
-  public readonly instanceIdentifiers: string[] = [];
-  public readonly instanceEndpoints: Endpoint[] = [];
 
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
@@ -310,7 +317,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       description: `Subnets for ${id} database`,
       vpc: props.instanceProps.vpc,
       vpcSubnets: props.instanceProps.vpcSubnets,
-      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
+      removalPolicy: renderUnless(helperRemovalPolicy(props.removalPolicy), RemovalPolicy.DESTROY),
     });
 
     this.securityGroups = props.instanceProps.securityGroups ?? [
@@ -340,17 +347,22 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
     this.engine = props.engine;
 
+    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+      ? props.clusterIdentifier?.toLowerCase()
+      : props.clusterIdentifier;
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
-      dbClusterIdentifier: props.clusterIdentifier,
+      dbClusterIdentifier: clusterIdentifier,
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
       port: props.port ?? clusterEngineBindConfig.port,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
+      enableIamDatabaseAuthentication: props.iamAuthentication,
       // Admin
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
@@ -467,6 +479,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
+  public readonly instanceIdentifiers: string[];
+  public readonly instanceEndpoints: Endpoint[];
 
   /**
    * The secret attached to this cluster
@@ -512,14 +526,16 @@ export class DatabaseCluster extends DatabaseClusterNew {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    applyRemovalPolicy(cluster, props.removalPolicy);
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     if (secret) {
       this.secret = secret.attach(this);
     }
 
     setLogRetention(this, props);
-    createInstances(this, props, this.subnetGroup);
+    const createdInstances = createInstances(this, props, this.subnetGroup);
+    this.instanceIdentifiers = createdInstances.instanceIdentifiers;
+    this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
 
   /**
@@ -588,6 +604,8 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
+  public readonly instanceIdentifiers: string[];
+  public readonly instanceEndpoints: Endpoint[];
 
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
@@ -608,10 +626,12 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    applyRemovalPolicy(cluster, props.removalPolicy);
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     setLogRetention(this, props);
-    createInstances(this, props, this.subnetGroup);
+    const createdInstances = createInstances(this, props, this.subnetGroup);
+    this.instanceIdentifiers = createdInstances.instanceIdentifiers;
+    this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
 }
 
@@ -651,6 +671,9 @@ interface InstanceConfig {
  */
 function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps, subnetGroup: ISubnetGroup): InstanceConfig {
   const instanceCount = props.instances != null ? props.instances : 2;
+  if (Token.isUnresolved(instanceCount)) {
+    throw new Error('The number of instances an RDS Cluster consists of cannot be provided as a deploy-time only value!');
+  }
   if (instanceCount < 1) {
     throw new Error('At least one instance is required');
   }
@@ -687,8 +710,6 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
         undefined;
 
-    const publiclyAccessible = instanceProps.vpcSubnets && instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
-
     const instance = new CfnDBInstance(cluster, `Instance${instanceIndex}`, {
       // Link to cluster
       engine: props.engine.engineType,
@@ -697,7 +718,8 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       dbInstanceIdentifier: instanceIdentifier,
       // Instance properties
       dbInstanceClass: databaseInstanceType(instanceType),
-      publiclyAccessible,
+      publiclyAccessible: instanceProps.publiclyAccessible ??
+        (instanceProps.vpcSubnets && instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC),
       enablePerformanceInsights: enablePerformanceInsights || instanceProps.enablePerformanceInsights, // fall back to undefined if not set
       performanceInsightsKmsKeyId: instanceProps.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
@@ -713,13 +735,11 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       deleteAutomatedBackups: props.instanceProps.deleteAutomatedBackups,
     });
 
-    // If removalPolicy isn't explicitly set,
-    // it's Snapshot for Cluster.
-    // Because of that, in this case,
-    // we can safely use the CFN default of Delete for DbInstances with dbClusterIdentifier set.
-    if (props.removalPolicy) {
-      applyRemovalPolicy(instance, props.removalPolicy);
-    }
+    // For instances that are part of a cluster:
+    //
+    //  Cluster DESTROY or SNAPSHOT -> DESTROY (snapshot is good enough to recreate)
+    //  Cluster RETAIN              -> RETAIN (otherwise cluster state will disappear)
+    instance.applyRemovalPolicy(helperRemovalPolicy(props.removalPolicy));
 
     // We must have a dependency on the NAT gateway provider here to create
     // things in the right order.

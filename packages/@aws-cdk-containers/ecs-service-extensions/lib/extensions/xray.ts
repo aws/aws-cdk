@@ -4,10 +4,14 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 const XRAY_DAEMON_IMAGE = 'amazon/aws-xray-daemon:latest';
 
 /**
- * This extension adds an X-Ray daemon inside the task definition, for
+ * This extension adds an X-Ray daemon inside the task definition for
  * capturing application trace spans and submitting them to the AWS
  * X-Ray service.
  */
@@ -17,7 +21,7 @@ export class XRayExtension extends ServiceExtension {
   }
 
   // @ts-ignore - Ignore unused params that are required for abstract class extend
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
   }
 

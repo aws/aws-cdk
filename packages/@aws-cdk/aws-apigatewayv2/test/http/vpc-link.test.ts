@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { VpcLink } from '../../lib';
@@ -51,7 +51,7 @@ describe('VpcLink', () => {
     // WHEN
     new VpcLink(stack, 'VpcLink', {
       vpc,
-      subnets: [subnet1, subnet2],
+      subnets: { subnets: [subnet1, subnet2] },
       securityGroups: [sg1, sg2, sg3],
     });
 
@@ -59,12 +59,6 @@ describe('VpcLink', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
       Name: 'VpcLink',
       SubnetIds: [
-        {
-          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
-        },
-        {
-          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
-        },
         {
           Ref: 'subnet1Subnet16A4B3BD',
         },

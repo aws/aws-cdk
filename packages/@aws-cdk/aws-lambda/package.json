@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Lambda",
         "packageId": "Amazon.CDK.AWS.Lambda",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -47,8 +45,8 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
@@ -77,15 +75,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
-    "@types/aws-lambda": "^8.10.64",
-    "@types/lodash": "^4.14.165",
+    "@types/jest": "^26.0.23",
+    "@types/aws-lambda": "^8.10.77",
+    "@types/lodash": "^4.14.170",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "jest": "^26.6.3",
-    "lodash": "^4.17.20",
-    "pkglint": "0.0.0"
+    "lodash": "^4.17.21",
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
@@ -97,13 +96,15 @@
     "@aws-cdk/aws-efs": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -116,13 +117,15 @@
     "@aws-cdk/aws-efs": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -142,7 +145,6 @@
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily.NODEJS",
       "docs-public-apis:@aws-cdk/aws-lambda.Alias.lambda",
       "docs-public-apis:@aws-cdk/aws-lambda.Alias.fromAliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-lambda.Function.fromFunctionArn",
       "docs-public-apis:@aws-cdk/aws-lambda.FunctionBase",
       "docs-public-apis:@aws-cdk/aws-lambda.QualifiedFunctionBase",
       "docs-public-apis:@aws-cdk/aws-lambda.QualifiedFunctionBase.lambda",
@@ -169,12 +171,21 @@
       "props-default-doc:@aws-cdk/aws-lambda.Permission.sourceArn",
       "docs-public-apis:@aws-cdk/aws-lambda.ResourceBindOptions",
       "docs-public-apis:@aws-cdk/aws-lambda.VersionAttributes",
-      "props-physical-name:@aws-cdk/aws-lambda.EventInvokeConfigProps"
+      "props-physical-name:@aws-cdk/aws-lambda.EventInvokeConfigProps",
+      "props-physical-name:@aws-cdk/aws-lambda.CodeSigningConfigProps"
     ]
   },
   "stability": "stable",
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "nozem": {
+    "ostools": [
+      "docker"
+    ]
+  },
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

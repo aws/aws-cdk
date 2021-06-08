@@ -24,7 +24,7 @@ running on AWS Lambda, or any web application.
   - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
 - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
 - [Integration Targets](#integration-targets)
-- [API Keys](#api-keys)
+- [Usage Plan & API Keys](#usage-plan--api-keys)
 - [Working with models](#working-with-models)
 - [Default Integration and Method Options](#default-integration-and-method-options)
 - [Proxy Routes](#proxy-routes)
@@ -32,6 +32,7 @@ running on AWS Lambda, or any web application.
   - [IAM-based authorizer](#iam-based-authorizer)
   - [Lambda-based token authorizer](#lambda-based-token-authorizer)
   - [Lambda-based request authorizer](#lambda-based-request-authorizer)
+  - [Cognito User Pools authorizer](#cognito-user-pools-authorizer)
 - [Mutual TLS](#mutal-tls-mtls)
 - [Deployments](#deployments)
   - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
@@ -109,7 +110,7 @@ item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 ### Breaking up Methods and Resources across Stacks
 
 It is fairly common for REST APIs with a large number of Resources and Methods to hit the [CloudFormation
-limit](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html) of 200 resources per
+limit](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html) of 500 resources per
 stack.
 
 To help with this, Resources and Methods for the same REST API can be re-organized across multiple stacks. A common
@@ -156,34 +157,47 @@ book.addMethod('GET', getBookIntegration, {
 });
 ```
 
-## API Keys
-
-The following example shows how to use an API Key with a usage plan:
+It is possible to also integrate with AWS services in a different region. The following code integrates with Amazon SQS in the
+`eu-west-1` region.
 
 ```ts
-const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
-  handler: 'hello.handler',
-  code: lambda.Code.fromAsset('lambda')
+const getMessageIntegration = new apigateway.AwsIntegration({
+  service: 'sqs', 
+  path: 'queueName', 
+  region: 'eu-west-1' 
 });
+```
 
-const api = new apigateway.RestApi(this, 'hello-api', { });
-const integration = new apigateway.LambdaIntegration(hello);
+## Usage Plan & API Keys
+
+A usage plan specifies who can access one or more deployed API stages and methods, and the rate at which they can be
+accessed. The plan uses API keys to identify API clients and meters access to the associated API stages for each key.
+Usage plans also allow configuring throttling limits and quota limits that are enforced on individual client API keys. 
+
+The following example shows how to create and asscociate a usage plan and an API key:
+
+```ts
+const api = new apigateway.RestApi(this, 'hello-api');
 
 const v1 = api.root.addResource('v1');
 const echo = v1.addResource('echo');
 const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
-const key = api.addApiKey('ApiKey');
 
 const plan = api.addUsagePlan('UsagePlan', {
   name: 'Easy',
-  apiKey: key,
   throttle: {
     rateLimit: 10,
     burstLimit: 2
   }
 });
 
+const key = api.addApiKey('ApiKey');
+plan.addApiKey(key);
+```
+
+To associate a plan to a given RestAPI stage:
+
+```ts
 plan.addApiStage({
   stage: api.deploymentStage,
   throttle: [
@@ -221,6 +235,29 @@ following code provides read permission to an API key.
 importedKey.grantRead(lambda);
 ```
 
+### ⚠️ Multiple API Keys
+
+It is possible to specify multiple API keys for a given Usage Plan, by calling `usagePlan.addApiKey()`.
+
+When using multiple API keys, a past bug of the CDK prevents API key associations to a Usage Plan to be deleted.
+If the CDK app had the [feature flag] - `@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId` - enabled when the API
+keys were created, then the app will not be affected by this bug.
+
+If this is not the case, you will need to ensure that the CloudFormation [logical ids] of the API keys that are not
+being deleted remain unchanged.
+Make note of the logical ids of these API keys before removing any, and set it as part of the `addApiKey()` method:
+
+```ts
+usageplan.addApiKey(apiKey, {
+  overrideLogicalId: '...',
+});
+```
+
+[feature flag]: https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html
+[logical ids]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
+
+### Rate Limited API Key
+
 In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
 This construct lets you specify rate limiting properties which should be applied only to the api key being created.
 The API key created has the specified rate limits, such as quota and throttles, applied.
@@ -228,19 +265,6 @@ The API key created has the specified rate limits, such as quota and throttles, 
 The following example shows how to use a rate limited api key :
 
 ```ts
-const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
-  handler: 'hello.handler',
-  code: lambda.Code.fromAsset('lambda')
-});
-
-const api = new apigateway.RestApi(this, 'hello-api', { });
-const integration = new apigateway.LambdaIntegration(hello);
-
-const v1 = api.root.addResource('v1');
-const echo = v1.addResource('echo');
-const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
-
 const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
   customerId: 'hello-customer',
   resources: [api],
@@ -249,7 +273,6 @@ const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
     period: apigateway.Period.MONTH
   }
 });
-
 ```
 
 ## Working with models
@@ -259,7 +282,7 @@ have to define your models and mappings for the request, response, and integrati
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });
@@ -580,6 +603,25 @@ Authorizers can also be passed via the `defaultMethodOptions` property within th
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
 depending on where the defaults were specified.
 
+### Cognito User Pools authorizer
+
+API Gateway also allows [Amazon Cognito user pools as authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html)
+
+The following snippet configures a Cognito user pool as an authorizer:
+
+```ts
+const userPool = new cognito.UserPool(stack, 'UserPool');
+
+const auth = new apigateway.CognitoUserPoolsAuthorizer(this, 'booksAuthorizer', {
+  cognitoUserPools: [userPool]
+});
+
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizer: auth,
+  authorizationType: apigateway.AuthorizationType.COGNITO,
+});
+```
+
 ## Mutual TLS (mTLS)
 
 Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
@@ -809,9 +851,10 @@ new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
     accessLogFormat: apigateway.AccessLogFormat.custom(
-      `${AccessLogFormat.contextRequestId()} ${AccessLogField.contextErrorMessage()} ${AccessLogField.contextErrorMessageString()}`);
-  })
-};
+      `${AccessLogField.contextRequestId()} ${AccessLogField.contextErrorMessage()} ${AccessLogField.contextErrorMessageString()}`
+    )
+  }
+});
 ```
 
 You can use the `methodOptions` property to configure

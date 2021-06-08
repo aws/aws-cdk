@@ -60,7 +60,38 @@ new route53.TxtRecord(this, 'TXTRecord', {
 });
 ```
 
-To add a A record to your zone:
+To add a NS record to your zone:
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+
+new route53.NsRecord(this, 'NSRecord', {
+  zone: myZone,
+  recordName: 'foo',  
+  values: [            
+    'ns-1.awsdns.co.uk.',
+    'ns-2.awsdns.com.'
+  ],
+  ttl: Duration.minutes(90),       // Optional - default is 30 minutes
+});
+```
+
+To add a DS record to your zone:
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+
+new route53.DsRecord(this, 'DSRecord', {
+  zone: myZone,
+  recordName: 'foo',
+  values: [
+    '12345 3 1 123456789abcdef67890123456789abcdef67890',
+  ],
+  ttl: Duration.minutes(90),       // Optional - default is 30 minutes
+});
+```
+
+To add an A record to your zone:
 
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
@@ -71,7 +102,28 @@ new route53.ARecord(this, 'ARecord', {
 });
 ```
 
-To add a AAAA record pointing to a CloudFront distribution:
+To add an A record for an EC2 instance with an Elastic IP (EIP) to your zone:
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as route53 from '@aws-cdk/aws-route53';
+
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+});
+
+const elasticIp = new ec2.CfnEIP(this, 'EIP', {
+  domain: 'vpc',
+  instanceId: instance.instanceId
+});
+
+new route53.ARecord(this, 'ARecord', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses(elasticIp.ref)
+});
+```
+
+To add an AAAA record pointing to a CloudFront distribution:
 
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
@@ -87,6 +139,48 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
+
+To add a NS record to a HostedZone in different account you can do the following:
+
+In the account containing the parent hosted zone:
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+
+const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
+  zoneName: 'someexample.com',
+  crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('12345678901'),
+  crossAccountZoneDelegationRoleName: 'MyDelegationRole',
+});
+```
+
+In the account containing the child zone to be delegated:
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as route53 from '@aws-cdk/aws-route53';
+
+const subZone = new route53.PublicHostedZone(this, 'SubZone', {
+  zoneName: 'sub.someexample.com'
+});
+
+// import the delegation role by constructing the roleArn
+const delegationRoleArn = Stack.of(this).formatArn({
+  region: '', // IAM is global in each partition
+  service: 'iam',
+  account: 'parent-account-id',
+  resource: 'role',
+  resourceName: 'MyDelegationRole',
+});
+const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRoleArn);
+
+// create the record
+new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
+  delegatedZone: subZone,
+  parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
+  delegationRole,
+});
+```
 
 ## Imports
 
@@ -125,7 +219,53 @@ Alternatively, use the `HostedZone.fromHostedZoneId` to import hosted zones if
 you know the ID and the retrieval for the `zoneName` is undesirable.
 
 ```ts
-const zone = HostedZone.fromHostedZoneId(this, 'MyZone', {
-  hostedZoneId: 'ZOJJZC49E0EPZ',
+const zone = HostedZone.fromHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
+```
+
+## VPC Endpoint Service Private DNS
+
+When you create a VPC endpoint service, AWS generates endpoint-specific DNS hostnames that consumers use to communicate with the service.
+For example, vpce-1234-abcdev-us-east-1.vpce-svc-123345.us-east-1.vpce.amazonaws.com.
+By default, your consumers access the service with that DNS name.
+This can cause problems with HTTPS traffic because the DNS will not match the backend certificate:
+
+```console
+curl: (60) SSL: no alternative certificate subject name matches target host name 'vpce-abcdefghijklmnopq-rstuvwx.vpce-svc-abcdefghijklmnopq.us-east-1.vpce.amazonaws.com'
+```
+
+Effectively, the endpoint appears untrustworthy. To mitigate this, clients have to create an alias for this DNS name in Route53.
+
+Private DNS for an endpoint service lets you configure a private DNS name so consumers can
+access the service using an existing DNS name without creating this Route53 DNS alias
+This DNS name can also be guaranteed to match up with the backend certificate.
+
+Before consumers can use the private DNS name, you must verify that you have control of the domain/subdomain.
+
+Assuming your account has ownership of the particular domain/subdomain,
+this construct sets up the private DNS configuration on the endpoint service,
+creates all the necessary Route53 entries, and verifies domain ownership.
+
+```ts
+import { Stack } from '@aws-cdk/core';
+import { Vpc, VpcEndpointService } from '@aws-cdk/aws-ec2';
+import { NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { PublicHostedZone } from '@aws-cdk/aws-route53';
+
+stack = new Stack();
+vpc = new Vpc(stack, 'VPC');
+nlb = new NetworkLoadBalancer(stack, 'NLB', {
+  vpc,
+});
+vpces = new VpcEndpointService(stack, 'VPCES', {
+  vpcEndpointServiceLoadBalancers: [nlb],
+});
+// You must use a public hosted zone so domain ownership can be verified
+zone = new PublicHostedZone(stack, 'PHZ', {
+  zoneName: 'aws-cdk.dev',
+});
+new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
+  endpointService: vpces,
+  domainName: 'my-stuff.aws-cdk.dev',
+  publicHostedZone: zone,
 });
 ```

@@ -4,7 +4,7 @@ import { CfnResourceReflection } from './cfn-resource';
 
 interface ModuleLinterContext {
   readonly assembly: reflect.Assembly;
-  readonly namespace: string;
+  readonly namespaces: Set<string>;
 }
 
 export const moduleLinter = new Linter<ModuleLinterContext>(assembly => {
@@ -13,20 +13,36 @@ export const moduleLinter = new Linter<ModuleLinterContext>(assembly => {
     return undefined; // no resources
   }
 
-  return [{
+  const namespaces = new Set<string>();
+  for (const cfnResource of cfnResources) {
+    namespaces.add(cfnResource.namespace);
+  }
+  return {
     assembly,
-    namespace: cfnResources[0].namespace,
-  }];
+    namespaces,
+  };
 });
 
 moduleLinter.add( {
   code: 'module-name',
   message: 'module name must be @aws-cdk/aws-<namespace>',
   eval: e => {
-    if (!e.ctx.namespace) { return; }
+    if (!e.ctx.namespaces) { return; }
     if (!e.ctx.assembly) { return; }
-    const namespace = overrideNamespace(e.ctx.namespace.toLocaleLowerCase().replace('::', '-'));
-    e.assertEquals(e.ctx.assembly.name, `@aws-cdk/${namespace}`, e.ctx.assembly.name);
+
+    const cdkNamespaces = Array
+      .from(e.ctx.namespaces)
+      .map(ns => `@aws-cdk/${overrideNamespace(ns.toLocaleLowerCase().replace('::', '-'))}`);
+    for (const cdkNamespace of cdkNamespaces) {
+      if (e.ctx.assembly.name === cdkNamespace) {
+        return;
+      }
+    }
+
+    e.assert(false, e.ctx.assembly.name, ` expected '${e.ctx.assembly.name}' to be ` +
+      (cdkNamespaces.length === 1
+        ? `'${cdkNamespaces[0]}'`
+        : `one of: ${cdkNamespaces.join(', ')}`));
   },
 });
 

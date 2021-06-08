@@ -70,7 +70,7 @@ export class ProxyTarget {
   /**
    * Bind this target to the specified database proxy.
    */
-  public bind(_: DatabaseProxy): ProxyTargetConfig {
+  public bind(proxy: DatabaseProxy): ProxyTargetConfig {
     const engine: IEngine | undefined = this.dbInstance?.engine ?? this.dbCluster?.engine;
 
     if (!engine) {
@@ -83,6 +83,10 @@ export class ProxyTarget {
     if (!engineFamily) {
       throw new Error(`Engine '${engineDescription(engine)}' does not support proxies`);
     }
+
+    // allow connecting to the Cluster/Instance from the Proxy
+    this.dbCluster?.connections.allowDefaultPortFrom(proxy, 'Allow connections to the database Cluster from the Proxy');
+    this.dbInstance?.connections.allowDefaultPortFrom(proxy, 'Allow connections to the database Instance from the Proxy');
 
     return {
       engineFamily,
@@ -315,6 +319,46 @@ export interface IDatabaseProxy extends cdk.IResource {
    * @attribute
    */
   readonly endpoint: string;
+
+  /**
+   * Grant the given identity connection access to the proxy.
+   *
+   * @param grantee the Principal to grant the permissions to
+   * @param dbUser the name of the database user to allow connecting as to the proxy
+   *
+   * @default - if the Proxy had been provided a single Secret value,
+   *   the user will be taken from that Secret
+   */
+  grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant;
+}
+
+/**
+ * Represents an RDS Database Proxy.
+ *
+ */
+abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy {
+  public abstract readonly dbProxyName: string;
+  public abstract readonly dbProxyArn: string;
+  public abstract readonly endpoint: string;
+
+  public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
+    if (!dbUser) {
+      throw new Error('For imported Database Proxies, the dbUser is required in grantConnect()');
+    }
+    const scopeStack = cdk.Stack.of(this);
+    const proxyGeneratedId = scopeStack.parseArn(this.dbProxyArn, ':').resourceName;
+    const userArn = scopeStack.formatArn({
+      service: 'rds-db',
+      resource: 'dbuser',
+      resourceName: `${proxyGeneratedId}/${dbUser}`,
+      sep: ':',
+    });
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['rds-db:connect'],
+      resourceArns: [userArn],
+    });
+  }
 }
 
 /**
@@ -322,8 +366,8 @@ export interface IDatabaseProxy extends cdk.IResource {
  *
  * @resource AWS::RDS::DBProxy
  */
-export class DatabaseProxy extends cdk.Resource
-  implements IDatabaseProxy, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export class DatabaseProxy extends DatabaseProxyBase
+  implements ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * Import an existing database proxy.
    */
@@ -332,7 +376,7 @@ export class DatabaseProxy extends cdk.Resource
     id: string,
     attrs: DatabaseProxyAttributes,
   ): IDatabaseProxy {
-    class Import extends cdk.Resource implements IDatabaseProxy {
+    class Import extends DatabaseProxyBase {
       public readonly dbProxyName = attrs.dbProxyName;
       public readonly dbProxyArn = attrs.dbProxyArn;
       public readonly endpoint = attrs.endpoint;
@@ -366,6 +410,7 @@ export class DatabaseProxy extends cdk.Resource
    */
   public readonly connections: ec2.Connections;
 
+  private readonly secrets: secretsmanager.ISecret[];
   private readonly resource: CfnDBProxy;
 
   constructor(scope: Construct, id: string, props: DatabaseProxyProps) {
@@ -379,13 +424,20 @@ export class DatabaseProxy extends cdk.Resource
       secret.grantRead(role);
     }
 
-    this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
+    const securityGroups = props.securityGroups ?? [
+      new ec2.SecurityGroup(this, 'ProxySecurityGroup', {
+        description: 'SecurityGroup for Database Proxy',
+        vpc: props.vpc,
+      }),
+    ];
+    this.connections = new ec2.Connections({ securityGroups });
 
     const bindResult = props.proxyTarget.bind(this);
 
     if (props.secrets.length < 1) {
       throw new Error('One or more secrets are required.');
     }
+    this.secrets = props.secrets;
 
     this.resource = new CfnDBProxy(this, 'Resource', {
       auth: props.secrets.map(_ => {
@@ -401,7 +453,7 @@ export class DatabaseProxy extends cdk.Resource
       idleClientTimeout: props.idleClientTimeout?.toSeconds(),
       requireTls: props.requireTLS ?? true,
       roleArn: role.roleArn,
-      vpcSecurityGroupIds: props.securityGroups?.map(_ => _.securityGroupId),
+      vpcSecurityGroupIds: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(_ => _.securityGroupId) }),
       vpcSubnetIds: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
     });
 
@@ -424,13 +476,15 @@ export class DatabaseProxy extends cdk.Resource
       throw new Error('Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers');
     }
 
-    new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
+    const proxyTargetGroup = new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
       targetGroupName: 'default',
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
       dbClusterIdentifiers,
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
+
+    bindResult.dbClusters?.forEach((c) => proxyTargetGroup.node.addDependency(c));
   }
 
   /**
@@ -441,6 +495,18 @@ export class DatabaseProxy extends cdk.Resource
       targetId: this.dbProxyName,
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_PROXY,
     };
+  }
+
+  public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
+    if (!dbUser) {
+      if (this.secrets.length > 1) {
+        throw new Error('When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect()');
+      }
+      // 'username' is the field RDS uses here,
+      // see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html#rds-proxy-secrets-arns
+      dbUser = this.secrets[0].secretValueFromJson('username').toString();
+    }
+    return super.grantConnect(grantee, dbUser);
   }
 }
 

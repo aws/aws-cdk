@@ -1,9 +1,12 @@
-import * as cdk from '@aws-cdk/core';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Condition } from '../condition';
-import { JsonPath } from '../fields';
+import { FieldUtils, JsonPath } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties shared by all states
@@ -55,12 +58,26 @@ export interface StateProps {
    * @default $
    */
   readonly resultPath?: string;
+
+  /**
+   * The JSON that will replace the state's raw result and become the effective
+   * result before ResultPath is applied.
+   *
+   * You can use ResultSelector to create a payload with values that are static
+   * or selected from the state's raw result.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
+   *
+   * @default - None
+   */
+  readonly resultSelector?: { [key: string]: any };
 }
 
 /**
  * Base class for all other state classes
  */
-export abstract class State extends cdk.Construct implements IChainable {
+export abstract class State extends CoreConstruct implements IChainable {
   /**
    * Add a prefix to the stateId of all States found in a construct tree
    */
@@ -146,6 +163,7 @@ export abstract class State extends cdk.Construct implements IChainable {
   protected readonly parameters?: object;
   protected readonly outputPath?: string;
   protected readonly resultPath?: string;
+  protected readonly resultSelector?: object;
   protected readonly branches: StateGraph[] = [];
   protected iteration?: StateGraph;
   protected defaultChoice?: State;
@@ -184,6 +202,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     this.parameters = props.parameters;
     this.outputPath = props.outputPath;
     this.resultPath = props.resultPath;
+    this.resultSelector = props.resultSelector;
   }
 
   public get id() {
@@ -251,7 +270,7 @@ export abstract class State extends cdk.Construct implements IChainable {
 
     this.retries.push({
       ...props,
-      errors: props.errors ? props.errors : [Errors.ALL],
+      errors: props.errors ?? [Errors.ALL],
     });
   }
 
@@ -265,7 +284,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     this.catches.push({
       next: handler,
       props: {
-        errors: props.errors ? props.errors : [Errors.ALL],
+        errors: props.errors ?? [Errors.ALL],
         resultPath: props.resultPath,
       },
     });
@@ -349,7 +368,7 @@ export abstract class State extends cdk.Construct implements IChainable {
   protected renderChoices(): any {
     return {
       Choices: renderList(this.choices, renderChoice),
-      Default: this.defaultChoice ? this.defaultChoice.stateId : undefined,
+      Default: this.defaultChoice?.stateId,
     };
   }
 
@@ -393,6 +412,15 @@ export abstract class State extends cdk.Construct implements IChainable {
       Retry: renderList(this.retries, renderRetry, (a, b) => compareErrors(a.errors, b.errors)),
       Catch: renderList(this.catches, renderCatch, (a, b) => compareErrors(a.props.errors, b.props.errors)),
     };
+  }
+
+  /**
+   * Render ResultSelector in ASL JSON format
+   */
+  protected renderResultSelector(): any {
+    return FieldUtils.renderObject({
+      ResultSelector: this.resultSelector,
+    });
   }
 
   /**

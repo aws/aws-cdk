@@ -1,9 +1,9 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ABSENT } from '@aws-cdk/assert';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import { Vpc } from '@aws-cdk/aws-ec2';
-import { Runtime } from '@aws-cdk/aws-lambda';
+import { CodeConfig, Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
@@ -12,8 +12,13 @@ jest.mock('../lib/bundling', () => {
   return {
     Bundling: {
       bundle: jest.fn().mockReturnValue({
-        bind: () => {
-          return { inlineCode: 'code' };
+        bind: (): CodeConfig => {
+          return {
+            s3Location: {
+              bucketName: 'my-bucket',
+              objectKey: 'my-key',
+            },
+          };
         },
         bindToResource: () => { return; },
       }),
@@ -37,6 +42,7 @@ test('NodejsFunction with .ts handler', () => {
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'index.handler',
+    Runtime: 'nodejs14.x',
   });
 });
 
@@ -92,7 +98,7 @@ test('throws when entry does not exist', () => {
 });
 
 test('throws when entry cannot be automatically found', () => {
-  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find entry file./);
+  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find handler file .*function.test.Fn.ts or .*function.test.Fn.js/);
 });
 
 test('throws with the wrong runtime family', () => {
@@ -105,6 +111,22 @@ test('throws with non existing lock file', () => {
   expect(() => new NodejsFunction(stack, 'handler1', {
     depsLockFilePath: '/does/not/exist.lock',
   })).toThrow(/Lock file at \/does\/not\/exist.lock doesn't exist/);
+});
+
+test('throws when depsLockFilePath is not a file', () => {
+  expect(() => new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: __dirname,
+  })).toThrow(/\`depsLockFilePath\` should point to a file/);
+});
+
+test('resolves depsLockFilePath to an absolute path', () => {
+  new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: './package.json',
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    depsLockFilePath: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/package.json$/),
+  }));
 });
 
 test('resolves entry to an absolute path', () => {

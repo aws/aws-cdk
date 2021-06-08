@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -57,7 +57,7 @@ export = {
   'empty aws-auth'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION });
+    const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false });
 
     // WHEN
     new AwsAuth(stack, 'AwsAuth', { cluster });
@@ -77,7 +77,7 @@ export = {
   'addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
+    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
     const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
     const user = new iam.User(stack, 'user');
 
@@ -185,7 +185,7 @@ export = {
         'Fn::Join': [
           '',
           [
-            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterMastersRole9AA35625',
@@ -233,7 +233,7 @@ export = {
   'addMastersRole after addNodegroup correctly'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
+    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
     cluster.addNodegroupCapacity('NG');
     const role = iam.Role.fromRoleArn(stack, 'imported-role', 'arn:aws:iam::123456789012:role/S3Access');
 

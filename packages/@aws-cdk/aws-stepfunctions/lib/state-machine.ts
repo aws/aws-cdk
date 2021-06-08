@@ -1,9 +1,10 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Arn, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Arn, Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
+import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
 
@@ -45,7 +46,7 @@ export enum LogLevel {
   /**
    * Log all errors
    */
-  ERROR= 'ERROR',
+  ERROR = 'ERROR',
   /**
    * Log fatal errors
    */
@@ -139,11 +140,17 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
+      public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
     return new Import(scope, id);
   }
 
   public abstract readonly stateMachineArn: string;
+
+  /**
+   * The principal this state machine is running as
+   */
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * Grant the given identity permissions to start an execution of this state
@@ -249,7 +256,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsFailed', props);
+    return this.cannedMetric(StatesMetrics.executionsFailedAverage, {
+      statistic: 'sum',
+      ...props,
+    });
   }
 
   /**
@@ -258,6 +268,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    // There's a typo in the "canned" version of this
     return this.metric('ExecutionThrottled', props);
   }
 
@@ -267,7 +278,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsAborted', props);
+    return this.cannedMetric(StatesMetrics.executionsAbortedAverage, {
+      statistic: 'sum',
+      ...props,
+    });
   }
 
   /**
@@ -276,7 +290,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsSucceeded', props);
+    return this.cannedMetric(StatesMetrics.executionsSucceededAverage, {
+      statistic: 'sum',
+      ...props,
+    });
   }
 
   /**
@@ -285,7 +302,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsTimedOut', props);
+    return this.cannedMetric(StatesMetrics.executionsTimedOutAverage, {
+      statistic: 'sum',
+      ...props,
+    });
   }
 
   /**
@@ -300,10 +320,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
    *
-   * @default - sum over 5 minutes
+   * @default - average over 5 minutes
    */
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionTime', props);
+    return this.cannedMetric(StatesMetrics.executionTimeAverage, props);
   }
 
   /**
@@ -316,6 +336,15 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
       sep: ':',
     });
+  }
+
+  private cannedMetric(
+    fn: (dims: { StateMachineArn: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ StateMachineArn: this.stateMachineArn }),
+      ...props,
+    }).attachTo(this);
   }
 }
 
@@ -350,6 +379,10 @@ export class StateMachine extends StateMachineBase {
       physicalName: props.stateMachineName,
     });
 
+    if (props.stateMachineName !== undefined) {
+      this.validateStateMachineName(props.stateMachineName);
+    }
+
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
     });
@@ -357,11 +390,11 @@ export class StateMachine extends StateMachineBase {
     const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
     graph.timeout = props.timeout;
 
-    this.stateMachineType = props.stateMachineType ? props.stateMachineType : StateMachineType.STANDARD;
+    this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
 
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
-      stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
+      stateMachineType: props.stateMachineType ?? undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
@@ -384,10 +417,29 @@ export class StateMachine extends StateMachineBase {
   }
 
   /**
+   * The principal this state machine is running as
+   */
+  public get grantPrincipal() {
+    return this.role.grantPrincipal;
+  }
+
+  /**
    * Add the given statement to the role's policy
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  private validateStateMachineName(stateMachineName: string) {
+    if (!Token.isUnresolved(stateMachineName)) {
+      if (stateMachineName.length < 1 || stateMachineName.length > 80) {
+        throw new Error(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`);
+      }
+
+      if (!stateMachineName.match(/^[a-z0-9\+\!\@\.\(\)\-\=\_\']+$/i)) {
+        throw new Error(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`);
+      }
+    }
   }
 
   private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
@@ -438,7 +490,7 @@ export class StateMachine extends StateMachineBase {
 /**
  * A State Machine
  */
-export interface IStateMachine extends IResource {
+export interface IStateMachine extends IResource, iam.IGrantable {
   /**
    * The ARN of the state machine
    * @attribute

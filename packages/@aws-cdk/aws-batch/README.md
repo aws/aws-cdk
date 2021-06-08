@@ -148,7 +148,7 @@ const computeEnv = batch.ComputeEnvironment.fromComputeEnvironmentArn(this, 'imp
 
 ### Change the baseline AMI of the compute resources
 
-Ocassionally, you will need to deviate from the default processing AMI.
+Occasionally, you will need to deviate from the default processing AMI.
 
 ECS Optimized Amazon Linux 2 example:
 
@@ -186,7 +186,7 @@ const jobQueue = new batch.JobQueue(stack, 'JobQueue', {
     {
       // Defines a collection of compute resources to handle assigned batch jobs
       computeEnvironment,
-      // Order determines the allocation order for jobs (i.e. Lower means higher preferance for job assignment)
+      // Order determines the allocation order for jobs (i.e. Lower means higher preference for job assignment)
       order: 1,
     },
   ],
@@ -244,6 +244,25 @@ new batch.JobDefinition(stack, 'batch-job-def-from-local', {
   container: {
     // todo-list is a directory containing a Dockerfile to build the application
     image: ecs.ContainerImage.fromAsset('../todo-list'),
+  },
+});
+```
+
+### Providing custom log configuration
+
+You can provide custom log driver and its configuration for the container.
+
+```ts
+new batch.JobDefinition(stack, 'job-def', {
+  container: {
+    image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+    logConfiguration: {
+      logDriver: batch.LogDriver.AWSLOGS,
+      options: { 'awslogs-region': 'us-east-1' },
+      secretOptions: [
+        batch.ExposedSecret.fromParametersStore('xyz', ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz')),
+      ],
+    },
   },
 });
 ```

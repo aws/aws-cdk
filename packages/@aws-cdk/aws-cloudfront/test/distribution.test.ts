@@ -1,10 +1,10 @@
-import { ABSENT, objectLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass } from '../lib';
+import { CfnDistribution, Distribution, Function, FunctionCode, FunctionEventType, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass, SecurityPolicyProtocol } from '../lib';
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
 
 let app: App;
@@ -56,7 +56,7 @@ test('exhaustive example of props renders correctly', () => {
     enabled: false,
     enableIpv6: false,
     enableLogging: true,
-    geoRestriction: GeoRestriction.blacklist('US', 'GB'),
+    geoRestriction: GeoRestriction.denylist('US', 'GB'),
     httpVersion: HttpVersion.HTTP1_1,
     logFilePrefix: 'logs/',
     logIncludesCookies: true,
@@ -103,6 +103,40 @@ test('exhaustive example of props renders correctly', () => {
         MinimumProtocolVersion: 'TLSv1.2_2019',
       },
       WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+    },
+  });
+});
+
+test('ensure comment prop is not greater than max lenght', () => {
+  const origin = defaultOrigin();
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    comment: `Adding a comment longer than 128 characters should be trimmed and added the 
+ellipsis so a user would know there was more to read and everything beyond this point should not show up`,
+  });
+
+  expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Comment: `Adding a comment longer than 128 characters should be trimmed and added the 
+ellipsis so a user would know there was more to ...`,
+      Enabled: true,
+      HttpVersion: 'http2',
+      IPV6Enabled: true,
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
+        },
+      ],
     },
   });
 });
@@ -314,23 +348,30 @@ describe('certificates', () => {
       },
     });
   });
+
+  test('adding a certificate with non default security policy protocol', () => {
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      domainNames: ['www.example.com'],
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016,
+      certificate: certificate,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerCertificate: {
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          SslSupportMethod: 'sni-only',
+          MinimumProtocolVersion: 'TLSv1_2016',
+        },
+      },
+    });
+  });
+
 });
 
 describe('custom error responses', () => {
-
-  test('should fail if responsePagePath is defined but responseCode is not', () => {
-    const origin = defaultOrigin();
-
-    expect(() => {
-      new Distribution(stack, 'Dist', {
-        defaultBehavior: { origin },
-        errorResponses: [{
-          httpStatus: 404,
-          responsePagePath: '/errors/404.html',
-        }],
-      });
-    }).toThrow(/\'responseCode\' must be provided if \'responsePagePath\' is defined/);
-  });
 
   test('should fail if only the error code is provided', () => {
     const origin = defaultOrigin();
@@ -340,7 +381,7 @@ describe('custom error responses', () => {
         defaultBehavior: { origin },
         errorResponses: [{ httpStatus: 404 }],
       });
-    }).toThrow(/A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid./);
+    }).toThrow(/A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid./);
   });
 
   test('should render the array of error configs if provided', () => {
@@ -348,13 +389,20 @@ describe('custom error responses', () => {
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
       errorResponses: [{
+        // responseHttpStatus defaults to httpsStatus
         httpStatus: 404,
-        responseHttpStatus: 404,
         responsePagePath: '/errors/404.html',
       },
       {
+        // without responsePagePath
         httpStatus: 500,
         ttl: Duration.seconds(2),
+      },
+      {
+        // with responseHttpStatus different from httpStatus
+        httpStatus: 403,
+        responseHttpStatus: 200,
+        responsePagePath: '/index.html',
       }],
     });
 
@@ -369,6 +417,11 @@ describe('custom error responses', () => {
           {
             ErrorCachingMinTTL: 2,
             ErrorCode: 500,
+          },
+          {
+            ErrorCode: 403,
+            ResponseCode: 200,
+            ResponsePagePath: '/index.html',
           },
         ],
       },
@@ -617,7 +670,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with incompatible env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_12_X,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
       environment: {
@@ -675,6 +728,44 @@ describe('with Lambda@Edge functions', () => {
       },
     });
   });
+});
+
+describe('with CloudFront functions', () => {
+
+  test('can add a CloudFront function to the default behavior', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        functionAssociations: [
+          {
+            eventType: FunctionEventType.VIEWER_REQUEST,
+            function: new Function(stack, 'TestFunction', {
+              code: FunctionCode.fromInline('foo'),
+            }),
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          FunctionAssociations: [
+            {
+              EventType: 'viewer-request',
+              FunctionARN: {
+                'Fn::GetAtt': [
+                  'TestFunction22AD90FC',
+                  'FunctionARN',
+                ],
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
+
 });
 
 test('price class is included if provided', () => {

@@ -1,14 +1,17 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 const CLOUDWATCH_AGENT_IMAGE = 'amazon/cloudwatch-agent:latest';
 
 /**
  * This extension adds a CloudWatch agent to the task definition and
- * configures the task to be able to publish metrics to CloudWatch
+ * configures the task to be able to publish metrics to CloudWatch.
  */
 export class CloudwatchAgentExtension extends ServiceExtension {
   private CW_CONFIG_CONTENT = {
@@ -28,7 +31,7 @@ export class CloudwatchAgentExtension extends ServiceExtension {
     super('cloudwatchAgent');
   }
 
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
     this.scope = scope;
   }

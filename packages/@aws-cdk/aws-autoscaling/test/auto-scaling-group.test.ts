@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -1320,6 +1320,50 @@ nodeunitShim({
     test.deepEqual(Object.values(autoscaling.ScalingEvent).length - 1, autoscaling.ScalingEvents.ALL._types.length);
     test.done();
   },
+
+  'Can protect new instances from scale-in via constructor property'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      newInstancesProtectedFromScaleIn: true,
+    });
+
+    // THEN
+    test.strictEqual(asg.areNewInstancesProtectedFromScaleIn(), true);
+    expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+      NewInstancesProtectedFromScaleIn: true,
+    }));
+
+    test.done();
+  },
+
+  'Can protect new instances from scale-in via setter'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+    asg.protectNewInstancesFromScaleIn();
+
+    // THEN
+    test.strictEqual(asg.areNewInstancesProtectedFromScaleIn(), true);
+    expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+      NewInstancesProtectedFromScaleIn: true,
+    }));
+
+    test.done();
+  },
 });
 
 function mockVpc(stack: cdk.Stack) {
@@ -1348,6 +1392,45 @@ test('Can set autoScalingGroupName', () => {
   // THEN
   expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
     AutoScalingGroupName: 'MyAsg',
+  }));
+});
+
+test('can use Vpc imported from unparseable list tokens', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  const vpcId = cdk.Fn.importValue('myVpcId');
+  const availabilityZones = cdk.Fn.split(',', cdk.Fn.importValue('myAvailabilityZones'));
+  const publicSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPublicSubnetIds'));
+  const privateSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPrivateSubnetIds'));
+  const isolatedSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myIsolatedSubnetIds'));
+
+  const vpc = ec2.Vpc.fromVpcAttributes(stack, 'importedVpc', {
+    vpcId,
+    availabilityZones,
+    publicSubnetIds,
+    privateSubnetIds,
+    isolatedSubnetIds,
+  });
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'ecs-ec2-asg', {
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: new ec2.AmazonLinuxImage(),
+    minCapacity: 1,
+    maxCapacity: 1,
+    desiredCapacity: 1,
+    vpc,
+    allowAllOutbound: false,
+    associatePublicIpAddress: false,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+  });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+    VPCZoneIdentifier: {
+      'Fn::Split': [',', { 'Fn::ImportValue': 'myPrivateSubnetIds' }],
+    },
   }));
 });
 

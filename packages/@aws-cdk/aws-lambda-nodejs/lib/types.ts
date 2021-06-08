@@ -1,4 +1,4 @@
-import { BundlingDockerImage } from '@aws-cdk/core';
+import { DockerImage } from '@aws-cdk/core';
 
 /**
  * Bundling options
@@ -42,11 +42,111 @@ export interface BundlingOptions {
   readonly loader?: { [ext: string]: string };
 
   /**
+   * Log level for esbuild
+   *
+   * @default LogLevel.WARNING
+   */
+  readonly logLevel?: LogLevel;
+
+  /**
+   * Whether to preserve the original `name` values even in minified code.
+   *
+   * In JavaScript the `name` property on functions and classes defaults to a
+   * nearby identifier in the source code.
+   *
+   * However, minification renames symbols to reduce code size and bundling
+   * sometimes need to rename symbols to avoid collisions. That changes value of
+   * the `name` property for many of these cases. This is usually fine because
+   * the `name` property is normally only used for debugging. However, some
+   * frameworks rely on the `name` property for registration and binding purposes.
+   * If this is the case, you can enable this option to preserve the original
+   * `name` values even in minified code.
+   *
+   * @default false
+   */
+  readonly keepNames?: boolean;
+
+  /**
+   * Normally the esbuild automatically discovers `tsconfig.json` files and reads their contents during a build.
+   *
+   * However, you can also configure a custom `tsconfig.json` file to use instead.
+   *
+   * This is similar to entry path, you need to provide path to your custom `tsconfig.json`.
+   *
+   * This can be useful if you need to do multiple builds of the same code with different settings.
+   *
+   * @example { 'tsconfig': 'path/custom.tsconfig.json' }
+   *
+   * @default - automatically discovered by `esbuild`
+   */
+  readonly tsconfig? : string
+
+  /**
+   * This option tells esbuild to write out a JSON file relative to output directory with metadata about the build.
+   *
+   * The metadata in this JSON file follows this schema (specified using TypeScript syntax):
+   *
+   * ```typescript
+   *  {
+   *     outputs: {
+   *          [path: string]: {
+   *            bytes: number
+   *            inputs: {
+   *              [path: string]: { bytesInOutput: number }
+   *            }
+   *            imports: { path: string }[]
+   *            exports: string[]
+   *          }
+   *        }
+   *     }
+   * }
+   * ```
+   * This data can then be analyzed by other tools. For example,
+   * bundle buddy can consume esbuild's metadata format and generates a treemap visualization
+   * of the modules in your bundle and how much space each one takes up.
+   * @see https://esbuild.github.io/api/#metafile
+   * @default - false
+   */
+  readonly metafile?: boolean
+
+  /**
+   * Use this to insert an arbitrary string at the beginning of generated JavaScript files.
+   *
+   * This is similar to footer which inserts at the end instead of the beginning.
+   *
+   * This is commonly used to insert comments:
+   *
+   * @default -  no comments are passed
+   */
+  readonly banner? : string
+
+  /**
+   * Use this to insert an arbitrary string at the end of generated JavaScript files.
+   *
+   * This is similar to banner which inserts at the beginning instead of the end.
+   *
+   * This is commonly used to insert comments
+   *
+   * @default -  no comments are passed
+   */
+  readonly footer? : string
+
+  /**
    * Environment variables defined when bundling runs.
    *
    * @default - no environment variables are defined.
    */
   readonly environment?: { [key: string]: string; };
+
+  /**
+   * Replace global identifiers with constant expressions.
+   *
+   * @example { 'process.env.DEBUG': 'true' }
+   * @example { 'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx') }
+   *
+   * @default - no replacements are made
+   */
+  readonly define?: { [key: string]: string };
 
   /**
    * A list of modules that should be considered as externals (already available
@@ -58,7 +158,7 @@ export interface BundlingOptions {
 
   /**
    * A list of modules that should be installed instead of bundled. Modules are
-   * installed in a Lambda compatible environnment only when bundling runs in
+   * installed in a Lambda compatible environment only when bundling runs in
    * Docker.
    *
    * @default - all modules are bundled
@@ -100,7 +200,7 @@ export interface BundlingOptions {
    *
    * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
    */
-  readonly dockerImage?: BundlingDockerImage;
+  readonly dockerImage?: DockerImage;
 
   /**
    * Command hooks
@@ -151,4 +251,18 @@ export interface ICommandHooks {
    * Commands are chained with `&&`.
    */
   afterBundling(inputDir: string, outputDir: string): string[];
+}
+
+/**
+ * Log level for esbuild
+ */
+export enum LogLevel {
+  /** Show everything */
+  INFO = 'info',
+  /** Show warnings and errors */
+  WARNING = 'warning',
+  /** Show errors only */
+  ERROR = 'error',
+  /** Show nothing */
+  SILENT = 'silent',
 }

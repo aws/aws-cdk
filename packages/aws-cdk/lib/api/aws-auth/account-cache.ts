@@ -43,7 +43,6 @@ export class AccountAccessKeyCache {
     // try to get account ID based on this access key ID from disk.
     const cached = await this.get(accessKeyId);
     if (cached) {
-
       debug(`Retrieved account ID ${cached.accountId} from disk cache`);
       return cached;
     }

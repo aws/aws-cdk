@@ -15,7 +15,7 @@ Amazon EventBridge delivers a near real-time stream of system events that
 describe changes in AWS resources. For example, an AWS CodePipeline emits the
 [State
 Change](https://docs.aws.amazon.com/eventbridge/latest/userguide/event-types.html#codepipeline-event-type)
-event when the pipeline changes it's state.
+event when the pipeline changes its state.
 
 * __Events__: An event indicates a change in your AWS environment. AWS resources
   can generate events when their state changes. For example, Amazon EC2
@@ -80,9 +80,22 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+Or using an Object:
+
+```ts
+onCommitRule.addTarget(new targets.SnsTopic(topic, {
+  message: events.RuleTargetInput.fromObject(
+    {
+      DataType: `custom_${events.EventField.fromPath('$.detail-type')}`
+    }
+  )
+}));
+```
+
 ## Scheduling
 
 You can configure a Rule to run on a schedule (cron or rate).
+Rate must be specified in minutes, hours or days.
 
 The following example runs a task every day at 4am:
 
@@ -163,3 +176,40 @@ In this situation, the CDK will wire the 2 accounts together:
 
 For more information, see the
 [AWS documentation on cross-account events](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html).
+
+## Archiving
+
+It is possible to archive all or some events sent to an event bus. It is then possible to [replay these events](https://aws.amazon.com/blogs/aws/new-archive-and-replay-events-with-amazon-eventbridge/).
+
+```ts
+import * as cdk from '@aws-cdk/core';
+
+const stack = new stack();
+
+const bus = new EventBus(stack, 'bus', {
+  eventBusName: 'MyCustomEventBus'
+});
+
+bus.archive('MyArchive', {
+  archiveName: 'MyCustomEventBusArchive',
+  description: 'MyCustomerEventBus Archive',
+  eventPattern: {
+    account: [stack.account],
+  },
+  retention: cdk.Duration.days(365),
+});
+```
+
+## Granting PutEvents to an existing EventBus
+
+To import an existing EventBus into your CDK application, use `EventBus.fromEventBusArn` or `EventBus.fromEventBusAttributes`
+factory method.
+
+Then, you can use the `grantPutEventsTo` method to grant `event:PutEvents` to the eventBus.
+
+```ts
+const eventBus = EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:aws:events:us-east-1:111111111:event-bus/my-event-bus');
+
+// now you can just call methods on the eventbus
+eventBus.grantPutEventsTo(lambdaFunction);
+```

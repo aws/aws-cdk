@@ -1,4 +1,4 @@
-import { ABSENT, countResources, expect, haveResource } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -38,6 +38,11 @@ export = {
           'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
         },
       ],
+    }));
+
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Handler: 'index.handler',
+      Runtime: 'nodejs12.x',
     }));
 
     expect(stack).to(haveResource('Custom::LogRetention', {

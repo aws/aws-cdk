@@ -92,7 +92,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   }
 
   async function exec() {
-    return new Promise<string>((ok, fail) => {
+    return new Promise<void>((ok, fail) => {
       // We use a slightly lower-level interface to:
       //
       // - Pass arguments in an array instead of a string, to get around a

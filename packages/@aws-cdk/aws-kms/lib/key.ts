@@ -1,8 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
+import * as perms from './private/perms';
 
 /**
  * A KMS Key, either managed by this CDK app, or imported.
@@ -77,8 +79,9 @@ abstract class KeyBase extends Resource implements IKey {
   /**
    * Optional property to control trusting account identities.
    *
-   * If specified grants will default identity policies instead of to both
-   * resource and identity policies.
+   * If specified, grants will default identity policies instead of to both
+   * resource and identity policies. This matches the default behavior when creating
+   * KMS keys via the API or console.
    */
   protected abstract readonly trustAccountIdentities: boolean;
 
@@ -153,7 +156,7 @@ abstract class KeyBase extends Resource implements IKey {
       resourceArns: [this.keyArn],
       resourceSelfArns: crossEnvironment ? undefined : ['*'],
     };
-    if (this.trustAccountIdentities) {
+    if (this.trustAccountIdentities && !crossEnvironment) {
       return iam.Grant.addToPrincipalOrResource(grantOptions);
     } else {
       return iam.Grant.addToPrincipalAndResource({
@@ -168,35 +171,24 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   /**
-   * Grant decryption permisisons using this key to the given principal
+   * Grant decryption permissions using this key to the given principal
    */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'kms:Decrypt',
-    );
+    return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
   }
 
   /**
-   * Grant encryption permisisons using this key to the given principal
+   * Grant encryption permissions using this key to the given principal
    */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'kms:Encrypt',
-      'kms:ReEncrypt*',
-      'kms:GenerateDataKey*',
-    );
+    return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
   }
 
   /**
-   * Grant encryption and decryption permisisons using this key to the given principal
+   * Grant encryption and decryption permissions using this key to the given principal
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'kms:Decrypt',
-      'kms:Encrypt',
-      'kms:ReEncrypt*',
-      'kms:GenerateDataKey*',
-    );
+    return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
   }
 
   /**
@@ -256,6 +248,85 @@ abstract class KeyBase extends Resource implements IKey {
 }
 
 /**
+ * The key spec, represents the cryptographic configuration of keys.
+ */
+export enum KeySpec {
+  /**
+   * The default key spec.
+   *
+   * Valid usage: ENCRYPT_DECRYPT
+   */
+  SYMMETRIC_DEFAULT = 'SYMMETRIC_DEFAULT',
+
+  /**
+   * RSA with 2048 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  RSA_2048 = 'RSA_2048',
+
+  /**
+   * RSA with 3072 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  RSA_3072 = 'RSA_3072',
+
+  /**
+   * RSA with 4096 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  RSA_4096 = 'RSA_4096',
+
+  /**
+   * NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and
+   * SHA-256 for the message digest.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_P256 = 'ECC_NIST_P256',
+
+  /**
+   * NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and
+   * SHA-384 for the message digest.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_P384 = 'ECC_NIST_P384',
+
+  /**
+   * NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and
+   * SHA-512 for the message digest.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_P521 = 'ECC_NIST_P521',
+
+  /**
+   * Standards for Efficient Cryptography 2, Section 2.4.1, ECDSA signature on the Koblitz curve.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_SECG_P256K1 = 'ECC_SECG_P256K1',
+}
+
+/**
+ * The key usage, represents the cryptographic operations of keys.
+ */
+export enum KeyUsage {
+  /**
+   * Encryption and decryption.
+   */
+  ENCRYPT_DECRYPT = 'ENCRYPT_DECRYPT',
+
+  /**
+   * Signing and verification
+   */
+  SIGN_VERIFY = 'SIGN_VERIFY',
+}
+
+/**
  * Construction properties for a KMS Key object
  */
 export interface KeyProps {
@@ -291,12 +362,48 @@ export interface KeyProps {
   readonly enabled?: boolean;
 
   /**
+   * The cryptographic configuration of the key. The valid value depends on usage of the key.
+   *
+   * IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion
+   * and a new key is created with the specified value.
+   *
+   * @default KeySpec.SYMMETRIC_DEFAULT
+   */
+  readonly keySpec?: KeySpec;
+
+  /**
+   * The cryptographic operations for which the key can be used.
+   *
+   * IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion
+   * and a new key is created with the specified value.
+   *
+   * @default KeyUsage.ENCRYPT_DECRYPT
+   */
+  readonly keyUsage?: KeyUsage;
+
+  /**
    * Custom policy document to attach to the KMS key.
+   *
+   * NOTE - If the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set (the default for new projects),
+   * this policy will *override* the default key policy and become the only key policy for the key. If the
+   * feature flag is not set, this policy will be appended to the default key policy.
    *
    * @default - A policy document with permissions for the account root to
    * administer the key will be created.
    */
   readonly policy?: iam.PolicyDocument;
+
+  /**
+   * A list of principals to add as key administrators to the key policy.
+   *
+   * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
+   * to use the key in cryptographic operations (e.g., encrypt, decrypt).
+   *
+   * These principals will be added to the default key policy (if none specified), or to the specified policy (if provided).
+   *
+   * @default []
+   */
+  readonly admins?: iam.IPrincipal[];
 
   /**
    * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
@@ -311,12 +418,33 @@ export interface KeyProps {
    *
    * Setting this to true adds a default statement which delegates key
    * access control completely to the identity's IAM policy (similar
-   * to how it works for other AWS resources).
+   * to how it works for other AWS resources). This matches the default behavior
+   * when creating KMS keys via the API or console.
    *
-   * @default false
+   * If the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set (the default for new projects),
+   * this flag will always be treated as 'true' and does not need to be explicitly set.
+   *
+   * @default - false, unless the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set.
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
+   * @deprecated redundant with the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag
    */
   readonly trustAccountIdentities?: boolean;
+
+  /**
+   * Specifies the number of days in the waiting period before
+   * AWS KMS deletes a CMK that has been removed from a CloudFormation stack.
+   *
+   * When you remove a customer master key (CMK) from a CloudFormation stack, AWS KMS schedules the CMK for deletion
+   * and starts the mandatory waiting period. The PendingWindowInDays property determines the length of waiting period.
+   * During the waiting period, the key state of CMK is Pending Deletion, which prevents the CMK from being used in
+   * cryptographic operations. When the waiting period expires, AWS KMS permanently deletes the CMK.
+   *
+   * Enter a value between 7 and 30 days.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-pendingwindowindays
+   * @default - 30 days
+   */
+  readonly pendingWindow?: Duration;
 }
 
 /**
@@ -357,6 +485,55 @@ export class Key extends KeyBase {
     return new Import(keyResourceName);
   }
 
+  /**
+   * Create a mutable {@link IKey} based on a low-level {@link CfnKey}.
+   * This is most useful when combined with the cloudformation-include module.
+   * This method is different than {@link fromKeyArn()} because the {@link IKey}
+   * returned from this method is mutable;
+   * meaning, calling any mutating methods on it,
+   * like {@link IKey.addToResourcePolicy()},
+   * will actually be reflected in the resulting template,
+   * as opposed to the object returned from {@link fromKeyArn()},
+   * on which calling those methods would have no effect.
+   */
+  public static fromCfnKey(cfnKey: CfnKey): IKey {
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnKey';
+
+    // if fromCfnKey() was already called on this cfnKey,
+    // return the same L2
+    // (as different L2s would conflict, because of the mutation of the keyPolicy property of the L1 below)
+    const existing = cfnKey.node.tryFindChild(id);
+    if (existing) {
+      return <IKey>existing;
+    }
+
+    let keyPolicy: iam.PolicyDocument;
+    try {
+      keyPolicy = iam.PolicyDocument.fromJson(cfnKey.keyPolicy);
+    } catch (e) {
+      // If the KeyPolicy contains any CloudFormation functions,
+      // PolicyDocument.fromJson() throws an exception.
+      // In that case, because we would have to effectively make the returned IKey immutable,
+      // throw an exception suggesting to use the other importing methods instead.
+      // We might make this parsing logic smarter later,
+      // but let's start by erroring out.
+      throw new Error('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
+        'This makes it impossible to create a mutable IKey from that Policy. ' +
+        'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey');
+    }
+
+    // change the key policy of the L1, so that all changes done in the L2 are reflected in the resulting template
+    cfnKey.keyPolicy = Lazy.any({ produce: () => keyPolicy.toJSON() });
+
+    return new class extends KeyBase {
+      public readonly keyArn = cfnKey.attrArn;
+      public readonly keyId = cfnKey.ref;
+      protected readonly policy = keyPolicy;
+      protected readonly trustAccountIdentities = false;
+    }(cfnKey, id);
+  }
+
   public readonly keyArn: string;
   public readonly keyId: string;
   protected readonly policy?: iam.PolicyDocument;
@@ -365,44 +542,114 @@ export class Key extends KeyBase {
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
 
-    this.policy = props.policy || new iam.PolicyDocument();
-    this.trustAccountIdentities = props.trustAccountIdentities || false;
-    if (this.trustAccountIdentities) {
-      this.allowAccountIdentitiesToControl();
+    const denyLists = {
+      [KeyUsage.ENCRYPT_DECRYPT]: [
+        KeySpec.ECC_NIST_P256,
+        KeySpec.ECC_NIST_P384,
+        KeySpec.ECC_NIST_P521,
+        KeySpec.ECC_SECG_P256K1,
+      ],
+      [KeyUsage.SIGN_VERIFY]: [
+        KeySpec.SYMMETRIC_DEFAULT,
+      ],
+    };
+    const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
+    const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
+    if (denyLists[keyUsage].includes(keySpec)) {
+      throw new Error(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`);
+    }
+
+    if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
+      throw new Error('key rotation cannot be enabled on asymmetric keys');
+    }
+
+    const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
+
+    this.policy = props.policy ?? new iam.PolicyDocument();
+    if (defaultKeyPoliciesFeatureEnabled) {
+      if (props.trustAccountIdentities === false) {
+        throw new Error('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+      }
+
+      this.trustAccountIdentities = true;
+      // Set the default key policy if one hasn't been provided by the user.
+      if (!props.policy) {
+        this.addDefaultAdminPolicy();
+      }
     } else {
-      this.allowAccountToAdmin();
+      this.trustAccountIdentities = props.trustAccountIdentities ?? false;
+      if (this.trustAccountIdentities) {
+        this.addDefaultAdminPolicy();
+      } else {
+        this.addLegacyAdminPolicy();
+      }
+    }
+
+    let pendingWindowInDays;
+    if (props.pendingWindow) {
+      pendingWindowInDays = props.pendingWindow.toDays();
+      if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
+        throw new Error(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`);
+      }
     }
 
     const resource = new CfnKey(this, 'Resource', {
       description: props.description,
       enableKeyRotation: props.enableKeyRotation,
       enabled: props.enabled,
+      keySpec: props.keySpec,
+      keyUsage: props.keyUsage,
       keyPolicy: this.policy,
+      pendingWindowInDays: pendingWindowInDays,
     });
 
     this.keyArn = resource.attrArn;
     this.keyId = resource.ref;
     resource.applyRemovalPolicy(props.removalPolicy);
 
+    (props.admins ?? []).forEach((p) => this.grantAdmin(p));
+
     if (props.alias !== undefined) {
       this.addAlias(props.alias);
     }
   }
 
-  private allowAccountIdentitiesToControl() {
+  /**
+   * Grant admins permissions using this key to the given principal
+   *
+   * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
+   * to use the key in cryptographic operations (e.g., encrypt, decrypt).
+   */
+  public grantAdmin(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.ADMIN_ACTIONS);
+  }
+
+  /**
+   * Adds the default key policy to the key. This policy gives the AWS account (root user) full access to the CMK,
+   * which reduces the risk of the CMK becoming unmanageable and enables IAM policies to allow access to the CMK.
+   * This is the same policy that is default when creating a Key via the KMS API or Console.
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
+   */
+  private addDefaultAdminPolicy() {
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['kms:*'],
       principals: [new iam.AccountRootPrincipal()],
     }));
-
   }
+
   /**
-   * Let users or IAM policies from this account admin this key.
+   * Grants the account admin privileges -- not full account access -- plus the GenerateDataKey action.
+   * The GenerateDataKey action was added for interop with S3 in https://github.com/aws/aws-cdk/issues/3458.
+   *
+   * This policy is discouraged and deprecated by the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag.
+   *
    * @link https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
-   * @link https://aws.amazon.com/premiumsupport/knowledge-center/update-key-policy-future/
+   * @deprecated
    */
-  private allowAccountToAdmin() {
+  private addLegacyAdminPolicy() {
+    // This is equivalent to `[...perms.ADMIN_ACTIONS, 'kms:GenerateDataKey']`,
+    // but keeping this explicit ordering for backwards-compatibility (changing the ordering causes resource updates)
     const actions = [
       'kms:Create*',
       'kms:Describe*',

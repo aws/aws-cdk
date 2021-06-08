@@ -1,6 +1,6 @@
 import { Bucket } from '@aws-cdk/aws-s3';
+import { Aws, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { Stack } from '../../core/lib';
 import * as ec2 from '../lib';
 
 nodeunitShim({
@@ -52,7 +52,7 @@ nodeunitShim({
 
     test.equals(rendered, '<powershell>trap {\n' +
         '$success=($PSItem.Exception.Message -eq "Success")\n' +
-        'cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS.Region.4]} --success ($success.ToString().ToLower())\n' +
+        `cfn-signal --stack Default --resource RESOURCE1989552F --region ${Aws.REGION} --success ($success.ToString().ToLower())\n` +
         'break\n' +
         '}\n' +
         'command1\n' +
@@ -157,7 +157,7 @@ nodeunitShim({
     test.equals(rendered, '#!/bin/bash\n' +
         'function exitTrap(){\n' +
         'exitCode=$?\n' +
-        '/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS.Region.4]} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n' +
+        `/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Aws.REGION} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n` +
         '}\n' +
         'trap exitTrap EXIT\n' +
         'command1');
@@ -273,4 +273,381 @@ nodeunitShim({
     test.done();
   },
 
+  'Linux user rendering multipart headers'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const linuxUserData = ec2.UserData.forLinux();
+    linuxUserData.addCommands('echo "Hello world"');
+
+    // WHEN
+    const defaultRender1 = ec2.MultipartBody.fromUserData(linuxUserData);
+    const defaultRender2 = ec2.MultipartBody.fromUserData(linuxUserData, 'text/cloud-boothook; charset=\"utf-8\"');
+
+    // THEN
+    expect(stack.resolve(defaultRender1.renderBodyPart())).toEqual([
+      'Content-Type: text/x-shellscript; charset=\"utf-8\"',
+      'Content-Transfer-Encoding: base64',
+      '',
+      { 'Fn::Base64': '#!/bin/bash\necho \"Hello world\"' },
+    ]);
+    expect(stack.resolve(defaultRender2.renderBodyPart())).toEqual([
+      'Content-Type: text/cloud-boothook; charset=\"utf-8\"',
+      'Content-Transfer-Encoding: base64',
+      '',
+      { 'Fn::Base64': '#!/bin/bash\necho \"Hello world\"' },
+    ]);
+
+    test.done();
+  },
+
+  'Default parts separator used, if not specified'(test: Test) {
+    // GIVEN
+    const multipart = new ec2.MultipartUserData();
+
+    multipart.addPart(ec2.MultipartBody.fromRawBody({
+      contentType: 'CT',
+    }));
+
+    // WHEN
+    const out = multipart.render();
+
+    // WHEN
+    test.equals(out, [
+      'Content-Type: multipart/mixed; boundary=\"+AWS+CDK+User+Data+Separator==\"',
+      'MIME-Version: 1.0',
+      '',
+      '--+AWS+CDK+User+Data+Separator==',
+      'Content-Type: CT',
+      '',
+      '--+AWS+CDK+User+Data+Separator==--',
+      '',
+    ].join('\n'));
+
+    test.done();
+  },
+
+  'Non-default parts separator used, if not specified'(test: Test) {
+    // GIVEN
+    const multipart = new ec2.MultipartUserData({
+      partsSeparator: '//',
+    });
+
+    multipart.addPart(ec2.MultipartBody.fromRawBody({
+      contentType: 'CT',
+    }));
+
+    // WHEN
+    const out = multipart.render();
+
+    // WHEN
+    test.equals(out, [
+      'Content-Type: multipart/mixed; boundary=\"//\"',
+      'MIME-Version: 1.0',
+      '',
+      '--//',
+      'Content-Type: CT',
+      '',
+      '--//--',
+      '',
+    ].join('\n'));
+
+    test.done();
+  },
+
+  'Multipart separator validation'(test: Test) {
+    // Happy path
+    new ec2.MultipartUserData();
+    new ec2.MultipartUserData({
+      partsSeparator: 'a-zA-Z0-9()+,-./:=?',
+    });
+
+    [' ', '\n', '\r', '[', ']', '<', '>', '違う'].forEach(s => test.throws(() => {
+      new ec2.MultipartUserData({
+        partsSeparator: s,
+      });
+    }, /Invalid characters in separator/));
+
+    test.done();
+  },
+
+  'Multipart user data throws when adding on exit commands'(test: Test) {
+    // GIVEN
+    // WHEN
+    const userData = new ec2.MultipartUserData();
+
+    // THEN
+    test.throws(() => userData.addOnExitCommands( 'a command goes here' ));
+    test.done();
+  },
+  'Multipart user data throws when adding signal command'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const resource = new ec2.Vpc(stack, 'RESOURCE');
+
+    // WHEN
+    const userData = new ec2.MultipartUserData();
+
+    // THEN
+    test.throws(() => userData.addSignalOnExitCommand( resource ));
+    test.done();
+  },
+  'Multipart user data throws when downloading file'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const userData = new ec2.MultipartUserData();
+    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
+    // WHEN
+    // THEN
+    test.throws(() => userData.addS3DownloadCommand({
+      bucket,
+      bucketKey: 'filename.sh',
+    } ));
+    test.done();
+  },
+  'Multipart user data throws when executing file'(test: Test) {
+    // GIVEN
+    const userData = new ec2.MultipartUserData();
+
+    // WHEN
+    // THEN
+    test.throws(() =>
+      userData.addExecuteFileCommand({
+        filePath: '/tmp/filename.sh',
+      } ));
+    test.done();
+  },
+
+  'can add commands to Multipart user data'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const innerUserData = ec2.UserData.forLinux();
+    const userData = new ec2.MultipartUserData();
+
+    // WHEN
+    userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
+    userData.addCommands('command1', 'command2');
+
+    // THEN
+    const expectedInner = '#!/bin/bash\ncommand1\ncommand2';
+    const rendered = innerUserData.render();
+    test.equals(rendered, expectedInner);
+    const out = stack.resolve(userData.render());
+    test.equals(out, {
+      'Fn::Join': [
+        '',
+        [
+          [
+            'Content-Type: multipart/mixed; boundary="+AWS+CDK+User+Data+Separator=="',
+            'MIME-Version: 1.0',
+            '',
+            '--+AWS+CDK+User+Data+Separator==',
+            'Content-Type: text/x-shellscript; charset="utf-8"',
+            'Content-Transfer-Encoding: base64',
+            '',
+            '',
+          ].join('\n'),
+          {
+            'Fn::Base64': expectedInner,
+          },
+          '\n--+AWS+CDK+User+Data+Separator==--\n',
+        ],
+      ],
+    });
+    test.done();
+  },
+  'can add commands on exit to Multipart user data'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const innerUserData = ec2.UserData.forLinux();
+    const userData = new ec2.MultipartUserData();
+
+    // WHEN
+    userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
+    userData.addCommands('command1', 'command2');
+    userData.addOnExitCommands('onexit1', 'onexit2');
+
+    // THEN
+    const expectedInner = '#!/bin/bash\n' +
+    'function exitTrap(){\n' +
+    'exitCode=$?\n' +
+    'onexit1\n' +
+    'onexit2\n' +
+    '}\n' +
+    'trap exitTrap EXIT\n' +
+    'command1\n' +
+    'command2';
+    const rendered = stack.resolve(innerUserData.render());
+    test.equals(rendered, expectedInner);
+    const out = stack.resolve(userData.render());
+    test.equals(out, {
+      'Fn::Join': [
+        '',
+        [
+          [
+            'Content-Type: multipart/mixed; boundary="+AWS+CDK+User+Data+Separator=="',
+            'MIME-Version: 1.0',
+            '',
+            '--+AWS+CDK+User+Data+Separator==',
+            'Content-Type: text/x-shellscript; charset="utf-8"',
+            'Content-Transfer-Encoding: base64',
+            '',
+            '',
+          ].join('\n'),
+          {
+            'Fn::Base64': expectedInner,
+          },
+          '\n--+AWS+CDK+User+Data+Separator==--\n',
+        ],
+      ],
+    });
+    test.done();
+  },
+  'can add Signal Command to Multipart user data'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const resource = new ec2.Vpc(stack, 'RESOURCE');
+    const innerUserData = ec2.UserData.forLinux();
+    const userData = new ec2.MultipartUserData();
+
+    // WHEN
+    userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
+    userData.addCommands('command1');
+    userData.addSignalOnExitCommand( resource );
+
+    // THEN
+    const expectedInner = stack.resolve('#!/bin/bash\n' +
+    'function exitTrap(){\n' +
+    'exitCode=$?\n' +
+    `/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Aws.REGION} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n` +
+    '}\n' +
+    'trap exitTrap EXIT\n' +
+    'command1');
+    const rendered = stack.resolve(innerUserData.render());
+    test.equals(rendered, expectedInner);
+    const out = stack.resolve(userData.render());
+    test.equals(out, {
+      'Fn::Join': [
+        '',
+        [
+          [
+            'Content-Type: multipart/mixed; boundary="+AWS+CDK+User+Data+Separator=="',
+            'MIME-Version: 1.0',
+            '',
+            '--+AWS+CDK+User+Data+Separator==',
+            'Content-Type: text/x-shellscript; charset="utf-8"',
+            'Content-Transfer-Encoding: base64',
+            '',
+            '',
+          ].join('\n'),
+          {
+            'Fn::Base64': expectedInner,
+          },
+          '\n--+AWS+CDK+User+Data+Separator==--\n',
+        ],
+      ],
+    });
+    test.done();
+  },
+  'can add download S3 files to Multipart user data'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const innerUserData = ec2.UserData.forLinux();
+    const userData = new ec2.MultipartUserData();
+    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
+    const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
+
+    // WHEN
+    userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
+    userData.addS3DownloadCommand({
+      bucket,
+      bucketKey: 'filename.sh',
+    } );
+    userData.addS3DownloadCommand({
+      bucket: bucket2,
+      bucketKey: 'filename2.sh',
+      localFile: 'c:\\test\\location\\otherScript.sh',
+    } );
+
+    // THEN
+    const expectedInner = '#!/bin/bash\n' +
+    'mkdir -p $(dirname \'/tmp/filename.sh\')\n' +
+    'aws s3 cp \'s3://test/filename.sh\' \'/tmp/filename.sh\'\n' +
+    'mkdir -p $(dirname \'c:\\test\\location\\otherScript.sh\')\n' +
+    'aws s3 cp \'s3://test2/filename2.sh\' \'c:\\test\\location\\otherScript.sh\'';
+    const rendered = stack.resolve(innerUserData.render());
+    test.equals(rendered, expectedInner);
+    const out = stack.resolve(userData.render());
+    test.equals(out, {
+      'Fn::Join': [
+        '',
+        [
+          [
+            'Content-Type: multipart/mixed; boundary="+AWS+CDK+User+Data+Separator=="',
+            'MIME-Version: 1.0',
+            '',
+            '--+AWS+CDK+User+Data+Separator==',
+            'Content-Type: text/x-shellscript; charset="utf-8"',
+            'Content-Transfer-Encoding: base64',
+            '',
+            '',
+          ].join('\n'),
+          {
+            'Fn::Base64': expectedInner,
+          },
+          '\n--+AWS+CDK+User+Data+Separator==--\n',
+        ],
+      ],
+    });
+    test.done();
+  },
+  'can add execute files to Multipart user data'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const innerUserData = ec2.UserData.forLinux();
+    const userData = new ec2.MultipartUserData();
+
+    // WHEN
+    userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
+    userData.addExecuteFileCommand({
+      filePath: '/tmp/filename.sh',
+    } );
+    userData.addExecuteFileCommand({
+      filePath: '/test/filename2.sh',
+      arguments: 'arg1 arg2 -arg $variable',
+    } );
+
+    // THEN
+    const expectedInner = '#!/bin/bash\n' +
+    'set -e\n' +
+    'chmod +x \'/tmp/filename.sh\'\n' +
+    '\'/tmp/filename.sh\'\n' +
+    'set -e\n' +
+    'chmod +x \'/test/filename2.sh\'\n' +
+    '\'/test/filename2.sh\' arg1 arg2 -arg $variable';
+    const rendered = stack.resolve(innerUserData.render());
+    test.equals(rendered, expectedInner);
+    const out = stack.resolve(userData.render());
+    test.equals(out, {
+      'Fn::Join': [
+        '',
+        [
+          [
+            'Content-Type: multipart/mixed; boundary="+AWS+CDK+User+Data+Separator=="',
+            'MIME-Version: 1.0',
+            '',
+            '--+AWS+CDK+User+Data+Separator==',
+            'Content-Type: text/x-shellscript; charset="utf-8"',
+            'Content-Transfer-Encoding: base64',
+            '',
+            '',
+          ].join('\n'),
+          {
+            'Fn::Base64': expectedInner,
+          },
+          '\n--+AWS+CDK+User+Data+Separator==--\n',
+        ],
+      ],
+    });
+    test.done();
+  },
 });

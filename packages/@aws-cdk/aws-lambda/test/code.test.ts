@@ -1,9 +1,10 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as lambda from '../lib';
 
 /* eslint-disable dot-notation */
@@ -76,6 +77,26 @@ describe('code', () => {
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
       }, ResourcePart.CompleteDefinition);
+    });
+
+    test('fails if asset is bound with a second stack', () => {
+      // GIVEN
+      const asset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
+
+      const app = new cdk.App();
+      const stack1 = new cdk.Stack(app, 'Stack1');
+      new lambda.Function(stack1, 'Func', {
+        code: asset,
+        runtime: lambda.Runtime.NODEJS_10_X,
+        handler: 'foom',
+      });
+
+      const stack2 = new cdk.Stack(app, 'Stack2');
+      expect(() => new lambda.Function(stack2, 'Func', {
+        code: asset,
+        runtime: lambda.Runtime.NODEJS_10_X,
+        handler: 'foom',
+      })).toThrow(/already associated/);
     });
   });
 
@@ -255,9 +276,10 @@ describe('code', () => {
   });
 
   describe('lambda.Code.fromImageAsset', () => {
-    test('repository uri is correctly identified', () => {
+    const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
+    testFutureBehavior('repository uri is correctly identified', flags, cdk.App, (app) => {
       // given
-      const stack = new cdk.Stack();
+      const stack = new cdk.Stack(app);
 
       // when
       new lambda.Function(stack, 'Fn', {
@@ -276,7 +298,7 @@ describe('code', () => {
               { Ref: 'AWS::Region' },
               '.',
               { Ref: 'AWS::URLSuffix' },
-              '/aws-cdk/assets:0874c7dfd254e95f5181cc7fa643e4abf010f68e5717e373b6e635b49a115b2b',
+              '/aws-cdk/assets:e8a944aeb0a08ba4811503d9c138e514b112dadca84daa5b4608e4a0fb80a0c9',
             ]],
           },
         },
@@ -305,6 +327,83 @@ describe('code', () => {
           EntryPoint: ['entrypoint', 'param2'],
         },
       });
+    });
+  });
+
+  describe('lambda.Code.fromDockerBuild', () => {
+    let fromBuildMock: jest.SpyInstance<cdk.DockerImage>;
+    let cpMock: jest.Mock<any, any>;
+
+    beforeEach(() => {
+      cpMock = jest.fn().mockReturnValue(path.join(__dirname, 'docker-build-lambda'));
+      fromBuildMock = jest.spyOn(cdk.DockerImage, 'fromBuild').mockImplementation(() => ({
+        cp: cpMock,
+        image: 'tag',
+        run: jest.fn(),
+        toJSON: jest.fn(),
+      }));
+    });
+
+    afterEach(() => {
+      fromBuildMock.mockRestore();
+    });
+
+    test('can use the result of a Docker build as an asset', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.fbafdbb9ae8d1bae0def415b791a93c486d18ebc63270c748abecc3ac0ab9533',
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
+        },
+      }, ResourcePart.CompleteDefinition);
+
+      expect(fromBuildMock).toHaveBeenCalledWith(path.join(__dirname, 'docker-build-lambda'), {});
+      expect(cpMock).toHaveBeenCalledWith('/asset/.', undefined);
+    });
+
+    test('fromDockerBuild appends /. to an image path not ending with a /', () => {
+      // given
+      const stack = new cdk.Stack();
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda'), {
+          imagePath: '/my/image/path',
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(cpMock).toHaveBeenCalledWith('/my/image/path/.', undefined);
+    });
+
+    test('fromDockerBuild appends . to an image path ending with a /', () => {
+      // given
+      const stack = new cdk.Stack();
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda'), {
+          imagePath: '/my/image/path/',
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(cpMock).toHaveBeenCalledWith('/my/image/path/.', undefined);
     });
   });
 });

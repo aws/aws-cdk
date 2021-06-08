@@ -381,7 +381,7 @@ export class FilterGroup {
    * Create a new FilterGroup with an added condition:
    * the push that is the source of the event must affect a file that matches the given pattern.
    * Note that you can only use this method if this Group contains only the `PUSH` event action,
-   * and only for GitHub and GitHubEnterprise sources.
+   * and only for GitHub, Bitbucket and GitHubEnterprise sources.
    *
    * @param pattern a regular expression
    */
@@ -393,7 +393,7 @@ export class FilterGroup {
    * Create a new FilterGroup with an added condition:
    * the push that is the source of the event must not affect a file that matches the given pattern.
    * Note that you can only use this method if this Group contains only the `PUSH` event action,
-   * and only for GitHub and GitHubEnterprise sources.
+   * and only for GitHub, Bitbucket and GitHubEnterprise sources.
    *
    * @param pattern a regular expression
    */
@@ -483,6 +483,15 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
   readonly webhook?: boolean;
 
   /**
+   * Trigger a batch build from a webhook instead of a standard one.
+   *
+   * Enabling this will enable batch builds on the CodeBuild project.
+   *
+   * @default false
+   */
+  readonly webhookTriggersBatchBuild?: boolean;
+
+  /**
    * A list of webhook filters that can constraint what events in the repository will trigger a build.
    * A build is triggered if any of the provided filter groups match.
    * Only valid if `webhook` was not provided as false.
@@ -500,20 +509,35 @@ abstract class ThirdPartyGitSource extends GitSource {
   protected readonly webhookFilters: FilterGroup[];
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
+  private readonly webhookTriggersBatchBuild?: boolean;
 
   protected constructor(props: ThirdPartyGitSourceProps) {
     super(props);
 
     this.webhook = props.webhook;
-    this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
+    this.reportBuildStatus = props.reportBuildStatus ?? true;
     this.webhookFilters = props.webhookFilters || [];
+    this.webhookTriggersBatchBuild = props.webhookTriggersBatchBuild;
   }
 
-  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
     const anyFilterGroupsProvided = this.webhookFilters.length > 0;
-    const webhook = this.webhook === undefined ? (anyFilterGroupsProvided ? true : undefined) : this.webhook;
+    const webhook = this.webhook ?? (anyFilterGroupsProvided ? true : undefined);
 
-    const superConfig = super.bind(_scope, _project);
+    if (!webhook && anyFilterGroupsProvided) {
+      throw new Error('`webhookFilters` cannot be used when `webhook` is `false`');
+    }
+
+    if (!webhook && this.webhookTriggersBatchBuild) {
+      throw new Error('`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`');
+    }
+
+    const superConfig = super.bind(_scope, project);
+
+    if (this.webhookTriggersBatchBuild) {
+      project.enableBatchBuilds();
+    }
+
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
@@ -522,6 +546,7 @@ abstract class ThirdPartyGitSource extends GitSource {
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: webhook === undefined ? undefined : {
         webhook,
+        buildType: this.webhookTriggersBatchBuild ? 'BUILD_BATCH' : undefined,
         filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map(fg => fg._toJson()) : undefined,
       },
     };
@@ -763,11 +788,6 @@ class BitBucketSource extends ThirdPartyGitSource {
       throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');
     }
 
-    // they also don't support file path conditions
-    if (this.anyWebhookFilterContainsFilePathConditions()) {
-      throw new Error('BitBucket sources do not support file path conditions for webhook filters');
-    }
-
     const superConfig = super.bind(_scope, _project);
     return {
       sourceProperty: {
@@ -782,12 +802,6 @@ class BitBucketSource extends ThirdPartyGitSource {
   private anyWebhookFilterContainsPrReopenedEventAction() {
     return this.webhookFilters.findIndex(fg => {
       return fg._actions.findIndex(a => a === EventAction.PULL_REQUEST_REOPENED) !== -1;
-    }) !== -1;
-  }
-
-  private anyWebhookFilterContainsFilePathConditions() {
-    return this.webhookFilters.findIndex(fg => {
-      return fg._filters.findIndex(f => f.type === WebhookFilterTypes.FILE_PATH) !== -1;
     }) !== -1;
   }
 }

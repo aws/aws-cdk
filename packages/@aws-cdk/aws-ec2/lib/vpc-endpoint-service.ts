@@ -17,7 +17,7 @@ export interface IVpcEndpointServiceLoadBalancer {
 
 /**
  * A VPC endpoint service.
- * @experimental
+ *
  */
 export interface IVpcEndpointService extends IResource {
   /**
@@ -27,12 +27,20 @@ export interface IVpcEndpointService extends IResource {
    * @attribute
    */
   readonly vpcEndpointServiceName: string;
+
+  /**
+   * The id of the VPC Endpoint Service that clients use to connect to,
+   * like vpce-svc-xxxxxxxxxxxxxxxx
+   *
+   * @attribute
+   */
+  readonly vpcEndpointServiceId: string;
 }
 
 /**
  * A VPC endpoint service
  * @resource AWS::EC2::VPCEndpointService
- * @experimental
+ *
  */
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
 
@@ -44,15 +52,21 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
   /**
    * Whether to require manual acceptance of new connections to the service.
-   * @experimental
+   *
    */
   public readonly acceptanceRequired: boolean;
 
   /**
    * One or more Principal ARNs to allow inbound connections to.
-   * @experimental
+   * @deprecated use `allowedPrincipals`
    */
   public readonly whitelistedPrincipals: ArnPrincipal[];
+
+  /**
+   * One or more Principal ARNs to allow inbound connections to.
+   *
+   */
+  public readonly allowedPrincipals: ArnPrincipal[];
 
   /**
    * The id of the VPC Endpoint Service, like vpce-svc-xxxxxxxxxxxxxxxx.
@@ -78,8 +92,13 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     }
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;
-    this.acceptanceRequired = props.acceptanceRequired !== undefined ? props.acceptanceRequired : true;
-    this.whitelistedPrincipals = props.whitelistedPrincipals !== undefined ? props.whitelistedPrincipals : [];
+    this.acceptanceRequired = props.acceptanceRequired ?? true;
+
+    if (props.allowedPrincipals && props.whitelistedPrincipals) {
+      throw new Error('`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead');
+    }
+    this.allowedPrincipals = props.allowedPrincipals ?? props.whitelistedPrincipals ?? [];
+    this.whitelistedPrincipals = this.allowedPrincipals;
 
     this.endpointService = new CfnVPCEndpointService(this, id, {
       networkLoadBalancerArns: this.vpcEndpointServiceLoadBalancers.map(lb => lb.loadBalancerArn),
@@ -90,15 +109,14 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
     const { region } = Stack.of(this);
     const serviceNamePrefix = !Token.isUnresolved(region) ?
-      RegionInfo.get(region).vpcEndpointServiceNamePrefix ??
-      Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX :
+      (RegionInfo.get(region).vpcEndpointServiceNamePrefix ?? Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX) :
       Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX;
 
     this.vpcEndpointServiceName = Fn.join('.', [serviceNamePrefix, Aws.REGION, this.vpcEndpointServiceId]);
-    if (this.whitelistedPrincipals.length > 0) {
+    if (this.allowedPrincipals.length > 0) {
       new CfnVPCEndpointServicePermissions(this, 'Permissions', {
         serviceId: this.endpointService.ref,
-        allowedPrincipals: this.whitelistedPrincipals.map(x => x.arn),
+        allowedPrincipals: this.allowedPrincipals.map(x => x.arn),
       });
     }
   }
@@ -106,7 +124,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
 /**
  * Construction properties for a VpcEndpointService.
- * @experimental
+ *
  */
 export interface VpcEndpointServiceProps {
 
@@ -119,7 +137,7 @@ export interface VpcEndpointServiceProps {
 
   /**
    * One or more load balancers to host the VPC Endpoint Service.
-   * @experimental
+   *
    */
   readonly vpcEndpointServiceLoadBalancers: IVpcEndpointServiceLoadBalancer[];
 
@@ -127,7 +145,7 @@ export interface VpcEndpointServiceProps {
    * Whether requests from service consumers to connect to the service through
    * an endpoint must be accepted.
    * @default true
-   * @experimental
+   *
    */
   readonly acceptanceRequired?: boolean;
 
@@ -136,7 +154,16 @@ export interface VpcEndpointServiceProps {
    * These principals can connect to your service using VPC endpoints. Takes a
    * list of one or more ArnPrincipal.
    * @default - no principals
-   * @experimental
+   * @deprecated use `allowedPrincipals`
    */
   readonly whitelistedPrincipals?: ArnPrincipal[];
+
+  /**
+   * IAM users, IAM roles, or AWS accounts to allow inbound connections from.
+   * These principals can connect to your service using VPC endpoints. Takes a
+   * list of one or more ArnPrincipal.
+   * @default - no principals
+   *
+   */
+  readonly allowedPrincipals?: ArnPrincipal[];
 }

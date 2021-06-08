@@ -1,11 +1,18 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import {
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  ICluster, LogDriver, PropagatedTagSource, Secret,
+} from '@aws-cdk/aws-ecs';
 import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Describes the type of DNS record the service should create
@@ -63,7 +70,9 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * The desired number of instantiations of the task definition to keep running on the service.
    * The minimum value is 1
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
    */
   readonly desiredCount?: number;
 
@@ -162,6 +171,21 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default NetworkLoadBalancedServiceRecordType.ALIAS
    */
   readonly recordType?: NetworkLoadBalancedServiceRecordType;
+
+  /**
+ * Specifies which deployment controller to use for the service. For more information, see
+ * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+ *
+ * @default - Rolling update (ECS)
+ */
+  readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
 }
 
 export interface NetworkLoadBalancedTaskImageOptions {
@@ -248,11 +272,19 @@ export interface NetworkLoadBalancedTaskImageOptions {
 /**
  * The base class for NetworkLoadBalancedEc2Service and NetworkLoadBalancedFargateService services.
  */
-export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
+export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * @deprecated - Use `internalDesiredCount` instead.
    */
   public readonly desiredCount: number;
+
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   * The default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service, if one is not provided.
+   */
+  public readonly internalDesiredCount?: number;
 
   /**
    * The Network Load Balancer for the service.
@@ -294,20 +326,19 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
-    this.desiredCount = props.desiredCount || 1;
 
-    const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
+    this.desiredCount = props.desiredCount || 1;
+    this.internalDesiredCount = props.desiredCount;
+
+    const internetFacing = props.publicLoadBalancer ?? true;
 
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
     };
 
-    const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer :
-      new NetworkLoadBalancer(this, 'LB', lbProps);
-
-    const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
-
+    const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
+    const listenerPort = props.listenerPort ?? 80;
     const targetProps = {
       port: 80,
     };
@@ -353,7 +384,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: CoreConstruct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);

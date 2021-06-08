@@ -92,6 +92,7 @@ const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
   webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
+  webhookTriggersBatchBuild: true, // optional, default is false
   webhookFilters: [
     codebuild.FilterGroup
       .inEventOf(codebuild.EventAction.PUSH)
@@ -150,6 +151,9 @@ const project = codebuild.Project(stack, 'MyProject', {
     }),
 });
 ```
+
+If you'd prefer your buildspec to be rendered as YAML in the template,
+use the `fromObjectToYaml()` method instead of `fromObject()`.
 
 Because we've not set the `name` property, this example will set the
 `overrideArtifactName` parameter, and produce an artifact named as defined in
@@ -599,3 +603,62 @@ new codebuild.Project(stack, 'MyProject', {
 Here's a CodeBuild project with a simple example that creates a project mounted on AWS EFS:
 
 [Minimal Example](./test/integ.project-file-system-location.ts)
+
+## Batch builds
+
+To enable batch builds you should call `enableBatchBuilds()` on the project instance.
+
+It returns an object containing the batch service role that was created,
+or `undefined` if batch builds could not be enabled, for example if the project was imported.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+const project = new codebuild.Project(this, 'MyProject', { ... });
+
+if (project.enableBatchBuilds()) {
+  console.log('Batch builds were enabled');
+}
+```
+
+## Timeouts
+
+There are two types of timeouts that can be set when creating your Project.
+The `timeout` property can be used to set an upper limit on how long your Project is able to run without being marked as completed.
+The default is 60 minutes.
+An example of overriding the default follows.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+new codebuild.Project(stack, 'MyProject', {
+  timeout: Duration.minutes(90)
+});
+```
+
+The `queuedTimeout` property can be used to set an upper limit on how your Project remains queued to run.
+There is no default value for this property.
+As an example, to allow your Project to queue for up to thirty (30) minutes before the build fails,
+use the following code.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+new codebuild.Project(stack, 'MyProject', {
+  queuedTimeout: Duration.minutes(30)
+});
+```
+
+## Limiting concurrency
+
+By default if a new build is triggered it will be run even if there is a previous build already in progress.
+It is possible to limit the maximum concurrent builds to value between 1 and the account specific maximum limit.
+By default there is no explicit limit.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+new codebuild.Project(stack, 'MyProject', {
+  concurrentBuildLimit: 1
+});
+```

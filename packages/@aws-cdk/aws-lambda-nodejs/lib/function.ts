@@ -1,10 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import { Bundling } from './bundling';
+import { PackageManager } from './package-manager';
 import { BundlingOptions } from './types';
-import { callsites, findUp, LockFile, nodeMajorVersion } from './util';
+import { callsites, findUp } from './util';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a NodejsFunction
@@ -31,8 +35,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The runtime environment. Only runtimes of the Node.js family are
    * supported.
    *
-   * @default - `NODEJS_12_X` if `process.versions.node` >= '12.0.0',
-   * `NODEJS_10_X` otherwise.
+   * @default Runtime.NODEJS_14_X
    */
   readonly runtime?: lambda.Runtime;
 
@@ -76,33 +79,16 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
  * A Node.js Lambda function bundled using esbuild
  */
 export class NodejsFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
+  constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
-    }
-
-    // Find lock file
-    let depsLockFilePath: string;
-    if (props.depsLockFilePath) {
-      if (!fs.existsSync(props.depsLockFilePath)) {
-        throw new Error(`Lock file at ${props.depsLockFilePath} doesn't exist`);
-      }
-      depsLockFilePath = props.depsLockFilePath;
-    } else {
-      const lockFile = findUp(LockFile.YARN) ?? findUp(LockFile.NPM);
-      if (!lockFile) {
-        throw new Error('Cannot find a package lock file (`yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
-      }
-      depsLockFilePath = lockFile;
     }
 
     // Entry and defaults
     const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
-    const defaultRunTime = nodeMajorVersion() >= 12
-      ? lambda.Runtime.NODEJS_12_X
-      : lambda.Runtime.NODEJS_10_X;
-    const runtime = props.runtime ?? defaultRunTime;
+    const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
+    const depsLockFilePath = findLockFile(props.depsLockFilePath);
 
     super(scope, id, {
       ...props,
@@ -121,6 +107,33 @@ export class NodejsFunction extends lambda.Function {
       this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
     }
   }
+}
+
+/**
+ * Checks given lock file or searches for a lock file
+ */
+function findLockFile(depsLockFilePath?: string): string {
+  if (depsLockFilePath) {
+    if (!fs.existsSync(depsLockFilePath)) {
+      throw new Error(`Lock file at ${depsLockFilePath} doesn't exist`);
+    }
+
+    if (!fs.statSync(depsLockFilePath).isFile()) {
+      throw new Error('`depsLockFilePath` should point to a file');
+    }
+
+    return path.resolve(depsLockFilePath);
+  }
+
+  const lockFile = findUp(PackageManager.PNPM.lockFile)
+    ?? findUp(PackageManager.YARN.lockFile)
+    ?? findUp(PackageManager.NPM.lockFile);
+
+  if (!lockFile) {
+    throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
+  }
+
+  return lockFile;
 }
 
 /**
@@ -153,7 +166,7 @@ function findEntry(id: string, entry?: string): string {
     return jsHandlerFile;
   }
 
-  throw new Error('Cannot find entry file.');
+  throw new Error(`Cannot find handler file ${tsHandlerFile} or ${jsHandlerFile}`);
 }
 
 /**

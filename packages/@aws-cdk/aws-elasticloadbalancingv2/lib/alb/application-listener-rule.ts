@@ -7,6 +7,10 @@ import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * Basic properties for defining a rule on a listener
  */
@@ -114,6 +118,7 @@ export interface ApplicationListenerRuleProps extends BaseApplicationListenerRul
 
 /**
  * The content type for a fixed response
+ * @deprecated superceded by `FixedResponseOptions`.
  */
 export enum ContentType {
   TEXT_PLAIN = 'text/plain',
@@ -125,6 +130,7 @@ export enum ContentType {
 
 /**
  * A fixed response
+ * @deprecated superceded by `ListenerAction.fixedResponse()`.
  */
 export interface FixedResponse {
   /**
@@ -149,6 +155,7 @@ export interface FixedResponse {
 
 /**
  * A redirect response
+ * @deprecated superceded by `ListenerAction.redirect()`.
  */
 export interface RedirectResponse {
   /**
@@ -194,7 +201,7 @@ export interface RedirectResponse {
 /**
  * Define a new listener rule
  */
-export class ApplicationListenerRule extends cdk.Construct {
+export class ApplicationListenerRule extends CoreConstruct {
   /**
    * The ARN of this rule
    */
@@ -381,8 +388,8 @@ export class ApplicationListenerRule extends cdk.Construct {
 
 /**
  * Validate the status code and message body of a fixed response
- *
  * @internal
+ * @deprecated
  */
 export function validateFixedResponse(fixedResponse: FixedResponse) {
   if (fixedResponse.statusCode && !/^(2|4|5)\d\d$/.test(fixedResponse.statusCode)) {
@@ -396,8 +403,8 @@ export function validateFixedResponse(fixedResponse: FixedResponse) {
 
 /**
  * Validate the status code and message body of a redirect response
- *
  * @internal
+ * @deprecated
  */
 export function validateRedirectResponse(redirectResponse: RedirectResponse) {
   if (redirectResponse.protocol && !/^(HTTPS?|#\{protocol\})$/i.test(redirectResponse.protocol)) {
