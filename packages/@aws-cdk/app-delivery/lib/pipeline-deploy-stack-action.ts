@@ -1,6 +1,7 @@
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -187,6 +188,14 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
 
   public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
     return this.executeChangeSetAction.onStateChange(name, target, options);
+  }
+
+  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications..IRule {
+    return this.executeChangeSetAction.notifyOn(id, options);
+  }
+
+  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+    return this.executeChangeSetAction.notifyOnStateChange(id, options);
   }
 
   public get actionProperties(): codepipeline.ActionProperties {

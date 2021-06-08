@@ -1,6 +1,7 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
@@ -170,6 +171,20 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
    */
   public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
     return this.action.onStateChange(name, target, options);
+  }
+
+  /**
+   * Exists to implement IAction
+   */
+  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule {
+    return this.action.notifyOn(id, options);
+  }
+
+  /**
+   * Exists to implement IAction
+   */
+  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+    return this.action.notifyOnStateChange(id, options);
   }
 
   /**
