@@ -63,6 +63,22 @@ export enum ExtendedStackSelection {
 }
 
 /**
+ * A specification of which stacks should be selected
+ */
+export interface StackSelector {
+  /**
+   * Whether all stacks at the top level assembly should
+   * be selected and nothing else
+   */
+  allTopLevel?: boolean,
+
+  /**
+   * A list of patterns to match the stack hierarchical ids
+   */
+  patterns: string[],
+}
+
+/**
  * A single Cloud Assembly and the operations we do on it to deploy the artifacts inside
  */
 export class CloudAssembly {
@@ -75,77 +91,100 @@ export class CloudAssembly {
     this.directory = assembly.directory;
   }
 
-  public async selectStacks(selectors: string[], options: SelectStacksOptions): Promise<StackCollection> {
-    selectors = selectors.filter(s => s != null); // filter null/undefined
-    selectors = [...new Set(selectors)]; // make them unique
-
+  public async selectStacks(selector: StackSelector, options: SelectStacksOptions): Promise<StackCollection> {
     const asm = this.assembly;
+    const topLevelStacks = asm.stacks;
     const stacks = semver.major(asm.version) < 10 ? asm.stacks : asm.stacksRecursively;
+    const allTopLevel = selector.allTopLevel ?? false;
+    const patterns = sanitizePatterns(selector.patterns);
+
     if (stacks.length === 0) {
       throw new Error('This app contains no stacks');
     }
 
-    if (selectors.length === 0) {
-      const topLevelStacks = this.assembly.stacks;
-      switch (options.defaultBehavior) {
-        case DefaultSelection.MainAssembly:
-          return new StackCollection(this, topLevelStacks);
-        case DefaultSelection.AllStacks:
-          return new StackCollection(this, stacks);
-        case DefaultSelection.None:
-          return new StackCollection(this, []);
-        case DefaultSelection.OnlySingle:
-          if (topLevelStacks.length === 1) {
-            return new StackCollection(this, topLevelStacks);
-          } else {
-            throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
-              `Stacks: ${stacks.map(x => x.id).join(' ')}`);
-          }
-        default:
-          throw new Error(`invalid default behavior: ${options.defaultBehavior}`);
-      }
+    if (allTopLevel) {
+      return this.selectTopLevelStacks(stacks, topLevelStacks, options.extend);
+    } else if (patterns.length > 0) {
+      return this.selectMatchingStacks(stacks, patterns, options.extend);
+    } else {
+      return this.selectDefaultStacks(stacks, topLevelStacks, options.defaultBehavior);
     }
+  }
 
+  private selectTopLevelStacks(stacks: cxapi.CloudFormationStackArtifact[],
+    topLevelStacks: cxapi.CloudFormationStackArtifact[],
+    extend: ExtendedStackSelection = ExtendedStackSelection.None): StackCollection {
+    if (topLevelStacks.length > 0) {
+      return this.extendStacks(topLevelStacks, stacks, extend);
+    } else {
+      throw new Error('No stack found in the main cloud assembly. Use "list" to print manifest');
+    }
+  }
+
+  private selectMatchingStacks(stacks: cxapi.CloudFormationStackArtifact[],
+    patterns: string[],
+    extend: ExtendedStackSelection = ExtendedStackSelection.None): StackCollection {
+    const matchingPattern = (pattern: string) => (stack: cxapi.CloudFormationStackArtifact) => {
+      if (minimatch(stack.hierarchicalId, pattern)) {
+        return true;
+      } else if (stack.id === pattern && semver.major(versionNumber()) < 2) {
+        warning('Selecting stack by identifier "%s". This identifier is deprecated and will be removed in v2. Please use "%s" instead.', colors.bold(stack.id), colors.bold(stack.hierarchicalId));
+        warning('Run "cdk ls" to see a list of all stack identifiers');
+        return true;
+      }
+      return false;
+    };
+
+    const matchedStacks = patterns
+      .map(pattern => stacks.find(matchingPattern(pattern)))
+      .filter(s => s != null) as cxapi.CloudFormationStackArtifact[];
+
+    return this.extendStacks(matchedStacks, stacks, extend);
+  }
+
+  private selectDefaultStacks(stacks: cxapi.CloudFormationStackArtifact[],
+    topLevelStacks: cxapi.CloudFormationStackArtifact[],
+    defaultSelection: DefaultSelection) {
+    switch (defaultSelection) {
+      case DefaultSelection.MainAssembly:
+        return new StackCollection(this, topLevelStacks);
+      case DefaultSelection.AllStacks:
+        return new StackCollection(this, stacks);
+      case DefaultSelection.None:
+        return new StackCollection(this, []);
+      case DefaultSelection.OnlySingle:
+        if (topLevelStacks.length === 1) {
+          return new StackCollection(this, topLevelStacks);
+        } else {
+          throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
+          `Stacks: ${stacks.map(x => x.id).join(' ')}`);
+        }
+      default:
+        throw new Error(`invalid default behavior: ${defaultSelection}`);
+    }
+  }
+
+  private extendStacks(matched: cxapi.CloudFormationStackArtifact[],
+    all: cxapi.CloudFormationStackArtifact[],
+    extend: ExtendedStackSelection = ExtendedStackSelection.None) {
     const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
-    for (const stack of stacks) {
+    for (const stack of all) {
       allStacks.set(stack.hierarchicalId, stack);
     }
 
-    // For every selector argument, pick stacks from the list.
-    const selectedStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
-    for (const pattern of selectors) {
-      let found = false;
+    const index = indexByHierarchicalId(matched);
 
-      for (const stack of stacks) {
-        const hierarchicalId = stack.hierarchicalId;
-        if (minimatch(hierarchicalId, pattern) && !selectedStacks.has(hierarchicalId)) {
-          selectedStacks.set(hierarchicalId, stack);
-          found = true;
-        } else if (minimatch(stack.id, pattern) && !selectedStacks.has(hierarchicalId) && semver.major(versionNumber()) < 2) {
-          warning('Selecting stack by identifier "%s". This identifier is deprecated and will be removed in v2. Please use "%s" instead.', colors.bold(stack.id), colors.bold(stack.hierarchicalId));
-          warning('Run "cdk ls" to see a list of all stack identifiers');
-          selectedStacks.set(hierarchicalId, stack);
-          found = true;
-        }
-      }
-
-      if (!found) {
-        throw new Error(`No stack found matching '${pattern}'. Use "list" to print manifest`);
-      }
-    }
-
-    const extend = options.extend || ExtendedStackSelection.None;
     switch (extend) {
       case ExtendedStackSelection.Downstream:
-        includeDownstreamStacks(selectedStacks, allStacks);
+        includeDownstreamStacks(index, allStacks);
         break;
       case ExtendedStackSelection.Upstream:
-        includeUpstreamStacks(selectedStacks, allStacks);
+        includeUpstreamStacks(index, allStacks);
         break;
     }
 
     // Filter original array because it is in the right order
-    const selectedList = stacks.filter(s => selectedStacks.has(s.hierarchicalId));
+    const selectedList = all.filter(s => index.has(s.hierarchicalId));
 
     return new StackCollection(this, selectedList);
   }
@@ -264,6 +303,16 @@ export interface MetadataMessageOptions {
   strict?: boolean;
 }
 
+function indexByHierarchicalId(stacks: cxapi.CloudFormationStackArtifact[]): Map<string, cxapi.CloudFormationStackArtifact> {
+  const result = new Map<string, cxapi.CloudFormationStackArtifact>();
+
+  for (const stack of stacks) {
+    result.set(stack.hierarchicalId, stack);
+  }
+
+  return result;
+}
+
 /**
  * Calculate the transitive closure of stack dependents.
  *
@@ -321,4 +370,10 @@ function includeUpstreamStacks(
   if (added.length > 0) {
     print('Including dependency stacks: %s', colors.bold(added.join(', ')));
   }
+}
+
+function sanitizePatterns(patterns: string[]): string[] {
+  let sanitized = patterns.filter(s => s != null); // filter null/undefined
+  sanitized = [...new Set(sanitized)]; // make them unique
+  return sanitized;
 }
