@@ -114,6 +114,7 @@
       "props-physical-name:@aws-cdk/aws-route53.CaaAmazonRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.CaaRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.CnameRecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.DsRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.HostedZoneProps",
       "props-physical-name:@aws-cdk/aws-route53.MxRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.NsRecordProps",
