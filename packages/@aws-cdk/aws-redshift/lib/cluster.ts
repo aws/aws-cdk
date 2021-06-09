@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -135,6 +135,13 @@ export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.IS
    * @attribute ClusterName
    */
   readonly clusterName: string;
+
+  /**
+   * ARN of the cluster
+   *
+   * @attribute
+   */
+  readonly clusterArn: string;
 
   /**
    * The endpoint to use for read/write operations
@@ -333,6 +340,8 @@ abstract class ClusterBase extends Resource implements ICluster {
    */
   public abstract readonly clusterName: string;
 
+  public abstract readonly clusterArn: string;
+
   /**
    * The endpoint to use for read/write operations
    */
@@ -370,6 +379,12 @@ export class Cluster extends ClusterBase {
         defaultPort: ec2.Port.tcp(attrs.clusterEndpointPort),
       });
       public readonly clusterName = attrs.clusterName;
+      public readonly clusterArn = Stack.of(scope).formatArn({
+        service: 'redshift',
+        resource: 'cluster',
+        resourceName: attrs.clusterName,
+        sep: ':',
+      });
       public readonly instanceIdentifiers: string[] = [];
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.clusterEndpointPort);
     }
@@ -381,6 +396,8 @@ export class Cluster extends ClusterBase {
    * Identifier of the cluster
    */
   public readonly clusterName: string;
+
+  public readonly clusterArn: string;
 
   /**
    * The endpoint to use for read/write operations
@@ -409,6 +426,8 @@ export class Cluster extends ClusterBase {
    * The subnets used by the DB subnet group.
    */
   private readonly vpcSubnets?: ec2.SubnetSelection;
+
+  private readonly attachedRoles: iam.IRole[];
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
@@ -460,6 +479,8 @@ export class Cluster extends ClusterBase {
       };
     }
 
+    this.attachedRoles = props?.roles ?? [];
+
     const cluster = new CfnCluster(this, 'Resource', {
       // Basic
       allowVersionUpgrade: true,
@@ -479,7 +500,9 @@ export class Cluster extends ClusterBase {
       nodeType: props.nodeType || NodeType.DC2_LARGE,
       numberOfNodes: nodeCount,
       loggingProperties,
-      iamRoles: props?.roles?.map(role => role.roleArn),
+      iamRoles: Lazy.list({
+        produce: () => this.attachedRoles.map(role => role.roleArn),
+      }),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
@@ -492,6 +515,12 @@ export class Cluster extends ClusterBase {
     });
 
     this.clusterName = cluster.ref;
+    this.clusterArn = Stack.of(this).formatArn({
+      service: 'redshift',
+      resource: 'cluster',
+      resourceName: this.clusterName,
+      sep: ':',
+    });
 
     // create a number token that represents the port of the cluster
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
@@ -548,6 +577,13 @@ export class Cluster extends ClusterBase {
       vpcSubnets: this.vpcSubnets,
       target: this,
     });
+  }
+
+  /**
+   * TODO
+   */
+  public attachRole(role: iam.IRole) {
+    this.attachedRoles.push(role);
   }
 
   private validateNodeCount(clusterType: ClusterType, numberOfNodes?: number): number | undefined {

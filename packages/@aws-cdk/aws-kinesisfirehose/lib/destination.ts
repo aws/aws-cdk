@@ -3,9 +3,12 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Size } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { IDeliveryStream } from './delivery-stream';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Options for S3 record backup of a delivery stream
@@ -121,7 +124,7 @@ export interface DestinationProps {
    *
    * If `logGroup` is provided, this will be implicitly set to `true`.
    *
-   * @default false - do not log errors.
+   * @default true - errors are logged.
    */
   readonly logging?: boolean;
 
@@ -184,17 +187,18 @@ export abstract class DestinationBase implements IDestination {
 
   abstract bind(scope: Construct, deliveryStream: IDeliveryStream): DestinationConfig;
 
-  protected createLoggingOptions(scope: Construct, deliveryStream: IDeliveryStream): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    if (this.props.logging || this.props.logGroup) {
+  protected createLoggingOptions(scope: Construct, deliveryStream: IDeliveryStream, streamId: string): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
+    if (this.props.logging !== false || this.props.logGroup) {
       this.logGroup = this.logGroup ?? this.props.logGroup ?? (!this.props.logStream ? new logs.LogGroup(scope, 'Log Group') : undefined);
       if (!this.logGroup) {
         throw new Error('Log stream was provided to Destination but log group was not');
       }
       this.logGroup.grantWrite(deliveryStream); // TODO: too permissive? add a new grant on the stream resource if it's passed in?
+      const logStream = this.props.logStream ?? this.logGroup.addStream(streamId);
       return {
         enabled: true,
         logGroupName: this.logGroup.logGroupName,
-        logStreamName: this.props.logStream?.logStreamName,
+        logStreamName: logStream.logStreamName,
       };
     }
     return undefined;

@@ -1,8 +1,10 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { CfnMapping, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { RegionInfo } from '@aws-cdk/region-info';
 import { Construct } from 'constructs';
 import { IDestination } from './destination';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
@@ -10,7 +12,7 @@ import { CfnDeliveryStream } from './kinesisfirehose.generated';
 /**
  * Represents a Kinesis Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends IResource, iam.IGrantable {
+export interface IDeliveryStream extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * Name of the delivery stream.
    *
@@ -123,6 +125,8 @@ export abstract class DeliveryStreamBase extends Resource implements IDeliverySt
 
   abstract readonly grantPrincipal: iam.IPrincipal;
 
+  abstract readonly connections: ec2.Connections;
+
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       resourceArns: [this.deliveryStreamArn],
@@ -166,6 +170,7 @@ export class DeliveryStream extends DeliveryStreamBase {
         resourceName: deliveryStreamName,
       })
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
+      public readonly connections = setConnections(this);
     }
     return new Import(scope, id);
   }
@@ -176,6 +181,8 @@ export class DeliveryStream extends DeliveryStreamBase {
 
   readonly grantPrincipal: iam.IPrincipal;
 
+  readonly connections: ec2.Connections;
+
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {
     super(scope, id);
 
@@ -183,6 +190,8 @@ export class DeliveryStream extends DeliveryStreamBase {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
     this.grantPrincipal = role;
+
+    this.connections = setConnections(this);
 
     const encryptionKey = props.encryptionKey ?? (props.encryption === StreamEncryption.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
     const encryptionConfig = (encryptionKey || (props.encryption === StreamEncryption.AWS_OWNED)) ? {
@@ -210,4 +219,28 @@ export class DeliveryStream extends DeliveryStreamBase {
     this.deliveryStreamName = resource.ref;
     this.deliveryStreamArn = resource.attrArn;
   }
+}
+
+function setConnections(scope: Construct) {
+  const region = Stack.of(scope).region
+  let cidrBlock = RegionInfo.get(region).firehoseCidrBlock;
+  if (!cidrBlock) {
+    const mapping: {[region: string]: { FirehoseCidrBlock: string }} = {};
+    RegionInfo.regions.forEach((region) => {
+      if (region.firehoseCidrBlock) {
+        mapping[region.name] = {
+          FirehoseCidrBlock: region.firehoseCidrBlock,
+        };
+      }
+    });
+    const cfnMapping = new CfnMapping(scope, 'Firehose CIDR Mapping', {
+      mapping,
+    });
+    cidrBlock = Fn.findInMap(cfnMapping.logicalId, region, 'FirehoseCidrBlock');
+    // TODO: this fails deployment if the region isn't configured, is that acceptable?
+  }
+
+  return new ec2.Connections({
+    peer: ec2.Peer.ipv4(cidrBlock),
+  });
 }

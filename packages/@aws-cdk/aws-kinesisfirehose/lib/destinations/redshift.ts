@@ -1,4 +1,4 @@
-import * as customresources from '@aws-cdk/custom-resources';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -6,10 +6,14 @@ import * as redshift from '@aws-cdk/aws-redshift';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CustomResource, Duration, SecretValue, Size, Token } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import * as customresources from '@aws-cdk/custom-resources';
 import { IDeliveryStream } from '../delivery-stream';
 import { BackupMode, Compression, DestinationBase, DestinationConfig, DestinationProps } from '../destination';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The Redshift user Firehose will assume to deliver data to Redshift
@@ -37,13 +41,26 @@ export interface RedshiftUser {
   readonly encryptionKey?: kms.IKey;
 }
 
+export interface RedshiftColumn {
+  /**
+   * The name of the column.
+   */
+  readonly name: string;
+
+  /**
+   * The data type of the column.
+   * TODO: strongly typed
+   */
+  readonly dataType: string;
+}
+
 /**
  * Properties for configuring a Redshift delivery stream destination.
  */
 export interface RedshiftDestinationProps extends DestinationProps {
   /**
    * The Redshift cluster to deliver data to.
-   * TODO: add ingress access from the Firehose CIDR
+   * TODO: publiclyAccessible must be set to true
    */
   readonly cluster: redshift.Cluster;
 
@@ -59,19 +76,13 @@ export interface RedshiftDestinationProps extends DestinationProps {
 
   /**
    * The table that data should be inserted into.
-   *
-   * Firehose does not create the table if it does not exist.
    */
   readonly tableName: string;
 
   /**
-   * A list of column names to load source data fields into specific target columns.
-   *
-   * The order of the columns must match the order of the source data.
-   *
-   * @default []
+   * The table columns that the source fields will be loaded into.
    */
-  readonly tableColumns?: string[];
+  readonly tableColumns: RedshiftColumn[];
 
   /**
    * Parameters given to the COPY command that is used to move data from S3 to Redshift.
@@ -92,11 +103,20 @@ export interface RedshiftDestinationProps extends DestinationProps {
   readonly retryTimeout?: Duration;
 
   /**
-   * The intermediate bucket where Firehose will stage your data before COPYing it to the Redshift cluster
+   * The intermediate bucket where Firehose will stage your data before COPYing it to the Redshift cluster.
    *
    * @default - a bucket will be created for you.
    */
   readonly intermediateBucket?: s3.IBucket;
+
+  /**
+   * The role that is attached to the Redshift cluster and will have permissions to access the intermediate bucket.
+   *
+   * If a role is provided, it must be already attached to the cluster, to avoid the 10 role per cluster limit.
+   *
+   * @default - a role will be created for you.
+   */
+  readonly bucketAccessRole?: iam.IRole;
 
   /**
    * The size of the buffer that Firehose uses for incoming data before delivering it to the intermediate bucket.
@@ -156,8 +176,37 @@ export class RedshiftDestination extends DestinationBase {
   }
 
   private createRedshiftConfig(scope: Construct, deliveryStream: IDeliveryStream): CfnDeliveryStream.RedshiftDestinationConfigurationProperty {
-    const endpoint = this.redshiftProps.cluster.clusterEndpoint;
+    const cluster = this.redshiftProps.cluster;
+    // TODO: assert cluster subnet is public
+    const endpoint = cluster.clusterEndpoint;
     const jdbcUrl = `jdbc:redshift://${endpoint.hostname}:${Token.asString(endpoint.port)}/${this.redshiftProps.database}`;
+    cluster.connections.allowDefaultPortFrom(deliveryStream, 'Allow incoming connections from Kinesis Data Firehose');
+
+    const createTable = new Construct(scope, 'Redshift Table');
+    const createTableHandler = new lambda.Function(createTable, 'Function', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'redshift-create-table-provider')),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      environment: {
+        clusterName: cluster.clusterName,
+        masterSecretArn: cluster.secret?.secretArn ?? '',
+        database: this.redshiftProps.database,
+        tableName: this.redshiftProps.tableName,
+        tableColumns: JSON.stringify(this.redshiftProps.tableColumns),
+      },
+    });
+    createTableHandler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['redshift-data:DescribeStatement', 'redshift-data:ExecuteStatement'],
+      resources: ['*'],
+    }));
+    cluster.secret?.grantRead(createTableHandler);
+
+    const createTableProvider = new customresources.Provider(createTable, 'Provider', {
+      onEventHandler: createTableHandler,
+    });
+    new CustomResource(createTable, 'Resource', {
+      serviceToken: createTableProvider.serviceToken,
+    });
 
     const user = (() => {
       if (this.redshiftProps.user.password) {
@@ -166,26 +215,41 @@ export class RedshiftDestination extends DestinationBase {
           password: this.redshiftProps.user.password,
         };
       } else {
-        const secret = new redshift.DatabaseSecret(scope, 'Firehose User', {
+        const secret = new redshift.DatabaseSecret(scope, 'Firehose User Secret', {
           username: this.redshiftProps.user.username,
           encryptionKey: this.redshiftProps.user.encryptionKey,
         });
-        this.secret = secret.attach(this.redshiftProps.cluster);
+        this.secret = secret.attach(cluster);
 
-        const createUser = new Construct(scope, 'Create Firehose Redshift');
-        const createUserProvider = new customresources.Provider(createUser, 'Provider', {
-          onEventHandler: new lambda.Function(createUser, 'Function', {
-            code: lambda.Code.fromInline(''),
-            runtime: lambda.Runtime.NODEJS_14_X,
-            handler: 'index.handler',
-          }),
+        const createUser = new Construct(scope, 'Firehose Redshift User');
+        const createUserHandler = new lambda.Function(createUser, 'Function', {
+          code: lambda.Code.fromAsset(path.join(__dirname, 'redshift-create-user-provider')),
+          runtime: lambda.Runtime.NODEJS_14_X,
+          handler: 'index.handler',
+          environment: {
+            clusterName: cluster.clusterName,
+            masterSecretArn: cluster.secret?.secretArn ?? '',
+            database: this.redshiftProps.database,
+            userSecretArn: this.secret.secretArn,
+            table: this.redshiftProps.tableName,
+          },
         });
-        new CustomResource(scope, 'Create Firehose Redshift User', {
+        createUserHandler.addToRolePolicy(new iam.PolicyStatement({
+          actions: ['redshift-data:DescribeStatement', 'redshift-data:ExecuteStatement'],
+          resources: ['*'],
+        }));
+        cluster.secret?.grantRead(createUserHandler);
+        this.secret.grantRead(createUserHandler);
+
+        const createUserProvider = new customresources.Provider(createUser, 'Provider', {
+          onEventHandler: createUserHandler,
+        });
+        new CustomResource(createUser, 'Resource', {
           serviceToken: createUserProvider.serviceToken,
         });
 
         return {
-          username: this.secret.secretValueFromJson('username'),
+          username: this.redshiftProps.user.username,
           password: this.secret.secretValueFromJson('password'),
         };
       };
@@ -201,23 +265,30 @@ export class RedshiftDestination extends DestinationBase {
         intervalInSeconds: this.redshiftProps.bufferingInterval?.toSeconds(),
         sizeInMBs: this.redshiftProps.bufferingSize?.toMebibytes(),
       },
-      cloudWatchLoggingOptions: this.createLoggingOptions(scope, deliveryStream),
+      cloudWatchLoggingOptions: this.createLoggingOptions(scope, deliveryStream, 'IntermediateS3'),
       compressionFormat: compression ?? Compression.UNCOMPRESSED,
     };
     // TODO: encryptionConfiguration? why need to provide if bucket has encryption
+    const bucketAccessRole = this.redshiftProps.bucketAccessRole ?? new iam.Role(scope, 'Intermediate Bucket Access Role', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    if (!this.redshiftProps.bucketAccessRole) {
+      cluster.attachRole(bucketAccessRole);
+    }
+    intermediateBucket.grantRead(bucketAccessRole);
 
     return {
       clusterJdbcurl: jdbcUrl,
       copyCommand: {
         dataTableName: this.redshiftProps.tableName,
-        dataTableColumns: this.redshiftProps.tableColumns?.join(),
+        dataTableColumns: this.redshiftProps.tableColumns?.map(column => column.name)?.join(),
         copyOptions: this.redshiftProps.copyOptions,
       },
       password: user.password.toString(),
       username: user.username.toString(),
       s3Configuration: intermediateS3Config,
       roleArn: (deliveryStream.grantPrincipal as iam.Role).roleArn,
-      cloudWatchLoggingOptions: this.createLoggingOptions(scope, deliveryStream),
+      cloudWatchLoggingOptions: this.createLoggingOptions(scope, deliveryStream, 'Redshift'),
       processingConfiguration: this.createProcessingConfig(deliveryStream),
       retryOptions: {
         durationInSeconds: this.redshiftProps.retryTimeout?.toSeconds(),

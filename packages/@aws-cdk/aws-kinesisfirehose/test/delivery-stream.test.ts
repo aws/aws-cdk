@@ -30,6 +30,7 @@ describe('delivery stream', () => {
         },
         database: database,
         tableName: 'table',
+        tableColumns: [{name: 'column', dataType: 'varchar(4)'}],
       }),
     });
 

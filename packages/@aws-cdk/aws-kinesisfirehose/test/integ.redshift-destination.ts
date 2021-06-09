@@ -35,7 +35,14 @@ class TestStack extends Stack {
         username: 'firehose',
       },
       database: database,
-      tableName: 'table',
+      tableName: 'firehose_test_table',
+      tableColumns: [
+        {name: 'TICKER_SYMBOL', dataType: 'varchar(4)'},
+        {name: 'SECTOR', dataType: 'varchar(16)'},
+        {name: 'CHANGE', dataType: 'float'},
+        {name: 'PRICE', dataType: 'float'},
+      ],
+      copyOptions: 'json \'auto\'',
     });
     new firehose.DeliveryStream(this, 'Firehose', {
       destination: redshiftDestination,

@@ -158,3 +158,11 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'us-west-1': '840364872350',
   'us-west-2': '840364872350',
 };
+
+// https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#using-iam-rs-vpc
+export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
+  'us-east-1': '52.70.63.192',
+  'us-east-2': '13.58.135.96',
+  'us-west-1': '13.57.135.192',
+  'us-west-2': '52.89.255.224',
+};
