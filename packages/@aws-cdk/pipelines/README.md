@@ -632,6 +632,17 @@ $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
     aws://222222222222/us-east-2
 ```
 
+If you only want to trust an account to do lookups (e.g, when your CDK application has a 
+`Vpc.fromLookup()` call), use the option `--trust-for-lookup`:
+
+```console
+$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+    [--profile admin-profile-2] \
+    --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
+    --trust-for-lookup 11111111111 \
+    aws://222222222222/us-east-2
+```
+
 These command lines explained:
 
 * `npx`: means to use the CDK CLI from the current NPM install. If you are using
@@ -647,6 +658,10 @@ These command lines explained:
   CDK applications into this account. In this case we indicate the Pipeline's account,
   but you could also use this for developer accounts (don't do that for production
   application accounts though!).
+* `--trust-for-lookup`: similar to `--trust`, but gives a more limited set of permissions to the 
+  trusted account, allowing it to only look up values, such as availability zones, EC2 images and 
+  VPCs. Note that if you provide an account using `--trust`, that account can also do lookups. 
+  So you only need to pass `--trust-for-lookup` if you need to use a different account.
 * `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
 
 > **Security tip**: we recommend that you use administrative credentials to an
@@ -799,6 +814,26 @@ Make sure you set the `privileged` environment variable to `true` in the synth d
 After turning on `privilegedMode: true`, you will need to do a one-time manual cdk deploy of your 
 pipeline to get it going again (as with a broken 'synth' the pipeline will not be able to self 
 update to the right state). 
+
+### S3 error: Access Denied
+
+Some constructs, such as EKS clusters, generate nested stacks. When CloudFormation tries 
+to deploy those stacks, it may fail with this error:
+
+```console
+S3 error: Access Denied For more information check http://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html
+```
+
+This happens because the pipeline is not self-mutating and, as a consequence, the `FileAssetX` 
+build projects get out-of-sync with the generated templates. To fix this, make sure the 
+`selfMutating` property is set to `true`:
+
+```typescript
+const pipeline = new CdkPipeline(this, 'MyPipeline', {
+  selfMutating: true,
+  ...
+});
+```
 
 ## Current Limitations
 

@@ -76,6 +76,21 @@ new route53.NsRecord(this, 'NSRecord', {
 });
 ```
 
+To add a DS record to your zone:
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+
+new route53.DsRecord(this, 'DSRecord', {
+  zone: myZone,
+  recordName: 'foo',
+  values: [
+    '12345 3 1 123456789abcdef67890123456789abcdef67890',
+  ],
+  ttl: Duration.minutes(90),       // Optional - default is 30 minutes
+});
+```
+
 To add an A record to your zone:
 
 ```ts
