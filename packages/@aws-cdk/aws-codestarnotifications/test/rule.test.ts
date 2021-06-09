@@ -17,7 +17,7 @@ describe('Rule', () => {
   test('created new notification rule with source', () => {
     const project = new FakeCodeBuild();
 
-    new notifications.Rule(stack, 'MyNotificationRule', {
+    new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: project,
     });
 
@@ -30,8 +30,8 @@ describe('Rule', () => {
     const project = new FakeCodeBuild();
     const slack = new FakeSlackTarget();
 
-    new notifications.Rule(stack, 'MyNotificationRule', {
-      ruleName: 'MyNotificationRule',
+    new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      notificationRuleName: 'MyNotificationRule',
       detailType: notifications.DetailType.FULL,
       events: [
         'codebuild-project-build-state-succeeded',
@@ -60,7 +60,7 @@ describe('Rule', () => {
   });
 
   test('created new notification rule without name and will generate from the `id`', () => {
-    new notifications.Rule(stack, 'MyNotificationRuleGeneratedFromId', {
+    new notifications.NotificationRule(stack, 'MyNotificationRuleGeneratedFromId', {
       source: new FakeCodeBuild(),
     });
 
@@ -74,11 +74,9 @@ describe('Rule', () => {
   test('generating name will cut if id length is over than 64 charts', () => {
     const project = new FakeCodeBuild();
 
-    const rule = new notifications.Rule(stack, 'MyNotificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong', {
+    new notifications.NotificationRule(stack, 'MyNotificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong', {
       source: project,
     });
-
-    expect(rule.ruleName.length).toBe(64);
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRuleGeneratedFromIooooooooooooooooooooooooooooLong',
@@ -90,8 +88,8 @@ describe('Rule', () => {
   test('created new notification rule without detailType', () => {
     const project = new FakeCodeBuild();
 
-    new notifications.Rule(stack, 'MyNotificationRule', {
-      ruleName: 'MyNotificationRule',
+    new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      notificationRuleName: 'MyNotificationRule',
       source: project,
     });
 
@@ -106,7 +104,7 @@ describe('Rule', () => {
   test('created new notification rule with status DISABLED', () => {
     const project = new FakeCodeBuild();
 
-    new notifications.Rule(stack, 'MyNotificationRule', {
+    new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: project,
       enabled: false,
     });
@@ -121,7 +119,7 @@ describe('Rule', () => {
   test('created new notification rule with status ENABLED', () => {
     const project = new FakeCodeBuild();
 
-    new notifications.Rule(stack, 'MyNotificationRule', {
+    new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: project,
       enabled: true,
     });
@@ -135,19 +133,19 @@ describe('Rule', () => {
 
   test('notification added targets', () => {
     const project = new FakeCodeBuild();
-    const topic1: notifications.IRuleTarget = {
+    const topic1: notifications.INotificationRuleTarget = {
       bind: () => ({
         targetType: 'SNS',
         targetAddress: 'arn:aws:sns::1234567890:MyTopic1',
       }),
     };
-    const topic2: notifications.IRuleTarget = {
+    const topic2: notifications.INotificationRuleTarget = {
       bind: () => ({
         targetType: 'SNS',
         targetAddress: 'arn:aws:sns::1234567890:MyTopic2',
       }),
     };
-    const topic3: notifications.IRuleTarget = {
+    const topic3: notifications.INotificationRuleTarget = {
       bind: () => ({
         targetType: 'SNS',
         targetAddress: 'arn:aws:sns::1234567890:MyTopic3',
@@ -155,7 +153,7 @@ describe('Rule', () => {
     };
     const slack = new FakeSlackTarget();
 
-    const rule = new notifications.Rule(stack, 'MyNotificationRule', {
+    const rule = new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: project,
     });
 
@@ -185,14 +183,14 @@ describe('Rule', () => {
   });
 
   test('will not effect and return false when added targets if notification from imported', () => {
-    const imported = notifications.Rule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
     const slack = new FakeSlackTarget();
     expect(imported.addTarget(slack)).toEqual(false);
   });
 
   test('will not add if notification added duplicating event', () => {
     const pipeline = new FakeCodePipeline();
-    new notifications.Rule(stack, 'MyNotificationRule', {
+    new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: pipeline,
       events: [
         'codepipeline-pipeline-pipeline-execution-succeeded',
@@ -213,17 +211,12 @@ describe('Rule', () => {
   });
 
   test('from notification rule ARN', () => {
-    const imported = notifications.Rule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
-    expect(imported.ruleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
-  });
-
-  test('should throws error if get ruleName from imported resource', () => {
-    const imported = notifications.Rule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
-    expect(() => imported.ruleName).toThrowError('cannot retrieve "ruleName" from an imported');
+    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    expect(imported.notificationRuleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
   });
 
   test('from notification rule ARN', () => {
-    const imported = notifications.Rule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
-    expect(imported.ruleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    expect(imported.notificationRuleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
   });
 });

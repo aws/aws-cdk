@@ -1,10 +1,9 @@
-import { IRule } from './rule';
+import { INotificationRule } from './notification-rule';
 
 /**
  * Information about the SNS topic or AWS Chatbot client associated with a notification target.
  */
-export interface RuleTargetConfig {
-
+export interface NotificationRuleTargetConfig {
   /**
    * The target type. Can be an Amazon SNS topic or AWS Chatbot client.
    */
@@ -20,10 +19,10 @@ export interface RuleTargetConfig {
  * Represents a notification target
  * That allows AWS Chatbot and SNS topic to associate with this rule target.
  */
-export interface IRuleTarget {
+export interface INotificationRuleTarget {
   /**
    * Binds target to notification rule
    * @param _rule The notification rule
    */
-  bind(_rule: IRule): RuleTargetConfig;
+  bind(_rule: INotificationRule): NotificationRuleTargetConfig;
 }

@@ -39,11 +39,11 @@ export class BitBucketSourceAction implements codepipeline.IAction {
     return this.codeStarConnectionsSourceAction.onStateChange(name, target, options);
   }
 
-  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule {
+  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule {
     return this.codeStarConnectionsSourceAction.notifyOn(id, options);
   }
 
-  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule {
     return this.codeStarConnectionsSourceAction.notifyOnStateChange(id, options);
   }
 }

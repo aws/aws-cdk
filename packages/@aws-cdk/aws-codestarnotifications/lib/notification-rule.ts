@@ -1,8 +1,8 @@
 import { IResource, Resource, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
-import { RuleSourceConfig, IRuleSource } from './source';
-import { IRuleTarget, RuleTargetConfig } from './target';
+import { NotificationRuleSourceConfig, INotificationRuleSource } from './source';
+import { INotificationRuleTarget, NotificationRuleTargetConfig } from './target';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -45,14 +45,14 @@ export interface NotifyOptions {
    *
    * @default - generated from the `id`
    */
-  readonly ruleName?: string;
+  readonly notificationRuleName?: string;
 
   /**
    * The target to register for the notification destination.
    *
    * @default - No target is added to the rule. Use `addTarget()` to add a target.
    */
-  readonly target?: IRuleTarget;
+  readonly target?: INotificationRuleTarget;
 
   /**
    * The status of the notification rule.
@@ -91,33 +91,26 @@ export interface NotifyOnEventOptions extends NotifyOptions {
 /**
  * Properties for a new notification rule
  */
-export interface RuleProps extends NotifyOnEventOptions {
+export interface NotificationRuleProps extends NotifyOnEventOptions {
   /**
    * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
    * Currently, Supported sources include pipelines in AWS CodePipeline and build projects in AWS CodeBuild in this L2 constructor.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codestarnotifications-notificationrule.html#cfn-codestarnotifications-notificationrule-resource
    */
-  readonly source: IRuleSource;
+  readonly source: INotificationRuleSource;
 }
 
 /**
  * Represents a notification rule
  */
-export interface IRule extends IResource {
+export interface INotificationRule extends IResource {
 
   /**
    * The ARN of the notification rule (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
    *
    * @attribute
    */
-  readonly ruleArn: string;
-
-  /**
-   * The name of the notification rule
-   *
-   * @attribute
-   */
-  readonly ruleName: string;
+  readonly notificationRuleArn: string;
 
   /**
    * Adds target to notification rule
@@ -125,7 +118,7 @@ export interface IRule extends IResource {
    * @param target The SNS topic or AWS Chatbot Slack target
    * @returns boolean - return true if it had any effect
    */
-  addTarget(target?: IRuleTarget): boolean;
+  addTarget(target?: INotificationRuleTarget): boolean;
 }
 
 /**
@@ -133,19 +126,18 @@ export interface IRule extends IResource {
  *
  * @resource AWS::CodeStarNotifications::NotificationRule
  */
-export class Rule extends Resource implements IRule {
+export class NotificationRule extends Resource implements INotificationRule {
   /**
    * Import an existing notification rule provided an ARN
    * @param scope The parent creating construct
    * @param id The construct's name
    * @param notificationRuleArn Notification rule ARN (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
    */
-  public static fromNotificationRuleArn(scope: Construct, id: string, notificationRuleArn: string): IRule {
-    class Import extends Resource implements IRule {
-      readonly ruleArn = notificationRuleArn;
-      public get ruleName(): string { throw new Error('cannot retrieve "ruleName" from an imported'); }
+  public static fromNotificationRuleArn(scope: Construct, id: string, notificationRuleArn: string): INotificationRule {
+    class Import extends Resource implements INotificationRule {
+      readonly notificationRuleArn = notificationRuleArn;
 
-      public addTarget(_target?: IRuleTarget) {
+      public addTarget(_target?: INotificationRuleTarget) {
         return false;
       }
     }
@@ -156,29 +148,24 @@ export class Rule extends Resource implements IRule {
   /**
    * @attribute
    */
-  readonly ruleArn: string;
-
-  /**
-   * @attribute
-   */
-  readonly ruleName: string;
+  readonly notificationRuleArn: string;
 
   /**
    * The source config of notification rule
    */
-  readonly source: RuleSourceConfig;
+  readonly source: NotificationRuleSourceConfig;
 
   /**
    * The target config of notification rule
    */
-  readonly targets: RuleTargetConfig[] = [];
+  readonly targets: NotificationRuleTargetConfig[] = [];
 
   /**
    * The events of notification rule
    */
   readonly events: string[] = [];
 
-  constructor(scope: Construct, id: string, props: RuleProps) {
+  constructor(scope: Construct, id: string, props: NotificationRuleProps) {
     super(scope, id);
 
     this.source = props.source.bind(this);
@@ -191,10 +178,8 @@ export class Rule extends Resource implements IRule {
       this.addTarget(props.target);
     }
 
-    this.ruleName = props.ruleName || this.generateName();
-
     const resource = new CfnNotificationRule(this, 'Resource', {
-      name: this.ruleName,
+      name: props.notificationRuleName || this.generateName(),
       status: (props?.enabled === false) ? Status.DISABLED : Status.ENABLED,
       detailType: props.detailType || DetailType.FULL,
       targets: this.targets,
@@ -202,14 +187,14 @@ export class Rule extends Resource implements IRule {
       resource: this.source.sourceArn,
     });
 
-    this.ruleArn = resource.ref;
+    this.notificationRuleArn = resource.ref;
   }
 
   /**
    * Adds target to notification rule
    * @param target The SNS topic or AWS Chatbot Slack target
    */
-  public addTarget(target?: IRuleTarget): boolean {
+  public addTarget(target?: INotificationRuleTarget): boolean {
     if (!target) {
       return false;
     }

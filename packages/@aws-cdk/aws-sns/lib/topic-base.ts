@@ -12,7 +12,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Represents an SNS topic
  */
-export interface ITopic extends IResource, notifications.IRuleTarget {
+export interface ITopic extends IResource, notifications.INotificationRuleTarget {
   /**
    * The ARN of the topic
    *
@@ -125,7 +125,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     });
   }
 
-  public bind(_rule: notifications.IRule): notifications.RuleTargetConfig {
+  public bind(_rule: notifications.INotificationRule): notifications.NotificationRuleTargetConfig {
     return {
       targetType: 'SNS',
       targetAddress: this.topicArn,

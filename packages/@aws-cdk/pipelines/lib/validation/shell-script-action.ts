@@ -254,7 +254,7 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
   /**
    * Exists to implement IAction
    */
-  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule {
+  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule {
     if (!this._action) {
       throw new Error('Need bind() first');
     }
@@ -265,7 +265,7 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
   /**
    * Exists to implement IAction
    */
-  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule {
     if (!this._action) {
       throw new Error('Need bind() first');
     }

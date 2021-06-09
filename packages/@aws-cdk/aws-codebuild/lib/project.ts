@@ -37,7 +37,7 @@ export interface BatchBuildConfig {
   readonly role: iam.IRole;
 }
 
-export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.IRuleSource {
+export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource {
   /**
    * The ARN of this Project.
    * @attribute
@@ -179,17 +179,17 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, n
    * @param options Customization options for Codestar notification rule
    * @returns Codestar notification rule associated with this build project.
    */
-  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule;
+  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule;
 
   /**
    * Defines a Codestar notification rule which triggers when a build completes successfully.
    */
-  notifyOnBuildSucceeded(id: string, options?: notifications.NotifyOptions): notifications.IRule;
+  notifyOnBuildSucceeded(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
 
   /**
    * Defines a Codestar notification rule which triggers when a build fails.
    */
-  notifyOnBuildFailed(id: string, options?: notifications.NotifyOptions): notifications.IRule;
+  notifyOnBuildFailed(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
 }
 
 /**
@@ -425,15 +425,15 @@ abstract class ProjectBase extends Resource implements IProject {
     return this.cannedMetric(CodeBuildMetrics.failedBuildsSum, props);
   }
 
-  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.IRule {
-    const rule = new notifications.Rule(this, id, {
+  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.INotificationRule {
+    const rule = new notifications.NotificationRule(this, id, {
       ...options,
       source: this,
     });
     return rule;
   }
 
-  public notifyOnBuildSucceeded(id: string, options: notifications.NotifyOptions = {}): notifications.IRule {
+  public notifyOnBuildSucceeded(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
     const rule = this.notifyOn(id, {
       ...options,
       events: [ProjectEvent.BUILD_STATE_SUCCEEDED],
@@ -441,7 +441,7 @@ abstract class ProjectBase extends Resource implements IProject {
     return rule;
   }
 
-  public notifyOnBuildFailed(id: string, options: notifications.NotifyOptions = {}): notifications.IRule {
+  public notifyOnBuildFailed(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
     const rule = this.notifyOn(id, {
       ...options,
       events: [ProjectEvent.BUILD_STATE_FAILED],
@@ -449,7 +449,7 @@ abstract class ProjectBase extends Resource implements IProject {
     return rule;
   }
 
-  public bind(_rule: notifications.IRule): notifications.RuleSourceConfig {
+  public bind(_rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
     return {
       sourceType: 'CodeBuild',
       sourceArn: this.projectArn,

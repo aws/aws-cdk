@@ -163,22 +163,22 @@ abstract class PipelineBase extends Resource implements IPipeline {
     return rule;
   }
 
-  public bind(_rule: notifications.IRule): notifications.RuleSourceConfig {
+  public bind(_rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
     return {
       sourceType: 'CodePipeline',
       sourceArn: this.pipelineArn,
     };
   }
 
-  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.IRule {
-    const rule = new notifications.Rule(this, id, {
+  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.INotificationRule {
+    const rule = new notifications.NotificationRule(this, id, {
       ...options,
       source: this,
     });
     return rule;
   }
 
-  public notifyOnStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.IRule {
+  public notifyOnStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
     const rule = this.notifyOn(id, {
       ...options,
       events: [

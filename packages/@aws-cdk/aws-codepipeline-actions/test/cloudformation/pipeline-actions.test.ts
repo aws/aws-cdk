@@ -344,13 +344,13 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public onStateChange(_id: string, _options: events.OnEventOptions): events.Rule {
     throw new Error('Method not implemented.');
   }
-  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.Rule {
+  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.NotificationRule {
     throw new Error('Method not implemented.');
   }
-  public notifyOnStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.Rule {
+  public notifyOnStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.NotificationRule {
     throw new Error('Method not implemented.');
   }
-  public bind(_rule: notifications.IRule): notifications.RuleSourceConfig {
+  public bind(_rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
     throw new Error('Method not implemented.');
   }
 }
@@ -398,11 +398,11 @@ class StageDouble implements codepipeline.IStage {
     throw new Error('onStateChange() is not supported on StageDouble');
   }
 
-  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.IRule {
+  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.INotificationRule {
     throw new Error('Method not implemented.');
   }
 
-  public notifyOnStateChange(_name: string, _options?: notifications.NotifyOptions): notifications.IRule {
+  public notifyOnStateChange(_name: string, _options?: notifications.NotifyOptions): notifications.INotificationRule {
     throw new Error('Method not implemented.');
   }
 }

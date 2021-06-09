@@ -106,7 +106,7 @@ export enum LoggingLevel {
 /**
  * Represents a Slack channel configuration
  */
-export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantable, notifications.IRuleTarget {
+export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantable, notifications.INotificationRuleTarget {
 
   /**
    * The ARN of the Slack channel configuration
@@ -181,7 +181,7 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
     });
   }
 
-  public bind(_rule: notifications.IRule): notifications.RuleTargetConfig {
+  public bind(_rule: notifications.INotificationRule): notifications.NotificationRuleTargetConfig {
     return {
       targetType: 'AWSChatbotSlack',
       targetAddress: this.slackChannelConfigurationArn,

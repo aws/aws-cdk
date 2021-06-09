@@ -163,7 +163,7 @@ export interface IAction {
    * @param options Customization options for Codestar notification rule
    * @returns Codestar notification rule associated with this build project.
    */
-  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule;
+  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Action execution" events emitted from this pipeline.
@@ -172,7 +172,7 @@ export interface IAction {
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule;
+  notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
 }
 
 /**
@@ -180,7 +180,7 @@ export interface IAction {
  * It extends {@link events.IRuleTarget},
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends IResource, notifications.IRuleSource {
+export interface IPipeline extends IResource, notifications.INotificationRuleSource {
   /**
    * The name of the Pipeline.
    *
@@ -223,7 +223,7 @@ export interface IPipeline extends IResource, notifications.IRuleSource {
    * @param options Customization options for Codestar notification rule
    * @returns Codestar notification rule associated with this build project.
    */
-  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule;
+  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Pipeline execution" events emitted from this pipeline.
@@ -232,7 +232,7 @@ export interface IPipeline extends IResource, notifications.IRuleSource {
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule;
+  notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
 }
 
 /**
@@ -267,7 +267,7 @@ export interface IStage {
    * @param options Customization options for Codestar notification rule
    * @returns Codestar notification rule associated with this build project.
    */
-  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule;
+  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Stage execution" events emitted from this pipeline.
@@ -276,7 +276,7 @@ export interface IStage {
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule;
+  notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
 }
 
 /**
@@ -408,15 +408,15 @@ export abstract class Action implements IAction {
     return rule;
   }
 
-  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.IRule {
-    const rule = new notifications.Rule(this._scope, id, {
+  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.INotificationRule {
+    const rule = new notifications.NotificationRule(this._scope, id, {
       ...options,
       source: this._pipeline,
     });
     return rule;
   }
 
-  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule {
     const rule = this.notifyOn(id, {
       ...options,
       events: [

@@ -1,10 +1,9 @@
-import { IRule } from './rule';
+import { INotificationRule } from './notification-rule';
 
 /**
  * Information about the Codebuild or CodePipeline associated with a notification source.
  */
-export interface RuleSourceConfig {
-
+export interface NotificationRuleSourceConfig {
   /**
    * The source type. Can be an AWS CodeCommit, CodeBuild, CodePipeline or CodeDeploy.
    */
@@ -20,10 +19,10 @@ export interface RuleSourceConfig {
  * Represents a notification source
  * The source that allows CodeBuild and CodePipeline to associate with this rule.
  */
-export interface IRuleSource {
+export interface INotificationRuleSource {
   /**
    * Binds source to notification rule
    * @param _rule The notification rule
    */
-  bind(_rule: IRule): RuleSourceConfig;
+  bind(_rule: INotificationRule): NotificationRuleSourceConfig;
 }

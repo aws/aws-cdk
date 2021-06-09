@@ -201,11 +201,11 @@ class TestAction implements codepipeline.IAction {
     throw new Error('onStateChange() is not available on MockAction');
   }
 
-  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.IRule {
+  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.INotificationRule {
     throw new Error('Method not implemented.');
   }
 
-  public notifyOnStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.IRule {
+  public notifyOnStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.INotificationRule {
     throw new Error('Method not implemented.');
   }
 }

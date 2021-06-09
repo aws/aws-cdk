@@ -88,11 +88,11 @@ export class ManualApprovalAction extends Action {
     };
   }
 
-  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule {
+  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule {
     return super.notifyOn(id, options);
   }
 
-  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule {
     const rule = this.notifyOn(id, {
       ...options,
       events: [

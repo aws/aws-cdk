@@ -176,14 +176,14 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
   /**
    * Exists to implement IAction
    */
-  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.IRule {
+  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule {
     return this.action.notifyOn(id, options);
   }
 
   /**
    * Exists to implement IAction
    */
-  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.IRule {
+  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule {
     return this.action.notifyOnStateChange(id, options);
   }
 
