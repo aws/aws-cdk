@@ -25,6 +25,24 @@ describe('HttpIamAuthorizer', () => {
       AuthorizerId: ABSENT,
     });
   });
+
+  test('default integration', () => {
+    // GIVEN
+    const stack = new Stack();
+    const authorizer = new HttpIamAuthorizer();
+
+    // WHEN
+    new HttpApi(stack, 'HttpApi', {
+      defaultAuthorizer: authorizer,
+      defaultIntegration: new DummyRouteIntegration(),
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'AWS_IAM',
+      AuthorizerId: ABSENT,
+    });
+  });
 });
 
 
