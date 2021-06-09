@@ -42,6 +42,11 @@
             "Type": "Api",
             "PropertyNotInCfnSchema": "unmodeled property in map"
           }
+        },
+        "ParentPropertyNotInCfnSchema": {
+          "ChildPropertyNotInCfnSchema": {
+            "Ref": "Bucket"
+          }
         }
       }
     }
