@@ -22,7 +22,7 @@
     "typescript": "~3.9.9"
   },
   "dependencies": {
-    "@typescript-eslint/parser": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.1",
     "eslint": "^7.28.0",
     "fs-extra": "^9.1.0"
   },
