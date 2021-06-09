@@ -17,7 +17,9 @@
     "test": "jest",
     "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -26,7 +28,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "codemaker": "^1.29.0",
+    "codemaker": "^1.30.0",
     "yaml": "1.10.2"
   },
   "devDependencies": {

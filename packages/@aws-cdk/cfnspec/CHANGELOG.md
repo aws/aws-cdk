@@ -1,3 +1,46 @@
+# CloudFormation Resource Specification v37.1.0
+
+## New Resource Types
+
+* AWS::CUR::ReportDefinition
+
+## Attribute Changes
+
+* AWS::MWAA::Environment CloudWatchLogGroupArn (__added__)
+
+## Property Changes
+
+* AWS::ECR::Repository EncryptionConfiguration.PrimitiveType (__deleted__)
+* AWS::ECR::Repository EncryptionConfiguration.Type (__added__)
+* AWS::ECR::Repository ImageScanningConfiguration.PrimitiveType (__deleted__)
+* AWS::ECR::Repository ImageScanningConfiguration.Type (__added__)
+* AWS::FraudDetector::Detector AssociatedModels (__added__)
+* AWS::QLDB::Ledger PermissionsMode.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::XRay::Group Tags.ItemType (__deleted__)
+* AWS::XRay::Group Tags.PrimitiveItemType (__added__)
+* AWS::XRay::SamplingRule Tags.ItemType (__deleted__)
+* AWS::XRay::SamplingRule Tags.PrimitiveItemType (__added__)
+
+## Property Type Changes
+
+* AWS::ECR::Repository.EncryptionConfiguration (__added__)
+* AWS::ECR::Repository.ImageScanningConfiguration (__added__)
+* AWS::FraudDetector::Detector.Model (__added__)
+* AWS::ACMPCA::CertificateAuthority.CrlConfiguration S3ObjectAcl (__added__)
+* AWS::ApplicationInsights::Application.ComponentMonitoringSetting ComponentConfigurationMode.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ApplicationInsights::Application.ComponentMonitoringSetting Tier.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFront::Function.FunctionMetadata FunctionARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::FSx::FileSystem.LustreConfiguration DataCompressionType (__added__)
+
+
 # CloudFormation Resource Specification v37.0.0
 
 ## New Resource Types

@@ -886,3 +886,60 @@ taskDefinition.addContainer('cont', {
   inferenceAcceleratorResources,
 });
 ```
+
+## ECS Exec command
+
+Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite for the exec command
+to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
+[Install Session Manager plugin for AWS CLI] (https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
+
+To enable the ECS Exec feature for your containers, set the boolean flag `enableExecuteCommand` to `true` in
+your `Ec2Service` or `FargateService`.
+
+```ts
+const service = new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  enableExecuteCommand: true,
+});
+```
+
+### Enabling logging
+
+You can enable sending logs of your execute session commands to a CloudWatch log group or S3 bucket by configuring
+the `executeCommandConfiguration` property for your cluster. The default configuration will send the
+logs to the CloudWatch Logs using the `awslogs` log driver that is configured in your task definition. Please note,
+when using your own `logConfiguration` the log group or S3 Bucket specified must already be created. 
+
+To encrypt data using your own KMS Customer Key (CMK), you must create a CMK and provide the key in the `kmsKey` field
+of the `executeCommandConfiguration`. To use this key for encrypting CloudWatch log data or S3 bucket, make sure to associate the key
+to these resources on creation. 
+
+```ts
+const kmsKey = new kms.Key(stack, 'KmsKey');
+
+// Pass the KMS key in the `encryptionKey` field to associate the key to the log group
+const logGroup = new logs.LogGroup(stack, 'LogGroup', {
+  encryptionKey: kmsKey,
+});
+
+// Pass the KMS key in the `encryptionKey` field to associate the key to the S3 bucket
+const execBucket = new s3.Bucket(stack, 'EcsExecBucket', {
+  encryptionKey: kmsKey,
+});
+
+const cluster = new ecs.Cluster(stack, 'Cluster', {
+  vpc,
+  executeCommandConfiguration: {
+    kmsKey,
+    logConfiguration: {
+      cloudWatchLogGroup: logGroup,
+      cloudWatchEncryptionEnabled: true,
+      s3Bucket: execBucket,
+      s3EncryptionEnabled: true,
+      s3KeyPrefix: 'exec-command-output',
+    },
+    logging: ecs.ExecuteCommandLogging.OVERRIDE,
+  },
+});
+```
