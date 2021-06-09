@@ -654,6 +654,10 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     }
     this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
+    if (props.multiAz === true && props.availabilityZone) {
+      throw new Error('Requesting a specific availability zone is not valid for Multi-AZ instances');
+    }
+
     const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'SubnetGroup', {
       description: `Subnet group for ${this.node.id} database`,
       vpc: this.vpc,
