@@ -687,6 +687,25 @@ test('fromSecretCompleteArn - grants', () => {
   });
 });
 
+test('fromSecretCompleteArn - can be assigned to a property with type number', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+
+  // WHEN
+  new lambda.Function(stack, 'MyFunction', {
+    code: lambda.Code.fromInline('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS,
+    memorySize: cdk.Token.asNumber(secret.secretValueFromJson('LambdaFunctionMemorySize')),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    MemorySize: `{{resolve:secretsmanager:${secretArn}:SecretString:LambdaFunctionMemorySize::}}`,
+  });
+});
+
 test('fromSecretPartialArn', () => {
   // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
