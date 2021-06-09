@@ -523,3 +523,44 @@ new QueueProcessingFargateService(stack, 'QueueProcessingService', {
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
 });
 ```
+
+### Deploy application and metrics sidecar
+
+The following is an example of deploying an application along with a metrics sidecar container that utilizes `dockerLabels` for discovery:
+
+```ts
+const service = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  vpc,
+  desiredCount: 1,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  dockerLabels: {
+    'application.label.one': 'first_label'
+    'application.label.two': 'second_label'
+  }
+});
+
+service.taskDefinition.addContainer('Sidecar', {
+  image: ContainerImage.fromRegistry('example/metrics-sidecar')
+}
+```
+
+### Select specific load balancer name ApplicationLoadBalancedFargateService
+
+```ts
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  vpcSubnets: {
+    subnets: [ec2.Subnet.fromSubnetId(stack, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
+  },
+  loadBalancerName: 'application-lb-name',
+});
+```
