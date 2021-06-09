@@ -133,6 +133,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
         logging: logDriver,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,
