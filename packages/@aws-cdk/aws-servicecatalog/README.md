@@ -109,9 +109,9 @@ const role = new iam.Role(this, 'MyRole', {});
 
 const group = new iam.Group(this, 'MyGroup', {});
 
-portfolio.giveAccess(user);
-portfolio.giveAccess(group);
-portfolio.giveAccess(role);
+portfolio.giveAccessToUser(user);
+portfolio.giveAccessToGroup(group);
+portfolio.giveAccessToRole(role);
 ```
 
 ## Constraints
@@ -136,7 +136,7 @@ import * as sns from '@aws-cdk/aws-sns';
 const portfolio = new servicecatalog.Portfolio(this, 'MyPortfolio', {
   portfolioName: 'Portfolio Name',
   providerName: 'Provider',
-  });
+});
 
 const product = new servicecatalog.Product(this, 'MyProduct', {
   productName: 'Product Name',
@@ -146,7 +146,7 @@ const product = new servicecatalog.Product(this, 'MyProduct', {
 
 const topics = [new sns.Topic(stack, 'topic1'), new sns.Topic(stack, 'topic2'), new sns.Topic(stack, 'topic3')];
 
-portfolio.addEventNotifications({ snsTopics: topics, product: product });
+portfolio.addEventNotifications({ topics: topics, product: product });
 ```
 
 ### Launch Role
@@ -157,7 +157,7 @@ A launch role constraint specifies a role that the end user assumes when launchi
 const portfolio = new servicecatalog.Portfolio(this, 'MyPortfolio', {
   portfolioName: 'Portfolio Name',
   providerName: 'Provider',
-  });
+});
 
 const product = new servicecatalog.Product(this, 'MyProduct', {
   productName: 'Product Name',
@@ -173,7 +173,6 @@ portfolio.addLaunchRole({
   role: launchRole,
   product: product,
 });
-
 ```
 
 ### Provisioning Rules
@@ -185,7 +184,7 @@ Rules are specified as a JSON string.
 const portfolio = new servicecatalog.Portfolio(this, 'MyPortfolio', {
   portfolioName: 'Portfolio Name',
   providerName: 'Provider',
-  });
+});
 
 const product = new servicecatalog.Product(this, 'MyProduct', {
   productName: 'Product Name',
@@ -218,7 +217,7 @@ You can specify multiple accounts and regions for the product launch. End users 
 const portfolio = new servicecatalog.Portfolio(this, 'MyPortfolio', {
   portfolioName: 'Portfolio Name',
   providerName: 'Provider',
-  });
+});
 
 const product = new servicecatalog.Product(this, 'MyProduct', {
   productName: 'Product Name',
@@ -226,14 +225,9 @@ const product = new servicecatalog.Product(this, 'MyProduct', {
   provisioningArtifacts: [{ templateUrl: 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template' }],
 });
 
-const accountList = ['012345678901',
-  '012345678902',
-  '012345678903'];
+const accounts = ['012345678901', '012345678902', '012345678903'];
 
-const regionList = ['us-west-1',
-  'us-east-1',
-  'us-west-2',
-  'us-east-1'];
+const regions = ['us-west-1', 'us-east-1', 'us-west-2', 'us-east-1'];
 
 const adminRole = new iam.Role(stack, 'AdminRole', {
   assumedBy: new iam.AccountRootPrincipal(),
@@ -244,13 +238,12 @@ const executionRole = new iam.Role(stack, 'ExecutionRole', {
 });
 
 portfolio.addStackSetConstraint({
-  accountList: accountList,
+  accounts: accounts,
   adminRole: adminRole,
   executionRole: executionRole,
   product: product,
-  regionList: regionList,
+  regions: regions,
 });
-
 ```
 
 ### Resource Updates
@@ -262,7 +255,7 @@ If tag updating is allowed, then new tags associated with the AWS Service Catalo
 const portfolio = new servicecatalog.Portfolio(this, 'MyPortfolio', {
   portfolioName: 'Portfolio Name',
   providerName: 'Provider',
-  });
+});
 
 const product = new servicecatalog.Product(this, 'MyProduct', {
   productName: 'Product Name',

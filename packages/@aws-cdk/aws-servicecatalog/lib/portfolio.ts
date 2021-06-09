@@ -1,14 +1,13 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Names, Resource, Tag } from '@aws-cdk/core';
+import { IResource, Names, Resource, Tag, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AcceptLanguage, TagOption } from './common';
-import { AddEventNotificationsProps, SetLaunchRoleProps, AddProvisioningRulesProps, AllowTagUpdatesProps, StackSetConstraintProps } from './constraints';
+import { EventNotificationsProps, LaunchRoleProps, ProvisioningRulesProps, TagUpdatesProps, StackSetConstraintProps } from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { getIdentifier } from './private/util';
 import { InputValidator } from './private/validation';
 import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
-
 
 /**
  * A Service Catalog portfolio.
@@ -17,31 +16,40 @@ export interface IPortfolio extends IResource {
 
   /**
    * The ARN of the portfolio.
-   *
    * @attribute
    */
   readonly portfolioArn: string;
 
   /**
    * The ID of the portfolio.
-   *
    * @attribute
    */
   readonly portfolioId: string;
 
   /**
    * The name of the portfolio.
-   *
    * @attribute
    */
   readonly portfolioName: string;
 
   /**
-   * Associate portfolio with a principal
-   * (Role/Group/User).
-   * @param principal an IAM principal role
+   * Associate portfolio with an IAM Role.
+   * @param role an IAM role
    */
-  giveAccess(principal: iam.IIdentity): void;
+  giveAccessToRole(role: iam.IRole): void;
+
+  /**
+   * Associate portfolio with an IAM User.
+   * @param user an IAM user
+   */
+  giveAccessToUser(user: iam.IUser): void;
+
+  /**
+   * Associate portfolio with a principal
+   * (Group).
+   * @param group an IAM Group
+   */
+  giveAccessToGroup(group: iam.IGroup): void;
 
   /**
    * Associate portfolio with the given product.
@@ -59,35 +67,33 @@ export interface IPortfolio extends IResource {
   /**
    * Add a Launch Notification Constraint.
    */
-  addEventNotifications(props: AddEventNotificationsProps): void;
+  addEventNotifications(props: EventNotificationsProps): void;
 
   /**
    * Add a Launch Role Constraint.
    */
-  addLaunchRole(props: SetLaunchRoleProps): void;
+  addLaunchRole(props: LaunchRoleProps): void;
 
   /**
-  * Add a Launch Template Constraint.
-  */
-  addProvisioningRules(props: AddProvisioningRulesProps): void;
+   * Add a Launch Template Constraint.
+   */
+  addProvisioningRules(props: ProvisioningRulesProps): void;
 
   /**
-  * Add a Resource Update Constraint.
-  */
-  allowTagUpdates(props: AllowTagUpdatesProps): void;
+   * Add a Resource Update Constraint.
+   */
+  allowTagUpdates(props: TagUpdatesProps): void;
 
   /**
-  * Add a Stack Set Constraint.
-  */
+   * Add a Stack Set Constraint.
+   */
   addStackSetConstraint(props: StackSetConstraintProps): void;
 
   /**
    * Associate Tag Options
    */
   addTagOptions(tagOptions: TagOption): void;
-
 }
-
 
 /**
  * A reference to a Service Catalog portfolio.
@@ -95,57 +101,55 @@ export interface IPortfolio extends IResource {
 export interface PortfolioAttributes {
 
   /**
-  * The ARN of the portfolo.
-  */
+   * The ARN of the portfolo.
+   */
   readonly portfolioArn: string;
 
   /**
-  * The name of the portfolo.
-  */
+   * The name of the portfolo.
+   */
   readonly portfolioName: string;
 }
 
 /**
-* Represents a Service Catalog portfolio.
-*/
+ * Represents a Service Catalog portfolio.
+ */
 abstract class PortfolioBase extends Resource implements IPortfolio {
 
-
   /**
-  * The ARN of the portfolio.
-  */
+   * The ARN of the portfolio.
+   */
   public abstract readonly portfolioArn: string;
 
   /**
-  * The Id of the portfolio.
-  */
+   * The Id of the portfolio.
+   */
   public abstract readonly portfolioId: string;
 
   /**
-  * The name of the portfolio.
-  */
+   * The name of the portfolio.
+   */
   public abstract readonly portfolioName: string;
 
+  /**
+   * Enable the Portfolio for a specific Role
+   */
+  public giveAccessToRole(role: iam.IRole) {
+    this.associatePrincipal(role.roleArn, role.node.addr);
+  }
 
   /**
-   * Enable the Portfolio for a specific Role, User or Group
+   * Enable the Portfolio for a specific User
    */
-  public giveAccess(principal: iam.IIdentity) {
-    const principalId = Names.nodeUniqueId(principal.node);
-    switch (true) {
-      case ('roleArn' in principal):
-        this.associatePrincipal((principal as iam.Role).roleArn, principalId);
-        break;
-      case ('userArn' in principal):
-        this.associatePrincipal((principal as iam.User).userArn, principalId);
-        break;
-      case ('groupArn' in principal):
-        this.associatePrincipal((principal as iam.Group).groupArn, principalId);
-        break;
-      default:
-        throw new Error(`Unrecognized end user type ${principal}`);
-    }
+  public giveAccessToUser(user: iam.IUser) {
+    this.associatePrincipal(user.userArn, user.node.addr);
+  }
 
+  /**
+   * Enable the Portfolio for a specific Group
+   */
+  public giveAccessToGroup(group: iam.IGroup) {
+    this.associatePrincipal(group.groupArn, group.node.addr);
   }
 
   /**
@@ -156,8 +160,8 @@ abstract class PortfolioBase extends Resource implements IPortfolio {
   }
 
   /**
-  * Share the portfolio with a designated account.
-  */
+   * Share the portfolio with a designated account.
+   */
   public share(accountId: string, shareTagOptions?: boolean, acceptLanguage?: AcceptLanguage) {
     const hashId = this.getKeyForPortfolio(accountId);
     new CfnPortfolioShare(this, `PortfolioShare${hashId}`, {
@@ -170,7 +174,6 @@ abstract class PortfolioBase extends Resource implements IPortfolio {
 
   /**
    * Associate a principal with the portfolio.
-   *
    */
   private associatePrincipal(principalArn: string, identifier: string) {
     const hashId = this.getKeyForPortfolio(identifier);
@@ -183,37 +186,29 @@ abstract class PortfolioBase extends Resource implements IPortfolio {
 
   /**
    * Add a launch notification constraint.
-   *
    */
-  public addEventNotifications(props: AddEventNotificationsProps) {
-    InputValidator.validateLength('description', props.description, 0, 2000);
+  public addEventNotifications(props: EventNotificationsProps) {
     AssociationManager.addLaunchNotificationConstraint(this, props);
   }
 
   /**
    * Add a launch role constraint.
-   *
    */
-  public addLaunchRole(props: SetLaunchRoleProps) {
-    InputValidator.validateLength('description', props.description, 0, 2000);
+  public addLaunchRole(props: LaunchRoleProps) {
     AssociationManager.addLaunchRoleConstraint(this, props);
   }
 
   /**
    * Add a launch template constraint.
-   *
    */
-  public addProvisioningRules(props: AddProvisioningRulesProps) {
-    InputValidator.validateLength('description', props.description, 0, 2000);
+  public addProvisioningRules(props: ProvisioningRulesProps) {
     AssociationManager.addTemplateConstraint(this, props);
   }
 
   /**
    * Add a resource template constraint.
-   *
    */
-  public allowTagUpdates(props: AllowTagUpdatesProps) {
-    InputValidator.validateLength('description', props.description, 0, 2000);
+  public allowTagUpdates(props: TagUpdatesProps) {
     AssociationManager.addResourceUpdateConstraint(this, props);
   }
 
@@ -221,27 +216,19 @@ abstract class PortfolioBase extends Resource implements IPortfolio {
    * Add a stack set template constraint.
    */
   public addStackSetConstraint(props: StackSetConstraintProps) {
-    InputValidator.validateLength('description', props.description, 0, 2000);
     AssociationManager.addStackSetConstraint(this, props);
   }
 
   /**
- * add tagOptions
- * @param tagOption
- */
+   * Add tagOptions
+   * @param tagOption
+   */
   public addTagOptions(tagOption: TagOption) {
-    Object.keys(tagOption).forEach(key => {
-      InputValidator.validateLength('key', key, 1, 128);
-      tagOption[key].forEach(value => {
-        InputValidator.validateLength('value', value.value, 1, 256);
-      });
-    });
     AssociationManager.associateTagOption(this, this.portfolioId, tagOption);
   }
 
   /**
    * Create a unique id based off the L1 portfolio.
-   *
    */
   protected abstract getKeyForPortfolio(value: string): string;
 }
@@ -252,38 +239,32 @@ abstract class PortfolioBase extends Resource implements IPortfolio {
 export interface PortfolioProps {
 
   /**
-     * Enforces a particular physical portfolio name.
-     * @default <generated>
-     */
+   * Enforces a particular physical portfolio name.
+   */
   readonly portfolioName: string;
 
   /**
-     * The provider name.
-     *
-     */
+   * The provider name.
+   */
   readonly providerName: string;
 
   /**
-     * The accept language.
-     * @default
-     */
+   * The accept language.
+   * @default - No accept language provided
+   */
   readonly acceptLanguage?: AcceptLanguage;
 
   /**
-     * Description for portfolio.
-     *
-     * @default
-     */
+   * Description for portfolio.
+   * @default - No description provided
+   */
   readonly description?: string;
 
-
   /**
-     * A collection of tags attached to portfolio.
-     * @default
-     *
-     */
+   * A collection of tags attached to portfolio.
+   * @default - No tags provided
+   */
   readonly tags?: Tag[];
-
 }
 
 /**
@@ -292,16 +273,20 @@ export interface PortfolioProps {
 export class Portfolio extends PortfolioBase {
 
   /**
-     * Creates a Portfolio construct that represents an external portfolio.
-     *
-     * @param scope The parent creating construct (usually `this`).
-     * @param id The construct's name.
-     * @param attrs Portfolio import properties
-     */
+   * Creates a Portfolio construct that represents an external portfolio.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param attrs Portfolio import properties
+   */
   public static fromPortfolioAttributes(scope: Construct, id: string, attrs: PortfolioAttributes): IPortfolio {
+    const parts = Stack.of(scope).parseArn(attrs.portfolioArn);
+    function throwError(errorMessage: string): never {
+      throw new Error(errorMessage);
+    }
     class Import extends PortfolioBase {
       public readonly id = id
-      public readonly portfolioId = attrs.portfolioArn.split('/').pop()!
+      public readonly portfolioId = parts.resourceName ?? throwError('Portfolio arn missing Portfolio ID during import from attributes');
       public readonly portfolioArn = attrs.portfolioArn;
       public readonly portfolioName = attrs.portfolioName;
 
@@ -309,7 +294,6 @@ export class Portfolio extends PortfolioBase {
         return getIdentifier(this.portfolioArn, value);
       }
     }
-
     return new Import(scope, id);
   }
 
@@ -337,13 +321,11 @@ export class Portfolio extends PortfolioBase {
     this.portfolioArn = this.getResourceArnAttribute(this.portfolio.ref, {
       service: 'catalog',
       resource: 'portfolio',
-      resourceName: this.portfolio.ref,
+      resourceName: this.physicalName,
     });
 
     this.portfolioName = this.getResourceNameAttribute(props.portfolioName);
-
     this.portfolioId = this.getResourceNameAttribute(this.portfolio.ref);
-
   }
 
   protected getKeyForPortfolio(value: string): string {
@@ -351,12 +333,11 @@ export class Portfolio extends PortfolioBase {
   }
 
   private validatePortfolioProps(props: PortfolioProps) {
-    InputValidator.validateLength('portfolioName', props.portfolioName, 1, 100);
-    InputValidator.validateLength('providerName', props.providerName, 1, 50);
-    InputValidator.validateLength('description', props.description, 0, 2000);
+    InputValidator.validateLength(props.portfolioName, 'portfolioName', 1, 100, props.portfolioName);
+    InputValidator.validateLength(props.portfolioName, 'providerName', 1, 50, props.providerName);
+    InputValidator.validateLength(props.portfolioName, 'description', 0, 2000, props.description);
   }
 }
-
 
 /**
  * The principal type

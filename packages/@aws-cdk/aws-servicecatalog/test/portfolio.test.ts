@@ -4,8 +4,6 @@ import { Topic } from '@aws-cdk/aws-sns';
 import { App, Stack, Tag } from '@aws-cdk/core';
 import { AcceptLanguage, Portfolio, Product } from '../lib';
 
-
-/* eslint-disable quote-props */
 describe('Portfolio', () => {
 
   test('default portfolio creation', () => {
@@ -56,7 +54,6 @@ describe('Portfolio', () => {
     });
   }),
 
-
   test('portfolio with tags', () => {
     const app = new App();
     const stack = new Stack(app);
@@ -89,7 +86,6 @@ describe('Portfolio', () => {
                 Value: 'myTestKeyValue2',
               },
             ],
-
           },
         },
       },
@@ -106,6 +102,18 @@ describe('Portfolio', () => {
     });
 
     expect(portfolio.portfolioArn).toEqual('arn:aws:catalog:region:account-id:portfolio/port-djh8932wr');
+  }),
+
+  test('fails portfolio from attributes without resource name in arn', () => {
+    const app = new App();
+    const stack = new Stack(app);
+
+    expect(() => {
+      Portfolio.fromPortfolioAttributes(stack, 'MyPortfolio', {
+        portfolioArn: 'arn:aws:catalog:region:account-id:portfolio',
+        portfolioName: 'MyPortfolio',
+      });
+    }).toThrowError('Portfolio arn missing Portfolio ID during import from attributes');
   }),
 
   test('portfolio share', () => {
@@ -145,7 +153,6 @@ describe('Portfolio', () => {
     });
   }),
 
-
   test('portfolio principal association with role type', () => {
     const app = new App();
     const stack = new Stack(app);
@@ -159,7 +166,7 @@ describe('Portfolio', () => {
       assumedBy: new AccountRootPrincipal(),
     });
 
-    portfolio.giveAccess(role);
+    portfolio.giveAccessToRole(role);
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::PortfolioPrincipalAssociation', {});
   }),
@@ -173,10 +180,9 @@ describe('Portfolio', () => {
       providerName: 'testProvider',
     });
 
-    const user = new User(stack, 'TestUser', {
-    });
+    const user = new User(stack, 'TestUser', {});
 
-    portfolio.giveAccess(user);
+    portfolio.giveAccessToUser(user);
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::PortfolioPrincipalAssociation', {});
   }),
@@ -190,10 +196,9 @@ describe('Portfolio', () => {
       providerName: 'testProvider',
     });
 
-    const group = new Group(stack, 'TestGroup', {
-    });
+    const group = new Group(stack, 'TestGroup', {});
 
-    portfolio.giveAccess(group);
+    portfolio.giveAccessToGroup(group);
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::PortfolioPrincipalAssociation', {});
   }),
@@ -244,22 +249,21 @@ describe('Portfolio', () => {
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::PortfolioProductAssociation', {
       PortfolioId: {
-        'Ref': 'MyPortfolio59CCA9C9',
+        Ref: 'MyPortfolio59CCA9C9',
       },
       ProductId: {
-        'Ref': 'MyProduct130E4C675',
+        Ref: 'MyProduct130E4C675',
       },
     });
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::PortfolioProductAssociation', {
       PortfolioId: {
-        'Ref': 'MyPortfolio59CCA9C9',
+        Ref: 'MyPortfolio59CCA9C9',
       },
       ProductId: {
-        'Ref': 'MyProduct2CA351636',
+        Ref: 'MyProduct2CA351636',
       },
     });
-
   }),
 
   test('multiple portfolio same product association', () => {
@@ -275,7 +279,6 @@ describe('Portfolio', () => {
       portfolioName: 'testPortfolio',
       providerName: 'testProvider',
     });
-
 
     const product = new Product(stack, 'MyProduct', {
       productName: 'testProduct',
@@ -295,14 +298,14 @@ describe('Portfolio', () => {
             ProviderName: 'testProvider',
           },
         },
-        MyPortfolioPortfolioProductAssociationaa221f0dae8e5996165b29fcb041c611AB8E6405: {
+        MyPortfolioPortfolioProductAssociation1ed088add331576703A2: {
           Type: 'AWS::ServiceCatalog::PortfolioProductAssociation',
           Properties: {
             PortfolioId: {
-              'Ref': 'MyPortfolio59CCA9C9',
+              Ref: 'MyPortfolio59CCA9C9',
             },
             ProductId: {
-              'Ref': 'MyProduct49A3C587',
+              Ref: 'MyProduct49A3C587',
             },
           },
         },
@@ -313,14 +316,14 @@ describe('Portfolio', () => {
             ProviderName: 'testProvider',
           },
         },
-        MyPortfolio2PortfolioProductAssociationdd95a83e7ee850c959f9fb1a9b5af6a73292AF9B: {
+        MyPortfolio2PortfolioProductAssociationf2c60e87e72a7CE1034B: {
           Type: 'AWS::ServiceCatalog::PortfolioProductAssociation',
           Properties: {
             PortfolioId: {
-              'Ref': 'MyPortfolio26425F3A8',
+              Ref: 'MyPortfolio26425F3A8',
             },
             ProductId: {
-              'Ref': 'MyProduct49A3C587',
+              Ref: 'MyProduct49A3C587',
             },
           },
         },
@@ -371,14 +374,14 @@ describe('Portfolio', () => {
             ProviderName: 'testProvider',
           },
         },
-        MyPortfolioPortfolioProductAssociation4e3fc8b48724e1e211c8ba4697d6344817BFD633: {
+        MyPortfolioPortfolioProductAssociation4227fa52422cED30A2F0: {
           Type: 'AWS::ServiceCatalog::PortfolioProductAssociation',
           Properties: {
             PortfolioId: {
-              'Ref': 'MyPortfolio59CCA9C9',
+              Ref: 'MyPortfolio59CCA9C9',
             },
             ProductId: {
-              'Ref': 'MyProduct49A3C587',
+              Ref: 'MyProduct49A3C587',
             },
           },
         },
@@ -430,7 +433,6 @@ describe('Portfolio', () => {
     expect(stack).toHaveResource('AWS::ServiceCatalog::TagOptionAssociation', {});
   }),
 
-  // Constraints
   test('portfolio with allow tag updates (resource update constraint)', () => {
 
     const app = new App();
@@ -450,7 +452,6 @@ describe('Portfolio', () => {
     portfolio.allowTagUpdates({ product: product });
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::ResourceUpdateConstraint', {});
-
   }),
 
   test('portfolio with allow tag updates (resource update constraint) still creates without explicit association', () => {
@@ -482,9 +483,7 @@ describe('Portfolio', () => {
       AcceptLanguage: 'jp',
       Description: description,
       TagUpdateOnProvisionedProduct: 'NOT_ALLOWED',
-
     });
-
   }),
 
   test('fails to create multiple tagupdates (resource update constraint)', () => {
@@ -512,15 +511,12 @@ describe('Portfolio', () => {
       tagUpdateOnProvisionedProductAllowed: false,
     });
 
-
     expect(() => {
       portfolio.allowTagUpdates({
         product: product,
         tagUpdateOnProvisionedProductAllowed: true,
       });
     }).toThrowError(/Cannot have multiple resource update constraints/);
-
-
   }),
 
   test('portfolio with launch role constraint', () => {
@@ -543,7 +539,6 @@ describe('Portfolio', () => {
       assumedBy: new AccountRootPrincipal(),
     });
 
-
     portfolio.addProduct(product);
 
     const description = 'test description for launch role';
@@ -559,8 +554,6 @@ describe('Portfolio', () => {
       AcceptLanguage: 'en',
       Description: description,
     });
-
-
   }),
 
   test('portfolio with launch role constraints will still create without explicit association', () => {
@@ -583,11 +576,9 @@ describe('Portfolio', () => {
       assumedBy: new AccountRootPrincipal(),
     });
 
-
     portfolio.addLaunchRole({ role: launchRole, product: product });
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchRoleConstraint', {});
-
   }),
 
   test('fails if two launch roles are added to a portfolio-product association', () => {
@@ -618,7 +609,7 @@ describe('Portfolio', () => {
 
     expect(() => {
       portfolio.addLaunchRole({ role: launchRole2, product: product });
-    }).toThrowError(`Cannot have multiple launch or stackset constraints on association ${portfolio.portfolioName}-${product.productName}`);
+    }).toThrowError('Cannot have multiple launch or stackset constraints on association - Portfolio: testPortfolio | Product: testProduct');
   }),
 
   test('portfolio with launch notification constraint', () => {
@@ -641,10 +632,9 @@ describe('Portfolio', () => {
 
     const topics = [new Topic(stack, 'topic1'), new Topic(stack, 'topic2'), new Topic(stack, 'topic3')];
 
-    portfolio.addEventNotifications({ snsTopics: topics, product: product });
+    portfolio.addEventNotifications({ topics: topics, product: product });
 
     expect(stack).toHaveResource('AWS::ServiceCatalog::LaunchNotificationConstraint', {});
-
   }),
 
   test('portfolio with launch notification constraint will still add without explicit association', () => {
@@ -665,7 +655,7 @@ describe('Portfolio', () => {
 
     const topics = [new Topic(stack, 'topic1'), new Topic(stack, 'topic2'), new Topic(stack, 'topic3')];
 
-    portfolio.addEventNotifications({ snsTopics: topics, product: product });
+    portfolio.addEventNotifications({ topics: topics, product: product });
 
     expect(stack).toHaveResource('AWS::ServiceCatalog::LaunchNotificationConstraint', {});
   }),
@@ -686,12 +676,10 @@ describe('Portfolio', () => {
       provisioningArtifacts: [{ templateUrl: 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template' }],
     });
 
-
     expect(() => {
-      portfolio.addEventNotifications({ snsTopics: [], product: product });
+      portfolio.addEventNotifications({ topics: [], product: product });
     }).toThrowError(`No topics provided for launch notifications for association ${portfolio.portfolioName}-${product.productName}`);
   }),
-
 
   test('portfolio with stackset constraint', () => {
 
@@ -709,17 +697,11 @@ describe('Portfolio', () => {
       provisioningArtifacts: [{ templateUrl: 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template' }],
     });
 
-
     portfolio.addProduct(product);
 
-    const accountList = ['012345678901',
-      '012345678902',
-      '012345678903'];
+    const accounts = ['012345678901', '012345678902', '012345678903'];
 
-    const regionList = ['us-west-1',
-      'us-east-1',
-      'us-west-2',
-      'us-east-1'];
+    const regions = ['us-west-1', 'us-east-1', 'us-west-2', 'us-east-1'];
 
     const adminRole = new Role(stack, 'AdminRole', {
       assumedBy: new AccountRootPrincipal(),
@@ -729,18 +711,15 @@ describe('Portfolio', () => {
       assumedBy: new AccountRootPrincipal(),
     });
 
-
     portfolio.addStackSetConstraint({
-      accountList: accountList,
+      accounts: accounts,
       adminRole: adminRole,
       executionRole: executionRole,
       product: product,
-      regionList: regionList,
+      regions: regions,
     });
 
     expect(stack).toHaveResource('AWS::ServiceCatalog::StackSetConstraint', {});
-
-
   }),
 
   test('portfolio still adds stackset constraint without explicit association', () => {
@@ -759,14 +738,9 @@ describe('Portfolio', () => {
       provisioningArtifacts: [{ templateUrl: 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template' }],
     });
 
-    const accountList = ['012345678901',
-      '012345678902',
-      '012345678903'];
+    const accounts = ['012345678901', '012345678902', '012345678903'];
 
-    const regionList = ['us-west-1',
-      'us-east-1',
-      'us-west-2',
-      'us-east-1'];
+    const regions = ['us-west-1', 'us-east-1', 'us-west-2', 'us-east-1'];
 
     const adminRole = new Role(stack, 'AdminRole', {
       assumedBy: new AccountRootPrincipal(),
@@ -776,13 +750,12 @@ describe('Portfolio', () => {
       assumedBy: new AccountRootPrincipal(),
     });
 
-
     portfolio.addStackSetConstraint({
-      accountList: accountList,
+      accounts: accounts,
       adminRole: adminRole,
       executionRole: executionRole,
       product: product,
-      regionList: regionList,
+      regions: regions,
     });
 
     expect(stack).toHaveResource('AWS::ServiceCatalog::StackSetConstraint', {});
@@ -804,15 +777,13 @@ describe('Portfolio', () => {
       provisioningArtifacts: [{ templateUrl: 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template' }],
     });
 
-
     portfolio.addProduct(product);
-
 
     expect(() => {
       portfolio.addProvisioningRules({
         product: product,
       });
-    }).toThrowError(`No rules provided for provisioning for association ${portfolio.portfolioName}-${product.productName}`);
+    }).toThrowError('No rules provided for provisioning for association - Portfolio: testPortfolio | Product: testProduct');
   }),
 
   test('portfolio still adds launch template constraint without explicit association', () => {
@@ -836,11 +807,11 @@ describe('Portfolio', () => {
       product: product,
       description: 'adding provisioning rules without explicit association',
       rules: {
-        'Rule1': {
-          'Assertions': [
+        rule1: {
+          Assertions: [
             {
-              'Assert': { 'Fn::Contains': [['t2.micro', 't2.small'], { 'Ref': 'InstanceType' }] },
-              'AssertDescription': 'Instance type should be t2.micro or t2.small',
+              Assert: { 'Fn::Contains': [['t2.micro', 't2.small'], { Ref: 'InstanceType' }] },
+              AssertDescription: 'Instance type should be t2.micro or t2.small',
             },
           ],
         },
@@ -848,7 +819,6 @@ describe('Portfolio', () => {
     });
 
     expect(stack).toHaveResource('AWS::ServiceCatalog::LaunchTemplateConstraint', {});
-
   }),
 
   test('fails to create multiple stackset constraints', () => {
@@ -867,15 +837,9 @@ describe('Portfolio', () => {
       provisioningArtifacts: [{ templateUrl: 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template' }],
     });
 
+    const accounts = ['012345678901', '012345678902', '012345678903'];
 
-    const accountList = ['012345678901',
-      '012345678902',
-      '012345678903'];
-
-    const regionList = ['us-west-1',
-      'us-east-1',
-      'us-west-2',
-      'us-east-1'];
+    const regions = ['us-west-1', 'us-east-1', 'us-west-2', 'us-east-1'];
 
     const adminRole = new Role(stack, 'AdminRole', {
       assumedBy: new AccountRootPrincipal(),
@@ -887,28 +851,25 @@ describe('Portfolio', () => {
 
     const description = 'stackset constraint test description';
     portfolio.addStackSetConstraint({
-      accountList: accountList,
+      accounts: accounts,
       adminRole: adminRole,
       executionRole: executionRole,
       product: product,
-      regionList: regionList,
+      regions: regions,
       description: description,
     });
 
-    const newAccountList = [
-      '000000000000',
-      '111111111111',
-    ];
+    const newAccounts = ['000000000000', '111111111111'];
 
     expect(() => {
       portfolio.addStackSetConstraint({
-        accountList: newAccountList,
+        accounts: newAccounts,
         adminRole: adminRole,
         executionRole: executionRole,
         product: product,
-        regionList: regionList,
+        regions: regions,
       });
-    }).toThrowError(`Cannot have multiple launch or stackset constraints on association ${portfolio.portfolioName}-${product.productName}`);
+    }).toThrowError('Cannot have multiple launch or stackset constraints on association - Portfolio: testPortfolio | Product: testProduct');
   }),
 
   test('fails portfolio creation with invalid name', () => {
@@ -935,7 +896,7 @@ describe('Portfolio', () => {
     }).toThrowError(/Invalid providerName length/);
   }),
 
-  test('fails portfolio creatio with invalid description length', () => {
+  test('fails portfolio creation with invalid description length', () => {
 
     const stack = new Stack();
     const description = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit'.repeat(50);
@@ -968,9 +929,8 @@ describe('Portfolio', () => {
 
     expect(() => {
       portfolio.addTagOptions(tagOptions);
-    }).toThrowError(/Invalid key length/);
+    }).toThrowError(/Invalid TagOption key length/);
   });
-
 
   test('fails to add tagOption with invalid value', () => {
 
@@ -992,7 +952,6 @@ describe('Portfolio', () => {
 
     expect(() => {
       portfolio.addTagOptions(tagOptions);
-    }).toThrowError(/Invalid value length/);
+    }).toThrowError(/Invalid TagOption value length/);
   });
 });
-

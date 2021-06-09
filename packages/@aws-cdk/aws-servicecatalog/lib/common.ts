@@ -2,24 +2,24 @@
  * The language code.
  */
 export enum AcceptLanguage {
+
   /**
-     * English
-     */
+   * English
+   */
   EN = 'en',
 
   /**
-     * Japanese
-     */
+   * Japanese
+   */
   JP = 'jp',
 
   /**
-     * Chinese
-     */
+   * Chinese
+   */
   ZH = 'zh'
 }
 
 /**
- *
  * Tag Option Value
  */
 export type TagOptionValue = {
@@ -28,8 +28,8 @@ export type TagOptionValue = {
 }
 
 /**
-  * Tag Option
-  */
+ * Tag Option
+ */
 export interface TagOption {
   [key: string]: TagOptionValue[]
 }

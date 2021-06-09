@@ -1,11 +1,12 @@
 import { Resource } from '@aws-cdk/core';
 import { AcceptLanguage, TagOption } from '../common';
-import { SetLaunchRoleProps, AddProvisioningRulesProps, AddEventNotificationsProps, AllowTagUpdatesProps, StackSetConstraintProps, ConstraintProps } from '../constraints';
-import { IPortfolio } from '../portfolio';
+import { LaunchRoleProps, ProvisioningRulesProps, EventNotificationsProps, TagUpdatesProps, StackSetConstraintProps, ConstraintProps } from '../constraints';
+import { IPortfolio, Portfolio } from '../portfolio';
 import { IProduct } from '../product';
 import { CfnPortfolioProductAssociation, CfnLaunchRoleConstraint, CfnLaunchTemplateConstraint, CfnLaunchNotificationConstraint, CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOption, CfnTagOptionAssociation } from '../servicecatalog.generated';
 import { getIdentifier } from './util';
-/* eslint-disable no-console */
+import { InputValidator } from './validation';
+
 export class AssociationManager {
 
   public static associateProductWithPortfolio(scope: Resource, portfolio: IPortfolio, product: IProduct) {
@@ -13,95 +14,104 @@ export class AssociationManager {
     if (!this.associationMap.has(associationKey)) {
       const association = new CfnPortfolioProductAssociation(scope, `PortfolioProductAssociation${associationKey}`, {
         portfolioId: portfolio.portfolioId,
-        productId: product.id,
+        productId: product.productId,
       });
       this.associationMap.set(associationKey, new Map());
       this.associationMap.get(associationKey).set(Constraints.ASSOCIATION, association);
     }
   }
 
-
-  public static addLaunchRoleConstraint(scope: Resource, props: SetLaunchRoleProps) {
+  public static addLaunchRoleConstraint(scope: Resource, props: LaunchRoleProps) {
     const [pair, associationKey] = this.associationPrecheck(scope, props);
+    InputValidator.validateLength(this.generateAssocationString(scope, pair), 'description', 0, 2000, props.description);
     if (!(this.associationMap.get(associationKey).get(Constraints.LAUNCH_ROLE)) &&
      !(this.associationMap.get(associationKey).get(Constraints.STACKSET))) {
       const constraint = new CfnLaunchRoleConstraint(scope, `LaunchRoleConstraint${associationKey}`, {
         acceptLanguage: props.acceptLanguage ?? AcceptLanguage.EN,
         description: props.description ?? '',
         portfolioId: pair.portfolio.portfolioId,
-        productId: pair.product.id,
+        productId: pair.product.productId,
         roleArn: props.role.roleArn,
       });
 
       constraint.addDependsOn(this.associationMap.get(associationKey).get(Constraints.ASSOCIATION));
       this.associationMap.get(associationKey).set(Constraints.LAUNCH_ROLE, constraint);
     } else {
-      throw new Error(`Cannot have multiple launch or stackset constraints on association ${pair.portfolio.portfolioName}-${pair.product.productName}`);
+      throw new Error(`Cannot have multiple launch or stackset constraints on association ${this.generateAssocationString(scope, pair)}`);
     }
   }
 
-  public static addTemplateConstraint(scope: Resource, props: AddProvisioningRulesProps) {
+  public static addTemplateConstraint(scope: Resource, props: ProvisioningRulesProps) {
     const [pair, associationKey] = this.associationPrecheck(scope, props);
-    const rules = JSON.stringify(props.rules) ?? '{}';
+    InputValidator.validateLength(this.generateAssocationString(scope, pair), 'description', 0, 2000, props.description);
+    const rules = JSON.stringify(
+      {
+        Rules: props.rules,
+      },
+    );
     if (rules == '{}') {
-      throw new Error(`No rules provided for provisioning for association ${pair.portfolio.portfolioName}-${pair.product.productName}`);
+      throw new Error(`No rules provided for provisioning for association ${this.generateAssocationString(scope, pair)}`);
     }
     const constraint = new CfnLaunchTemplateConstraint(scope, `LaunchTemplateConstraint${getIdentifier(associationKey, rules)}`, {
       acceptLanguage: props.acceptLanguage ?? AcceptLanguage.EN,
       description: props.description ?? '',
       portfolioId: pair.portfolio.portfolioId,
-      productId: pair.product.id,
+      productId: pair.product.productId,
       rules: rules,
     });
 
     constraint.addDependsOn(this.associationMap.get(associationKey).get(Constraints.ASSOCIATION));
-
   }
 
-  public static addLaunchNotificationConstraint(scope: Resource, props: AddEventNotificationsProps) {
+  public static addLaunchNotificationConstraint(scope: Resource, props: EventNotificationsProps) {
     const [pair, associationKey] = this.associationPrecheck(scope, props);
-    if (!props.snsTopics.length) {
+    InputValidator.validateLength(this.generateAssocationString(scope, pair), 'description', 0, 2000, props.description);
+    if (!props.topics.length) {
       throw new Error(`No topics provided for launch notifications for association ${pair.portfolio.portfolioName}-${pair.product.productName}`);
     }
-    const constraint = new CfnLaunchNotificationConstraint(scope, `LaunchNotificationConstraint${getIdentifier(associationKey, ...props.snsTopics.map(topic => topic.node.addr))}`, {
+    const constraint = new CfnLaunchNotificationConstraint(scope, `LaunchNotificationConstraint${getIdentifier(associationKey, ...props.topics.map(tpc => tpc.node.addr))}`, {
       acceptLanguage: props.acceptLanguage || AcceptLanguage.EN,
       description: props.description,
       portfolioId: pair.portfolio.portfolioId,
-      productId: pair.product.id,
-      notificationArns: props.snsTopics.map(topic => topic.topicArn),
+      productId: pair.product.productId,
+      notificationArns: props.topics.map(tpc => tpc.topicArn),
     });
+
     constraint.addDependsOn(this.associationMap.get(associationKey).get(Constraints.ASSOCIATION));
   }
 
-  public static addResourceUpdateConstraint(scope: Resource, props: AllowTagUpdatesProps) {
+  public static addResourceUpdateConstraint(scope: Resource, props: TagUpdatesProps) {
     const [pair, associationKey] = this.associationPrecheck(scope, props);
+    InputValidator.validateLength(this.generateAssocationString(scope, pair), 'description', 0, 2000, props.description);
     if (!this.associationMap.get(associationKey).get(Constraints.RESOURCE_UPDATE)) {
       const constraint = new CfnResourceUpdateConstraint(scope, `ResourceUpdateConstraint${associationKey}`, {
         acceptLanguage: props.acceptLanguage ?? AcceptLanguage.EN,
         description: props.description ?? '',
         portfolioId: pair.portfolio.portfolioId,
-        productId: pair.product.id,
+        productId: pair.product.productId,
         tagUpdateOnProvisionedProduct: props.tagUpdateOnProvisionedProductAllowed || props.tagUpdateOnProvisionedProductAllowed === undefined
           ? Allowed.ALLOWED : Allowed.NOT_ALLOWED,
       });
+
       constraint.addDependsOn(this.associationMap.get(associationKey).get(Constraints.ASSOCIATION));
       this.associationMap.get(associationKey).set(Constraints.RESOURCE_UPDATE, constraint);
     } else {
-      throw new Error(`Cannot have multiple resource update constraints for association ${pair.portfolio.portfolioName}-${pair.product.productName}`);
+      throw new Error(`Cannot have multiple resource update constraints for association ${this.generateAssocationString(scope, pair)}`);
     }
   }
 
   public static addStackSetConstraint(scope: Resource, props: StackSetConstraintProps) {
     const [pair, associationKey] = this.associationPrecheck(scope, props);
+    InputValidator.validateLength(this.generateAssocationString(scope, pair), 'description', 0, 2000, props.description);
     if (!(this.associationMap.get(associationKey).get(Constraints.LAUNCH_ROLE)) &&
      !(this.associationMap.get(associationKey).get(Constraints.STACKSET))) {
       const constraint = new CfnStackSetConstraint(scope, `StackSetConstraint${associationKey}`, {
         acceptLanguage: props.acceptLanguage,
         description: props.description ?? '',
         portfolioId: pair.portfolio.portfolioId,
-        productId: pair.product.id,
-        accountList: props.accountList,
-        regionList: props.regionList,
+        productId: pair.product.productId,
+        accountList: props.accounts,
+        regionList: props.regions,
         adminRole: props.adminRole.roleArn,
         executionRole: props.adminRole.roleName,
         stackInstanceControl: props.stackInstanceControlAllowed ? Allowed.ALLOWED : Allowed.NOT_ALLOWED,
@@ -110,15 +120,16 @@ export class AssociationManager {
       constraint.addDependsOn(this.associationMap.get(associationKey).get(Constraints.ASSOCIATION));
       this.associationMap.get(associationKey).set(Constraints.STACKSET, constraint);
     } else {
-      throw new Error(`Cannot have multiple launch or stackset constraints on association ${pair.portfolio.portfolioName}-${pair.product.productName}`);
+      throw new Error(`Cannot have multiple launch or stackset constraints on association ${this.generateAssocationString(scope, pair)}`);
     }
   }
 
   public static associateTagOption(scope: Resource, resourceId: string, tagOption: TagOption) {
 
     Object.keys(tagOption).forEach(key => {
+      InputValidator.validateLength(resourceId, 'TagOption key', 1, 128, key);
       tagOption[key].forEach(value => {
-
+        InputValidator.validateLength(resourceId, 'TagOption value', 1, 256, value.value);
         const tagOptionKey = getIdentifier(key, value.value);
         if (!this.tagOptionMap.has(tagOptionKey)) {
           const tO = new CfnTagOption(scope, `TagOption${tagOptionKey}`, {
@@ -133,7 +144,6 @@ export class AssociationManager {
           resourceId: resourceId,
           tagOptionId: this.tagOptionMap.get(tagOptionKey).ref,
         });
-
       });
     });
   }
@@ -141,7 +151,7 @@ export class AssociationManager {
   private static associationMap = new Map();
   private static tagOptionMap = new Map();
 
-  private static associationPrecheck(scope:Resource, props: ConstraintProps): [AssociationPair, string] {
+  private static associationPrecheck(scope: Resource, props: ConstraintProps): [AssociationPair, string] {
     const pair = this.resolveProductAndPortfolio(scope, props);
     const associationKey = getIdentifier(pair.portfolio.node.addr, pair.product.node.addr, scope.stack.node.addr);
     if (!this.associationMap.has(associationKey)) {
@@ -149,16 +159,21 @@ export class AssociationManager {
     }
     return [pair, associationKey];
   }
+
   private static resolveProductAndPortfolio(resource: Resource, props: ConstraintProps): AssociationPair {
 
     const isScopePortfolio: boolean = 'portfolioArn' in resource;
-    const portfolio = isScopePortfolio ? resource : props.product;
+    const portfolio = isScopePortfolio ? resource as Portfolio : props.product;
     const product = isScopePortfolio ? props.product : resource;
 
     return {
       portfolio: portfolio as IPortfolio,
       product: product as IProduct,
     };
+  }
+
+  private static generateAssocationString(scope: Resource, pair: AssociationPair) {
+    return `- Portfolio: ${scope.stack.resolve(pair.portfolio.portfolioName)} | Product: ${scope.stack.resolve(pair.product.productName)}`;
   }
 }
 
@@ -168,8 +183,8 @@ interface AssociationPair {
 }
 
 /**
-  * Custom allow code
-  */
+ * Custom allow code
+ */
 enum Allowed {
 
   /**
@@ -179,7 +194,7 @@ enum Allowed {
 
   /**
    * Not allowed operation
-  */
+   */
   NOT_ALLOWED = 'NOT_ALLOWED'
 }
 
@@ -187,29 +202,34 @@ enum Allowed {
  * Constraint keys for map
  */
 enum Constraints {
-/**
- * association key
- */
-  ASSOCIATION = 'association',
+
   /**
-   * launch role constraint key
+   * Association key
+   */
+  ASSOCIATION = 'association',
+
+  /**
+   * Launch role constraint key
    */
   LAUNCH_ROLE = 'launchRole',
+
   /**
- * stackset constraint key
- */
+   * Stackset constraint key
+   */
   STACKSET = 'stackSet',
+
   /**
- * resource update constraint key
- */
+   * Resource update constraint key
+   */
   RESOURCE_UPDATE = 'resourceUpdate',
+
   /**
- * launch notification constraint key
- */
+   * Launch notification constraint key
+   */
   NOTIFICATION = 'notification',
+
   /**
- * provisioning rules constraint key
- */
+   * Provisioning rules constraint key
+   */
   PROVISIONING_RULES = 'provisioningRules'
 }
-

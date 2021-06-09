@@ -2,7 +2,6 @@ import '@aws-cdk/assert-internal/jest';
 import { App, Stack } from '@aws-cdk/core';
 import { AcceptLanguage, Portfolio, Product } from '../lib';
 
-
 /* eslint-disable quote-props */
 describe('Product', () => {
 
@@ -32,7 +31,6 @@ describe('Product', () => {
             ],
           },
         },
-
       },
     });
   }),
@@ -63,7 +61,6 @@ describe('Product', () => {
             ],
           },
         },
-
       },
     });
   }),
@@ -78,6 +75,18 @@ describe('Product', () => {
     });
 
     expect(product.productArn).toEqual('arn:aws:catalog:region:account-id:product/prod-djh8932wr');
+  }),
+
+  test('fails product from attributes without resource name in arn', () => {
+    const app = new App();
+    const stack = new Stack(app);
+
+    expect(() => {
+      Product.fromProductAttributes(stack, 'MyProduct', {
+        productArn: 'arn:aws:catalog:region:account-id:product',
+        productName: 'MyProduct',
+      });
+    }).toThrowError('Product arn missing Product ID during import from attributes');
   }),
 
   test('product-portfolio association', () => {
@@ -108,6 +117,4 @@ describe('Product', () => {
       },
     });
   });
-
-
 });

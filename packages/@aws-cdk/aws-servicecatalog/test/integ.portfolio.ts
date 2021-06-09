@@ -2,7 +2,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
 import { Portfolio, Product } from '../lib';
 
-
 const app = new App();
 const stack = new Stack(app, 'integ-servicecatalog-portfolio');
 
@@ -25,13 +24,11 @@ const product = new Product(stack, 'TestProduct', {
   provisioningArtifacts: [{ templateUrl: 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template' }],
 });
 
-portfolio.giveAccess(role);
-portfolio.giveAccess(role2);
-
+portfolio.giveAccessToRole(role);
+portfolio.giveAccessToRole(role2);
 
 portfolio.allowTagUpdates({
   product: product,
 });
-
 
 app.synth();
