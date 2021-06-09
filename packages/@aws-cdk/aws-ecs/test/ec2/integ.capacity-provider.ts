@@ -10,6 +10,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {
   vpc,
+  enableFargateCapacityProviders: true,
 });
 
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -27,6 +28,8 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
 
 const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
   autoScalingGroup,
+  // This is to allow cdk destroy to work; otherwise deletion will hang bc ASG cannot be deleted
+  enableManagedTerminationProtection: false,
 });
 
 cluster.addAsgCapacityProvider(cp);
@@ -43,4 +46,3 @@ new ecs.Ec2Service(stack, 'EC2Service', {
 });
 
 app.synth();
-
