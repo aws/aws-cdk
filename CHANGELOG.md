@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 ## [1.108.0](https://github.com/aws/aws-cdk/compare/v1.107.0...v1.108.0) (2021-06-09)
 
 
-### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+### ⚠ BREAKING CHANGES
 
 * **cfnspec:** `imageScanningConfiguration` property of `ecr.CfnRepository` now accepts `scanOnPush` instead of `ScanOnPush` (notice the casing change).
 
