@@ -828,7 +828,7 @@
           ]
         },
         "Config": {
-          "version": "1.19",
+          "version": "1.20",
           "roleArn": {
             "Fn::GetAtt": [
               "FargateClusterRole8E36B33A",
