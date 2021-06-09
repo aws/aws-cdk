@@ -9,10 +9,12 @@
     "watch": "tsc -w",
     "test": "jest",
     "build+test+package": "npm run build+test",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
   },
   "devDependencies": {
-    "@types/eslint": "^7.2.10",
+    "@types/eslint": "^7.2.13",
     "@types/fs-extra": "^8.1.1",
     "@types/jest": "^26.0.23",
     "@types/node": "^10.17.60",
@@ -22,8 +24,8 @@
     "typescript": "~3.9.9"
   },
   "dependencies": {
-    "@typescript-eslint/parser": "^4.24.0",
-    "eslint": "^7.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "eslint": "^7.28.0",
     "fs-extra": "^9.1.0"
   },
   "jest": {

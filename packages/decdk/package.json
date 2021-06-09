@@ -18,7 +18,9 @@
     "test": "jest",
     "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
     "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package"
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -43,6 +45,7 @@
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
     "@aws-cdk/aws-applicationinsights": "0.0.0",
     "@aws-cdk/aws-appmesh": "0.0.0",
+    "@aws-cdk/aws-apprunner": "0.0.0",
     "@aws-cdk/aws-appstream": "0.0.0",
     "@aws-cdk/aws-appsync": "0.0.0",
     "@aws-cdk/aws-athena": "0.0.0",
@@ -78,6 +81,7 @@
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
+    "@aws-cdk/aws-cur": "0.0.0",
     "@aws-cdk/aws-customerprofiles": "0.0.0",
     "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-datapipeline": "0.0.0",
@@ -128,6 +132,7 @@
     "@aws-cdk/aws-iot": "0.0.0",
     "@aws-cdk/aws-iot1click": "0.0.0",
     "@aws-cdk/aws-iotanalytics": "0.0.0",
+    "@aws-cdk/aws-iotcoredeviceadvisor": "0.0.0",
     "@aws-cdk/aws-iotevents": "0.0.0",
     "@aws-cdk/aws-iotfleethub": "0.0.0",
     "@aws-cdk/aws-iotsitewise": "0.0.0",
@@ -225,7 +230,7 @@
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.3.69",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "^1.29.0",
+    "jsii-reflect": "^1.30.0",
     "jsonschema": "^1.4.0",
     "yaml": "1.10.2",
     "yargs": "^16.2.0"
@@ -236,7 +241,7 @@
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.13",
     "jest": "^26.6.3",
-    "jsii": "^1.29.0"
+    "jsii": "^1.30.0"
   },
   "keywords": [
     "aws",
