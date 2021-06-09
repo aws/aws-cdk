@@ -23,7 +23,9 @@
     "integ-cli-regression-latest-code": "test/integ/run-against-dist test/integ/test-cli-regression-against-current-code.sh",
     "integ-cli-no-regression": "test/integ/run-against-repo test/integ/cli/test.sh",
     "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh",
-    "gen": "./generate.sh"
+    "gen": "./generate.sh",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "cdk-build": {
     "jest": true
