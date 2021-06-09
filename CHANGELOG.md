@@ -30,7 +30,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **apigatewayv2:** http api - default route does not use the default authorizer ([#14904](https://github.com/aws/aws-cdk/issues/14904)) ([25412a6](https://github.com/aws/aws-cdk/commit/25412a60971d3e332fa22fad4c44122eef9dfd2c)), closes [/github.com/aws/aws-cdk/issues/10534#issuecomment-837895317](https://github.com/aws//github.com/aws/aws-cdk/issues/10534/issues/issuecomment-837895317)
+* **apigatewayv2:** http api - default route does not use the default authorizer ([#14904](https://github.com/aws/aws-cdk/issues/14904)) ([25412a6](https://github.com/aws/aws-cdk/commit/25412a60971d3e332fa22fad4c44122eef9dfd2c))
 * **cli:** cross account docker image assets upload no longer works ([#14816](https://github.com/aws/aws-cdk/issues/14816)) ([14fbb11](https://github.com/aws/aws-cdk/commit/14fbb11af407a5834dedb6aeb095285dd44695ba)), closes [#14815](https://github.com/aws/aws-cdk/issues/14815)
 * **cli:** image publishing role doesn't have docker pull permissions ([#14662](https://github.com/aws/aws-cdk/issues/14662)) ([beaffa9](https://github.com/aws/aws-cdk/commit/beaffa9aec25875649ad4ef02d0885d8de0f5eac)), closes [#14656](https://github.com/aws/aws-cdk/issues/14656)
 * **core:** property overrides fail for references ([#15018](https://github.com/aws/aws-cdk/issues/15018)) ([ebac8bc](https://github.com/aws/aws-cdk/commit/ebac8bc08885d6862f75b1133752b639dcf54b1c))
