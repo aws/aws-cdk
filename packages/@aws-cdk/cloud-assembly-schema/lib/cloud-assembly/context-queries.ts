@@ -65,6 +65,13 @@ export interface AmiContextQuery {
   readonly region: string;
 
   /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
    * Owners to DescribeImages call
    *
    * @default - All owners
@@ -90,6 +97,14 @@ export interface AvailabilityZonesContextQuery {
    * Query region
    */
   readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
 }
 
 /**
@@ -105,6 +120,13 @@ export interface HostedZoneContextQuery {
    * Query region
    */
   readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
 
   /**
    * The domain name e.g. example.com to lookup
@@ -144,6 +166,13 @@ export interface SSMParameterContextQuery {
   readonly region: string;
 
   /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
    * Parameter name to query
    */
   readonly parameterName: string;
@@ -162,6 +191,13 @@ export interface VpcContextQuery {
    * Query region
    */
   readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
 
   /**
    * Filters to apply to the VPC
@@ -204,6 +240,13 @@ export interface EndpointServiceAvailabilityZonesContextQuery {
    * Query region
    */
   readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
 
   /**
    * Query service name
@@ -261,6 +304,13 @@ export interface LoadBalancerContextQuery extends LoadBalancerFilter {
    * Query region
    */
   readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
 }
 
 /**
@@ -313,6 +363,13 @@ export interface LoadBalancerListenerContextQuery extends LoadBalancerFilter {
   readonly region: string;
 
   /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
    * Find by listener's arn
    * @default - does not find by listener arn
    */
@@ -344,6 +401,13 @@ export interface SecurityGroupContextQuery {
    * Query region
    */
   readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
 
   /**
    * Security group id

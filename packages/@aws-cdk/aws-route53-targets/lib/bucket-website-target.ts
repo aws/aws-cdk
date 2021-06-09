@@ -10,7 +10,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
   constructor(private readonly bucket: s3.IBucket) {
   }
 
-  public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
+  public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     const { region } = Stack.of(this.bucket.stack);
 
     if (Token.isUnresolved(region)) {

@@ -188,6 +188,13 @@ export interface ApplicationLoadBalancedTaskImageProps {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * A key/value map of labels to add to the container.
+   *
+   * @default - No labels.
+   */
+  readonly dockerLabels?: { [key: string]: string };
 }
 
 /**

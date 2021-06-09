@@ -21,17 +21,30 @@ beforeEach(() => {
 
 nodeunitShim({
   'instance is created correctly'(test: Test) {
-    // WHEN
-    new Instance(stack, 'Instance', {
-      vpc,
-      machineImage: new AmazonLinuxImage(),
-      instanceType: InstanceType.of(InstanceClass.BURSTABLE4_GRAVITON, InstanceSize.LARGE),
-    });
+    // GIVEN
+    const sampleInstances = [{
+      instanceClass: InstanceClass.BURSTABLE4_GRAVITON,
+      instanceSize: InstanceSize.LARGE,
+      instanceType: 't4g.large',
+    }, {
+      instanceClass: InstanceClass.HIGH_COMPUTE_MEMORY1,
+      instanceSize: InstanceSize.XLARGE3,
+      instanceType: 'z1d.3xlarge',
+    }];
 
-    // THEN
-    cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
-      InstanceType: 't4g.large',
-    }));
+    for (const [i, sampleInstance] of sampleInstances.entries()) {
+      // WHEN
+      new Instance(stack, `Instance${i}`, {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(sampleInstance.instanceClass, sampleInstance.instanceSize),
+      });
+
+      // THEN
+      cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
+        InstanceType: sampleInstance.instanceType,
+      }));
+    }
 
     test.done();
   },
