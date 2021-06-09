@@ -7,6 +7,7 @@ import * as yargs from 'yargs';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
+import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
@@ -230,7 +231,11 @@ async function initCommandLine() {
     args.STACKS = args.STACKS || [];
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];
 
-    const stacks = (args.all) ? ['*'] : args.STACKS;
+    const selector: StackSelector = {
+      allTopLevel: args.all,
+      patterns: args.STACKS,
+    };
+
     const cli = new CdkToolkit({
       cloudExecutable,
       cloudFormation,
@@ -294,7 +299,7 @@ async function initCommandLine() {
           }
         }
         return cli.deploy({
-          stackNames: stacks,
+          selector,
           exclusively: args.exclusively,
           toolkitStackName,
           roleArn: args.roleArn,
@@ -314,7 +319,7 @@ async function initCommandLine() {
 
       case 'destroy':
         return cli.destroy({
-          stackNames: stacks,
+          selector,
           exclusively: args.exclusively,
           force: args.force,
           roleArn: args.roleArn,
