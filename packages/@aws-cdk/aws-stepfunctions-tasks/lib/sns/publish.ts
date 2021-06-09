@@ -73,7 +73,7 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
    * for SNS Filter Subscriptions.
    *
    * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
-   * @default no attributes are sent
+   * @default - no attributes are sent
    */
   readonly messageAttributes?: SnsMessageAttribute[];
 
@@ -172,4 +172,3 @@ export class SnsPublish extends sfn.TaskStateBase {
     };
   }
 }
-
