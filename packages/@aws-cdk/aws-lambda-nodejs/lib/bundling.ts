@@ -27,6 +27,11 @@ export interface BundlingProps extends BundlingOptions {
    * The runtime of the lambda function
    */
   readonly runtime: Runtime;
+
+  /**
+   * Path to project root
+   */
+  readonly projectRoot?: string;
 }
 
 /**
@@ -37,7 +42,7 @@ export class Bundling implements cdk.BundlingOptions {
    * esbuild bundled Lambda asset code
    */
   public static bundle(options: BundlingProps): AssetCode {
-    return Code.fromAsset(path.dirname(options.depsLockFilePath), {
+    return Code.fromAsset(options.projectRoot ?? path.dirname(options.depsLockFilePath), {
       assetHashType: cdk.AssetHashType.OUTPUT,
       bundling: new Bundling(options),
     });
@@ -67,7 +72,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? EsbuildInstallation.detect();
 
-    this.projectRoot = path.dirname(props.depsLockFilePath);
+    this.projectRoot = props.projectRoot ?? path.dirname(props.depsLockFilePath);
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
 
     if (props.tsconfig) {
@@ -174,7 +179,7 @@ export class Bundling implements cdk.BundlingOptions {
       osPlatform,
     });
     const environment = this.props.environment ?? {};
-    const cwd = path.dirname(this.props.depsLockFilePath);
+    const cwd = this.projectRoot;
 
     return {
       tryBundle(outputDir: string) {

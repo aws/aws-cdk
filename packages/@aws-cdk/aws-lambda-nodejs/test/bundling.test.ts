@@ -376,3 +376,24 @@ test('with command hooks', () => {
     }),
   });
 });
+
+test('esbuild bundling with projectRoot', () => {
+  Bundling.bundle({
+    entry: '/project/lib/index.ts',
+    projectRoot: '/project/lib',
+    depsLockFilePath,
+    tsconfig,
+    runtime: Runtime.NODEJS_12_X,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project/lib', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'esbuild --bundle "/asset-input/index.ts" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --tsconfig=/asset-input/custom-tsconfig.ts',
+      ],
+    }),
+  });
+});

@@ -73,6 +73,13 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    *   modules are bundled.
    */
   readonly bundling?: BundlingOptions;
+
+  /**
+   * The path to the directory containing project config files (`package.json` or `tsconfig.json`)
+   *
+   * @default - the directory containing the `depsLockFilePath`
+   */
+  readonly projectRoot?: string;
 }
 
 /**
