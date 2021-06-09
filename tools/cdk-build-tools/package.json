@@ -24,7 +24,9 @@
     "pkglint": "pkglint -f",
     "test": "echo success",
     "build+test+package": "yarn build+test",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -74,7 +76,9 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "nozem": {
-    "ostools": ["chmod"]
+    "ostools": [
+      "chmod"
+    ]
   },
   "ubergen": {
     "exclude": true

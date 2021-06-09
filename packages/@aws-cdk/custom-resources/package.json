@@ -48,7 +48,9 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "jest": true,
@@ -123,7 +125,10 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["rm", "cp"]
+    "ostools": [
+      "rm",
+      "cp"
+    ]
   },
   "maturity": "stable",
   "publishConfig": {
