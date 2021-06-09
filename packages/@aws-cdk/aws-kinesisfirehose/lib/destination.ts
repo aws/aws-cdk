@@ -187,7 +187,11 @@ export abstract class DestinationBase implements IDestination {
 
   abstract bind(scope: Construct, deliveryStream: IDeliveryStream): DestinationConfig;
 
-  protected createLoggingOptions(scope: Construct, deliveryStream: IDeliveryStream, streamId: string): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
+  protected createLoggingOptions(
+    scope: Construct,
+    deliveryStream: IDeliveryStream,
+    streamId: string,
+  ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
     if (this.props.logging !== false || this.props.logGroup) {
       this.logGroup = this.logGroup ?? this.props.logGroup ?? (!this.props.logStream ? new logs.LogGroup(scope, 'Log Group') : undefined);
       if (!this.logGroup) {

@@ -222,14 +222,14 @@ export class DeliveryStream extends DeliveryStreamBase {
 }
 
 function setConnections(scope: Construct) {
-  const region = Stack.of(scope).region
+  const region = Stack.of(scope).region;
   let cidrBlock = RegionInfo.get(region).firehoseCidrBlock;
   if (!cidrBlock) {
     const mapping: {[region: string]: { FirehoseCidrBlock: string }} = {};
-    RegionInfo.regions.forEach((region) => {
-      if (region.firehoseCidrBlock) {
-        mapping[region.name] = {
-          FirehoseCidrBlock: region.firehoseCidrBlock,
+    RegionInfo.regions.forEach((regionInfo) => {
+      if (regionInfo.firehoseCidrBlock) {
+        mapping[regionInfo.name] = {
+          FirehoseCidrBlock: regionInfo.firehoseCidrBlock,
         };
       }
     });

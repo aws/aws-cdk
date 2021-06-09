@@ -41,6 +41,9 @@ export interface RedshiftUser {
   readonly encryptionKey?: kms.IKey;
 }
 
+/**
+ * A column in a Redshift table.
+ */
 export interface RedshiftColumn {
   /**
    * The name of the column.

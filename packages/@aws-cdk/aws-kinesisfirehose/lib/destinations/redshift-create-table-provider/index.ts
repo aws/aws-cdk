@@ -39,6 +39,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   } else if (event.RequestType === 'Update') {
     return { PhysicalResourceId: event.PhysicalResourceId };
   } else {
+    /* eslint-disable-next-line dot-notation */
     throw new Error(`Unrecognized event type: ${event['RequestType']}`);
   }
 }
