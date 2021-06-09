@@ -4,7 +4,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ApplicationMultipleTargetGroupsFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
+import { ApplicationMultipleTargetGroupsFargateService, NetworkMultipleTargetGroupsFargateService, ApplicationLoadBalancedFargateService } from '../../lib';
 
 export = {
   'When Application Load Balancer': {
@@ -306,6 +306,83 @@ export = {
           cluster,
         });
       }, /You must specify one of: taskDefinition or image/);
+
+      test.done();
+    },
+
+    'test Fargate loadbalancer construct with application load balancer name set'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      // WHEN
+      new ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        loadBalancerName: 'alb-test-load-balancer',
+      });
+
+      // THEN - stack contains a load balancer and a service
+      expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Name: 'alb-test-load-balancer',
+      }));
+
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        DesiredCount: 1,
+        LaunchType: 'FARGATE',
+        LoadBalancers: [
+          {
+            ContainerName: 'web',
+            ContainerPort: 80,
+            TargetGroupArn: {
+              Ref: 'ServiceLBPublicListenerECSGroup0CC8688C',
+            },
+          },
+        ],
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            LogConfiguration: {
+              LogDriver: 'awslogs',
+              Options: {
+                'awslogs-group': {
+                  Ref: 'ServiceTaskDefwebLogGroup2A898F61',
+                },
+                'awslogs-stream-prefix': 'Service',
+                'awslogs-region': {
+                  Ref: 'AWS::Region',
+                },
+              },
+            },
+            Name: 'web',
+            PortMappings: [
+              {
+                ContainerPort: 80,
+                Protocol: 'tcp',
+              },
+            ],
+          },
+        ],
+        Cpu: '256',
+        ExecutionRoleArn: {
+          'Fn::GetAtt': [
+            'ServiceTaskDefExecutionRole919F7BE3',
+            'Arn',
+          ],
+        },
+        Family: 'ServiceTaskDef79D79521',
+        Memory: '512',
+        NetworkMode: 'awsvpc',
+        RequiresCompatibilities: [
+          'FARGATE',
+        ],
+      }));
 
       test.done();
     },

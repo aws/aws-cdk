@@ -546,3 +546,21 @@ service.taskDefinition.addContainer('Sidecar', {
   image: ContainerImage.fromRegistry('example/metrics-sidecar')
 }
 ```
+
+### Select specific load balancer name ApplicationLoadBalancedFargateService
+
+```ts
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  vpcSubnets: {
+    subnets: [ec2.Subnet.fromSubnetId(stack, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
+  },
+  loadBalancerName: 'application-lb-name',
+});
+```
