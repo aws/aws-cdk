@@ -22,13 +22,13 @@ afterEach(() => {
 test('can do cross-account deployment if enabled', () => {
   // GIVEN
   const pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    backend: new cdkp.CodePipelineBackend({
+    engine: new cdkp.CodePipelineEngine(pipelineStack, 'Engine', {
       crossAccountKeys: true,
     }),
   });
 
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
+  pipeline.addStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -79,13 +79,13 @@ test('can do cross-account deployment if enabled', () => {
 test('action has right settings for cross-account/cross-region deployment', () => {
   // GIVEN
   const pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    backend: new cdkp.CodePipelineBackend({
+    engine: new cdkp.CodePipelineEngine(pipelineStack, 'Engine', {
       crossAccountKeys: true,
     }),
   });
 
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossBoth', { env: { account: 'you', region: 'elsewhere' } }));
+  pipeline.addStage(new OneStackApp(app, 'CrossBoth', { env: { account: 'you', region: 'elsewhere' } }));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -135,7 +135,7 @@ test('action has right settings for cross-account/cross-region deployment', () =
 test('can control fix/CLI version used in pipeline selfupdate', () => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk2', {
-    backend: new cdkp.CodePipelineBackend({
+    engine: new cdkp.CodePipelineEngine(pipelineStack, 'Engine', {
       pipelineName: 'vpipe',
       cdkCliVersion: '1.2.3',
     }),

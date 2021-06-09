@@ -17,7 +17,7 @@ export class Wave {
     this.post = props.post ?? [];
   }
 
-  public addStage(stage: cdk.Stage, options: AddStageOptions = {}) {
+  public addStage(stage: cdk.Stage, options: AddStageOpts = {}) {
     const ret = StageDeployment.fromStage(stage, options);
     this.stages.push(ret);
     return ret;
@@ -32,7 +32,7 @@ export class Wave {
   }
 }
 
-export interface AddStageOptions {
+export interface AddStageOpts {
   readonly pre?: Step[];
   readonly post?: Step[];
 }

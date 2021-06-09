@@ -1,7 +1,7 @@
 /// !cdk-integ PipelineStack
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
-import { App, CfnParameter, CfnResource, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import { App, CfnResource, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 
@@ -81,43 +81,3 @@ new CdkpipelinesDemoPipelineStack(app, 'PipelineStack', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
 app.synth();
-
-
-class TheStack extends Stack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
-
-    const clusterName = new CfnParameter(this, 'ClusterName');
-    const namespace = new CfnParameter(this, 'Namespace');
-
-    const kubeNamespace = new CfnResource(this, 'KubeNamespace', {
-      type: 'AWSQS::Kubernetes::Resource',
-      properties: {
-        ClusterName: clusterName.valueAsString,
-        Namespace: 'default',
-        Manifest: this.toJsonString({
-          apiVersion: 'v1',
-          kind: 'Namespace',
-          metadata: {
-            name: namespace.valueAsString,
-            labels: {
-              name: namespace.valueAsString,
-            }
-          },
-        }),
-      },
-    });
-
-    new CfnResource(this, 'KubeStateMetrics', {
-      type: 'AWSQS::Kubernetes::Helm',
-      properties: {
-        ClusterID: clusterName.valueAsString,
-        Name: 'kube-state-metrics',
-        Namespace: kubeNamespace.getAtt('Name').toString(),
-        Repository: 'https://prometheus-community.github.io/helm-charts',
-        Chart: 'prometheus-community/kube-state-metrics',
-      },
-    });
-  }
-}
-

@@ -167,14 +167,12 @@ export class Graph<A> extends GraphNode<A> {
   }
 
   public consoleLog(indent: number = 0) {
-    // eslint-disable-next-line no-console
-    console.log(' '.repeat(indent) + this + depString(this));
+    process.stdout.write(' '.repeat(indent) + this + depString(this) + '\n');
     for (const node of this.nodes) {
       if (node instanceof Graph) {
         node.consoleLog(indent + 2);
       } else {
-        // eslint-disable-next-line no-console
-        console.log(' '.repeat(indent + 2) + node + depString(node));
+        process.stdout.write(' '.repeat(indent + 2) + node + depString(node) + '\n');
       }
     }
 

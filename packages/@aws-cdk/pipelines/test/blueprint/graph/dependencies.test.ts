@@ -1,10 +1,10 @@
-import { Workflow, WorkflowNode } from '../../../lib';
+import { Graph, GraphNode } from '../../../lib/private/graph';
 
-class PlainNode extends WorkflowNode { }
+class PlainNode extends GraphNode<any> { }
 
 describe('with nested graphs', () => {
   const graph = mkGraph('G', G => {
-    let aa: WorkflowNode;
+    let aa: GraphNode<any>;
 
     const A = G.graph('A', [], GA => {
       aa = GA.node('aa');
@@ -53,7 +53,7 @@ describe('with nested graphs', () => {
 });
 
 function mkGraph(name: string, block: (b: GraphBuilder) => void) {
-  const graph = new Workflow(name);
+  const graph = new Graph(name);
   block({
     graph(name2, deps, block2) {
       const innerG = mkGraph(name2, block2);
@@ -73,16 +73,16 @@ function mkGraph(name: string, block: (b: GraphBuilder) => void) {
 
 
 interface GraphBuilder {
-  graph(name: string, deps: WorkflowNode[], block: (b: GraphBuilder) => void): Workflow;
-  node(name: string, deps?: WorkflowNode[]): WorkflowNode;
+  graph(name: string, deps: GraphNode<any>[], block: (b: GraphBuilder) => void): Graph<any>;
+  node(name: string, deps?: GraphNode<any>[]): GraphNode<any>;
 }
 
 
-function nodeNames(n: WorkflowNode): string;
-function nodeNames(ns: WorkflowNode[]): string[];
-function nodeNames(ns: WorkflowNode[][]): string[][];
+function nodeNames(n: GraphNode<any>): string;
+function nodeNames(ns: GraphNode<any>[]): string[];
+function nodeNames(ns: GraphNode<any>[][]): string[][];
 function nodeNames(n: any): any {
-  if (n instanceof WorkflowNode) { return n.name; }
+  if (n instanceof GraphNode) { return n.id; }
   if (Array.isArray(n)) { return n.map(nodeNames); }
   throw new Error('oh no');
 }

@@ -8,10 +8,10 @@ class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const pipeline = new pipelines.Pipeline(this, 'Pipeline', {
-      buildStep: new pipelines.CdkBuild({
+    const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+      synthStep: new pipelines.SynthStep('Synth', {
         input: pipelines.CodePipelineSource.gitHub('rix0rrr/cdk-pipelines-demo'),
-        buildCommands: [
+        commands: [
           'npm ci',
           'npm run build',
           'npx cdk synth',
@@ -19,27 +19,27 @@ class PipelineStack extends Stack {
       }),
     });
 
-    pipeline.addApplicationStage(new AppStage(this, 'Beta'));
+    pipeline.addStage(new AppStage(this, 'Beta'));
 
-    const group = pipeline.addDeploymentGroup('Wave1');
-    group.addApplicationStage(new AppStage(this, 'Prod1'));
-    group.addApplicationStage(new AppStage(this, 'Prod2'));
+    const group = pipeline.addWave('Wave1');
+    group.addStage(new AppStage(this, 'Prod1'));
+    group.addStage(new AppStage(this, 'Prod2'));
 
-    const group2 = pipeline.addDeploymentGroup('Wave2');
-    group2.addApplicationStage(new AppStage(this, 'Prod1'));
-    group2.addApplicationStage(new AppStage(this, 'Prod2'));
-    group2.addApplicationStage(new AppStage(this, 'Prod1'));
-    group2.addApplicationStage(new AppStage(this, 'Prod2'));
+    const group2 = pipeline.addWave('Wave2');
+    group2.addStage(new AppStage(this, 'Prod1'));
+    group2.addStage(new AppStage(this, 'Prod2'));
+    group2.addStage(new AppStage(this, 'Prod1'));
+    group2.addStage(new AppStage(this, 'Prod2'));
 
-    const group3 = pipeline.addDeploymentGroup('Wave3');
-    group3.addApplicationStage(new AppStage(this, 'Prod1'));
-    group3.addApplicationStage(new AppStage(this, 'Prod2'));
-    group3.addApplicationStage(new AppStage(this, 'Prod1'));
-    group3.addApplicationStage(new AppStage(this, 'Prod2'));
-    group3.addApplicationStage(new AppStage(this, 'Prod1'));
-    group3.addApplicationStage(new AppStage(this, 'Prod2'));
-    group3.addApplicationStage(new AppStage(this, 'Prod1'));
-    group3.addApplicationStage(new AppStage(this, 'Prod2'));
+    const group3 = pipeline.addWave('Wave3');
+    group3.addStage(new AppStage(this, 'Prod1'));
+    group3.addStage(new AppStage(this, 'Prod2'));
+    group3.addStage(new AppStage(this, 'Prod1'));
+    group3.addStage(new AppStage(this, 'Prod2'));
+    group3.addStage(new AppStage(this, 'Prod1'));
+    group3.addStage(new AppStage(this, 'Prod2'));
+    group3.addStage(new AppStage(this, 'Prod1'));
+    group3.addStage(new AppStage(this, 'Prod2'));
   }
 }
 

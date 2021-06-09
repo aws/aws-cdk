@@ -1,8 +1,7 @@
-import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cp_actions from '@aws-cdk/aws-codepipeline-actions';
 import { SecretValue, Token } from '@aws-cdk/core';
 import { FileSet, Step } from '../blueprint';
-import { CodePipelineActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodePipelineActionFactoryResult, CodePipelineActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
 
 export abstract class CodePipelineSource extends Step implements ICodePipelineActionFactory {
@@ -23,7 +22,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
     return new GitHubSource(repoString, props);
   }
 
-  public abstract produce(options: CodePipelineActionOptions): cp.IAction;
+  public abstract produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult;
 }
 
 export interface GitHubSourceOptions {
@@ -75,19 +74,21 @@ class GitHubSource extends CodePipelineSource {
     this.repo = parts[1];
     this.branch = props.branch ?? 'main';
     this.authentication = props.authentication ?? SecretValue.secretsManager('github-token');
-    this.primaryOutput = new FileSet(`source:${this.owner}/${this.repo}`);
+    this.primaryOutput = new FileSet('Source', this);
   }
 
-  public produce(options: CodePipelineActionOptions): cp.IAction {
-    return new cp_actions.GitHubSourceAction({
-      actionName: options.actionName,
-      oauthToken: this.authentication,
-      output: options.artifacts.toCodePipeline(this.primaryOutput!),
-      owner: this.owner,
-      repo: this.repo,
-      branch: this.branch,
-      runOrder: options.runOrder,
-      trigger: cp_actions.GitHubTrigger.WEBHOOK,
-    });
+  public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
+    return {
+      action: new cp_actions.GitHubSourceAction({
+        actionName: options.actionName,
+        oauthToken: this.authentication,
+        output: options.artifacts.toCodePipeline(this.primaryOutput!),
+        owner: this.owner,
+        repo: this.repo,
+        branch: this.branch,
+        runOrder: options.runOrder,
+        trigger: cp_actions.GitHubTrigger.WEBHOOK,
+      }),
+    };
   }
 }

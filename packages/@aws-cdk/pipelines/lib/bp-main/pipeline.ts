@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
-import { AddStageOptions, AddWaveOptions, Blueprint, Step } from '../blueprint';
+import { AddStageOpts, AddWaveOptions, Blueprint, Step } from '../blueprint';
 import { IDeploymentEngine } from './engine';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Construct as CoreConstruct, Stage } from '@aws-cdk/core';
+import { Aspects, Construct as CoreConstruct, Stage } from '@aws-cdk/core';
 
 export interface PipelineProps {
   readonly synthStep: Step;
@@ -24,9 +24,11 @@ export class Pipeline extends CoreConstruct {
     this.blueprint = new Blueprint({
       synthStep: props.synthStep,
     });
+
+    Aspects.of(this).add({ visit: () => this.buildJustInTime() });
   }
 
-  public addStage(stage: Stage, options?: AddStageOptions) {
+  public addStage(stage: Stage, options?: AddStageOpts) {
     if (this.built) {
       throw new Error('addStage: can\'t add Stages anymore after build() has been called');
     }
@@ -50,7 +52,10 @@ export class Pipeline extends CoreConstruct {
     this.built = true;
   }
 
-  protected prepare() {
+  /**
+   * Automatically call 'build()' just before synthesis if the user hasn't explicitly called it yet
+   */
+  private buildJustInTime() {
     if (!this.built) {
       this.build();
     }

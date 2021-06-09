@@ -21,7 +21,8 @@ export class ArtifactMap {
 
   private makeUniqueName(baseName: string) {
     let i = 1;
-    let name = sanitizeArtifactName(baseName);
+    baseName = sanitizeArtifactName(baseName);
+    let name = baseName;
     while (this.usedNames.has(name)) {
       name = `${baseName}${++i}`;
     }

@@ -2,7 +2,6 @@ export * from './blueprint';
 export * from './file-set';
 export * from './run-script';
 export * from './stack-deployment';
-export * from './stack-output';
 export * from './stage-deployment';
 export * from './step';
 export * from './synth-step';

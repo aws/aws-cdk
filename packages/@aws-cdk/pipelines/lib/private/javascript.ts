@@ -51,7 +51,7 @@ export function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B): Record<
   return ret;
 }
 
-export function mkdict<A>(xs: Array<[string, A]>): Record<string, A> {
+export function mkdict<A>(xs: Array<readonly [string, A]>): Record<string, A> {
   const ret: Record<string, A> = {};
   for (const [k, v] of xs) {
     ret[k] = v;

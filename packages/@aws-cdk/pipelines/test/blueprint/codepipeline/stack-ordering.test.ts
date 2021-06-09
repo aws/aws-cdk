@@ -19,7 +19,7 @@ beforeEach(() => {
 
 test('interdependent stacks are in the right order', () => {
   // WHEN
-  pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'));
+  pipeline.addStage(new TwoStackApp(app, 'MyApp'));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -37,7 +37,7 @@ test('interdependent stacks are in the right order', () => {
 
 test('multiple independent stacks go in parallel', () => {
   // WHEN
-  pipeline.addApplicationStage(new ThreeStackApp(app, 'MyApp'));
+  pipeline.addStage(new ThreeStackApp(app, 'MyApp'));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -59,9 +59,9 @@ test('multiple independent stacks go in parallel', () => {
 
 test('manual approval is inserted in correct location', () => {
   // WHEN
-  pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'), {
-    approvers: [
-      new cdkp.ManualChangeSetApproval(),
+  pipeline.addStage(new TwoStackApp(app, 'MyApp'), {
+    post: [
+      new cdkp.ManualApproval('Approve'),
     ],
   });
 

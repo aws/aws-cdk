@@ -30,18 +30,18 @@ export class TestApp extends App {
   }
 }
 
-export type TestGitHubNpmPipelineProps = Partial<cdkp.CdkBuildProps> & { buildStep?: cdkp.IArtifactable, backend?: cdkp.Backend };
+export type TestGitHubNpmPipelineProps = Partial<cdkp.SynthStepProps> & { synthStep?: cdkp.Step, engine?: cdkp.IDeploymentEngine };
 export class TestGitHubNpmPipeline extends cdkp.Pipeline {
   constructor(scope: Construct, id: string, props?: TestGitHubNpmPipelineProps) {
     super(scope, id, {
-      buildStep: new cdkp.CdkBuild({
+      synthStep: new cdkp.SynthStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         installCommands: ['npm ci'],
-        buildCommands: ['npx cdk synth'],
+        commands: ['npx cdk synth'],
         ...props,
       }),
-      backend: props?.backend,
-      ...props?.buildStep ? { buildStep: props.buildStep } : undefined,
+      engine: props?.engine ?? new cdkp.CodePipelineEngine(scope, 'Engine'),
+      ...props?.synthStep ? { buildStep: props.synthStep } : undefined,
     });
   }
 }

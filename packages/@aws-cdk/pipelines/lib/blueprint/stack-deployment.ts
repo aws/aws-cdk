@@ -1,11 +1,7 @@
-import * as path from 'path';
-import { Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { isAssetManifest } from '../private/cloud-assembly-internals';
-import { appOf, assemblyBuilderOf } from '../private/construct-internals';
-import { toPosixPath } from '../private/fs';
 import { AssetType } from '../types';
 import { FileSet, IFileSet } from './file-set';
 
@@ -17,21 +13,17 @@ export interface StackDeploymentProps {
   readonly executionRoleArn?: string;
   readonly tags?: Record<string, string>;
   readonly customCloudAssembly?: IFileSet;
-  readonly templatePath: string;
+  readonly cloudAssemblyRoot: string;
+  readonly relativeTemplatePath: string;
   readonly requiredAssets?: StackAsset[];
 }
 
 export class StackDeployment {
   public static fromArtifact(stackArtifact: cxapi.CloudFormationStackArtifact, options: FromArtifactOptions): StackDeployment {
-    // We need the path of the template relative to the root Cloud Assembly
-    // It should be easier to get this, but for now it is what it is.
-    const appAsmRoot = assemblyBuilderOf(appOf(options.scope)).outdir;
-    const fullTemplatePath = path.join(stackArtifact.assembly.directory, stackArtifact.templateFile);
-
     const artRegion = stackArtifact.environment.region;
-    const region = artRegion === Stack.of(options.scope).region || artRegion === cxapi.UNKNOWN_REGION ? undefined : artRegion;
+    const region = artRegion === cxapi.UNKNOWN_REGION ? undefined : artRegion;
     const artAccount = stackArtifact.environment.account;
-    const account = artAccount === Stack.of(options.scope).account || artAccount === cxapi.UNKNOWN_ACCOUNT ? undefined : artAccount;
+    const account = artAccount === cxapi.UNKNOWN_ACCOUNT ? undefined : artAccount;
 
     return new StackDeployment({
       account,
@@ -39,7 +31,8 @@ export class StackDeployment {
       tags: stackArtifact.tags,
       customCloudAssembly: options.customCloudAssembly,
       stackName: stackArtifact.stackName,
-      templatePath: toPosixPath(path.relative(appAsmRoot, fullTemplatePath)),
+      cloudAssemblyRoot: stackArtifact.assembly.directory,
+      relativeTemplatePath: stackArtifact.templateFile,
       assumeRoleArn: stackArtifact.assumeRoleArn,
       executionRoleArn: stackArtifact.cloudFormationExecutionRoleArn,
       requiredAssets: extractStackAssets(stackArtifact),
@@ -53,7 +46,8 @@ export class StackDeployment {
   public readonly executionRoleArn?: string;
   public readonly tags: Record<string, string>;
   public readonly customCloudAssembly?: FileSet;
-  public readonly templatePath: string;
+  public readonly cloudAssemblyRoot: string;
+  public readonly relativeTemplatePath: string;
   public readonly requiredAssets: StackAsset[];
 
   public readonly dependsOnStacks: StackDeployment[] = [];
@@ -65,8 +59,9 @@ export class StackDeployment {
     this.assumeRoleArn = props.assumeRoleArn;
     this.executionRoleArn = props.executionRoleArn;
     this.stackName = props.stackName;
+    this.cloudAssemblyRoot = props.cloudAssemblyRoot;
     this.customCloudAssembly = props.customCloudAssembly?.primaryOutput;
-    this.templatePath = props.templatePath;
+    this.relativeTemplatePath = props.relativeTemplatePath;
     this.requiredAssets = props.requiredAssets ?? [];
   }
 

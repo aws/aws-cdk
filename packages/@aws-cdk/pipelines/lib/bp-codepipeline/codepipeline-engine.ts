@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
@@ -8,20 +9,21 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { Blueprint, ManualApproval, RunScript, StackAsset, StackDeployment, Step } from '../blueprint';
 import { IDeploymentEngine } from '../bp-main/engine';
-import { embeddedAsmPath } from '../private/construct-internals';
+import { appOf, assemblyBuilderOf, embeddedAsmPath } from '../private/construct-internals';
+import { toPosixPath } from '../private/fs';
 import { GraphNode, GraphNodeCollection, isGraph } from '../private/graph';
 import { enumerate, flatten, maybeSuffix } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
+import { AssetType } from '../types/asset-type';
+import { CodeBuildFactory, mergeBuildEnvironments } from './_codebuild-factory';
 import { AGraphNode, GraphFromBlueprint } from './_graph-from-blueprint';
 import { ArtifactMap } from './artifact-map';
-import { CodeBuildStep, mergeBuildEnvironments } from './codebuild-step';
-import { ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildStep } from './codebuild-step';
+import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-import { AssetType } from '../types/asset-type';
-import { toPosixPath } from '../private/fs';
 
 export interface CodePipelineEngineProps {
   // Legacy and tweaking props
@@ -61,8 +63,9 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
   private readonly defaultCodeBuildEnv: cb.BuildEnvironment;
-  private _buildStep?: CodeBuildStep;
+  private _buildProject?: cb.IProject;
   private readonly selfMutation: boolean;
+  private readonly myCxAsmRoot: string;
 
   constructor(scope: Construct, id: string, private readonly props: CodePipelineEngineProps={}) {
     super(scope, id);
@@ -72,6 +75,8 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
       buildImage: props.defaultCodeBuildImage ?? cb.LinuxBuildImage.STANDARD_5_0,
       computeType: cb.ComputeType.SMALL,
     };
+
+    this.myCxAsmRoot = path.resolve(assemblyBuilderOf(appOf(this)).outdir);
   }
 
   public buildDeployment(blueprint: Blueprint): void {
@@ -90,6 +95,20 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
     });
 
     this.pipelineStagesAndActionsFromGraph(graphFromBp);
+  }
+
+  public get buildProject(): cb.IProject {
+    if (!this._buildProject) {
+      throw new Error('Call pipeline.build() before reading this property');
+    }
+    return this._buildProject;
+  }
+
+  public get pipeline(): cp.Pipeline {
+    if (!this._pipeline) {
+      throw new Error('Pipeline not created yet');
+    }
+    return this._pipeline;
   }
 
   private pipelineStagesAndActionsFromGraph(graphFromBp: GraphFromBlueprint) {
@@ -130,20 +149,6 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
     }
   }
 
-  public get buildProject(): cb.IProject {
-    if (!this._buildStep) {
-      throw new Error('Call pipeline.build() before reading this property');
-    }
-    return this._buildStep.project;
-  }
-
-  public get pipeline(): cp.Pipeline {
-    if (!this._pipeline) {
-      throw new Error('Pipeline not created yet');
-    }
-    return this._pipeline;
-  }
-
   /**
    * Make an action from the given node and/or step
    */
@@ -168,7 +173,13 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
         return this.executeChangeSetAction(options.node.data.stack, options);
 
       case 'step':
-        return this.actionFromStep(options.node.data.step, options);
+        const result = this.actionFromStep(options.node.data.step, options);
+
+        if (options.graphFromBp.isSynthNode(options.node) && result.project) {
+          this._buildProject = result.project;
+        }
+
+        return result.action;
     }
   }
 
@@ -184,7 +195,7 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
    * The rest is expressed in terms of these 3, or in terms of graph nodes
    * which are handled elsewhere.
    */
-  private actionFromStep(step: Step, options: MakeActionOptions): cp.IAction {
+  private actionFromStep(step: Step, options: MakeActionOptions): CodePipelineActionFactoryResult {
     // CodePipeline-specific steps first -- this includes Sources
     if (isCodePipelineActionFactory(step)) {
       return step.produce({
@@ -197,14 +208,13 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
 
     // Now built-in steps
     if (step instanceof RunScript) {
-      return new CodeBuildStep(step.id, {
+      return new CodeBuildFactory(step, {
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
 
         // If this CodeBuild job is before the self-update stage, we need to include a hash of
         // its definition in the pipeline (to force the pipeline to restart if the definition changes)
         includeBuildHashInPipeline: options.beforeSelfUpdate,
-        ...CodeBuildStep.propsFromStep(step),
         buildEnvironment: this.codeBuildEnvironmentFromNode(options.node),
       }).produce({
         actionName: actionName(options.node, options.sharedParent),
@@ -215,11 +225,13 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
     }
 
     if (step instanceof ManualApproval) {
-      return new cpa.ManualApprovalAction({
-        actionName: actionName(options.node, options.sharedParent),
-        runOrder: options.runOrder,
-        additionalInformation: step.comment,
-      });
+      return {
+        action: new cpa.ManualApprovalAction({
+          actionName: actionName(options.node, options.sharedParent),
+          runOrder: options.runOrder,
+          additionalInformation: step.comment,
+        }),
+      };
     }
 
     throw new Error(`Deployment step '${step}' is not supported for CodePipeline-backed pipelines`);
@@ -231,31 +243,37 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
     const templateArtifact = this.artifacts.toCodePipeline(stack.customCloudAssembly ?? options.graphFromBp.cloudAssemblyFileSet);
     const templateConfigurationPath = this.writeTemplateConfiguration(stack);
 
+    const region = stack.region !== Stack.of(this).region ? stack.region : undefined;
+    const account = stack.account !== Stack.of(this).account ? Stack.of(this).account : undefined;
+
     return new cpa.CloudFormationCreateReplaceChangeSetAction({
       actionName: actionName(options.node, options.sharedParent),
       runOrder: options.runOrder,
       changeSetName,
       stackName: stack.stackName,
-      templatePath: templateArtifact.atPath(stack.templatePath),
+      templatePath: templateArtifact.atPath(toPosixPath(stack.relativeTemplatePath)),
       adminPermissions: true,
-      role: this.roleFromPlaceholderArn(this.pipeline, stack.region, stack.account, stack.assumeRoleArn),
-      deploymentRole: this.roleFromPlaceholderArn(this.pipeline, stack.region, stack.account, stack.executionRoleArn),
-      region: stack.region,
+      role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
+      deploymentRole: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.executionRoleArn),
+      region: region,
       templateConfiguration: templateConfigurationPath
-        ? templateArtifact.atPath(templateConfigurationPath)
+        ? templateArtifact.atPath(toPosixPath(templateConfigurationPath))
         : undefined,
     });
   }
 
   private executeChangeSetAction(stack: StackDeployment, options: MakeActionOptions) {
     const changeSetName = 'PipelineChange';
+    const region = stack.region !== Stack.of(this).region ? stack.region : undefined;
+    const account = stack.account !== Stack.of(this).account ? Stack.of(this).account : undefined;
+
     return new cpa.CloudFormationExecuteChangeSetAction({
       actionName: actionName(options.node, options.sharedParent),
       runOrder: options.runOrder,
       changeSetName,
       stackName: stack.stackName,
-      role: this.roleFromPlaceholderArn(this.pipeline, stack.region, stack.account, stack.assumeRoleArn),
-      region: stack.region,
+      role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
+      region: region,
     });
   }
 
@@ -281,7 +299,7 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
         `npm install -g aws-cdk${installSuffix}`,
       ],
       commands: [
-        `cdk -a ${embeddedAsmPath(this.pipeline)} deploy ${pipelineStackName} --require-approval=never --verbose`,
+        `cdk -a ${toPosixPath(embeddedAsmPath(this.pipeline))} deploy ${pipelineStackName} --require-approval=never --verbose`,
       ],
       rolePolicyStatements: [
         // allow the self-mutating project permissions to assume the bootstrap Action role
@@ -304,19 +322,16 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
       runOrder: options.runOrder,
       artifacts: this.artifacts,
       scope: this,
-    });
+    }).action;
   }
 
   private publishAssetsAction(assets: StackAsset[], options: MakeActionOptions): cp.IAction {
     const installSuffix = this.props.cdkCliVersion ? `@${this.props.cdkCliVersion}` : '';
 
     const commands = assets.map(asset => {
-      return `cdk-assets --path "${toPosixPath(asset.relativeAssetManifestPath)}" --verbose publish "${asset.assetSelector}"`;
+      const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
+      return `cdk-assets --path "${toPosixPath(relativeAssetManifestPath)}" --verbose publish "${asset.assetSelector}"`;
     });
-
-    const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, manifestArtifact.file);
-        relativeAssetManifestPath,
-
 
     return new CodeBuildStep(options.node.id, {
       vpc: this.props.vpc,
@@ -342,22 +357,13 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
           actions: ['sts:AssumeRole'],
           resources: ['arn:*:iam::*:role/*-deploy-role-*', 'arn:*:iam::*:role/*-publishing-role-*'],
         }),
-        new iam.PolicyStatement({
-          actions: ['cloudformation:DescribeStacks'],
-          resources: ['*'], // this is needed to check the status of the bootstrap stack when doing `cdk deploy`
-        }),
-        // S3 checks for the presence of the ListBucket permission
-        new iam.PolicyStatement({
-          actions: ['s3:ListBucket'],
-          resources: ['*'],
-        }),
       ],
     }).produce({
       actionName: 'SelfMutate',
       runOrder: options.runOrder,
       artifacts: this.artifacts,
       scope: this,
-    });
+    }).action;
   }
 
 
@@ -403,20 +409,20 @@ export class CodePipelineEngine extends CoreConstruct implements IDeploymentEngi
    * Currently only supports tags.
    */
   private writeTemplateConfiguration(stack: StackDeployment): string | undefined {
-    let fullConfigPath;
-    if (Object.keys(stack.tags).length > 0) {
-      fullConfigPath = `${stack.templatePath}.config.json`;
+    if (Object.keys(stack.tags).length === 0) { return undefined; }
 
-      // Write the template configuration file (for parameters into CreateChangeSet call that
-      // cannot be configured any other way). They must come from a file, and there's unfortunately
-      // no better hook to write this file (`construct.onSynthesize()` would have been the prime candidate
-      // but that is being deprecated--and DeployCdkStackAction isn't even a construct).
-      writeTemplateConfiguration(fullConfigPath, {
-        Tags: stack.tags,
-      });
-    }
+    const relativeConfigPath = `${stack.relativeTemplatePath}.config.json`;
+    const absConfigPath = path.join(stack.cloudAssemblyRoot, relativeConfigPath);
 
-    return fullConfigPath;
+    // Write the template configuration file (for parameters into CreateChangeSet call that
+    // cannot be configured any other way). They must come from a file, and there's unfortunately
+    // no better hook to write this file (`construct.onSynthesize()` would have been the prime candidate
+    // but that is being deprecated--and DeployCdkStackAction isn't even a construct).
+    writeTemplateConfiguration(absConfigPath, {
+      Tags: stack.tags,
+    });
+
+    return relativeConfigPath;
   }
 }
 

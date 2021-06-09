@@ -34,7 +34,7 @@ afterEach(() => {
 
 test('references stack template in subassembly', () => {
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'App'));
+  pipeline.addStage(new OneStackApp(app, 'App'));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -57,13 +57,13 @@ test('references stack template in subassembly', () => {
 test('obvious error is thrown when stage contains no stacks', () => {
   // WHEN
   expect(() => {
-    pipeline.addApplicationStage(new Stage(app, 'EmptyStage'));
+    pipeline.addStage(new Stage(app, 'EmptyStage'));
   }).toThrow(/should contain at least one Stack/);
 });
 
 test('action has right settings for same-env deployment', () => {
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'Same'));
+  pipeline.addStage(new OneStackApp(app, 'Same'));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -125,7 +125,7 @@ test('action has right settings for same-env deployment', () => {
 
 test('action has right settings for cross-region deployment', () => {
   // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossRegion', { env: { region: 'elsewhere' } }));
+  pipeline.addStage(new OneStackApp(app, 'CrossRegion', { env: { region: 'elsewhere' } }));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -246,8 +246,8 @@ test('selfmutation feature can be turned off', () => {
   const stack = new Stack();
   // WHEN
   new TestGitHubNpmPipeline(stack, 'Cdk', {
-    backend: new cdkp.CodePipelineBackend({
-      selfMutating: false,
+    engine: new cdkp.CodePipelineEngine(stack, 'Engine', {
+      selfMutation: false,
     }),
   });
   // THEN
@@ -261,8 +261,8 @@ test('selfmutation feature can be turned off', () => {
 
 test('overridden stack names are respected', () => {
   // WHEN
-  pipeline.addApplicationStage(new OneStackAppWithCustomName(app, 'App1'));
-  pipeline.addApplicationStage(new OneStackAppWithCustomName(app, 'App2'));
+  pipeline.addStage(new OneStackAppWithCustomName(app, 'App1'));
+  pipeline.addStage(new OneStackAppWithCustomName(app, 'App2'));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -298,12 +298,12 @@ test('changing CLI version leads to a different pipeline structure (restarting i
 
   // WHEN
   new TestGitHubNpmPipeline(stack2, 'Cdk', {
-    backend: new cdkp.CodePipelineBackend({
+    engine: new cdkp.CodePipelineEngine(stack2, 'Engine', {
       cdkCliVersion: '1.2.3',
     }),
   });
   new TestGitHubNpmPipeline(stack3, 'Cdk', {
-    backend: new cdkp.CodePipelineBackend({
+    engine: new cdkp.CodePipelineEngine(stack2, 'Engine', {
       cdkCliVersion: '4.5.6',
     }),
   });
@@ -324,7 +324,7 @@ test('tags get reflected in pipeline', () => {
   // WHEN
   const stage = new OneStackApp(app, 'App');
   Tags.of(stage).add('CostCenter', 'F00B4R');
-  pipeline.addApplicationStage(stage);
+  pipeline.addStage(stage);
 
   // THEN
   const templateConfig = Capture.aString();

@@ -72,6 +72,7 @@ export class GraphFromBlueprint {
 
     this.addPrePost(wave.pre, wave.post, retGraph);
     retGraph.dependOn(this.lastPreparationNode);
+    this.graph.add(retGraph);
 
     return retGraph;
   }
@@ -82,10 +83,11 @@ export class GraphFromBlueprint {
     const stackGraphs = new Map<StackDeployment, AGraph>();
 
     for (const stack of stage.stacks) {
-      const stackGraph: AGraph = Graph.of(stack.stackName, { type: 'stack-group', stack });
+      const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
       const prepare: AGraphNode = GraphNode.of('Prepare', { type: 'prepare', stack });
       const deploy: AGraphNode = GraphNode.of('Deploy', { type: 'execute', stack });
 
+      retGraph.add(stackGraph);
       stackGraph.add(prepare, deploy);
       deploy.dependOn(prepare);
       stackGraphs.set(stack, stackGraph);
@@ -181,6 +183,13 @@ export class GraphFromBlueprint {
     newNode.dependOn(this.lastPreparationNode);
     return newNode;
   }
+
+  /**
+   * Simplify the stack name by removing the `Stage-` prefix if it exists.
+   */
+  private simpleStackName(stackName: string, stageName: string) {
+    return stripPrefix(stackName, `${stageName}-`);
+  }
 }
 
 type GraphAnnotation =
@@ -197,3 +206,7 @@ type GraphAnnotation =
 // (to save on generics in the code above).
 export type AGraphNode = GraphNode<GraphAnnotation>;
 export type AGraph = Graph<GraphAnnotation>;
+
+function stripPrefix(s: string, prefix: string) {
+  return s.startsWith(prefix) ? s.substr(prefix.length) : s;
+}

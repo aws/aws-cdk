@@ -57,12 +57,12 @@ export class RunScript extends Step {
     // Outputs
 
     if (props.primaryOutputDirectory) {
-      this.primaryOutput = new FileSet(`${id}:Output`, this);
+      this.primaryOutput = new FileSet('Output', this);
       this.outputs.push({ directory: props.primaryOutputDirectory, fileSet: this.primaryOutput });
     }
 
     for (const [name, directory] of Object.entries(props.additionalOutputDirectories ?? {})) {
-      const fileSet = new FileSet(`${id}:${directory}`, this);
+      const fileSet = new FileSet(directory, this);
       this._additionalOutputs[name] = fileSet;
       this.outputs.push({ directory, fileSet });
     }
