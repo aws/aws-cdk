@@ -40,7 +40,7 @@ export class RichAction implements IAction {
   }
 
   public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule {
-    return this.notifyOn(id, options);
+    return this.action.notifyOnStateChange(id, options);
   }
 
   public get isCrossRegion(): boolean {
