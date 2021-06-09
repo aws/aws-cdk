@@ -114,6 +114,7 @@ export = {
           taskRole: new Role(stack, 'TaskRole', {
             assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
           }),
+          dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
         },
         cpu: 256,
         assignPublicIp: true,
@@ -223,6 +224,10 @@ export = {
                 Protocol: 'tcp',
               },
             ],
+            DockerLabels: {
+              label1: 'labelValue1',
+              label2: 'labelValue2',
+            },
           },
         ],
         Cpu: '256',
@@ -490,6 +495,7 @@ export = {
           taskRole: new Role(stack, 'TaskRole', {
             assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
           }),
+          dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
         },
         cpu: 256,
         assignPublicIp: true,
@@ -594,6 +600,10 @@ export = {
                 Protocol: 'tcp',
               },
             ],
+            DockerLabels: {
+              label1: 'labelValue1',
+              label2: 'labelValue2',
+            },
           },
         ],
         Cpu: '256',
