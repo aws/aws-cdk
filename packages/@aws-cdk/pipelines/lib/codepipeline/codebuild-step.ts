@@ -56,7 +56,7 @@ export interface CodeBuildStepProps extends ScriptStepProps {
  * Run a script as a CodeBuild Project
  */
 export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
-  public primaryOutput?: FileSet | undefined;
+  public readonly primaryOutput?: FileSet | undefined;
   private readonly runScript: ScriptStep;
   private _project?: codebuild.IProject;
 
@@ -69,6 +69,8 @@ export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
     if (!mainInput) {
       throw new Error('CodeBuild action must have exactly one input with directory \'.\'');
     }
+
+    this.primaryOutput = this.runScript.primaryOutput;
     this.requiredFileSets.push(...this.runScript.requiredFileSets);
   }
 
