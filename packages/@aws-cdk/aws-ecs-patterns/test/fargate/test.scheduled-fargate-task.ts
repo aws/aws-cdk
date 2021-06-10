@@ -353,4 +353,24 @@ export = {
 
     test.done();
   },
+  'Scheduled Fargate Task - exposes ECS Task'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+      cluster,
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryLimitMiB: 512,
+      },
+      schedule: events.Schedule.expression('rate(1 minute)'),
+    });
+
+    // THEN
+    expect(scheduledFargateTask.task).not.toBeNull();
+
+    test.done();
+  },
 };
