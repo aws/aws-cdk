@@ -141,6 +141,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       maxReceiveCount: 42,
       retentionPeriod: cdk.Duration.days(7),
+      visibilityTimeout: cdk.Duration.minutes(5),
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
@@ -159,6 +160,7 @@ export = {
         },
         maxReceiveCount: 42,
       },
+      VisibilityTimeout: 300,
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {
