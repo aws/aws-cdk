@@ -14,4 +14,4 @@ phases:
       - yarn --version || npm -g install yarn
   build:
     commands:
-      - /bin/bash ./build.sh && git diff-index --exit-code --ignore-space-at-eol --stat HEAD
+      - /bin/bash ./build.sh --extract && git diff-index --exit-code --ignore-space-at-eol --stat HEAD
