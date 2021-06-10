@@ -7,6 +7,7 @@ import * as yargs from 'yargs';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
+import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
@@ -79,6 +80,7 @@ async function parseCommandLineArguments() {
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
+      .option('trust-for-lookup', { type: 'array', desc: 'The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
       .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
@@ -229,7 +231,11 @@ async function initCommandLine() {
     args.STACKS = args.STACKS || [];
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];
 
-    const stacks = (args.all) ? ['*'] : args.STACKS;
+    const selector: StackSelector = {
+      allTopLevel: args.all,
+      patterns: args.STACKS,
+    };
+
     const cli = new CdkToolkit({
       cloudExecutable,
       cloudFormation,
@@ -279,6 +285,7 @@ async function initCommandLine() {
             qualifier: args.qualifier,
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
             trustedAccounts: arrayFromYargs(args.trust),
+            trustedAccountsForLookup: arrayFromYargs(args.trustForLookup),
             cloudFormationExecutionPolicies: arrayFromYargs(args.cloudformationExecutionPolicies),
           },
         });
@@ -292,7 +299,7 @@ async function initCommandLine() {
           }
         }
         return cli.deploy({
-          stackNames: stacks,
+          selector,
           exclusively: args.exclusively,
           toolkitStackName,
           roleArn: args.roleArn,
@@ -312,7 +319,7 @@ async function initCommandLine() {
 
       case 'destroy':
         return cli.destroy({
-          stackNames: stacks,
+          selector,
           exclusively: args.exclusively,
           force: args.force,
           roleArn: args.roleArn,
