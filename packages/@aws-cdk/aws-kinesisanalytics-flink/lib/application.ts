@@ -262,6 +262,7 @@ export class Application extends ApplicationBase {
     code.bucket.grantRead(this);
 
     const resource = new ka.CfnApplicationV2(this, 'Resource', {
+      applicationName: props.applicationName,
       runtimeEnvironment: props.runtime.value,
       serviceExecutionRole: this.role.roleArn,
       applicationConfiguration: {
