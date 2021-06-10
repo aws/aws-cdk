@@ -45,7 +45,7 @@ export abstract class FirewallDomains {
   }
 
   /**
-   * Firewall domains created from a file stored in Amazon S3.
+   * Firewall domains created from the URI of a file stored in Amazon S3.
    * The file must be a text file and must contain a single domain per line.
    *
    * @param s3Uri S3 bucket uri (s3://bucket/prefix/objet).
@@ -56,6 +56,17 @@ export abstract class FirewallDomains {
     }
 
     return { s3Uri };
+  }
+
+  /**
+   * Firewall domains created from a file stored in Amazon S3.
+   * The file must be a text file and must contain a single domain per line.
+   *
+   * @param bucket S3 bucket
+   * @param key S3 key
+   */
+  public static fromS3(bucket: string, key: string): FirewallDomains {
+    return this.fromS3Uri(`s3://${bucket}/${key.replace(/^\//, '')}`);
   }
 
   /** S3 bucket URI of text file with domain list */

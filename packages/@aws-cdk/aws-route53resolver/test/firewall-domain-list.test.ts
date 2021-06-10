@@ -34,6 +34,18 @@ test('domain list from S3 URI', () => {
   });
 });
 
+test('domain list from S3', () => {
+  // WHEN
+  new FirewallDomainList(stack, 'List', {
+    domains: FirewallDomains.fromS3('bucket', 'prefix/object'),
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Route53Resolver::FirewallDomainList', {
+    DomainFileUrl: 's3://bucket/prefix/object',
+  });
+});
+
 test('throws with invalid S3 URI', () => {
   expect(() => new FirewallDomainList(stack, 'List', {
     domains: FirewallDomains.fromS3Uri('https://invalid/bucket/uri'),
