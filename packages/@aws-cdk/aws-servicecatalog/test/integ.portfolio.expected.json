@@ -1,0 +1,11 @@
+{
+  "Resources": {
+    "TestPortfolio4AC794EB": {
+      "Type": "AWS::ServiceCatalog::Portfolio",
+      "Properties": {
+        "DisplayName": "TestPortfolio",
+        "ProviderName": "TestProvider"
+      }
+    }
+  }
+}
