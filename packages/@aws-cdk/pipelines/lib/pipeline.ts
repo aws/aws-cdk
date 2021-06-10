@@ -122,9 +122,17 @@ export interface CdkPipelineProps {
   readonly selfMutating?: boolean;
 
   /**
+   * Optional settings to configure the asset publishing step
+   *
+   * @default -
+   */
+  readonly assetPublishingOptions?: AssetPublishingOptions;
+
+  /**
    * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
    *
    * @default false
+   * @deprecated use `assetPublishingOptions.singlePublisherPerType`
    */
   readonly singlePublisherPerType?: boolean;
 
@@ -143,6 +151,27 @@ export interface CdkPipelineProps {
    * @default - false
    */
   readonly supportDockerAssets?: boolean;
+}
+
+/**
+ * Optional settings to configure the asset publishing step
+ */
+export interface AssetPublishingOptions {
+
+  /**
+   * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
+   *
+   * @default false
+   */
+  readonly singlePublisherPerType?: boolean;
+
+  /**
+   * Additional commands to run before installing cdk-assert
+   * Use this to setup proxies or npm mirrors
+   *
+   * @default -
+   */
+  readonly preInstallCommands?: string[];
 }
 
 /**
@@ -236,7 +265,8 @@ export class CdkPipeline extends CoreConstruct {
       projectName: maybeSuffix(props.pipelineName, '-publish'),
       vpc: props.vpc,
       subnetSelection: props.subnetSelection,
-      singlePublisherPerType: props.singlePublisherPerType,
+      singlePublisherPerType: props.assetPublishingOptions?.singlePublisherPerType ?? props.singlePublisherPerType,
+      preInstallCommands: props.assetPublishingOptions?.preInstallCommands,
     });
   }
 
@@ -387,6 +417,7 @@ interface AssetPublishingProps {
   readonly vpc?: ec2.IVpc;
   readonly subnetSelection?: ec2.SubnetSelection;
   readonly singlePublisherPerType?: boolean;
+  readonly preInstallCommands?: string[];
 }
 
 /**
@@ -484,6 +515,7 @@ class AssetPublishing extends CoreConstruct {
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
         createBuildspecFile: this.props.singlePublisherPerType,
+        preInstallCommands: this.props.preInstallCommands,
       });
       this.stages[stageIndex].addAction(action);
     }

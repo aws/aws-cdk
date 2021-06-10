@@ -206,8 +206,10 @@ const cdkPipeline = new CdkPipeline(app, 'CdkPipeline', {
 ```
 
 If you use assets for files or Docker images, every asset will get its own upload action during the asset stage. 
-By setting the value `singlePublisherPerType` to `true`, only one action for files and one action for 
+By setting the value `assetPublishingOptions.singlePublisherPerType` to `true`, only one action for files and one action for 
 Docker images is created that handles all assets of the respective type.
+
+If you need to run commands to setup proxies, mirrors, etc you can supply them using the `assetPublishingOptions.preInstallCommands`.
 
 ## Initial pipeline deployment
 

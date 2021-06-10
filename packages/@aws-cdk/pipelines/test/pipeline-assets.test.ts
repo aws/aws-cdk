@@ -18,16 +18,15 @@ let app: TestApp;
 let pipelineStack: Stack;
 let pipeline: cdkp.CdkPipeline;
 
+afterEach(() => {
+  app.cleanup();
+});
 
 describe('basic pipeline', () => {
   beforeEach(() => {
     app = new TestApp();
     pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
     pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  });
-
-  afterEach(() => {
-    app.cleanup();
   });
 
   test('no assets stage if the application has no assets', () => {
@@ -351,6 +350,39 @@ describe('basic pipeline', () => {
   });
 });
 
+
+test('can supply pre-install scripts to asset upload', () => {
+  // WHEN
+  app = new TestApp();
+  pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    assetPublishingOptions: {
+      preInstallCommands: [
+        'npm config set registry https://registry.com',
+      ],
+    },
+  });
+  pipeline.addApplicationStage(new FileAssetApp(app, 'FileAssetApp'));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:5.0',
+    },
+    Source: {
+      BuildSpec: encodedJson(deepObjectLike({
+        phases: {
+          install: {
+            commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets'],
+          },
+        },
+      })),
+    },
+  });
+
+  app.cleanup();
+});
+
 describe('pipeline with VPC', () => {
   let vpc: ec2.Vpc;
   beforeEach(() => {
@@ -360,10 +392,6 @@ describe('pipeline with VPC', () => {
     pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       vpc,
     });
-  });
-
-  afterEach(() => {
-    app.cleanup();
   });
 
   test('asset CodeBuild Project uses VPC subnets', () => {
@@ -413,12 +441,10 @@ describe('pipeline with single asset publisher', () => {
     app = new TestApp();
     pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
     pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      singlePublisherPerType: true,
+      assetPublishingOptions: {
+        singlePublisherPerType: true,
+      },
     });
-  });
-
-  afterEach(() => {
-    app.cleanup();
   });
 
   test('multiple assets are using the same job in singlePublisherMode', () => {
