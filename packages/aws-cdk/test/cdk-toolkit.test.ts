@@ -45,7 +45,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'] });
+      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] } });
     });
 
     test('with stacks all stacks specified as double wildcard', async () => {
@@ -53,7 +53,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['**'] });
+      await toolkit.deploy({ selector: { patterns: ['**'] } });
     });
 
 
@@ -62,7 +62,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['Test-Stack-A'] });
+      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A'] } });
     });
 
     test('with stacks all stacks specified as wildcard', async () => {
@@ -70,7 +70,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['*'] });
+      await toolkit.deploy({ selector: { patterns: ['*'] } });
     });
 
     test('with sns notification arns', async () => {
@@ -88,7 +88,7 @@ describe('deploy', () => {
 
       // WHEN
       await toolkit.deploy({
-        stackNames: ['Test-Stack-A', 'Test-Stack-B'],
+        selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] },
         notificationArns,
       });
     });
