@@ -685,6 +685,10 @@ export class Function extends FunctionBase {
     this.runtime = props.runtime;
 
     if (props.layers) {
+      if (props.runtime === Runtime.FROM_IMAGE) {
+        throw new Error('Layers are not supported for container image functions');
+      }
+
       this.addLayers(...props.layers);
     }
 
