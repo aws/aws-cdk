@@ -20,6 +20,8 @@
     "test": "jest",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build && npm test",
+    "build+extract": "npm run build",
+    "build+test+extract": "npm run build+test",
     "watch": "tsc -b -w",
     "lint": "tsc -b && eslint . --ext=.ts"
   },

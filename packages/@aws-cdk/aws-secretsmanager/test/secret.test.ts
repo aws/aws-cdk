@@ -687,6 +687,25 @@ test('fromSecretCompleteArn - grants', () => {
   });
 });
 
+test('fromSecretCompleteArn - can be assigned to a property with type number', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+
+  // WHEN
+  new lambda.Function(stack, 'MyFunction', {
+    code: lambda.Code.fromInline('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS,
+    memorySize: cdk.Token.asNumber(secret.secretValueFromJson('LambdaFunctionMemorySize')),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    MemorySize: `{{resolve:secretsmanager:${secretArn}:SecretString:LambdaFunctionMemorySize::}}`,
+  });
+});
+
 test('fromSecretPartialArn', () => {
   // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
@@ -787,6 +806,19 @@ describe('fromSecretAttributes', () => {
     expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
       secretCompleteArn: 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret',
     })).toThrow(/does not appear to be complete/);
+  });
+
+  test('parses environment from secretArn', () => {
+    // GIVEN
+    const secretAccount = '222222222222';
+
+    // WHEN
+    const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+      secretCompleteArn: `arn:aws:secretsmanager:eu-west-1:${secretAccount}:secret:MySecret-f3gDy9`,
+    });
+
+    // THEN
+    expect(secret.env.account).toBe(secretAccount);
   });
 });
 

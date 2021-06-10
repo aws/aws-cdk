@@ -471,6 +471,19 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 });
 ```
 
+### Define tasks with custom queue parameters for QueueProcessingFargateService
+
+```ts
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  maxReceiveCount: 42,
+  retentionPeriod: cdk.Duration.days(7),
+  visibilityTimeout: cdk.Duration.minutes(5),
+});
+```
+
 ### Select specific vpc subnets for ApplicationLoadBalancedFargateService
 
 ```ts
