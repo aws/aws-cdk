@@ -42,6 +42,19 @@ test('select all top level stacks in the presence of nested assemblies', async (
   expect(x.stackIds).toContain('withouterrors');
 });
 
+test('select stacks by glob pattern', async () => {
+  // GIVEN
+  const cxasm = await testCloudAssembly();
+
+  // WHEN
+  const x = await cxasm.selectStacks({ patterns: ['with*'] }, { defaultBehavior: DefaultSelection.AllStacks });
+
+  // THEN
+  expect(x.stackCount).toBe(2);
+  expect(x.stackIds).toContain('witherrors');
+  expect(x.stackIds).toContain('withouterrors');
+});
+
 test('select behavior: all', async () => {
   // GIVEN
   const cxasm = await testCloudAssembly();
