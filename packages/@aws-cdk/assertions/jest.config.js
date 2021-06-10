@@ -7,5 +7,5 @@ module.exports = {
             branches: 60,
         },
     },
-    collectCoverageFrom: ['lib/**', '!lib/assert-internal/**']
+    collectCoverageFrom: ['lib/**', '!lib/vendored/**']
 };
