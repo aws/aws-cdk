@@ -1,4 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+/// !cdk-integ PipelineStack
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -26,20 +27,10 @@ class PipelineStack extends Stack {
     group.addStage(new AppStage(this, 'Prod2'));
 
     const group2 = pipeline.addWave('Wave2');
-    group2.addStage(new AppStage(this, 'Prod1'));
-    group2.addStage(new AppStage(this, 'Prod2'));
-    group2.addStage(new AppStage(this, 'Prod1'));
-    group2.addStage(new AppStage(this, 'Prod2'));
-
-    const group3 = pipeline.addWave('Wave3');
-    group3.addStage(new AppStage(this, 'Prod1'));
-    group3.addStage(new AppStage(this, 'Prod2'));
-    group3.addStage(new AppStage(this, 'Prod1'));
-    group3.addStage(new AppStage(this, 'Prod2'));
-    group3.addStage(new AppStage(this, 'Prod1'));
-    group3.addStage(new AppStage(this, 'Prod2'));
-    group3.addStage(new AppStage(this, 'Prod1'));
-    group3.addStage(new AppStage(this, 'Prod2'));
+    group2.addStage(new AppStage(this, 'Prod3'));
+    group2.addStage(new AppStage(this, 'Prod4'));
+    group2.addStage(new AppStage(this, 'Prod5'));
+    group2.addStage(new AppStage(this, 'Prod6'));
   }
 }
 
