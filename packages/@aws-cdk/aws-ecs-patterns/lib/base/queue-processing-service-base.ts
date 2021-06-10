@@ -285,7 +285,7 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
         retentionPeriod: props.retentionPeriod || Duration.days(14),
       });
       this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
-        visibilityTimeout: props.visibilityTimeout || undefined,
+        visibilityTimeout: props.visibilityTimeout,
         deadLetterQueue: {
           queue: this.deadLetterQueue,
           maxReceiveCount: props.maxReceiveCount || 3,
