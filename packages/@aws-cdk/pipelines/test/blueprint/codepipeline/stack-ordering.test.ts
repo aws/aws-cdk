@@ -61,7 +61,7 @@ test('manual approval is inserted after app', () => {
   // WHEN
   pipeline.addStage(new TwoStackApp(app, 'MyApp'), {
     post: [
-      new cdkp.ManualApproval('Approve'),
+      new cdkp.ManualApprovalStep('Approve'),
     ],
   });
 

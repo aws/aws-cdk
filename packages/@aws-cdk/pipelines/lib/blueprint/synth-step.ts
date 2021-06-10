@@ -2,7 +2,7 @@ import * as path from 'path';
 import { toPosixPath } from '../private/fs';
 import { mapValues, mkdict } from '../private/javascript';
 import { IFileSet } from './file-set';
-import { RunScript } from './run-script';
+import { ScriptStep } from './script-step';
 
 export interface SynthStepProps {
   readonly subdirectory?: string;
@@ -17,7 +17,7 @@ export interface SynthStepProps {
   readonly additionalOutputDirectories?: Record<string, string>;
 }
 
-export class SynthStep extends RunScript {
+export class SynthStep extends ScriptStep {
   constructor(id: string, props: SynthStepProps) {
     const subdirectory = props.subdirectory ?? '.';
 

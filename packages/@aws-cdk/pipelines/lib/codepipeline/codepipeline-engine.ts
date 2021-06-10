@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
-import { AssetType, ManualApproval, RunScript, StackAsset, StackDeployment, Step } from '../blueprint';
+import { AssetType, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { BuildDeploymentOptions, IDeploymentEngine } from '../main/engine';
 import { appOf, assemblyBuilderOf, embeddedAsmPath } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
@@ -216,7 +216,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
     }
 
     // Now built-in steps
-    if (step instanceof RunScript) {
+    if (step instanceof ScriptStep) {
       return new CodeBuildFactory(step.id, step, {
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
@@ -233,7 +233,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       });
     }
 
-    if (step instanceof ManualApproval) {
+    if (step instanceof ManualApprovalStep) {
       return {
         action: new cpa.ManualApprovalAction({
           actionName: actionName(options.node, options.sharedParent),

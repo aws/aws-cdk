@@ -1,14 +1,14 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { FileSet, RunScript, RunScriptProps, Step } from '../blueprint';
+import { FileSet, ScriptStep, ScriptStepProps, Step } from '../blueprint';
 import { CodeBuildFactory } from './_codebuild-factory';
 import { ICodePipelineActionFactory, CodePipelineActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
 
 /**
  * Construction props for SimpleSynthAction
  */
-export interface CodeBuildStepProps extends RunScriptProps {
+export interface CodeBuildStepProps extends ScriptStepProps {
   /**
    * Name for the generated CodeBuild project
    *
@@ -57,13 +57,13 @@ export interface CodeBuildStepProps extends RunScriptProps {
  */
 export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
   public primaryOutput?: FileSet | undefined;
-  private readonly runScript: RunScript;
+  private readonly runScript: ScriptStep;
   private _project?: codebuild.IProject;
 
   constructor(id: string, private readonly props: CodeBuildStepProps) {
     super(id);
 
-    this.runScript = new RunScript(id, props);
+    this.runScript = new ScriptStep(id, props);
 
     const mainInput = this.runScript.inputs.find(x => x.directory === '.');
     if (!mainInput) {

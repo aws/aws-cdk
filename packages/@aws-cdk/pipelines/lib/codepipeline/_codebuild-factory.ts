@@ -5,7 +5,7 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { FileSetLocation, RunScript } from '../blueprint';
+import { FileSetLocation, ScriptStep } from '../blueprint';
 import { mapValues, noEmptyObject } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { ICodePipelineActionFactory, CodePipelineActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
@@ -56,11 +56,14 @@ export interface CodeBuildFactoryProps {
 
 /**
  * Produce a CodeBuild project from a RunScript step and some CodeBuild-specific customizations
+ *
+ * The functionality here is shared between the `CodePipelinEngine` translating a `RunScript` into
+ * a CodeBuild project, as well as the `CodeBuildStep` straight up.
  */
 export class CodeBuildFactory implements ICodePipelineActionFactory {
   private _project?: codebuild.IProject;
 
-  constructor(private readonly constructId: string, private readonly runScript: RunScript, private readonly props: CodeBuildFactoryProps) {
+  constructor(private readonly constructId: string, private readonly runScript: ScriptStep, private readonly props: CodeBuildFactoryProps) {
   }
 
   public get project(): codebuild.IProject {

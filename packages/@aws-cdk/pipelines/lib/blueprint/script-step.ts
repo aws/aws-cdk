@@ -1,7 +1,7 @@
 import { FileSet, IFileSet } from './file-set';
 import { Step } from './step';
 
-export interface RunScriptProps {
+export interface ScriptStepProps {
   readonly commands: string[];
   readonly installCommands?: string[];
   readonly env?: Record<string, string>;
@@ -13,7 +13,7 @@ export interface RunScriptProps {
   readonly additionalOutputDirectories?: Record<string, string>;
 }
 
-export class RunScript extends Step {
+export class ScriptStep extends Step {
   public readonly primaryOutput?: FileSet | undefined;
   public readonly commands: string[];
   public readonly installCommands: string[];
@@ -24,7 +24,7 @@ export class RunScript extends Step {
 
   private readonly _additionalOutputs: Record<string, FileSet> = {};
 
-  constructor(id: string, props: RunScriptProps) {
+  constructor(id: string, props: ScriptStepProps) {
     super(id);
 
     this.commands = props.commands;

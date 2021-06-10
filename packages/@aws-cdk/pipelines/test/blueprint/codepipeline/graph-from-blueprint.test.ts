@@ -85,7 +85,7 @@ describe('blueprint with wave and stage', () => {
 
   test('post-action gets added inside stage graph', () => {
     // GIVEN
-    blueprint.waves[0].stages[0].addPost(new cdkp.ManualApproval('Approve'));
+    blueprint.waves[0].stages[0].addPost(new cdkp.ManualApprovalStep('Approve'));
 
     // WHEN
     const graph = new GraphFromBlueprint(blueprint).graph;
@@ -104,7 +104,7 @@ describe('blueprint with wave and stage', () => {
 
   test('pre-action gets added inside stage graph', () => {
     // GIVEN
-    blueprint.waves[0].stages[0].addPre(new cdkp.ManualApproval('Gogogo'));
+    blueprint.waves[0].stages[0].addPre(new cdkp.ManualApprovalStep('Gogogo'));
 
     // WHEN
     const graph = new GraphFromBlueprint(blueprint).graph;
