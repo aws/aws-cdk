@@ -3,35 +3,36 @@
 
 ---
 
-![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
 
 <!--END STABILITY BANNER-->
-
-> NOTE: This module contains *beta APIs*.
->
-> Some of the symbols in the APIs are suffixed with the `Beta<n>`.
-> When we have backwards incompatible change, we will create a new
-> symbol with a `Beta<n+1>` suffix and deprecate the `Beta<n>` symbol.
-----
 
 This module allows asserting the contents of CloudFormation templates.
 
 To run assertions based on a CDK `Stack`, start off with -
 
 ```ts
-const stack = new cdk.Stack(...)
+import { Stack } from '@aws-cdk/core';
+import { TemplateAssertions } from '@aws-cdk/assertions';
+
+const stack = new Stack(...)
 ...
-const assert = TemplateAssertionsBeta1.fromStack(stack);
+const assert = TemplateAssertions.fromStack(stack);
 ```
 
 Alternatively, assertions can be run on an existing CloudFormation template -
 
 ```ts
-const file = '/path/to/template/file.json';
-const template = fs.readFileSync(file);
-const assert = TemplateAssertionsBeta1.fromTemplate(template);
+const template = fs.readFileSync('/path/to/template/file');
+const assert = TemplateAssertions.fromTemplate(template);
 ```
 
 ## Full Template Match
@@ -40,6 +41,7 @@ The simplest assertion would be to assert that the template matches a given
 template.
 
 ```ts
+// In typescript
 assert.assertTemplateMatches({
   Resources: {
     Type: 'Foo::Bar',
@@ -84,6 +86,32 @@ assert.assertHasResource('Foo::Bar', {
   Properties: { Foo: 'Bar' },
   DependsOn: [ 'Waldo', 'Fred' ],
 }, {
-  part: ResourcePartBeta1.COMPLETE,
+  part: ResourcePart.COMPLETE,
 });
+```
+
+## Strongly typed languages
+
+Some of the APIs documented above, such as `assertTemplateMatches()` and
+`assertHasResource()` accept fluently an arbitrary JSON (like) structure as one
+of its parameters.
+This fluency is available only in dynamically typed languages like javascript
+and Python.
+
+For strongly typed languages, like Java, you can achieve similar fluency using
+any popular JSON deserializer. The following Java example uses `Gson` -
+
+```java
+// In Java, using text blocks and Gson
+import com.google.gson.Gson;
+
+String json = """
+  {
+    "Foo": "Bar",
+    "Baz": 5,
+    "Qux": [ "Waldo", "Fred" ],
+  } """;
+
+Map expected = new Gson().fromJson(json, Map.class);
+assert.assertHasResource("Foo::Bar", expected);
 ```

@@ -1,5 +1,5 @@
 import { CfnResource, Stack } from '@aws-cdk/core';
-import { ResourcePartBeta1, TemplateAssertionsBeta1 } from '../lib';
+import { ResourcePart, TemplateAssertions } from '../lib';
 
 describe('StackAssertions', () => {
 
@@ -10,7 +10,7 @@ describe('StackAssertions', () => {
         type: 'Foo::Bar',
       });
 
-      const inspect = TemplateAssertionsBeta1.fromStack(stack);
+      const inspect = TemplateAssertions.fromStack(stack);
       inspect.assertResourceCountIs('Foo::Bar', 1);
 
       expect(() => inspect.assertResourceCountIs('Foo::Bar', 0)).toThrow(/has 1 resource of type Foo::Bar/);
@@ -22,7 +22,7 @@ describe('StackAssertions', () => {
     test('no resource', () => {
       const stack = new Stack();
 
-      const inspect = TemplateAssertionsBeta1.fromStack(stack);
+      const inspect = TemplateAssertions.fromStack(stack);
       inspect.assertResourceCountIs('Foo::Bar', 0);
 
       expect(() => inspect.assertResourceCountIs('Foo::Bar', 1)).toThrow(/has 0 resource of type Foo::Bar/);
@@ -39,7 +39,7 @@ describe('StackAssertions', () => {
         },
       });
 
-      const inspect = TemplateAssertionsBeta1.fromStack(stack);
+      const inspect = TemplateAssertions.fromStack(stack);
       inspect.assertHasResource('Foo::Bar', { baz: 'qux' });
 
       expect(() => inspect.assertHasResource('Foo::Bar', { fred: 'waldo' })).toThrow(/None .* matches resource 'Foo::Bar'/);
@@ -52,7 +52,7 @@ describe('StackAssertions', () => {
         type: 'Foo::Bar',
       });
 
-      const inspect = TemplateAssertionsBeta1.fromStack(stack);
+      const inspect = TemplateAssertions.fromStack(stack);
       expect(() => inspect.assertHasResource('Foo::Baz', {})).toThrow(/None .* matches resource 'Foo::Baz'/);
     });
 
@@ -62,12 +62,12 @@ describe('StackAssertions', () => {
       const baz = new CfnResource(stack, 'Baz', { type: 'Foo::Baz' });
       bar.node.addDependency(baz);
 
-      const inspect = TemplateAssertionsBeta1.fromStack(stack);
+      const inspect = TemplateAssertions.fromStack(stack);
       inspect.assertHasResource('Foo::Bar', {
         Properties: { baz: 'qux' },
         DependsOn: ['Baz'],
       }, {
-        part: ResourcePartBeta1.COMPLETE,
+        part: ResourcePart.COMPLETE,
       });
     });
   });
@@ -80,7 +80,7 @@ describe('StackAssertions', () => {
         properties: { baz: 'qux' },
       });
 
-      const inspect = TemplateAssertionsBeta1.fromStack(stack);
+      const inspect = TemplateAssertions.fromStack(stack);
       inspect.assertTemplateMatches({
         Resources: {
           Foo: {
@@ -98,7 +98,7 @@ describe('StackAssertions', () => {
         properties: { baz: 'qux' },
       });
 
-      const inspect = TemplateAssertionsBeta1.fromStack(stack);
+      const inspect = TemplateAssertions.fromStack(stack);
       expect(() => inspect.assertTemplateMatches({
         Resources: {
           Foo: {

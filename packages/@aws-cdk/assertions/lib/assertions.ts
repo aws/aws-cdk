@@ -4,18 +4,18 @@ import * as assert from './vendored/assert';
 /**
  * A number of options to customize the `StackAssertions.assertResource()` API.
  */
-export interface AssertResourceOptionsBeta1 {
+export interface AssertResourceOptions {
   /**
    * The part of the CloudFormation Resource that the assertion should match against.
    * @default ResourcePart.PROPERTIES
    */
-  readonly part?: ResourcePartBeta1;
+  readonly part?: ResourcePart;
 }
 
 /**
  * See `AssertResourceOptions.part`
  */
-export enum ResourcePartBeta1 {
+export enum ResourcePart {
   /** The entire resource definition in the template, excluding the 'Type' */
   COMPLETE,
   /** The 'Properties' section of the resource definition in the template */
@@ -27,14 +27,14 @@ export enum ResourcePartBeta1 {
  * Typically used, as part of unit tests, to validate that the rendered
  * CloudFormation template has expected resources and properties.
  */
-export class TemplateAssertionsBeta1 {
+export class TemplateAssertions {
 
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
    */
   public static fromStack(stack: Stack) {
-    return new TemplateAssertionsBeta1(toTemplate(stack));
+    return new TemplateAssertions(toTemplate(stack));
   }
 
   /**
@@ -42,7 +42,7 @@ export class TemplateAssertionsBeta1 {
    * @param template the CloudFormation template in JSON format as a string
    */
   public static fromTemplate(template: string) {
-    return new TemplateAssertionsBeta1(JSON.parse(template));
+    return new TemplateAssertions(JSON.parse(template));
   }
 
   private readonly inspector: assert.StackInspector;
@@ -69,8 +69,8 @@ export class TemplateAssertionsBeta1 {
    * @param props the properties of the resource
    * @param options customize how the matching should be performed
    */
-  public assertHasResource(type: string, props: any, options?: AssertResourceOptionsBeta1): void {
-    const part = assertResourcePart(options?.part ?? ResourcePartBeta1.PROPERTIES);
+  public assertHasResource(type: string, props: any, options?: AssertResourceOptions): void {
+    const part = assertResourcePart(options?.part ?? ResourcePart.PROPERTIES);
     const assertion = assert.haveResource(type, props, part);
     assertion.assertOrThrow(this.inspector);
   }
@@ -94,11 +94,11 @@ function toTemplate(stack: Stack): any {
   return assembly.getStackArtifact(stack.artifactId).template;
 }
 
-function assertResourcePart(part: ResourcePartBeta1) {
+function assertResourcePart(part: ResourcePart) {
   switch (part) {
-    case ResourcePartBeta1.PROPERTIES:
+    case ResourcePart.PROPERTIES:
       return assert.ResourcePart.Properties;
-    case ResourcePartBeta1.COMPLETE:
+    case ResourcePart.COMPLETE:
       return assert.ResourcePart.CompleteDefinition;
     default:
       throw new Error(`unexpected: unrecognized resource part type [${part}]`);
