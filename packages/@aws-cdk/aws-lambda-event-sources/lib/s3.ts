@@ -21,7 +21,7 @@ export interface S3EventSourceProps {
  * Use S3 bucket notifications as an event source for AWS Lambda.
  */
 export class S3EventSource implements lambda.IEventSource {
-  constructor(readonly bucket: s3.Bucket, private readonly props: S3EventSourceProps) {
+  constructor(readonly bucket: s3.IBucket, private readonly props: S3EventSourceProps) {
 
   }
 

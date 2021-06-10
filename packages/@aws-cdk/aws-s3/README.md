@@ -207,7 +207,9 @@ bucket.addEventNotification(s3.EventType.OBJECT_REMOVED,
   { prefix: 'foo/', suffix: '.jpg' });
 ```
 
-Adding notifications on existing buckets:
+### Adding notifications on existing buckets
+
+You can add notifications to existing bucket by importing the bucket and using the same API:
 
 ```ts
 const bucket = Bucket.fromBucketAttributes(this, 'ImportedBucket', {
@@ -215,6 +217,20 @@ const bucket = Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 });
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
+
+Note that this operation will fail if your bucket has any pre-existing notifications configured.
+If you'd like CDK to account for those pre-existing notifications, you have to specify their ID's when importing the bucket:
+
+```ts
+const bucket = Bucket.fromBucketAttributes(this, 'ImportedBucket', {
+    bucketArn: 'arn:aws:s3:::my-bucket',
+    existingNotificationIds: ['Nzg1NjMyMTMtMDFjNy00OWQyLTkxMjAtYjU5ZThjNzZlNTg0', 'YjgyZWRmODgtOWQ4Zi00NzhmLWJmYTQtYjMzODgxMTU1N2My']
+});
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
+```
+
+> The ID's can be retrieved from the aws console by looking at the `Name` property of the notification.
+
 
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 

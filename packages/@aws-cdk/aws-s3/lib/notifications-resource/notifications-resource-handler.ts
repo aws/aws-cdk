@@ -41,7 +41,7 @@ export class NotificationsResourceHandler extends Construct {
       lambda = new NotificationsResourceHandler(root, logicalId);
     }
 
-    return lambda.functionArn;
+    return lambda;
   }
 
   /**
@@ -50,19 +50,23 @@ export class NotificationsResourceHandler extends Construct {
    */
   public readonly functionArn: string;
 
+  /**
+   * The role of the handler's lambda function.
+   */
+  public readonly role: iam.Role;
+
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const role = new iam.Role(this, 'Role', {
+    this.role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
       ],
     });
 
-    // handler allowed to get existing bucket notification configuration and put bucket notification on s3 buckets.
-    role.addToPolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification', 's3:GetBucketNotification'],
+    this.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:PutBucketNotification'],
       resources: ['*'],
     }));
 
@@ -80,14 +84,14 @@ export class NotificationsResourceHandler extends Construct {
       type: resourceType,
       properties: {
         Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
-        Code: { ZipFile: fs.readFileSync(path.join(__dirname, 'lambda-source/src/index.py'), 'utf8') },
+        Code: { ZipFile: fs.readFileSync(path.join(__dirname, 'lambda/index.py'), 'utf8') },
         Handler: 'index.handler',
-        Role: role.roleArn,
+        Role: this.role.roleArn,
         Runtime: 'python3.8',
         Timeout: 300,
       },
     });
-    resource.node.addDependency(role);
+    resource.node.addDependency(this.role);
 
     this.functionArn = resource.getAtt('Arn').toString();
   }
