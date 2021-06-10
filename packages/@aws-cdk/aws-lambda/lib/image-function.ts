@@ -65,8 +65,5 @@ export class DockerImageFunction extends Function {
       runtime: Runtime.FROM_IMAGE,
       code: props.code._bind(),
     });
-    if (props.layers) {
-      throw new Error('Layers are not supported for container image functions');
-    }
   }
 }
