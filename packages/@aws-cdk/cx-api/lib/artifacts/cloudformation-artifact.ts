@@ -94,6 +94,13 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly terminationProtection?: boolean;
 
+  /**
+   * Whether this stack should be validated by the CLI after synthesis
+   *
+   * @default - false
+   */
+  public readonly validateOnSynth?: boolean;
+
   private _template: any | undefined;
 
   constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest) {
@@ -119,6 +126,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
     this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
     this.terminationProtection = properties.terminationProtection;
+    this.validateOnSynth = properties.validateOnSynth;
 
     this.stackName = properties.stackName || artifactId;
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);

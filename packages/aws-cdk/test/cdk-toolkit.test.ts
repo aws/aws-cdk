@@ -45,7 +45,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'] });
+      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] } });
     });
 
     test('with stacks all stacks specified as double wildcard', async () => {
@@ -53,7 +53,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['**'] });
+      await toolkit.deploy({ selector: { patterns: ['**'] } });
     });
 
 
@@ -62,7 +62,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['Test-Stack-A'] });
+      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A'] } });
     });
 
     test('with stacks all stacks specified as wildcard', async () => {
@@ -70,7 +70,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['*'] });
+      await toolkit.deploy({ selector: { patterns: ['*'] } });
     });
 
     test('with sns notification arns', async () => {
@@ -88,7 +88,7 @@ describe('deploy', () => {
 
       // WHEN
       await toolkit.deploy({
-        stackNames: ['Test-Stack-A', 'Test-Stack-B'],
+        selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] },
         notificationArns,
       });
     });
@@ -178,20 +178,58 @@ describe('synth', () => {
     process.env.STACKS_TO_VALIDATE = undefined;
   });
 
-  test('with STACKS_TO_VALIDATE containing a failed stack', async() => {
-    process.env.STACKS_TO_VALIDATE = 'Test-Stack-A;Test-Stack-A/witherrors';
+  test('stack has error and is flagged for validation', async() => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        MockStack.MOCK_STACK_B,
+      ],
+      nestedAssemblies: [{
+        stacks: [
+          { properties: { validateOnSynth: true }, ...MockStack.MOCK_STACK_WITH_ERROR },
+        ],
+      }],
+    });
 
     const toolkit = defaultToolkitSetup();
 
-    await expect(toolkit.synth(['Test-Stack-A'], false, true)).rejects.toBeDefined();
+    await expect(toolkit.synth([], false, true)).rejects.toBeDefined();
   });
 
-  test('with STACKS_TO_VALIDATE not containing a failed stack', async() => {
-    process.env.STACKS_TO_VALIDATE = 'Test-Stack-A';
+  test('stack has error and was explicitly selected', async() => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        MockStack.MOCK_STACK_B,
+      ],
+      nestedAssemblies: [{
+        stacks: [
+          { properties: { validateOnSynth: false }, ...MockStack.MOCK_STACK_WITH_ERROR },
+        ],
+      }],
+    });
 
     const toolkit = defaultToolkitSetup();
 
-    await toolkit.synth(['Test-Stack-A'], false, true);
+    await expect(toolkit.synth(['witherrors'], false, true)).rejects.toBeDefined();
+  });
+
+  test('stack has error, is not flagged for validation and was not explicitly selected', async () => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        MockStack.MOCK_STACK_B,
+      ],
+      nestedAssemblies: [{
+        stacks: [
+          { properties: { validateOnSynth: false }, ...MockStack.MOCK_STACK_WITH_ERROR },
+        ],
+      }],
+    });
+
+    const toolkit = defaultToolkitSetup();
+
+    await toolkit.synth([], false, true);
   });
 });
 

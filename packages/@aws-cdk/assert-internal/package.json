@@ -13,7 +13,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -26,7 +28,7 @@
     "cdk-build-tools": "0.0.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.5.5"
+    "ts-jest": "^26.5.6"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",

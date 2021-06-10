@@ -12,7 +12,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "cdk-build": {
     "jest": true,
@@ -40,7 +42,7 @@
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
     "@aws-cdk/assert-internal": "0.0.0",
-    "ts-jest": "^26.5.5"
+    "ts-jest": "^26.5.6"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0",

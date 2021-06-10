@@ -18,7 +18,9 @@
     "watch": "cdk-watch",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "cdk-build": {
     "jest": true
@@ -35,7 +37,7 @@
     "@types/jest": "^26.0.23",
     "@types/jszip": "^3.4.1",
     "@types/mock-fs": "^4.13.0",
-    "@types/node": "^10.17.59",
+    "@types/node": "^10.17.60",
     "@types/yargs": "^15.0.13",
     "cdk-build-tools": "0.0.0",
     "jest": "^26.6.3",
@@ -48,7 +50,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.848.0",
-    "glob": "^7.1.6",
+    "glob": "^7.1.7",
     "yargs": "^16.2.0"
   },
   "repository": {
@@ -68,7 +70,11 @@
     "shrinkWrap": true
   },
   "nozem": {
-    "ostools": ["unzip", "diff", "rm"]
+    "ostools": [
+      "unzip",
+      "diff",
+      "rm"
+    ]
   },
   "stability": "experimental",
   "maturity": "experimental",
