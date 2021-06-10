@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import '@aws-cdk/assert-internal/jest';
 import * as cdkp from '../../../lib';
-import { GraphFromBlueprint } from '../../../lib/bp-codepipeline/_graph-from-blueprint';
+import { GraphFromBlueprint } from '../../../lib/codepipeline/_graph-from-blueprint';
 import { Graph, GraphNode } from '../../../lib/private/graph';
 import { flatten } from '../../../lib/private/javascript';
 import { OneStackApp } from '../test-app';
@@ -17,37 +17,116 @@ afterEach(() => {
   app.cleanup();
 });
 
-test('simple app gets graphed correctly', () => {
-  // GIVEN
-  const blueprint = new cdkp.Blueprint({
-    synthStep: new cdkp.SynthStep('Synth', {
-      input: cdkp.CodePipelineSource.gitHub('test/test'),
-      commands: ['build'],
-    }),
+describe('blueprint with one stage', () => {
+  let blueprint: cdkp.Blueprint;
+  beforeEach(() => {
+    blueprint = new cdkp.Blueprint({
+      synthStep: new cdkp.SynthStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        commands: ['build'],
+      }),
+    });
+    blueprint.addStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
   });
-  blueprint.addStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
 
-  // WHEN
-  const graph = new GraphFromBlueprint(blueprint).graph;
+  test('simple app gets graphed correctly', () => {
+    // WHEN
+    const graph = new GraphFromBlueprint(blueprint).graph;
 
-  // THEN
-  expect(childNames(graph)).toEqual([
-    'Source',
-    'Build',
-    'CrossAccount',
-  ]);
+    // THEN
+    expect(childrenAt(graph)).toEqual([
+      'Source',
+      'Build',
+      'CrossAccount',
+    ]);
 
-  const crossAccount = assertGraph(graph.tryGetChild('CrossAccount'));
-  expect(childNames(crossAccount)).toEqual([
-    'Stack',
-  ]);
+    expect(childrenAt(graph, 'CrossAccount')).toEqual([
+      'Stack',
+    ]);
 
-  const stack = assertGraph(crossAccount.tryGetChild('Stack'));
-  expect(childNames(stack)).toEqual([
-    'Prepare',
-    'Deploy',
-  ]);
+    expect(childrenAt(graph, 'CrossAccount', 'Stack')).toEqual([
+      'Prepare',
+      'Deploy',
+    ]);
+  });
+
+  test('self mutation gets inserted at the right place', () => {
+    // WHEN
+    const graph = new GraphFromBlueprint(blueprint, { selfMutation: true }).graph;
+
+    // THEN
+    expect(childrenAt(graph)).toEqual([
+      'Source',
+      'Build',
+      'UpdatePipeline',
+      'CrossAccount',
+    ]);
+
+    expect(childrenAt(graph, 'UpdatePipeline')).toEqual([
+      'SelfMutate',
+    ]);
+  });
 });
+
+describe('blueprint with wave and stage', () => {
+  let blueprint: cdkp.Blueprint;
+  beforeEach(() => {
+    blueprint = new cdkp.Blueprint({
+      synthStep: new cdkp.SynthStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        commands: ['build'],
+      }),
+    });
+
+    const wave = blueprint.addWave('Wave');
+    wave.addStage(new OneStackApp(app, 'Alpha'));
+    wave.addStage(new OneStackApp(app, 'Beta'));
+  });
+
+  test('post-action gets added inside stage graph', () => {
+    // GIVEN
+    blueprint.waves[0].stages[0].addPost(new cdkp.ManualApproval('Approve'));
+
+    // WHEN
+    const graph = new GraphFromBlueprint(blueprint).graph;
+
+    // THEN
+    expect(childrenAt(graph, 'Wave')).toEqual([
+      'Alpha',
+      'Beta',
+    ]);
+
+    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
+      'Stack',
+      'Approve',
+    ]);
+  });
+
+  test('pre-action gets added inside stage graph', () => {
+    // GIVEN
+    blueprint.waves[0].stages[0].addPre(new cdkp.ManualApproval('Gogogo'));
+
+    // WHEN
+    const graph = new GraphFromBlueprint(blueprint).graph;
+
+    // THEN
+    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
+      'Gogogo',
+      'Stack',
+    ]);
+  });
+});
+
+function childrenAt(g: Graph<any>, ...descend: string[]) {
+  for (const d of descend) {
+    const child = g.tryGetChild(d);
+    if (!child) {
+      throw new Error(`No node named '${d}' in ${g}`);
+    }
+    g = assertGraph(child);
+  }
+  return childNames(g);
+}
 
 function childNames(g: Graph<any>) {
   return Array.from(flatten(g.sortedChildren())).map(n => n.id);

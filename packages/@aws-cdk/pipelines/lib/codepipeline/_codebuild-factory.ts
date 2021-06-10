@@ -60,7 +60,7 @@ export interface CodeBuildFactoryProps {
 export class CodeBuildFactory implements ICodePipelineActionFactory {
   private _project?: codebuild.IProject;
 
-  constructor(private readonly runScript: RunScript, private readonly props: CodeBuildFactoryProps) {
+  constructor(private readonly constructId: string, private readonly runScript: RunScript, private readonly props: CodeBuildFactoryProps) {
   }
 
   public get project(): codebuild.IProject {
@@ -107,7 +107,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       buildSpecString: buildSpec.toBuildSpec(),
     }));
 
-    const project = new codebuild.PipelineProject(options.scope, 'CdkBuildProject', {
+    const project = new codebuild.PipelineProject(options.scope, this.constructId, {
       projectName: this.props.projectName,
       environment,
       vpc: this.props.vpc,
@@ -167,9 +167,6 @@ function renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLoca
   // save the generated files in the output artifact
   // This part of the buildspec has to look completely different depending on whether we're
   // using secondary artifacts or not.
-  // eslint-disable-next-line no-console
-  console.log(outputs);
-
   if (outputs.length === 0) { return undefined; }
 
   if (outputs.length === 1) {

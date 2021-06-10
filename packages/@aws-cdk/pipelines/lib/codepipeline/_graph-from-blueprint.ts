@@ -1,6 +1,5 @@
-import { Blueprint, FileSet, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
+import { AssetType, Blueprint, FileSet, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
 import { Graph, GraphNode, GraphNodeCollection } from '../private/graph';
-import { AssetType } from '../types';
 import { CodePipelineSource } from './codepipeline-source';
 
 export interface GraphFromBlueprintProps {

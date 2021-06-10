@@ -3,9 +3,9 @@ import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { AssetType } from '../blueprint/asset-type';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { topologicalSort } from '../private/toposort';
-import { AssetType } from '../types/asset-type';
 import { DeployCdkStackAction } from './actions';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.

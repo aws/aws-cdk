@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { arrayWith, deepObjectLike, encodedJson, objectLike, Capture } from '@aws-cdk/assert-internal';
+import { arrayWith, deepObjectLike, encodedJson, objectLike, Capture, anything } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as cbuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -136,7 +136,7 @@ test('complex setup with environment variables still renders correct project', (
       'install2',
     ],
     commands: ['synth'],
-    engine: new cdkp.CodePipelineEngine(pipelineStack, 'Engine', {
+    engine: new cdkp.CodePipelineEngine({
       buildEnvironment: {
         environmentVariables: {
           INNER_VAR: { value: 'InnerValue' },
@@ -223,11 +223,11 @@ test('Standard (NPM) synth can output additional artifacts', () => {
       BuildSpec: encodedJson(deepObjectLike({
         artifacts: {
           'secondary-artifacts': {
-            Synth_CloudAssemblyArtifact: {
+            Synth_Output: {
               'base-directory': 'cdk.out',
               'files': '**/*',
             },
-            Synth_Build_IntegTest: {
+            Synth_test: {
               'base-directory': 'test',
               'files': '**/*',
             },
@@ -241,7 +241,7 @@ test('Standard (NPM) synth can output additional artifacts', () => {
 test('Standard (NPM) synth can run in a VPC', () => {
   // WHEN
   new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    engine: new cdkp.CodePipelineEngine(pipelineStack, 'Engine', {
+    engine: new cdkp.CodePipelineEngine({
       vpc: new ec2.Vpc(pipelineStack, 'NpmSynthTestVpc'),
     }),
   });
@@ -252,7 +252,7 @@ test('Standard (NPM) synth can run in a VPC', () => {
       SecurityGroupIds: [
         {
           'Fn::GetAtt': [
-            'EngineCdkBuildProjectSecurityGroupF736B879',
+            anything(),
             'GroupId',
           ],
         },
@@ -284,9 +284,9 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
   const hash2 = synthWithAction(() => ({
     installCommands: ['do install'],
   }));
-  const hash3 = synthWithAction((stack) => ({
+  const hash3 = synthWithAction(() => ({
     commands: ['asdf'],
-    engine: new cdkp.CodePipelineEngine(stack, 'Engine', {
+    engine: new cdkp.CodePipelineEngine({
       buildEnvironment: {
         computeType: cbuild.ComputeType.LARGE,
       },
@@ -308,11 +308,11 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
   expect(hash2).not.toEqual(hash4);
   expect(hash3).not.toEqual(hash4);
 
-  function synthWithAction(cb: (stack: Stack) => testutil.TestGitHubNpmPipelineProps) {
+  function synthWithAction(cb: () => testutil.TestGitHubNpmPipelineProps) {
     const _app = new testutil.TestApp({ outdir: OUTDIR });
     const _pipelineStack = new Stack(_app, 'PipelineStack', { env: testutil.PIPELINE_ENV });
 
-    new testutil.TestGitHubNpmPipeline(_pipelineStack, 'Cdk', cb(_pipelineStack));
+    new testutil.TestGitHubNpmPipeline(_pipelineStack, 'Cdk', cb());
 
     const theHash = Capture.aString();
     expect(_pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -341,7 +341,7 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
 
 test('SimpleSynthAction is IGrantable', () => {
   // GIVEN
-  const engine = new cdkp.CodePipelineEngine(pipelineStack, 'Engine');
+  const engine = new cdkp.CodePipelineEngine();
   const pipe = new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     engine,
   });
@@ -367,7 +367,7 @@ test('SimpleSynthAction can reference an imported ECR repo', () => {
 
   // WHEN
   new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    engine: new cdkp.CodePipelineEngine(pipelineStack, 'Engine', {
+    engine: new cdkp.CodePipelineEngine({
       buildEnvironment: {
         buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
           ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),

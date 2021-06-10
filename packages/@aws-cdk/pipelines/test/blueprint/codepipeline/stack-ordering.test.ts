@@ -57,7 +57,7 @@ test('multiple independent stacks go in parallel', () => {
   });
 });
 
-test('manual approval is inserted in correct location', () => {
+test('manual approval is inserted after app', () => {
   // WHEN
   pipeline.addStage(new TwoStackApp(app, 'MyApp'), {
     post: [
@@ -71,11 +71,10 @@ test('manual approval is inserted in correct location', () => {
       Name: 'MyApp',
       Actions: sortedByRunOrder([
         objectLike({ Name: 'Stack1.Prepare' }),
-        objectLike({ Name: 'Stack1.Approve' }),
         objectLike({ Name: 'Stack1.Deploy' }),
         objectLike({ Name: 'Stack2.Prepare' }),
-        objectLike({ Name: 'Stack2.Approve' }),
         objectLike({ Name: 'Stack2.Deploy' }),
+        objectLike({ Name: 'Approve' }),
       ]),
     }),
   });

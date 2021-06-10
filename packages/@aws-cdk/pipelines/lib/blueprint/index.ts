@@ -1,3 +1,4 @@
+export * from './asset-type';
 export * from './blueprint';
 export * from './file-set';
 export * from './run-script';

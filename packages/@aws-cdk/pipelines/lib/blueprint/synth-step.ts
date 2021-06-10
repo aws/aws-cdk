@@ -30,7 +30,7 @@ export class SynthStep extends RunScript {
       additionalInputs: mkdict(Object.entries(props.additionalInputs ?? {}).map(([dir, fileSet]) =>
         [toPosixPath(path.join(subdirectory, dir)), fileSet] as const,
       )),
-      primaryOutputDirectory: props.cloudAssemblyOutputDirectory ?? 'cdk.out',
+      primaryOutputDirectory: path.join(subdirectory, props.cloudAssemblyOutputDirectory ?? 'cdk.out'),
       additionalOutputDirectories: mapValues(props.additionalOutputDirectories ?? {}, dir => path.join(subdirectory, dir)),
     });
   }

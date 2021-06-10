@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Step } from '../blueprint';
-import { Pipeline } from '../bp-main/pipeline';
+import { Pipeline } from '../main/pipeline';
 import { CodePipelineEngine, CodePipelineEngineProps } from './codepipeline-engine';
 
 export interface CodePipelineProps extends CodePipelineEngineProps {
@@ -12,8 +12,8 @@ export class CodePipeline extends Pipeline {
   constructor(scope: Construct, id: string, props: CodePipelineProps) {
     super(scope, id, {
       synthStep: props.synthStep,
-      // FIXME: Would have liked to pass 'this' here, but that's not allowed
-      engine: new CodePipelineEngine(scope, `${id}CodePipeline`, props),
+      // This needs to not be a construct because we can't root it under `CodePipeline` here.
+      engine: new CodePipelineEngine(props),
     });
   }
 }

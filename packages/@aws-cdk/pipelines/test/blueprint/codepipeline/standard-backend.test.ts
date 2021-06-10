@@ -246,7 +246,7 @@ test('selfmutation feature can be turned off', () => {
   const stack = new Stack();
   // WHEN
   new TestGitHubNpmPipeline(stack, 'Cdk', {
-    engine: new cdkp.CodePipelineEngine(stack, 'Engine', {
+    engine: new cdkp.CodePipelineEngine({
       selfMutation: false,
     }),
   });
@@ -298,12 +298,12 @@ test('changing CLI version leads to a different pipeline structure (restarting i
 
   // WHEN
   new TestGitHubNpmPipeline(stack2, 'Cdk', {
-    engine: new cdkp.CodePipelineEngine(stack2, 'Engine', {
+    engine: new cdkp.CodePipelineEngine({
       cdkCliVersion: '1.2.3',
     }),
   });
   new TestGitHubNpmPipeline(stack3, 'Cdk', {
-    engine: new cdkp.CodePipelineEngine(stack2, 'Engine', {
+    engine: new cdkp.CodePipelineEngine({
       cdkCliVersion: '4.5.6',
     }),
   });

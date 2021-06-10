@@ -48,7 +48,7 @@ export class Pipeline extends CoreConstruct {
     if (this.built) {
       throw new Error('build() has already been called: can only call it once');
     }
-    this.engine.buildDeployment(this.blueprint);
+    this.engine.buildDeployment({ blueprint: this.blueprint, scope: this });
     this.built = true;
   }
 

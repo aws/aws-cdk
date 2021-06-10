@@ -83,7 +83,7 @@ export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
   }
 
   public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
-    const factory = new CodeBuildFactory(this.runScript, this.props);
+    const factory = new CodeBuildFactory(this.id, this.runScript, this.props);
     const ret = factory.produce(options);
     this._project = factory.project;
     return ret;

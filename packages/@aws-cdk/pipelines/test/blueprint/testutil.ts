@@ -34,14 +34,13 @@ export type TestGitHubNpmPipelineProps = Partial<cdkp.SynthStepProps> & { synthS
 export class TestGitHubNpmPipeline extends cdkp.Pipeline {
   constructor(scope: Construct, id: string, props?: TestGitHubNpmPipelineProps) {
     super(scope, id, {
-      synthStep: new cdkp.SynthStep('Synth', {
+      synthStep: props?.synthStep ?? new cdkp.SynthStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         installCommands: ['npm ci'],
         commands: ['npx cdk synth'],
         ...props,
       }),
-      engine: props?.engine ?? new cdkp.CodePipelineEngine(scope, 'Engine'),
-      ...props?.synthStep ? { buildStep: props.synthStep } : undefined,
+      engine: props?.engine ?? new cdkp.CodePipelineEngine(),
     });
   }
 }

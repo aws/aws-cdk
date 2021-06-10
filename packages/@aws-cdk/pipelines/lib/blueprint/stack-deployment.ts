@@ -1,8 +1,9 @@
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { isAssetManifest } from '../private/cloud-assembly-internals';
-import { AssetType } from '../types';
+import { AssetType } from './asset-type';
 import { FileSet, IFileSet } from './file-set';
 
 export interface StackDeploymentProps {
@@ -13,8 +14,7 @@ export interface StackDeploymentProps {
   readonly executionRoleArn?: string;
   readonly tags?: Record<string, string>;
   readonly customCloudAssembly?: IFileSet;
-  readonly cloudAssemblyRoot: string;
-  readonly relativeTemplatePath: string;
+  readonly absoluteTemplatePath: string;
   readonly requiredAssets?: StackAsset[];
 }
 
@@ -31,8 +31,7 @@ export class StackDeployment {
       tags: stackArtifact.tags,
       customCloudAssembly: options.customCloudAssembly,
       stackName: stackArtifact.stackName,
-      cloudAssemblyRoot: stackArtifact.assembly.directory,
-      relativeTemplatePath: stackArtifact.templateFile,
+      absoluteTemplatePath: path.join(stackArtifact.assembly.directory, stackArtifact.templateFile),
       assumeRoleArn: stackArtifact.assumeRoleArn,
       executionRoleArn: stackArtifact.cloudFormationExecutionRoleArn,
       requiredAssets: extractStackAssets(stackArtifact),
@@ -46,8 +45,7 @@ export class StackDeployment {
   public readonly executionRoleArn?: string;
   public readonly tags: Record<string, string>;
   public readonly customCloudAssembly?: FileSet;
-  public readonly cloudAssemblyRoot: string;
-  public readonly relativeTemplatePath: string;
+  public readonly absoluteTemplatePath: string;
   public readonly requiredAssets: StackAsset[];
 
   public readonly dependsOnStacks: StackDeployment[] = [];
@@ -59,10 +57,13 @@ export class StackDeployment {
     this.assumeRoleArn = props.assumeRoleArn;
     this.executionRoleArn = props.executionRoleArn;
     this.stackName = props.stackName;
-    this.cloudAssemblyRoot = props.cloudAssemblyRoot;
     this.customCloudAssembly = props.customCloudAssembly?.primaryOutput;
-    this.relativeTemplatePath = props.relativeTemplatePath;
+    this.absoluteTemplatePath = props.absoluteTemplatePath;
     this.requiredAssets = props.requiredAssets ?? [];
+  }
+
+  public relativeTemplatePath(root: string) {
+    return path.relative(root, this.absoluteTemplatePath);
   }
 
   public addDependency(stackDeployment: StackDeployment) {

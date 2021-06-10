@@ -22,7 +22,7 @@ afterEach(() => {
 test('can do cross-account deployment if enabled', () => {
   // GIVEN
   const pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    engine: new cdkp.CodePipelineEngine(pipelineStack, 'Engine', {
+    engine: new cdkp.CodePipelineEngine({
       crossAccountKeys: true,
     }),
   });
@@ -79,7 +79,7 @@ test('can do cross-account deployment if enabled', () => {
 test('action has right settings for cross-account/cross-region deployment', () => {
   // GIVEN
   const pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    engine: new cdkp.CodePipelineEngine(pipelineStack, 'Engine', {
+    engine: new cdkp.CodePipelineEngine({
       crossAccountKeys: true,
     }),
   });
@@ -135,7 +135,7 @@ test('action has right settings for cross-account/cross-region deployment', () =
 test('can control fix/CLI version used in pipeline selfupdate', () => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk2', {
-    engine: new cdkp.CodePipelineEngine(pipelineStack, 'Engine', {
+    engine: new cdkp.CodePipelineEngine({
       pipelineName: 'vpipe',
       cdkCliVersion: '1.2.3',
     }),
