@@ -1337,8 +1337,8 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
 }
 
 /**
- * Requires packages to have fast-fail build scripts, allowing to combine build, test and package in a single command.
- * This involves two targets: `build+test:pack` and `build+test` (to skip the pack).
+ * Requires packages to have fast-fail build scripts, allowing to combine build, test and package/extract in a single command.
+ * This involves multiple targets: `build+test`, `build+extract`, `build+test+extract`, and `build+test+package`
  */
 export class FastFailingBuildScripts extends ValidationRule {
   public readonly name = 'fast-failing-build-scripts';
@@ -1348,12 +1348,15 @@ export class FastFailingBuildScripts extends ValidationRule {
 
     const hasTest = 'test' in scripts;
     const hasPack = 'package' in scripts;
+    const hasExtract = 'rosetta:extract' in scripts;
 
     const cmdBuild = 'yarn build';
     expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'yarn test'].join(' && ') : cmdBuild);
+    expectJSON(this.name, pkg, 'scripts.build+extract', hasExtract ? [cmdBuild, 'yarn rosetta:extract'].join(' && ') : cmdBuild);
 
     const cmdBuildTest = 'yarn build+test';
     expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'yarn package'].join(' && ') : cmdBuildTest);
+    expectJSON(this.name, pkg, 'scripts.build+test+extract', hasExtract ? [cmdBuildTest, 'yarn rosetta:extract'].join(' && ') : cmdBuildTest);
   }
 }
 
