@@ -81,7 +81,7 @@ beforeEach(() => {
               region: 'us-north-50',
               assumeRoleArn: 'arn:aws:role',
               bucketName: 'some_bucket',
-              objectKey: 'some_key',
+              objectKey: 'some_key.txt',
             },
           },
         },
@@ -94,7 +94,7 @@ beforeEach(() => {
               region: 'us-north-50',
               assumeRoleArn: 'arn:aws:role',
               bucketName: 'some_bucket',
-              objectKey: 'some_key',
+              objectKey: 'some_key.png',
             },
           },
         },
@@ -163,13 +163,13 @@ test('correctly looks up content type', async () => {
 
   expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.objectContaining({
     Bucket: 'some_bucket',
-    Key: 'some_key',
+    Key: 'some_key.txt',
     ContentType: 'text/plain',
   }));
 
   expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.objectContaining({
     Bucket: 'some_bucket',
-    Key: 'some_key',
+    Key: 'some_key.png',
     ContentType: 'image/png',
   }));
 
