@@ -346,7 +346,7 @@ test('SimpleSynthAction is IGrantable', () => {
     engine,
   });
   const bucket = new s3.Bucket(pipelineStack, 'Bucket');
-  pipe.build();
+  pipe.buildPipeline();
 
   // WHEN
   bucket.grantRead(engine.buildProject);

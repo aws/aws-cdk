@@ -57,7 +57,7 @@ export interface CodeBuildFactoryProps {
 /**
  * Produce a CodeBuild project from a RunScript step and some CodeBuild-specific customizations
  *
- * The functionality here is shared between the `CodePipelinEngine` translating a `RunScript` into
+ * The functionality here is shared between the `CodePipelinEngine` translating a `ScriptStep` into
  * a CodeBuild project, as well as the `CodeBuildStep` straight up.
  */
 export class CodeBuildFactory implements ICodePipelineActionFactory {

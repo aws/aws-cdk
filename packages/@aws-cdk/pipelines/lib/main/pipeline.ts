@@ -44,7 +44,7 @@ export class Pipeline extends CoreConstruct {
     return this.blueprint.addWave(id, options);
   }
 
-  public build() {
+  public buildPipeline() {
     if (this.built) {
       throw new Error('build() has already been called: can only call it once');
     }
@@ -57,7 +57,7 @@ export class Pipeline extends CoreConstruct {
    */
   private buildJustInTime() {
     if (!this.built) {
-      this.build();
+      this.buildPipeline();
     }
   }
 }
