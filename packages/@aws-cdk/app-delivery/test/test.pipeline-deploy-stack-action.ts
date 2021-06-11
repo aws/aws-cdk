@@ -3,7 +3,6 @@ import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
-import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -468,14 +467,6 @@ class FakeAction implements codepipeline.IAction {
 
   public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps): events.Rule {
     throw new Error('onStateChange() is not available on FakeAction');
-  }
-
-  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.INotificationRule {
-    throw new Error('Method not implemented.');
-  }
-
-  public notifyOnStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.INotificationRule {
-    throw new Error('Method not implemented.');
   }
 }
 
