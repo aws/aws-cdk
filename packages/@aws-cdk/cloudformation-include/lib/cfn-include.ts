@@ -694,7 +694,7 @@ export class CfnInclude extends core.CfnElement {
     return nestedStackResource;
   }
 
-  private parametersForNestedStack(parameters: any, nestedStackId: string): { [key: string]: any } | undefined {
+  private parametersForNestedStack(parameters: any, nestedStackId: string): { [key: string]: string } | undefined {
     if (parameters == null) {
       return undefined;
     }
@@ -703,7 +703,7 @@ export class CfnInclude extends core.CfnElement {
     const ret: { [key: string]: string } = {};
     for (const paramName of Object.keys(parameters)) {
       if (!(paramName in parametersToReplace)) {
-        ret[paramName] = parameters[paramName];
+        ret[paramName] = cfn_parse.FromCloudFormation.getString(parameters[paramName]).value;
       }
     }
     return ret;

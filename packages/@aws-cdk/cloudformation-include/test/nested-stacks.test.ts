@@ -334,6 +334,28 @@ describe('CDK Include for nested stacks', () => {
     }).toThrow(/Nested Stack 'AnotherChildStack' was not included in the parent template/);
   });
 
+  test('correctly handles references in nested stacks Parameters', () => {
+    new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('cross-stack-refs.json'),
+      loadNestedStacks: {
+        'ChildStack': {
+          templateFile: testTemplateFilePath('child-import-stack.json'),
+        },
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
+      "Parameters": {
+        "Param1": {
+          "Ref": "Param",
+        },
+        "Param2": {
+          "Fn::GetAtt": ["Bucket", "Arn"],
+        },
+      },
+    });
+  });
+
   test('correctly handles renaming of references across nested stacks', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('cross-stack-refs.json'),
@@ -421,6 +443,23 @@ describe('CDK Include for nested stacks', () => {
       "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
       "NotificationARNs": ["arn1"],
       "TimeoutInMinutes": 5,
+    });
+  });
+
+  test('can ingest a NestedStack with a Number CFN Parameter passed as a number', () => {
+    new inc.CfnInclude(stack, 'MyScope', {
+      templateFile: testTemplateFilePath('parent-number-in-child-params.yaml'),
+      loadNestedStacks: {
+        'NestedStack': {
+          templateFile: testTemplateFilePath('child-with-number-parameter.yaml'),
+        },
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
+      "Parameters": {
+        "Number": "60",
+      },
     });
   });
 
