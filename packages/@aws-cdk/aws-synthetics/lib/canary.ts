@@ -246,8 +246,9 @@ export interface CanaryProps {
   readonly test: Test;
 
   /**
-   * Key-value pairs that the Synthetics caches and makes available for your canary scripts. Use environment variables to apply configuration changes,
-   * such as test and production environment configurations, without changing your Canary script source code.
+   * Key-value pairs that the Synthetics caches and makes available for your canary scripts. Use environment variables
+   * to apply configuration changes, such as test and production environment configurations, without changing your
+   * Canary script source code.
    *
    * @default - No environment variables.
    */
