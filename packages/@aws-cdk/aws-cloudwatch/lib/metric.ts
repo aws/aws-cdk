@@ -15,7 +15,7 @@ import { Construct } from '@aws-cdk/core';
  */
 export type DimensionHash = {[dim: string]: any};
 
-export type DimensionsMap = {[dim: string]: string};
+export type DimensionsMap = { [dim: string]: string };
 
 /**
  * Options shared by most methods accepting metric options
