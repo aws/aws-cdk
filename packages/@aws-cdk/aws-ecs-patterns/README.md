@@ -502,6 +502,11 @@ const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTa
 ### Set SecurityGroups for ScheduledFargateTask
 
 ```ts
+const stack = new cdk.Stack();
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
 const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
   cluster,
   scheduledFargateTaskImageOptions: {
