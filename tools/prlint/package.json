@@ -34,6 +34,8 @@
   "scripts": {
     "build": "tsc --build",
     "test": "jest",
-    "build+test": "npm run build && npm run test"
+    "build+test": "npm run build && npm run test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
   }
 }
