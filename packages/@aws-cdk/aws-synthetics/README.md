@@ -46,8 +46,8 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
   environment: {
-      URL: 'https://api.example.com/user/books/topbook/'
-  }
+      URL: 'https://api.example.com/user/books/topbook/',
+  },
 });
 ```
 
