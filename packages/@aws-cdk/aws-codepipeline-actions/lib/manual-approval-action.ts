@@ -1,4 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
 import { Action } from './action';
@@ -46,6 +47,7 @@ export class ManualApprovalAction extends Action {
    * a new Topic will be created.
    */
   private _notificationTopic?: sns.ITopic;
+  private stage?: codepipeline.IStage;
   private readonly props: ManualApprovalActionProps;
 
   constructor(props: ManualApprovalActionProps) {
@@ -63,8 +65,32 @@ export class ManualApprovalAction extends Action {
     return this._notificationTopic;
   }
 
-  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  /**
+   * grantManualApproval
+   *
+   * https://docs.aws.amazon.com/codepipeline/latest/userguide/approvals-iam-permissions.html
+   *
+   * @param grantable the grantable to attach the permissions to
+   */
+  public grantManualApproval(grantable: iam.IGrantable) {
+    if (!this.stage || !this.stage.pipeline) {
+      throw new Error('Cannot grant permissions before binding action to a stage');
+    }
+    grantable.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['codepipeline:ListPipelines'],
+      resources: ['*'],
+    }));
+    grantable.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['codepipeline:GetPipeline', 'codepipeline:GetPipelineState', 'codepipeline:GetPipelineExecution'],
+      resources: [this.stage.pipeline.pipelineArn],
+    }));
+    grantable.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['codepipeline:PutApprovalResult'],
+      resources: [`${this.stage.pipeline.pipelineArn}/${this.stage.stageName}/${this.props.actionName}`],
+    }));
+  }
+
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     if (this.props.notificationTopic) {
       this._notificationTopic = this.props.notificationTopic;
     } else if ((this.props.notifyEmails || []).length > 0) {
@@ -78,6 +104,8 @@ export class ManualApprovalAction extends Action {
       }
     }
 
+    this.stage = stage;
+
     return {
       configuration: undefinedIfAllValuesAreEmpty({
         NotificationArn: this._notificationTopic?.topicArn,
@@ -86,6 +114,7 @@ export class ManualApprovalAction extends Action {
       }),
     };
   }
+
 }
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {

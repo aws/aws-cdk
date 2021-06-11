@@ -866,6 +866,8 @@ but `notifyEmails` were,
 a new SNS Topic will be created
 (and accessible through the `notificationTopic` property of the Action).
 
+If you want to grant any principal permissions to click on the approve button you can invoke the method `grantManualApproval` with the given `IGrantable`.
+
 ### AWS Lambda
 
 This module contains an Action that allows you to invoke a Lambda function in a Pipeline:
