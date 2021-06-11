@@ -2,10 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.108.1](https://github.com/aws/aws-cdk/compare/v1.108.0...v1.108.1) (2021-06-11)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v39.1.0 ([af74354](https://github.com/aws/aws-cdk/commit/af7435494ba938b036e85435b5dcb590082fc378))
+
 ## [1.108.0](https://github.com/aws/aws-cdk/compare/v1.107.0...v1.108.0) (2021-06-09)
 
 
-### ⚠ BREAKING CHANGES
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
 * **cfnspec:** `imageScanningConfiguration` property of `ecr.CfnRepository` now accepts `scanOnPush` instead of `ScanOnPush` (notice the casing change).
 
