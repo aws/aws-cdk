@@ -20,22 +20,6 @@ export enum DetailType {
 }
 
 /**
- * The status of the notification rule.
- */
-enum Status {
-
-  /**
-   * If the status is set to DISABLED, notifications aren't sent.
-   */
-  DISABLED = 'DISABLED',
-
-  /**
-   * If the status is set to ENABLED, notifications are sent.
-   */
-  ENABLED = 'ENABLED',
-}
-
-/**
  * Standard set of options for `notifyOnXxx` codestar notification handler on construct
  */
 export interface NotifyOptions {
@@ -180,11 +164,13 @@ export class NotificationRule extends Resource implements INotificationRule {
 
     const resource = new CfnNotificationRule(this, 'Resource', {
       name: props.notificationRuleName || this.generateName(),
-      status: (props?.enabled === false) ? Status.DISABLED : Status.ENABLED,
       detailType: props.detailType || DetailType.FULL,
       targets: this.targets,
       eventTypeIds: this.events,
       resource: this.source.sourceArn,
+      status: props.enabled !== undefined
+        ? !props.enabled ? 'DISABLED' : 'ENABLED'
+        : undefined,
     });
 
     this.notificationRuleArn = resource.ref;
@@ -228,10 +214,6 @@ export class NotificationRule extends Resource implements INotificationRule {
    */
   private generateName(): string {
     const name = Names.uniqueId(this);
-    if (name.length > 64) {
-      return name.substring(0, 32) + name.substring(name.length - 32);
-    }
-
-    return name;
+    return name.slice(-64);
   }
 }

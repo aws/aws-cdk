@@ -43,7 +43,6 @@ describe('Rule', () => {
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
-      Status: 'ENABLED',
       DetailType: 'FULL',
       EventTypeIds: [
         'codebuild-project-build-state-succeeded',
@@ -67,7 +66,6 @@ describe('Rule', () => {
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRuleGeneratedFromId',
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
-      Status: 'ENABLED',
     });
   });
 
@@ -79,9 +77,8 @@ describe('Rule', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
-      Name: 'MyNotificationRuleGeneratedFromIooooooooooooooooooooooooooooLong',
+      Name: 'ificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong',
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
-      Status: 'ENABLED',
     });
   });
 
@@ -97,7 +94,6 @@ describe('Rule', () => {
       DetailType: 'FULL',
       Name: 'MyNotificationRule',
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
-      Status: 'ENABLED',
     });
   });
 
