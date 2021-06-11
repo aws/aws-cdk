@@ -97,6 +97,13 @@ export = {
       });
     }, `Dimension value must be at least 1 and no more than 255 characters; received ${invalidDimensionValue}`);
 
+    test.done();
+  },
+
+  'cannot use long dimension values in dimensionsMap'(test: Test) {
+    const arr = new Array(256);
+    const invalidDimensionValue = arr.fill('A', 0).join('');
+
     test.throws(() => {
       new Metric({
         namespace: 'Test',
@@ -133,6 +140,10 @@ export = {
       } );
     }, /The maximum number of dimensions is 10, received 11/);
 
+    test.done();
+  },
+
+  'throws error when there are more than 10 dimensions in dimensionsMap'(test: Test) {
     test.throws(() => {
       new Metric({
         namespace: 'Test',
@@ -157,20 +168,34 @@ export = {
     test.done();
   },
 
-  'cannot use both dimensions and dimensionsMap'(test: Test) {
-    test.throws(() => {
-      new Metric({
-        namespace: 'Test',
-        metricName: 'ACount',
-        period: cdk.Duration.minutes(10),
-        dimensions: {
-          dimensionA: 'value1',
+  'can make metric with dimensionsMap property'(test: Test) {
+    const m = new Metric({
+      namespace: 'Test',
+      metricName: 'Metric',
+      period: cdk.Duration.minutes(10),
+      dimensionsMap: {
+        dimensionA: 'value1',
+        dimensionB: 'value2',
+      },
+    });
+
+    expect(m).toMatch({
+      namespace: 'Test',
+      metricName: 'Metric',
+      period: {
+        amount: 10,
+        unit: {
+          label: 'minutes',
+          isoLabel: 'M',
+          inMillis: 60000,
         },
-        dimensionsMap: {
-          dimensionA: 'value1',
-        },
-      });
-    }, /Using both the 'dimensions' and 'dimensionsMap' properties is not supported. Use only 'dimensionsMap.'/);
+      },
+      dimensions: {
+        dimensionA: 'value1',
+        dimensionB: 'value2',
+      },
+      statistic: 'Average',
+    });
 
     test.done();
   },

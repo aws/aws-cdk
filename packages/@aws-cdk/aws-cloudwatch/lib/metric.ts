@@ -10,9 +10,6 @@ import { normalizeStatistic, parseStatistic } from './private/statistic';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-/**
- * @deprecated Use `DimensionsMap` instead.
- */
 export type DimensionHash = {[dim: string]: any};
 
 export type DimensionsMap = { [dim: string]: string };
@@ -200,14 +197,8 @@ export class Metric implements IMetric {
     });
   }
 
-  /**
-   * Dimensions of this metric
-   *
-   * @deprecated Use `dimensionsMap` instead.
-   */
-  public readonly dimensions?: DimensionHash;
   /** Dimensions of this metric */
-  public readonly dimensionsMap?: DimensionsMap;
+  public readonly dimensions?: DimensionHash;
   /** Namespace of this metric */
   public readonly namespace: string;
   /** Name of this metric */
@@ -236,17 +227,14 @@ export class Metric implements IMetric {
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
       throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
-    if (props.dimensions && props.dimensionsMap) {
-      throw new Error('Using both the \'dimensions\' and \'dimensionsMap\' properties is not supported. Use only \'dimensionsMap.\'');
-    }
     if (props.dimensions) {
       this.validateDimensions(props.dimensions);
+      this.dimensions = props.dimensions;
     }
-    this.dimensions = props.dimensions;
     if (props.dimensionsMap) {
-      this.validateDimensionsMap(props.dimensionsMap);
+      this.validateDimensions(props.dimensionsMap);
+      this.dimensions = props.dimensionsMap;
     }
-    this.dimensionsMap = props.dimensionsMap;
     this.namespace = props.namespace;
     this.metricName = props.metricName;
     // Try parsing, this will throw if it's not a valid stat
@@ -283,7 +271,6 @@ export class Metric implements IMetric {
 
     return new Metric({
       dimensions: ifUndefined(props.dimensions, this.dimensions),
-      dimensionsMap: ifUndefined(props.dimensionsMap, this.dimensionsMap),
       namespace: this.namespace,
       metricName: this.metricName,
       period: ifUndefined(props.period, this.period),
@@ -417,22 +404,16 @@ export class Metric implements IMetric {
    */
   private dimensionsAsList(): Dimension[] {
     const dims = this.dimensions;
-    const dimsMap = this.dimensionsMap;
 
-    if (dims) {
-      return Object.keys(dims).sort().map(key => ({ name: key, value: dims[key] }));
+    if (dims === undefined) {
+      return [];
     }
 
-    if (dimsMap) {
-      return Object.keys(dimsMap).sort().map(key => ({ name: key, value: dimsMap[key] }));
-    }
+    const list = Object.keys(dims).sort().map(key => ({ name: key, value: dims[key] }));
 
-    return [];
+    return list;
   }
 
-  /**
-   * @deprecated Use `validateDimensionsMap` instead.
-   */
   private validateDimensions(dims: DimensionHash): void {
     var dimsArray = Object.keys(dims);
     if (dimsArray?.length > 10) {
@@ -443,23 +424,6 @@ export class Metric implements IMetric {
       if (dims[key] === undefined || dims[key] === null) {
         throw new Error(`Dimension value of '${dims[key]}' is invalid`);
       };
-      if (key.length < 1 || key.length > 255) {
-        throw new Error(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
-      };
-
-      if (dims[key].length < 1 || dims[key].length > 255) {
-        throw new Error(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
-      };
-    });
-  }
-
-  private validateDimensionsMap(dims: DimensionsMap): void {
-    var dimsArray = Object.keys(dims);
-    if (dimsArray?.length > 10) {
-      throw new Error(`The maximum number of dimensions is 10, received ${dimsArray.length}`);
-    }
-
-    dimsArray.map(key => {
       if (key.length < 1 || key.length > 255) {
         throw new Error(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
       };
