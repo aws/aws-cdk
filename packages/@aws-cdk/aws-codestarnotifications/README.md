@@ -35,9 +35,9 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sns from '@aws-cdk/aws-sns';
 import * as chatbot from '@aws-cdk/aws-chatbot';
 
-const project = new codebuild.Project(stack, 'MyProject', {});
+const project = new codebuild.PipelineProject(stack, 'MyProject');
 
-const topic = new sns.Topic(stack, 'MyTopic1', {});
+const topic = new sns.Topic(stack, 'MyTopic1');
 
 const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
     slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
@@ -53,7 +53,7 @@ const rule = new notifications.NotificationRule(stack, 'NotificationRule', {
   ],
 });
 
-rule.addTarget(slack);
+rule.addTarget(topic);
 rule.addTarget(slack);
 ```
 
