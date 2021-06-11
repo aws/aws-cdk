@@ -1,0 +1,105 @@
+{
+  "Resources": {
+    "TestRole6C9272DF": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TestRole25D98AB21": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TestPortfolio4AC794EB": {
+      "Type": "AWS::ServiceCatalog::Portfolio",
+      "Properties": {
+        "DisplayName": "TestPortfolio",
+        "ProviderName": "TestProvider"
+      }
+    },
+    "TestPortfolioPortolioPrincipalAssociation20e1afa20ac27E1A060D": {
+      "Type": "AWS::ServiceCatalog::PortfolioPrincipalAssociation",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "PrincipalARN": {
+          "Fn::GetAtt": [
+            "TestRole6C9272DF",
+            "Arn"
+          ]
+        },
+        "PrincipalType": "IAM"
+      }
+    },
+    "TestPortfolioPortolioPrincipalAssociationed87390fac8eDE790AF5": {
+      "Type": "AWS::ServiceCatalog::PortfolioPrincipalAssociation",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "PrincipalARN": {
+          "Fn::GetAtt": [
+            "TestRole25D98AB21",
+            "Arn"
+          ]
+        },
+        "PrincipalType": "IAM"
+      }
+    }
+  }
+}
