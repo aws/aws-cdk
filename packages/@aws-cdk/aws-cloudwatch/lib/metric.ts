@@ -271,6 +271,7 @@ export class Metric implements IMetric {
 
     return new Metric({
       dimensions: ifUndefined(props.dimensions, this.dimensions),
+      dimensionsMap: ifUndefined(props.dimensionsMap, props.dimensions ? props.dimensions : this.dimensions),
       namespace: this.namespace,
       metricName: this.metricName,
       period: ifUndefined(props.period, this.period),
