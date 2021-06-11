@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { HttpAuthorizerType, IHttpRouteAuthorizer } from './authorizer';
+import { IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration } from './integration';
 
 /**
@@ -59,7 +59,7 @@ export class HttpRouteKey {
    */
   public static with(path: string, method?: HttpMethod) {
     if (path !== '/' && (!path.startsWith('/') || path.endsWith('/'))) {
-      throw new Error('path must always start with a "/" and not end with a "/"');
+      throw new Error('A route path must always start with a "/" and not end with a "/"');
     }
     return new HttpRouteKey(`${method ?? HttpMethod.ANY} ${path}`, path);
   }
@@ -121,6 +121,20 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
 }
 
 /**
+ * Supported Route Authorizer types
+ */
+enum HttpRouteAuthorizationType {
+  /** JSON Web Tokens */
+  JWT = 'JWT',
+
+  /** Lambda Authorizer */
+  CUSTOM = 'CUSTOM',
+
+  /** No authorizer */
+  NONE = 'NONE'
+}
+
+/**
  * Route class that creates the Route for API Gateway HTTP API
  * @resource AWS::ApiGatewayV2::Route
  */
@@ -147,6 +161,10 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
     }) : undefined;
 
+    if (authBindResult && !(authBindResult.authorizationType in HttpRouteAuthorizationType)) {
+      throw new Error('authorizationType should either be JWT, CUSTOM, or NONE');
+    }
+
     let authorizationScopes = authBindResult?.authorizationScopes;
 
     if (authBindResult && props.authorizationScopes) {
@@ -155,8 +173,6 @@ export class HttpRoute extends Resource implements IHttpRoute {
         ...props.authorizationScopes,
       ]));
     }
-
-    const authorizationType = authBindResult?.authorizationType === HttpAuthorizerType.NONE ? undefined : authBindResult?.authorizationType;
 
     if (authorizationScopes?.length === 0) {
       authorizationScopes = undefined;
@@ -167,7 +183,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
       authorizerId: authBindResult?.authorizerId,
-      authorizationType,
+      authorizationType: authBindResult?.authorizationType ?? 'NONE', // must be explicitly NONE (not undefined) for stack updates to work correctly
       authorizationScopes,
     };
 

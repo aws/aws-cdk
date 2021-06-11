@@ -49,7 +49,9 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::DMS",
@@ -71,7 +73,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.22",
+    "@types/jest": "^26.0.23",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "pkglint": "0.0.0",

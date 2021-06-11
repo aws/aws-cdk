@@ -17,7 +17,7 @@ import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_20;
 
 export = {
 
@@ -85,7 +85,7 @@ export = {
           vpc: vpc,
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }],
           defaultCapacity: 0,
-          version: eks.KubernetesVersion.V1_19,
+          version: eks.KubernetesVersion.V1_20,
         }), /cannot select multiple subnet groups/);
 
         test.done();
@@ -97,7 +97,7 @@ export = {
           vpc: vpc,
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
           defaultCapacity: 0,
-          version: eks.KubernetesVersion.V1_19,
+          version: eks.KubernetesVersion.V1_20,
         });
 
         // THEN
@@ -629,7 +629,7 @@ export = {
     expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.19',
+        version: '1.20',
         resourcesVpcConfig: {
           securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
@@ -1437,26 +1437,44 @@ export = {
 
     'EksOptimizedImage() with no nodeType always uses STANDARD with LATEST_KUBERNETES_VERSION'(test: Test) {
       // GIVEN
-      const { stack } = testFixtureNoVpc();
+      const { app, stack } = testFixtureNoVpc();
       const LATEST_KUBERNETES_VERSION = '1.14';
 
       // WHEN
-      const machineImageConfig = new eks.EksOptimizedImage().getImage(stack);
+      new eks.EksOptimizedImage().getImage(stack);
 
       // THEN
-      test.equal(stack.resolve(machineImageConfig.imageId), `{{resolve:ssm:/aws/service/eks/optimized-ami/${LATEST_KUBERNETES_VERSION}/amazon-linux-2/recommended/image_id}}`);
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('/amazon-linux-2/'),
+      ), 'EKS STANDARD AMI should be in ssm parameters');
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes(LATEST_KUBERNETES_VERSION),
+      ), 'LATEST_KUBERNETES_VERSION should be in ssm parameters');
       test.done();
     },
 
     'EksOptimizedImage() with specific kubernetesVersion return correct AMI'(test: Test) {
       // GIVEN
-      const { stack } = testFixtureNoVpc();
+      const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      const machineImageConfig = new eks.EksOptimizedImage({ kubernetesVersion: '1.19' }).getImage(stack);
+      new eks.EksOptimizedImage({ kubernetesVersion: '1.20' }).getImage(stack);
 
       // THEN
-      test.equal(stack.resolve(machineImageConfig.imageId), '{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2/recommended/image_id}}');
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('/amazon-linux-2/'),
+      ), 'EKS STANDARD AMI should be in ssm parameters');
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('/1.20/'),
+      ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
 
@@ -1523,7 +1541,7 @@ export = {
 
     'addAutoScalingGroupCapacity with T4g instance type comes with nodegroup with correct AmiType'(test: Test) {
       // GIVEN
-      const { stack } = testFixtureNoVpc();
+      const { app, stack } = testFixtureNoVpc();
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
@@ -1535,15 +1553,18 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-        ImageId: '{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2-arm64/recommended/image_id}}',
-      }));
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('amazon-linux-2-arm64/'),
+      ), 'Amazon Linux 2 AMI for ARM64 should be in ssm parameters');
       test.done();
     },
 
     'EKS-Optimized AMI with GPU support when addAutoScalingGroupCapacity'(test: Test) {
       // GIVEN
-      const { stack } = testFixtureNoVpc();
+      const { app, stack } = testFixtureNoVpc();
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
@@ -1555,15 +1576,17 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-        ImageId: '{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2-gpu/recommended/image_id}}',
-      }));
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux-2-gpu'),
+      ), 'EKS AMI with GPU should be in ssm parameters');
       test.done();
     },
 
     'EKS-Optimized AMI with ARM64 when addAutoScalingGroupCapacity'(test: Test) {
       // GIVEN
-      const { stack } = testFixtureNoVpc();
+      const { app, stack } = testFixtureNoVpc();
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
@@ -1575,21 +1598,32 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-        ImageId: '{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2-arm64/recommended/image_id}}',
-      }));
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2-arm64/'),
+      ), 'EKS AMI with GPU should be in ssm parameters');
       test.done();
     },
 
     'BottleRocketImage() with specific kubernetesVersion return correct AMI'(test: Test) {
       // GIVEN
-      const { stack } = testFixtureNoVpc();
+      const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      const machineImageConfig = new BottleRocketImage({ kubernetesVersion: '1.19' }).getImage(stack);
+      new BottleRocketImage({ kubernetesVersion: '1.20' }).getImage(stack);
 
       // THEN
-      test.equal(stack.resolve(machineImageConfig).imageId, '{{resolve:ssm:/aws/service/bottlerocket/aws-k8s-1.19/x86_64/latest/image_id}}');
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
+          (v as any).Default.includes('/bottlerocket/'),
+      ), 'BottleRocket AMI should be in ssm parameters');
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
+          (v as any).Default.includes('/aws-k8s-1.20/'),
+      ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
 
@@ -1609,7 +1643,7 @@ export = {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: '1.19',
+          version: '1.20',
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },

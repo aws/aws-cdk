@@ -50,7 +50,9 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::AppMesh",
@@ -183,7 +185,8 @@
       "duration-prop-type:@aws-cdk/aws-appmesh.TcpVirtualNodeListenerOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.GrpcRouteSpecOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.HttpRouteSpecOptions.timeout",
-      "duration-prop-type:@aws-cdk/aws-appmesh.TcpRouteSpecOptions.timeout"
+      "duration-prop-type:@aws-cdk/aws-appmesh.TcpRouteSpecOptions.timeout",
+      "no-unused-type:@aws-cdk/aws-appmesh.Protocol"
     ]
   },
   "stability": "experimental",

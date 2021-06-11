@@ -1,6 +1,7 @@
+import * as path from 'path';
 import { ABSENT } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
-import { App, Stack } from '@aws-cdk/core';
+import { App, CfnResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
 let app: App;
@@ -54,6 +55,73 @@ test('apply newly created boundary to a role', () => {
   // GIVEN
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('service.amazonaws.com'),
+  });
+
+  // WHEN
+  iam.PermissionsBoundary.of(role).apply(new iam.ManagedPolicy(stack, 'Policy', {
+    statements: [
+      new iam.PolicyStatement({
+        actions: ['*'],
+        resources: ['*'],
+      }),
+    ],
+  }));
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    PermissionsBoundary: { Ref: 'Policy23B91518' },
+  });
+});
+
+test('apply boundary to role created by a custom resource', () => {
+  // GIVEN
+  const provider = CustomResourceProvider.getOrCreateProvider(stack, 'Empty', {
+    codeDirectory: path.join(__dirname, 'custom-resource'),
+    runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  });
+
+  // WHEN
+  iam.PermissionsBoundary.of(provider).apply(new iam.ManagedPolicy(stack, 'Policy', {
+    statements: [
+      new iam.PolicyStatement({
+        actions: ['*'],
+        resources: ['*'],
+      }),
+    ],
+  }));
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    PermissionsBoundary: { Ref: 'Policy23B91518' },
+  });
+});
+
+test('apply boundary to users created via CfnResource', () => {
+  // GIVEN
+  const user = new CfnResource(stack, 'User', {
+    type: 'AWS::IAM::User',
+  });
+
+  // WHEN
+  iam.PermissionsBoundary.of(user).apply(new iam.ManagedPolicy(stack, 'Policy', {
+    statements: [
+      new iam.PolicyStatement({
+        actions: ['*'],
+        resources: ['*'],
+      }),
+    ],
+  }));
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::User', {
+    PermissionsBoundary: { Ref: 'Policy23B91518' },
+  });
+});
+
+test('apply boundary to roles created via CfnResource', () => {
+  // GIVEN
+  const role = new CfnResource(stack, 'Role', {
+    type: 'AWS::IAM::Role',
   });
 
   // WHEN
