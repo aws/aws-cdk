@@ -84,7 +84,7 @@ export = {
 
     const eventBusName = 'test-bus-to-import-by-name';
 
-    const eventBus = new EventBus(stack, 'Bus', { eventBusName });
+    const eventBus = new EventBus(stack, 'Bus', { eventBusName, });
 
     const importEB = EventBus.fromEventBusName(stack, 'ImportBus', eventBusName);
 
