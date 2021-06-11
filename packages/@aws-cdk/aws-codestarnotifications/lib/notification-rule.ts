@@ -1,7 +1,7 @@
 import { IResource, Resource, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
-import { NotificationRuleSourceConfig, INotificationRuleSource } from './notification-rule-source';
+import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
 
 /**
@@ -135,11 +135,6 @@ export class NotificationRule extends Resource implements INotificationRule {
   readonly notificationRuleArn: string;
 
   /**
-   * The source config of notification rule
-   */
-  readonly source: NotificationRuleSourceConfig;
-
-  /**
    * The target config of notification rule
    */
   private targets: NotificationRuleTargetConfig[] = [];
@@ -152,7 +147,7 @@ export class NotificationRule extends Resource implements INotificationRule {
   constructor(scope: Construct, id: string, props: NotificationRuleProps) {
     super(scope, id);
 
-    this.source = props.source.bind(this);
+    const source = props.source.bind(this);
 
     if (props.events) {
       this.addEvents(props.events);
@@ -167,7 +162,7 @@ export class NotificationRule extends Resource implements INotificationRule {
       detailType: props.detailType || DetailType.FULL,
       targets: this.targets,
       eventTypeIds: this.events,
-      resource: this.source.sourceArn,
+      resource: source.sourceArn,
       status: props.enabled !== undefined
         ? !props.enabled ? 'DISABLED' : 'ENABLED'
         : undefined,
