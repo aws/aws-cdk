@@ -1,7 +1,6 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
-import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
@@ -133,20 +132,6 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
    */
   public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
     return this.action.onStateChange(name, target, options);
-  }
-
-  /**
-   * Exists to implement IAction
-   */
-  public notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule {
-    return this.action.notifyOn(id, options);
-  }
-
-  /**
-   * Exists to implement IAction
-   */
-  public notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule {
-    return this.action.notifyOnStateChange(id, options);
   }
 
   /**
