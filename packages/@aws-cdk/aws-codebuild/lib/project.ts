@@ -480,7 +480,10 @@ abstract class ProjectBase extends Resource implements IProject {
     });
   }
 
-  public bindAsNotificationRuleSource(_scope: CoreConstruct, _rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
+  /**
+   * Returns a source configuration for notification rule.
+   */
+  public bindAsNotificationRuleSource(_scope: Construct, _rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
     return {
       sourceType: 'CodeBuild',
       sourceArn: this.projectArn,

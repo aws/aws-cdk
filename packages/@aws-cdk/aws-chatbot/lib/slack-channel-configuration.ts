@@ -180,7 +180,10 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
       ...props,
     });
   }
-
+  /**
+   * Represents a notification target
+   * That allows AWS Chatbot to associate with this rule target.
+   */
   public bindAsNotificationRuleTarget(_scope: Construct, _rule: notifications.INotificationRule): notifications.NotificationRuleTargetConfig {
     return {
       targetType: 'AWSChatbotSlack',
