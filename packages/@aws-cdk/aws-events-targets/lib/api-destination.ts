@@ -2,7 +2,6 @@ import * as events from '@aws-cdk/aws-events';
 
 /**
  * Customize the EventBridge Api Destinations Target
- * @experimental
  */
 export interface ApiDestinationProps {
   /**
@@ -37,7 +36,6 @@ export interface ApiDestinationProps {
 
 /**
  * Use an API Destination rule target.
- * @experimental
  */
 export class ApiDestination implements events.IRuleTarget {
   constructor(

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as events from '@aws-cdk/aws-events';
 import { Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
