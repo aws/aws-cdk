@@ -89,18 +89,7 @@ export = {
     const importEB = EventBus.fromEventBusName(stack, 'ImportBus', eventBusName);
 
     // WHEN
-    new CfnResource(stack, 'Res', {
-      type: 'Test::Resource',
-      properties: {
-        EventBusArn1: eventBus.eventBusArn,
-        EventBusArn2: importEB.eventBusArn,
-      },
-    });
-
-    expect(stack).to(haveResource('Test::Resource', {
-      EventBusArn1: stack.resolve(eventBus.eventBusArn),
-      EventBusArn2: stack.resolve(eventBus.eventBusArn),
-    }));
+    test.deepEqual(stack.resolve(eventBus.eventBusName), stack.resolve(importEB.eventBusName));
 
     test.done();
   },
