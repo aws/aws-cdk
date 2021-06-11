@@ -472,11 +472,13 @@ To define CodeStar Notification rules for Projects, use one of the `notifyOnXxx(
 They are very similar to `onXxx()` methods for CloudWatch events:
 
 ```ts
-import * as targets from '@aws-cdk/aws-codestarnotifications-targets';
+const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+    slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+    slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+    slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+});
 
 const rule = project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', {
-  target: new targets.SlackChannelConfiguration(slack),
-  // you can also use the resource directly:
   target: slack,
 });
 ```
