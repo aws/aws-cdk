@@ -36,16 +36,14 @@ The Hitchhikers Guide to the Galaxy
 The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes:
 
 ```ts
-import * as synthetics from '@aws-cdk/aws-synthetics';
-
-const canary = new synthetics.Canary(this, 'MyCanary', {
-  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+const canary = new Canary(this, 'MyCanary', {
+  schedule: Schedule.rate(Duration.minutes(5)),
   test: Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    code: Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
-  environment: {
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  environmentVariables: {
       URL: 'https://api.example.com/user/books/topbook/',
   },
 });
@@ -105,30 +103,32 @@ Using the `Code` class static initializers:
 
 ```ts
 // To supply the code inline:
-const canary = new Canary(this, 'MyCanary', {
+new Canary(this, 'Inline Canary', {
   test: Test.custom({
-    code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    code: Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
 });
 
 // To supply the code from your local filesystem:
-const canary = new Canary(this, 'MyCanary', {
+new Canary(this, 'Asset Canary', {
   test: Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    code: Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
 });
 
 // To supply the code from a S3 bucket:
-const canary = new Canary(this, 'MyCanary', {
+import * as s3 from '@aws-cdk/aws-s3';
+const bucket = new s3.Bucket(this, 'Code Bucket');
+new Canary(this, 'Bucket Canary', {
   test: Test.custom({
-    code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
+    code: Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
 });
 ```
 
@@ -153,7 +153,8 @@ You can configure a CloudWatch Alarm on a canary metric. Metrics are emitted by 
 
 Create an alarm that tracks the canary metric:
 
-```ts
+```ts fixture=canary
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 new cloudwatch.Alarm(this, 'CanaryAlarm', {
   metric: canary.metricSuccessPercent(),
   evaluationPeriods: 2,
