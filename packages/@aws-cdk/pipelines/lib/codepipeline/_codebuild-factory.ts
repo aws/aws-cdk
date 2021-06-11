@@ -5,7 +5,7 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { FileSetLocation, ScriptStep } from '../blueprint';
+import { FileSetLocation, ScriptStep, StackDeployment } from '../blueprint';
 import { mapValues, noEmptyObject } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { ICodePipelineActionFactory, CodePipelineActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
@@ -63,7 +63,10 @@ export interface CodeBuildFactoryProps {
 export class CodeBuildFactory implements ICodePipelineActionFactory {
   private _project?: codebuild.IProject;
 
-  constructor(private readonly constructId: string, private readonly runScript: ScriptStep, private readonly props: CodeBuildFactoryProps) {
+  constructor(
+    private readonly constructId: string,
+    private readonly runScript: ScriptStep,
+    private readonly props: CodeBuildFactoryProps) {
   }
 
   public get project(): codebuild.IProject {
@@ -74,12 +77,20 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
   }
 
   public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
-    const mainInput = this.runScript.inputs.find(x => x.directory === '.')!;
+    const mainInput = this.runScript.inputs.find(x => x.directory === '.');
     const extraInputs = this.runScript.inputs.filter(x => x.directory !== '.');
 
-    const inputArtifact = options.artifacts.toCodePipeline(mainInput.fileSet);
+    const inputArtifact = mainInput
+      ? options.artifacts.toCodePipeline(mainInput.fileSet)
+      : options.fallbackArtifact;
     const extraInputArtifacts = extraInputs.map(x => options.artifacts.toCodePipeline(x.fileSet));
     const outputArtifacts = this.runScript.outputs.map(x => options.artifacts.toCodePipeline(x.fileSet));
+
+    if (!inputArtifact) {
+      // This should actually never happen because CodeBuild projects shouldn't be added before the
+      // Source, which always produces at least an artifact.
+      throw new Error(`CodeBuild action '${this.runScript.id}' requires an input (and the pipeline doesn't have one either, did you add a CodePipelineSource yet?)`);
+    }
 
     const installCommands = [
       ...generateInputArtifactLinkCommands(options.artifacts, extraInputs),
@@ -124,6 +135,14 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       });
     }
 
+    const stackOutputEnv: Record<string, codebuild.BuildEnvironmentVariable> = mapValues(this.runScript.envFromOutputs, (outputRef) => (
+      { value: `#{${stackVariableNamespace(options.queries.producingStack(outputRef))}.${outputRef.outputName}}` }
+    ));
+
+    const configHashEnv: Record<string, codebuild.BuildEnvironmentVariable> = this.props.includeBuildHashInPipeline
+      ? { _PROJECT_CONFIG_HASH: { value: projectConfigHash } }
+      : {};
+
     const action = new codepipeline_actions.CodeBuildAction({
       actionName: options.actionName ?? this.runScript.id,
       input: inputArtifact,
@@ -136,9 +155,10 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       // made the config of the underlying CodeBuild Project.
       // Hence, the pipeline will be restarted. This is necessary if the users
       // adds (for example) build or test commands to the buildspec.
-      environmentVariables: this.props.includeBuildHashInPipeline ? {
-        _PROJECT_CONFIG_HASH: { value: projectConfigHash },
-      } : undefined,
+      environmentVariables: noEmptyObject({
+        ...configHashEnv,
+        ...stackOutputEnv,
+      }),
     });
 
     this._project = project;
@@ -235,4 +255,8 @@ function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
     imagePullPrincipalType: env.buildImage?.imagePullPrincipalType,
     secretsManagerArn: env.buildImage?.secretsManagerCredentials?.secretArn,
   };
+}
+
+export function stackVariableNamespace(stack: StackDeployment) {
+  return stack.stackArtifactId;
 }

@@ -1,6 +1,7 @@
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Construct } from 'constructs';
+import { BlueprintQueries } from '../blueprint';
 import { ArtifactMap } from './artifact-map';
 
 export interface CodePipelineActionOptions {
@@ -8,6 +9,20 @@ export interface CodePipelineActionOptions {
   readonly actionName: string;
   readonly runOrder: number;
   readonly artifacts: ArtifactMap;
+
+  /**
+   * An input artifact that CodeBuild projects that don't actually need an input artifact can use
+   *
+   * CodeBuild Projects MUST have an input artifact in order to be added to the Pipeline. If
+   * the Project doesn't actually care about its input (it can be anything), it can use the
+   * Artifact passed here.
+   */
+  readonly fallbackArtifact?: cp.Artifact;
+
+  /**
+   * Queries to perform on the blueprint
+   */
+  readonly queries: BlueprintQueries;
 }
 
 /**

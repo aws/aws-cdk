@@ -2,7 +2,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import { FileSet } from '../blueprint';
 
 /**
- * Translate Graph Artifacts to CodePipeline Artifacts
+ * Translate FileSets to CodePipeline Artifacts
  */
 export class ArtifactMap {
   private artifacts = new Map<FileSet, cp.Artifact>();

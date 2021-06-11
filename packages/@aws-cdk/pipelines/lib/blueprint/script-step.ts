@@ -1,10 +1,14 @@
+import { CfnOutput, Stack } from '@aws-cdk/core';
+import { mapValues } from '../private/javascript';
 import { FileSet, IFileSet } from './file-set';
+import { StackDeployment } from './stack-deployment';
 import { Step } from './step';
 
 export interface ScriptStepProps {
   readonly commands: string[];
   readonly installCommands?: string[];
   readonly env?: Record<string, string>;
+  readonly envFromOutputs?: Record<string, CfnOutput>;
 
   readonly input?: IFileSet;
   readonly additionalInputs?: Record<string, IFileSet>;
@@ -18,6 +22,7 @@ export class ScriptStep extends Step {
   public readonly commands: string[];
   public readonly installCommands: string[];
   public readonly env: Record<string, string>;
+  public readonly envFromOutputs: Record<string, StackOutputReference>;
 
   public readonly inputs: FileSetLocation[] = [];
   public readonly outputs: FileSetLocation[] = [];
@@ -30,6 +35,7 @@ export class ScriptStep extends Step {
     this.commands = props.commands;
     this.installCommands = props.installCommands ?? [];
     this.env = props.env ?? {};
+    this.envFromOutputs = mapValues(props.envFromOutputs ?? {}, StackOutputReference.fromCfnOutput);
 
     // Inputs
     if (props.input) {
@@ -80,4 +86,18 @@ export class ScriptStep extends Step {
 export interface FileSetLocation {
   readonly directory: string;
   readonly fileSet: FileSet;
+}
+
+export class StackOutputReference {
+  public static fromCfnOutput(output: CfnOutput) {
+    const stack = Stack.of(output);
+    return new StackOutputReference(stack.node.path, stack.artifactId, stack.resolve(output.logicalId));
+  }
+
+  private constructor(public readonly stackDescription: string, private readonly stackArtifactId: string, public readonly outputName: string) {
+  }
+
+  public isProducedBy(stack: StackDeployment) {
+    return stack.stackArtifactId === this.stackArtifactId;
+  }
 }

@@ -7,6 +7,8 @@ import { AssetType } from './asset-type';
 import { FileSet, IFileSet } from './file-set';
 
 export interface StackDeploymentProps {
+  readonly stackArtifactId: string;
+  readonly stackHierarchicalId: string;
   readonly stackName: string;
   readonly region?: string;
   readonly account?: string;
@@ -30,6 +32,8 @@ export class StackDeployment {
       region,
       tags: stackArtifact.tags,
       customCloudAssembly: options.customCloudAssembly,
+      stackArtifactId: stackArtifact.id,
+      stackHierarchicalId: stackArtifact.hierarchicalId,
       stackName: stackArtifact.stackName,
       absoluteTemplatePath: path.join(stackArtifact.assembly.directory, stackArtifact.templateFile),
       assumeRoleArn: stackArtifact.assumeRoleArn,
@@ -38,6 +42,8 @@ export class StackDeployment {
     });
   }
 
+  public readonly stackArtifactId: string;
+  public readonly stackHierarchicalId: string;
   public readonly stackName: string;
   public readonly region?: string;
   public readonly account?: string;
@@ -51,6 +57,8 @@ export class StackDeployment {
   public readonly dependsOnStacks: StackDeployment[] = [];
 
   constructor(props: StackDeploymentProps) {
+    this.stackArtifactId = props.stackArtifactId;
+    this.stackHierarchicalId = props.stackHierarchicalId;
     this.account = props.account;
     this.region = props.region;
     this.tags = props.tags ?? {};

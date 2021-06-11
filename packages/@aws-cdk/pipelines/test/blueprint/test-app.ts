@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import '@aws-cdk/assert-internal/jest';
-import { Stage, StageProps } from '@aws-cdk/core';
+import { CfnOutput, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BucketStack } from './testutil';
 
@@ -9,6 +9,17 @@ export class OneStackApp extends Stage {
     super(scope, id, props);
 
     new BucketStack(this, 'Stack');
+  }
+}
+
+export class AppWithOutput extends Stage {
+  public readonly theOutput: CfnOutput;
+
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+    const stack = new BucketStack(this, 'Stack');
+    this.theOutput = new CfnOutput(stack, 'MyOutput', { value: stack.bucket.bucketName });
   }
 }
 

@@ -1,8 +1,8 @@
-import { AssetType, Blueprint, FileSet, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
-import { Graph, GraphNode, GraphNodeCollection } from '../private/graph';
+import { AssetType, Blueprint, BlueprintQueries, FileSet, ScriptStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
+import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from '../private/graph';
 import { CodePipelineSource } from './codepipeline-source';
 
-export interface GraphFromBlueprintProps {
+export interface PipelineStructureProps {
   readonly selfMutation?: boolean;
 }
 
@@ -11,19 +11,23 @@ export interface GraphFromBlueprintProps {
  *
  * This code makes all the decisions on how to lay out the CodePipeline
  */
-export class GraphFromBlueprint {
+export class PipelineStructure {
   public readonly graph: AGraph = Graph.of('', { type: 'group' });
   public readonly cloudAssemblyFileSet: FileSet;
+  public readonly queries: BlueprintQueries;
 
   private readonly added = new Map<Step, AGraphNode>();
   private readonly assetNodes = new Map<string, AGraphNode>();
   private readonly synthNode: AGraphNode;
   private readonly selfMutateNode?: AGraphNode;
+  private readonly stackOutputDependencies = new DependencyBuilders<StackDeployment, any>();
   private lastPreparationNode: AGraphNode;
   private _fileAssetCtr = 0;
   private _dockerAssetCtr = 0;
 
-  constructor(blueprint: Blueprint, props: GraphFromBlueprintProps = {}) {
+  constructor(public readonly blueprint: Blueprint, props: PipelineStructureProps = {}) {
+    this.queries = new BlueprintQueries(blueprint);
+
     this.synthNode = this.addBuildStep(blueprint.synthStep);
     if (this.synthNode.data?.type === 'step') {
       this.synthNode.data.isBuildStep = true;
@@ -53,6 +57,9 @@ export class GraphFromBlueprint {
     for (let i = 1; i < waves.length; i++) {
       waves[i].dependOn(waves[i - 1]);
     }
+
+    // Add additional dependencies between steps that depend on stack outputs and the stacks
+    // that produce them.
   }
 
   public isSynthNode(node: AGraphNode) {
@@ -83,24 +90,33 @@ export class GraphFromBlueprint {
 
     for (const stack of stage.stacks) {
       const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
-      const prepare: AGraphNode = GraphNode.of('Prepare', { type: 'prepare', stack });
-      const deploy: AGraphNode = GraphNode.of('Deploy', { type: 'execute', stack });
+      const prepareNode: AGraphNode = GraphNode.of('Prepare', { type: 'prepare', stack });
+      const deployNode: AGraphNode = GraphNode.of('Deploy', {
+        type: 'execute',
+        stack,
+        captureOutputs: this.queries.stackOutputsReferenced(stack).length > 0,
+      });
 
       retGraph.add(stackGraph);
-      stackGraph.add(prepare, deploy);
-      deploy.dependOn(prepare);
+      stackGraph.add(prepareNode, deployNode);
+      deployNode.dependOn(prepareNode);
       stackGraphs.set(stack, stackGraph);
 
       // Depend on Cloud Assembly
       const cloudAssembly = stack.customCloudAssembly?.primaryOutput ?? this.cloudAssemblyFileSet;
-      prepare.dependOn(this.addAndRecurse(cloudAssembly.producer, retGraph));
+      prepareNode.dependOn(this.addAndRecurse(cloudAssembly.producer, retGraph));
 
       // Depend on Assets
       // FIXME: Custom Cloud Assembly currently doesn't actually help separating
       // out templates from assets!!!
       for (const asset of stack.requiredAssets) {
         const assetNode = this.publishAsset(asset);
-        prepare.dependOn(assetNode);
+        prepareNode.dependOn(assetNode);
+      }
+
+      // Add stack output synchronization point
+      if (this.queries.stackOutputsReferenced(stack).length > 0) {
+        this.stackOutputDependencies.get(stack).dependOn(deployNode);
       }
     }
 
@@ -156,6 +172,15 @@ export class GraphFromBlueprint {
       node.dependOn(producerNode);
     }
 
+    // Add stack dependencies (by use of the dependencybuilder this also works
+    // if we encounter the Step before the Stack has been properly added yet)
+    if (step instanceof ScriptStep) {
+      for (const output of Object.values(step.envFromOutputs)) {
+        const stack = this.queries.producingStack(output);
+        this.stackOutputDependencies.get(stack).dependBy(node);
+      }
+    }
+
     return node;
   }
 
@@ -198,7 +223,7 @@ type GraphAnnotation =
   | { readonly type: 'step'; readonly step: Step; isBuildStep?: boolean }
   | { readonly type: 'self-update' }
   | { readonly type: 'prepare'; readonly stack: StackDeployment }
-  | { readonly type: 'execute'; readonly stack: StackDeployment }
+  | { readonly type: 'execute'; readonly stack: StackDeployment; readonly captureOutputs: boolean }
   ;
 
 // Type aliases for the graph nodes tagged with our specific annotation type

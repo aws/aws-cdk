@@ -75,6 +75,53 @@ export class GraphNode<A> {
   }
 }
 
+/**
+ * A dependency set that can be constructed partially and later finished
+ *
+ * It doesn't matter in what order sources and targets for the dependency
+ * relationship(s) get added. This class can serve as a synchronization
+ * point if the order in which graph nodes get added to the graph is not
+ * well-defined.
+ *
+ * Useful utility during graph building.
+ */
+export class DependencyBuilder<A> {
+  private readonly targets: GraphNode<A>[] = [];
+  private readonly sources: GraphNode<A>[] = [];
+
+  public dependOn(...targets: GraphNode<A>[]) {
+    for (const target of targets) {
+      for (const source of this.sources) {
+        source.dependOn(target);
+      }
+      this.targets.push(target);
+    }
+    return this;
+  }
+
+  public dependBy(...sources: GraphNode<A>[]) {
+    for (const source of sources) {
+      for (const target of this.targets) {
+        source.dependOn(target);
+      }
+      this.sources.push(source);
+    }
+    return this;
+  }
+}
+
+export class DependencyBuilders<K, A> {
+  private readonly builders = new Map<K, DependencyBuilder<A>>();
+
+  public get(key: K) {
+    const b = this.builders.get(key);
+    if (b) { return b; }
+    const ret = new DependencyBuilder<A>();
+    this.builders.set(key, ret);
+    return ret;
+  }
+}
+
 export interface GraphProps<A> extends GraphNodeProps<A> {
   /**
    * Initial nodes in the workflow

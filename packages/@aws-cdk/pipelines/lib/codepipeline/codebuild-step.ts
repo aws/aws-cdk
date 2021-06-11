@@ -65,11 +65,6 @@ export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
 
     this.runScript = new ScriptStep(id, props);
 
-    const mainInput = this.runScript.inputs.find(x => x.directory === '.');
-    if (!mainInput) {
-      throw new Error('CodeBuild action must have exactly one input with directory \'.\'');
-    }
-
     this.primaryOutput = this.runScript.primaryOutput;
     this.requiredFileSets.push(...this.runScript.requiredFileSets);
   }

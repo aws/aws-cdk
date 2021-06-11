@@ -7,15 +7,15 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
-import { AssetType, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
+import { AssetType, BlueprintQueries, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { BuildDeploymentOptions, IDeploymentEngine } from '../main/engine';
 import { appOf, assemblyBuilderOf, embeddedAsmPath } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
 import { GraphNode, GraphNodeCollection, isGraph } from '../private/graph';
 import { enumerate, flatten, maybeSuffix } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { CodeBuildFactory, mergeBuildEnvironments } from './_codebuild-factory';
-import { AGraphNode, GraphFromBlueprint } from './_graph-from-blueprint';
+import { CodeBuildFactory, mergeBuildEnvironments, stackVariableNamespace } from './_codebuild-factory';
+import { AGraphNode, PipelineStructure } from './_pipeline-structure';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
@@ -63,6 +63,11 @@ export class CodePipelineEngine implements IDeploymentEngine {
   private _myCxAsmRoot?: string;
   private _scope?: Construct;
 
+  /**
+   * This is set to the very first artifact produced in the pipeline
+   */
+  private _fallbackArtifact?: cp.Artifact;
+
   constructor(private readonly props: CodePipelineEngineProps={}) {
     this.selfMutation = this.props.selfMutation ?? true;
     this.defaultCodeBuildEnv = {
@@ -85,7 +90,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       restartExecutionOnUpdate: true,
     });
 
-    const graphFromBp = new GraphFromBlueprint(options.blueprint, {
+    const graphFromBp = new PipelineStructure(options.blueprint, {
       selfMutation: this.selfMutation,
     });
 
@@ -120,10 +125,10 @@ export class CodePipelineEngine implements IDeploymentEngine {
     return this._scope;
   }
 
-  private pipelineStagesAndActionsFromGraph(graphFromBp: GraphFromBlueprint) {
+  private pipelineStagesAndActionsFromGraph(structure: PipelineStructure) {
     // Translate graph into Pipeline Stages and Actions
     let beforeSelfMutation = this.selfMutation;
-    for (const stageNode of flatten(graphFromBp.graph.sortedChildren())) {
+    for (const stageNode of flatten(structure.graph.sortedChildren())) {
       if (!isGraph(stageNode)) {
         throw new Error(`Top-level children must be graphs, got '${stageNode}'`);
       }
@@ -146,11 +151,12 @@ export class CodePipelineEngine implements IDeploymentEngine {
             }
 
             pipelineStage.addAction(this.actionFromNode({
-              graphFromBp,
+              graphFromBp: structure,
               runOrder: runOrder + 1,
               node,
               sharedParent,
               beforeSelfUpdate: beforeSelfMutation,
+              queries: structure.queries,
             }));
           }
         }
@@ -179,13 +185,17 @@ export class CodePipelineEngine implements IDeploymentEngine {
         return this.createChangeSetAction(options.node.data.stack, options);
 
       case 'execute':
-        return this.executeChangeSetAction(options.node.data.stack, options);
+        return this.executeChangeSetAction(options.node.data.stack, options.node.data.captureOutputs, options);
 
       case 'step':
         const result = this.actionFromStep(options.node.data.step, options);
 
         if (options.graphFromBp.isSynthNode(options.node) && result.project) {
           this._buildProject = result.project;
+        }
+
+        if (options.node.data.step.primaryOutput?.primaryOutput && !this._fallbackArtifact) {
+          this._fallbackArtifact = this.artifacts.toCodePipeline(options.node.data.step.primaryOutput?.primaryOutput);
         }
 
         return result.action;
@@ -212,6 +222,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
         actionName: actionName(options.node, options.sharedParent),
         runOrder: options.runOrder,
         artifacts: this.artifacts,
+        fallbackArtifact: this._fallbackArtifact,
+        queries: options.queries,
       });
     }
 
@@ -230,6 +242,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
         runOrder: options.runOrder,
         artifacts: this.artifacts,
         scope: this.scope,
+        fallbackArtifact: this._fallbackArtifact,
+        queries: options.queries,
       });
     }
 
@@ -271,8 +285,9 @@ export class CodePipelineEngine implements IDeploymentEngine {
     });
   }
 
-  private executeChangeSetAction(stack: StackDeployment, options: MakeActionOptions) {
+  private executeChangeSetAction(stack: StackDeployment, captureOutputs: boolean, options: MakeActionOptions) {
     const changeSetName = 'PipelineChange';
+
     const region = stack.region !== Stack.of(this.scope).region ? stack.region : undefined;
     const account = stack.account !== Stack.of(this.scope).account ? stack.account : undefined;
 
@@ -283,6 +298,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       stackName: stack.stackName,
       role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
       region: region,
+      variablesNamespace: captureOutputs ? stackVariableNamespace(stack) : undefined,
     });
   }
 
@@ -331,6 +347,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
       runOrder: options.runOrder,
       artifacts: this.artifacts,
       scope: this.scope,
+      fallbackArtifact: this._fallbackArtifact,
+      queries: options.queries,
     }).action;
   }
 
@@ -372,6 +390,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
       runOrder: options.runOrder,
       artifacts: this.artifacts,
       scope: this.scope,
+      fallbackArtifact: this._fallbackArtifact,
+      queries: options.queries,
     }).action;
   }
 
@@ -436,11 +456,12 @@ export class CodePipelineEngine implements IDeploymentEngine {
 }
 
 interface MakeActionOptions {
-  readonly graphFromBp: GraphFromBlueprint;
+  readonly graphFromBp: PipelineStructure;
   readonly runOrder: number;
   readonly node: AGraphNode;
   readonly sharedParent: AGraphNode;
   readonly beforeSelfUpdate: boolean;
+  readonly queries: BlueprintQueries;
 }
 
 function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {

@@ -1,9 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
+import { arrayWith, encodedJson, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { App, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../../lib';
-import { ThreeStackApp, TwoStackApp } from '../test-app';
+import { AppWithOutput, ThreeStackApp, TwoStackApp } from '../test-app';
 import { sortedByRunOrder } from '../testmatchers';
 import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from '../testutil';
 
@@ -76,6 +76,41 @@ test('manual approval is inserted after app', () => {
         objectLike({ Name: 'Stack2.Deploy' }),
         objectLike({ Name: 'Approve' }),
       ]),
+    }),
+  });
+});
+
+test('ScriptStep can use stack outputs', () => {
+  const myApp = new AppWithOutput(app, 'Alpha');
+  pipeline.addStage(myApp, {
+    post: [
+      new cdkp.ScriptStep('Approve', {
+        commands: ['/bin/true'],
+        envFromOutputs: {
+          THE_OUTPUT: myApp.theOutput,
+        },
+      }),
+    ],
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Alpha',
+      Actions: arrayWith(
+        objectLike({
+          Name: 'Stack.Deploy',
+          Namespace: 'AlphaStack6B3389FA',
+        }),
+        objectLike({
+          Name: 'Approve',
+          Configuration: objectLike({
+            EnvironmentVariables: encodedJson([
+              { name: 'THE_OUTPUT', value: '#{AlphaStack6B3389FA.MyOutput}', type: 'PLAINTEXT' },
+            ]),
+          }),
+        }),
+      ),
     }),
   });
 });

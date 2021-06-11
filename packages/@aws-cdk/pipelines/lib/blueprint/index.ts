@@ -1,5 +1,6 @@
 export * from './asset-type';
 export * from './blueprint';
+export * from './blueprint-queries';
 export * from './file-set';
 export * from './script-step';
 export * from './stack-deployment';
