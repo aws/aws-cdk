@@ -190,7 +190,7 @@ place to serve as replication buckets, you can supply these at Pipeline definiti
 time using the `crossRegionReplicationBuckets` parameter. Example:
 
 ```ts
-const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', { /* ... */ });
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   // ...
 
   crossRegionReplicationBuckets: {
