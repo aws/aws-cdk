@@ -3,7 +3,7 @@ import { ResourcePart, TemplateAssertions } from '../lib';
 
 describe('StackAssertions', () => {
 
-  describe('assertResourceCount', () => {
+  describe('resourceCountIs', () => {
     test('resource exists', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Resource', {
@@ -11,25 +11,25 @@ describe('StackAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      inspect.assertResourceCountIs('Foo::Bar', 1);
+      inspect.resourceCountIs('Foo::Bar', 1);
 
-      expect(() => inspect.assertResourceCountIs('Foo::Bar', 0)).toThrow(/has 1 resource of type Foo::Bar/);
-      expect(() => inspect.assertResourceCountIs('Foo::Bar', 2)).toThrow(/has 1 resource of type Foo::Bar/);
+      expect(() => inspect.resourceCountIs('Foo::Bar', 0)).toThrow(/has 1 resource of type Foo::Bar/);
+      expect(() => inspect.resourceCountIs('Foo::Bar', 2)).toThrow(/has 1 resource of type Foo::Bar/);
 
-      expect(() => inspect.assertResourceCountIs('Foo::Baz', 1)).toThrow(/has 0 resource of type Foo::Baz/);
+      expect(() => inspect.resourceCountIs('Foo::Baz', 1)).toThrow(/has 0 resource of type Foo::Baz/);
     });
 
     test('no resource', () => {
       const stack = new Stack();
 
       const inspect = TemplateAssertions.fromStack(stack);
-      inspect.assertResourceCountIs('Foo::Bar', 0);
+      inspect.resourceCountIs('Foo::Bar', 0);
 
-      expect(() => inspect.assertResourceCountIs('Foo::Bar', 1)).toThrow(/has 0 resource of type Foo::Bar/);
+      expect(() => inspect.resourceCountIs('Foo::Bar', 1)).toThrow(/has 0 resource of type Foo::Bar/);
     });
   });
 
-  describe('assertResourceProps', () => {
+  describe('hasResource', () => {
     test('property matching', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Resource', {
@@ -40,10 +40,10 @@ describe('StackAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      inspect.assertHasResource('Foo::Bar', { baz: 'qux' });
+      inspect.hasResource('Foo::Bar', { baz: 'qux' });
 
-      expect(() => inspect.assertHasResource('Foo::Bar', { fred: 'waldo' })).toThrow(/None .* matches resource 'Foo::Bar'/);
-      expect(() => inspect.assertHasResource('Foo::Baz', {})).toThrow(/None .* matches resource 'Foo::Baz'/);
+      expect(() => inspect.hasResource('Foo::Bar', { fred: 'waldo' })).toThrow(/None .* matches resource 'Foo::Bar'/);
+      expect(() => inspect.hasResource('Foo::Baz', {})).toThrow(/None .* matches resource 'Foo::Baz'/);
     });
 
     test('no resource', () => {
@@ -53,7 +53,7 @@ describe('StackAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      expect(() => inspect.assertHasResource('Foo::Baz', {})).toThrow(/None .* matches resource 'Foo::Baz'/);
+      expect(() => inspect.hasResource('Foo::Baz', {})).toThrow(/None .* matches resource 'Foo::Baz'/);
     });
 
     test('complete definition', () => {
@@ -63,7 +63,7 @@ describe('StackAssertions', () => {
       bar.node.addDependency(baz);
 
       const inspect = TemplateAssertions.fromStack(stack);
-      inspect.assertHasResource('Foo::Bar', {
+      inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'qux' },
         DependsOn: ['Baz'],
       }, {
@@ -72,7 +72,7 @@ describe('StackAssertions', () => {
     });
   });
 
-  describe('assertMatchTemplate', () => {
+  describe('templateMatches', () => {
     test('matches', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
@@ -81,7 +81,7 @@ describe('StackAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      inspect.assertTemplateMatches({
+      inspect.templateMatches({
         Resources: {
           Foo: {
             Type: 'Foo::Bar',
@@ -99,7 +99,7 @@ describe('StackAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      expect(() => inspect.assertTemplateMatches({
+      expect(() => inspect.templateMatches({
         Resources: {
           Foo: {
             Type: 'Foo::Bar',

@@ -57,7 +57,7 @@ export class TemplateAssertions {
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param count number of expected instances
    */
-  public assertResourceCountIs(type: string, count: number): void {
+  public resourceCountIs(type: string, count: number): void {
     const assertion = assert.countResources(type, count);
     assertion.assertOrThrow(this.inspector);
   }
@@ -69,7 +69,7 @@ export class TemplateAssertions {
    * @param props the properties of the resource
    * @param options customize how the matching should be performed
    */
-  public assertHasResource(type: string, props: any, options?: AssertResourceOptions): void {
+  public hasResource(type: string, props: any, options?: AssertResourceOptions): void {
     const part = assertResourcePart(options?.part ?? ResourcePart.PROPERTIES);
     const assertion = assert.haveResource(type, props, part);
     assertion.assertOrThrow(this.inspector);
@@ -79,7 +79,7 @@ export class TemplateAssertions {
    * Assert that the CloudFormation template matches the given value
    * @param expected the expected CloudFormation template as key-value pairs.
    */
-  public assertTemplateMatches(expected: {[key: string]: any}) {
+  public templateMatches(expected: {[key: string]: any}) {
     const assertion = assert.matchTemplate(expected);
     assertion.assertOrThrow(this.inspector);
   }
