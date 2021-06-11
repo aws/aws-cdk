@@ -185,7 +185,7 @@ export class EventBus extends EventBusBase {
    * @param eventBusName Name of imported event bus
    */
   public static fromEventBusName(scope: Construct, id: string, eventBusName: string): IEventBus {
-    const eventBusArn = Stack.of(this).formatArn({
+    const eventBusArn = Stack.of(scope).formatArn({
       resource: 'event-bus',
       service: 'events',
       resourceName: eventBusName,
