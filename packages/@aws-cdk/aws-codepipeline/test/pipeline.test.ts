@@ -453,8 +453,8 @@ describe('pipeline with codestar notification integration', () => {
     });
   });
 
-  test('On "Pipeline execution" events emitted notification rule', () => {
-    pipeline.notifyOnStateChange('NotifyOnPipelineStateChange', {
+  test('On "Pipeline" execution events emitted notification rule', () => {
+    pipeline.notifyOnPipelineStateChange('NotifyOnPipelineStateChange', {
       target: {
         bind: () => ({
           targetType: 'AWSChatbotSlack',
@@ -492,6 +492,130 @@ describe('pipeline with codestar notification integration', () => {
           TargetType: 'AWSChatbotSlack',
         },
       ],
+      Status: 'ENABLED',
+    });
+  });
+
+  test('On any "Stage" execution events emitted notification rule in pipeline', () => {
+    pipeline.notifyOnAnyStageStateChange('NotifyOnAnyStageStateChange', {
+      target: {
+        bind: () => ({
+          targetType: 'AWSChatbotSlack',
+          targetAddress: 'SlackID',
+        }),
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      Name: 'PipelineNotifyOnAnyStageStateChange05355CCD',
+      DetailType: 'FULL',
+      EventTypeIds: [
+        'codepipeline-pipeline-stage-execution-canceled',
+        'codepipeline-pipeline-stage-execution-failed',
+        'codepipeline-pipeline-stage-execution-resumed',
+        'codepipeline-pipeline-stage-execution-started',
+        'codepipeline-pipeline-stage-execution-succeeded',
+      ],
+      Resource: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':codepipeline:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'PipelineC660917D' },
+        ]],
+      },
+      Targets: [
+        {
+          TargetAddress: 'SlackID',
+          TargetType: 'AWSChatbotSlack',
+        },
+      ],
+      Status: 'ENABLED',
+    });
+  });
+
+  test('On any "Action" execution events emitted notification rule in pipeline', () => {
+    pipeline.notifyOnAnyActionStateChange('NotifyOnAnyActionStateChange', {
+      target: {
+        bind: () => ({
+          targetType: 'AWSChatbotSlack',
+          targetAddress: 'SlackID',
+        }),
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      Name: 'PipelineNotifyOnAnyActionStateChange64D5B2AA',
+      DetailType: 'FULL',
+      EventTypeIds: [
+        'codepipeline-pipeline-action-execution-canceled',
+        'codepipeline-pipeline-action-execution-failed',
+        'codepipeline-pipeline-action-execution-started',
+        'codepipeline-pipeline-action-execution-succeeded',
+      ],
+      Resource: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':codepipeline:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'PipelineC660917D' },
+        ]],
+      },
+      Targets: [
+        {
+          TargetAddress: 'SlackID',
+          TargetType: 'AWSChatbotSlack',
+        },
+      ],
+      Status: 'ENABLED',
+    });
+  });
+
+  test('On any "Manual approval" execution events emitted notification rule in pipeline', () => {
+    pipeline.notifyOnAnyManualApprovalStateChange('NotifyOnAnyManualApprovalStateChange', {
+      target: {
+        bind: () => ({
+          targetType: 'AWSChatbotSlack',
+          targetAddress: 'SlackID',
+        }),
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      Name: 'PipelineNotifyOnAnyManualApprovalStateChangeE60778F7',
+      DetailType: 'FULL',
+      EventTypeIds: [
+        'codepipeline-pipeline-manual-approval-failed',
+        'codepipeline-pipeline-manual-approval-needed',
+        'codepipeline-pipeline-manual-approval-succeeded',
+      ],
+      Resource: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':codepipeline:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'PipelineC660917D' },
+        ]],
+      },
+      Targets: [
+        {
+          TargetAddress: 'SlackID',
+          TargetType: 'AWSChatbotSlack',
+        },
+      ],
+      Status: 'ENABLED',
     });
   });
 });

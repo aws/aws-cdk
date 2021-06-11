@@ -210,7 +210,34 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
+  notifyOnPipelineStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Stage execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnAnyStageStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Action execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnAnyActionStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Manual approval" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnAnyManualApprovalStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
 }
 
 /**
@@ -401,30 +428,4 @@ export abstract class Action implements IAction {
       throw new Error('Action must be added to a stage that is part of a pipeline first');
     }
   }
-}
-
-/**
- * The list of event types for AWS Codepipeline Action
- * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
- */
-enum ActionEvent {
-  /**
-   * Trigger notification when pipeline action execution succeeded
-   */
-  ACTION_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-action-execution-succeeded',
-
-  /**
-   * Trigger notification when pipeline action execution failed
-   */
-  ACTION_EXECUTION_FAILED = 'codepipeline-pipeline-action-execution-failed',
-
-  /**
-   * Trigger notification when pipeline action execution canceled
-   */
-  ACTION_EXECUTION_CANCELED = 'codepipeline-pipeline-action-execution-canceled',
-
-  /**
-   * Trigger notification when pipeline action execution started
-   */
-  ACTION_EXECUTION_STARTED = 'codepipeline-pipeline-action-execution-started',
 }

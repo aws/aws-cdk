@@ -171,15 +171,14 @@ abstract class PipelineBase extends Resource implements IPipeline {
   }
 
   public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.INotificationRule {
-    const rule = new notifications.NotificationRule(this, id, {
+    return new notifications.NotificationRule(this, id, {
       ...options,
       source: this,
     });
-    return rule;
   }
 
-  public notifyOnStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
-    const rule = this.notifyOn(id, {
+  public notifyOnPipelineStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
+    return this.notifyOn(id, {
       ...options,
       events: [
         PipelineEvent.PIPELINE_EXECUTION_FAILED,
@@ -190,7 +189,42 @@ abstract class PipelineBase extends Resource implements IPipeline {
         PipelineEvent.PIPELINE_EXECUTION_SUPERSEDED,
       ],
     });
-    return rule;
+  }
+
+  public notifyOnAnyStageStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
+    return this.notifyOn(id, {
+      ...options,
+      events: [
+        PipelineEvent.STAGE_EXECUTION_CANCELED,
+        PipelineEvent.STAGE_EXECUTION_FAILED,
+        PipelineEvent.STAGE_EXECUTION_RESUMED,
+        PipelineEvent.STAGE_EXECUTION_STARTED,
+        PipelineEvent.STAGE_EXECUTION_SUCCEEDED,
+      ],
+    });
+  }
+
+  public notifyOnAnyActionStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
+    return this.notifyOn(id, {
+      ...options,
+      events: [
+        PipelineEvent.ACTION_EXECUTION_CANCELED,
+        PipelineEvent.ACTION_EXECUTION_FAILED,
+        PipelineEvent.ACTION_EXECUTION_STARTED,
+        PipelineEvent.ACTION_EXECUTION_SUCCEEDED,
+      ],
+    });
+  }
+
+  public notifyOnAnyManualApprovalStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
+    return this.notifyOn(id, {
+      ...options,
+      events: [
+        PipelineEvent.MANUAL_APPROVAL_FAILED,
+        PipelineEvent.MANUAL_APPROVAL_NEEDED,
+        PipelineEvent.MANUAL_APPROVAL_SUCCEEDED,
+      ],
+    });
   }
 }
 
@@ -1067,13 +1101,52 @@ enum PipelineEvent {
    * Trigger notification when pipeline execution superseded
    */
   PIPELINE_EXECUTION_SUPERSEDED = 'codepipeline-pipeline-pipeline-execution-superseded',
-}
 
-/**
- * The list of event types for AWS Codepipeline Manual approval action
- * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
- */
-enum ManualApprovalEvent {
+  /**
+   * Trigger notification when pipeline stage execution started
+   */
+  STAGE_EXECUTION_STARTED = 'codepipeline-pipeline-stage-execution-started',
+
+  /**
+  * Trigger notification when pipeline stage execution succeeded
+  */
+  STAGE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-stage-execution-succeeded',
+
+  /**
+  * Trigger notification when pipeline stage execution resumed
+  */
+  STAGE_EXECUTION_RESUMED = 'codepipeline-pipeline-stage-execution-resumed',
+
+  /**
+  * Trigger notification when pipeline stage execution canceled
+  */
+  STAGE_EXECUTION_CANCELED = 'codepipeline-pipeline-stage-execution-canceled',
+
+  /**
+  * Trigger notification when pipeline stage execution failed
+  */
+  STAGE_EXECUTION_FAILED = 'codepipeline-pipeline-stage-execution-failed',
+
+  /**
+   * Trigger notification when pipeline action execution succeeded
+   */
+  ACTION_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-action-execution-succeeded',
+
+  /**
+   * Trigger notification when pipeline action execution failed
+   */
+  ACTION_EXECUTION_FAILED = 'codepipeline-pipeline-action-execution-failed',
+
+  /**
+   * Trigger notification when pipeline action execution canceled
+   */
+  ACTION_EXECUTION_CANCELED = 'codepipeline-pipeline-action-execution-canceled',
+
+  /**
+   * Trigger notification when pipeline action execution started
+   */
+  ACTION_EXECUTION_STARTED = 'codepipeline-pipeline-action-execution-started',
+
   /**
    * Trigger notification when pipeline manual approval failed
    */
@@ -1088,35 +1161,4 @@ enum ManualApprovalEvent {
    * Trigger notification when pipeline manual approval succeeded
    */
   MANUAL_APPROVAL_SUCCEEDED = 'codepipeline-pipeline-manual-approval-succeeded',
-}
-
-/**
- * The list of event types for AWS Codepipeline Stage
- * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
- */
-enum StageEvent {
-  /**
-   * Trigger notification when pipeline stage execution started
-   */
-  STAGE_EXECUTION_STARTED = 'codepipeline-pipeline-stage-execution-started',
-
-  /**
-   * Trigger notification when pipeline stage execution succeeded
-   */
-  STAGE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-stage-execution-succeeded',
-
-  /**
-   * Trigger notification when pipeline stage execution resumed
-   */
-  STAGE_EXECUTION_RESUMED = 'codepipeline-pipeline-stage-execution-resumed',
-
-  /**
-   * Trigger notification when pipeline stage execution canceled
-   */
-  STAGE_EXECUTION_CANCELED = 'codepipeline-pipeline-stage-execution-canceled',
-
-  /**
-   * Trigger notification when pipeline stage execution failed
-   */
-  STAGE_EXECUTION_FAILED = 'codepipeline-pipeline-stage-execution-failed',
 }
