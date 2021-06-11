@@ -1,5 +1,5 @@
 // AWS::CodeStarNotifications CloudFormation Resources:
 export * from './codestarnotifications.generated';
 export * from './notification-rule';
-export * from './source';
-export * from './target';
+export * from './notification-rule-source';
+export * from './notification-rule-target';

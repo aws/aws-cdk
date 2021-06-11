@@ -1,8 +1,8 @@
 import { IResource, Resource, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
-import { NotificationRuleSourceConfig, INotificationRuleSource } from './source';
-import { INotificationRuleTarget, NotificationRuleTargetConfig } from './target';
+import { NotificationRuleSourceConfig, INotificationRuleSource } from './notification-rule-source';
+import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
 
 /**
  * The level of detail to include in the notifications for this resource.
