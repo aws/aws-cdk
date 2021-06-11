@@ -157,7 +157,7 @@ export class NotificationRule extends Resource implements INotificationRule {
       eventTypeIds: this.events,
       resource: source.sourceArn,
       status: props.enabled !== undefined
-        ? !props.enabled ? 'DISABLED' : 'ENABLED'
+        ? (!props.enabled ? 'DISABLED' : 'ENABLED')
         : undefined,
     });
 
