@@ -119,7 +119,7 @@ export class NotificationRule extends Resource implements INotificationRule {
     class Import extends Resource implements INotificationRule {
       readonly notificationRuleArn = notificationRuleArn;
 
-      public addTarget(_target?: INotificationRuleTarget): boolean {
+      public addTarget(_target: INotificationRuleTarget): boolean {
         return false;
       }
     }
