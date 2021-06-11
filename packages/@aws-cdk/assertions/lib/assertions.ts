@@ -33,7 +33,7 @@ export class TemplateAssertions {
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
    */
-  public static fromStack(stack: Stack) {
+  public static fromStack(stack: Stack): TemplateAssertions {
     return new TemplateAssertions(toTemplate(stack));
   }
 
@@ -41,7 +41,7 @@ export class TemplateAssertions {
    * Base your assertions from an existing CloudFormation template.
    * @param template the CloudFormation template in JSON format as a string
    */
-  public static fromTemplate(template: string) {
+  public static fromTemplate(template: string): TemplateAssertions {
     return new TemplateAssertions(JSON.parse(template));
   }
 
@@ -79,7 +79,7 @@ export class TemplateAssertions {
    * Assert that the CloudFormation template matches the given value
    * @param expected the expected CloudFormation template as key-value pairs.
    */
-  public templateMatches(expected: {[key: string]: any}) {
+  public templateMatches(expected: {[key: string]: any}): void {
     const assertion = assert.matchTemplate(expected);
     assertion.assertOrThrow(this.inspector);
   }
@@ -94,7 +94,7 @@ function toTemplate(stack: Stack): any {
   return assembly.getStackArtifact(stack.artifactId).template;
 }
 
-function assertResourcePart(part: ResourcePart) {
+function assertResourcePart(part: ResourcePart): assert.ResourcePart {
   switch (part) {
     case ResourcePart.PROPERTIES:
       return assert.ResourcePart.Properties;
