@@ -79,6 +79,32 @@ export = {
     test.done();
   },
 
+  'imported event bus from name'(test: Test) {
+    const stack = new Stack();
+
+    const eventBusName = 'test-bus-to-import-by-name';
+
+    const eventBus = new EventBus(stack, 'Bus', { eventBusName });
+
+    const importEB = EventBus.fromEventBusName(stack, 'ImportBus', eventBusName);
+
+    // WHEN
+    new CfnResource(stack, 'Res', {
+      type: 'Test::Resource',
+      properties: {
+        EventBusArn1: eventBus.eventBusArn,
+        EventBusArn2: importEB.eventBusArn,
+      },
+    });
+
+    expect(stack).to(haveResource('Test::Resource', {
+      EventBusArn1: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
+      EventBusArn2: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
+    }));
+
+    test.done();
+  },
+
   'same account imported event bus has right resource env'(test: Test) {
     const stack = new Stack();
 
