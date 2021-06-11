@@ -163,6 +163,9 @@ abstract class PipelineBase extends Resource implements IPipeline {
     return rule;
   }
 
+  /**
+   * Returns a source configuration for notification rule.
+   */
   public bindAsNotificationRuleSource(_scope: Construct, _rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
     return {
       sourceType: 'CodePipeline',

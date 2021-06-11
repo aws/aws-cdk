@@ -41,6 +41,11 @@ export interface BatchBuildConfig {
  * Additional options to pass to the notification rule.
  */
 export interface ProjectNotifyOnOptions extends notifications.NotificationRuleOptions {
+  /**
+   * A list of event types associated with this notification rule for CodeBuild Project.
+   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
+   */
   readonly events: ProjectNotificationEvents[];
 }
 
@@ -475,7 +480,7 @@ abstract class ProjectBase extends Resource implements IProject {
     });
   }
 
-  public bindAsNotificationRuleSource(_scope: Construct, _rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
+  public bindAsNotificationRuleSource(_scope: CoreConstruct, _rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
     return {
       sourceType: 'CodeBuild',
       sourceArn: this.projectArn,

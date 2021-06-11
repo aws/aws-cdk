@@ -58,8 +58,6 @@ export interface NotificationRuleProps extends NotificationRuleOptions {
    * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
    *
-   * You must specify this property (either via props or via `addEvents`)
-   *
    * @default - No events.
    */
   readonly events?: string[];
@@ -199,7 +197,6 @@ export class NotificationRule extends Resource implements INotificationRule {
    * @returns string
    */
   private generateName(): string {
-    const name = Names.uniqueId(this);
-    return name.slice(-64);
+    return Names.uniqueId(this).slice(-64);
   }
 }

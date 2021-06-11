@@ -344,22 +344,45 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public onStateChange(_id: string, _options: events.OnEventOptions): events.Rule {
     throw new Error('Method not implemented.');
   }
-  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.NotificationRule {
+  public notifyOn(
+    _id: string,
+    _target: notifications.INotificationRuleTarget,
+    _options?: codepipeline.PipelineNotifyOnOptions,
+  ): notifications.NotificationRule {
     throw new Error('Method not implemented.');
   }
-  public notifyOnPipelineStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.NotificationRule {
+  public notifyOnPipelineStateChange(
+    _id: string,
+    _target: notifications.INotificationRuleTarget,
+    _options?: notifications.NotificationRuleOptions,
+  ): notifications.NotificationRule {
     throw new Error('Method not implemented.');
   }
-  public notifyOnAnyStageStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.INotificationRule {
+  public notifyOnAnyStageStateChange(
+    _id: string,
+    _target: notifications.INotificationRuleTarget,
+    _options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
     throw new Error('Method not implemented.');
   }
-  public notifyOnAnyActionStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.INotificationRule {
+  public notifyOnAnyActionStateChange(
+    _id: string,
+    _target: notifications.INotificationRuleTarget,
+    _options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
     throw new Error('Method not implemented.');
   }
-  public notifyOnAnyManualApprovalStateChange(_id: string, _options?: notifications.NotifyOptions): notifications.INotificationRule {
+  public notifyOnAnyManualApprovalStateChange(
+    _id: string,
+    _target: notifications.INotificationRuleTarget,
+    _options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
     throw new Error('Method not implemented.');
   }
-  public bind(_rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
+  public bindAsNotificationRuleSource(
+    _scope: constructs.Construct,
+    _rule: notifications.INotificationRule,
+  ): notifications.NotificationRuleSourceConfig {
     throw new Error('Method not implemented.');
   }
 }

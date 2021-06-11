@@ -123,6 +123,11 @@ export interface ActionConfig {
  * Additional options to pass to the notification rule.
  */
 export interface PipelineNotifyOnOptions extends notifications.NotificationRuleOptions {
+  /**
+   * A list of event types associated with this notification rule for CodePipeline Pipeline.
+   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
+   */
   readonly events: PipelineNotificationEvents[];
 }
 
