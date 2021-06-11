@@ -102,7 +102,7 @@ export interface INotificationRule extends IResource {
    * @param target The SNS topic or AWS Chatbot Slack target
    * @returns boolean - return true if it had any effect
    */
-  addTarget(target?: INotificationRuleTarget): boolean;
+  addTarget(target: INotificationRuleTarget): boolean;
 }
 
 /**
@@ -121,7 +121,7 @@ export class NotificationRule extends Resource implements INotificationRule {
     class Import extends Resource implements INotificationRule {
       readonly notificationRuleArn = notificationRuleArn;
 
-      public addTarget(_target?: INotificationRuleTarget) {
+      public addTarget(_target?: INotificationRuleTarget): boolean {
         return false;
       }
     }
@@ -142,12 +142,12 @@ export class NotificationRule extends Resource implements INotificationRule {
   /**
    * The target config of notification rule
    */
-  readonly targets: NotificationRuleTargetConfig[] = [];
+  private targets: NotificationRuleTargetConfig[] = [];
 
   /**
    * The events of notification rule
    */
-  readonly events: string[] = [];
+  private events: string[] = [];
 
   constructor(scope: Construct, id: string, props: NotificationRuleProps) {
     super(scope, id);
@@ -180,11 +180,7 @@ export class NotificationRule extends Resource implements INotificationRule {
    * Adds target to notification rule
    * @param target The SNS topic or AWS Chatbot Slack target
    */
-  public addTarget(target?: INotificationRuleTarget): boolean {
-    if (!target) {
-      return false;
-    }
-
+  public addTarget(target: INotificationRuleTarget): boolean {
     this.targets.push(target.bind(this));
     return true;
   }
