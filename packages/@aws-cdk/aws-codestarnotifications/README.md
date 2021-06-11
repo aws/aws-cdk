@@ -31,7 +31,6 @@ The following targets are supported:
 
 ```ts
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
-import * as targets from '@aws-cdk/aws-codestarnotifications-targets';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sns from '@aws-cdk/aws-sns';
 import * as chatbot from '@aws-cdk/aws-chatbot';
@@ -48,12 +47,14 @@ const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
 
 const rule = new notifications.NotificationRule(stack, 'NotificationRule', {
   source: project,
+  events: [
+    'codebuild-project-build-state-succeeded',
+    'codebuild-project-build-state-failed',
+  ],
 });
 
-rule.addEvents(['codebuild-project-build-state-succeeded']);
-
-rule.addTarget(new targets.SlackChannelConfiguration(slack));
-rule.addTarget(new targets.SnsTopic(slack));
+rule.addTarget(slack);
+rule.addTarget(slack);
 ```
 
 ## Notification Source
