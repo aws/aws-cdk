@@ -184,12 +184,12 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, n
   /**
    * Defines a Codestar notification rule which triggers when a build completes successfully.
    */
-  notifyOnBuildSucceeded(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
+  notifyOnBuildSucceeded(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
 
   /**
    * Defines a Codestar notification rule which triggers when a build fails.
    */
-  notifyOnBuildFailed(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
+  notifyOnBuildFailed(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
 }
 
 /**
@@ -433,7 +433,7 @@ abstract class ProjectBase extends Resource implements IProject {
     return rule;
   }
 
-  public notifyOnBuildSucceeded(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
+  public notifyOnBuildSucceeded(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
     const rule = this.notifyOn(id, {
       ...options,
       events: [ProjectEvent.BUILD_STATE_SUCCEEDED],
@@ -441,7 +441,7 @@ abstract class ProjectBase extends Resource implements IProject {
     return rule;
   }
 
-  public notifyOnBuildFailed(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
+  public notifyOnBuildFailed(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
     const rule = this.notifyOn(id, {
       ...options,
       events: [ProjectEvent.BUILD_STATE_FAILED],

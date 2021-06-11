@@ -210,7 +210,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnPipelineStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
+  notifyOnPipelineStateChange(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Stage execution" events emitted from this pipeline.
@@ -219,7 +219,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnAnyStageStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
+  notifyOnAnyStageStateChange(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Action execution" events emitted from this pipeline.
@@ -228,7 +228,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnAnyActionStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
+  notifyOnAnyActionStateChange(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Manual approval" events emitted from this pipeline.
@@ -237,7 +237,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnAnyManualApprovalStateChange(id: string, options?: notifications.NotifyOptions): notifications.INotificationRule;
+  notifyOnAnyManualApprovalStateChange(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
 }
 
 /**

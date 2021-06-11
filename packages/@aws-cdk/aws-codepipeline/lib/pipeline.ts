@@ -177,7 +177,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
     });
   }
 
-  public notifyOnPipelineStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
+  public notifyOnPipelineStateChange(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
     return this.notifyOn(id, {
       ...options,
       events: [
@@ -191,7 +191,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
     });
   }
 
-  public notifyOnAnyStageStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
+  public notifyOnAnyStageStateChange(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
     return this.notifyOn(id, {
       ...options,
       events: [
@@ -204,7 +204,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
     });
   }
 
-  public notifyOnAnyActionStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
+  public notifyOnAnyActionStateChange(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
     return this.notifyOn(id, {
       ...options,
       events: [
@@ -216,7 +216,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
     });
   }
 
-  public notifyOnAnyManualApprovalStateChange(id: string, options: notifications.NotifyOptions = {}): notifications.INotificationRule {
+  public notifyOnAnyManualApprovalStateChange(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
     return this.notifyOn(id, {
       ...options,
       events: [

@@ -22,7 +22,7 @@ export enum DetailType {
 /**
  * Standard set of options for `notifyOnXxx` codestar notification handler on construct
  */
-export interface NotifyOptions {
+export interface NotificationRuleOptions {
   /**
    * The name for the notification rule.
    * Notification rule names must be unique in your AWS account.
@@ -59,7 +59,7 @@ export interface NotifyOptions {
 /**
  * Standard set of options for `notifyOn` codestar notification handler on construct
  */
-export interface NotifyOnEventOptions extends NotifyOptions {
+export interface NotifyOnEventOptions extends NotificationRuleOptions {
   /**
    * A list of event types associated with this notification rule.
    * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
