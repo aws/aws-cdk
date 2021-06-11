@@ -90,6 +90,24 @@ assert.assertHasResource('Foo::Bar', {
 });
 ```
 
+## Special Matchers
+
+The expectation provided to the `assertHasResource()` method, besides carrying
+literal values, as seen in the above examples, can also have special matchers
+encoded. 
+They are available as part of the `Matchers` class and can be used as follows -
+
+```ts
+assert.assertHasResource('Foo::Bar', {
+  Foo: 'Bar',
+  Baz: Matchers.absent(),
+})
+```
+
+The list of available matchers are -
+
+* `absent()`: Specifies that this key must not be present.
+
 ## Strongly typed languages
 
 Some of the APIs documented above, such as `assertTemplateMatches()` and
