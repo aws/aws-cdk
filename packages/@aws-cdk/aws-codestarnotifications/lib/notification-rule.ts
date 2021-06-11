@@ -1,11 +1,8 @@
 import { IResource, Resource, Names } from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -115,7 +112,7 @@ export class NotificationRule extends Resource implements INotificationRule {
    * @param id The construct's name
    * @param notificationRuleArn Notification rule ARN (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
    */
-  public static fromNotificationRuleArn(scope: Construct, id: string, notificationRuleArn: string): INotificationRule {
+  public static fromNotificationRuleArn(scope: constructs.Construct, id: string, notificationRuleArn: string): INotificationRule {
     class Import extends Resource implements INotificationRule {
       readonly notificationRuleArn = notificationRuleArn;
 
@@ -142,7 +139,7 @@ export class NotificationRule extends Resource implements INotificationRule {
    */
   private events: string[] = [];
 
-  constructor(scope: Construct, id: string, props: NotificationRuleProps) {
+  constructor(scope: constructs.Construct, id: string, props: NotificationRuleProps) {
     super(scope, id);
 
     const source = props.source.bindAsNotificationRuleSource(this, this);

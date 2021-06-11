@@ -1,9 +1,6 @@
 
+import * as constructs from 'constructs';
 import { INotificationRule } from './notification-rule';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Information about the Codebuild or CodePipeline associated with a notification source.
@@ -28,5 +25,5 @@ export interface INotificationRuleSource {
   /**
    * Returns a source configuration for notification rule.
    */
-  bindAsNotificationRuleSource(scope: Construct, rule: INotificationRule): NotificationRuleSourceConfig;
+  bindAsNotificationRuleSource(scope: constructs.Construct, rule: INotificationRule): NotificationRuleSourceConfig;
 }
