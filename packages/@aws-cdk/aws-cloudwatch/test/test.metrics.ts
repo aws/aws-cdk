@@ -199,4 +199,25 @@ export = {
 
     test.done();
   },
+
+  '"with" with a different dimensions property'(test: Test) {
+    const dims = {
+      dimensionA: 'value1',
+    };
+
+    const m = new Metric({
+      namespace: 'Test',
+      metricName: 'Metric',
+      period: cdk.Duration.minutes(10),
+      dimensionsMap: dims,
+    });
+
+    test.notEqual(m.with({
+      dimensions: {
+        dimensionB: 'value2',
+      },
+    }).dimensions, dims);
+
+    test.done();
+  },
 };
