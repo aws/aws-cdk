@@ -97,6 +97,17 @@ export = {
       });
     }, `Dimension value must be at least 1 and no more than 255 characters; received ${invalidDimensionValue}`);
 
+    test.throws(() => {
+      new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        period: cdk.Duration.minutes(10),
+        dimensionsMap: {
+          DimensionWithLongValue: invalidDimensionValue,
+        },
+      });
+    }, `Dimension value must be at least 1 and no more than 255 characters; received ${invalidDimensionValue}`);
+
     test.done();
   },
 
@@ -121,6 +132,45 @@ export = {
         },
       } );
     }, /The maximum number of dimensions is 10, received 11/);
+
+    test.throws(() => {
+      new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        period: cdk.Duration.minutes(10),
+        dimensionsMap: {
+          dimensionA: 'value1',
+          dimensionB: 'value2',
+          dimensionC: 'value3',
+          dimensionD: 'value4',
+          dimensionE: 'value5',
+          dimensionF: 'value6',
+          dimensionG: 'value7',
+          dimensionH: 'value8',
+          dimensionI: 'value9',
+          dimensionJ: 'value10',
+          dimensionK: 'value11',
+        },
+      } );
+    }, /The maximum number of dimensions is 10, received 11/);
+
+    test.done();
+  },
+
+  'cannot use both dimensions and dimensionsMap'(test: Test) {
+    test.throws(() => {
+      new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        period: cdk.Duration.minutes(10),
+        dimensions: {
+          dimensionA: 'value1',
+        },
+        dimensionsMap: {
+          dimensionA: 'value1',
+        },
+      });
+    }, /Using both the 'dimensions' and 'dimensionsMap' properties is not supported. Use only 'dimensionsMap.'/);
 
     test.done();
   },
