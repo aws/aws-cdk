@@ -170,6 +170,32 @@ test('Runtime can be specified', () => {
   });
 });
 
+test('environment variables can be specified', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+  const environmentVariables = {
+    TEST_KEY_1: 'TEST_VALUE_1',
+    TEST_KEY_2: 'TEST_VALUE_2',
+  };
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    environmentVariables: environmentVariables,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    RunConfig: {
+      EnvironmentVariables: environmentVariables,
+    },
+  });
+});
+
 test('Runtime can be customized', () => {
   // GIVEN
   const stack = new Stack(new App(), 'canaries');
