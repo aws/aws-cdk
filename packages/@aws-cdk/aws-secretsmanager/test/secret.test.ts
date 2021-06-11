@@ -807,6 +807,19 @@ describe('fromSecretAttributes', () => {
       secretCompleteArn: 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret',
     })).toThrow(/does not appear to be complete/);
   });
+
+  test('parses environment from secretArn', () => {
+    // GIVEN
+    const secretAccount = '222222222222';
+
+    // WHEN
+    const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+      secretCompleteArn: `arn:aws:secretsmanager:eu-west-1:${secretAccount}:secret:MySecret-f3gDy9`,
+    });
+
+    // THEN
+    expect(secret.env.account).toBe(secretAccount);
+  });
 });
 
 test('import by secret name', () => {
