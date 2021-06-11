@@ -397,14 +397,6 @@ class StageDouble implements codepipeline.IStage {
   events.Rule {
     throw new Error('onStateChange() is not supported on StageDouble');
   }
-
-  public notifyOn(_id: string, _options?: notifications.NotifyOnEventOptions): notifications.INotificationRule {
-    throw new Error('Method not implemented.');
-  }
-
-  public notifyOnStateChange(_name: string, _options?: notifications.NotifyOptions): notifications.INotificationRule {
-    throw new Error('Method not implemented.');
-  }
 }
 
 class RoleDouble extends iam.Role {
