@@ -5,6 +5,7 @@ import {
   FakeCodeBuild,
   FakeCodePipeline,
   FakeSlackTarget,
+  FakeSnsTopicTarget,
 } from './helpers';
 
 describe('Rule', () => {
@@ -129,50 +130,27 @@ describe('Rule', () => {
 
   test('notification added targets', () => {
     const project = new FakeCodeBuild();
-    const topic1: notifications.INotificationRuleTarget = {
-      bind: () => ({
-        targetType: 'SNS',
-        targetAddress: 'arn:aws:sns::1234567890:MyTopic1',
-      }),
-    };
-    const topic2: notifications.INotificationRuleTarget = {
-      bind: () => ({
-        targetType: 'SNS',
-        targetAddress: 'arn:aws:sns::1234567890:MyTopic2',
-      }),
-    };
-    const topic3: notifications.INotificationRuleTarget = {
-      bind: () => ({
-        targetType: 'SNS',
-        targetAddress: 'arn:aws:sns::1234567890:MyTopic3',
-      }),
-    };
+    const topic = new FakeSnsTopicTarget();
     const slack = new FakeSlackTarget();
 
     const rule = new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: project,
     });
 
-    rule.addTarget(topic1);
-    rule.addTarget(topic2);
     rule.addTarget(slack);
 
-    expect(rule.addTarget(topic3)).toEqual(true);
+    expect(rule.addTarget(topic)).toEqual(true);
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
       Targets: [
         {
-          TargetAddress: 'arn:aws:sns::1234567890:MyTopic1',
-          TargetType: 'SNS',
-        },
-        {
-          TargetAddress: 'arn:aws:sns::1234567890:MyTopic2',
-          TargetType: 'SNS',
-        },
-        {
           TargetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
           TargetType: 'AWSChatbotSlack',
+        },
+        {
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
+          TargetType: 'SNS',
         },
       ],
     });
