@@ -82,11 +82,9 @@ export = {
   'imported event bus from name'(test: Test) {
     const stack = new Stack();
 
-    const eventBusName = 'test-bus-to-import-by-name';
+    const eventBus = new EventBus(stack, 'Bus', { eventBusName: 'test-bus-to-import-by-name' });
 
-    const eventBus = new EventBus(stack, 'Bus', { eventBusName });
-
-    const importEB = EventBus.fromEventBusName(stack, 'ImportBus', eventBusName);
+    const importEB = EventBus.fromEventBusName(stack, 'ImportBus', eventBus.eventBusName);
 
     // WHEN
     test.deepEqual(stack.resolve(eventBus.eventBusName), stack.resolve(importEB.eventBusName));
