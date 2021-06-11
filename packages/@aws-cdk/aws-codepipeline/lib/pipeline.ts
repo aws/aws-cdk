@@ -1068,3 +1068,55 @@ enum PipelineEvent {
    */
   PIPELINE_EXECUTION_SUPERSEDED = 'codepipeline-pipeline-pipeline-execution-superseded',
 }
+
+/**
+ * The list of event types for AWS Codepipeline Manual approval action
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+ */
+enum ManualApprovalEvent {
+  /**
+   * Trigger notification when pipeline manual approval failed
+   */
+  MANUAL_APPROVAL_FAILED = 'codepipeline-pipeline-manual-approval-failed',
+
+  /**
+   * Trigger notification when pipeline manual approval needed
+   */
+  MANUAL_APPROVAL_NEEDED = 'codepipeline-pipeline-manual-approval-needed',
+
+  /**
+   * Trigger notification when pipeline manual approval succeeded
+   */
+  MANUAL_APPROVAL_SUCCEEDED = 'codepipeline-pipeline-manual-approval-succeeded',
+}
+
+/**
+ * The list of event types for AWS Codepipeline Stage
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+ */
+enum StageEvent {
+  /**
+   * Trigger notification when pipeline stage execution started
+   */
+  STAGE_EXECUTION_STARTED = 'codepipeline-pipeline-stage-execution-started',
+
+  /**
+   * Trigger notification when pipeline stage execution succeeded
+   */
+  STAGE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-stage-execution-succeeded',
+
+  /**
+   * Trigger notification when pipeline stage execution resumed
+   */
+  STAGE_EXECUTION_RESUMED = 'codepipeline-pipeline-stage-execution-resumed',
+
+  /**
+   * Trigger notification when pipeline stage execution canceled
+   */
+  STAGE_EXECUTION_CANCELED = 'codepipeline-pipeline-stage-execution-canceled',
+
+  /**
+   * Trigger notification when pipeline stage execution failed
+   */
+  STAGE_EXECUTION_FAILED = 'codepipeline-pipeline-stage-execution-failed',
+}
