@@ -98,8 +98,8 @@ export = {
     });
 
     expect(stack).to(haveResource('Test::Resource', {
-      EventBusArn1: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
-      EventBusArn2: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
+      EventBusArn1: stack.resolve(eventBus.eventBusArn),
+      EventBusArn2: stack.resolve(eventBus.eventBusArn),
     }));
 
     test.done();
