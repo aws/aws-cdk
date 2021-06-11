@@ -125,7 +125,10 @@ export abstract class TopicBase extends Resource implements ITopic {
     });
   }
 
-  public bind(_rule: notifications.INotificationRule): notifications.NotificationRuleTargetConfig {
+  public bindAsNotificationRuleTarget(_scope: Construct, _rule: notifications.INotificationRule): notifications.NotificationRuleTargetConfig {
+    // SNS topic need to grant codestar-notifications service to publish
+    // @see https://docs.aws.amazon.com/dtconsole/latest/userguide/set-up-sns.html
+    this.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));
     return {
       targetType: 'SNS',
       targetAddress: this.topicArn,

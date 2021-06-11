@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert-internal';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as codebuild from '../lib';
@@ -19,23 +20,11 @@ export = {
       }),
     });
 
-    project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', {
-      target: {
-        bind: () => ({
-          targetType: 'AWSChatbotSlack',
-          targetAddress: 'SlackID',
-        }),
-      },
-    });
+    const target = new sns.Topic(stack, 'MyTopic');
 
-    project.notifyOnBuildFailed('NotifyOnBuildFailed', {
-      target: {
-        bind: () => ({
-          targetType: 'SNS',
-          targetAddress: 'TopicID',
-        }),
-      },
-    });
+    project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', target);
+
+    project.notifyOnBuildFailed('NotifyOnBuildFailed', target);
 
     expect(stack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyCodebuildProjectNotifyOnBuildSucceeded77719592',
@@ -51,8 +40,10 @@ export = {
       },
       Targets: [
         {
-          TargetAddress: 'SlackID',
-          TargetType: 'AWSChatbotSlack',
+          TargetAddress: {
+            Ref: 'MyTopic86869434',
+          },
+          TargetType: 'SNS',
         },
       ],
     }));
@@ -71,7 +62,9 @@ export = {
       },
       Targets: [
         {
-          TargetAddress: 'TopicID',
+          TargetAddress: {
+            Ref: 'MyTopic86869434',
+          },
           TargetType: 'SNS',
         },
       ],

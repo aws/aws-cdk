@@ -8,7 +8,7 @@ import {
   IStackSynthesizer, Lazy, Names, PhysicalName, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ActionCategory, IAction, IPipeline, IStage } from './action';
+import { ActionCategory, IAction, IPipeline, IStage, PipelineNotifyOnOptions } from './action';
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
 import { FullActionDescriptor } from './private/full-action-descriptor';
@@ -163,66 +163,83 @@ abstract class PipelineBase extends Resource implements IPipeline {
     return rule;
   }
 
-  public bind(_rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
+  public bindAsNotificationRuleSource(_scope: Construct, _rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
     return {
       sourceType: 'CodePipeline',
       sourceArn: this.pipelineArn,
     };
   }
 
-  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.INotificationRule {
+  public notifyOn(id: string, target: notifications.INotificationRuleTarget, options?: PipelineNotifyOnOptions): notifications.INotificationRule {
     return new notifications.NotificationRule(this, id, {
       ...options,
       source: this,
+      targets: [target],
     });
   }
 
-  public notifyOnPipelineStateChange(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
-    return this.notifyOn(id, {
+  public notifyOnPipelineStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
       ...options,
       events: [
-        PipelineEvent.PIPELINE_EXECUTION_FAILED,
-        PipelineEvent.PIPELINE_EXECUTION_CANCELED,
-        PipelineEvent.PIPELINE_EXECUTION_STARTED,
-        PipelineEvent.PIPELINE_EXECUTION_RESUMED,
-        PipelineEvent.PIPELINE_EXECUTION_SUCCEEDED,
-        PipelineEvent.PIPELINE_EXECUTION_SUPERSEDED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_CANCELED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_STARTED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_RESUMED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_SUCCEEDED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_SUPERSEDED,
       ],
     });
   }
 
-  public notifyOnAnyStageStateChange(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
-    return this.notifyOn(id, {
+  public notifyOnAnyStageStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
       ...options,
       events: [
-        PipelineEvent.STAGE_EXECUTION_CANCELED,
-        PipelineEvent.STAGE_EXECUTION_FAILED,
-        PipelineEvent.STAGE_EXECUTION_RESUMED,
-        PipelineEvent.STAGE_EXECUTION_STARTED,
-        PipelineEvent.STAGE_EXECUTION_SUCCEEDED,
+        PipelineNotificationEvents.STAGE_EXECUTION_CANCELED,
+        PipelineNotificationEvents.STAGE_EXECUTION_FAILED,
+        PipelineNotificationEvents.STAGE_EXECUTION_RESUMED,
+        PipelineNotificationEvents.STAGE_EXECUTION_STARTED,
+        PipelineNotificationEvents.STAGE_EXECUTION_SUCCEEDED,
       ],
     });
   }
 
-  public notifyOnAnyActionStateChange(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
-    return this.notifyOn(id, {
+  public notifyOnAnyActionStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
       ...options,
       events: [
-        PipelineEvent.ACTION_EXECUTION_CANCELED,
-        PipelineEvent.ACTION_EXECUTION_FAILED,
-        PipelineEvent.ACTION_EXECUTION_STARTED,
-        PipelineEvent.ACTION_EXECUTION_SUCCEEDED,
+        PipelineNotificationEvents.ACTION_EXECUTION_CANCELED,
+        PipelineNotificationEvents.ACTION_EXECUTION_FAILED,
+        PipelineNotificationEvents.ACTION_EXECUTION_STARTED,
+        PipelineNotificationEvents.ACTION_EXECUTION_SUCCEEDED,
       ],
     });
   }
 
-  public notifyOnAnyManualApprovalStateChange(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
-    return this.notifyOn(id, {
+  public notifyOnAnyManualApprovalStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
       ...options,
       events: [
-        PipelineEvent.MANUAL_APPROVAL_FAILED,
-        PipelineEvent.MANUAL_APPROVAL_NEEDED,
-        PipelineEvent.MANUAL_APPROVAL_SUCCEEDED,
+        PipelineNotificationEvents.MANUAL_APPROVAL_FAILED,
+        PipelineNotificationEvents.MANUAL_APPROVAL_NEEDED,
+        PipelineNotificationEvents.MANUAL_APPROVAL_SUCCEEDED,
       ],
     });
   }
@@ -1071,7 +1088,7 @@ function renderEnvDimension(s: string | undefined) {
  * The list of event types for AWS Codepipeline Pipeline
  * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
  */
-enum PipelineEvent {
+export enum PipelineNotificationEvents {
   /**
    * Trigger notification when pipeline execution failed
    */

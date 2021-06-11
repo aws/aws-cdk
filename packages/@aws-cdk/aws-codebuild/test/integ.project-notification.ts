@@ -20,6 +20,6 @@ const project = new codebuild.Project(stack, 'MyProject', {
 
 const topic = new sns.Topic(stack, 'MyTopic');
 
-project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', { target: topic });
+project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', topic);
 
 app.synth();

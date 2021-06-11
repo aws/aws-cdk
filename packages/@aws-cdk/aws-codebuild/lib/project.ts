@@ -37,6 +37,13 @@ export interface BatchBuildConfig {
   readonly role: iam.IRole;
 }
 
+/**
+ * Additional options to pass to the notification rule.
+ */
+export interface ProjectNotifyOnOptions extends notifications.NotificationRuleOptions {
+  readonly events: ProjectNotificationEvents[];
+}
+
 export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource {
   /**
    * The ARN of this Project.
@@ -173,23 +180,36 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, n
   metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-   * You can also use the methods `notifyOnBuildSucceeded` and `notifyOnBuildFailed` to define rules for these specific event occurs.
+   * Defines a Codestar Notification rule triggered when the project
+   * events emitted by you specified, it very similar to `onEvent` API.
+   *
+   * You can also use the methods `notifyOnBuildSucceeded` and
+   * `notifyOnBuildFailed` to define rules for these specific event emitted.
    *
    * @param id The logical identifier of the CodeStar Notifications rule that will be created
-   * @param options Customization options for Codestar notification rule
-   * @returns Codestar notification rule associated with this build project.
+   * @param target The target to register for the Codestar Notifications destination.
+   * @param options Customization options for Codestar Notifications rule
+   * @returns Codestar Notifications rule associated with this build project.
    */
-  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule;
+  notifyOn(id: string, target: notifications.INotificationRuleTarget, options?: ProjectNotifyOnOptions): notifications.INotificationRule;
 
   /**
    * Defines a Codestar notification rule which triggers when a build completes successfully.
    */
-  notifyOnBuildSucceeded(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
+  notifyOnBuildSucceeded(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
 
   /**
    * Defines a Codestar notification rule which triggers when a build fails.
    */
-  notifyOnBuildFailed(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
+  notifyOnBuildFailed(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
 }
 
 /**
@@ -425,31 +445,37 @@ abstract class ProjectBase extends Resource implements IProject {
     return this.cannedMetric(CodeBuildMetrics.failedBuildsSum, props);
   }
 
-  public notifyOn(id: string, options: notifications.NotifyOnEventOptions = {}): notifications.INotificationRule {
-    const rule = new notifications.NotificationRule(this, id, {
+  public notifyOn(id: string, target: notifications.INotificationRuleTarget, options?: ProjectNotifyOnOptions): notifications.INotificationRule {
+    return new notifications.NotificationRule(this, id, {
       ...options,
       source: this,
+      targets: [target],
     });
-    return rule;
   }
 
-  public notifyOnBuildSucceeded(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
-    const rule = this.notifyOn(id, {
+  public notifyOnBuildSucceeded(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
       ...options,
-      events: [ProjectEvent.BUILD_STATE_SUCCEEDED],
+      events: [ProjectNotificationEvents.BUILD_STATE_SUCCEEDED],
     });
-    return rule;
   }
 
-  public notifyOnBuildFailed(id: string, options: notifications.NotificationRuleOptions = {}): notifications.INotificationRule {
-    const rule = this.notifyOn(id, {
+  public notifyOnBuildFailed(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
       ...options,
-      events: [ProjectEvent.BUILD_STATE_FAILED],
+      events: [ProjectNotificationEvents.BUILD_STATE_FAILED],
     });
-    return rule;
   }
 
-  public bind(_rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
+  public bindAsNotificationRuleSource(_scope: Construct, _rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
     return {
       sourceType: 'CodeBuild',
       sourceArn: this.projectArn,
@@ -2017,7 +2043,7 @@ export enum BuildEnvironmentVariableType {
  * The list of event types for AWS Codebuild
  * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject
  */
-enum ProjectEvent {
+export enum ProjectNotificationEvents {
   /**
    * Trigger notification when project build state failed
    */

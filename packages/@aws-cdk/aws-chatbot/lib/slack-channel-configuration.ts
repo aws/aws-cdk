@@ -181,7 +181,7 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
     });
   }
 
-  public bind(_rule: notifications.INotificationRule): notifications.NotificationRuleTargetConfig {
+  public bindAsNotificationRuleTarget(_scope: Construct, _rule: notifications.INotificationRule): notifications.NotificationRuleTargetConfig {
     return {
       targetType: 'AWSChatbotSlack',
       targetAddress: this.slackChannelConfigurationArn,

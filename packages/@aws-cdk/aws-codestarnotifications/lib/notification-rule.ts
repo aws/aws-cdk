@@ -1,8 +1,11 @@
 import { IResource, Resource, Names } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -32,13 +35,6 @@ export interface NotificationRuleOptions {
   readonly notificationRuleName?: string;
 
   /**
-   * The target to register for the notification destination.
-   *
-   * @default - No target is added to the rule. Use `addTarget()` to add a target.
-   */
-  readonly target?: INotificationRuleTarget;
-
-  /**
    * The status of the notification rule.
    * If the enabled is set to DISABLED, notifications aren't sent for the notification rule.
    *
@@ -57,9 +53,9 @@ export interface NotificationRuleOptions {
 }
 
 /**
- * Standard set of options for `notifyOn` codestar notification handler on construct
+ * Properties for a new notification rule
  */
-export interface NotifyOnEventOptions extends NotificationRuleOptions {
+export interface NotificationRuleProps extends NotificationRuleOptions {
   /**
    * A list of event types associated with this notification rule.
    * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
@@ -70,18 +66,20 @@ export interface NotifyOnEventOptions extends NotificationRuleOptions {
    * @default - No events.
    */
   readonly events?: string[];
-}
 
-/**
- * Properties for a new notification rule
- */
-export interface NotificationRuleProps extends NotifyOnEventOptions {
   /**
    * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
    * Currently, Supported sources include pipelines in AWS CodePipeline and build projects in AWS CodeBuild in this L2 constructor.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codestarnotifications-notificationrule.html#cfn-codestarnotifications-notificationrule-resource
    */
   readonly source: INotificationRuleSource;
+
+  /**
+   * The targets to register for the notification destination.
+   *
+   * @default - No targets are added to the rule. Use `addTarget()` to add a target.
+   */
+  readonly targets?: INotificationRuleTarget[];
 }
 
 /**
@@ -147,15 +145,15 @@ export class NotificationRule extends Resource implements INotificationRule {
   constructor(scope: Construct, id: string, props: NotificationRuleProps) {
     super(scope, id);
 
-    const source = props.source.bind(this);
+    const source = props.source.bindAsNotificationRuleSource(this, this);
 
     if (props.events) {
       this.addEvents(props.events);
     }
 
-    if (props.target) {
-      this.addTarget(props.target);
-    }
+    props.targets?.forEach((target) => {
+      this.addTarget(target);
+    });
 
     const resource = new CfnNotificationRule(this, 'Resource', {
       name: props.notificationRuleName || this.generateName(),
@@ -176,7 +174,7 @@ export class NotificationRule extends Resource implements INotificationRule {
    * @param target The SNS topic or AWS Chatbot Slack target
    */
   public addTarget(target: INotificationRuleTarget): boolean {
-    this.targets.push(target.bind(this));
+    this.targets.push(target.bindAsNotificationRuleTarget(this, this));
     return true;
   }
 

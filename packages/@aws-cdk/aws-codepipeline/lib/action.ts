@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { IResource, Lazy } from '@aws-cdk/core';
 import { Artifact } from './artifact';
+import { PipelineNotificationEvents } from './pipeline';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -120,6 +121,13 @@ export interface ActionConfig {
 }
 
 /**
+ * Additional options to pass to the notification rule.
+ */
+export interface PipelineNotifyOnOptions extends notifications.NotificationRuleOptions {
+  readonly events: PipelineNotificationEvents[];
+}
+
+/**
  * A Pipeline Action.
  * If you want to implement this interface,
  * consider extending the {@link Action} class,
@@ -194,14 +202,16 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * Defines a Codestar notification rule triggered when the pipeline
    * events emitted by you specified, it very similar to `onEvent` API.
    *
-   * You can also use the methods `notifyOnStateChange`
+   * You can also use the methods `notifyOnPipelineStateChange`, `notifyOnAnyStageStateChange`,
+   * `notifyOnAnyActionStateChange` and `notifyOnAnyManualApprovalStateChange`
    * to define rules for these specific event emitted.
    *
    * @param id The id of the Codestar notification rule
+   * @param target The target to register for the Codestar Notifications destination.
    * @param options Customization options for Codestar notification rule
    * @returns Codestar notification rule associated with this build project.
    */
-  notifyOn(id: string, options?: notifications.NotifyOnEventOptions): notifications.INotificationRule;
+  notifyOn(id: string, target: notifications.INotificationRuleTarget, options?: PipelineNotifyOnOptions): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Pipeline execution" events emitted from this pipeline.
@@ -210,7 +220,11 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnPipelineStateChange(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
+  notifyOnPipelineStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Stage execution" events emitted from this pipeline.
@@ -219,7 +233,11 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnAnyStageStateChange(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
+  notifyOnAnyStageStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Action execution" events emitted from this pipeline.
@@ -228,7 +246,11 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnAnyActionStateChange(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
+  notifyOnAnyActionStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Manual approval" events emitted from this pipeline.
@@ -237,7 +259,11 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnAnyManualApprovalStateChange(id: string, options?: notifications.NotificationRuleOptions): notifications.INotificationRule;
+  notifyOnAnyManualApprovalStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
 }
 
 /**

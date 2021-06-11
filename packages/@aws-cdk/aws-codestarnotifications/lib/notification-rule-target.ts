@@ -1,4 +1,9 @@
+
 import { INotificationRule } from './notification-rule';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Information about the SNS topic or AWS Chatbot client associated with a notification target.
@@ -21,8 +26,7 @@ export interface NotificationRuleTargetConfig {
  */
 export interface INotificationRuleTarget {
   /**
-   * Binds target to notification rule
-   * @param _rule The notification rule
+   * Returns a target configuration for notification rule.
    */
-  bind(_rule: INotificationRule): NotificationRuleTargetConfig;
+  bindAsNotificationRuleTarget(scope: Construct, rule: INotificationRule): NotificationRuleTargetConfig;
 }

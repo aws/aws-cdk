@@ -39,7 +39,7 @@ describe('Rule', () => {
         'codebuild-project-build-state-failed',
       ],
       source: project,
-      target: slack,
+      targets: [slack],
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
