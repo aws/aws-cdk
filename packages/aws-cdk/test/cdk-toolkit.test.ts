@@ -231,12 +231,25 @@ describe('synth', () => {
 
     await toolkit.synth([], false, true);
   });
+
+  test('stack has dependency and was explicitly selected', async () => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_C,
+        MockStack.MOCK_STACK_D,
+      ],
+    });
+
+    const toolkit = defaultToolkitSetup();
+
+    await expect(toolkit.synth([MockStack.MOCK_STACK_D.stackName], true, false)).resolves.toBeDefined();
+  });
 });
 
 class MockStack {
   public static readonly MOCK_STACK_A: TestStackArtifact = {
     stackName: 'Test-Stack-A',
-    template: { Resources: { TempalteName: 'Test-Stack-A' } },
+    template: { Resources: { TemplateName: 'Test-Stack-A' } },
     env: 'aws://123456789012/bermuda-triangle-1',
     metadata: {
       '/Test-Stack-A': [
@@ -251,7 +264,7 @@ class MockStack {
   };
   public static readonly MOCK_STACK_B: TestStackArtifact = {
     stackName: 'Test-Stack-B',
-    template: { Resources: { TempalteName: 'Test-Stack-B' } },
+    template: { Resources: { TemplateName: 'Test-Stack-B' } },
     env: 'aws://123456789012/bermuda-triangle-1',
     metadata: {
       '/Test-Stack-B': [
@@ -266,7 +279,7 @@ class MockStack {
   };
   public static readonly MOCK_STACK_C: TestStackArtifact = {
     stackName: 'Test-Stack-C',
-    template: { Resources: { TempalteName: 'Test-Stack-C' } },
+    template: { Resources: { TemplateName: 'Test-Stack-C' } },
     env: 'aws://123456789012/bermuda-triangle-1',
     metadata: {
       '/Test-Stack-C': [
@@ -280,6 +293,22 @@ class MockStack {
     },
     displayName: 'Test-Stack-A/Test-Stack-C',
   };
+  public static readonly MOCK_STACK_D: TestStackArtifact = {
+    stackName: 'Test-Stack-D',
+    template: { Resources: { TemplateName: 'Test-Stack-D' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    metadata: {
+      '/Test-Stack-D': [
+        {
+          type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+          data: [
+            { key: 'Baz', value: 'Zinga!' },
+          ],
+        },
+      ],
+    },
+    depends: [MockStack.MOCK_STACK_C.stackName],
+  }
   public static readonly MOCK_STACK_WITH_ERROR: TestStackArtifact = {
     stackName: 'witherrors',
     env: 'aws://123456789012/bermuda-triangle-1',
