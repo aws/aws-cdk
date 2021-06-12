@@ -44,7 +44,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
   environmentVariables: {
-      URL: 'https://api.example.com/user/books/topbook/',
+      stage: 'prod',
   },
 });
 ```
@@ -52,25 +52,23 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 The following is an example of an `index.js` file which exports the `handler` function:
 
 ```js
-var synthetics = require('Synthetics');
+const synthetics = require('Synthetics');
 const log = require('SyntheticsLogger');
 
 const pageLoadBlueprint = async function () {
+    // Configure the stage of the API using environment variables
+    const url = `https://api.example.com/${process.env.stage}/user/books/topbook/`;
 
-    // INSERT URL here
-    const url = process.env.URL;
-
-    let page = await synthetics.getPage();
-    const response = await page.goto(url, {waitUntil: 'domcontentloaded', timeout: 30000});
-    //Wait for page to render.
-    //Increase or decrease wait time based on endpoint being monitored.
+    const page = await synthetics.getPage();
+    const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    // Wait for page to render. Increase or decrease wait time based on endpoint being monitored.
     await page.waitFor(15000);
-    // This will take a screenshot that will be included in test output artifacts
+    // This will take a screenshot that will be included in test output artifacts.
     await synthetics.takeScreenshot('loaded', 'loaded');
-    let pageTitle = await page.title();
+    const pageTitle = await page.title();
     log.info('Page title: ' + pageTitle);
     if (response.status() !== 200) {
-        throw "Failed to load page!";
+        throw 'Failed to load page!';
     }
 };
 
