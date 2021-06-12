@@ -251,7 +251,7 @@ const container = ec2TaskDefinition.addContainer("WebContainer", {
 });
 ```
 
-For a `ExternalTaskDefinition`:
+For an `ExternalTaskDefinition`:
 
 ```ts
 const externalTaskDefinition = new ecs.ExternalTaskDefinition(this, 'TaskDef');
