@@ -49,7 +49,7 @@ test('Canary can have generated name', () => {
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    Name: 'canariescanary8dfb794',
+    Name: 'canary',
   });
 });
 
