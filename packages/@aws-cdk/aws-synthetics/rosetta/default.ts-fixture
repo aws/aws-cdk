@@ -1,6 +1,6 @@
 // Fixture with packages imported, but nothing else
 import { Construct, Duration, Stack } from '@aws-cdk/core';
-import { Canary, Code, Runtime, Schedule, Test } from '@aws-cdk/aws-synthetics';
+import * as synthetics from '@aws-cdk/aws-synthetics';
 import * as path from 'path';
 
 class Fixture extends Stack {

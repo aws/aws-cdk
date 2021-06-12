@@ -36,13 +36,13 @@ The Hitchhikers Guide to the Galaxy
 The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes:
 
 ```ts
-const canary = new Canary(this, 'MyCanary', {
-  schedule: Schedule.rate(Duration.minutes(5)),
-  test: Test.custom({
-    code: Code.fromAsset(path.join(__dirname, 'canary')),
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
   environmentVariables: {
       URL: 'https://api.example.com/user/books/topbook/',
   },
@@ -103,32 +103,32 @@ Using the `Code` class static initializers:
 
 ```ts
 // To supply the code inline:
-new Canary(this, 'Inline Canary', {
-  test: Test.custom({
-    code: Code.fromInline('/* Synthetics handler code */'),
+new synthetics.Canary(this, 'Inline Canary', {
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
 });
 
 // To supply the code from your local filesystem:
-new Canary(this, 'Asset Canary', {
-  test: Test.custom({
-    code: Code.fromAsset(path.join(__dirname, 'canary')),
+new synthetics.Canary(this, 'Asset Canary', {
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
 });
 
 // To supply the code from a S3 bucket:
 import * as s3 from '@aws-cdk/aws-s3';
 const bucket = new s3.Bucket(this, 'Code Bucket');
-new Canary(this, 'Bucket Canary', {
-  test: Test.custom({
-    code: Code.fromBucket(bucket, 'canary.zip'),
+new synthetics.Canary(this, 'Bucket Canary', {
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
 });
 ```
 
