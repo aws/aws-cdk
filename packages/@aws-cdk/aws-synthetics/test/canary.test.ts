@@ -2,12 +2,12 @@ import '@aws-cdk/assert-internal/jest';
 import { ABSENT, objectLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
 
 test('Basic canary properties work', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -36,7 +36,7 @@ test('Basic canary properties work', () => {
 
 test('Canary can have generated name', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -55,7 +55,7 @@ test('Canary can have generated name', () => {
 
 test('Name validation does not fail when using Tokens', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -73,7 +73,7 @@ test('Name validation does not fail when using Tokens', () => {
 
 test('Throws when name is specified incorrectly', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // THEN
   expect(() => new synthetics.Canary(stack, 'Canary', {
@@ -89,7 +89,7 @@ test('Throws when name is specified incorrectly', () => {
 
 test('Throws when name has more than 21 characters', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // THEN
   expect(() => new synthetics.Canary(stack, 'Canary', {
@@ -105,7 +105,7 @@ test('Throws when name has more than 21 characters', () => {
 
 test('An existing role can be specified instead of auto-created', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   const role = new iam.Role(stack, 'role', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -131,7 +131,7 @@ test('An existing role can be specified instead of auto-created', () => {
 
 test('An existing bucket and prefix can be specified instead of auto-created', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'mytestbucket');
   const prefix = 'canary';
 
@@ -153,7 +153,7 @@ test('An existing bucket and prefix can be specified instead of auto-created', (
 
 test('Runtime can be specified', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -172,7 +172,7 @@ test('Runtime can be specified', () => {
 
 test('environment variables can be specified', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
   const environmentVariables = {
     TEST_KEY_1: 'TEST_VALUE_1',
     TEST_KEY_2: 'TEST_VALUE_2',
@@ -198,11 +198,7 @@ test('environment variables can be specified', () => {
 
 test('environment variables are skipped if not provided', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
-  const environmentVariables = {
-    TEST_KEY_1: 'TEST_VALUE_1',
-    TEST_KEY_2: 'TEST_VALUE_2',
-  };
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -221,7 +217,7 @@ test('environment variables are skipped if not provided', () => {
 
 test('Runtime can be customized', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -240,7 +236,7 @@ test('Runtime can be customized', () => {
 
 test('Schedule can be set with Rate', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -260,7 +256,7 @@ test('Schedule can be set with Rate', () => {
 
 test('Schedule can be set to 1 minute', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -280,7 +276,7 @@ test('Schedule can be set to 1 minute', () => {
 
 test('Schedule can be set with Expression', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -300,7 +296,7 @@ test('Schedule can be set with Expression', () => {
 
 test('Schedule can be set to run once', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -320,7 +316,7 @@ test('Schedule can be set to run once', () => {
 
 test('Throws when rate above 60 minutes', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // THEN
   expect(() => new synthetics.Canary(stack, 'Canary', {
@@ -336,7 +332,7 @@ test('Throws when rate above 60 minutes', () => {
 
 test('Throws when rate above is not a whole number of minutes', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // THEN
   expect(() => new synthetics.Canary(stack, 'Canary', {
@@ -352,7 +348,7 @@ test('Throws when rate above is not a whole number of minutes', () => {
 
 test('Can share artifacts bucket between canaries', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   const canary1 = new synthetics.Canary(stack, 'Canary1', {
@@ -380,7 +376,7 @@ test('Can share artifacts bucket between canaries', () => {
 
 test('can specify custom test', () => {
   // GIVEN
-  const stack = new Stack(new App(), 'canaries');
+  const stack = new Stack();
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
