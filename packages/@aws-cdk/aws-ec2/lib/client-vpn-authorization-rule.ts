@@ -36,7 +36,13 @@ export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationR
   /**
    * The client VPN endpoint to which to add the rule.
    */
-  readonly clientVpnEndpoint: IClientVpnEndpoint;
+   readonly clientVpnEndpoint: IClientVpnEndpoint;
+  
+  /**
+   * @deprecated by typo. moved to clientVpnEndpoint
+   */
+  readonly clientVpnEndoint: IClientVpnEndpoint;
+
 }
 
 /**
