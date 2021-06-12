@@ -1,3 +1,38 @@
+# CloudFormation Resource Specification v39.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::AuditManager::Assessment FrameworkId (__deleted__)
+* AWS::EC2::TransitGateway Id (__added__)
+
+## Property Changes
+
+* AWS::AutoScaling::AutoScalingGroup Context (__added__)
+* AWS::EC2::NatGateway ConnectivityType (__added__)
+* AWS::EC2::NatGateway AllocationId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::TransitGateway Tags.DuplicatesAllowed (__added__)
+* AWS::Lambda::Function Id (__deleted__)
+* AWS::Lambda::LayerVersion CompatibleArchitectures (__deleted__)
+* AWS::RAM::ResourceShare PermissionArns (__added__)
+* AWS::SQS::Queue DeduplicationScope (__added__)
+* AWS::SQS::Queue FifoThroughputLimit (__added__)
+* AWS::SageMaker::CodeRepository Tags (__added__)
+
+## Property Type Changes
+
+* AWS::SSMContacts::Contact.ChannelTargetInfo (__added__)
+* AWS::SSMContacts::Contact.ContactTargetInfo (__added__)
+* AWS::SSMContacts::Contact.Targets ChannelTargetInfo.PrimitiveType (__deleted__)
+* AWS::SSMContacts::Contact.Targets ChannelTargetInfo.Type (__added__)
+* AWS::SSMContacts::Contact.Targets ContactTargetInfo.PrimitiveType (__deleted__)
+* AWS::SSMContacts::Contact.Targets ContactTargetInfo.Type (__added__)
+
+
 # CloudFormation Resource Specification v38.0.0
 
 ## New Resource Types
