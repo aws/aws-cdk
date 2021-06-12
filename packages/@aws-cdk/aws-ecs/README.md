@@ -60,7 +60,7 @@ one to run tasks on AWS Fargate.
 - Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on Amazon EC2 instances running in your account.
 - Use the `FargateTaskDefinition` and `FargateService` constructs to run tasks on
   instances that are managed for you by AWS.
-- Use the `ExternalTaskDefinition` and `ExternalService` constructs to run tasks on self managed infrastructure managed by AWS ECS Anywhere
+- Use the `ExternalTaskDefinition` and `ExternalService` constructs to run tasks on self-managed infrastructure managed by AWS ECS Anywhere
 
 Here are the main differences:
 
