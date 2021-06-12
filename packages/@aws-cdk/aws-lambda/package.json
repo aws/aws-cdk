@@ -49,7 +49,9 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::Lambda",
@@ -76,8 +78,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^26.0.23",
-    "@types/aws-lambda": "^8.10.76",
-    "@types/lodash": "^4.14.169",
+    "@types/aws-lambda": "^8.10.77",
+    "@types/lodash": "^4.14.170",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -145,7 +147,6 @@
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily.NODEJS",
       "docs-public-apis:@aws-cdk/aws-lambda.Alias.lambda",
       "docs-public-apis:@aws-cdk/aws-lambda.Alias.fromAliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-lambda.Function.fromFunctionArn",
       "docs-public-apis:@aws-cdk/aws-lambda.FunctionBase",
       "docs-public-apis:@aws-cdk/aws-lambda.QualifiedFunctionBase",
       "docs-public-apis:@aws-cdk/aws-lambda.QualifiedFunctionBase.lambda",
