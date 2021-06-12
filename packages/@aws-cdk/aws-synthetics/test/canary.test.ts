@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { objectLike } from '@aws-cdk/assert-internal';
+import { ABSENT, objectLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Lazy, Stack } from '@aws-cdk/core';
@@ -193,6 +193,29 @@ test('environment variables can be specified', () => {
     RunConfig: {
       EnvironmentVariables: environmentVariables,
     },
+  });
+});
+
+test('environment variables are skipped if not provided', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+  const environmentVariables = {
+    TEST_KEY_1: 'TEST_VALUE_1',
+    TEST_KEY_2: 'TEST_VALUE_2',
+  };
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    RunConfig: ABSENT,
   });
 });
 
