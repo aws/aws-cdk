@@ -244,9 +244,12 @@ The `backendDefaults` property are added to the node while creating the virtual 
 
 The `tls` property can be added to a Virtual Node listener or Virtual Gateway listener to add TLS configuration. 
 App Mesh allows you to provide the TLS certificate to the proxy in the following ways:
-* A certificate from AWS Certificate Manager can be incorporated
-* A customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
-* A certificate provided by a Secrets Discovery Service (SDS) endpoint over local Unix Domain Socket can be specified with its `secretName`.
+
+- A certificate from AWS Certificate Manager can be incorporated
+
+- A customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
+
+- A certificate provided by a Secrets Discovery Service (SDS) endpoint over local Unix Domain Socket can be specified with its `secretName`.
 
 ```typescript
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
