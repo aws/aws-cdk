@@ -32,9 +32,6 @@ performance mode, and `Bursting` throughput mode and does not transition files t
 Access (IA) storage class.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as efs from '@aws-cdk/aws-efs';
-
 const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   vpc: new ec2.Vpc(this, 'VPC'),
   lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS, // files are not transitioned to infrequent access (IA) storage by default
@@ -53,18 +50,18 @@ Here is an example of giving a role write permissions on a file system.
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 
-let existingFS = efs.FileSystem.fromFileSystemAttributes(stack, 'existingFS', {
+const importedFileSystem = efs.FileSystem.fromFileSystemAttributes(this, 'existingFS', {
   fileSystemId: 'fs-12345678', // You can also use fileSystemArn instead of fileSystemId.
-  securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+  securityGroup: ec2.SecurityGroup.fromSecurityGroupId(this, 'SG', 'sg-123456789', {
     allowAllOutbound: false,
   }),
 });
 
-let role = new iam.Role(stack, 'Role', {
+const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.AnyPrincipal(),
 });
 
-existingFs.grant(role, 'elasticfilesystem:ClientWrite');
+importedFileSystem.grant(role, 'elasticfilesystem:ClientWrite');
 ```
 
 ### Access Point

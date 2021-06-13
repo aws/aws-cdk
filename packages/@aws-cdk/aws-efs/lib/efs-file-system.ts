@@ -412,7 +412,7 @@ class ImportedFileSystem extends FileSystemBase {
       resourceName: attrs.fileSystemId,
     });
 
-    let parsedArn = Stack.of(scope).parseArn(this.fileSystemArn);
+    const parsedArn = Stack.of(scope).parseArn(this.fileSystemArn);
 
     if (!parsedArn.resourceName) {
       throw new Error('Invalid FileSystem Arn.');

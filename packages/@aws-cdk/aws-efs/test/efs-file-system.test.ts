@@ -239,7 +239,7 @@ test('support granting permissions', () => {
     vpc,
   });
 
-  let role = new iam.Role(stack, 'Role', {
+  const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.AnyPrincipal(),
   });
 
