@@ -3,7 +3,7 @@ import * as events from '@aws-cdk/aws-events';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
-test('use aws batch job as an eventrule target', () => {
+test('use api destination as an eventrule target', () => {
   // GIVEN
   const stack = new Stack();
 
