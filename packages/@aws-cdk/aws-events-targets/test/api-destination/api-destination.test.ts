@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as events from '@aws-cdk/aws-events';
-import { Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 test('use aws batch job as an eventrule target', () => {
@@ -19,22 +19,30 @@ test('use aws batch job as an eventrule target', () => {
     connectionName: 'testConnection',
   });
 
+  const destination = new events.ApiDestination(stack, 'Destination', {
+    apiDestinationName: 'apiDestinationName',
+    connection: connection,
+    invocationEndpoint: 'https://endpoint.com',
+    invocationRateLimit: Duration.seconds(10),
+    httpMethod: events.HttpMethod.POST,
+  });
+
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: events.Schedule.rate(Duration.minutes(1)),
   });
 
   // WHEN
-  rule.addTarget(new targets.ApiDestination(connection));
+  rule.addTarget(new targets.ApiDestination(destination));
 
   // THEN
   expect(stack).to(haveResource('AWS::Events::Rule', {
-    ScheduleExpression: 'rate(1 min)',
+    ScheduleExpression: 'rate(1 minute)',
     State: 'ENABLED',
     Targets: [
       {
         Arn: {
           'Fn::GetAtt': [
-            'Connection07624BCD',
+            'DestinationApiDestinationA879FAE5',
             'Arn',
           ],
         },

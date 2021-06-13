@@ -39,7 +39,7 @@ export interface ApiDestinationProps {
  */
 export class ApiDestination implements events.IRuleTarget {
   constructor(
-    private readonly connection: events.Connection,
+    private readonly apiDestination: events.ApiDestination,
     private readonly props: ApiDestinationProps = {},
   ) { }
 
@@ -55,9 +55,9 @@ export class ApiDestination implements events.IRuleTarget {
     };
 
     return {
-      arn: this.connection.connectionArn,
+      arn: this.apiDestination.apiDestinationArn,
       input: this.props.event,
-      targetResource: this.connection,
+      targetResource: this.apiDestination,
       httpParameters,
     };
   }
