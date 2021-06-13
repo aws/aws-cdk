@@ -20,10 +20,8 @@ In AWS Backup, a *backup plan* is a policy expression that defines when and how 
 This module provides ready-made backup plans (similar to the console experience):
 
 ```ts
-import * as backup from '@aws-cdk/aws-backup';
-
 // Daily, weekly and monthly with 5 year retention
-const plan = backup.BackupPlan.dailyWeeklyMonthly5YearRetention(this, 'Plan');
+const myPlan = backup.BackupPlan.dailyWeeklyMonthly5YearRetention(this, 'Plan');
 ```
 
 Assigning resources to a plan can be done with `addSelection()`:
@@ -44,7 +42,7 @@ created for the selection. The `BackupSelection` implements `IGrantable`.
 To add rules to a plan, use `addRule()`:
 
 ```ts
-plan.addRule(new BackupPlanRule({
+plan.addRule(new backup.BackupPlanRule({
   completionWindow: Duration.hours(2),
   startWindow: Duration.hours(1),
   scheduleExpression: events.Schedule.cron({ // Only cron expressions are supported
@@ -59,8 +57,8 @@ plan.addRule(new BackupPlanRule({
 Ready-made rules are also available:
 
 ```ts
-plan.addRule(BackupPlanRule.daily());
-plan.addRule(BackupPlanRule.weekly());
+plan.addRule(backup.BackupPlanRule.daily());
+plan.addRule(backup.BackupPlanRule.weekly());
 ```
 
 By default a new [vault](#Backup-vault) is created when creating a plan.
@@ -68,8 +66,8 @@ It is also possible to specify a vault either at the plan level or at the
 rule level.
 
 ```ts
-const plan = backup.BackupPlan.daily35DayRetention(this, 'Plan', myVault); // Use `myVault` for all plan rules
-plan.addRule(BackupPlanRule.monthly1Year(otherVault)); // Use `otherVault` for this specific rule
+const plan2 = backup.BackupPlan.daily35DayRetention(this, 'Plan', myVault); // Use `myVault` for all plan rules
+plan2.addRule(backup.BackupPlanRule.monthly1Year(otherVault)); // Use `otherVault` for this specific rule
 ```
 
 ## Backup vault
@@ -77,7 +75,7 @@ plan.addRule(BackupPlanRule.monthly1Year(otherVault)); // Use `otherVault` for t
 In AWS Backup, a *backup vault* is a container that you organize your backups in. You can use backup vaults to set the AWS Key Management Service (AWS KMS) encryption key that is used to encrypt backups in the backup vault and to control access to the backups in the backup vault. If you require different encryption keys or access policies for different groups of backups, you can optionally create multiple backup vaults.
 
 ```ts
-const vault = new BackupVault(stack, 'Vault', {
+const vault = new backup.BackupVault(this, 'Vault', {
   encryptionKey: myKey, // Custom encryption key
   notificationTopic: myTopic, // Send all vault events to this SNS topic
 });
@@ -90,21 +88,11 @@ that contains recovery points will fail.
 ## Importing existing backup vault
 
 To import an existing backup vault into your CDK application, use the `BackupVault.fromBackupVaultArn` or `BackupVault.fromBackupVaultName` 
-factory method. Here is an example of giving a lambda role permission to start a backup job:
+static method. Here is an example of giving a Lambda function permission to start a backup job:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Stack } from '@aws-cdk/core';
 
-let stack = new Stack();
+const importedVault = backup.BackupVault.fromBackupVaultName(this, 'Vault', 'myVaultName');
 
-let vault = BackupVault.fromBackupVaultName(stack, 'Vault', 'myVaultName');
-
-let fn = new lambda.Function(stack, 'function', {
-  handler: 'index.handler',
-  code: lambda.Code.fromInline('boom'),
-  runtime: lambda.Runtime.NODEJS_12_X,
-});
-
-vault.grant(fn, 'backup:StartBackupJob');
+importedVault.grant(fn, 'backup:StartBackupJob');
 ```

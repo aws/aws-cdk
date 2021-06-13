@@ -135,6 +135,12 @@ abstract class BackupVaultBase extends Resource implements IBackupVault {
    * @param actions The actions to grant
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    for (const action of actions) {
+      if (action.indexOf('*') >= 0) {
+        throw new Error("AWS Backup access policies don't support a wildcard in the Action key.");
+      }
+    }
+
     return iam.Grant.addToPrincipal({
       grantee: grantee,
       actions: actions,
