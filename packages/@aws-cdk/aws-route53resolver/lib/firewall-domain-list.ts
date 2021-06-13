@@ -1,3 +1,4 @@
+import { IBucket } from '@aws-cdk/aws-s3';
 import { IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnFirewallDomainList } from './route53resolver.generated';
@@ -65,8 +66,8 @@ export abstract class FirewallDomains {
    * @param bucket S3 bucket
    * @param key S3 key
    */
-  public static fromS3(bucket: string, key: string): FirewallDomains {
-    return this.fromS3Uri(`s3://${bucket}/${key.replace(/^\//, '')}`);
+  public static fromS3(bucket: IBucket, key: string): FirewallDomains {
+    return this.fromS3Uri(bucket.s3UrlForObject(key));
   }
 
   /** S3 bucket URI of text file with domain list */

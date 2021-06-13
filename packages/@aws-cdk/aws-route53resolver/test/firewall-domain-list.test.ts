@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { FirewallDomainList, FirewallDomains } from '../lib';
 
@@ -37,7 +38,7 @@ test('domain list from S3 URI', () => {
 test('domain list from S3', () => {
   // WHEN
   new FirewallDomainList(stack, 'List', {
-    domains: FirewallDomains.fromS3('bucket', 'prefix/object'),
+    domains: FirewallDomains.fromS3(Bucket.fromBucketName(stack, 'Bucket', 'bucket'), 'prefix/object'),
   });
 
   // THEN
