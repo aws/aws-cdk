@@ -785,7 +785,7 @@ describe('schema details', () => {
 
     expect(table.schema()).toEqual({
       partitionKey: TABLE_PARTITION_KEY,
-      sortKey: undefined
+      sortKey: undefined,
     });
   });
 
@@ -798,14 +798,14 @@ describe('schema details', () => {
 
     expect(table.schema()).toEqual({
       partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
+      sortKey: TABLE_SORT_KEY,
     });
   });
 
   test('get scheama for GSI with hash key', () => {
     const table = new Table(stack, 'Table A', {
       tableName: TABLE_NAME,
-      partitionKey: TABLE_PARTITION_KEY
+      partitionKey: TABLE_PARTITION_KEY,
     });
 
     table.addGlobalSecondaryIndex({
@@ -822,7 +822,7 @@ describe('schema details', () => {
   test('get scheama for GSI with hash key + range key', () => {
     const table = new Table(stack, 'Table A', {
       tableName: TABLE_NAME,
-      partitionKey: TABLE_PARTITION_KEY
+      partitionKey: TABLE_PARTITION_KEY,
     });
 
     table.addGlobalSecondaryIndex({
@@ -840,7 +840,7 @@ describe('schema details', () => {
   test('get scheama for LSI', () => {
     const table = new Table(stack, 'Table A', {
       tableName: TABLE_NAME,
-      partitionKey: TABLE_PARTITION_KEY
+      partitionKey: TABLE_PARTITION_KEY,
     });
 
     table.addLocalSecondaryIndex({
@@ -857,7 +857,7 @@ describe('schema details', () => {
   test('get scheama for multiple secondary indexes', () => {
     const table = new Table(stack, 'Table A', {
       tableName: TABLE_NAME,
-      partitionKey: TABLE_PARTITION_KEY
+      partitionKey: TABLE_PARTITION_KEY,
     });
 
     table.addLocalSecondaryIndex({
@@ -885,7 +885,7 @@ describe('schema details', () => {
   test('get scheama for unknown secondary index', () => {
     const table = new Table(stack, 'Table A', {
       tableName: TABLE_NAME,
-      partitionKey: TABLE_PARTITION_KEY
+      partitionKey: TABLE_PARTITION_KEY,
     });
 
     expect(table.schema(GSI_NAME)).toEqual(undefined);

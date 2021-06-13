@@ -909,11 +909,11 @@ abstract class TableBase extends Resource implements ITable {
   ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
-      Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
-      ...this.regionalArns,
-      ...this.regionalArns.map(arn => Lazy.string({
-        produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-      }))];
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.string({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        }))];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
@@ -1321,7 +1321,7 @@ export class Table extends TableBase {
       return {
         partitionKey: this.tablePartitionKey,
         sortKey: this.tableSortKey,
-      }
+      };
     }
 
     return this.secondaryIndexesSchema.get(indexName);
