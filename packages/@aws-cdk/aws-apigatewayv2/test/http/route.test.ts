@@ -145,7 +145,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('books', HttpMethod.GET),
-    })).toThrowError(/path must always start with a "\/" and not end with a "\/"/);
+    })).toThrowError(/A route path must always start with a "\/" and not end with a "\/"/);
   });
 
   test('throws when path ends with /', () => {
@@ -156,7 +156,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books/', HttpMethod.GET),
-    })).toThrowError(/path must always start with a "\/" and not end with a "\/"/);
+    })).toThrowError(/A route path must always start with a "\/" and not end with a "\/"/);
   });
 
   test('configures private integration correctly when all props are passed', () => {
@@ -242,6 +242,20 @@ describe('HttpRoute', () => {
       AuthorizationScopes: ['read:books'],
     });
   });
+
+  test('should fail when unsupported authorization type is used', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    const authorizer = new InvalidTypeAuthorizer();
+
+    expect(() => new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      authorizer,
+    })).toThrowError('authorizationType should either be JWT, CUSTOM, or NONE');
+  });
 });
 
 class DummyIntegration implements IHttpRouteIntegration {
@@ -272,7 +286,29 @@ class DummyAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: HttpAuthorizerType.JWT,
+      authorizationType: 'JWT',
+    };
+  }
+}
+
+class InvalidTypeAuthorizer implements IHttpRouteAuthorizer {
+  private authorizer?: HttpAuthorizer;
+
+  public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    if (!this.authorizer) {
+
+      this.authorizer = new HttpAuthorizer(options.scope, 'auth-1234', {
+        httpApi: options.route.httpApi,
+        identitySource: ['identitysource.1', 'identitysource.2'],
+        type: HttpAuthorizerType.JWT,
+        jwtAudience: ['audience.1', 'audience.2'],
+        jwtIssuer: 'issuer',
+      });
+    }
+
+    return {
+      authorizerId: this.authorizer.authorizerId,
+      authorizationType: 'Random',
     };
   }
 }

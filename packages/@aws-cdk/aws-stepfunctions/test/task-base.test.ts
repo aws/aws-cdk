@@ -44,6 +44,33 @@ describe('Task base', () => {
     });
   });
 
+  test('instantiate a concrete implementation with resultSelector', () => {
+    // WHEN
+    task = new FakeTask(stack, 'my-exciting-task', {
+      resultSelector: {
+        buz: 'buz',
+        baz: sfn.JsonPath.stringAt('$.baz'),
+      },
+    });
+
+    // THEN
+    expect(render(task)).toEqual({
+      StartAt: 'my-exciting-task',
+      States: {
+        'my-exciting-task': {
+          End: true,
+          Type: 'Task',
+          Resource: 'my-resource',
+          Parameters: { MyParameter: 'myParameter' },
+          ResultSelector: {
+            'buz': 'buz',
+            'baz.$': '$.baz',
+          },
+        },
+      },
+    });
+  });
+
   test('add catch configuration', () => {
     // GIVEN
     const failure = new sfn.Fail(stack, 'failed', {
