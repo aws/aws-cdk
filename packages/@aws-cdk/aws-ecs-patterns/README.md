@@ -455,6 +455,19 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 });
 ```
 
+### Define tasks with custom queue parameters for QueueProcessingFargateService
+
+```ts
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  maxReceiveCount: 42,
+  retentionPeriod: cdk.Duration.days(7),
+  visibilityTimeout: cdk.Duration.minutes(5),
+});
+```
+
 ### Select specific vpc subnets for ApplicationLoadBalancedFargateService
 
 ```ts
@@ -522,6 +535,29 @@ new QueueProcessingFargateService(stack, 'QueueProcessingService', {
   memoryLimitMiB: 512,
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
 });
+```
+
+### Deploy application and metrics sidecar
+
+The following is an example of deploying an application along with a metrics sidecar container that utilizes `dockerLabels` for discovery:
+
+```ts
+const service = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  vpc,
+  desiredCount: 1,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  dockerLabels: {
+    'application.label.one': 'first_label'
+    'application.label.two': 'second_label'
+  }
+});
+
+service.taskDefinition.addContainer('Sidecar', {
+  image: ContainerImage.fromRegistry('example/metrics-sidecar')
+}
 ```
 
 ### Select specific load balancer name ApplicationLoadBalancedFargateService
