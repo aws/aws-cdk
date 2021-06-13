@@ -74,3 +74,5 @@ removed:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps.jobDefinition
 strengthened:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps
 removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.cluster
 strengthened:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps
+
+changed-type:@aws-cdk/aws-lambda-event-sources.S3EventSource.bucket
