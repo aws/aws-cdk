@@ -25,7 +25,7 @@ export interface IBackupVault extends IResource {
 
   /**
    * Grant the actions defined in actions to the given grantee
-   * on this Backup Vault resource.
+   * on this backup vault.
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
@@ -122,9 +122,7 @@ export enum BackupVaultEvents {
 }
 
 abstract class BackupVaultBase extends Resource implements IBackupVault {
-  // The name of a logical container where backups are stored.
   public abstract readonly backupVaultName: string;
-  // The ARN of the backup vault.
   public abstract readonly backupVaultArn: string;
 
   /**
@@ -175,7 +173,7 @@ export class BackupVault extends BackupVaultBase {
     const parsedArn = Stack.of(scope).parseArn(backupVaultArn);
 
     if (!parsedArn.resourceName) {
-      throw new Error('Invalid Backup Vault Arn.');
+      throw new Error(`Backup Vault Arn ${backupVaultArn} does not have a resource name.`);
     }
 
     const backupVaultName = parsedArn.resourceName;
