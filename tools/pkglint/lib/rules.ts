@@ -818,27 +818,6 @@ export class NodeCompatibility extends ValidationRule {
   }
 }
 
-/**
- * Verifies that the ``@types/`` dependencies are correctly recorded in ``devDependencies`` and not ``dependencies``.
- */
-export class NoAtTypesInDependencies extends ValidationRule {
-  public readonly name = 'dependencies/at-types';
-
-  public validate(pkg: PackageJson): void {
-    const predicate = (s: string) => s.startsWith('@types/');
-    for (const dependency of pkg.getDependencies(predicate)) {
-      pkg.report({
-        ruleName: this.name,
-        message: `dependency on ${dependency.name}@${dependency.version} must be in devDependencies`,
-        fix: () => {
-          pkg.addDevDependency(dependency.name, dependency.version);
-          pkg.removeDependency(predicate);
-        },
-      });
-    }
-  }
-}
-
 function isCdkModuleName(name: string) {
   return !!name.match(/^@aws-cdk\//);
 }
@@ -1358,8 +1337,8 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
 }
 
 /**
- * Requires packages to have fast-fail build scripts, allowing to combine build, test and package in a single command.
- * This involves two targets: `build+test:pack` and `build+test` (to skip the pack).
+ * Requires packages to have fast-fail build scripts, allowing to combine build, test and package/extract in a single command.
+ * This involves multiple targets: `build+test`, `build+extract`, `build+test+extract`, and `build+test+package`
  */
 export class FastFailingBuildScripts extends ValidationRule {
   public readonly name = 'fast-failing-build-scripts';
@@ -1369,12 +1348,15 @@ export class FastFailingBuildScripts extends ValidationRule {
 
     const hasTest = 'test' in scripts;
     const hasPack = 'package' in scripts;
+    const hasExtract = 'rosetta:extract' in scripts;
 
     const cmdBuild = 'yarn build';
     expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'yarn test'].join(' && ') : cmdBuild);
+    expectJSON(this.name, pkg, 'scripts.build+extract', hasExtract ? [cmdBuild, 'yarn rosetta:extract'].join(' && ') : cmdBuild);
 
     const cmdBuildTest = 'yarn build+test';
     expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'yarn package'].join(' && ') : cmdBuildTest);
+    expectJSON(this.name, pkg, 'scripts.build+test+extract', hasExtract ? [cmdBuildTest, 'yarn rosetta:extract'].join(' && ') : cmdBuildTest);
   }
 }
 
@@ -1728,6 +1710,31 @@ export class AwsCdkLibReadmeMatchesCore extends ValidationRule {
   }
 }
 
+/**
+ * Enforces that the aws-cdk's package.json on the V2 branch does not have the "main"
+ * and "types" keys filled.
+ */
+export class CdkCliV2MissesMainAndTypes extends ValidationRule {
+  public readonly name = 'aws-cdk/cli/v2/package.json/main';
+
+  public validate(pkg: PackageJson): void {
+    // this rule only applies to the CLI
+    if (pkg.json.name !== 'aws-cdk') { return; }
+    // this only applies to V2
+    if (cdkMajorVersion() === 1) { return; }
+
+    if (pkg.json.main || pkg.json.types) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'The package.json file for the aws-cdk CLI package in V2 cannot have "main" and "types" keys',
+        fix: () => {
+          delete pkg.json.main;
+          delete pkg.json.types;
+        },
+      });
+    }
+  }
+}
 
 /**
  * Determine whether this is a JSII package
