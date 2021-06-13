@@ -173,3 +173,15 @@ const table = new dynamodb.Table(stack, 'MyTable', {
 
 // In this case, the CMK _cannot_ be accessed through table.encryptionKey.
 ```
+
+## Get schema of table or secondary indexes
+
+To get the partition key and sort key of the table or indexes you have configured:
+
+```ts
+const { partitionKey, sortKey } = table.schema();
+
+// In case you want to get schema details for any secondary index
+
+const { partitionKey, sortKey } = table.schema(INDEX_NAME);
+```

@@ -110,23 +110,28 @@ export enum TableEncryption {
 }
 
 /**
- * Properties of a DynamoDB Table
- *
- * Use {@link TableProps} for all table properties
+ * Represents the table schema attributes.
  */
-export interface TableOptions {
+export interface SchemaOptions {
   /**
    * Partition key attribute definition.
    */
   readonly partitionKey: Attribute;
 
   /**
-   * Table sort key attribute definition.
+   * Sort key attribute definition.
    *
    * @default no sort key
    */
   readonly sortKey?: Attribute;
+}
 
+/**
+ * Properties of a DynamoDB Table
+ *
+ * Use {@link TableProps} for all table properties
+ */
+export interface TableOptions extends SchemaOptions {
   /**
    * The read capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
@@ -269,18 +274,7 @@ export interface SecondaryIndexProps {
 /**
  * Properties for a global secondary index
  */
-export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
-  /**
-   * The attribute of a partition key for the global secondary index.
-   */
-  readonly partitionKey: Attribute;
-
-  /**
-   * The attribute of a sort key for the global secondary index.
-   * @default - No sort key
-   */
-  readonly sortKey?: Attribute;
-
+export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOptions {
   /**
    * The read capacity for the global secondary index.
    *
@@ -911,15 +905,15 @@ abstract class TableBase extends Resource implements ITable {
    */
   private combinedGrant(
     grantee: iam.IGrantable,
-    opts: {keyActions?: string[], tableActions?: string[], streamActions?: string[]},
+    opts: { keyActions?: string[], tableActions?: string[], streamActions?: string[] },
   ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
-        ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        }))];
+      Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+      ...this.regionalArns,
+      ...this.regionalArns.map(arn => Lazy.string({
+        produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+      }))];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
@@ -944,7 +938,7 @@ abstract class TableBase extends Resource implements ITable {
       });
       return ret;
     }
-    throw new Error(`Unexpected 'action', ${ opts.tableActions || opts.streamActions }`);
+    throw new Error(`Unexpected 'action', ${opts.tableActions || opts.streamActions}`);
   }
 
   private cannedMetric(
@@ -1076,6 +1070,8 @@ export class Table extends TableBase {
   private readonly tablePartitionKey: Attribute;
   private readonly tableSortKey?: Attribute;
 
+  private readonly secondaryIndexesSchema = new Map<string, SchemaOptions>();
+
   private readonly billingMode: BillingMode;
   private readonly tableScaling: ScalableAttributePair = {};
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
@@ -1177,6 +1173,11 @@ export class Table extends TableBase {
       },
     });
 
+    this.secondaryIndexesSchema.set(props.indexName, {
+      partitionKey: props.partitionKey,
+      sortKey: props.sortKey,
+    });
+
     this.indexScaling.set(props.indexName, {});
   }
 
@@ -1202,6 +1203,11 @@ export class Table extends TableBase {
       indexName: props.indexName,
       keySchema: lsiKeySchema,
       projection: lsiProjection,
+    });
+
+    this.secondaryIndexesSchema.set(props.indexName, {
+      partitionKey: this.tablePartitionKey,
+      sortKey: props.sortKey,
     });
   }
 
@@ -1303,6 +1309,22 @@ export class Table extends TableBase {
       role: this.scalingRole,
       ...props,
     });
+  }
+
+  /**
+   * Get schema attributes of table or index.
+   *
+   * @returns Schema of table or index.
+   */
+  public schema(indexName?: string): SchemaOptions | undefined {
+    if (!indexName) {
+      return {
+        partitionKey: this.tablePartitionKey,
+        sortKey: this.tableSortKey,
+      }
+    }
+
+    return this.secondaryIndexesSchema.get(indexName);
   }
 
   /**

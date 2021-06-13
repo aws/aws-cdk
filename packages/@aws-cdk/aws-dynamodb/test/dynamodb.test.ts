@@ -770,6 +770,128 @@ describe('when billing mode is PAY_PER_REQUEST', () => {
   });
 });
 
+describe('schema details', () => {
+  let stack: Stack;
+
+  beforeEach(() => {
+    stack = new Stack();
+  });
+
+  test('get scheama for table with hash key only', () => {
+    const table = new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+    });
+
+    expect(table.schema()).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: undefined
+    });
+  });
+
+  test('get scheama for table with hash key + range key', () => {
+    const table = new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
+
+    expect(table.schema()).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
+  });
+
+  test('get scheama for GSI with hash key', () => {
+    const table = new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+    });
+
+    expect(table.schema(GSI_NAME)).toEqual({
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: undefined,
+    });
+  });
+
+  test('get scheama for GSI with hash key + range key', () => {
+    const table = new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+
+    expect(table.schema(GSI_NAME)).toEqual({
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+  });
+
+  test('get scheama for LSI', () => {
+    const table = new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY
+    });
+
+    table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY,
+    });
+
+    expect(table.schema(LSI_NAME)).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: LSI_SORT_KEY,
+    });
+  });
+
+  test('get scheama for multiple secondary indexes', () => {
+    const table = new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY
+    });
+
+    table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY,
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+
+    expect(table.schema(LSI_NAME)).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: LSI_SORT_KEY,
+    });
+
+    expect(table.schema(GSI_NAME)).toEqual({
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+  });
+
+  test('get scheama for unknown secondary index', () => {
+    const table = new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY
+    });
+
+    expect(table.schema(GSI_NAME)).toEqual(undefined);
+  });
+
+});
 test('when adding a global secondary index with hash key only', () => {
   const stack = new Stack();
 
