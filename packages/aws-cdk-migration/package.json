@@ -15,7 +15,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "build+test+extract": "yarn build+test",
+    "build+extract": "yarn build"
   },
   "cdk-build": {
     "jest": true
