@@ -1,4 +1,4 @@
-# Assert v2
+# Assertions
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -15,9 +15,11 @@
 
 <!--END STABILITY BANNER-->
 
-This module allows asserting the contents of CloudFormation templates.
+Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 
-To run assertions based on a CDK `Stack`, start off with -
+The `TemplateAssertions` class includes a set of methods for writing assertions against CloudFormation templates. Use one of the `TemplateAssertions.fromXxx()` static methods to create an instance of this class.
+
+To create `TemplateAssertions` from CDK stack, start off with:
 
 ```ts
 import { Stack } from '@aws-cdk/core';
@@ -41,7 +43,6 @@ The simplest assertion would be to assert that the template matches a given
 template.
 
 ```ts
-// In typescript
 assert.templateMatches({
   Resources: {
     Type: 'Foo::Bar',
