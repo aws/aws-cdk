@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Names, Resource, Stack } from '@aws-cdk/core';
 import { AcceptLanguage } from './common';
-import { getIdentifier } from './private/util';
+import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
 
@@ -10,10 +10,26 @@ import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } fro
 import { Construct } from 'constructs';
 
 /**
+ * Options for portfolio share.
+ */
+export interface PortfolioShareOptions {
+  /**
+   * Whether to share tagOptions as a part of the portfolio share
+   * @default - share not specified
+   */
+  readonly shareTagOptions?: boolean;
+
+  /**
+   * The accept language of the share
+   * @default - accept language not specified
+   */
+  readonly acceptLanguage?: AcceptLanguage;
+}
+
+/**
  * A Service Catalog portfolio.
  */
 export interface IPortfolio extends IResource {
-
   /**
    * The ARN of the portfolio.
    * @attribute
@@ -45,94 +61,75 @@ export interface IPortfolio extends IResource {
   giveAccessToGroup(group: iam.IGroup): void;
 
   /**
-   * Share portfolio with another account.
+   * Initiate a portfolio share with another account.
    * @param accountId AWS account to share portfolio with
    * @param options Options for the initiate share
    */
-  share(accountId: string, options?: PortfolioShareOptions): void;
+  shareWithAccount(accountId: string, options?: PortfolioShareOptions): void;
 }
 
-/**
- * Represents a Service Catalog Portfolio.
- */
 abstract class PortfolioBase extends Resource implements IPortfolio {
-
-  /**
-   * The ARN of the portfolio.
-   */
   public abstract readonly portfolioArn: string;
-
-  /**
-   * The Id of the portfolio.
-   */
   public abstract readonly portfolioId: string;
+  private readonly associatedPrincipals: Set<string> = new Set();
 
-  /**
-   * Enable the Portfolio for a specific Role
-   */
-  public giveAccessToRole(role: iam.IRole) {
+  public giveAccessToRole(role: iam.IRole): void {
     this.associatePrincipal(role.roleArn, role.node.addr);
   }
 
-  /**
-   * Enable the Portfolio for a specific User
-   */
-  public giveAccessToUser(user: iam.IUser) {
+  public giveAccessToUser(user: iam.IUser): void {
     this.associatePrincipal(user.userArn, user.node.addr);
   }
 
-  /**
-   * Enable the Portfolio for a specific Group
-   */
-  public giveAccessToGroup(group: iam.IGroup) {
+  public giveAccessToGroup(group: iam.IGroup): void {
     this.associatePrincipal(group.groupArn, group.node.addr);
   }
 
-  /**
-   * Share the portfolio with a designated account.
-   */
-  public share(accountId: string, options?: PortfolioShareOptions) {
-    const hashId = this.getKeyForPortfolio(accountId);
+  public shareWithAccount(accountId: string, options: PortfolioShareOptions = {}): void {
+    const hashId = this.generateUniqueHash(accountId);
     new CfnPortfolioShare(this, `PortfolioShare${hashId}`, {
       portfolioId: this.portfolioId,
       accountId: accountId,
-      shareTagOptions: options?.shareTagOptions,
-      acceptLanguage: options?.acceptLanguage,
+      shareTagOptions: options.shareTagOptions,
+      acceptLanguage: options.acceptLanguage,
     });
   }
 
   /**
    * Associate a principal with the portfolio.
+   * If the principal is already associated, it will skip.
    */
-  private associatePrincipal(principalArn: string, identifier: string) {
-    const hashId = this.getKeyForPortfolio(identifier);
-    new CfnPortfolioPrincipalAssociation(this, `PortolioPrincipalAssociation${hashId}`, {
-      portfolioId: this.portfolioId,
-      principalArn: principalArn,
-      principalType: PrincipalType.IAM,
-    });
+  private associatePrincipal(principalArn: string, principalId: string): void {
+    if (!this.associatedPrincipals.has(principalArn)) {
+      const hashId = this.generateUniqueHash(principalId);
+      new CfnPortfolioPrincipalAssociation(this, `PortolioPrincipalAssociation${hashId}`, {
+        portfolioId: this.portfolioId,
+        principalArn: principalArn,
+        principalType: 'IAM',
+      });
+      this.associatedPrincipals.add(principalArn);
+    }
   }
 
   /**
    * Create a unique id based off the L1 CfnPortfolio or the arn of an imported portfolio.
    */
-  protected abstract getKeyForPortfolio(value: string): string;
+  protected abstract generateUniqueHash(value: string): string;
 }
 
 /**
  * Properties for a Portfolio.
  */
 export interface PortfolioProps {
-
   /**
    * The name of the portfolio.
    */
-  readonly name: string;
+  readonly displayName: string;
 
   /**
    * The provider name.
    */
-  readonly provider: string;
+  readonly providerName: string;
 
   /**
    * The accept language.
@@ -151,7 +148,6 @@ export interface PortfolioProps {
  * A Service Catalog portfolio.
  */
 export class Portfolio extends PortfolioBase {
-
   /**
    * Creates a Portfolio construct that represents an external portfolio.
    *
@@ -168,13 +164,14 @@ export class Portfolio extends PortfolioBase {
     }
 
     class Import extends PortfolioBase {
-      portfolioArn = portfolioArn;
-      portfolioId = portfolioId!;
+      public readonly portfolioArn = portfolioArn;
+      public readonly portfolioId = portfolioId!;
 
-      protected getKeyForPortfolio(value: string): string {
-        return getIdentifier(this.portfolioArn, value);
+      protected generateUniqueHash(value: string): string {
+        return hashValues(this.portfolioArn, value);
       }
     }
+
     return new Import(scope, id, {
       environmentFromArn: portfolioArn,
     });
@@ -187,17 +184,15 @@ export class Portfolio extends PortfolioBase {
   constructor(scope: Construct, id: string, props: PortfolioProps) {
     super(scope, id);
 
-    this.validatePortfolioProps(props, id);
+    this.validatePortfolioProps(props);
 
     this.portfolio = new CfnPortfolio(this, 'Resource', {
-      displayName: props.name,
-      providerName: props.provider,
+      displayName: props.displayName,
+      providerName: props.providerName,
       description: props.description,
       acceptLanguage: props.acceptLanguage,
     });
-
     this.portfolioId = this.portfolio.ref;
-
     this.portfolioArn = Stack.of(this).formatArn({
       service: 'servicecatalog',
       resource: 'portfolio',
@@ -205,42 +200,13 @@ export class Portfolio extends PortfolioBase {
     });
   }
 
-  protected getKeyForPortfolio(value: string): string {
-    return getIdentifier(Names.nodeUniqueId(this.portfolio.node), value);
+  protected generateUniqueHash(value: string): string {
+    return hashValues(Names.nodeUniqueId(this.portfolio.node), value);
   }
 
-  private validatePortfolioProps(props: PortfolioProps, id: string) {
-    InputValidator.validateLength(id, 'portfolio name', 1, 100, props.name);
-    InputValidator.validateLength(id, 'provider name', 1, 50, props.provider);
-    InputValidator.validateLength(id, 'description', 0, 2000, props.description);
+  private validatePortfolioProps(props: PortfolioProps) {
+    InputValidator.validateLength(this.node.path, 'portfolio display name', 1, 100, props.displayName);
+    InputValidator.validateLength(this.node.path, 'provider name', 1, 50, props.providerName);
+    InputValidator.validateLength(this.node.path, 'description', 0, 2000, props.description);
   }
-}
-
-/**
- * Options for portfolio share.
- */
-export interface PortfolioShareOptions {
-
-  /**
-   * Whether to share tagOptions as a part of the portfolio share
-   * @default - share not specified
-   */
-  readonly shareTagOptions?: boolean;
-
-  /**
-   * The accept language of the share
-   * @default - accept language not specified
-   */
-  readonly acceptLanguage?: AcceptLanguage;
-}
-
-/**
- * The principal type
- * Only supported version currently is IAM
- */
-enum PrincipalType {
-  /**
-   * IAM
-   */
-  IAM = 'IAM'
 }

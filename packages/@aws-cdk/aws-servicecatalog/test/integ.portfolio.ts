@@ -9,16 +9,17 @@ const role = new iam.Role(stack, 'TestRole', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
 
-const role2 = new iam.Role(stack, 'TestRole2', {
-  assumedBy: new iam.AccountRootPrincipal(),
-});
+const group = new iam.Group(stack, 'TestGroup');
 
 const portfolio = new Portfolio(stack, 'TestPortfolio', {
-  name: 'TestPortfolio',
-  provider: 'TestProvider',
+  displayName: 'TestPortfolio',
+  providerName: 'TestProvider',
+  description: 'This is our Service Catalog Portfolio',
 });
 
 portfolio.giveAccessToRole(role);
-portfolio.giveAccessToRole(role2);
+portfolio.giveAccessToGroup(group);
+
+portfolio.shareWithAccount('123456789012');
 
 app.synth();

@@ -2,7 +2,6 @@
  * The language code.
  */
 export enum AcceptLanguage {
-
   /**
    * English
    */

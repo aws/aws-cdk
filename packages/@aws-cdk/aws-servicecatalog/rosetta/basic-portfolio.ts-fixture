@@ -6,6 +6,11 @@ class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
+    const portfolio = new servicecatalog.Portfolio(this, "MyFirstPortfolio", {
+      displayName: "MyFirstPortfolio",
+      providerName: "MyTeam",
+    });
+
     /// here
   }
 }
