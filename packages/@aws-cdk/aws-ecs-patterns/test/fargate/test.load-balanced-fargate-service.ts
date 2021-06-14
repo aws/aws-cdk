@@ -1012,4 +1012,65 @@ export = {
 
   },
 
+  'test ALB load balanced service with docker labels defined'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Image: '/aws/aws-example-app',
+          DockerLabels: {
+            label1: 'labelValue1',
+            label2: 'labelValue2',
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'test Network load balanced service with docker labels defined'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Image: '/aws/aws-example-app',
+          DockerLabels: {
+            label1: 'labelValue1',
+            label2: 'labelValue2',
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
 };

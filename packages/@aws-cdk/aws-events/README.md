@@ -80,6 +80,18 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+Or using an Object:
+
+```ts
+onCommitRule.addTarget(new targets.SnsTopic(topic, {
+  message: events.RuleTargetInput.fromObject(
+    {
+      DataType: `custom_${events.EventField.fromPath('$.detail-type')}`
+    }
+  )
+}));
+```
+
 ## Scheduling
 
 You can configure a Rule to run on a schedule (cron or rate).
