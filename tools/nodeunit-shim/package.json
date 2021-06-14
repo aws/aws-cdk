@@ -9,7 +9,9 @@
     "watch": "tsc -w",
     "test": "echo No tests",
     "build+test+package": "npm run build+test",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
