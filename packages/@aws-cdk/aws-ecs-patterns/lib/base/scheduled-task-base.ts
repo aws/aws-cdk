@@ -141,14 +141,14 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
   public readonly subnetSelection: SubnetSelection;
 
   /**
-   * The security group to use for the ECS Task.
-   */
-  public readonly securityGroups?: ISecurityGroup[];
-
-  /**
    * The CloudWatch Events rule for the service.
    */
   public readonly eventRule: Rule;
+  /**
+   * The security group to use for the ECS Task.
+   */
+  private readonly _securityGroups?: ISecurityGroup[];
+
 
   /**
    * Constructs a new instance of the ScheduledTaskBase class.
@@ -162,7 +162,7 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
     }
     this.desiredTaskCount = props.desiredTaskCount || 1;
     this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE };
-    this.securityGroups = props.securityGroups;
+    this._securityGroups = props.securityGroups;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
@@ -184,7 +184,7 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
       taskDefinition,
       taskCount: this.desiredTaskCount,
       subnetSelection: this.subnetSelection,
-      securityGroups: this.securityGroups,
+      securityGroups: this._securityGroups,
     });
 
     this.addTaskAsTarget(eventRuleTarget);
