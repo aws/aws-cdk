@@ -22,7 +22,7 @@ This check validates that the modified files in the PR follow these rules:
 
 ```console
 cd tools/prlint
-npm install
+yarn install
 ```
 
 # Usage
@@ -35,7 +35,7 @@ steps:
     uses: actions/checkout@v2
 
   - name: Install & Build # install & build prlint
-    run: cd path/to/prlint && npm ci && npm build
+    run: cd path/to/prlint && yarn install --frozen-lockfile && yarn build
 
   - name: Lint
     uses: ./path/to/prlint

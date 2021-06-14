@@ -178,6 +178,8 @@ Resources:
             IgnorePublicAcls: true
             RestrictPublicBuckets: true
           - Ref: AWS::NoValue
+      VersioningConfiguration:
+        Status: Enabled
     UpdateReplacePolicy: Retain
     DeletionPolicy: Retain
   StagingBucketPolicy:
@@ -348,6 +350,8 @@ Resources:
               - ecr:BatchCheckLayerAvailability
               - ecr:DescribeRepositories
               - ecr:DescribeImages
+              - ecr:BatchGetImage
+              - ecr:GetDownloadUrlForLayer
             Resource:
               Fn::Sub: "${ContainerAssetsRepository.Arn}"
             Effect: Allow

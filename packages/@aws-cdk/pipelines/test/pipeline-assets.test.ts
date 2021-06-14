@@ -1,5 +1,6 @@
+import * as fs from 'fs';
 import * as path from 'path';
-import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert-internal';
+import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -439,19 +440,13 @@ describe('pipeline with single asset publisher', () => {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
-          phases: {
-            build: {
-              // Both assets are uploaded in the same action
-              commands: arrayWith(
-                `cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`,
-                `cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`,
-              ),
-            },
-          },
-        })),
+        BuildSpec: 'buildspec-assets-FileAsset.yaml',
       },
     });
+    const assembly = SynthUtils.synthesize(pipelineStack, { skipValidation: true }).assembly;
+    const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, 'buildspec-assets-FileAsset.yaml')).toString());
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
   });
 });
 class PlainStackApp extends Stage {
