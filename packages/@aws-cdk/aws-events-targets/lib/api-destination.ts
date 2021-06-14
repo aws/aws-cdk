@@ -69,7 +69,7 @@ export class ApiDestination implements events.IRuleTarget {
       ...(this.props ? bindBaseTargetConfig(this.props) : {}),
       arn: this.apiDestination.apiDestinationArn,
       role: this.props?.eventRole || singletonEventRole(this.apiDestination, [new iam.PolicyStatement({
-        resources: [`${this.apiDestination.apiDestinationArn}/*`],
+        resources: [this.apiDestination.apiDestinationArn],
         actions: [
           'events:InvokeApiDestination',
         ],
