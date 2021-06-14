@@ -59,7 +59,9 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "nozem": {
-    "ostools": ["ln"]
+    "ostools": [
+      "ln"
+    ]
   },
   "ubergen": {
     "exclude": true

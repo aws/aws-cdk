@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-ecr-assets",
   "version": "0.0.0",
+  "private": true,
   "description": "Docker image assets deployed to ECR",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -82,7 +83,7 @@
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "minimatch": "^3.0.4",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -92,7 +93,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "nyc": {
     "statements": 70
