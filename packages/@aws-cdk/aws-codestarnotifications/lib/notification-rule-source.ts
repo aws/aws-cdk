@@ -7,11 +7,6 @@ import { INotificationRule } from './notification-rule';
  */
 export interface NotificationRuleSourceConfig {
   /**
-   * The source type. Can be an AWS CodeCommit, CodeBuild, CodePipeline or CodeDeploy.
-   */
-  readonly sourceType: string;
-
-  /**
    * The Amazon Resource Name (ARN) of the notification source.
    */
   readonly sourceArn: string;

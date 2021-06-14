@@ -541,7 +541,6 @@ export = {
     const rule = new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: {
         bindAsNotificationRuleSource: () => ({
-          sourceType: 'CodeBuild',
           sourceArn: 'ARN',
         }),
       },

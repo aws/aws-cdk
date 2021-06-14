@@ -6,7 +6,6 @@ export class FakeCodeBuild implements notifications.INotificationRuleSource {
 
   bindAsNotificationRuleSource(): notifications.NotificationRuleSourceConfig {
     return {
-      sourceType: 'CodeBuild',
       sourceArn: this.projectArn,
     };
   }
@@ -18,7 +17,6 @@ export class FakeCodePipeline implements notifications.INotificationRuleSource {
 
   bindAsNotificationRuleSource(): notifications.NotificationRuleSourceConfig {
     return {
-      sourceType: 'CodePipeline',
       sourceArn: this.pipelineArn,
     };
   }
