@@ -28,9 +28,11 @@ describe('Application', () => {
     new flink.Application(stack, 'FlinkApplication', {
       runtime: flink.Runtime.FLINK_1_11,
       code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
+      applicationName: 'MyFlinkApplication',
     });
 
     expect(stack).toHaveResource('AWS::KinesisAnalyticsV2::Application', {
+      ApplicationName: 'MyFlinkApplication',
       RuntimeEnvironment: 'FLINK-1_11',
       ServiceExecutionRole: {
         'Fn::GetAtt': [

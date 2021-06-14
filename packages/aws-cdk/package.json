@@ -23,7 +23,9 @@
     "integ-cli-regression-latest-code": "test/integ/run-against-dist test/integ/test-cli-regression-against-current-code.sh",
     "integ-cli-no-regression": "test/integ/run-against-repo test/integ/cli/test.sh",
     "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh",
-    "gen": "./generate.sh"
+    "gen": "./generate.sh",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "cdk-build": {
     "jest": true
@@ -105,7 +107,14 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "nozem": {
-    "ostools": ["git", "date", "cat", "dotnet", "mvn", "npm"],
+    "ostools": [
+      "git",
+      "date",
+      "cat",
+      "dotnet",
+      "mvn",
+      "npm"
+    ],
     "env": {
       "CODEBUILD_RESOLVED_SOURCE_VERSION": "|nzm-build"
     }
