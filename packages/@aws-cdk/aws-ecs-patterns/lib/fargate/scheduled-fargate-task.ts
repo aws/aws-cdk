@@ -38,7 +38,7 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
   /**
    * Existing security groups to use for your service.
    *   *
-   * @default 'A new security group is created'
+   * @default - a new security group will be created.
    */
   readonly securityGroups?: ISecurityGroup[]
 }
