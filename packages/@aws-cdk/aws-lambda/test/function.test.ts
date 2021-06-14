@@ -2156,6 +2156,22 @@ describe('function', () => {
       });
     });
   });
+
+  test('error when layers set in a container function', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const code = new lambda.S3Code(bucket, 'ObjectKey');
+
+    const layer = new lambda.LayerVersion(stack, 'Layer', {
+      code,
+    });
+
+    expect(() => new lambda.DockerImageFunction(stack, 'MyLambda', {
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+      layers: [layer],
+    })).toThrow(/Layers are not supported for container image functions/);
+  });
+
 });
 
 function newTestLambda(scope: constructs.Construct) {

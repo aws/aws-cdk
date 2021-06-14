@@ -10,7 +10,9 @@
     "package": "mkdir -p dist/js && mv $( npm pack ) dist/js/",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
-    "pkglint": "pkglint -f"
+    "pkglint": "pkglint -f",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "bin": {
     "awslint": "bin/awslint"
@@ -29,8 +31,8 @@
     "@types/yargs": "^15.0.13",
     "pkglint": "0.0.0",
     "typescript": "~3.9.9",
-    "@typescript-eslint/eslint-plugin": "^4.26.0",
-    "@typescript-eslint/parser": "^4.26.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/parser": "^4.26.1",
     "eslint": "^7.28.0",
     "eslint-import-resolver-node": "^0.3.4",
     "eslint-import-resolver-typescript": "^2.4.0",
@@ -61,7 +63,10 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "nozem": {
-    "ostools": ["chmod", "npm"]
+    "ostools": [
+      "chmod",
+      "npm"
+    ]
   },
   "publishConfig": {
     "tag": "latest"
