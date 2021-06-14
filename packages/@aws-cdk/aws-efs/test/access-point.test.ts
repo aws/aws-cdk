@@ -143,7 +143,7 @@ test('custom access point is created correctly', () => {
 
   });
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::AccessPoint', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::AccessPoint', {
     FileSystemId: {
       Ref: 'EfsFileSystem37910666',
     },

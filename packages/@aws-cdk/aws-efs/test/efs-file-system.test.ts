@@ -1,4 +1,4 @@
-import { TemplateAssertions, Matchers, ResourcePart } from '@aws-cdk/assertions';
+import { TemplateAssertions, Matchers } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
@@ -26,7 +26,7 @@ testFutureBehavior(
       vpc: customVpc,
     });
 
-    TemplateAssertions.fromStack(customStack).hasResource('AWS::EFS::FileSystem', {
+    TemplateAssertions.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
       Encrypted: true,
     });
 
@@ -40,7 +40,7 @@ testLegacyBehavior('when @aws-cdk/aws-efs:defaultEncryptionAtRest is missing, en
     vpc: customVpc,
   });
 
-  TemplateAssertions.fromStack(customStack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
     Encrypted: Matchers.absent(),
   });
 
@@ -53,10 +53,10 @@ test('default file system is created correctly', () => {
   });
   // THEN
   const assertions = TemplateAssertions.fromStack(stack);
-  assertions.hasResource('AWS::EFS::FileSystem', {
+  assertions.hasResourceDefinition('AWS::EFS::FileSystem', {
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
-  }, { part: ResourcePart.COMPLETE });
+  });
   assertions.resourceCountIs('AWS::EFS::MountTarget', 2);
   assertions.resourceCountIs('AWS::EC2::SecurityGroup', 1);
 });
@@ -68,7 +68,7 @@ test('unencrypted file system is created correctly with default KMS', () => {
     encrypted: false,
   });
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     Encrypted: false,
   });
 });
@@ -80,7 +80,7 @@ test('encrypted file system is created correctly with default KMS', () => {
     encrypted: true,
   });
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     Encrypted: true,
   });
 });
@@ -102,7 +102,7 @@ test('encrypted file system is created correctly with custom KMS', () => {
    * in generated CDK, hence hardcoding the MD5 hash here for assertion. Assumption is that the path of the Key wont
    * change in this UT. Checked the unique id by generating the cloud formation stack.
    */
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     Encrypted: true,
     KmsKeyId: {
       'Fn::GetAtt': [
@@ -120,7 +120,7 @@ test('file system is created correctly with a life cycle property', () => {
     lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
   });
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     LifecyclePolicies: [{
       TransitionToIA: 'AFTER_7_DAYS',
     }],
@@ -134,7 +134,7 @@ test('file system is created correctly with performance mode', () => {
     performanceMode: PerformanceMode.MAX_IO,
   });
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     PerformanceMode: 'maxIO',
   });
 });
@@ -146,7 +146,7 @@ test('file system is created correctly with bursting throughput mode', () => {
     throughputMode: ThroughputMode.BURSTING,
   });
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     ThroughputMode: 'bursting',
   });
 });
@@ -186,7 +186,7 @@ test('file system is created correctly with provisioned throughput mode', () => 
     provisionedThroughputPerSecond: Size.mebibytes(5),
   });
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     ThroughputMode: 'provisioned',
     ProvisionedThroughputInMibps: 5,
   });
@@ -204,7 +204,7 @@ test('existing file system is imported correctly', () => {
   fs.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EC2::SecurityGroupEgress', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
     GroupId: 'sg-123456789',
   });
 });
@@ -217,7 +217,7 @@ test('support tags', () => {
   Tags.of(fileSystem).add('Name', 'LookAtMeAndMyFancyTags');
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     FileSystemTags: [
       { Key: 'Name', Value: 'LookAtMeAndMyFancyTags' },
     ],
@@ -232,7 +232,7 @@ test('file system is created correctly when given a name', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     FileSystemTags: [
       { Key: 'Name', Value: 'MyNameableFileSystem' },
     ],
@@ -246,7 +246,7 @@ test('auto-named if none provided', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     FileSystemTags: [
       { Key: 'Name', Value: fileSystem.node.path },
     ],
@@ -258,10 +258,10 @@ test('removalPolicy is DESTROY', () => {
   new FileSystem(stack, 'EfsFileSystem', { vpc, removalPolicy: RemovalPolicy.DESTROY });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceDefinition('AWS::EFS::FileSystem', {
     DeletionPolicy: 'Delete',
     UpdateReplacePolicy: 'Delete',
-  }, { part: ResourcePart.COMPLETE });
+  });
 });
 
 test('can specify backup policy', () => {
@@ -269,7 +269,7 @@ test('can specify backup policy', () => {
   new FileSystem(stack, 'EfsFileSystem', { vpc, enableAutomaticBackups: true });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResource('AWS::EFS::FileSystem', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     BackupPolicy: {
       Status: 'ENABLED',
     },
