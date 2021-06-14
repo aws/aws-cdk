@@ -1069,4 +1069,18 @@ describe('restapi', () => {
       expect(countMetric.color).toEqual(color);
     });
   });
+
+  test('"disableExecuteApiEndpoint" can disable the default execute-api endpoint', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'my-api', { disableExecuteApiEndpoint: true });
+    api.root.addMethod('GET');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
+      DisableExecuteApiEndpoint: true,
+    });
+  });
 });
