@@ -18,9 +18,8 @@ export interface LambdaDestinationOptions{
  */
 export class LambdaDestination implements logs.ILogSubscriptionDestination {
   /**  LambdaDestinationOptions */
-  constructor(private readonly fn: lambda.IFunction, private readonly options: 
-    LambdaDestinationOptions = {}) {
-    }
+  constructor(private readonly fn: lambda.IFunction, private readonly options: LambdaDestinationOptions = {}) {
+  }
 
   public bind(scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
     const arn = logGroup.logGroupArn;
