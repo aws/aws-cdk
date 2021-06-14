@@ -483,6 +483,7 @@ class AssetPublishing extends CoreConstruct {
         role: this.assetRoles[command.assetType],
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
+        createBuildspecFile: this.props.singlePublisherPerType,
       });
       this.stages[stageIndex].addAction(action);
     }
