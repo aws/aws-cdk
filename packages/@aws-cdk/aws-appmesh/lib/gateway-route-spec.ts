@@ -1,10 +1,7 @@
+import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The criterion for determining a request match for this GatewayRoute

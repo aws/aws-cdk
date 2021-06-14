@@ -61,9 +61,12 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "nozem": {
-    "ostools": ["chmod", "npm"]
+    "ostools": [
+      "chmod",
+      "npm"
+    ]
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   }
 }

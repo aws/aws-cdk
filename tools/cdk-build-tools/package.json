@@ -74,7 +74,9 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "nozem": {
-    "ostools": ["chmod"]
+    "ostools": [
+      "chmod"
+    ]
   },
   "ubergen": {
     "exclude": true
