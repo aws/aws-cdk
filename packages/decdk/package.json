@@ -18,7 +18,9 @@
     "test": "jest",
     "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
     "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package"
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -151,6 +153,7 @@
     "@aws-cdk/aws-lambda-nodejs": "0.0.0",
     "@aws-cdk/aws-lambda-python": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
+    "@aws-cdk/aws-location": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-logs-destinations": "0.0.0",
     "@aws-cdk/aws-lookoutmetrics": "0.0.0",
