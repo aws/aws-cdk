@@ -1,16 +1,24 @@
 import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Customize the EventBridge Api Destinations Target
  */
-export interface ApiDestinationProps {
+export interface ApiDestinationProps extends TargetBaseProps {
   /**
    * The event to send
    *
    * @default the entire EventBridge event
    */
   readonly event?: events.RuleTargetInput;
-
+  /**
+   * The role to assume before invoking the target
+   * (i.e., the pipeline) when the given rule is triggered.
+   *
+   * @default - a new role will be created
+   */
+  readonly eventRole?: iam.IRole;
   /**
    * The headers that need to be sent as part of request invoking the API Gateway REST API
    * or EventBridge Api destinations.
@@ -53,9 +61,19 @@ export class ApiDestination implements events.IRuleTarget {
       pathParameterValues: this.props.pathParameterValues,
       queryStringParameters: this.props.queryStringParameters,
     };
+    if (this.props?.deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
+    }
 
     return {
+      ...(this.props ? bindBaseTargetConfig(this.props) : {}),
       arn: this.apiDestination.apiDestinationArn,
+      role: this.props?.eventRole || singletonEventRole(this.apiDestination, [new iam.PolicyStatement({
+        resources: [`${this.apiDestination.apiDestinationArn}/*`],
+        actions: [
+          'events:InvokeApiDestination',
+        ],
+      })]),
       input: this.props.event,
       targetResource: this.apiDestination,
       httpParameters,

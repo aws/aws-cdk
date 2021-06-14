@@ -48,6 +48,12 @@ test('use api destination as an eventrule target', () => {
         },
         Id: 'Target0',
         HttpParameters: {},
+        RoleArn: {
+          'Fn::GetAtt': [
+            'DestinationEventsRole7DA63556',
+            'Arn',
+          ],
+        },
       },
     ],
   }));
