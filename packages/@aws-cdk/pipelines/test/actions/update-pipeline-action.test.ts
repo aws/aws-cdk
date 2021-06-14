@@ -29,7 +29,7 @@ test('self-update project role has proper permissions', () => {
           Resource: { 'Fn::Join': ['', ['arn:*:iam::', { Ref: 'AWS::AccountId' }, ':role/*']] },
           Condition: {
             'ForAnyValue:StringEquals': {
-              'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy-artifacts'],
+              'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
             },
           },
         },

@@ -1165,7 +1165,7 @@
                   "iam:ResourceTag/aws-cdk:bootstrap-role": [
                     "image-publishing",
                     "file-publishing",
-                    "deploy-artifacts"
+                    "deploy"
                   ]
                 }
               },

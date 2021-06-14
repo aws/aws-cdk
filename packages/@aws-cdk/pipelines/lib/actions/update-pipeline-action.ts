@@ -101,7 +101,7 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
       resources: [`arn:*:iam::${Stack.of(this).account}:role/*`],
       conditions: {
         'ForAnyValue:StringEquals': {
-          'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy-artifacts'],
+          'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
         },
       },
     }));
