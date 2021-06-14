@@ -50,13 +50,14 @@ export interface ApiDestinationProps {
   readonly invocationEndpoint: string;
   /**
    * The maximum number of requests per second to send to the HTTP invocation endpoint.
+   * @default - None
    */
-  readonly invocationRateLimit: Duration;
+  readonly invocationRateLimit?: Duration;
   /**
    * The name for the API destination.
    * @default - A unique name will be generated from the construct ID
    */
-  readonly apiDestinationName: string;
+  readonly apiDestinationName?: string;
 }
 
 /**

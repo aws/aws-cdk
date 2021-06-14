@@ -312,12 +312,12 @@ export class Connection extends Resource implements IConnection {
       if (props.authParameters?.apiKeyAuthParameters !== undefined) {
         authParameters = {
           ApiKeyAuthParameters: {
-            ApiKeyName: props.authParameters?.apiKeyAuthParameters?.apiKeyValue,
+            ApiKeyName: props.authParameters?.apiKeyAuthParameters?.apiKeyName,
             ApiKeyValue: props.authParameters?.apiKeyAuthParameters?.apiKeyValue,
           },
         };
       } else {
-        throw new Error('You must supply the relevant authParameters for this authorizationType');
+        throw new Error(`You must supply apiKeyName and apiKeyValue for AuthorizationType: ${props.authorizationType}`);
       };
     };
 
@@ -330,7 +330,7 @@ export class Connection extends Resource implements IConnection {
           },
         };
       } else {
-        throw new Error('You must supply the relevant authParameters for this authorizationType');
+        throw new Error(`You must supply password and username for AuthorizationType: ${props.authorizationType}`);
       };
     };
 
@@ -344,11 +344,14 @@ export class Connection extends Resource implements IConnection {
               ClientSecret: props.authParameters?.oAuthParameters?.clientParameters.clientSecret,
             },
             HttpMethod: props.authParameters?.oAuthParameters?.httpMethod,
-            //OAuthHttpParameters: props.authParameters?.oAuthParameters?.oAuthHttpParameters,
+            OAuthHttpParameters: {
+              //HeaderParameters: buildParamaters(props.authParameters?.oAuthParameters?.oAuthHttpParameters?.headerParameters),
+              //QueryStringParameters: buildParamaters(props.authParameters?.oAuthParameters?.oAuthHttpParameters?.queryStringParameters),
+            },
           },
         };
       } else {
-        throw new Error('You must supply the relevant authParameters for this authorizationType');
+        throw new Error(`You must supply authorizationEndpoint, clientID and clientSecret for AuthorizationType: ${props.authorizationType}`);
       };
     };
 
@@ -421,3 +424,26 @@ function nameHash(name: string): string {
   return md5.slice(0, 6);
 }
 
+// interface CommonParameters {
+//   IsValueSecret?: string | undefined;
+//   Key: string;
+//   Value: string;
+// }
+
+// /**
+// * Build a parameter from parameter object
+// *
+// * @param object to build parameters from
+// */
+// function buildParamaters(parameters: Parameter[]): CommonParameters[]{
+//   let builtParamaters: CommonParameters[] = [];
+//   parameters.forEach(p => {
+//     let headerBuilder = {
+//       IsValueSecret: p.isValueSecret,
+//       Key: p.key,
+//       Value: p.value,
+//     };
+//     builtParamaters.push(headerBuilder);
+//   });
+//   return builtParamaters
+// }

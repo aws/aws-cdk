@@ -56,7 +56,7 @@ export = {
     // THEN
     test.throws(() => {
       createInvalidConnection();
-    }, /You must supply the relevant authParameters for this authorizationType/);
+    }, /You must supply apiKeyName and apiKeyValue for AuthorizationType: API_KEY/);
 
     test.done();
   },
@@ -106,12 +106,12 @@ export = {
             ClientSecret: 'clientSecret',
           },
           HttpMethod: 'GET',
-          // OAuthHttpParameters: {
-          //   HeaderParameters: [{
-          //     Key: 'oAuthHeaderKey',
-          //     Value: 'oAuthHeaderValue',
-          //   }],
-          // },
+          OAuthHttpParameters: {
+            // HeaderParameters: [{
+            //   Key: 'oAuthHeaderKey',
+            //   Value: 'oAuthHeaderValue',
+            // }],
+          },
         },
         InvocationHttpParameters: {
           HeaderParameters: [{
