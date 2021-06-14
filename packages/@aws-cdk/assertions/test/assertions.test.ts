@@ -1,7 +1,29 @@
 import { CfnResource, Stack } from '@aws-cdk/core';
-import { ResourcePart, TemplateAssertions } from '../lib';
+import { Construct } from 'constructs';
+import { TemplateAssertions } from '../lib';
 
 describe('StackAssertions', () => {
+  describe('fromTemplate', () => {
+    test('default', () => {
+      const assertions = TemplateAssertions.fromTemplate(`{
+        "Resources": { 
+          "Foo": { 
+            "Type": "Baz::Qux",
+            "Properties": { "Fred": "Waldo" }
+          } 
+        }
+      }`);
+      assertions.resourceCountIs('Baz::Qux', 1);
+    });
+  });
+
+  describe('fromStack', () => {
+    test('fails when root is not a stage', () => {
+      const c = new Construct(undefined as any, '');
+      const stack = new Stack(c, 'MyStack');
+      expect(() => TemplateAssertions.fromStack(stack)).toThrow(/must be part of a Stage or an App/);
+    });
+  });
 
   describe('resourceCountIs', () => {
     test('resource exists', () => {
@@ -29,7 +51,7 @@ describe('StackAssertions', () => {
     });
   });
 
-  describe('hasResource', () => {
+  describe('hasResourceXXX', () => {
     test('property matching', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Resource', {
@@ -40,10 +62,14 @@ describe('StackAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      inspect.hasResource('Foo::Bar', { baz: 'qux' });
+      inspect.hasResourceProperties('Foo::Bar', { baz: 'qux' });
 
-      expect(() => inspect.hasResource('Foo::Bar', { fred: 'waldo' })).toThrow(/None .* matches resource 'Foo::Bar'/);
-      expect(() => inspect.hasResource('Foo::Baz', {})).toThrow(/None .* matches resource 'Foo::Baz'/);
+      expect(
+        () => inspect.hasResourceProperties('Foo::Bar', { fred: 'waldo' }),
+      ).toThrow(/None .* matches resource 'Foo::Bar'/);
+      expect(
+        () => inspect.hasResourceProperties('Foo::Baz', {}),
+      ).toThrow(/None .* matches resource 'Foo::Baz'/);
     });
 
     test('no resource', () => {
@@ -53,7 +79,9 @@ describe('StackAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      expect(() => inspect.hasResource('Foo::Baz', {})).toThrow(/None .* matches resource 'Foo::Baz'/);
+      expect(
+        () => inspect.hasResourceProperties('Foo::Baz', {}),
+      ).toThrow(/None .* matches resource 'Foo::Baz'/);
     });
 
     test('complete definition', () => {
@@ -63,11 +91,9 @@ describe('StackAssertions', () => {
       bar.node.addDependency(baz);
 
       const inspect = TemplateAssertions.fromStack(stack);
-      inspect.hasResource('Foo::Bar', {
+      inspect.hasResourceDefinition('Foo::Bar', {
         Properties: { baz: 'qux' },
         DependsOn: ['Baz'],
-      }, {
-        part: ResourcePart.COMPLETE,
       });
     });
   });

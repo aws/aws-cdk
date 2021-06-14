@@ -70,7 +70,7 @@ The following code asserts that the `Properties` section of a resource of type
 `Foo::Bar` contains the specified properties -
 
 ```ts
-assert.hasResource('Foo::Bar', {
+assert.hasResourceProperties('Foo::Bar', {
   Foo: 'Bar',
   Baz: 5,
   Qux: [ 'Waldo', 'Fred' ],
@@ -82,23 +82,21 @@ which can be used to verify things other sections like `DependsOn`, `Metadata`,
 `DeletionProperty`, etc.
 
 ```ts
-assert.hasResource('Foo::Bar', {
+assert.hasResourceDefinition('Foo::Bar', {
   Properties: { Foo: 'Bar' },
   DependsOn: [ 'Waldo', 'Fred' ],
-}, {
-  part: ResourcePart.COMPLETE,
 });
 ```
 
 ## Special Matchers
 
-The expectation provided to the `hasResource()` method, besides carrying
+The expectation provided to the `hasResourceXXX()` methods, besides carrying
 literal values, as seen in the above examples, can also have special matchers
 encoded. 
 They are available as part of the `Matchers` class and can be used as follows -
 
 ```ts
-assert.hasResource('Foo::Bar', {
+assert.hasResourceProperties('Foo::Bar', {
   Foo: 'Bar',
   Baz: Matchers.absent(),
 })
@@ -111,8 +109,8 @@ The list of available matchers are -
 ## Strongly typed languages
 
 Some of the APIs documented above, such as `templateMatches()` and
-`hasResource()` accept fluently an arbitrary JSON (like) structure as one
-of its parameters.
+`hasResourceProperties()` accept fluently an arbitrary JSON (like) structure 
+its parameter.
 This fluency is available only in dynamically typed languages like javascript
 and Python.
 
@@ -131,5 +129,5 @@ String json = """
   } """;
 
 Map expected = new Gson().fromJson(json, Map.class);
-assert.hasResource("Foo::Bar", expected);
+assert.hasResourceProperties("Foo::Bar", expected);
 ```

@@ -12,11 +12,11 @@ describe('Matchers', () => {
     });
 
     const inspect = TemplateAssertions.fromStack(stack);
-    inspect.hasResource('Foo::Bar', {
+    inspect.hasResourceProperties('Foo::Bar', {
       fred: Matchers.absent(),
     });
 
-    expect(() => inspect.hasResource('Foo::Bar', {
+    expect(() => inspect.hasResourceProperties('Foo::Bar', {
       baz: Matchers.absent(),
     })).toThrow(/None .* matches resource 'Foo::Bar'/);
   });
