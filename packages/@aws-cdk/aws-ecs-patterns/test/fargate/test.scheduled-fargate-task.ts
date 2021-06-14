@@ -299,6 +299,7 @@ export = {
 
     test.done();
   },
+
   'Scheduled Fargate Task - with platformVersion defined'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -405,6 +406,7 @@ export = {
 
     test.done();
   },
+
   'Scheduled Fargate Task - exposes ECS Task'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -421,7 +423,7 @@ export = {
     });
 
     // THEN
-    expect(scheduledFargateTask.task).not.toBeNull();
+    test.notEqual(scheduledFargateTask.task, undefined);
 
     test.done();
   },
