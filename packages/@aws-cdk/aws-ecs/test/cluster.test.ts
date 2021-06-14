@@ -1710,6 +1710,10 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      CapacityProviders: ABSENT,
+    }));
+
+    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE_SPOT'],
     }));
 
@@ -1728,6 +1732,10 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      CapacityProviders: ABSENT,
+    }));
+
+    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
     }));
 
@@ -1745,6 +1753,10 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      CapacityProviders: ABSENT,
+    }));
+
+    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
     }));
 
@@ -1763,6 +1775,10 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      CapacityProviders: ABSENT,
+    }));
+
+    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE'],
     }));
 
@@ -1781,6 +1797,10 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      CapacityProviders: ABSENT,
+    }));
+
+    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE'],
     }));
 
@@ -1929,7 +1949,6 @@ nodeunitShim({
       enableManagedTerminationProtection: false,
     });
 
-    // These should not be added at the association level
     cluster.enableFargateCapacityProviders();
 
     // Ensure not added twice
@@ -1942,6 +1961,8 @@ nodeunitShim({
         Ref: 'EcsCluster97242B84',
       },
       CapacityProviders: [
+        'FARGATE',
+        'FARGATE_SPOT',
         {
           Ref: 'providerD3FF4D3A',
         },
