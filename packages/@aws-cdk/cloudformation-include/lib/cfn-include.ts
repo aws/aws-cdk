@@ -682,8 +682,8 @@ export class CfnInclude extends core.CfnElement {
     const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
     const nestedStack = new core.NestedStack(this, nestedStackId, {
       parameters: this.parametersForNestedStack(nestedStackProps.Parameters, nestedStackId),
-      notificationArns: nestedStackProps.NotificationArns,
-      timeout: nestedStackProps.Timeout,
+      notificationArns: cfn_parse.FromCloudFormation.getStringArray(nestedStackProps.NotificationARNs).value,
+      timeout: this.timeoutForNestedStack(nestedStackProps.TimeoutInMinutes),
     });
     const template = new CfnInclude(nestedStack, nestedStackId, this.nestedStacksToInclude[nestedStackId]);
     this.nestedStacks[nestedStackId] = { stack: nestedStack, includedTemplate: template };
@@ -707,6 +707,14 @@ export class CfnInclude extends core.CfnElement {
       }
     }
     return ret;
+  }
+
+  private timeoutForNestedStack(value: any): core.Duration | undefined {
+    if (value == null) {
+      return undefined;
+    }
+
+    return core.Duration.minutes(cfn_parse.FromCloudFormation.getNumber(value).value);
   }
 
   private overrideLogicalIdIfNeeded(element: core.CfnElement, id: string): void {

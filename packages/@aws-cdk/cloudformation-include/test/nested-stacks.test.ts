@@ -408,13 +408,10 @@ describe('CDK Include for nested stacks', () => {
   });
 
   test("handles Metadata, DeletionPolicy, and UpdateReplacePolicy attributes of the nested stack's resource", () => {
-    const cfnTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+    new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-with-attributes.json'),
       loadNestedStacks: {
         'ChildStack': {
-          templateFile: testTemplateFilePath('child-import-stack.json'),
-        },
-        'AnotherChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
         },
       },
@@ -430,19 +427,32 @@ describe('CDK Include for nested stacks', () => {
       ],
       "UpdateReplacePolicy": "Retain",
     }, ResourcePart.CompleteDefinition);
-
-    cfnTemplate.getNestedStack('AnotherChildStack');
   });
 
   test('correctly parses NotificationsARNs, Timeout', () => {
     new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-with-attributes.json'),
+      loadNestedStacks: {
+        'ChildStack': {
+          templateFile: testTemplateFilePath('custom-resource.json'),
+        },
+        'AnotherChildStack': {
+          templateFile: testTemplateFilePath('custom-resource.json'),
+        },
+      },
     });
 
     expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
-      "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
       "NotificationARNs": ["arn1"],
       "TimeoutInMinutes": 5,
+    });
+    expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
+      "NotificationARNs": { "Ref": "ArrayParam" },
+      "TimeoutInMinutes": {
+        "Fn::Select": [0, {
+          "Ref": "ArrayParam",
+        }],
+      },
     });
   });
 
