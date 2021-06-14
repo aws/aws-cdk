@@ -76,11 +76,13 @@ import * as s3 from '@aws-cdk/aws-s3';
 const bucket = new s3.Bucket(this, 'MyBucket');
 new codebuild.Project(this, 'MyProject', {
   source: codebuild.Source.s3({
-    bucket,
+    bucket: bucket,
     path: 'path/to/file.zip',
   }),
 });
 ```
+
+The CodeBuild role will be granted to read just the given path from the given `bucket`.
 
 ### `GitHubSource` and `GitHubEnterpriseSource`
 
