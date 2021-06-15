@@ -55,9 +55,8 @@ const rule = new notifications.NotificationRule(stack, 'NotificationRule', {
     'codebuild-project-build-state-succeeded',
     'codebuild-project-build-state-failed',
   ],
+  targets: [topic],
 });
-
-rule.addTarget(topic);
 rule.addTarget(slack);
 ```
 
