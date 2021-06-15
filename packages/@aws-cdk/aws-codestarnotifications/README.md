@@ -16,7 +16,11 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ## NotificationRule
 
 The `NotificationRule` construct defines an AWS CodeStarNotifications rule.
-The rule specifies the events you want notifications about and the targets (such as Amazon SNS topics or AWS Chatbot clients configured for Slack) where you want to receive them. notification targets are objects that implement the `INotificationRuleTarget` interface and notification source is object that implement the `INotificationRuleSource` interface.
+The rule specifies the events you want notifications about and the targets
+(such as Amazon SNS topics or AWS Chatbot clients configured for Slack)
+where you want to receive them.
+Notification targets are objects that implement the `INotificationRuleTarget`
+interface and notification source is object that implement the `INotificationRuleSource` interface.
 
 ## Notification Targets
 
