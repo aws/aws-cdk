@@ -169,7 +169,7 @@ export = {
   },
 
   'can make metric with dimensionsMap property'(test: Test) {
-    const m = new Metric({
+    const metric = new Metric({
       namespace: 'Test',
       metricName: 'Metric',
       period: cdk.Duration.minutes(10),
@@ -179,7 +179,7 @@ export = {
       },
     });
 
-    expect(m).toMatch({
+    expect(metric).toMatch({
       namespace: 'Test',
       metricName: 'Metric',
       period: {
@@ -205,7 +205,7 @@ export = {
       dimensionA: 'value1',
     };
 
-    const m = new Metric({
+    const metric = new Metric({
       namespace: 'Test',
       metricName: 'Metric',
       period: cdk.Duration.minutes(10),
@@ -216,7 +216,7 @@ export = {
       dimensionB: 'value2',
     };
 
-    test.deepEqual(m.with({
+    test.deepEqual(metric.with({
       dimensionsMap: newDims,
     }).dimensions, newDims);
 
