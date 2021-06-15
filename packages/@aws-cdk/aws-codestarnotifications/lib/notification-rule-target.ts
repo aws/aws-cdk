@@ -1,5 +1,4 @@
 import * as constructs from 'constructs';
-import { INotificationRule } from './notification-rule';
 
 /**
  * Information about the SNS topic or AWS Chatbot client associated with a notification target.
@@ -24,5 +23,5 @@ export interface INotificationRuleTarget {
   /**
    * Returns a target configuration for notification rule.
    */
-  bindAsNotificationRuleTarget(scope: constructs.Construct, rule: INotificationRule): NotificationRuleTargetConfig;
+  bindAsNotificationRuleTarget(scope: constructs.Construct): NotificationRuleTargetConfig;
 }

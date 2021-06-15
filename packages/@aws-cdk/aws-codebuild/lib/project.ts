@@ -488,7 +488,7 @@ abstract class ProjectBase extends Resource implements IProject {
     });
   }
 
-  public bindAsNotificationRuleSource(_scope: Construct, _rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
+  public bindAsNotificationRuleSource(_scope: Construct): notifications.NotificationRuleSourceConfig {
     return {
       sourceArn: this.projectArn,
     };

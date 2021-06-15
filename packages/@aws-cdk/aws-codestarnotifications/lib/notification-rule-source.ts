@@ -1,5 +1,4 @@
 import * as constructs from 'constructs';
-import { INotificationRule } from './notification-rule';
 
 /**
  * Information about the Codebuild or CodePipeline associated with a notification source.
@@ -19,5 +18,5 @@ export interface INotificationRuleSource {
   /**
    * Returns a source configuration for notification rule.
    */
-  bindAsNotificationRuleSource(scope: constructs.Construct, rule: INotificationRule): NotificationRuleSourceConfig;
+  bindAsNotificationRuleSource(scope: constructs.Construct): NotificationRuleSourceConfig;
 }

@@ -130,10 +130,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    * Represents a notification target
    * That allows SNS topic to associate with this rule target.
    */
-  public bindAsNotificationRuleTarget(
-    _scope: constructs.Construct,
-    _rule: notifications.INotificationRule,
-  ): notifications.NotificationRuleTargetConfig {
+  public bindAsNotificationRuleTarget(_scope: constructs.Construct): notifications.NotificationRuleTargetConfig {
     // SNS topic need to grant codestar-notifications service to publish
     // @see https://docs.aws.amazon.com/dtconsole/latest/userguide/set-up-sns.html
     this.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));
