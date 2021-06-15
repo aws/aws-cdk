@@ -176,10 +176,8 @@ export class BackupVault extends BackupVaultBase {
       throw new Error(`Backup Vault Arn ${backupVaultArn} does not have a resource name.`);
     }
 
-    const backupVaultName = parsedArn.resourceName;
-
     class Import extends BackupVaultBase {
-      public readonly backupVaultName = backupVaultName;
+      public readonly backupVaultName = parsedArn.resourceName!;
       public readonly backupVaultArn = backupVaultArn;
     }
 

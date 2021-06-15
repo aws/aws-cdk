@@ -21,7 +21,7 @@ This module provides ready-made backup plans (similar to the console experience)
 
 ```ts
 // Daily, weekly and monthly with 5 year retention
-const myPlan = backup.BackupPlan.dailyWeeklyMonthly5YearRetention(this, 'Plan');
+const plan = backup.BackupPlan.dailyWeeklyMonthly5YearRetention(this, 'Plan');
 ```
 
 Assigning resources to a plan can be done with `addSelection()`:
@@ -88,11 +88,12 @@ that contains recovery points will fail.
 ## Importing existing backup vault
 
 To import an existing backup vault into your CDK application, use the `BackupVault.fromBackupVaultArn` or `BackupVault.fromBackupVaultName` 
-static method. Here is an example of giving a Lambda function permission to start a backup job:
+static method. Here is an example of giving an IAM Role permission to start a backup job:
 
 ```ts
-
 const importedVault = backup.BackupVault.fromBackupVaultName(this, 'Vault', 'myVaultName');
 
-importedVault.grant(fn, 'backup:StartBackupJob');
+const role = new iam.Role(this, 'Access Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+
+importedVault.grant(role, 'backup:StartBackupJob');
 ```

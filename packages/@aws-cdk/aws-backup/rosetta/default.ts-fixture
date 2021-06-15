@@ -4,11 +4,10 @@ import { Construct } from 'constructs';
 import * as backup from '@aws-cdk/aws-backup';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 
-declare const fn: lambda.Function;
 declare const myKey: kms.Key;
 declare const myCoolConstruct: Construct;
 declare const myTable: dynamodb.Table;
