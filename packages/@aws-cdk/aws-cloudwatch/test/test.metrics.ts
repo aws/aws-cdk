@@ -212,11 +212,13 @@ export = {
       dimensionsMap: dims,
     });
 
-    test.notEqual(m.with({
-      dimensions: {
-        dimensionB: 'value2',
-      },
-    }).dimensions, dims);
+    const newDims = {
+      dimensionB: 'value2',
+    };
+
+    test.deepEqual(m.with({
+      dimensionsMap: newDims,
+    }).dimensions, newDims);
 
     test.done();
   },
