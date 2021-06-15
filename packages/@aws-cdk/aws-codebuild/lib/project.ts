@@ -185,21 +185,21 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, n
   metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-   * Defines a Codestar Notification rule triggered when the project
+   * Defines a CodeStar Notification rule triggered when the project
    * events emitted by you specified, it very similar to `onEvent` API.
    *
    * You can also use the methods `notifyOnBuildSucceeded` and
    * `notifyOnBuildFailed` to define rules for these specific event emitted.
    *
    * @param id The logical identifier of the CodeStar Notifications rule that will be created
-   * @param target The target to register for the Codestar Notifications destination.
-   * @param options Customization options for Codestar Notifications rule
-   * @returns Codestar Notifications rule associated with this build project.
+   * @param target The target to register for the CodeStar Notifications destination.
+   * @param options Customization options for CodeStar Notifications rule
+   * @returns CodeStar Notifications rule associated with this build project.
    */
   notifyOn(id: string, target: notifications.INotificationRuleTarget, options?: ProjectNotifyOnOptions): notifications.INotificationRule;
 
   /**
-   * Defines a Codestar notification rule which triggers when a build completes successfully.
+   * Defines a CodeStar notification rule which triggers when a build completes successfully.
    */
   notifyOnBuildSucceeded(
     id: string,
@@ -208,7 +208,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, n
   ): notifications.INotificationRule;
 
   /**
-   * Defines a Codestar notification rule which triggers when a build fails.
+   * Defines a CodeStar notification rule which triggers when a build fails.
    */
   notifyOnBuildFailed(
     id: string,
