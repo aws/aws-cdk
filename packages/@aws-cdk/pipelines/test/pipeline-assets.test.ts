@@ -14,6 +14,9 @@ import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubAction, TestGitHubNpmPipe
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
 const FILE_ASSET_SOURCE_HASH2 = 'ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e';
 
+const FILE_PUBLISHING_ROLE = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}';
+const IMAGE_PUBLISHING_ROLE = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}';
+
 let app: TestApp;
 let pipelineStack: Stack;
 let pipeline: cdkp.CdkPipeline;
@@ -204,7 +207,7 @@ describe('basic pipeline', () => {
     });
   });
 
-  test('file image asset publishers do not use privilegedmode, have right AssumeRole', () => {
+  test('file image asset publishers do not use privilegedmode', () => {
     // WHEN
     pipeline.addApplicationStage(new FileAssetApp(app, 'FileAssetApp'));
 
@@ -224,19 +227,9 @@ describe('basic pipeline', () => {
         Image: 'aws/codebuild/standard:5.0',
       }),
     });
-
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: arrayWith({
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Resource: 'arn:*:iam::*:role/*-file-publishing-role-*',
-        }),
-      },
-    });
   });
 
-  test('docker image asset publishers use privilegedmode, have right AssumeRole', () => {
+  test('docker image asset publishers use privilegedmode', () => {
     // WHEN
     pipeline.addApplicationStage(new DockerAssetApp(app, 'DockerAssetApp'));
 
@@ -255,15 +248,6 @@ describe('basic pipeline', () => {
         Image: 'aws/codebuild/standard:5.0',
         PrivilegedMode: true,
       }),
-    });
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: arrayWith({
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Resource: 'arn:*:iam::*:role/*-image-publishing-role-*',
-        }),
-      },
     });
   });
 
@@ -313,7 +297,30 @@ describe('basic pipeline', () => {
         },
       });
       expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
-        expectedAssetRolePolicy('arn:*:iam::*:role/*-file-publishing-role-*', 'CdkAssetsFileRole6BE17A07'));
+        expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
+    });
+
+    test('publishing assets role may assume roles from multiple environments', () => {
+      pipeline.addApplicationStage(new FileAssetApp(app, 'App1'));
+      pipeline.addApplicationStage(new FileAssetApp(app, 'App2', {
+        env: {
+          account: '0123456789012',
+          region: 'eu-west-1',
+        },
+      }));
+
+      expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
+        expectedAssetRolePolicy([FILE_PUBLISHING_ROLE, 'arn:${AWS::Partition}:iam::0123456789012:role/cdk-hnb659fds-file-publishing-role-0123456789012-eu-west-1'],
+          'CdkAssetsFileRole6BE17A07'));
+    });
+
+    test('publishing assets role de-dupes assumed roles', () => {
+      pipeline.addApplicationStage(new FileAssetApp(app, 'App1'));
+      pipeline.addApplicationStage(new FileAssetApp(app, 'App2'));
+      pipeline.addApplicationStage(new FileAssetApp(app, 'App3'));
+
+      expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
+        expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
     });
 
     test('includes image publishing assets role for apps with Docker assets', () => {
@@ -336,7 +343,7 @@ describe('basic pipeline', () => {
         },
       });
       expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
-        expectedAssetRolePolicy('arn:*:iam::*:role/*-image-publishing-role-*', 'CdkAssetsDockerRole484B6DD3'));
+        expectedAssetRolePolicy(IMAGE_PUBLISHING_ROLE, 'CdkAssetsDockerRole484B6DD3'));
     });
 
     test('includes both roles for apps with both file and Docker assets', () => {
@@ -344,9 +351,9 @@ describe('basic pipeline', () => {
       pipeline.addApplicationStage(new DockerAssetApp(app, 'App2'));
 
       expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
-        expectedAssetRolePolicy('arn:*:iam::*:role/*-file-publishing-role-*', 'CdkAssetsFileRole6BE17A07'));
+        expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
       expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
-        expectedAssetRolePolicy('arn:*:iam::*:role/*-image-publishing-role-*', 'CdkAssetsDockerRole484B6DD3'));
+        expectedAssetRolePolicy(IMAGE_PUBLISHING_ROLE, 'CdkAssetsDockerRole484B6DD3'));
     });
   });
 });
@@ -449,6 +456,7 @@ describe('pipeline with single asset publisher', () => {
     expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
   });
 });
+
 class PlainStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
@@ -515,7 +523,10 @@ class MegaAssetsApp extends Stage {
   }
 }
 
-function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string) {
+
+function expectedAssetRolePolicy(assumeRolePattern: string | string[], attachedRole: string) {
+  if (typeof assumeRolePattern === 'string') { assumeRolePattern = [assumeRolePattern]; }
+
   return {
     PolicyDocument: {
       Statement: [{
@@ -548,7 +559,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
       {
         Action: 'sts:AssumeRole',
         Effect: 'Allow',
-        Resource: assumeRolePattern,
+        Resource: assumeRolePattern.map(arn => { return { 'Fn::Sub': arn }; }),
       },
       {
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
