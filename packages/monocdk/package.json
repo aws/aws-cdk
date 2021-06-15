@@ -113,6 +113,7 @@
   "devDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-accessanalyzer": "0.0.0",
     "@aws-cdk/aws-acmpca": "0.0.0",
