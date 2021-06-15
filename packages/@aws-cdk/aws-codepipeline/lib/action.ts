@@ -226,6 +226,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
    *
    * @param id Identifier for this notification handler.
+   * @param target The target to register for the CodeStar Notifications destination.
    * @param options Additional options to pass to the notification rule.
    */
   notifyOnExecutionStateChange(
@@ -239,6 +240,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
    *
    * @param id Identifier for this notification handler.
+   * @param target The target to register for the CodeStar Notifications destination.
    * @param options Additional options to pass to the notification rule.
    */
   notifyOnAnyStageStateChange(
@@ -252,6 +254,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
    *
    * @param id Identifier for this notification handler.
+   * @param target The target to register for the CodeStar Notifications destination.
    * @param options Additional options to pass to the notification rule.
    */
   notifyOnAnyActionStateChange(
@@ -265,6 +268,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
    *
    * @param id Identifier for this notification handler.
+   * @param target The target to register for the CodeStar Notifications destination.
    * @param options Additional options to pass to the notification rule.
    */
   notifyOnAnyManualApprovalStateChange(
