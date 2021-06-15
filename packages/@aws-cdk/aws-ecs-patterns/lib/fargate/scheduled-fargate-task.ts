@@ -128,6 +128,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       taskCount: this.desiredTaskCount,
       subnetSelection: this.subnetSelection,
       platformVersion: props.platformVersion,
+      securityGroups: props.securityGroups,
     });
 
     this.addTaskAsTarget(eventRuleTarget);
