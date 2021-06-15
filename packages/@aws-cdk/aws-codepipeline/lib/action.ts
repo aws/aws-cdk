@@ -203,19 +203,23 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
   onStateChange(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
-   * Defines a Codestar notification rule triggered when the pipeline
+   * Defines a CodeStar notification rule triggered when the pipeline
    * events emitted by you specified, it very similar to `onEvent` API.
    *
-   * You can also use the methods `notifyOnPipelineStateChange`, `notifyOnAnyStageStateChange`,
+   * You can also use the methods `notifyOnExecutionStateChange`, `notifyOnAnyStageStateChange`,
    * `notifyOnAnyActionStateChange` and `notifyOnAnyManualApprovalStateChange`
    * to define rules for these specific event emitted.
    *
-   * @param id The id of the Codestar notification rule
-   * @param target The target to register for the Codestar Notifications destination.
-   * @param options Customization options for Codestar notification rule
-   * @returns Codestar notification rule associated with this build project.
+   * @param id The id of the CodeStar notification rule
+   * @param target The target to register for the CodeStar Notifications destination.
+   * @param options Customization options for CodeStar notification rule
+   * @returns CodeStar notification rule associated with this build project.
    */
-  notifyOn(id: string, target: notifications.INotificationRuleTarget, options?: PipelineNotifyOnOptions): notifications.INotificationRule;
+  notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: PipelineNotifyOnOptions,
+  ): notifications.INotificationRule;
 
   /**
    * Define an notification rule triggered by the set of the "Pipeline execution" events emitted from this pipeline.
@@ -224,7 +228,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
    * @param id Identifier for this notification handler.
    * @param options Additional options to pass to the notification rule.
    */
-  notifyOnPipelineStateChange(
+  notifyOnExecutionStateChange(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,

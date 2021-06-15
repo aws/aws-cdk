@@ -352,5 +352,5 @@ const target = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
   slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
 });
 
-const rule = pipeline.notifyOnPipelineStateChange('NotifyOnPipelineStateChange', target);
+const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange', target);
 ```

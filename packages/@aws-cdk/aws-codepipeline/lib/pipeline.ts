@@ -163,16 +163,17 @@ abstract class PipelineBase extends Resource implements IPipeline {
     return rule;
   }
 
-  /**
-   * Returns a source configuration for notification rule.
-   */
   public bindAsNotificationRuleSource(_scope: Construct, _rule: notifications.INotificationRule): notifications.NotificationRuleSourceConfig {
     return {
       sourceArn: this.pipelineArn,
     };
   }
 
-  public notifyOn(id: string, target: notifications.INotificationRuleTarget, options?: PipelineNotifyOnOptions): notifications.INotificationRule {
+  public notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: PipelineNotifyOnOptions,
+  ): notifications.INotificationRule {
     return new notifications.NotificationRule(this, id, {
       ...options,
       source: this,
@@ -180,7 +181,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
     });
   }
 
-  public notifyOnPipelineStateChange(
+  public notifyOnExecutionStateChange(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
