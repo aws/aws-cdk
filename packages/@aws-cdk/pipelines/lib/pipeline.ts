@@ -441,9 +441,7 @@ class AssetPublishing extends CoreConstruct {
     if (!this.assetRoles[command.assetType]) {
       this.generateAssetRole(command.assetType);
     }
-
-    this.assetPublishingRoles[command.assetType] = this.assetPublishingRoles[command.assetType] ?? new Set();
-    this.assetPublishingRoles[command.assetType].add(command.assetPublishingRoleArn);
+    this.assetPublishingRoles[command.assetType] = (this.assetPublishingRoles[command.assetType] ?? new Set()).add(command.assetPublishingRoleArn);
 
     const publisherKey = this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId;
 
