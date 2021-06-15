@@ -132,7 +132,7 @@ export interface NodegroupOptions {
    */
   readonly maxSize?: number;
   /**
-   * The minimum number of worker nodes that the managed node group can scale in to. This number must be greater than zero.
+   * The minimum number of worker nodes that the managed node group can scale in to. This number must be greater than or equal to zero.
    *
    * @default 1
    */
