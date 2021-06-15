@@ -584,7 +584,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
-   * Adds the specified extention to the task definition.
+   * Adds the specified extension to the task definition.
    *
    * Extension can be used to apply a packaged modification to
    * a task definition.
