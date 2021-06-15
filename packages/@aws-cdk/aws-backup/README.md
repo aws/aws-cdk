@@ -72,8 +72,8 @@ rule level.
 const myVault = backup.BackupVault.fromBackupVaultName(this, 'Vault1', 'myVault');
 const otherVault = backup.BackupVault.fromBackupVaultName(this, 'Vault2', 'otherVault');
 
-const plan2 = backup.BackupPlan.daily35DayRetention(this, 'Plan', myVault); // Use `myVault` for all plan rules
-plan2.addRule(backup.BackupPlanRule.monthly1Year(otherVault)); // Use `otherVault` for this specific rule
+const plan = backup.BackupPlan.daily35DayRetention(this, 'Plan', myVault); // Use `myVault` for all plan rules
+plan.addRule(backup.BackupPlanRule.monthly1Year(otherVault)); // Use `otherVault` for this specific rule
 ```
 
 ## Backup vault
