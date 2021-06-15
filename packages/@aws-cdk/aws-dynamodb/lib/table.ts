@@ -1319,12 +1319,11 @@ export class Table extends TableBase {
         sortKey: this.tableSortKey,
       };
     }
-
-    if(!this.secondaryIndexSchemas.has(indexName)) {
+    let schema = this.secondaryIndexSchemas.get(indexName);
+    if (!schema) {
       throw new Error(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`);
     }
-
-    return this.secondaryIndexSchemas.get(indexName);
+    return schema;
   }
 
   /**
