@@ -8,7 +8,7 @@ import {
   FakeSnsTopicTarget,
 } from './helpers';
 
-describe('Rule', () => {
+describe('NotificationRule', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
@@ -158,13 +158,6 @@ describe('Rule', () => {
     });
   });
 
-  test('will not effect and return false when added targets if notification from imported', () => {
-    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule',
-      'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
-    const slack = new FakeSlackTarget();
-    expect(imported.addTarget(slack)).toEqual(false);
-  });
-
   test('will not add if notification added duplicating event', () => {
     const pipeline = new FakeCodePipeline();
 
@@ -187,10 +180,25 @@ describe('Rule', () => {
       ],
     });
   });
+});
+
+describe('NotificationRule from imported', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
 
   test('from notification rule ARN', () => {
     const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule',
       'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
     expect(imported.notificationRuleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+  });
+
+  test('will not effect and return false when added targets if notification from imported', () => {
+    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule',
+      'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    const slack = new FakeSlackTarget();
+    expect(imported.addTarget(slack)).toEqual(false);
   });
 });
