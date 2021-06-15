@@ -206,7 +206,7 @@ export class Portfolio extends PortfolioBase {
 
   private validatePortfolioProps(props: PortfolioProps) {
     InputValidator.validateLength(this.node.path, 'portfolio display name', 1, 100, props.displayName);
-    InputValidator.validateLength(this.node.path, 'provider name', 1, 50, props.providerName);
-    InputValidator.validateLength(this.node.path, 'description', 0, 2000, props.description);
+    InputValidator.validateLength(this.node.path, 'portfolio provider name', 1, 50, props.providerName);
+    InputValidator.validateLength(this.node.path, 'portfolio description', 0, 2000, props.description);
   }
 }

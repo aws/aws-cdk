@@ -7,8 +7,7 @@ export class InputValidator {
    */
   public static validateLength(resourceName: string, inputName: string, minLength: number, maxLength: number, inputString?: string): void {
     if (inputString !== undefined && (inputString.length < minLength || inputString.length > maxLength)) {
-      throw new Error(`Invalid ${inputName} length of ${inputString.length} for ${resourceName}, ${inputName} length must be between ${minLength} and ${maxLength}\n` +
-      `${inputName}: ${this.truncateString(inputString, 100)}`);
+      throw new Error(`Invalid ${inputName} for resource ${resourceName}, must have length between ${minLength} and ${maxLength}, got: '${this.truncateString(inputString, 100)}'`);
     }
   }
 

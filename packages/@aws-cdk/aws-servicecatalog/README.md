@@ -27,8 +27,8 @@ enables organizations to create and manage catalogs of products for their end us
 ## Table Of Contents
 
 - [Portfolio](#portfolio)
-  - [Granting access](#granting-access-to-a-portfolio)
-  - [Sharing](#sharing-a-portfolio-with-another-aws-account)
+  - [Granting access to a portfolio](#granting-access-to-a-portfolio)
+  - [Sharing a portfolio with another AWS account](#sharing-a-portfolio-with-another-aws-account)
 
 The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
@@ -67,8 +67,7 @@ Portfolios can be imported by their ARN via the `Portfolio.fromPortfolioArn()` A
 
 ```ts
 const portfolio = servicecatalog.Portfolio.fromPortfolioArn(this, 'MyImportedPortfolio',
-  'arn:aws:catalog:region:account-id:portfolio/port-abcdefghi'
-);
+  'arn:aws:catalog:region:account-id:portfolio/port-abcdefghi');
 ```
 
 ### Granting access to a portfolio

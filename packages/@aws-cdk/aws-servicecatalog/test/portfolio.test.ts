@@ -62,7 +62,7 @@ describe('Portfolio', () => {
           displayName: '',
           providerName: 'testProvider',
         });
-      }).toThrowError(/Invalid portfolio display name length/);
+      }).toThrowError(/Invalid portfolio display name for resource Default\/MyPortfolio/);
     }),
 
     test('fails portfolio creation with long name', () => {
@@ -72,7 +72,7 @@ describe('Portfolio', () => {
           providerName: 'testProvider',
           description: 'A portfolio for some products'.repeat(1000),
         });
-      }).toThrowError(/Invalid description length of/);
+      }).toThrowError(/Invalid portfolio description for resource Default\/MyPortfolio/);
     }),
 
     test('fails portfolio creation with invalid provider name', () => {
@@ -81,7 +81,7 @@ describe('Portfolio', () => {
           displayName: 'testPortfolio',
           providerName: '',
         });
-      }).toThrowError(/Invalid provider name length/);
+      }).toThrowError(/Invalid portfolio provider name for resource Default\/MyPortfolio/);
     }),
 
     test('fails portfolio creation with invalid description length', () => {
@@ -93,7 +93,7 @@ describe('Portfolio', () => {
           providerName: 'testProvider',
           description: description,
         });
-      }).toThrowError(/Invalid description length/);
+      }).toThrowError(/Invalid portfolio description for resource Default\/MyPortfolio/);
     });
   }),
 
