@@ -57,10 +57,8 @@ export interface NotificationRuleProps extends NotificationRuleOptions {
    * A list of event types associated with this notification rule.
    * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
-   *
-   * @default - No events.
    */
-  readonly events?: string[];
+  readonly events: string[];
 
   /**
    * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
@@ -138,9 +136,7 @@ export class NotificationRule extends Resource implements INotificationRule {
 
     const source = props.source.bindAsNotificationRuleSource(this);
 
-    if (props.events) {
-      this.addEvents(props.events);
-    }
+    this.addEvents(props.events);
 
     const resource = new CfnNotificationRule(this, 'Resource', {
       // It has a 64 characters limit for the name

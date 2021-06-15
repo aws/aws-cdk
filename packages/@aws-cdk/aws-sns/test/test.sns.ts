@@ -544,6 +544,7 @@ export = {
           sourceArn: 'ARN',
         }),
       },
+      events: ['codebuild-project-build-state-succeeded'],
     });
 
     rule.addTarget(topic);

@@ -20,10 +20,12 @@ describe('NotificationRule', () => {
 
     new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: project,
+      events: ['codebuild-project-build-state-succeeded'],
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Resource: project.projectArn,
+      EventTypeIds: ['codebuild-project-build-state-succeeded'],
     });
   });
 
@@ -64,11 +66,13 @@ describe('NotificationRule', () => {
 
     new notifications.NotificationRule(stack, 'MyNotificationRuleGeneratedFromId', {
       source: project,
+      events: ['codebuild-project-build-state-succeeded'],
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRuleGeneratedFromId',
       Resource: project.projectArn,
+      EventTypeIds: ['codebuild-project-build-state-succeeded'],
     });
   });
 
@@ -77,11 +81,13 @@ describe('NotificationRule', () => {
 
     new notifications.NotificationRule(stack, 'MyNotificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong', {
       source: project,
+      events: ['codebuild-project-build-state-succeeded'],
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'ificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong',
       Resource: project.projectArn,
+      EventTypeIds: ['codebuild-project-build-state-succeeded'],
     });
   });
 
@@ -91,12 +97,14 @@ describe('NotificationRule', () => {
     new notifications.NotificationRule(stack, 'MyNotificationRule', {
       notificationRuleName: 'MyNotificationRule',
       source: project,
+      events: ['codebuild-project-build-state-succeeded'],
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
-      DetailType: 'FULL',
       Name: 'MyNotificationRule',
       Resource: project.projectArn,
+      EventTypeIds: ['codebuild-project-build-state-succeeded'],
+      DetailType: 'FULL',
     });
   });
 
@@ -105,12 +113,14 @@ describe('NotificationRule', () => {
 
     new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: project,
+      events: ['codebuild-project-build-state-succeeded'],
       enabled: false,
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
       Resource: project.projectArn,
+      EventTypeIds: ['codebuild-project-build-state-succeeded'],
       Status: 'DISABLED',
     });
   });
@@ -120,12 +130,14 @@ describe('NotificationRule', () => {
 
     new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: project,
+      events: ['codebuild-project-build-state-succeeded'],
       enabled: true,
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
       Resource: project.projectArn,
+      EventTypeIds: ['codebuild-project-build-state-succeeded'],
       Status: 'ENABLED',
     });
   });
@@ -137,6 +149,7 @@ describe('NotificationRule', () => {
 
     const rule = new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: project,
+      events: ['codebuild-project-build-state-succeeded'],
     });
 
     rule.addTarget(slack);
@@ -145,6 +158,7 @@ describe('NotificationRule', () => {
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Resource: project.projectArn,
+      EventTypeIds: ['codebuild-project-build-state-succeeded'],
       Targets: [
         {
           TargetAddress: slack.slackChannelConfigurationArn,
