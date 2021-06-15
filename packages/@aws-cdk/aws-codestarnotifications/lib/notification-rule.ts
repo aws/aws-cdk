@@ -119,7 +119,9 @@ export class NotificationRule extends Resource implements INotificationRule {
       }
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: notificationRuleArn,
+    });
   }
 
   /**
