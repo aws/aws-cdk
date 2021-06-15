@@ -127,17 +127,11 @@ export class NotificationRule extends Resource implements INotificationRule {
   /**
    * @attribute
    */
-  readonly notificationRuleArn: string;
+  public readonly notificationRuleArn: string;
 
-  /**
-   * The target config of notification rule
-   */
-  private targets: NotificationRuleTargetConfig[] = [];
+  private readonly targets: NotificationRuleTargetConfig[] = [];
 
-  /**
-   * The events of notification rule
-   */
-  private events: string[] = [];
+  private readonly events: string[] = [];
 
   constructor(scope: constructs.Construct, id: string, props: NotificationRuleProps) {
     super(scope, id);
