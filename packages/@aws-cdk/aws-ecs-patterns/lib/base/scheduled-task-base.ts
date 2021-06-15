@@ -144,11 +144,11 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
    * The CloudWatch Events rule for the service.
    */
   public readonly eventRule: Rule;
+
   /**
    * The security group to use for the ECS Task.
    */
   private readonly _securityGroups?: ISecurityGroup[];
-
 
   /**
    * Constructs a new instance of the ScheduledTaskBase class.
