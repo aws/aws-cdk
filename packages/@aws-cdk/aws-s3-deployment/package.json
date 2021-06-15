@@ -124,7 +124,10 @@
       "mktemp",
       "mkdir",
       "cp",
-      "docker"
+      "docker",
+      "com.docker.cli",
+      "docker-credential-desktop",
+      "docker-credential-osxkeychain"
     ]
   },
   "publishConfig": {

@@ -107,7 +107,10 @@
   "nozem": {
     "ostools": [
       "dirname",
-      "docker"
+      "docker",
+      "docker-credential-desktop",
+      "docker-credential-osxkeychain",
+      "com.docker.cli"
     ]
   },
   "publishConfig": {

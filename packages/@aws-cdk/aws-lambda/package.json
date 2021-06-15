@@ -183,7 +183,8 @@
   },
   "nozem": {
     "ostools": [
-      "docker"
+      "docker",
+      "com.docker.cli"
     ]
   },
   "maturity": "stable",
