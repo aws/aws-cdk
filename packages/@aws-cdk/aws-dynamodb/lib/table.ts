@@ -1064,13 +1064,11 @@ export class Table extends TableBase {
   private readonly globalSecondaryIndexes = new Array<CfnTable.GlobalSecondaryIndexProperty>();
   private readonly localSecondaryIndexes = new Array<CfnTable.LocalSecondaryIndexProperty>();
 
-  private readonly secondaryIndexNames = new Set<string>();
+  private readonly secondaryIndexSchemas = new Map<string, SchemaOptions>();
   private readonly nonKeyAttributes = new Set<string>();
 
   private readonly tablePartitionKey: Attribute;
   private readonly tableSortKey?: Attribute;
-
-  private readonly secondaryIndexesSchema = new Map<string, SchemaOptions>();
 
   private readonly billingMode: BillingMode;
   private readonly tableScaling: ScalableAttributePair = {};
@@ -1162,7 +1160,6 @@ export class Table extends TableBase {
     const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
     const gsiProjection = this.buildIndexProjection(props);
 
-    this.secondaryIndexNames.add(props.indexName);
     this.globalSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: gsiKeySchema,
@@ -1173,7 +1170,7 @@ export class Table extends TableBase {
       },
     });
 
-    this.secondaryIndexesSchema.set(props.indexName, {
+    this.secondaryIndexSchemas.set(props.indexName, {
       partitionKey: props.partitionKey,
       sortKey: props.sortKey,
     });
@@ -1198,14 +1195,13 @@ export class Table extends TableBase {
     const lsiKeySchema = this.buildIndexKeySchema(this.tablePartitionKey, props.sortKey);
     const lsiProjection = this.buildIndexProjection(props);
 
-    this.secondaryIndexNames.add(props.indexName);
     this.localSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: lsiKeySchema,
       projection: lsiProjection,
     });
 
-    this.secondaryIndexesSchema.set(props.indexName, {
+    this.secondaryIndexSchemas.set(props.indexName, {
       partitionKey: this.tablePartitionKey,
       sortKey: props.sortKey,
     });
@@ -1324,7 +1320,7 @@ export class Table extends TableBase {
       };
     }
 
-    return this.secondaryIndexesSchema.get(indexName);
+    return this.secondaryIndexSchemas.get(indexName);
   }
 
   /**
@@ -1375,11 +1371,10 @@ export class Table extends TableBase {
    * @param indexName a name of global or local secondary index
    */
   private validateIndexName(indexName: string) {
-    if (this.secondaryIndexNames.has(indexName)) {
+    if (this.secondaryIndexSchemas.has(indexName)) {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
       throw new Error(`a duplicate index name, ${indexName}, is not allowed`);
     }
-    this.secondaryIndexNames.add(indexName);
   }
 
   /**
