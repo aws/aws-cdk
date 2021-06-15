@@ -1,4 +1,3 @@
-
 import * as constructs from 'constructs';
 import { INotificationRule } from './notification-rule';
 
