@@ -62,7 +62,8 @@ rule.addTarget(slack);
 
 ## Notification Source
 
-This module includes classes that implement the `INotificationRuleSource` interface for AWS CodeBuild, AWS CodePipeline and will support AWS CodeCommit, AWS CodeDeploy in future.
+This module includes classes that implement the `INotificationRuleSource` interface for AWS CodeBuild,
+AWS CodePipeline and will support AWS CodeCommit, AWS CodeDeploy in future.
 
 The following sources are supported:
 
@@ -71,8 +72,7 @@ The following sources are supported:
 
 ## Events
 
-The list of event types for AWS Codebuild and AWS CodePipeline, for more information, see the
+For the complete list of supported event types for CodeBuild and CodePipeline, see:
 
-[Events for notification rules on build projects](https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject).
-
-[Events for notification rules on pipelines](https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline).
+* [Events for notification rules on build projects](https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject).
+* [Events for notification rules on pipelines](https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline).
