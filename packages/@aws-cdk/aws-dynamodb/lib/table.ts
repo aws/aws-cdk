@@ -1312,12 +1312,16 @@ export class Table extends TableBase {
    *
    * @returns Schema of table or index.
    */
-  public schema(indexName?: string): SchemaOptions | undefined {
+  public schema(indexName?: string): SchemaOptions {
     if (!indexName) {
       return {
         partitionKey: this.tablePartitionKey,
         sortKey: this.tableSortKey,
       };
+    }
+
+    if(!this.secondaryIndexSchemas.has(indexName)) {
+      throw new Error(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`);
     }
 
     return this.secondaryIndexSchemas.get(indexName);

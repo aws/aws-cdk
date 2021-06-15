@@ -863,7 +863,8 @@ describe('schema details', () => {
   });
 
   test('get scheama for unknown secondary index', () => {
-    expect(table.schema(GSI_NAME)).toEqual(undefined);
+    expect(() => table.schema(GSI_NAME))
+      .toThrow(/Cannot find schema for index: MyGSI. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index/);
   });
 });
 
