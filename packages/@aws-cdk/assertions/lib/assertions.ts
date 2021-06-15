@@ -17,10 +17,19 @@ export class TemplateAssertions {
   }
 
   /**
-   * Base your assertions from an existing CloudFormation template.
-   * @param template the CloudFormation template in JSON format as a string
+   * Base your assertions from an existing CloudFormation template formatted as a
+   * nested set of records.
+   * @param template the CloudFormation template formatted as a nested set of records
    */
-  public static fromTemplate(template: string): TemplateAssertions {
+  public static fromTemplate(template: { [key: string] : any }): TemplateAssertions {
+    return new TemplateAssertions(template);
+  }
+
+  /**
+   * Base your assertions from an existing CloudFormation template formatted as a string.
+   * @param template the CloudFormation template in
+   */
+  public static fromString(template: string): TemplateAssertions {
     return new TemplateAssertions(JSON.parse(template));
   }
 

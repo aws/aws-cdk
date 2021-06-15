@@ -34,7 +34,7 @@ Alternatively, assertions can be run on an existing CloudFormation template -
 
 ```ts
 const template = fs.readFileSync('/path/to/template/file');
-const assert = TemplateAssertions.fromTemplate(template);
+const assert = TemplateAssertions.fromString(template);
 ```
 
 ## Full Template Match
@@ -99,13 +99,13 @@ They are available as part of the `Matchers` class and can be used as follows -
 ```ts
 assert.hasResourceProperties('Foo::Bar', {
   Foo: 'Bar',
-  Baz: Matchers.absent(),
+  Baz: Match.absentProperty(),
 })
 ```
 
 The list of available matchers are -
 
-* `absent()`: Specifies that this key must not be present.
+* `absentProperty()`: Specifies that this key must not be present.
 
 ## Strongly typed languages
 

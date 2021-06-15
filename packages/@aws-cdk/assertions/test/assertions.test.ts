@@ -3,9 +3,9 @@ import { Construct } from 'constructs';
 import { TemplateAssertions } from '../lib';
 
 describe('StackAssertions', () => {
-  describe('fromTemplate', () => {
+  describe('fromString', () => {
     test('default', () => {
-      const assertions = TemplateAssertions.fromTemplate(`{
+      const assertions = TemplateAssertions.fromString(`{
         "Resources": { 
           "Foo": { 
             "Type": "Baz::Qux",

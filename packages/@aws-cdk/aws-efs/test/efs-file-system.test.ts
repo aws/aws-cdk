@@ -1,4 +1,4 @@
-import { TemplateAssertions, Matchers } from '@aws-cdk/assertions';
+import { TemplateAssertions, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
@@ -41,7 +41,7 @@ testLegacyBehavior('when @aws-cdk/aws-efs:defaultEncryptionAtRest is missing, en
   });
 
   TemplateAssertions.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
-    Encrypted: Matchers.absent(),
+    Encrypted: Match.absentProperty(),
   });
 
 });

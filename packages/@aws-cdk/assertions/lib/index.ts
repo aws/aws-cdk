@@ -1,2 +1,2 @@
 export * from './assertions';
-export * from './matchers';
+export * from './match';

@@ -1,5 +1,5 @@
 import { CfnResource, Stack } from '@aws-cdk/core';
-import { Matchers, TemplateAssertions } from '../lib';
+import { Match, TemplateAssertions } from '../lib';
 
 describe('Matchers', () => {
   test('absent', () => {
@@ -13,11 +13,11 @@ describe('Matchers', () => {
 
     const inspect = TemplateAssertions.fromStack(stack);
     inspect.hasResourceProperties('Foo::Bar', {
-      fred: Matchers.absent(),
+      fred: Match.absentProperty(),
     });
 
     expect(() => inspect.hasResourceProperties('Foo::Bar', {
-      baz: Matchers.absent(),
+      baz: Match.absentProperty(),
     })).toThrow(/None .* matches resource 'Foo::Bar'/);
   });
 });
