@@ -44,9 +44,9 @@ const project = new codebuild.PipelineProject(stack, 'MyProject');
 const topic = new sns.Topic(stack, 'MyTopic1');
 
 const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-    slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
-    slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
-    slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
 });
 
 const rule = new notifications.NotificationRule(stack, 'NotificationRule', {
