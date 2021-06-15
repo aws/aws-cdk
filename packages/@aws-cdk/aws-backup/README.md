@@ -26,7 +26,10 @@ const plan = backup.BackupPlan.dailyWeeklyMonthly5YearRetention(this, 'Plan');
 
 Assigning resources to a plan can be done with `addSelection()`:
 
-```ts
+```ts fixture=with-plan
+const myTable = dynamodb.Table.fromTableName(this, 'Table', 'myTableName');
+const myCoolConstruct = new Construct(this, 'MyCoolConstruct');
+
 plan.addSelection('Selection', {
   resources: [
     backup.BackupResource.fromDynamoDbTable(myTable), // A DynamoDB table
@@ -41,7 +44,7 @@ created for the selection. The `BackupSelection` implements `IGrantable`.
 
 To add rules to a plan, use `addRule()`:
 
-```ts
+```ts fixture=with-plan
 plan.addRule(new backup.BackupPlanRule({
   completionWindow: Duration.hours(2),
   startWindow: Duration.hours(1),
@@ -56,7 +59,7 @@ plan.addRule(new backup.BackupPlanRule({
 
 Ready-made rules are also available:
 
-```ts
+```ts fixture=with-plan
 plan.addRule(backup.BackupPlanRule.daily());
 plan.addRule(backup.BackupPlanRule.weekly());
 ```
@@ -66,6 +69,9 @@ It is also possible to specify a vault either at the plan level or at the
 rule level.
 
 ```ts
+const myVault = backup.BackupVault.fromBackupVaultName(this, 'Vault1', 'myVault');
+const otherVault = backup.BackupVault.fromBackupVaultName(this, 'Vault2', 'otherVault');
+
 const plan2 = backup.BackupPlan.daily35DayRetention(this, 'Plan', myVault); // Use `myVault` for all plan rules
 plan2.addRule(backup.BackupPlanRule.monthly1Year(otherVault)); // Use `otherVault` for this specific rule
 ```
@@ -75,6 +81,9 @@ plan2.addRule(backup.BackupPlanRule.monthly1Year(otherVault)); // Use `otherVaul
 In AWS Backup, a *backup vault* is a container that you organize your backups in. You can use backup vaults to set the AWS Key Management Service (AWS KMS) encryption key that is used to encrypt backups in the backup vault and to control access to the backups in the backup vault. If you require different encryption keys or access policies for different groups of backups, you can optionally create multiple backup vaults.
 
 ```ts
+const myKey = kms.Key.fromKeyArn(this, 'MyKey', 'aaa');
+const myTopic = sns.Topic.fromTopicArn(this, 'MyTopic', 'bbb');
+
 const vault = new backup.BackupVault(this, 'Vault', {
   encryptionKey: myKey, // Custom encryption key
   notificationTopic: myTopic, // Send all vault events to this SNS topic

@@ -156,7 +156,7 @@ export class BackupVault extends BackupVaultBase {
    * Import an existing backup vault by name
    */
   public static fromBackupVaultName(scope: Construct, id: string, backupVaultName: string): IBackupVault {
-    let backupVaultArn = Stack.of(scope).formatArn({
+    const backupVaultArn = Stack.of(scope).formatArn({
       service: 'backup',
       resource: 'backup-vault',
       resourceName: backupVaultName,
