@@ -23,19 +23,23 @@ export class FakeCodePipeline implements notifications.INotificationRuleSource {
 }
 
 export class FakeSnsTopicTarget implements notifications.INotificationRuleTarget {
+  readonly topicArn = 'arn:aws:sns::1234567890:MyTopic';
+
   bindAsNotificationRuleTarget(): notifications.NotificationRuleTargetConfig {
     return {
       targetType: 'SNS',
-      targetAddress: 'arn:aws:sns::1234567890:MyTopic',
+      targetAddress: this.topicArn,
     };
   }
 }
 
 export class FakeSlackTarget implements notifications.INotificationRuleTarget {
+  readonly slackChannelConfigurationArn = 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel';
+
   bindAsNotificationRuleTarget(): notifications.NotificationRuleTargetConfig {
     return {
       targetType: 'AWSChatbotSlack',
-      targetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
+      targetAddress: this.slackChannelConfigurationArn,
     };
   }
 }

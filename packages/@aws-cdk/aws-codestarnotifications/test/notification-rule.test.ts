@@ -23,7 +23,7 @@ describe('Rule', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
-      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Resource: project.projectArn,
     });
   });
 
@@ -49,10 +49,10 @@ describe('Rule', () => {
         'codebuild-project-build-state-succeeded',
         'codebuild-project-build-state-failed',
       ],
-      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Resource: project.projectArn,
       Targets: [
         {
-          TargetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
+          TargetAddress: slack.slackChannelConfigurationArn,
           TargetType: 'AWSChatbotSlack',
         },
       ],
@@ -60,13 +60,15 @@ describe('Rule', () => {
   });
 
   test('created new notification rule without name and will generate from the `id`', () => {
+    const project = new FakeCodeBuild();
+
     new notifications.NotificationRule(stack, 'MyNotificationRuleGeneratedFromId', {
-      source: new FakeCodeBuild(),
+      source: project,
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRuleGeneratedFromId',
-      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Resource: project.projectArn,
     });
   });
 
@@ -79,7 +81,7 @@ describe('Rule', () => {
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'ificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong',
-      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Resource: project.projectArn,
     });
   });
 
@@ -94,7 +96,7 @@ describe('Rule', () => {
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       DetailType: 'FULL',
       Name: 'MyNotificationRule',
-      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Resource: project.projectArn,
     });
   });
 
@@ -108,7 +110,7 @@ describe('Rule', () => {
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
-      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Resource: project.projectArn,
       Status: 'DISABLED',
     });
   });
@@ -123,7 +125,7 @@ describe('Rule', () => {
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
-      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Resource: project.projectArn,
       Status: 'ENABLED',
     });
   });
@@ -142,14 +144,14 @@ describe('Rule', () => {
     expect(rule.addTarget(topic)).toEqual(true);
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
-      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Resource: project.projectArn,
       Targets: [
         {
-          TargetAddress: 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel',
+          TargetAddress: slack.slackChannelConfigurationArn,
           TargetType: 'AWSChatbotSlack',
         },
         {
-          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
+          TargetAddress: topic.topicArn,
           TargetType: 'SNS',
         },
       ],
@@ -165,6 +167,7 @@ describe('Rule', () => {
 
   test('will not add if notification added duplicating event', () => {
     const pipeline = new FakeCodePipeline();
+
     new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: pipeline,
       events: [
@@ -176,7 +179,7 @@ describe('Rule', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
-      Resource: 'arn:aws:codepipeline::1234567890:MyCodepipelineProject',
+      Resource: pipeline.pipelineArn,
       EventTypeIds: [
         'codepipeline-pipeline-pipeline-execution-succeeded',
         'codepipeline-pipeline-pipeline-execution-failed',
@@ -188,11 +191,6 @@ describe('Rule', () => {
   test('from notification rule ARN', () => {
     const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule',
       'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
-    expect(imported.notificationRuleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
-  });
-
-  test('from notification rule ARN', () => {
-    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
     expect(imported.notificationRuleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
   });
 });
