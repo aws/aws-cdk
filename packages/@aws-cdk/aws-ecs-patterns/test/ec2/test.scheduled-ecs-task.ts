@@ -317,4 +317,25 @@ export = {
 
     test.done();
   },
+
+  'Scheduled Ec2 Task - exposes ECS Task'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    const scheduledEc2Task = new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+      cluster,
+      scheduledEc2TaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryLimitMiB: 512,
+      },
+      schedule: events.Schedule.expression('rate(1 minute)'),
+    });
+
+    // THEN
+    test.notEqual(scheduledEc2Task.task, undefined);
+
+    test.done();
+  },
 };
