@@ -1,8 +1,8 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Metric } from '../lib';
+import { Alarm, Metric } from '../lib';
 
 export = {
   'metric grant'(test: Test) {
@@ -168,34 +168,43 @@ export = {
     test.done();
   },
 
-  'can make metric with dimensionsMap property'(test: Test) {
+  'can create metric with dimensionsMap property'(test: Test) {
+    const stack = new cdk.Stack();
     const metric = new Metric({
       namespace: 'Test',
       metricName: 'Metric',
-      period: cdk.Duration.minutes(10),
       dimensionsMap: {
         dimensionA: 'value1',
         dimensionB: 'value2',
       },
     });
 
-    expect(metric).toMatch({
-      namespace: 'Test',
-      metricName: 'Metric',
-      period: {
-        amount: 10,
-        unit: {
-          label: 'minutes',
-          isoLabel: 'M',
-          inMillis: 60000,
-        },
-      },
-      dimensions: {
-        dimensionA: 'value1',
-        dimensionB: 'value2',
-      },
-      statistic: 'Average',
+    new Alarm(stack, 'Alarm', {
+      metric: metric,
+      threshold: 10,
+      evaluationPeriods: 1,
     });
+
+    test.deepEqual(metric.dimensions, {
+      dimensionA: 'value1',
+      dimensionB: 'value2',
+    });
+    expect(stack).to(haveResourceLike('AWS::CloudWatch::Alarm', {
+      Namespace: 'Test',
+      MetricName: 'Metric',
+      Dimensions: [
+        {
+          Name: 'dimensionA',
+          Value: 'value1',
+        },
+        {
+          Name: 'dimensionB',
+          Value: 'value2',
+        },
+      ],
+      Threshold: 10,
+      EvaluationPeriods: 1,
+    }));
 
     test.done();
   },
