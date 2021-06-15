@@ -19,16 +19,8 @@ export interface SecretRotationApplicationOptions {
    * @default false
    */
   readonly isMultiUser?: boolean;
-
-  /**
-   * The semantic version of the rotation application
-   *
-   * NOTE: explicitly specifying version might break when building an application crossing multiple partitions
-   *
-   * @default use '1.1.60' for partition 'aws', '1.1.37' for partition 'aws-cn'
-   */
-  readonly semanticVersion?: string;
 }
+
 /**
  * A secret rotation serverless application.
  */
@@ -120,14 +112,14 @@ export class SecretRotationApplication {
   /**
    * The application identifier of the rotation application
    *
-   * @depercated the application identifier(ARN) is only valid when deploying to partition 'aws'
+   * @deprecated only valid when deploying to the 'aws' partition. Use `applicationArnForPartition` instead.
    */
   public readonly applicationId: string;
 
   /**
    * The semantic version of the rotation application
    *
-   * @deprecated use SecretRotationApplicationOptions.semanticVersion instead
+   * @deprecated only valid when deploying to the 'aws' partition. Use `semanticVersionForPartition` instead.
    */
   public readonly semanticVersion: string;
 
@@ -139,19 +131,41 @@ export class SecretRotationApplication {
   /**
    * The application name of the rotation application
    */
-  public readonly applicationName: string;
-
-  /**
-   * @internal
-   */
-  readonly _semanticVersion?: string;
+  private readonly applicationName: string;
 
   constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
     this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
-    this.applicationName = applicationId;
-    this._semanticVersion = options?.semanticVersion;
     this.semanticVersion = semanticVersion;
+    this.applicationName = applicationId;
     this.isMultiUser = options && options.isMultiUser;
+  }
+
+  /**
+   * Returns the application ARN for the current partition.
+   * Can be used in combination with a `CfnMapping` to automatically select the correct ARN based on the current partition.
+   */
+  public applicationArnForPartition(partition: string) {
+    if (partition === 'aws') {
+      return this.applicationId;
+    } else if (partition === 'aws-cn') {
+      return `arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/${this.applicationName}`;
+    } else {
+      throw new Error(`unsupported partition: ${partition}`);
+    }
+  }
+
+  /**
+   * The semantic version of the app for the current partition.
+   * Can be used in combination with a `CfnMapping` to automatically select the correct version based on the current partition.
+   */
+  public semanticVersionForPartition(partition: string) {
+    if (partition === 'aws') {
+      return this.semanticVersion;
+    } else if (partition === 'aws-cn') {
+      return '1.1.37';
+    } else {
+      throw new Error(`unsupported partition: ${partition}`);
+    }
   }
 }
 
@@ -283,21 +297,19 @@ export class SecretRotation extends CoreConstruct {
     const sarMapping = new CfnMapping(this, 'SARMapping', {
       mapping: {
         'aws': {
-          account: '297356227824',
-          region: 'us-east-1',
-          semanticVersion: '1.1.60',
+          applicationId: props.application.applicationArnForPartition('aws'),
+          semanticVersion: props.application.semanticVersionForPartition('aws'),
         },
         'aws-cn': {
-          account: '193023089310',
-          region: 'cn-north-1',
-          semanticVersion: '1.1.37',
+          applicationId: props.application.applicationArnForPartition('aws-cn'),
+          semanticVersion: props.application.semanticVersionForPartition('aws-cn'),
         },
       },
     });
     const application = new serverless.CfnApplication(this, 'Resource', {
       location: {
-        applicationId: `arn:${Aws.PARTITION}:serverlessrepo:${sarMapping.findInMap(Aws.PARTITION, 'region')}:${sarMapping.findInMap(Aws.PARTITION, 'account')}:applications/${props.application.applicationName}`,
-        semanticVersion: props.application._semanticVersion ?? sarMapping.findInMap(Aws.PARTITION, 'semanticVersion'),
+        applicationId: sarMapping.findInMap(Aws.PARTITION, 'applicationId'),
+        semanticVersion: sarMapping.findInMap(Aws.PARTITION, 'semanticVersion'),
       },
       parameters,
     });

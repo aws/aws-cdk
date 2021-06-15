@@ -75,45 +75,10 @@ test('secret rotation single user', () => {
   expect(stack).toHaveResource('AWS::Serverless::Application', {
     Location: {
       ApplicationId: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':serverlessrepo:',
-            {
-              'Fn::FindInMap': [
-                'SecretRotationSARMappingC10A2F5D',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                'region',
-              ],
-            },
-            ':',
-            {
-              'Fn::FindInMap': [
-                'SecretRotationSARMappingC10A2F5D',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                'account',
-              ],
-            },
-            ':applications/SecretsManagerRDSMySQLRotationSingleUser',
-          ],
-        ],
+        'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'applicationId'],
       },
       SemanticVersion: {
-        'Fn::FindInMap': [
-          'SecretRotationSARMappingC10A2F5D',
-          {
-            Ref: 'AWS::Partition',
-          },
-          'semanticVersion',
-        ],
+        'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'semanticVersion'],
       },
     },
     Parameters: {
