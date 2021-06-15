@@ -4,6 +4,7 @@ import {
   CommonTaskDefinitionAttributes,
   CommonTaskDefinitionProps,
   Compatibility,
+  InferenceAccelerator,
   ITaskDefinition,
   NetworkMode,
   TaskDefinition,
@@ -75,9 +76,15 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
 
   /**
    * Overridden method to throw error, as volumes are not supported for external task definitions
-   * @param _ volume
    */
-  public addVolume(_: Volume) {
+  public addVolume(_volume: Volume) {
     throw new Error('External task definitions doesnt support volumes');
+  }
+
+  /**
+   * Overriden method to throw error as interface accelerators are not supported for external tasks
+   */
+  public addInferenceAccelerator(_inferenceAccelerator: InferenceAccelerator) {
+    throw new Error('Cannot use inference accelerators on tasks that run on External service');
   }
 }

@@ -622,4 +622,17 @@ nodeunitShim({
 
     test.done();
   },
+
+  'error when interferenceAccelerators set'(test: Test) {
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {});
+
+    // THEN
+    expect(() => taskDefinition.addInferenceAccelerator({
+      deviceName: 'device1',
+      deviceType: 'eia2.medium',
+    })).toThrow('Cannot use inference accelerators on tasks that run on External service');
+
+    test.done();
+  },
 });

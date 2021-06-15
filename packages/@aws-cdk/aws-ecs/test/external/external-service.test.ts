@@ -1,5 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
@@ -297,6 +299,253 @@ nodeunitShim({
       propagateTaskTagsFrom: PropagatedTagSource.SERVICE,
     }));
 
+    test.done();
+  },
+
+  'error if enableExecuteCommand options provided with external service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    // THEN
+    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      enableExecuteCommand: true,
+    })).toThrow('Enable Execute Command options are not supported for External service');
+
+    // THEN
+    test.done();
+  },
+
+  'error if capacityProviderStrategies options provided with external service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    // WHEN
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+
+    // THEN
+    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      capacityProviderStrategies: [{
+        capacityProvider: capacityProvider.capacityProviderName,
+      }],
+    })).toThrow('Capacity Providers are not supported for External service');
+
+    // THEN
+    test.done();
+  },
+
+  'error when performing attachToApplicationTargetGroup to an external service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+    });
+
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+    const listener = lb.addListener('listener', { port: 80 });
+    const targetGroup = listener.addTargets('target', {
+      port: 80,
+    });
+
+    // THEN
+    expect(() => service.attachToApplicationTargetGroup(targetGroup)).toThrow('Application load balancer cannot be attached to an external service');
+
+    // THEN
+    test.done();
+  },
+
+  'error when performing loadBalancerTarget to an external service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    expect(() => service.loadBalancerTarget({
+      containerName: 'MainContainer',
+    })).toThrow('External service cannot be attached as load balancer targets');
+
+    // THEN
+    test.done();
+  },
+
+  'error when performing registerLoadBalancerTargets to an external service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+    const listener = lb.addListener('listener', { port: 80 });
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    expect(() => service.registerLoadBalancerTargets(
+      {
+        containerName: 'MainContainer',
+        containerPort: 8000,
+        listener: ecs.ListenerConfig.applicationListener(listener),
+        newTargetGroupId: 'target1',
+      },
+    )).toThrow('External service cannot be registered as load balancer targets');
+
+    // THEN
+    test.done();
+  },
+
+  'error when performing autoScaleTaskCount to an external service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    expect(() => service.autoScaleTaskCount({
+      maxCapacity: 2,
+      minCapacity: 1,
+    })).toThrow('Autoscaling not supported for external service');
+
+    // THEN
+    test.done();
+  },
+
+  'error when performing enableCloudMap to an external service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    expect(() => service.enableCloudMap({})).toThrow('Cloud map integration not supported for an external service');
+
+    // THEN
+    test.done();
+  },
+
+  'error when performing associateCloudMapService to an external service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    const container = taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+    });
+
+    const cloudMapNamespace = new cloudmap.PrivateDnsNamespace(stack, 'TestCloudMapNamespace', {
+      name: 'scorekeep.com',
+      vpc,
+    });
+
+    const cloudMapService = new cloudmap.Service(stack, 'Service', {
+      name: 'service-name',
+      namespace: cloudMapNamespace,
+      dnsRecordType: cloudmap.DnsRecordType.SRV,
+    });
+
+    // THEN
+    expect(() => service.associateCloudMapService({
+      service: cloudMapService,
+      container: container,
+      containerPort: 8000,
+    })).toThrow('Cloud map service association is not supported for an external service');
+
+    // THEN
     test.done();
   },
 });
