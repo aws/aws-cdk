@@ -347,9 +347,9 @@ They are very similar to `onXxx()` methods for CloudWatch events:
 
 ```ts
 const target = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-    slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
-    slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
-    slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
 });
 
 const rule = pipeline.notifyOnPipelineStateChange('NotifyOnPipelineStateChange', target);
