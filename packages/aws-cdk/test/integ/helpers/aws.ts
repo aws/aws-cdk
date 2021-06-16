@@ -79,10 +79,24 @@ export class AwsClients {
 
   public async emptyBucket(bucketName: string) {
     const objects = await this.s3('listObjectVersions', { Bucket: bucketName });
-    const deleteVersions = (objects.Versions || []).filter(obj => obj.Key && obj.VersionId)
-      .map(obj => ({ Key: obj.Key, VersionId: obj.VersionId }));
-    const deleteMarkers = (objects.DeleteMarkers || []).filter(obj => obj.Key && obj.VersionId)
-      .map(obj => ({ Key: obj.Key, VersionId: obj.VersionId }));
+    const deleteVersions = (objects.Versions || [])
+      .map(obj => {
+        if (typeof obj.Key === 'string' && typeof obj.VersionId === 'string') {
+          return { Key: obj.Key, VersionId: obj.VersionId };
+        } else {
+          return { Key: '', VersionId: '' };
+        }
+      })
+      .filter(d => !!d.Key || !!d.VersionId);
+    const deleteMarkers = (objects.DeleteMarkers || [])
+      .map(obj => {
+        if (typeof obj.Key === 'string' && typeof obj.VersionId === 'string') {
+          return { Key: obj.Key, VersionId: obj.VersionId };
+        } else {
+          return { Key: '', VersionId: '' };
+        }
+      })
+      .filter(d => !!d.Key || !!d.VersionId);
     if (deleteVersions.length === 0 && deleteMarkers.length === 0) {
       return Promise.resolve();
     }
