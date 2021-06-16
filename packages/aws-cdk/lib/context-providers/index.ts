@@ -26,6 +26,8 @@ export async function provideContextValues(
   sdk: SdkProvider,
   environment: cxapi.Environment) {
 
+  const deployments = new CloudFormationDeployments({ sdkProvider: sdk });
+
   for (const missingContext of missingValues) {
     const key = missingContext.key;
     const constructor = availableContextProviders[missingContext.provider];
@@ -38,7 +40,6 @@ export async function provideContextValues(
 
     let value;
     try {
-      const deployments = new CloudFormationDeployments({ sdkProvider: sdk });
       const resolvedEnvironment = await sdk.resolveEnvironment(environment);
 
       const arns = await deployments.replaceEnvPlaceholders({
