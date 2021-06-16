@@ -31,11 +31,15 @@ test('lookup role ARN is resolved', async () => {
   // GIVEN
   contextproviders.registerContextProvider(TEST_PROVIDER, class {
     public async getValue(args: {[key: string]: any}): Promise<any> {
-      if (args.lookupRoleArn != null) {
-        return 'some resolved value';
-      } else {
+      if (args.lookupRoleArn == null) {
         throw new Error('No lookupRoleArn');
       }
+
+      if (args.lookupRoleArn.includes('${AWS::Partition}')) {
+        throw new Error('Partition not resolved');
+      }
+
+      return 'some resolved value';
     }
   });
   const context = new Context();
