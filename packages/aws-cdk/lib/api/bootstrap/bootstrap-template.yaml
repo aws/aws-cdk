@@ -6,6 +6,11 @@ Parameters:
       stacks to this environment
     Default: ''
     Type: CommaDelimitedList
+  TrustedAccountsForLookup:
+    Description: List of AWS accounts that are trusted to look up values in this
+      environment
+    Default: ''
+    Type: CommaDelimitedList
   CloudFormationExecutionPolicies:
     Description: List of the ManagedPolicy ARN(s) to attach to the CloudFormation
       deployment role
@@ -45,6 +50,13 @@ Conditions:
           - Fn::Join:
               - ''
               - Ref: TrustedAccounts
+  HasTrustedAccountsForLookup:
+    Fn::Not:
+      - Fn::Equals:
+          - ''
+          - Fn::Join:
+              - ''
+              - Ref: TrustedAccountsForLookup
   HasCloudFormationExecutionPolicies:
     Fn::Not:
       - Fn::Equals:
@@ -233,6 +245,57 @@ Resources:
               - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-image-publishing-role-${AWS::AccountId}-${AWS::Region}
+  LookupRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
+          - Fn::If:
+              - HasTrustedAccountsForLookup
+              - Action: sts:AssumeRole
+                Effect: Allow
+                Principal:
+                  AWS:
+                    Ref: TrustedAccountsForLookup
+              - Ref: AWS::NoValue
+          - Fn::If:
+              - HasTrustedAccounts
+              - Action: sts:AssumeRole
+                Effect: Allow
+                Principal:
+                  AWS:
+                    Ref: TrustedAccounts
+              - Ref: AWS::NoValue
+      RoleName:
+        Fn::Sub: cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Action:
+                  - ec2:DescribeVpcs
+                  - ec2:DescribeAvailabilityZones
+                  - ec2:DescribeSubnets
+                  - ec2:DescribeRouteTables
+                  - ec2:DescribeVpnGateways
+                  - ec2:DescribeImages
+                  - ec2:DescribeVpcEndpointServices
+                  - ec2:DescribeSecurityGroups
+                  - elasticloadbalancing:DescribeLoadBalancers
+                  - elasticloadbalancing:DescribeTags
+                  - elasticloadbalancing:DescribeListeners
+                  - route53:ListHostedZonesByName
+                  - route53:GetHostedZone
+                  - ssm:GetParameter
+                Resource: "*"
+                Effect: Allow
+            Version: '2012-10-17'
+          PolicyName:
+            Fn::Sub: cdk-${Qualifier}-lookup-role-default-policy-${AWS::AccountId}-${AWS::Region}
   FilePublishingRoleDefaultPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -279,6 +342,8 @@ Resources:
               - ecr:BatchCheckLayerAvailability
               - ecr:DescribeRepositories
               - ecr:DescribeImages
+              - ecr:BatchGetImage
+              - ecr:GetDownloadUrlForLayer
             Resource:
               Fn::Sub: "${ContainerAssetsRepository.Arn}"
             Effect: Allow
@@ -393,7 +458,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '5'
+      Value: '6'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

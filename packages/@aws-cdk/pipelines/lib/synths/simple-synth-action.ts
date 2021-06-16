@@ -211,6 +211,16 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       synthCommand: options.synthCommand ?? 'npx cdk synth',
       vpc: options.vpc,
       subnetSelection: options.subnetSelection,
+      environment: {
+        ...options.environment,
+        environmentVariables: {
+          // Need this in case the CDK CLI is not in the 'package.json' of the project,
+          // and 'npx' is going to download it; without this setting, 'npx' will not properly
+          // install the package into the root user's home directory
+          NPM_CONFIG_UNSAFE_PERM: { value: 'true' },
+          ...options.environment?.environmentVariables,
+        },
+      },
     });
   }
 
@@ -228,6 +238,16 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       synthCommand: options.synthCommand ?? 'npx cdk synth',
       vpc: options.vpc,
       subnetSelection: options.subnetSelection,
+      environment: {
+        ...options.environment,
+        environmentVariables: {
+          // Need this in case the CDK CLI is not in the 'package.json' of the project,
+          // and 'npx' is going to download it; without this setting, 'npx' will not properly
+          // install the package into the root user's home directory
+          NPM_CONFIG_UNSAFE_PERM: { value: 'true' },
+          ...options.environment?.environmentVariables,
+        },
+      },
     });
   }
 

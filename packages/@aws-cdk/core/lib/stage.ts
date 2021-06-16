@@ -198,7 +198,7 @@ export class Stage extends Construct {
 }
 
 /**
- * Options for assemly synthesis.
+ * Options for assembly synthesis.
  */
 export interface StageSynthesisOptions {
   /**

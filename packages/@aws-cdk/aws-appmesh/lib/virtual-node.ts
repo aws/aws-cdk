@@ -1,7 +1,9 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
+import { renderTlsClientPolicy } from './private/utils';
 import { ServiceDiscovery } from './service-discovery';
 import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
@@ -33,6 +35,10 @@ export interface IVirtualNode extends cdk.IResource {
    */
   readonly mesh: IMesh;
 
+  /**
+   * Grants the given entity `appmesh:StreamAggregatedResources`.
+   */
+  grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -108,6 +114,14 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    * The Mesh which the VirtualNode belongs to
    */
   public abstract readonly mesh: IMesh;
+
+  public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['appmesh:StreamAggregatedResources'],
+      resourceArns: [this.virtualNodeArn],
+    });
+  }
 }
 
 /**
@@ -185,7 +199,9 @@ export class VirtualNode extends VirtualNodeBase {
         listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
         backendDefaults: props.backendDefaults !== undefined
           ? {
-            clientPolicy: props.backendDefaults?.clientPolicy?.bind(this).clientPolicy,
+            clientPolicy: {
+              tls: renderTlsClientPolicy(this, props.backendDefaults?.tlsClientPolicy, (config) => config.virtualNodeClientTlsValidationTrust),
+            },
           }
           : undefined,
         serviceDiscovery: {

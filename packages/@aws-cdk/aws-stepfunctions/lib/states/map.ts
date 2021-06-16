@@ -62,6 +62,20 @@ export interface MapProps {
   readonly parameters?: { [key: string]: any };
 
   /**
+   * The JSON that will replace the state's raw result and become the effective
+   * result before ResultPath is applied.
+   *
+   * You can use ResultSelector to create a payload with values that are static
+   * or selected from the state's raw result.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
+   *
+   * @default - None
+   */
+  readonly resultSelector?: { [key: string]: any };
+
+  /**
    * MaxConcurrency
    *
    * An upper bound on the number of iterations you want running at once.
@@ -158,6 +172,7 @@ export class Map extends State implements INextable {
       ...this.renderNextEnd(),
       ...this.renderInputOutput(),
       ...this.renderParameters(),
+      ...this.renderResultSelector(),
       ...this.renderRetryCatch(),
       ...this.renderIterator(),
       ...this.renderItemsPath(),
