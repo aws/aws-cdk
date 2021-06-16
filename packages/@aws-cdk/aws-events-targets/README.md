@@ -260,7 +260,7 @@ const connection = new events.Connection(this, 'Connection', {
 const destination = new events.ApiDestination(this, 'Destination', {
   apiDestinationName: 'apiDestinationName',
   connection: connection,
-  invocationEndpoint: 'https://example.com,
+  invocationEndpoint: 'https://example.com',
   invocationRateLimit: cdk.Duration.seconds(10),
   httpMethod: events.HttpMethod.GET
 });
