@@ -90,8 +90,7 @@ export class CloudExecutable {
           await contextproviders.provideContextValues(
             assembly.manifest.missing,
             this.props.configuration.context,
-            this.props.sdkProvider,
-            assembly.stacks[0].environment);
+            this.props.sdkProvider);
 
           // Cache the new context to disk
           await this.props.configuration.saveContext();

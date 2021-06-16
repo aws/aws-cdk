@@ -18,11 +18,7 @@ test('errors are reported into the context value', async () => {
   // WHEN
   await contextproviders.provideContextValues([
     { key: 'asdf', props: { account: '1234', region: 'us-east-1' }, provider: TEST_PROVIDER },
-  ], context, mockSDK, {
-    account: '1234',
-    region: 'us-east-1',
-    name: '',
-  });
+  ], context, mockSDK);
 
   // THEN - error is now in context
 
@@ -31,7 +27,7 @@ test('errors are reported into the context value', async () => {
   expect(context.get('asdf').$providerError).toBe('Something went wrong');
 });
 
-test('foooooooooooo', async () => {
+test('lookup role ARN is resolved', async () => {
   // GIVEN
   contextproviders.registerContextProvider(TEST_PROVIDER, class {
     public async getValue(args: {[key: string]: any}): Promise<any> {
@@ -55,11 +51,7 @@ test('foooooooooooo', async () => {
       },
       provider: TEST_PROVIDER,
     },
-  ], context, mockSDK, {
-    account: '1234',
-    region: 'us-east-1',
-    name: '',
-  });
+  ], context, mockSDK);
 
   // THEN - Value gets resolved
   expect(context.get('asdf')).toEqual('some resolved value');
@@ -77,11 +69,7 @@ test('errors are marked transient', async () => {
   // WHEN
   await contextproviders.provideContextValues([
     { key: 'asdf', props: { account: '1234', region: 'us-east-1' }, provider: TEST_PROVIDER },
-  ], context, mockSDK, {
-    account: '',
-    region: '',
-    name: '',
-  });
+  ], context, mockSDK);
 
   // THEN - error is marked transient
   expect(context.get('asdf')[TRANSIENT_CONTEXT_KEY]).toBeTruthy();
