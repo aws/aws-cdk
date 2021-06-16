@@ -468,6 +468,21 @@ const rule = project.onStateChange('BuildStateChange', {
 });
 ```
 
+## CodeStar Notifications
+
+To define CodeStar Notification rules for Projects, use one of the `notifyOnXxx()` methods.
+They are very similar to `onXxx()` methods for CloudWatch events:
+
+```ts
+const target = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+});
+
+const rule = project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', target);
+```
+
 ## Secondary sources and artifacts
 
 CodeBuild Projects can get their sources from multiple places, and produce
