@@ -244,7 +244,7 @@ export class CloudFormationDeployments {
   /**
    * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
    */
-  private async replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment): Promise<A> {
+  public async replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment): Promise<A> {
     return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
       accountId: () => Promise.resolve(env.account),
       region: () => Promise.resolve(env.region),

@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { SdkProvider } from '../api';
+import { CloudFormationDeployments } from '../api/cloudformation-deployments';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 import { AmiContextProviderPlugin } from './ami';
@@ -22,7 +23,8 @@ export type ProviderMap = {[name: string]: ProviderConstructor};
 export async function provideContextValues(
   missingValues: cxschema.MissingContext[],
   context: Context,
-  sdk: SdkProvider) {
+  sdk: SdkProvider,
+  environment: cxapi.Environment) {
 
   for (const missingContext of missingValues) {
     const key = missingContext.key;
@@ -36,7 +38,14 @@ export async function provideContextValues(
 
     let value;
     try {
-      value = await provider.getValue(missingContext.props);
+      const deployments = new CloudFormationDeployments({ sdkProvider: sdk });
+      const resolvedEnvironment = await sdk.resolveEnvironment(environment);
+
+      const arns = await deployments.replaceEnvPlaceholders({
+        lookupRoleArn: missingContext.props.lookupRoleArn,
+      }, resolvedEnvironment);
+
+      value = await provider.getValue({ ...missingContext.props, lookupRoleArn: arns.lookupRoleArn });
     } catch (e) {
       // Set a specially formatted provider value which will be interpreted
       // as a lookup failure in the toolkit.
