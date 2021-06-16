@@ -8,7 +8,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -23,10 +23,6 @@ import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The type returned from {@link IProject#enableBatchBuilds}.
@@ -747,7 +743,7 @@ export class Project extends ProjectBase {
       }
 
       if (principal) {
-        const stack = Stack.of(principal);
+        const stack = Stack.of(principal as unknown as IConstruct);
 
         // save the SSM env variables
         if (envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE) {
@@ -1037,6 +1033,8 @@ export class Project extends ProjectBase {
     if (bindFunction) {
       bindFunction.call(this.buildImage, this, this, {});
     }
+
+    this.node.addValidation({ validate: () => this.validateProject() });
   }
 
   public enableBatchBuilds(): BatchBuildConfig | undefined {
@@ -1109,7 +1107,7 @@ export class Project extends ProjectBase {
    * @param _scope the construct the binding is taking place in
    * @param options additional options for the binding
    */
-  public bindToCodePipeline(_scope: CoreConstruct, options: BindToCodePipelineOptions): void {
+  public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
     // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
     // and always uses its own, project-level key
     if (options.artifactBucket.encryptionKey && !this._encryptionKey) {
@@ -1125,10 +1123,7 @@ export class Project extends ProjectBase {
     }
   }
 
-  /**
-   * @override
-   */
-  protected validate(): string[] {
+  private validateProject(): string[] {
     const ret = new Array<string>();
     if (this.source.type === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) {
       if (this._secondarySources.length > 0) {
@@ -1517,7 +1512,7 @@ export interface BuildImageConfig { }
 /** A variant of {@link IBuildImage} that allows binding to the project. */
 export interface IBindableBuildImage extends IBuildImage {
   /** Function that allows the build image access to the construct tree. */
-  bind(scope: CoreConstruct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
+  bind(scope: Construct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
 }
 
 class ArmBuildImage implements IBuildImage {

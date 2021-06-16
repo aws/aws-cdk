@@ -8,10 +8,6 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Lazy, ISynthesisSession, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 import { toPosixPath } from '../private/fs';
 
 /**
@@ -103,7 +99,7 @@ export interface PublishAssetsActionProps {
  * You do not need to instantiate this action -- it will automatically
  * be added by the pipeline when you add stacks that use assets.
  */
-export class PublishAssetsAction extends CoreConstruct implements codepipeline.IAction {
+export class PublishAssetsAction extends Construct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;
   private readonly commands = new Array<string>();
 
@@ -188,7 +184,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
   /**
    * Exists to implement IAction
    */
-  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     return this.action.bind(scope, stage, options);
   }
 

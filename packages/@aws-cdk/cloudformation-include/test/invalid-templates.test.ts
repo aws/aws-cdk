@@ -2,6 +2,7 @@ import * as path from 'path';
 import { SynthUtils } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as inc from '../lib';
 
@@ -9,7 +10,8 @@ describe('CDK Include', () => {
   let stack: core.Stack;
 
   beforeEach(() => {
-    stack = new core.Stack();
+    const app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    stack = new core.Stack(app);
   });
 
   test('throws a validation exception for a template with a missing required top-level resource property', () => {
