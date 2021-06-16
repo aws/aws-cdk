@@ -84,30 +84,12 @@ const node2 = mesh.addVirtualNode('node2', {
       },
     },
   },
-  backends: [
-    appmesh.Backend.virtualService(
-      new appmesh.VirtualService(stack, 'service-3', {
-        virtualServiceName: 'service3.domain.local',
-        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
-      }),
-      {
-        tlsClientPolicy: {
-          certificate: appmesh.TlsCertificate.file({
-            certificateChainPath: 'path/to/certChain',
-            privateKeyPath: 'path/to/privateKey',
-          }),
-          validation: {
-            subjectAlternativeNames: {
-              exactMatch: ['mymesh.local'],
-            },
-            trust: appmesh.TlsValidationTrust.file({
-              certificateChain: 'path/to/certChain',
-            }),
-          },
-        },
-      },
-    ),
-  ],
+  backends: [appmesh.Backend.virtualService(
+    new appmesh.VirtualService(stack, 'service-3', {
+      virtualServiceName: 'service3.domain.local',
+      virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+    }),
+  )],
 });
 
 const node3 = mesh.addVirtualNode('node3', {
@@ -160,7 +142,14 @@ const node4 = mesh.addVirtualNode('node4', {
   })],
   backendDefaults: {
     tlsClientPolicy: {
+      certificate: appmesh.TlsCertificate.file({
+        certificateChainPath: 'path/to/certChain',
+        privateKeyPath: 'path/to/privateKey',
+      }),
       validation: {
+        subjectAlternativeNames: {
+          exactMatch: ['mymesh.local'],
+        },
         trust: appmesh.TlsValidationTrust.file({
           certificateChain: 'path-to-certificate',
         }),
@@ -205,6 +194,23 @@ router.addRoute('route-3', {
     ],
     timeout: {
       idle: cdk.Duration.seconds(12),
+    },
+  }),
+});
+
+router.addRoute('route-4', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [
+      {
+        virtualNode: node4,
+        weight: 20,
+      },
+    ],
+    timeout: {
+      idle: cdk.Duration.seconds(12),
+    },
+    match: {
+      serviceName: 'test',
     },
   }),
 });
@@ -308,13 +314,12 @@ new appmesh.VirtualGateway(stack, 'gateway3', {
   })],
   backendDefaults: {
     tlsClientPolicy: {
-      certificate: appmesh.TlsCertificate.file({
-        certificateChainPath: 'path/to/certChain',
-        privateKeyPath: 'path/to/privateKey',
+      certificate: appmesh.TlsCertificate.sds({
+        secretName: 'secret_validation',
       }),
       validation: {
-        trust: appmesh.TlsValidationTrust.sds({
-          secretName: 'secret_validation',
+        trust: appmesh.TlsValidationTrust.file({
+          certificateChain: 'path/to/certChain',
         }),
       },
     },

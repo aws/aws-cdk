@@ -242,10 +242,10 @@ The `backendDefaults` property are added to the node while creating the virtual 
 
 ## Adding TLS to a listener
 
-The `tls` property can be added to a Virtual Node listener or Virtual Gateway listener to add TLS configuration. 
+The `tls` property can be provided when creating a Virtual Node listener, or a Virtual Gateway listener to add TLS configuration. 
 App Mesh allows you to provide the TLS certificate to the proxy in the following ways:
 
-- A certificate from AWS Certificate Manager can be incorporated
+- A certificate from AWS Certificate Manager (ACM) can be used.
 
 - A customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
 
@@ -286,18 +286,35 @@ const gateway = new appmesh.VirtualGateway(this, 'gateway', {
   })],
   virtualGatewayName: 'gateway',
 });
+
+// A Virtual Gateway with listener TLS from a SDS provided certificate
+const gateway2 = new appmesh.VirtualGateway(this, 'gateway2', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.grpc({
+    port: 8080,
+    tls: {
+      mode: appmesh.TlsMode.STRICT,
+      certificate: appmesh.TlsCertificate.sds({
+        secretName: 'secrete_certificate',
+      }),
+    },
+  })],
+  virtualGatewayName: 'gateway2',
+});
 ```
 
 ## Adding mutual TLS authentication
 
-To enable mutual TL authentication, add `certificate` property to TLS Client Policy and/or `validation` property to TLS Listener.
+Mutual TLS authentication is an optional component of TLS that offers two-way peer authentication. To enable mutual TLS authentication, add `certificate` property to TLS Client Policy and/or `validation` property to TLS Listener.
 
-A certificate from AWS Certificate Manager is **not** supported for mutual TLS.
+`tls.validation` and `tlsClientPolicy.certificate` can be sourced from either:
+
+- A customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
+
+- A certificate provided by a Secrets Discovery Service (SDS) endpoint over local Unix Domain Socket can be specified with its `secretName`.
 
 ```typescript
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
-
-const cert = new certificatemanager.Certificate(this, 'cert', {...});
 
 const node1 = new appmesh.VirtualNode(stack, 'node1', {
   mesh,
@@ -306,8 +323,9 @@ const node1 = new appmesh.VirtualNode(stack, 'node1', {
     port: 80,
     tls: {
       mode: appmesh.TlsMode.STRICT,
-      certificate: appmesh.TlsCertificate.acm({
-        certificate: cert,
+      certificate: appmesh.TlsCertificate.file({
+        certificateChainPath: 'path/to/certChain',
+        privateKeyPath: 'path/to/privateKey',
       }),
       // Validate a file client certificates to enable mutual TLS authentication when a client provides a certificate.
       validation: {
@@ -318,8 +336,6 @@ const node1 = new appmesh.VirtualNode(stack, 'node1', {
     },
   })],
 });
-
-const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
 
 const node2 = new appmesh.VirtualNode(stack, 'node2', {
   mesh,

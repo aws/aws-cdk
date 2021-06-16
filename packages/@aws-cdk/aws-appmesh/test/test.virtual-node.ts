@@ -334,9 +334,6 @@ export = {
             tlsClientPolicy: {
               ports: [8080, 8081],
               validation: {
-                subjectAlternativeNames: {
-                  exactMatch: ['mesh-endpoint.apps.local'],
-                },
                 trust: appmesh.TlsValidationTrust.acm({
                   certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
                 }),
@@ -353,11 +350,6 @@ export = {
                 TLS: {
                   Ports: [8080, 8081],
                   Validation: {
-                    SubjectAlternativeNames: {
-                      Match: {
-                        Exact: ['mesh-endpoint.apps.local'],
-                      },
-                    },
                     Trust: {
                       ACM: {
                         CertificateAuthorityArns: [`${certificateAuthorityArn}`],
@@ -372,98 +364,106 @@ export = {
 
         test.done();
       },
+    },
 
-      'with client\'s TLS certificate from SDS': {
-        'should add a backend default to the resource with TLS certificate'(test: Test) {
-          // GIVEN
-          const stack = new cdk.Stack();
-          const mesh = new appmesh.Mesh(stack, 'mesh', {
-            meshName: 'test-mesh',
-          });
+    'with client\'s TLS certificate from SDS': {
+      'should add a backend default to the resource with TLS certificate'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
 
-          // WHEN
+        // WHEN
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+          backendDefaults: {
+            tlsClientPolicy: {
+              certificate: appmesh.TlsCertificate.sds( {
+                secretName: 'secret_certificate',
+              }),
+              ports: [8080, 8081],
+              validation: {
+                subjectAlternativeNames: {
+                  exactMatch: ['mesh-endpoint.apps.local'],
+                },
+                trust: appmesh.TlsValidationTrust.sds({
+                  secretName: 'secret_validation',
+                }),
+              },
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            BackendDefaults: {
+              ClientPolicy: {
+                TLS: {
+                  Certificate: {
+                    SDS: {
+                      SecretName: 'secret_certificate',
+                    },
+                  },
+                  Ports: [8080, 8081],
+                  Validation: {
+                    SubjectAlternativeNames: {
+                      Match: {
+                        Exact: ['mesh-endpoint.apps.local'],
+                      },
+                    },
+                    Trust: {
+                      SDS: {
+                        SecretName: 'secret_validation',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'with client\'s TLS certificate from ACM': {
+      'should throw an error'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+        const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
+        const cert = new acm.Certificate(stack, 'cert', {
+          domainName: '',
+        });
+
+        // WHEN + THEN
+        test.throws(() => {
           new appmesh.VirtualNode(stack, 'test-node', {
             mesh,
             serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
             backendDefaults: {
               tlsClientPolicy: {
-                certificate: appmesh.TlsCertificate.sds( {
-                  secretName: 'secret_certificate',
+                certificate: appmesh.TlsCertificate.acm({
+                  certificate: cert,
                 }),
                 ports: [8080, 8081],
                 validation: {
-                  trust: appmesh.TlsValidationTrust.sds({
-                    secretName: 'secret_validation',
+                  trust: appmesh.TlsValidationTrust.acm({
+                    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
                   }),
                 },
               },
             },
           });
+        }, /ACM certificate source is currently not supported./);
 
-          // THEN
-          expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
-            Spec: {
-              BackendDefaults: {
-                ClientPolicy: {
-                  TLS: {
-                    Certificate: {
-                      SDS: {
-                        SecretName: 'secret_certificate',
-                      },
-                    },
-                    Ports: [8080, 8081],
-                    Validation: {
-                      Trust: {
-                        SDS: {
-                          SecretName: 'secret_validation',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          }));
-
-          test.done();
-        },
-      },
-
-      'with client\'s TLS certificate from ACM': {
-        'should throw an error'(test: Test) {
-          // GIVEN
-          const stack = new cdk.Stack();
-          const mesh = new appmesh.Mesh(stack, 'mesh', {
-            meshName: 'test-mesh',
-          });
-          const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
-          const cert = new acm.Certificate(stack, 'cert', {
-            domainName: '',
-          });
-
-          // WHEN + THEN
-          test.throws(() => {
-            new appmesh.VirtualNode(stack, 'test-node', {
-              mesh,
-              serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-              backendDefaults: {
-                tlsClientPolicy: {
-                  certificate: appmesh.TlsCertificate.acm({
-                    certificate: cert,
-                  }),
-                  ports: [8080, 8081],
-                  validation: {
-                    trust: appmesh.TlsValidationTrust.acm({
-                      certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-                    }),
-                  },
-                },
-              },
-            });
-          }, /ACM certificate source is currently not supported./);
-
-          test.done();
-        },
+        test.done();
       },
     },
 
@@ -489,9 +489,6 @@ export = {
 
         node.addBackend(appmesh.Backend.virtualService(service1, {
           tlsClientPolicy: {
-            certificate: appmesh.TlsCertificate.sds({
-              secretName: 'secret_certificate',
-            }),
             ports: [8080, 8081],
             validation: {
               trust: appmesh.TlsValidationTrust.file({
@@ -512,11 +509,6 @@ export = {
                   },
                   ClientPolicy: {
                     TLS: {
-                      Certificate: {
-                        SDS: {
-                          SecretName: 'secret_certificate',
-                        },
-                      },
                       Ports: [8080, 8081],
                       Validation: {
                         Trust: {
@@ -722,99 +714,6 @@ export = {
             ],
           },
         }));
-
-        test.done();
-      },
-    },
-
-    'when an http listener is added with the TLS Validation from SDS': {
-      'the listener should include the TLS configuration'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-
-        // WHEN
-        new appmesh.VirtualNode(stack, 'test-node', {
-          mesh,
-          listeners: [appmesh.VirtualNodeListener.http({
-            port: 80,
-            tls: {
-              mode: appmesh.TlsMode.PERMISSIVE,
-              certificate: appmesh.TlsCertificate.file({
-                certificateChainPath: 'path/to/certChain',
-                privateKeyPath: 'path/to/privateKey',
-              }),
-              validation: {
-                trust: appmesh.TlsValidationTrust.sds({
-                  secretName: 'secret',
-                }),
-              },
-            },
-          })],
-        });
-
-        // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
-          Spec: {
-            Listeners: [
-              {
-                TLS: {
-                  Mode: appmesh.TlsMode.PERMISSIVE,
-                  Certificate: {
-                    File: {
-                      CertificateChain: 'path/to/certChain',
-                      PrivateKey: 'path/to/privateKey',
-                    },
-                  },
-                  Validation: {
-                    Trust: {
-                      SDS: {
-                        SecretName: 'secret',
-                      },
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        }));
-
-        test.done();
-      },
-    },
-
-    'when an http listener is added with the TLS Validation from ACM': {
-      'should throw an error'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-        const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
-
-        // WHEN + THEN
-        test.throws(() => {
-          new appmesh.VirtualNode(stack, 'test-node', {
-            mesh,
-            listeners: [appmesh.VirtualNodeListener.http({
-              port: 80,
-              tls: {
-                mode: appmesh.TlsMode.PERMISSIVE,
-                certificate: appmesh.TlsCertificate.file({
-                  certificateChainPath: 'path/to/certChain',
-                  privateKeyPath: 'path/to/privateKey',
-                }),
-                validation: {
-                  trust: appmesh.TlsValidationTrust.acm({
-                    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-                  }),
-                },
-              },
-            })],
-          });
-        }, /ACM certificate source is currently not supported/),
 
         test.done();
       },

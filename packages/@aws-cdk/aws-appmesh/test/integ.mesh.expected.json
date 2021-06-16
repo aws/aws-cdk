@@ -625,6 +625,50 @@
         "RouteName": "route-3"
       }
     },
+    "meshrouterroute417D3F5B5": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "GrpcRoute": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode4AE87F692",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 20
+                }
+              ]
+            },
+            "Match": {
+              "ServiceName": "test"
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 12000
+              }
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-4"
+      }
+    },
     "meshrouterroutematchingACC12F04": {
       "Type": "AWS::AppMesh::Route",
       "Properties": {
@@ -971,30 +1015,6 @@
           "Backends": [
             {
               "VirtualService": {
-                "ClientPolicy": {
-                  "TLS": {
-                    "Certificate": {
-                      "File": {
-                        "CertificateChain": "path/to/certChain",
-                        "PrivateKey": "path/to/privateKey"
-                      }
-                    },
-                    "Validation": {
-                      "SubjectAlternativeNames": {
-                        "Match": {
-                          "Exact": [
-                            "mymesh.local"
-                          ]
-                        }
-                      },
-                      "Trust": {
-                        "File": {
-                          "CertificateChain": "path/to/certChain"
-                        }
-                      }
-                    }
-                  }
-                },
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
                     "service3859EB104",
@@ -1099,7 +1119,20 @@
           "BackendDefaults": {
             "ClientPolicy": {
               "TLS": {
+                "Certificate": {
+                  "File": {
+                    "CertificateChain": "path/to/certChain",
+                    "PrivateKey": "path/to/privateKey"
+                  }
+                },
                 "Validation": {
+                  "SubjectAlternativeNames": {
+                    "Match": {
+                      "Exact": [
+                        "mymesh.local"
+                      ]
+                    }
+                  },
                   "Trust": {
                     "File": {
                       "CertificateChain": "path-to-certificate"
@@ -1438,15 +1471,14 @@
             "ClientPolicy": {
               "TLS": {
                 "Certificate": {
-                  "File": {
-                    "CertificateChain": "path/to/certChain",
-                    "PrivateKey": "path/to/privateKey"
+                  "SDS": {
+                    "SecretName": "secret_validation"
                   }
                 },
                 "Validation": {
                   "Trust": {
-                    "SDS": {
-                      "SecretName": "secret_validation"
+                    "File": {
+                      "CertificateChain": "path/to/certChain"
                     }
                   }
                 }

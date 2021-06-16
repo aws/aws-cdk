@@ -1,6 +1,6 @@
 import { CfnVirtualNode } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
-import { ConnectionPoolConfig } from './private/utils';
+import { ConnectionPoolConfig, renderTls } from './private/utils';
 import {
   GrpcConnectionPool, GrpcTimeout, Http2ConnectionPool, HttpConnectionPool,
   HttpTimeout, OutlierDetection, Protocol, TcpConnectionPool, TcpTimeout,
@@ -186,40 +186,11 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
         },
         healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualNodeHealthCheck,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
-        tls: this.renderTls(scope, this.tls),
+        tls: renderTls(scope, this.tls),
         outlierDetection: this.outlierDetection ? this.renderOutlierDetection(this.outlierDetection) : undefined,
         connectionPool: this.connectionPool ? this.renderConnectionPool(this.connectionPool) : undefined,
       },
     };
-  }
-
-  /**
-   * Renders the TLS config for a listener
-   */
-  private renderTls(scope: Construct, tls: TlsListener | undefined): CfnVirtualNode.ListenerTlsProperty | undefined {
-    const tlsValidation = tls?.validation;
-    if (tlsValidation?.trust.bind(scope).tlsValidationTrust.acm) {
-      throw new Error('ACM certificate source is currently not supported.');
-    }
-
-    return tls
-      ? {
-        certificate: tls.certificate.bind(scope).tlsCertificate,
-        mode: tls.mode,
-        validation: tlsValidation
-          ? {
-            subjectAlternativeNames: tlsValidation.subjectAlternativeNames
-              ? {
-                match: {
-                  exact: tlsValidation.subjectAlternativeNames.exactMatch,
-                },
-              }
-              : undefined,
-            trust: tlsValidation.trust.bind(scope).tlsValidationTrust,
-          }
-          : undefined,
-      }
-      : undefined;
   }
 
   private renderTimeout(timeout: HttpTimeout): CfnVirtualNode.ListenerTimeoutProperty {
