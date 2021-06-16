@@ -181,7 +181,7 @@ export interface BaseConnectionProps {
    *
    * @default - none
    */
-  readonly description: string;
+  readonly description?: string;
 
   /**
    * The name of the connection.
