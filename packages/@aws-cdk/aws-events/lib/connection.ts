@@ -174,7 +174,7 @@ export interface BaseConnectionProps {
    *
    * @default - none
    */
-  readonly authParameters: AuthParameters;
+  readonly authParameters?: AuthParameters;
 
   /**
    * The name of the connection.
