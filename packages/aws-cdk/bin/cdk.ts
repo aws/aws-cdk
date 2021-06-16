@@ -7,6 +7,7 @@ import * as yargs from 'yargs';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
+import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
@@ -69,6 +70,7 @@ async function parseCommandLineArguments() {
     )
     .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' })
+      .option('validation', { type: 'boolean', desc: 'After synthesis, validate stacks with the "validateOnSynth" attribute set (can also be controlled with CDK_VALIDATION)', default: true })
       .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not output CloudFormation Template to stdout', default: false }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
@@ -230,7 +232,11 @@ async function initCommandLine() {
     args.STACKS = args.STACKS || [];
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];
 
-    const stacks = (args.all) ? ['*'] : args.STACKS;
+    const selector: StackSelector = {
+      allTopLevel: args.all,
+      patterns: args.STACKS,
+    };
+
     const cli = new CdkToolkit({
       cloudExecutable,
       cloudFormation,
@@ -294,7 +300,7 @@ async function initCommandLine() {
           }
         }
         return cli.deploy({
-          stackNames: stacks,
+          selector,
           exclusively: args.exclusively,
           toolkitStackName,
           roleArn: args.roleArn,
@@ -314,7 +320,7 @@ async function initCommandLine() {
 
       case 'destroy':
         return cli.destroy({
-          stackNames: stacks,
+          selector,
           exclusively: args.exclusively,
           force: args.force,
           roleArn: args.roleArn,
@@ -322,7 +328,12 @@ async function initCommandLine() {
 
       case 'synthesize':
       case 'synth':
-        return cli.synth(args.STACKS, args.exclusively, args.quiet);
+        if (args.exclusively) {
+          return cli.synth(args.STACKS, args.exclusively, args.quiet, args.validation);
+        } else {
+          return cli.synth(args.STACKS, true, args.quiet, args.validation);
+        }
+
 
       case 'metadata':
         return cli.metadata(args.STACK);

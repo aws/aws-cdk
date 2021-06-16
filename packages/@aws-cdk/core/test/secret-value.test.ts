@@ -21,12 +21,11 @@ nodeunitShim({
     // WHEN
     const v = SecretValue.secretsManager('secret-id', {
       jsonField: 'json-key',
-      versionId: 'version-id',
       versionStage: 'version-stage',
     });
 
     // THEN
-    test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:json-key:version-stage:version-id}}');
+    test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:json-key:version-stage:}}');
     test.done();
   },
 
@@ -44,6 +43,18 @@ nodeunitShim({
 
   'secretsManager with an empty ID'(test: Test) {
     test.throws(() => SecretValue.secretsManager(''), /secretId cannot be empty/);
+    test.done();
+  },
+
+  'secretsManager with versionStage and versionId'(test: Test) {
+    test.throws(() => {
+      SecretValue.secretsManager('secret-id',
+        {
+          versionStage: 'version-stage',
+          versionId: 'version-id',
+        });
+    }, /were both provided but only one is allowed/);
+
     test.done();
   },
 
@@ -98,5 +109,4 @@ nodeunitShim({
     test.throws(() => SecretValue.cfnParameter(p), /CloudFormation parameter must be configured with "NoEcho"/);
     test.done();
   },
-
 });

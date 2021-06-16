@@ -1,16 +1,18 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Lazy } from '@aws-cdk/core';
+import { Lazy, ISynthesisSession, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { toPosixPath } from '../private/fs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-import { toPosixPath } from '../private/fs';
 
 /**
  * Type of the asset that is being published
@@ -82,6 +84,14 @@ export interface PublishAssetsActionProps {
    * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * Use a file buildspec written to the cloud assembly instead of an inline buildspec.
+   * This prevents size limitation errors as inline specs have a max length of 25600 characters
+   *
+   * @default false
+   */
+  readonly createBuildspecFile?: boolean;
 }
 
 /**
@@ -97,10 +107,24 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
   private readonly action: codepipeline.IAction;
   private readonly commands = new Array<string>();
 
+  private readonly buildSpec: codebuild.BuildSpec;
+
   constructor(scope: Construct, id: string, private readonly props: PublishAssetsActionProps) {
     super(scope, id);
 
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
+
+    this.buildSpec = codebuild.BuildSpec.fromObject({
+      version: '0.2',
+      phases: {
+        install: {
+          commands: `npm install -g cdk-assets${installSuffix}`,
+        },
+        build: {
+          commands: Lazy.list({ produce: () => this.commands }),
+        },
+      },
+    });
 
     const project = new codebuild.PipelineProject(this, 'Default', {
       projectName: this.props.projectName,
@@ -110,28 +134,9 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
       },
       vpc: props.vpc,
       subnetSelection: props.subnetSelection,
-      buildSpec: codebuild.BuildSpec.fromObject({
-        version: '0.2',
-        phases: {
-          install: {
-            commands: `npm install -g cdk-assets${installSuffix}`,
-          },
-          build: {
-            commands: Lazy.list({ produce: () => this.commands }),
-          },
-        },
-      }),
+      buildSpec: props.createBuildspecFile ? codebuild.BuildSpec.fromSourceFilename(this.getBuildSpecFileName()) : this.buildSpec,
       role: props.role,
     });
-
-    const rolePattern = props.assetType === AssetType.DOCKER_IMAGE
-      ? 'arn:*:iam::*:role/*-image-publishing-role-*'
-      : 'arn:*:iam::*:role/*-file-publishing-role-*';
-
-    project.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      resources: [rolePattern],
-    }));
 
     this.action = new codepipeline_actions.CodeBuildAction({
       actionName: props.actionName,
@@ -144,6 +149,20 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
       } : undefined,
     });
   }
+
+  private getBuildSpecFileName(): string {
+    return `buildspec-assets-${this.props.actionName}.yaml`;
+  }
+
+  protected synthesize(session: ISynthesisSession): void {
+    super.synthesize(session);
+
+    if (this.props.createBuildspecFile) {
+      const specFile = path.join(session.outdir, this.getBuildSpecFileName());
+      fs.writeFileSync(specFile, Stack.of(this).resolve(this.buildSpec.toBuildSpec()), { encoding: 'utf-8' });
+    }
+  }
+
 
   /**
    * Add a single publishing command
@@ -160,8 +179,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
   /**
    * Exists to implement IAction
    */
-  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     return this.action.bind(scope, stage, options);
   }
 

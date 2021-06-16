@@ -17,7 +17,9 @@
     "test": "jest",
     "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
   },
   "author": {
     "name": "Amazon Web Services",
