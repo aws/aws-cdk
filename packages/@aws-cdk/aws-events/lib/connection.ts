@@ -170,7 +170,7 @@ export interface BaseConnectionProps {
   readonly authorizationType: AuthorizationType;
 
   /**
-   * The name of the connection.
+   * Authentication method for this Connection
    *
    * @default - none
    */
