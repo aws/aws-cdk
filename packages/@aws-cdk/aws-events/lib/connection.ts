@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource, Stack, SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
 
@@ -27,7 +27,7 @@ export interface ApiKeyAuthParameters {
   /**
    * The value for the API key to use for authorization.
    */
-  readonly apiKeyValue: string;
+  readonly apiKeyValue: SecretValue;
 }
 
 /**
