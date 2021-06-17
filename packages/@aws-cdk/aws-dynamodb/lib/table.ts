@@ -110,23 +110,28 @@ export enum TableEncryption {
 }
 
 /**
- * Properties of a DynamoDB Table
- *
- * Use {@link TableProps} for all table properties
+ * Represents the table schema attributes.
  */
-export interface TableOptions {
+export interface SchemaOptions {
   /**
    * Partition key attribute definition.
    */
   readonly partitionKey: Attribute;
 
   /**
-   * Table sort key attribute definition.
+   * Sort key attribute definition.
    *
    * @default no sort key
    */
   readonly sortKey?: Attribute;
+}
 
+/**
+ * Properties of a DynamoDB Table
+ *
+ * Use {@link TableProps} for all table properties
+ */
+export interface TableOptions extends SchemaOptions {
   /**
    * The read capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
@@ -269,18 +274,7 @@ export interface SecondaryIndexProps {
 /**
  * Properties for a global secondary index
  */
-export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
-  /**
-   * The attribute of a partition key for the global secondary index.
-   */
-  readonly partitionKey: Attribute;
-
-  /**
-   * The attribute of a sort key for the global secondary index.
-   * @default - No sort key
-   */
-  readonly sortKey?: Attribute;
-
+export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOptions {
   /**
    * The read capacity for the global secondary index.
    *
@@ -911,7 +905,7 @@ abstract class TableBase extends Resource implements ITable {
    */
   private combinedGrant(
     grantee: iam.IGrantable,
-    opts: {keyActions?: string[], tableActions?: string[], streamActions?: string[]},
+    opts: { keyActions?: string[], tableActions?: string[], streamActions?: string[] },
   ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
@@ -944,7 +938,7 @@ abstract class TableBase extends Resource implements ITable {
       });
       return ret;
     }
-    throw new Error(`Unexpected 'action', ${ opts.tableActions || opts.streamActions }`);
+    throw new Error(`Unexpected 'action', ${opts.tableActions || opts.streamActions}`);
   }
 
   private cannedMetric(
@@ -1070,7 +1064,7 @@ export class Table extends TableBase {
   private readonly globalSecondaryIndexes = new Array<CfnTable.GlobalSecondaryIndexProperty>();
   private readonly localSecondaryIndexes = new Array<CfnTable.LocalSecondaryIndexProperty>();
 
-  private readonly secondaryIndexNames = new Set<string>();
+  private readonly secondaryIndexSchemas = new Map<string, SchemaOptions>();
   private readonly nonKeyAttributes = new Set<string>();
 
   private readonly tablePartitionKey: Attribute;
@@ -1166,7 +1160,6 @@ export class Table extends TableBase {
     const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
     const gsiProjection = this.buildIndexProjection(props);
 
-    this.secondaryIndexNames.add(props.indexName);
     this.globalSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: gsiKeySchema,
@@ -1175,6 +1168,11 @@ export class Table extends TableBase {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5,
       },
+    });
+
+    this.secondaryIndexSchemas.set(props.indexName, {
+      partitionKey: props.partitionKey,
+      sortKey: props.sortKey,
     });
 
     this.indexScaling.set(props.indexName, {});
@@ -1197,11 +1195,15 @@ export class Table extends TableBase {
     const lsiKeySchema = this.buildIndexKeySchema(this.tablePartitionKey, props.sortKey);
     const lsiProjection = this.buildIndexProjection(props);
 
-    this.secondaryIndexNames.add(props.indexName);
     this.localSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: lsiKeySchema,
       projection: lsiProjection,
+    });
+
+    this.secondaryIndexSchemas.set(props.indexName, {
+      partitionKey: this.tablePartitionKey,
+      sortKey: props.sortKey,
     });
   }
 
@@ -1306,6 +1308,25 @@ export class Table extends TableBase {
   }
 
   /**
+   * Get schema attributes of table or index.
+   *
+   * @returns Schema of table or index.
+   */
+  public schema(indexName?: string): SchemaOptions {
+    if (!indexName) {
+      return {
+        partitionKey: this.tablePartitionKey,
+        sortKey: this.tableSortKey,
+      };
+    }
+    let schema = this.secondaryIndexSchemas.get(indexName);
+    if (!schema) {
+      throw new Error(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`);
+    }
+    return schema;
+  }
+
+  /**
    * Validate the table construct.
    *
    * @returns an array of validation error message
@@ -1353,11 +1374,10 @@ export class Table extends TableBase {
    * @param indexName a name of global or local secondary index
    */
   private validateIndexName(indexName: string) {
-    if (this.secondaryIndexNames.has(indexName)) {
+    if (this.secondaryIndexSchemas.has(indexName)) {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
       throw new Error(`a duplicate index name, ${indexName}, is not allowed`);
     }
-    this.secondaryIndexNames.add(indexName);
   }
 
   /**
