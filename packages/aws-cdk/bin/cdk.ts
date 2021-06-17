@@ -313,7 +313,7 @@ async function initCommandLine() {
           force: args.force,
           parameters: parameterMap,
           usePreviousParameters: args['previous-parameters'],
-          outputsFile: args.outputsFile,
+          outputsFile: configuration.settings.get(['outputsFile']),
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
         });
