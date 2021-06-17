@@ -335,6 +335,24 @@ export = {
 
     test.done();
   },
+
+  'correctly returns physical name of the log group'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const logGroup = new LogGroup(stack, 'LogGroup', {
+      logGroupName: 'my-log-group',
+    });
+
+    // THEN
+    test.equal(logGroup.logGroupPhysicalName(), 'my-log-group');
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      LogGroupName: 'my-log-group',
+    }));
+
+    test.done();
+  },
 };
 
 function dataDrivenTests(cases: any[][], body: (test: Test, ...args: any[]) => void) {
