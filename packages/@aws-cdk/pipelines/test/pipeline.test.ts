@@ -16,7 +16,7 @@ import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import { Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
-import { complianceSuite } from './helpers/compliance';
+import { behavior } from './helpers/compliance';
 import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
@@ -33,7 +33,7 @@ afterEach(() => {
   app.cleanup();
 });
 
-complianceSuite('references stack template in subassembly', (tests) => {
+behavior('references stack template in subassembly', (tests) => {
   tests.legacy(() => {
     // WHEN
     pipeline.addApplicationStage(new OneStackApp(app, 'App'));
@@ -56,7 +56,6 @@ complianceSuite('references stack template in subassembly', (tests) => {
     });
   });
 
-  tests.ignore.modern();
 });
 
 test('obvious error is thrown when stage contains no stacks', () => {
