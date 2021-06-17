@@ -425,7 +425,7 @@ export class Secret extends SecretBase {
       public readonly secretName = parseSecretName(scope, secretArn);
       protected readonly autoCreatePolicy = false;
       public get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
-    }(scope, id);
+    }(scope, id, { environmentFromArn: secretArn });
   }
 
   public readonly encryptionKey?: kms.IKey;

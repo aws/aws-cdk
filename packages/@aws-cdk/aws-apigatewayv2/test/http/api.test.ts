@@ -400,6 +400,24 @@ describe('HttpApi', () => {
       });
     });
 
+    test('can add default authorizer when using default integration', () => {
+      const stack = new Stack();
+
+      const authorizer = new DummyAuthorizer();
+
+      new HttpApi(stack, 'api', {
+        defaultIntegration: new DummyRouteIntegration(),
+        defaultAuthorizer: authorizer,
+        defaultAuthorizationScopes: ['read:pets'],
+      });
+
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+        AuthorizerId: 'auth-1234',
+        AuthorizationType: 'JWT',
+        AuthorizationScopes: ['read:pets'],
+      });
+    });
+
     test('can add default authorizer, but remove it for a route', () => {
       const stack = new Stack();
       const authorizer = new DummyAuthorizer();

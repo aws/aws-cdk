@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, Aws, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
+import { Annotations, App, Aws, CfnOutput, Fn, Lazy, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
@@ -122,6 +122,13 @@ export interface CdkPipelineProps {
   readonly selfMutating?: boolean;
 
   /**
+   * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
+   *
+   * @default false
+   */
+  readonly singlePublisherPerType?: boolean;
+
+  /**
    * Whether the pipeline needs to build Docker images in the UpdatePipeline stage.
    *
    * If the UpdatePipeline stage tries to build a Docker image and this flag is not
@@ -229,6 +236,7 @@ export class CdkPipeline extends CoreConstruct {
       projectName: maybeSuffix(props.pipelineName, '-publish'),
       vpc: props.vpc,
       subnetSelection: props.subnetSelection,
+      singlePublisherPerType: props.singlePublisherPerType,
     });
   }
 
@@ -378,6 +386,7 @@ interface AssetPublishingProps {
   readonly projectName?: string;
   readonly vpc?: ec2.IVpc;
   readonly subnetSelection?: ec2.SubnetSelection;
+  readonly singlePublisherPerType?: boolean;
 }
 
 /**
@@ -389,6 +398,7 @@ class AssetPublishing extends CoreConstruct {
 
   private readonly publishers: Record<string, PublishAssetsAction> = {};
   private readonly assetRoles: Record<string, iam.IRole> = {};
+  private readonly assetPublishingRoles: Record<string, Set<string>> = {};
   private readonly myCxAsmRoot: string;
 
   private readonly lastStageBeforePublishing?: codepipeline.IStage;
@@ -431,16 +441,26 @@ class AssetPublishing extends CoreConstruct {
     if (!this.assetRoles[command.assetType]) {
       this.generateAssetRole(command.assetType);
     }
+    this.assetPublishingRoles[command.assetType] = (this.assetPublishingRoles[command.assetType] ?? new Set()).add(command.assetPublishingRoleArn);
 
-    let action = this.publishers[command.assetId];
+    const publisherKey = this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId;
+
+    let action = this.publishers[publisherKey];
     if (!action) {
       // Dynamically create new stages as needed, with `MAX_PUBLISHERS_PER_STAGE` assets per stage.
-      const stageIndex = Math.floor((this._fileAssetCtr + this._dockerAssetCtr) / this.MAX_PUBLISHERS_PER_STAGE);
-      if (stageIndex >= this.stages.length) {
+      const stageIndex = this.props.singlePublisherPerType ? 0 :
+        Math.floor((this._fileAssetCtr + this._dockerAssetCtr) / this.MAX_PUBLISHERS_PER_STAGE);
+
+      if (!this.props.singlePublisherPerType && stageIndex >= this.stages.length) {
         const previousStage = this.stages.slice(-1)[0] ?? this.lastStageBeforePublishing;
         this.stages.push(this.pipeline.addStage({
           stageName: `Assets${stageIndex > 0 ? stageIndex + 1 : ''}`,
           placement: { justAfter: previousStage },
+        }));
+      } else if (this.props.singlePublisherPerType && this.stages.length == 0) {
+        this.stages.push(this.pipeline.addStage({
+          stageName: 'Assets',
+          placement: { justAfter: this.lastStageBeforePublishing },
         }));
       }
 
@@ -450,12 +470,14 @@ class AssetPublishing extends CoreConstruct {
       //
       // FIXME: The ultimate best solution is probably to generate a single Project per asset type
       // and reuse that for all assets.
-      const id = command.assetType === AssetType.FILE ? `FileAsset${++this._fileAssetCtr}` : `DockerAsset${++this._dockerAssetCtr}`;
+      const id = this.props.singlePublisherPerType ?
+        command.assetType === AssetType.FILE ? 'FileAsset' : 'DockerAsset' :
+        command.assetType === AssetType.FILE ? `FileAsset${++this._fileAssetCtr}` : `DockerAsset${++this._dockerAssetCtr}`;
 
       // NOTE: It's important that asset changes don't force a pipeline self-mutation.
       // This can cause an infinite loop of updates (see https://github.com/aws/aws-cdk/issues/9080).
       // For that reason, we use the id as the actionName below, rather than the asset hash.
-      action = this.publishers[command.assetId] = new PublishAssetsAction(this, id, {
+      action = this.publishers[publisherKey] = new PublishAssetsAction(this, id, {
         actionName: id,
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
@@ -463,6 +485,7 @@ class AssetPublishing extends CoreConstruct {
         role: this.assetRoles[command.assetType],
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
+        createBuildspecFile: this.props.singlePublisherPerType,
       });
       this.stages[stageIndex].addAction(action);
     }
@@ -525,12 +548,11 @@ class AssetPublishing extends CoreConstruct {
     }));
 
     // Publishing role access
-    const rolePattern = assetType === AssetType.DOCKER_IMAGE
-      ? 'arn:*:iam::*:role/*-image-publishing-role-*'
-      : 'arn:*:iam::*:role/*-file-publishing-role-*';
+    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
+    // Lazy-evaluated so all asset publishing roles are included.
     assetRole.addToPolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: [rolePattern],
+      resources: Lazy.list({ produce: () => [...this.assetPublishingRoles[assetType]].map(arn => Fn.sub(arn)) }),
     }));
 
     // Artifact access

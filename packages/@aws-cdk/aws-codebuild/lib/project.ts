@@ -1,4 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
@@ -7,7 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { ArnComponents, Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
+import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -36,7 +37,19 @@ export interface BatchBuildConfig {
   readonly role: iam.IRole;
 }
 
-export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
+/**
+ * Additional options to pass to the notification rule.
+ */
+export interface ProjectNotifyOnOptions extends notifications.NotificationRuleOptions {
+  /**
+   * A list of event types associated with this notification rule for CodeBuild Project.
+   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
+   */
+  readonly events: ProjectNotificationEvents[];
+}
+
+export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource {
   /**
    * The ARN of this Project.
    * @attribute
@@ -170,6 +183,42 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    * @default sum over 5 minutes
    */
   metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Defines a CodeStar Notification rule triggered when the project
+   * events emitted by you specified, it very similar to `onEvent` API.
+   *
+   * You can also use the methods `notifyOnBuildSucceeded` and
+   * `notifyOnBuildFailed` to define rules for these specific event emitted.
+   *
+   * @param id The logical identifier of the CodeStar Notifications rule that will be created
+   * @param target The target to register for the CodeStar Notifications destination.
+   * @param options Customization options for CodeStar Notifications rule
+   * @returns CodeStar Notifications rule associated with this build project.
+   */
+  notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: ProjectNotifyOnOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar notification rule which triggers when a build completes successfully.
+   */
+  notifyOnBuildSucceeded(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar notification rule which triggers when a build fails.
+   */
+  notifyOnBuildFailed(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
 }
 
 /**
@@ -403,6 +452,46 @@ abstract class ProjectBase extends Resource implements IProject {
    */
   public metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(CodeBuildMetrics.failedBuildsSum, props);
+  }
+
+  public notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: ProjectNotifyOnOptions,
+  ): notifications.INotificationRule {
+    return new notifications.NotificationRule(this, id, {
+      ...options,
+      source: this,
+      targets: [target],
+    });
+  }
+
+  public notifyOnBuildSucceeded(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [ProjectNotificationEvents.BUILD_SUCCEEDED],
+    });
+  }
+
+  public notifyOnBuildFailed(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [ProjectNotificationEvents.BUILD_FAILED],
+    });
+  }
+
+  public bindAsNotificationRuleSource(_scope: Construct): notifications.NotificationRuleSourceConfig {
+    return {
+      sourceArn: this.projectArn,
+    };
   }
 
   private cannedMetric(
@@ -764,46 +853,34 @@ export class Project extends ProjectBase {
 
         // save SecretsManager env variables
         if (envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER) {
-          if (Token.isUnresolved(envVariableValue)) {
-            // the value of the property can be a complex string, separated by ':';
-            // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
-            const secretArn = envVariableValue.split(':')[0];
-
-            // if we are passed a Token, we should assume it's the ARN of the Secret
-            // (as the name would not work anyway, because it would be the full name, which CodeBuild does not support)
-            secretsManagerIamResources.add(secretArn);
-          } else {
-            // check if the provided value is a full ARN of the Secret
-            let parsedArn: ArnComponents | undefined;
-            try {
-              parsedArn = stack.parseArn(envVariableValue, ':');
-            } catch (e) {}
-            const secretSpecifier: string = parsedArn ? parsedArn.resourceName : envVariableValue;
+          // We have 3 basic cases here of what envVariableValue can be:
+          // 1. A string that starts with 'arn:' (and might contain Token fragments).
+          // 2. A Token.
+          // 3. A simple value, like 'secret-id'.
+          if (envVariableValue.startsWith('arn:')) {
+            const parsedArn = stack.parseArn(envVariableValue, ':');
+            if (!parsedArn.resourceName) {
+              throw new Error('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
+            }
 
             // the value of the property can be a complex string, separated by ':';
             // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
-            const secretName = secretSpecifier.split(':')[0];
-            const secretIamResourceName = parsedArn
-              // If we were given an ARN, we don't' know whether the name is full, or partial,
-              // as CodeBuild supports both ARN forms.
-              // Because of that, follow the name with a '*', which works for both
-              ? `${secretName}*`
-              // If we were given just a name, it must be partial, as CodeBuild doesn't support providing full names.
-              // In this case, we need to accommodate for the generated suffix in the IAM resource name
-              : `${secretName}-??????`;
+            const secretName = parsedArn.resourceName.split(':')[0];
             secretsManagerIamResources.add(stack.formatArn({
               service: 'secretsmanager',
               resource: 'secret',
-              resourceName: secretIamResourceName,
+              // since we don't know whether the ARN was full, or partial
+              // (CodeBuild supports both),
+              // stick a "*" at the end, which makes it work for both
+              resourceName: `${secretName}*`,
               sep: ':',
-              // if we were given an ARN, we need to use the provided partition/account/region
-              partition: parsedArn?.partition,
-              account: parsedArn?.account,
-              region: parsedArn?.region,
+              partition: parsedArn.partition,
+              account: parsedArn.account,
+              region: parsedArn.region,
             }));
             // if secret comes from another account, SecretsManager will need to access
             // KMS on the other account as well to be able to get the secret
-            if (parsedArn && parsedArn.account && Token.compareStrings(parsedArn.account, stack.account) === TokenComparison.DIFFERENT) {
+            if (parsedArn.account && Token.compareStrings(parsedArn.account, stack.account) === TokenComparison.DIFFERENT) {
               kmsIamResources.add(stack.formatArn({
                 service: 'kms',
                 resource: 'key',
@@ -811,12 +888,61 @@ export class Project extends ProjectBase {
                 // the key policies have to allow this access, so a wildcard is safe here
                 resourceName: '*',
                 sep: '/',
-                // if we were given an ARN, we need to use the provided partition/account/region
                 partition: parsedArn.partition,
                 account: parsedArn.account,
                 region: parsedArn.region,
               }));
             }
+          } else if (Token.isUnresolved(envVariableValue)) {
+            // the value of the property can be a complex string, separated by ':';
+            // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
+            let secretArn = envVariableValue.split(':')[0];
+
+            // parse the Token, and see if it represents a single resource
+            // (we will assume it's a Secret from SecretsManager)
+            const fragments = Tokenization.reverseString(envVariableValue);
+            if (fragments.tokens.length === 1) {
+              const resolvable = fragments.tokens[0];
+              if (Reference.isReference(resolvable)) {
+                // check the Stack the resource owning the reference belongs to
+                const resourceStack = Stack.of(resolvable.target);
+                if (Token.compareStrings(stack.account, resourceStack.account) === TokenComparison.DIFFERENT) {
+                  // since this is a cross-account access,
+                  // add the appropriate KMS permissions
+                  kmsIamResources.add(stack.formatArn({
+                    service: 'kms',
+                    resource: 'key',
+                    // We do not know the ID of the key, but since this is a cross-account access,
+                    // the key policies have to allow this access, so a wildcard is safe here
+                    resourceName: '*',
+                    sep: '/',
+                    partition: resourceStack.partition,
+                    account: resourceStack.account,
+                    region: resourceStack.region,
+                  }));
+
+                  // Work around a bug in SecretsManager -
+                  // when the access is cross-environment,
+                  // Secret.secretArn returns a partial ARN!
+                  // So add a "*" at the end, so that the permissions work
+                  secretArn = `${secretArn}-??????`;
+                }
+              }
+            }
+
+            // if we are passed a Token, we should assume it's the ARN of the Secret
+            // (as the name would not work anyway, because it would be the full name, which CodeBuild does not support)
+            secretsManagerIamResources.add(secretArn);
+          } else {
+            // the value of the property can be a complex string, separated by ':';
+            // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
+            const secretName = envVariableValue.split(':')[0];
+            secretsManagerIamResources.add(stack.formatArn({
+              service: 'secretsmanager',
+              resource: 'secret',
+              resourceName: `${secretName}-??????`,
+              sep: ':',
+            }));
           }
         }
       }
@@ -1923,4 +2049,40 @@ export enum BuildEnvironmentVariableType {
    * An environment variable stored in AWS Secrets Manager.
    */
   SECRETS_MANAGER = 'SECRETS_MANAGER'
+}
+
+/**
+ * The list of event types for AWS Codebuild
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject
+ */
+export enum ProjectNotificationEvents {
+  /**
+   * Trigger notification when project build state failed
+   */
+  BUILD_FAILED = 'codebuild-project-build-state-failed',
+
+  /**
+   * Trigger notification when project build state succeeded
+   */
+  BUILD_SUCCEEDED = 'codebuild-project-build-state-succeeded',
+
+  /**
+   * Trigger notification when project build state in progress
+   */
+  BUILD_IN_PROGRESS = 'codebuild-project-build-state-in-progress',
+
+  /**
+   * Trigger notification when project build state stopped
+   */
+  BUILD_STOPPED = 'codebuild-project-build-state-stopped',
+
+  /**
+   * Trigger notification when project build phase failure
+   */
+  BUILD_PHASE_FAILED = 'codebuild-project-build-phase-failure',
+
+  /**
+   * Trigger notification when project build phase success
+   */
+  BUILD_PHASE_SUCCEEDED = 'codebuild-project-build-phase-success',
 }

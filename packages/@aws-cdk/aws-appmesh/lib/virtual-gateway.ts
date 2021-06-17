@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 import { IMesh, Mesh } from './mesh';
+import { renderTlsClientPolicy } from './private/utils';
 import { AccessLog, BackendDefaults } from './shared-interfaces';
 import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-gateway-listener';
 
@@ -195,7 +196,9 @@ export class VirtualGateway extends VirtualGatewayBase {
         listeners: this.listeners.map(listener => listener.listener),
         backendDefaults: props.backendDefaults !== undefined
           ? {
-            clientPolicy: props.backendDefaults?.clientPolicy?.bind(this).clientPolicy,
+            clientPolicy: {
+              tls: renderTlsClientPolicy(this, props.backendDefaults?.tlsClientPolicy, (config) => config.virtualGatewayClientTlsValidationTrust),
+            },
           }
           : undefined,
         logging: accessLogging !== undefined ? {
