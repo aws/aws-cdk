@@ -79,31 +79,21 @@ export class AwsClients {
 
   public async emptyBucket(bucketName: string) {
     const objects = await this.s3('listObjectVersions', { Bucket: bucketName });
-    const deleteVersions = (objects.Versions || [])
-      .map(obj => {
+    const deletes = [...objects.Versions || [], ...objects.DeleteMarkers || []]
+      .reduce((acc, obj) => {
         if (typeof obj.Key === 'string' && typeof obj.VersionId === 'string') {
-          return { Key: obj.Key, VersionId: obj.VersionId };
+          return acc.concat([{ Key: obj.Key, VersionId: obj.VersionId }]);
         } else {
-          return { Key: '', VersionId: '' };
+          return acc;
         }
-      })
-      .filter(d => !!d.Key || !!d.VersionId);
-    const deleteMarkers = (objects.DeleteMarkers || [])
-      .map(obj => {
-        if (typeof obj.Key === 'string' && typeof obj.VersionId === 'string') {
-          return { Key: obj.Key, VersionId: obj.VersionId };
-        } else {
-          return { Key: '', VersionId: '' };
-        }
-      })
-      .filter(d => !!d.Key || !!d.VersionId);
-    if (deleteVersions.length === 0 && deleteMarkers.length === 0) {
+      }, [] as AWS.S3.ObjectIdentifierList);
+    if (deletes.length === 0) {
       return Promise.resolve();
     }
     return this.s3('deleteObjects', {
       Bucket: bucketName,
       Delete: {
-        Objects: [...deleteVersions, ...deleteMarkers],
+        Objects: deletes,
         Quiet: false,
       },
     });
