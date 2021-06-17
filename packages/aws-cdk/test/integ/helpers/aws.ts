@@ -81,8 +81,10 @@ export class AwsClients {
     const objects = await this.s3('listObjectVersions', { Bucket: bucketName });
     const deletes = [...objects.Versions || [], ...objects.DeleteMarkers || []]
       .reduce((acc, obj) => {
-        if (typeof obj.Key === 'string' && typeof obj.VersionId === 'string') {
+        if (typeof obj.VersionId === 'string' && typeof obj.Key === 'string') {
           acc.push({ Key: obj.Key, VersionId: obj.VersionId });
+        } else if (typeof obj.Key === 'string') {
+          acc.push({ Key: obj.Key });
         }
         return acc;
       }, [] as AWS.S3.ObjectIdentifierList);
