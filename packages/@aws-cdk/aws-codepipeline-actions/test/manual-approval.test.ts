@@ -29,9 +29,6 @@ nodeunitShim({
     'allows granting manual approval permissions to role'(test: Test) {
       const stack = new Stack();
       const role = new iam.Role(stack, 'Human', { assumedBy: new iam.AnyPrincipal() });
-      const manualApprovalAction = new cpactions.ManualApprovalAction({
-        actionName: 'Approve',
-      });
       const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
       pipeline.addStage({
         stageName: 'Source',
@@ -44,6 +41,10 @@ nodeunitShim({
         })],
       });
       const stage = pipeline.addStage({ stageName: 'stage' });
+
+      const manualApprovalAction = new cpactions.ManualApprovalAction({
+        actionName: 'Approve',
+      });
       stage.addAction(manualApprovalAction);
 
       manualApprovalAction.grantManualApproval(role);
@@ -68,21 +69,13 @@ nodeunitShim({
                   '',
                   [
                     'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
+                    { 'Ref': 'AWS::Partition' },
                     ':codepipeline:',
-                    {
-                      'Ref': 'AWS::Region',
-                    },
+                    { 'Ref': 'AWS::Region' },
                     ':',
-                    {
-                      'Ref': 'AWS::AccountId',
-                    },
+                    { 'Ref': 'AWS::AccountId' },
                     ':',
-                    {
-                      'Ref': 'pipelineDBECAE49',
-                    },
+                    { 'Ref': 'pipelineDBECAE49' },
                   ],
                 ],
               },
@@ -95,21 +88,13 @@ nodeunitShim({
                   '',
                   [
                     'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
+                    { 'Ref': 'AWS::Partition' },
                     ':codepipeline:',
-                    {
-                      'Ref': 'AWS::Region',
-                    },
+                    { 'Ref': 'AWS::Region' },
                     ':',
-                    {
-                      'Ref': 'AWS::AccountId',
-                    },
+                    { 'Ref': 'AWS::AccountId' },
                     ':',
-                    {
-                      'Ref': 'pipelineDBECAE49',
-                    },
+                    { 'Ref': 'pipelineDBECAE49' },
                     '/stage/Approve',
                   ],
                 ],

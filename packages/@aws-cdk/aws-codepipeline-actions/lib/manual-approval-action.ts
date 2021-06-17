@@ -47,8 +47,8 @@ export class ManualApprovalAction extends Action {
    * a new Topic will be created.
    */
   private _notificationTopic?: sns.ITopic;
-  private stage?: codepipeline.IStage;
   private readonly props: ManualApprovalActionProps;
+  private stage?: codepipeline.IStage;
 
   constructor(props: ManualApprovalActionProps) {
     super({
@@ -66,14 +66,15 @@ export class ManualApprovalAction extends Action {
   }
 
   /**
-   * grantManualApproval
+   * grant the provided principal the permissions to approve or reject this manual approval action
    *
+   * For more info see:
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/approvals-iam-permissions.html
    *
    * @param grantable the grantable to attach the permissions to
    */
-  public grantManualApproval(grantable: iam.IGrantable) {
-    if (!this.stage || !this.stage.pipeline) {
+  public grantManualApproval(grantable: iam.IGrantable): void {
+    if (!this.stage) {
       throw new Error('Cannot grant permissions before binding action to a stage');
     }
     grantable.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
