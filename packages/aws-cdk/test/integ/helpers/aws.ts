@@ -82,10 +82,9 @@ export class AwsClients {
     const deletes = [...objects.Versions || [], ...objects.DeleteMarkers || []]
       .reduce((acc, obj) => {
         if (typeof obj.Key === 'string' && typeof obj.VersionId === 'string') {
-          return acc.concat([{ Key: obj.Key, VersionId: obj.VersionId }]);
-        } else {
-          return acc;
+          acc.push({ Key: obj.Key, VersionId: obj.VersionId });
         }
+        return acc;
       }, [] as AWS.S3.ObjectIdentifierList);
     if (deletes.length === 0) {
       return Promise.resolve();
