@@ -81,9 +81,9 @@ export class AwsClients {
     const objects = await this.s3('listObjectVersions', { Bucket: bucketName });
     const deletes = [...objects.Versions || [], ...objects.DeleteMarkers || []]
       .reduce((acc, obj) => {
-        if (typeof obj.VersionId === 'string' && typeof obj.Key === 'string') {
+        if (typeof obj.VersionId !== 'undefined' && typeof obj.Key !== 'undefined') {
           acc.push({ Key: obj.Key, VersionId: obj.VersionId });
-        } else if (typeof obj.Key === 'string') {
+        } else if (typeof obj.Key !== 'undefined') {
           acc.push({ Key: obj.Key });
         }
         return acc;
