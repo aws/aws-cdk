@@ -228,7 +228,8 @@ abstract class SecretBase extends Resource implements ISecret {
       );
     }
 
-    if (result.resourceStatement && !this.encryptionKey) {
+    // Throw if secret is not imported and it's shared cross account and no KMS key is provided
+    if (this instanceof Secret && result.resourceStatement && !this.encryptionKey) {
       throw new Error('KMS Key must be provided for cross account access to Secret');
     }
 
@@ -251,7 +252,8 @@ abstract class SecretBase extends Resource implements ISecret {
       );
     }
 
-    if (result.resourceStatement && !this.encryptionKey) {
+    // Throw if secret is not imported and it's shared cross account and no KMS key is provided
+    if (this instanceof Secret && result.resourceStatement && !this.encryptionKey) {
       throw new Error('KMS Key must be provided for cross account access to Secret');
     }
 
