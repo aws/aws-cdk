@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { InputValidator } from './private/validation';
 import { CfnApplication } from './servicecatalogappregistry.generated';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -56,7 +57,6 @@ export class Application extends ApplicationBase implements IApplication {
    */
   public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
     const applicationId = applicationArn.split('/').pop()!;
-
     if (applicationArn.split('/').length != 3 || applicationId.length == 0) {
       throw new Error('Malformed ARN, cannot determine application ID from: ' + applicationArn);
     }
@@ -73,18 +73,23 @@ export class Application extends ApplicationBase implements IApplication {
 
   public readonly applicationArn: string;
   public readonly applicationId: string;
-  private readonly application: CfnApplication;
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
     super(scope, id, {
     });
+    this.validateApplicationProps(props);
 
-    this.application = new CfnApplication(this, 'Resource', {
+    const application = new CfnApplication(this, 'Resource', {
       name: props.applicationName,
       description: props.description,
     });
 
-    this.applicationId = cdk.Token.asString(this.application.getAtt('Id'));
-    this.applicationArn = cdk.Token.asString(this.application.getAtt('Arn'));
+    this.applicationArn = application.attrArn;
+    this.applicationId = application.attrId;
+  }
+  private validateApplicationProps(props: ApplicationProps) {
+    InputValidator.validateLength(this.node.path, 'application name', 1, 256, props.applicationName);
+    InputValidator.validateRegex(this.node.path, 'application name', /^[a-zA-Z0-9-_]+$/, props.applicationName);
+    InputValidator.validateLength(this.node.path, 'application description', 0, 1024, props.description);
   }
 }

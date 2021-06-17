@@ -1,4 +1,3 @@
-
 import * as cdk from '@aws-cdk/core';
 import * as appreg from '../lib';
 

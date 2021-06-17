@@ -37,7 +37,7 @@ The application name must be unique at the account level, but is mutable.
 ```ts
 const application = new appreg.Application(this, 'MyFirstApplication', {
   applicationName: 'MyFirstApplicationName', 
-  description: 'description for my application',
+  description: 'description for my application', // the description is optional
 });
 ```
 
@@ -46,5 +46,5 @@ Applications can be imported by their ARN via the `Application.fromApplicationAr
 
 ```ts
 const importedApplication = appreg.Application.fromArn(this, 'MyImportedApplication', 
-'arn:aws:servicecatalog:us-east-1:012345678910:/applications/0aqmvxvgmry0ecc4mjhwypun6i');
+  'arn:aws:servicecatalog:us-east-1:012345678910:/applications/0aqmvxvgmry0ecc4mjhwypun6i');
 ```

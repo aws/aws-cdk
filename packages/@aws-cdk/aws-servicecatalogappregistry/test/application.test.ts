@@ -57,7 +57,6 @@ describe('Application', () => {
   test('for an application imported by ARN', () => {
     const application = appreg.Application.fromApplicationArn(stack, 'MyApplication',
       'arn:aws:servicecatalog:us-east-1:123456789012:/applications/0aqmvxvgmry0ecc4mjhwypun6i');
-
     expect(application.applicationId).toEqual('0aqmvxvgmry0ecc4mjhwypun6i');
   }),
 
@@ -66,6 +65,39 @@ describe('Application', () => {
       appreg.Application.fromApplicationArn(stack, 'MyApplication',
         'arn:aws:servicecatalog:us-east-1:123456789012:/applications/');
     }).toThrow(/Malformed ARN, cannot determine application ID from:/);
+  }),
+
+  test('fails for application with description length longer than allowed', () => {
+    expect(() => {
+      new appreg.Application(stack, 'MyApplication', {
+        applicationName: 'testApplication',
+        description: 'too long description'.repeat(1000),
+      });
+    }).toThrow(/Invalid application description for resource/);
+  }),
+
+  test('fails for application creation with name too short', () => {
+    expect(() => {
+      new appreg.Application(stack, 'MyApplication', {
+        applicationName: '',
+      });
+    }).toThrow(/Invalid application name for resource/);
+  }),
+
+  test('fails for application with name too long', () => {
+    expect(() => {
+      new appreg.Application(stack, 'MyApplication', {
+        applicationName: 'testApplication'.repeat(50),
+      });
+    }).toThrow(/Invalid application name for resource/);
+  }),
+
+  test('fails for application with name of invalid characters', () => {
+    expect(() => {
+      new appreg.Application(stack, 'MyApplication', {
+        applicationName: 'My@ppl!iC@ #',
+      });
+    }).toThrow(/Invalid application name for resource/);
   });
 });
 
