@@ -866,7 +866,8 @@ but `notifyEmails` were,
 a new SNS Topic will be created
 (and accessible through the `notificationTopic` property of the Action).
 
-If you want to grant any principal permissions to click on the approve button you can invoke the method `grantManualApproval` with the given `IGrantable`.
+If you want to grant a principal permissions to approve the changes,
+you can invoke the method `grantManualApproval` passing it a `IGrantable`:
 
 ### AWS Lambda
 
