@@ -29,6 +29,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Portfolio](#portfolio)
   - [Granting access to a portfolio](#granting-access-to-a-portfolio)
   - [Sharing a portfolio with another AWS account](#sharing-a-portfolio-with-another-aws-account)
+- [Product](#product)
 
 The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
@@ -96,4 +97,23 @@ A portfolio can be programatically shared with other accounts so that specified 
 
 ```ts fixture=basic-portfolio
 portfolio.shareWithAccount('012345678901');
+```
+
+## Product
+
+Products are the resources you are allowing end users to provision and utilize. 
+The cdk currently only supports adding products of type Cloudformation product. 
+Using the CDK, a new Product can be created with the `Product` construct:
+
+```ts
+const product = new servicecatalog.Product(this, 'MyFirstProduct', {
+  productName: "My Product",
+  owner: "Product Owner",
+  provisioningArtifacts: [
+    {
+      name: "v1",
+      templateUrl:'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'
+    },
+  ]
+});
 ```

@@ -97,7 +97,11 @@
   "awslint": {
     "exclude": [
       "resource-attribute:@aws-cdk/aws-servicecatalog.Portfolio.portfolioName",
-      "props-physical-name:@aws-cdk/aws-servicecatalog.PortfolioProps"
+      "resource-attribute:@aws-cdk/aws-servicecatalog.Product.cloudFormationProductProductName",
+      "resource-attribute:@aws-cdk/aws-servicecatalog.Product.cloudFormationProductProvisioningArtifactIds",
+      "resource-attribute:@aws-cdk/aws-servicecatalog.Product.cloudFormationProductProvisioningArtifactNames",
+      "props-physical-name:@aws-cdk/aws-servicecatalog.PortfolioProps",
+      "props-physical-name:@aws-cdk/aws-servicecatalog.ProductProps"
     ]
   },
   "maturity": "experimental",
