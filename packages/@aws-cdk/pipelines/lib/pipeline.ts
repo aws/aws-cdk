@@ -122,19 +122,19 @@ export interface CdkPipelineProps {
   readonly selfMutating?: boolean;
 
   /**
-   * Optional settings to configure the asset publishing step
-   *
-   * @default -
-   */
-  readonly assetPublishingOptions?: AssetPublishingOptions;
-
-  /**
    * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
    *
    * @default false
-   * @deprecated use `assetPublishingOptions.singlePublisherPerType`
    */
   readonly singlePublisherPerType?: boolean;
+
+  /**
+   * Additional commands to run before installing cdk-assets during the asset publishing step
+   * Use this to setup proxies or npm mirrors
+   *
+   * @default -
+   */
+  readonly assetPreInstallCommands?: string[];
 
   /**
    * Whether the pipeline needs to build Docker images in the UpdatePipeline stage.
@@ -151,27 +151,6 @@ export interface CdkPipelineProps {
    * @default - false
    */
   readonly supportDockerAssets?: boolean;
-}
-
-/**
- * Optional settings to configure the asset publishing step
- */
-export interface AssetPublishingOptions {
-
-  /**
-   * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
-   *
-   * @default false
-   */
-  readonly singlePublisherPerType?: boolean;
-
-  /**
-   * Additional commands to run before installing cdk-assert
-   * Use this to setup proxies or npm mirrors
-   *
-   * @default -
-   */
-  readonly preInstallCommands?: string[];
 }
 
 /**
@@ -265,8 +244,8 @@ export class CdkPipeline extends CoreConstruct {
       projectName: maybeSuffix(props.pipelineName, '-publish'),
       vpc: props.vpc,
       subnetSelection: props.subnetSelection,
-      singlePublisherPerType: props.assetPublishingOptions?.singlePublisherPerType ?? props.singlePublisherPerType,
-      preInstallCommands: props.assetPublishingOptions?.preInstallCommands,
+      singlePublisherPerType: props.singlePublisherPerType,
+      preInstallCommands: props.assetPreInstallCommands,
     });
   }
 
@@ -372,7 +351,7 @@ export class CdkPipeline extends CoreConstruct {
     return flatMap(this._pipeline.stages, s => s.actions.filter(isDeployAction));
   }
 
-  private* validateDeployOrder(): IterableIterator<string> {
+  private * validateDeployOrder(): IterableIterator<string> {
     const stackActions = this.stackActions;
     for (const stackAction of stackActions) {
       // For every dependency, it must be executed in an action before this one is prepared.
@@ -390,7 +369,7 @@ export class CdkPipeline extends CoreConstruct {
     }
   }
 
-  private* validateRequestedOutputs(): IterableIterator<string> {
+  private * validateRequestedOutputs(): IterableIterator<string> {
     const artifactIds = this.stackActions.map(s => s.stackArtifactId);
 
     for (const artifactId of Object.keys(this._outputArtifacts)) {

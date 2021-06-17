@@ -363,11 +363,9 @@ test('can supply pre-install scripts to asset upload', () => {
   app = new TestApp();
   pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    assetPublishingOptions: {
-      preInstallCommands: [
-        'npm config set registry https://registry.com',
-      ],
-    },
+    assetPreInstallCommands: [
+      'npm config set registry https://registry.com',
+    ],
   });
   pipeline.addApplicationStage(new FileAssetApp(app, 'FileAssetApp'));
 
@@ -448,9 +446,7 @@ describe('pipeline with single asset publisher', () => {
     app = new TestApp();
     pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
     pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      assetPublishingOptions: {
-        singlePublisherPerType: true,
-      },
+      singlePublisherPerType: true,
     });
   });
 
