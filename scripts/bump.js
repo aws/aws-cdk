@@ -54,7 +54,7 @@ async function main() {
   await standardVersion(opts);
 
   // fetch back the tags, and only the tags, removed locally above
-  await exec('git fetch origin refs/tags/*:refs/tags/*');
+  await exec('git fetch origin "refs/tags/*:refs/tags/*"');
 }
 
 main().catch(err => {
