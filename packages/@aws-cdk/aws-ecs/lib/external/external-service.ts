@@ -159,17 +159,6 @@ export class ExternalService extends BaseService implements IExternalService {
     throw new Error ('Application load balancer cannot be attached to an external service');
   }
 
-  // /**
-  //  * Registers the service as a target of a Classic Load Balancer (CLB).
-  //  *
-  //  * [disable-awslint:ref-via-interface]
-  //  *
-  //  * Not support by External service
-  //  */
-  // public attachToClassicLB(_: elb.LoadBalancer): void {
-  //   throw new Error ('Classic load balancer cannot be attached to an external service');
-  // }
-
   /**
    * Overriden method to throw error as `loadBalancerTarget` is not supported for external service
    */
