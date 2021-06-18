@@ -1,4 +1,6 @@
 import { Stack, Stage } from '@aws-cdk/core';
+import { Match } from './match';
+import { LiteralMatch } from './matchers';
 import * as assert from './vendored/assert';
 
 /**
@@ -70,6 +72,22 @@ export class TemplateAssertions {
   public hasResourceDefinition(type: string, props: any): void {
     const assertion = assert.haveResource(type, props, assert.ResourcePart.CompleteDefinition);
     assertion.assertOrThrow(this.inspector);
+  }
+
+  public hasResource(type: string, props: any): void {
+    const matcher = Match.isMatcher(props) ? props : new LiteralMatch(props);
+    for (const logicalId of Object.keys(this.inspector.value.Resources || {})) {
+      const resource = this.inspector.value.Resources[logicalId];
+      if (resource.Type === type) {
+        // FIXME: replace by ObjectLikeMatch
+        const typeOmitted = { ...resource };
+        delete typeOmitted.Type;
+        if (matcher.test(typeOmitted)) {
+          return;
+        }
+      }
+    }
+    throw new Error('MYERROR');
   }
 
   /**

@@ -135,4 +135,19 @@ describe('StackAssertions', () => {
       })).resolves;
     });
   });
+
+  describe('hasResource', () => {
+    test('matches', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+      inspect.hasResource('Foo::Bar', {
+        Properties: { baz: 'qux' },
+      });
+    });
+  });
 });
