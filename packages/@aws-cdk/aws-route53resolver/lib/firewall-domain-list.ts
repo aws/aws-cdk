@@ -1,4 +1,6 @@
+import * as path from 'path';
 import { IBucket } from '@aws-cdk/aws-s3';
+import { Asset } from '@aws-cdk/aws-s3-assets';
 import { IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnFirewallDomainList } from './route53resolver.generated';
@@ -37,7 +39,7 @@ export interface FirewallDomainListProps {
  */
 export abstract class FirewallDomains {
   /**
-   * Firewall domains created from a list
+   * Firewall domains created from a list of domains
    *
    * @param list the list of domains
    */
@@ -48,6 +50,7 @@ export abstract class FirewallDomains {
   /**
    * Firewall domains created from the URI of a file stored in Amazon S3.
    * The file must be a text file and must contain a single domain per line.
+   * The content type of the S3 object must be `plain/text`.
    *
    * @param s3Uri S3 bucket uri (s3://bucket/prefix/objet).
    */
@@ -62,12 +65,36 @@ export abstract class FirewallDomains {
   /**
    * Firewall domains created from a file stored in Amazon S3.
    * The file must be a text file and must contain a single domain per line.
+   * The content type of the S3 object must be `plain/text`.
    *
    * @param bucket S3 bucket
    * @param key S3 key
    */
   public static fromS3(bucket: IBucket, key: string): FirewallDomains {
     return this.fromS3Uri(bucket.s3UrlForObject(key));
+  }
+
+  /**
+   * Firewall domains created from a local disk path to a text file.
+   * The file must be a text file (`.txt` extension) and must contain a single
+   * domain per line.
+   *
+   * @param assetPath path to the text file
+   */
+  public static fromAsset(scope: Construct, id: string, assetPath: string): FirewallDomains {
+    // cdk-assets will correctly set the content type for the S3 object
+    // if the file has the correct extension
+    if (path.extname(assetPath) !== '.txt') {
+      throw new Error(`FirewallDomains.fromAsset() expects a file with the .txt extension, got ${assetPath}`);
+    }
+
+    const asset = new Asset(scope, id, { path: assetPath });
+
+    if (!asset.isFile) {
+      throw new Error('FirewallDomains.fromAsset() expects a file');
+    }
+
+    return this.fromS3Uri(asset.s3ObjectUrl);
   }
 
   /** S3 bucket URI of text file with domain list */

@@ -213,6 +213,49 @@
         ]
       }
     },
+    "OtherListBA4427B5": {
+      "Type": "AWS::Route53Resolver::FirewallDomainList",
+      "Properties": {
+        "DomainFileUrl": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3BucketD6778673"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3VersionKey1A69D23D"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3VersionKey1A69D23D"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
     "RuleGroup06BA8844": {
       "Type": "AWS::Route53Resolver::FirewallRuleGroup",
       "Properties": {
@@ -259,6 +302,20 @@
           "Ref": "Vpc8378EB38"
         }
       }
+    }
+  },
+  "Parameters": {
+    "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3BucketD6778673": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a\""
+    },
+    "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3VersionKey1A69D23D": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a\""
+    },
+    "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aArtifactHashFF61A347": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a\""
     }
   }
 }

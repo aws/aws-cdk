@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -14,6 +15,10 @@ class TestStack extends Stack {
     });
     const overrideList = new route53resolver.FirewallDomainList(this, 'OverrideList', {
       domains: route53resolver.FirewallDomains.fromList(['override-domain.com']),
+    });
+
+    new route53resolver.FirewallDomainList(this, 'OtherList', {
+      domains: route53resolver.FirewallDomains.fromAsset(this, 'Domains', path.join(__dirname, 'domains.txt')),
     });
 
     const ruleGroup = new route53resolver.FirewallRuleGroup(this, 'RuleGroup');
