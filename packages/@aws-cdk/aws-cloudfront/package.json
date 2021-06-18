@@ -159,7 +159,8 @@
       "resource-attribute:@aws-cdk/aws-cloudfront.OriginRequestPolicy.originRequestPolicyLastModifiedTime",
       "resource-attribute:@aws-cdk/aws-cloudfront.KeyGroup.keyGroupLastModifiedTime",
       "resource-attribute:@aws-cdk/aws-cloudfront.PublicKey.publicKeyCreatedTime",
-      "resource-attribute:@aws-cdk/aws-cloudfront.OriginAccessIdentity.cloudFrontOriginAccessIdentityId"
+      "resource-attribute:@aws-cdk/aws-cloudfront.OriginAccessIdentity.cloudFrontOriginAccessIdentityId",
+      "resource-attribute:@aws-cdk/aws-cloudfront.Function.functionMetadataFunctionArn"
     ]
   },
   "awscdkio": {
