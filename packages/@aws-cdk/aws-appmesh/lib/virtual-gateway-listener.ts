@@ -1,13 +1,13 @@
 import { CfnVirtualGateway } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
-import { ConnectionPoolConfig, renderTls } from './private/utils';
+import { ListenerTls } from './listener-tls';
+import { ConnectionPoolConfig, renderListenerTls } from './private/utils';
 import {
   GrpcConnectionPool,
   Http2ConnectionPool,
   HttpConnectionPool,
   Protocol,
 } from './shared-interfaces';
-import { TlsListener } from './tls-listener';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -36,7 +36,7 @@ interface VirtualGatewayListenerCommonOptions {
    *
    * @default - none
    */
-  readonly tls?: TlsListener;
+  readonly tls?: ListenerTls;
 }
 
 /**
@@ -125,7 +125,7 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
   constructor(private readonly protocol: Protocol,
     private readonly healthCheck: HealthCheck | undefined,
     private readonly port: number = 8080,
-    private readonly tls: TlsListener | undefined,
+    private readonly listenerTls: ListenerTls | undefined,
     private readonly connectionPool: ConnectionPoolConfig | undefined) {
     super();
   }
@@ -142,7 +142,7 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
           protocol: this.protocol,
         },
         healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualGatewayHealthCheck,
-        tls: renderTls(scope, this.tls),
+        tls: renderListenerTls(scope, this.listenerTls),
         connectionPool: this.connectionPool ? renderConnectionPool(this.connectionPool, this.protocol) : undefined,
       },
     };

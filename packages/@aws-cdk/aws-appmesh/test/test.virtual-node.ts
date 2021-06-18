@@ -331,12 +331,10 @@ export = {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           backendDefaults: {
-            tlsClientPolicy: {
+            clientPolicyTls: {
               ports: [8080, 8081],
               validation: {
-                trust: appmesh.TlsValidationTrust.acm({
-                  certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-                }),
+                trust: appmesh.TlsValidationTrust.acm([acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
               },
             },
           },
@@ -366,7 +364,7 @@ export = {
       },
     },
 
-    'with client\'s TLS certificate from SDS': {
+    "with client's TLS certificate from SDS": {
       'should add a backend default to the resource with TLS certificate'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
@@ -379,18 +377,14 @@ export = {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           backendDefaults: {
-            tlsClientPolicy: {
-              certificate: appmesh.TlsCertificate.sds( {
-                secretName: 'secret_certificate',
-              }),
+            clientPolicyTls: {
+              mutualTlsAuthCertificate: appmesh.TlsCertificate.sds( 'secret_certificate'),
               ports: [8080, 8081],
               validation: {
                 subjectAlternativeNames: {
                   exactMatch: ['mesh-endpoint.apps.local'],
                 },
-                trust: appmesh.TlsValidationTrust.sds({
-                  secretName: 'secret_validation',
-                }),
+                trust: appmesh.TlsValidationTrust.sds('secret_validation'),
               },
             },
           },
@@ -430,43 +424,6 @@ export = {
       },
     },
 
-    'with client\'s TLS certificate from ACM': {
-      'should throw an error'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-        const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
-        const cert = new acm.Certificate(stack, 'cert', {
-          domainName: '',
-        });
-
-        // WHEN + THEN
-        test.throws(() => {
-          new appmesh.VirtualNode(stack, 'test-node', {
-            mesh,
-            serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-            backendDefaults: {
-              tlsClientPolicy: {
-                certificate: appmesh.TlsCertificate.acm({
-                  certificate: cert,
-                }),
-                ports: [8080, 8081],
-                validation: {
-                  trust: appmesh.TlsValidationTrust.acm({
-                    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-                  }),
-                },
-              },
-            },
-          });
-        }, /ACM certificate source is currently not supported./);
-
-        test.done();
-      },
-    },
-
     'when a backend is added': {
       'should add a backend virtual service to the resource'(test: Test) {
         // GIVEN
@@ -488,12 +445,10 @@ export = {
         });
 
         node.addBackend(appmesh.Backend.virtualService(service1, {
-          tlsClientPolicy: {
+          clientPolicyTls: {
             ports: [8080, 8081],
             validation: {
-              trust: appmesh.TlsValidationTrust.file({
-                certificateChain: 'path-to-certificate',
-              }),
+              trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
             },
           },
         }));
@@ -549,9 +504,7 @@ export = {
             port: 80,
             tls: {
               mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.acm({
-                certificate: cert,
-              }),
+              certificate: appmesh.TlsCertificate.acm(cert),
             },
           },
           )],
@@ -597,10 +550,7 @@ export = {
             port: 80,
             tls: {
               mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.file({
-                certificateChainPath: 'path/to/certChain',
-                privateKeyPath: 'path/to/privateKey',
-              }),
+              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
             },
           })],
         });
@@ -643,9 +593,7 @@ export = {
             port: 80,
             tls: {
               mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.sds({
-                secretName: 'secret_certificate',
-              }),
+              certificate: appmesh.TlsCertificate.sds('secret_certificate'),
             },
           })],
         });
@@ -688,10 +636,7 @@ export = {
             port: 80,
             tls: {
               mode: appmesh.TlsMode.PERMISSIVE,
-              certificate: appmesh.TlsCertificate.file({
-                certificateChainPath: 'path/to/certChain',
-                privateKeyPath: 'path/to/privateKey',
-              }),
+              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
             },
           })],
         });
@@ -925,10 +870,7 @@ export = {
         port: 80,
         tls: {
           mode: appmesh.TlsMode.PERMISSIVE,
-          certificate: appmesh.TlsCertificate.file({
-            certificateChainPath: 'path/to/certChain',
-            privateKeyPath: 'path/to/privateKey',
-          }),
+          certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
         },
       })],
     });

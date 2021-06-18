@@ -8,7 +8,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Represents the properties needed to define TLS Validation context
  */
-export interface TlsValidation {
+interface TlsValidationCommonProperty {
   /**
    * Represents the subject alternative names (SANs) secured by the certificate.
    * SANs must be in the FQDN or URI format.
@@ -16,11 +16,26 @@ export interface TlsValidation {
    * @default - the Envoy proxy for that node doesn't verify the SAN on a peer client certificate.
    */
   readonly subjectAlternativeNames?: SubjectiveAlternativeNames;
+}
 
+/**
+ * Represents the properties needed to define TLS Validation context
+ */
+export interface TlsValidation extends TlsValidationCommonProperty {
   /**
    * Reference to where to retrieve the trust chain.
    */
   readonly trust: TlsValidationTrust;
+}
+
+/**
+ * Represents the properties needed to define TLS Validation context
+ */
+export interface MutualTLSAuthEligibleTlsValidation extends TlsValidationCommonProperty {
+  /**
+   * Reference to where to retrieve the trust chain.
+   */
+  readonly trust: MutualTLSAuthEligibleTlsValidationTrust;
 }
 
 /**
@@ -34,58 +49,28 @@ export interface TlsValidationTrustConfig {
 }
 
 /**
- * ACM Trust Properties
- */
-export interface TlsValidationAcmTrustOptions {
-  /**
-   * Contains information for your private certificate authority
-   */
-  readonly certificateAuthorities: acmpca.ICertificateAuthority[];
-}
-
-/**
- * File Trust Properties
- */
-export interface TlsValidationFileTrustOptions {
-  /**
-   * Path to the Certificate Chain file on the file system where the Envoy is deployed.
-   */
-  readonly certificateChain: string;
-}
-
-/**
- * SDS Trust Properties
- */
-export interface TlsValidationSdsTrustOptions {
-  /**
-   * The name of the secret for Envoy to fetch from a specific endpoint through the Secrets Discovery Protocol.
-   */
-  readonly secretName: string;
-}
-
-/**
  * Defines the TLS Validation Context Trust.
  */
 export abstract class TlsValidationTrust {
   /**
    * Tells envoy where to fetch the validation context from
    */
-  public static file(props: TlsValidationFileTrustOptions): TlsValidationTrust {
-    return new TlsValidationFileTrust(props);
+  public static file(certificateChain: string): MutualTLSAuthEligibleTlsValidationTrust {
+    return new TlsValidationFileTrust(certificateChain);
   }
 
   /**
    * TLS Validation Context Trust for ACM Private Certificate Authority (CA).
    */
-  public static acm(props: TlsValidationAcmTrustOptions): TlsValidationTrust {
-    return new TlsValidationAcmTrust(props);
+  public static acm(certificateAuthorities: acmpca.ICertificateAuthority[]): TlsValidationTrust {
+    return new TlsValidationAcmTrust(certificateAuthorities);
   }
 
   /**
    * TLS Validation Context Trust for Envoy' service discovery service.
    */
-  public static sds(props: TlsValidationSdsTrustOptions): TlsValidationTrust {
-    return new TlsValidationSdsTrust(props);
+  public static sds(secretName: string): MutualTLSAuthEligibleTlsValidationTrust {
+    return new TlsValidationSdsTrust(secretName);
   }
 
   /**
@@ -94,15 +79,23 @@ export abstract class TlsValidationTrust {
   public abstract bind(scope: Construct): TlsValidationTrustConfig;
 }
 
+/**
+ * Represents a TLS Validation Context Trust that is supported for mutual TLS authentication.
+ */
+export abstract class MutualTLSAuthEligibleTlsValidationTrust extends TlsValidationTrust {
+  // TypeScript uses structural typing, so we need a property different from TlsValidationTrust
+  protected readonly differentiator = false;
+}
+
 class TlsValidationAcmTrust extends TlsValidationTrust {
   /**
    * Contains information for your private certificate authority
    */
   readonly certificateAuthorities: acmpca.ICertificateAuthority[];
 
-  constructor (props: TlsValidationAcmTrustOptions) {
+  constructor (certificateAuthorities: acmpca.ICertificateAuthority[]) {
     super();
-    this.certificateAuthorities = props.certificateAuthorities;
+    this.certificateAuthorities = certificateAuthorities;
   }
 
   public bind(_scope: Construct): TlsValidationTrustConfig {
@@ -121,15 +114,15 @@ class TlsValidationAcmTrust extends TlsValidationTrust {
   }
 }
 
-class TlsValidationFileTrust extends TlsValidationTrust {
+class TlsValidationFileTrust extends MutualTLSAuthEligibleTlsValidationTrust {
   /**
    * Path to the Certificate Chain file on the file system where the Envoy is deployed.
    */
   readonly certificateChain: string;
 
-  constructor (props: TlsValidationFileTrustOptions) {
+  constructor (certificateChain: string) {
     super();
-    this.certificateChain = props.certificateChain;
+    this.certificateChain = certificateChain;
   }
 
   public bind(_scope: Construct): TlsValidationTrustConfig {
@@ -143,15 +136,15 @@ class TlsValidationFileTrust extends TlsValidationTrust {
   }
 }
 
-class TlsValidationSdsTrust extends TlsValidationTrust {
+class TlsValidationSdsTrust extends MutualTLSAuthEligibleTlsValidationTrust {
   /**
    * The name of the secret for Envoy to fetch from a specific endpoint through the Secrets Discovery Protocol.
    */
   readonly secretName: string;
 
-  constructor (props: TlsValidationSdsTrustOptions) {
+  constructor (secretName: string) {
     super();
-    this.secretName = props.secretName;
+    this.secretName = secretName;
   }
 
   public bind(_scope: Construct): TlsValidationTrustConfig {

@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
+import { ClientPolicyTls } from './client-policy-tls';
 import { renderTlsClientPolicy } from './private/utils';
-import { TlsClientPolicy } from './tls-client-policy';
 import { IVirtualService } from './virtual-service';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -173,11 +173,11 @@ class FileAccessLog extends AccessLog {
  */
 export interface BackendDefaults {
   /**
-   * Client policy for backend defaults
+   * TLS properties for Client policy for backend defaults
    *
    * @default - none
    */
-  readonly tlsClientPolicy?: TlsClientPolicy;
+  readonly clientPolicyTls?: ClientPolicyTls;
 }
 
 /**
@@ -186,11 +186,11 @@ export interface BackendDefaults {
 export interface VirtualServiceBackendOptions {
 
   /**
-   * Client policy for the backend
+   * TLS properties for  Client policy for the backend
    *
    * @default - none
    */
-  readonly tlsClientPolicy?: TlsClientPolicy;
+  readonly clientPolicyTls?: ClientPolicyTls;
 }
 
 /**
@@ -212,7 +212,7 @@ export abstract class Backend {
    * Construct a Virtual Service backend
    */
   public static virtualService(virtualService: IVirtualService, props: VirtualServiceBackendOptions = {}): Backend {
-    return new VirtualServiceBackend(virtualService, props.tlsClientPolicy);
+    return new VirtualServiceBackend(virtualService, props.clientPolicyTls);
   }
 
   /**
@@ -227,7 +227,7 @@ export abstract class Backend {
 class VirtualServiceBackend extends Backend {
 
   constructor (private readonly virtualService: IVirtualService,
-    private readonly tlsClientPolicy: TlsClientPolicy | undefined) {
+    private readonly clientPolicyTls: ClientPolicyTls | undefined) {
     super();
   }
 
@@ -239,9 +239,9 @@ class VirtualServiceBackend extends Backend {
       virtualServiceBackend: {
         virtualService: {
           virtualServiceName: this.virtualService.virtualServiceName,
-          clientPolicy: this.tlsClientPolicy
+          clientPolicy: this.clientPolicyTls
             ? {
-              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),
+              tls: renderTlsClientPolicy(scope, this.clientPolicyTls),
             }
             : undefined,
         },

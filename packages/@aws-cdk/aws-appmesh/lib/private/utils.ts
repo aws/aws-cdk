@@ -1,6 +1,6 @@
 import { CfnVirtualNode } from '../appmesh.generated';
-import { TlsClientPolicy } from '../tls-client-policy';
-import { TlsListener } from '../tls-listener';
+import { ClientPolicyTls } from '../client-policy-tls';
+import { ListenerTls } from '../listener-tls';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -35,20 +35,16 @@ export interface ConnectionPoolConfig {
 /**
  * This is the helper method to render TLS property of client policy.
  */
-export function renderTlsClientPolicy(scope: Construct, tlsClientPolicy: TlsClientPolicy | undefined)
+export function renderTlsClientPolicy(scope: Construct, clientPolicyTls: ClientPolicyTls | undefined)
   : CfnVirtualNode.ClientPolicyTlsProperty | undefined {
-  const certificate = tlsClientPolicy?.certificate?.bind(scope).tlsCertificate;
-  if (certificate?.acm) {
-    throw new Error('ACM certificate source is currently not supported for Client certificates in a TLS Client Policy');
-  }
+  const certificate = clientPolicyTls?.mutualTlsAuthCertificate?.bind(scope).tlsCertificate;
+  const sans = clientPolicyTls?.validation.subjectAlternativeNames;
 
-  const sans = tlsClientPolicy?.validation.subjectAlternativeNames;
-
-  return tlsClientPolicy
+  return clientPolicyTls
     ? {
       certificate: certificate,
-      ports: tlsClientPolicy.ports,
-      enforce: tlsClientPolicy.enforce,
+      ports: clientPolicyTls.ports,
+      enforce: clientPolicyTls.enforce,
       validation: {
         subjectAlternativeNames: sans
           ? {
@@ -57,7 +53,7 @@ export function renderTlsClientPolicy(scope: Construct, tlsClientPolicy: TlsClie
             },
           }
           : undefined,
-        trust: tlsClientPolicy.validation.trust.bind(scope).tlsValidationTrust,
+        trust: clientPolicyTls.validation.trust.bind(scope).tlsValidationTrust,
       },
     }
     : undefined;
@@ -66,16 +62,16 @@ export function renderTlsClientPolicy(scope: Construct, tlsClientPolicy: TlsClie
 /**
  * This is the helper method to render the TLS config for a listener.
  */
-export function renderTls(scope: Construct, tls: TlsListener | undefined): CfnVirtualNode.ListenerTlsProperty | undefined {
-  const tlsValidation = tls?.validation;
+export function renderListenerTls(scope: Construct, listenerTls: ListenerTls | undefined): CfnVirtualNode.ListenerTlsProperty | undefined {
+  const tlsValidation = listenerTls?.mutualTlsAuthValidation;
   if (tlsValidation?.trust.bind(scope).tlsValidationTrust.acm) {
     throw new Error('ACM certificate source is currently not supported for server validation in a listener TLS configuration.');
   }
 
-  return tls
+  return listenerTls
     ? {
-      certificate: tls.certificate.bind(scope).tlsCertificate,
-      mode: tls.mode,
+      certificate: listenerTls.certificate.bind(scope).tlsCertificate,
+      mode: listenerTls.mode,
       validation: tlsValidation
         ? {
           subjectAlternativeNames: tlsValidation.subjectAlternativeNames

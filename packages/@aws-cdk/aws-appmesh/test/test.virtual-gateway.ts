@@ -1,5 +1,4 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
-import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -173,9 +172,7 @@ export = {
           port: 8080,
           tls: {
             mode: appmesh.TlsMode.STRICT,
-            certificate: appmesh.TlsCertificate.acm({
-              certificate: cert,
-            }),
+            certificate: appmesh.TlsCertificate.acm(cert),
           },
         })],
       });
@@ -219,10 +216,7 @@ export = {
           port: 8080,
           tls: {
             mode: appmesh.TlsMode.STRICT,
-            certificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-            }),
+            certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
           },
         })],
       });
@@ -264,9 +258,7 @@ export = {
           port: 8080,
           tls: {
             mode: appmesh.TlsMode.STRICT,
-            certificate: appmesh.TlsCertificate.sds({
-              secretName: 'secret_certificate',
-            }),
+            certificate: appmesh.TlsCertificate.sds('secret_certificate'),
           },
         })],
       });
@@ -292,44 +284,6 @@ export = {
       test.done();
     },
 
-    'with an http listener with TLS validation from ACM': {
-      'should throw an error'(test:Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-        const cert = new acm.Certificate(stack, 'cert', {
-          domainName: '',
-        });
-        const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
-
-        // WHEN + THEN
-        test.throws(() => {
-          new appmesh.VirtualGateway(stack, 'testGateway', {
-            virtualGatewayName: 'test-gateway',
-            mesh: mesh,
-            listeners: [appmesh.VirtualGatewayListener.http({
-              port: 8080,
-              tls: {
-                mode: appmesh.TlsMode.STRICT,
-                certificate: appmesh.TlsCertificate.acm({
-                  certificate: cert,
-                }),
-                validation: {
-                  trust: appmesh.TlsValidationTrust.acm({
-                    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-                  }),
-                },
-              },
-            })],
-          });
-        }, /ACM certificate source is currently not supported/);
-
-        test.done();
-      },
-    },
-
     'with an grpc listener with a TLS validation from file': {
       'the listener should include the TLS configuration'(test:Test) {
         // GIVEN
@@ -346,14 +300,9 @@ export = {
             port: 8080,
             tls: {
               mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.file({
-                certificateChainPath: 'path/to/certChain',
-                privateKeyPath: 'path/to/privateKey',
-              }),
-              validation: {
-                trust: appmesh.TlsValidationTrust.file({
-                  certificateChain: 'path/to/certChain',
-                }),
+              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+              mutualTlsAuthValidation: {
+                trust: appmesh.TlsValidationTrust.file('path/to/certChain'),
               },
             },
           })],
@@ -405,16 +354,12 @@ export = {
             port: 8080,
             tls: {
               mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.sds({
-                secretName: 'secret_certificate',
-              }),
-              validation: {
+              certificate: appmesh.TlsCertificate.sds('secret_certificate'),
+              mutualTlsAuthValidation: {
                 subjectAlternativeNames: {
                   exactMatch: ['mesh-endpoint.apps.local'],
                 },
-                trust: appmesh.TlsValidationTrust.sds({
-                  secretName: 'secret_validation',
-                }),
+                trust: appmesh.TlsValidationTrust.sds('secret_validation'),
               },
             },
           })],
@@ -465,10 +410,7 @@ export = {
           port: 8080,
           tls: {
             mode: appmesh.TlsMode.PERMISSIVE,
-            certificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-            }),
+            certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
           },
         })],
       });
@@ -598,11 +540,9 @@ export = {
         virtualGatewayName: 'virtual-gateway',
         mesh: mesh,
         backendDefaults: {
-          tlsClientPolicy: {
+          clientPolicyTls: {
             validation: {
-              trust: appmesh.TlsValidationTrust.file({
-                certificateChain: 'path-to-certificate',
-              }),
+              trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
             },
           },
         },
@@ -631,7 +571,7 @@ export = {
       test.done();
     },
 
-    'with client\'s TLS certificate from SDS': {
+    "with client's TLS certificate from SDS": {
       'should add a backend default to the resource with TLS certificate'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
@@ -644,17 +584,13 @@ export = {
           virtualGatewayName: 'virtual-gateway',
           mesh: mesh,
           backendDefaults: {
-            tlsClientPolicy: {
-              certificate: appmesh.TlsCertificate.sds( {
-                secretName: 'secret_certificate',
-              }),
+            clientPolicyTls: {
+              mutualTlsAuthCertificate: appmesh.TlsCertificate.sds( 'secret_certificate'),
               validation: {
                 subjectAlternativeNames: {
                   exactMatch: ['mesh-endpoint.apps.local'],
                 },
-                trust: appmesh.TlsValidationTrust.sds({
-                  secretName: 'secret_validation',
-                }),
+                trust: appmesh.TlsValidationTrust.sds('secret_validation'),
               },
             },
           },
@@ -689,39 +625,6 @@ export = {
             },
           },
         }));
-
-        test.done();
-      },
-    },
-
-    'with client\'s TLS certificate from ACM': {
-      'should throw an error if TLS certificate from ACM is selected as a source'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-        const cert = new acm.Certificate(stack, 'cert', {
-          domainName: '',
-        });
-
-        // WHEN + Then
-        test.throws(() => new appmesh.VirtualGateway(stack, 'virtual-gateway', {
-          virtualGatewayName: 'virtual-gateway',
-          mesh: mesh,
-          backendDefaults: {
-            tlsClientPolicy: {
-              certificate: appmesh.TlsCertificate.acm({
-                certificate: cert,
-              }),
-              validation: {
-                trust: appmesh.TlsValidationTrust.file({
-                  certificateChain: 'path-to-certificate',
-                }),
-              },
-            },
-          },
-        }), /ACM certificate source is currently not supported/);
 
         test.done();
       },

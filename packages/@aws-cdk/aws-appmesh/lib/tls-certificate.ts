@@ -16,63 +16,28 @@ export interface TlsCertificateConfig {
 }
 
 /**
- * ACM Certificate Properties
- */
-export interface AcmCertificateOptions {
-  /**
-   * The ACM certificate
-   */
-  readonly certificate: acm.ICertificate;
-}
-
-/**
- * File Certificate Properties
- */
-export interface FileCertificateOptions {
-  /**
-   * The file path of the certificate chain file.
-   */
-  readonly certificateChainPath: string;
-
-  /**
-   * The file path of the private key file.
-   */
-  readonly privateKeyPath: string;
-}
-
-/**
- * SDS Certificate Properties
- */
-export interface SdsCertificateOptions {
-  /**
-   * The name of the secret for Envoy to fetch from a specific endpoint through the Secrets Discovery Protocol.
-   */
-  readonly secretName: string;
-}
-
-/**
  * Represents a TLS certificate
  */
 export abstract class TlsCertificate {
   /**
    * Returns an File TLS Certificate
    */
-  public static file(props: FileCertificateOptions): TlsCertificate {
-    return new FileTlsCertificate(props);
+  public static file(certificateChainPath: string, privateKeyPath: string): MutualTLSAuthEligibleCertificate {
+    return new FileTlsCertificate(certificateChainPath, privateKeyPath);
   }
 
   /**
    * Returns an ACM TLS Certificate
    */
-  public static acm(props: AcmCertificateOptions): TlsCertificate {
-    return new AcmTlsCertificate(props);
+  public static acm(certificate: acm.ICertificate): TlsCertificate {
+    return new AcmTlsCertificate(certificate);
   }
 
   /**
    * Returns an SDS TLS Certificate
    */
-  public static sds(props: SdsCertificateOptions): TlsCertificate {
-    return new SdsTlsCertificate(props);
+  public static sds(secretName: string): MutualTLSAuthEligibleCertificate {
+    return new SdsTlsCertificate(secretName);
   }
 
   /**
@@ -80,6 +45,14 @@ export abstract class TlsCertificate {
    */
   public abstract bind(_scope: Construct): TlsCertificateConfig;
 
+}
+
+/**
+ * Represents a TLS certificate that is supported for mutual TLS authentication.
+ */
+export abstract class MutualTLSAuthEligibleCertificate extends TlsCertificate {
+  // TypeScript uses structural typing, so we need a property different from TlsCertificate
+  protected readonly differentiator = false;
 }
 
 /**
@@ -91,9 +64,9 @@ class AcmTlsCertificate extends TlsCertificate {
    */
   readonly acmCertificate: acm.ICertificate;
 
-  constructor(props: AcmCertificateOptions) {
+  constructor(certificate: acm.ICertificate) {
     super();
-    this.acmCertificate = props.certificate;
+    this.acmCertificate = certificate;
   }
 
   bind(_scope: Construct): TlsCertificateConfig {
@@ -110,7 +83,7 @@ class AcmTlsCertificate extends TlsCertificate {
 /**
  * Represents a file provided TLS certificate
  */
-class FileTlsCertificate extends TlsCertificate {
+class FileTlsCertificate extends MutualTLSAuthEligibleCertificate {
   /**
    * The file path of the certificate chain file.
    */
@@ -121,10 +94,10 @@ class FileTlsCertificate extends TlsCertificate {
    */
   readonly privateKey: string;
 
-  constructor(props: FileCertificateOptions) {
+  constructor(certificateChainPath: string, privateKeyPath: string) {
     super();
-    this.certificateChain = props.certificateChainPath;
-    this.privateKey = props.privateKeyPath;
+    this.certificateChain = certificateChainPath;
+    this.privateKey = privateKeyPath;
   }
 
   bind(_scope: Construct): TlsCertificateConfig {
@@ -142,15 +115,15 @@ class FileTlsCertificate extends TlsCertificate {
 /**
  * Represents a SDS provided TLS certificate
  */
-class SdsTlsCertificate extends TlsCertificate {
+class SdsTlsCertificate extends MutualTLSAuthEligibleCertificate {
   /**
    * The name of the secret requested from the Secret Discovery Service provider.
    */
   readonly secretName: string;
 
-  constructor(props: SdsCertificateOptions) {
+  constructor(secretName: string) {
     super();
-    this.secretName = props.secretName;
+    this.secretName = secretName;
   }
 
   bind(_scope: Construct): TlsCertificateConfig {
