@@ -5,6 +5,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Stack, Stage } from '@aws-cdk/core';
 import { Pipeline, SynthStep } from '../../../lib';
 import { TestApp } from '../testutil';
+import { GitHubExampleApp } from './example-app';
 import { GitHubEngine } from './github-engine';
 
 test('pipeline with only a synth step', () => {
@@ -56,6 +57,17 @@ test('single wave/stage/stack', () => {
   app.synth();
 
   expect(readFileSync(github.workflowPath, 'utf-8')).toMatchSnapshot();
+});
+
+test('example app', () => {
+  const repoDir = mkoutdir();
+  const app = new GitHubExampleApp({
+    repoDir: repoDir,
+    envA: 'aws://111111111111/us-east-1',
+    envB: 'aws://222222222222/eu-west-2',
+  });
+  app.synth();
+  expect(readFileSync(join(repoDir, '.github/workflows/deploy.yml'), 'utf-8')).toMatchSnapshot();
 });
 
 function mkoutdir() {

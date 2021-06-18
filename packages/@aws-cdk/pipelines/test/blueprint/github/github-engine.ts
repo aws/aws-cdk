@@ -136,7 +136,7 @@ export class GitHubEngine implements IDeploymentEngine {
 
     const workflow = {
       name: this.workflowName,
-      on: this.workflowTriggers,
+      on: snakeCaseKeys(this.workflowTriggers),
       jobs: jobmap,
     };
 

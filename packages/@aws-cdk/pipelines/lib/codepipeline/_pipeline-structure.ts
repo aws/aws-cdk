@@ -175,11 +175,7 @@ export class PipelineStructure {
         if (!depNode) {
           throw new Error(`cannot find node for ${dep.stackName}`);
         }
-        // eslint-disable-next-line no-console
-        console.log(`stack ${stack.stackName} depends on ${dep.stackName}`);
         stackNode.dependOn(depNode);
-        // eslint-disable-next-line no-console
-        console.log(`${stackNode.uniqueId} - deps: ${stackNode.dependencies.map(x=>x.uniqueId)}`);
       }
     }
 
