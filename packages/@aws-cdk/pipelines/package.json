@@ -40,9 +40,12 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/assert-internal": "0.0.0",
     "@types/yaml": "1.9.6",
+    "decamelize": "^5.0.0",
+    "@types/decamelize": "3.0.3",
     "yaml": "1.10.2"        
   },
   "peerDependencies": {

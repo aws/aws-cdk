@@ -1,13 +1,14 @@
 import { mkdtempSync, readFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { App, Stack, Stage } from '@aws-cdk/core';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { Stack, Stage } from '@aws-cdk/core';
 import { Pipeline, SynthStep } from '../../../lib';
-import { GitHubEngine } from './engine';
-
+import { TestApp } from '../testutil';
+import { GitHubEngine } from './github-engine';
 
 test('pipeline with only a synth step', () => {
-  const app = new App();
+  const app = new TestApp();
 
   const github = new GitHubEngine({
     workflowPath: `${mkoutdir()}/deploy.yml`,
@@ -27,20 +28,26 @@ test('pipeline with only a synth step', () => {
 });
 
 test('single wave/stage/stack', () => {
-  const app = new App();
+  const app = new TestApp();
 
   const github = new GitHubEngine({
     workflowPath: `${mkoutdir()}/deploy.yml`,
   });
 
   const stage = new Stage(app, 'MyStack');
-  new Stack(stage, 'MyStack');
+  const stack = new Stack(stage, 'MyStack');
+
+  new lambda.Function(stack, 'Function', {
+    code: lambda.Code.fromAsset(join(__dirname, 'fixtures')),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_14_X,
+  });
 
   const pipeline = new Pipeline(app, 'MyPipeline', {
     engine: github,
     synthStep: new SynthStep('Build', {
-      installCommands: ['yarn'],
-      commands: ['yarn build'],
+      // installCommands: ['yarn'],
+      commands: ['echo "nothing to do"'],
     }),
   });
 
