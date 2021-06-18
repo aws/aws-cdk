@@ -38,7 +38,8 @@ explicitly trust.
 
 ### Domain lists
 
-Domain lists can be created using a list of strings or text file stored in Amazon S3:
+Domain lists can be created using a list of strings, a text file stored in Amazon S3 or a local
+text file:
 
 ```ts
 const blockList = new route53resolver.FirewallDomainList(this, 'BlockList', {
@@ -47,7 +48,11 @@ const blockList = new route53resolver.FirewallDomainList(this, 'BlockList', {
 
 const s3List = new route53resolver.FirewallDomainList(this, 'S3List', {
   domains: route53resolver.FirewallDomains.fromS3Uri('s3://bucket/prefix/object'),
-})
+});
+
+const assetList = new route53resolver.FirewallDomainList(this, 'AssetList', {
+  domains: route53resolver.FirewallDomains.fromAsset(this, 'Asset', '/path/to/domains.txt'),
+});
 ```
 
 The file must be a text file and must contain a single domain per line.

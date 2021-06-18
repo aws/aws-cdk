@@ -82,7 +82,7 @@ export abstract class FirewallDomains {
   /**
    * Firewall domains created from a local disk path to a text file.
    * The file must be a text file (`.txt` extension) and must contain a single
-   * domain per line.
+   * domain per line. It will be uploaded to S3.
    *
    * @param assetPath path to the text file
    */
