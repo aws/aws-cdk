@@ -15,5 +15,5 @@ export abstract class Match {
     return x && x instanceof Match;
   }
 
-  public abstract match(actual: any): boolean;
+  public abstract test(actual: any): boolean;
 }

@@ -6,7 +6,7 @@ export class ArrayWithMatch extends Match {
     super();
   }
 
-  public match(actual: any): boolean {
+  public test(actual: any): boolean {
     if (this.pattern.length > actual.length) return false;
 
     let patternIdx = 0;
@@ -15,7 +15,7 @@ export class ArrayWithMatch extends Match {
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       let patternElement = this.pattern[patternIdx];
       let matcher = Match.isMatcher(patternElement) ? patternElement : new LiteralMatch(patternElement);
-      const m = matcher.match(actual[actualIdx]);
+      const m = matcher.test(actual[actualIdx]);
       if (m) {
         patternIdx++;
       } else {

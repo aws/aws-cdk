@@ -5,7 +5,7 @@ export class LiteralMatch extends Match {
     super();
   }
 
-  public match(actual: any): boolean {
+  public test(actual: any): boolean {
     if (Array.isArray(actual) !== Array.isArray(this.pattern)) {
       return false;
     }
@@ -18,7 +18,7 @@ export class LiteralMatch extends Match {
       for (let i = 0; i < this.pattern.length; i++) {
         const p = this.pattern[i];
         const matcher = Match.isMatcher(p) ? p : new LiteralMatch(p);
-        if (!matcher.match(actual[i])) return false;
+        if (!matcher.test(actual[i])) return false;
       }
 
       return true;
@@ -32,13 +32,13 @@ export class LiteralMatch extends Match {
       const patternKeys = Object.keys(this.pattern).sort();
       const actualKeys = Object.keys(actual).sort();
 
-      const sameKeys = new LiteralMatch(patternKeys).match(actualKeys);
+      const sameKeys = new LiteralMatch(patternKeys).test(actualKeys);
       if (!sameKeys) return false;
 
       for (const [patternKey, patternVal] of Object.entries(this.pattern)) {
         if (!(patternKey in actual)) return false;
         const matcher = Match.isMatcher(patternVal) ? patternVal : new LiteralMatch(patternVal);
-        if (!matcher.match(actual[patternKey])) return false;
+        if (!matcher.test(actual[patternKey])) return false;
       }
 
       return true;
