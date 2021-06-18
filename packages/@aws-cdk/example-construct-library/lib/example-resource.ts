@@ -411,9 +411,9 @@ export class ExampleResource extends ExampleResourceBase {
     // and that sort of value would be also encoded as a string;
     // so, we need to use the Token.isUnresolved() method from the core library
     // to skip validation in that case.
-    if (props.waitConditionHandleName !== undefined &&
-        !core.Token.isUnresolved(props.waitConditionHandleName) &&
-        !/^[_a-zA-Z]+$/.test(props.waitConditionHandleName)) {
+    if (props.waitConditionHandleName !== undefined
+        && !core.Token.isUnresolved(props.waitConditionHandleName)
+        && !/^[_a-zA-Z]+$/.test(props.waitConditionHandleName)) {
       throw new Error('waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
         `got: '${props.waitConditionHandleName}'`);
     }

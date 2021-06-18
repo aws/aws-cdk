@@ -413,9 +413,9 @@ export class Cluster extends ClusterBase {
     }
 
     if (
-      !core.Token.isUnresolved(props.clusterName) &&
-      !/^[a-zA-Z0-9]+$/.test(props.clusterName) &&
-      props.clusterName.length > 64
+      !core.Token.isUnresolved(props.clusterName)
+      && !/^[a-zA-Z0-9]+$/.test(props.clusterName)
+      && props.clusterName.length > 64
     ) {
       throw Error(
         'The cluster name must only contain alphanumeric characters and have a maximum length of 64 characters.' +
@@ -424,17 +424,17 @@ export class Cluster extends ClusterBase {
     }
 
     if (
-      props.encryptionInTransit?.clientBroker ===
-        ClientBrokerEncryption.PLAINTEXT &&
-      props.clientAuthentication
+      props.encryptionInTransit?.clientBroker
+        === ClientBrokerEncryption.PLAINTEXT
+      && props.clientAuthentication
     ) {
       throw Error(
         'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
       );
     } else if (
-      props.encryptionInTransit?.clientBroker ===
-        ClientBrokerEncryption.TLS_PLAINTEXT &&
-      props.clientAuthentication?.saslProps?.scram
+      props.encryptionInTransit?.clientBroker
+        === ClientBrokerEncryption.TLS_PLAINTEXT
+      && props.clientAuthentication?.saslProps?.scram
     ) {
       throw Error(
         'To enable SASL/SCRAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
@@ -465,14 +465,14 @@ export class Cluster extends ClusterBase {
 
     const encryptionInTransit = {
       clientBroker:
-        props.encryptionInTransit?.clientBroker ??
-        ClientBrokerEncryption.TLS,
+        props.encryptionInTransit?.clientBroker
+        ?? ClientBrokerEncryption.TLS,
       inCluster: props.encryptionInTransit?.enableInCluster ?? true,
     };
 
     const openMonitoring =
-      props.monitoring?.enablePrometheusJmxExporter ||
-      props.monitoring?.enablePrometheusNodeExporter
+      props.monitoring?.enablePrometheusJmxExporter
+      || props.monitoring?.enablePrometheusNodeExporter
         ? {
           prometheus: {
             jmxExporter: props.monitoring?.enablePrometheusJmxExporter
@@ -496,8 +496,8 @@ export class Cluster extends ClusterBase {
         },
         firehose: {
           enabled:
-            props.logging?.firehoseDeliveryStreamName !==
-            undefined,
+            props.logging?.firehoseDeliveryStreamName
+            !== undefined,
           deliveryStream:
             props.logging?.firehoseDeliveryStreamName,
         },
@@ -510,8 +510,8 @@ export class Cluster extends ClusterBase {
     };
 
     if (
-      props.clientAuthentication?.saslProps?.scram &&
-      props.clientAuthentication?.saslProps?.key === undefined
+      props.clientAuthentication?.saslProps?.scram
+      && props.clientAuthentication?.saslProps?.key === undefined
     ) {
       this.saslScramAuthenticationKey = new kms.Key(this, 'SASLKey', {
         description:

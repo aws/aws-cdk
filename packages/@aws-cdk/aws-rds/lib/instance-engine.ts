@@ -132,8 +132,8 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.singleUserRotationApplication = props.singleUserRotationApplication;
     this.multiUserRotationApplication = props.multiUserRotationApplication;
     this.engineVersion = props.version;
-    this.parameterGroupFamily = props.parameterGroupFamily ??
-      (this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined);
+    this.parameterGroupFamily = props.parameterGroupFamily
+      ?? (this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined);
     this.engineFamily = props.engineFamily;
   }
 

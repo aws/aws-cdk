@@ -22,12 +22,11 @@ type Flags = {[key: string]: any};
  * they are enabled, and then the test is executed.
  */
 export function testFutureBehavior<T>(
-  name: string,
-  flags: Flags,
-  cdkApp: new (props?: { context: Flags }) => T,
-  fn: (app: T) => void,
-  repoRoot: string = path.join(process.cwd(), '..', '..', '..')) {
-
+    name: string,
+    flags: Flags,
+    cdkApp: new (props?: { context: Flags }) => T,
+    fn: (app: T) => void,
+    repoRoot: string = path.join(process.cwd(), '..', '..', '..')) {
   const major = cdkMajorVersion(repoRoot);
   if (major === 2) {
     const app = new cdkApp();
@@ -51,11 +50,10 @@ export function testFutureBehavior<T>(
  * When run in CDKv2, the test is skipped, since the feature flag usage is unsupported and blocked.
  */
 export function testLegacyBehavior<T>(
-  name: string,
-  cdkApp: new () => T,
-  fn: (app: T) => void,
-  repoRoot: string = path.join(process.cwd(), '..', '..', '..')) {
-
+    name: string,
+    cdkApp: new () => T,
+    fn: (app: T) => void,
+    repoRoot: string = path.join(process.cwd(), '..', '..', '..')) {
   const major = cdkMajorVersion(repoRoot);
   if (major === 2) {
     return;

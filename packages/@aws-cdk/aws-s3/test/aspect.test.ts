@@ -43,8 +43,8 @@ nodeunitShim({
 class BucketVersioningChecker implements cdk.IAspect {
   public visit(node: IConstruct): void {
     if (node instanceof s3.CfnBucket) {
-      if (!node.versioningConfiguration ||
-        (!cdk.Tokenization.isResolvable(node.versioningConfiguration) && node.versioningConfiguration.status !== 'Enabled')) {
+      if (!node.versioningConfiguration
+        || (!cdk.Tokenization.isResolvable(node.versioningConfiguration) && node.versioningConfiguration.status !== 'Enabled')) {
         cdk.Annotations.of(node).addError('Bucket versioning is not enabled');
       }
     }

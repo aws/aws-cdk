@@ -734,20 +734,20 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
 
   private hasCommitMessageFilterAndPrEvent() {
     return this.webhookFilters.some(fg => (
-      fg._filters.some(fp => fp.type === WebhookFilterTypes.COMMIT_MESSAGE) &&
-      this.hasPrEvent(fg._actions)));
+      fg._filters.some(fp => fp.type === WebhookFilterTypes.COMMIT_MESSAGE)
+      && this.hasPrEvent(fg._actions)));
   }
   private hasFilePathFilterAndPrEvent() {
     return this.webhookFilters.some(fg => (
-      fg._filters.some(fp => fp.type === WebhookFilterTypes.FILE_PATH) &&
-      this.hasPrEvent(fg._actions)));
+      fg._filters.some(fp => fp.type === WebhookFilterTypes.FILE_PATH)
+      && this.hasPrEvent(fg._actions)));
   }
   private hasPrEvent(actions: EventAction[]) {
     return actions.includes(
-      EventAction.PULL_REQUEST_CREATED ||
-      EventAction.PULL_REQUEST_MERGED ||
-      EventAction.PULL_REQUEST_REOPENED ||
-      EventAction.PULL_REQUEST_UPDATED);
+      EventAction.PULL_REQUEST_CREATED
+      || EventAction.PULL_REQUEST_MERGED
+      || EventAction.PULL_REQUEST_REOPENED
+      || EventAction.PULL_REQUEST_UPDATED);
   }
 }
 

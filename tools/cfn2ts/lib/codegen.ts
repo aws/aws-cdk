@@ -993,8 +993,8 @@ function tagType(resource: schema.TaggableResource): string {
     if (schema.isTagPropertyAutoScalingGroup(resource.Properties[name])) {
       return `${TAG_TYPE}.AUTOSCALING_GROUP`;
     }
-    if (schema.isTagPropertyJson(resource.Properties[name]) ||
-      schema.isTagPropertyStringMap(resource.Properties[name])) {
+    if (schema.isTagPropertyJson(resource.Properties[name])
+      || schema.isTagPropertyStringMap(resource.Properties[name])) {
       return `${TAG_TYPE}.MAP`;
     }
   }

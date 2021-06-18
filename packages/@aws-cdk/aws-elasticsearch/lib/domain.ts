@@ -1272,19 +1272,19 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const warmDefaultInstanceType = 'ultrawarm1.medium.elasticsearch';
 
     const dedicatedMasterType =
-      props.capacity?.masterNodeInstanceType?.toLowerCase() ??
-      defaultInstanceType;
+      props.capacity?.masterNodeInstanceType?.toLowerCase()
+      ?? defaultInstanceType;
     const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
     const dedicatedMasterEnabled = dedicatedMasterCount > 0;
 
     const instanceType =
-      props.capacity?.dataNodeInstanceType?.toLowerCase() ??
-      defaultInstanceType;
+      props.capacity?.dataNodeInstanceType?.toLowerCase()
+      ?? defaultInstanceType;
     const instanceCount = props.capacity?.dataNodes ?? 1;
 
     const warmType =
-      props.capacity?.warmInstanceType?.toLowerCase() ??
-      warmDefaultInstanceType;
+      props.capacity?.warmInstanceType?.toLowerCase()
+      ?? warmDefaultInstanceType;
     const warmCount = props.capacity?.warmNodes ?? 0;
     const warmEnabled = warmCount > 0;
 
@@ -1296,8 +1296,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     const zoneAwarenessEnabled =
-      props.zoneAwareness?.enabled ??
-      props.zoneAwareness?.availabilityZoneCount != null;
+      props.zoneAwareness?.enabled
+      ?? props.zoneAwareness?.availabilityZoneCount != null;
 
 
     let securityGroups: ec2.ISecurityGroup[] | undefined;
@@ -1329,8 +1329,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const elasticsearchVersionNum = parseVersion(props.version);
 
     if (
-      elasticsearchVersionNum <= 7.7 &&
-      ![
+      elasticsearchVersionNum <= 7.7
+      && ![
         1.5, 2.3, 5.1, 5.3, 5.5, 5.6, 6.0,
         6.2, 6.3, 6.4, 6.5, 6.7, 6.8, 7.1, 7.4,
         7.7,
@@ -1514,8 +1514,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const logGroups: logs.ILogGroup[] = [];
 
     if (props.logging?.slowSearchLogEnabled) {
-      this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
-        new logs.LogGroup(this, 'SlowSearchLogs', {
+      this.slowSearchLogGroup = props.logging.slowSearchLogGroup
+        ?? new logs.LogGroup(this, 'SlowSearchLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
@@ -1523,8 +1523,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
 
     if (props.logging?.slowIndexLogEnabled) {
-      this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
-        new logs.LogGroup(this, 'SlowIndexLogs', {
+      this.slowIndexLogGroup = props.logging.slowIndexLogGroup
+        ?? new logs.LogGroup(this, 'SlowIndexLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
@@ -1532,8 +1532,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
 
     if (props.logging?.appLogEnabled) {
-      this.appLogGroup = props.logging.appLogGroup ??
-        new logs.LogGroup(this, 'AppLogs', {
+      this.appLogGroup = props.logging.appLogGroup
+        ?? new logs.LogGroup(this, 'AppLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
@@ -1541,8 +1541,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
 
     if (props.logging?.auditLogEnabled) {
-      this.auditLogGroup = props.logging.auditLogGroup ??
-          new logs.LogGroup(this, 'AuditLogs', {
+      this.auditLogGroup = props.logging.auditLogGroup
+          ?? new logs.LogGroup(this, 'AuditLogs', {
             retention: logs.RetentionDays.ONE_MONTH,
           });
 

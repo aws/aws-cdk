@@ -107,8 +107,8 @@ export class AwsCliCompatible {
       { isConfig: true, filename: configFileName(), profile: 'default' },
     ];
 
-    let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
-      process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
+    let region = process.env.AWS_REGION || process.env.AMAZON_REGION
+      || process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
 
     while (!region && toCheck.length > 0) {
       const opts = toCheck.shift()!;

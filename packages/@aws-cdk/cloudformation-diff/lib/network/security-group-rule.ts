@@ -37,12 +37,10 @@ export class SecurityGroupRule {
         findFirst(ruleObject,
           ['CidrIp', 'CidrIpv6'],
           (ip) => ({ kind: 'cidr-ip', ip } as CidrIpPeer))
-        ||
-        findFirst(ruleObject,
+        || findFirst(ruleObject,
           ['DestinationSecurityGroupId', 'SourceSecurityGroupId'],
           (securityGroupId) => ({ kind: 'security-group', securityGroupId } as SecurityGroupPeer))
-        ||
-        findFirst(ruleObject,
+        || findFirst(ruleObject,
           ['DestinationPrefixListId', 'SourcePrefixListId'],
           (prefixListId) => ({ kind: 'prefix-list', prefixListId } as PrefixListPeer));
   }

@@ -271,8 +271,8 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
   }
 
   public configureNat(options: ConfigureNatOptions) {
-    const defaultDirection = this.props.defaultAllowedTraffic ??
-      (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
+    const defaultDirection = this.props.defaultAllowedTraffic
+      ?? (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
 
     // Create the NAT instances. They can share a security group and a Role.
     const machineImage = this.props.machineImage || new NatInstanceImage();
@@ -394,8 +394,8 @@ export class NatInstanceImage extends LookupMachineImage {
 }
 
 function isOutboundAllowed(direction: NatTrafficDirection) {
-  return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND ||
-    direction === NatTrafficDirection.OUTBOUND_ONLY;
+  return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND
+    || direction === NatTrafficDirection.OUTBOUND_ONLY;
 }
 
 function isInboundAllowed(direction: NatTrafficDirection) {

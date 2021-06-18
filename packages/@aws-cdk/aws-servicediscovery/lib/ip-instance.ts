@@ -95,8 +95,8 @@ export class IpInstance extends InstanceBase {
       throw new Error('An `ipv4` must be specified for a service using a `A` record.');
     }
 
-    if (!props.ipv6 &&
-      (dnsRecordType === DnsRecordType.AAAA || dnsRecordType === DnsRecordType.A_AAAA)) {
+    if (!props.ipv6
+      && (dnsRecordType === DnsRecordType.AAAA || dnsRecordType === DnsRecordType.A_AAAA)) {
       throw new Error('An `ipv6` must be specified for a service using a `AAAA` record.');
     }
 

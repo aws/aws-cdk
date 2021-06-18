@@ -213,9 +213,9 @@ export class Role extends Resource implements IRole {
 
       public attachInlinePolicy(policy: Policy): void {
         const thisAndPolicyAccountComparison = Token.compareStrings(this.env.account, policy.env.account);
-        const equalOrAnyUnresolved = thisAndPolicyAccountComparison === TokenComparison.SAME ||
-          thisAndPolicyAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
-          thisAndPolicyAccountComparison === TokenComparison.ONE_UNRESOLVED;
+        const equalOrAnyUnresolved = thisAndPolicyAccountComparison === TokenComparison.SAME
+          || thisAndPolicyAccountComparison === TokenComparison.BOTH_UNRESOLVED
+          || thisAndPolicyAccountComparison === TokenComparison.ONE_UNRESOLVED;
         if (equalOrAnyUnresolved) {
           this.attachedPolicies.attach(policy);
           policy.attachToRole(this);
@@ -248,9 +248,9 @@ export class Role extends Resource implements IRole {
 
     const importedRole = new Import(scope, id);
     const roleArnAndScopeStackAccountComparison = Token.compareStrings(importedRole.env.account, scopeStack.account);
-    const equalOrAnyUnresolved = roleArnAndScopeStackAccountComparison === TokenComparison.SAME ||
-      roleArnAndScopeStackAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
-      roleArnAndScopeStackAccountComparison === TokenComparison.ONE_UNRESOLVED;
+    const equalOrAnyUnresolved = roleArnAndScopeStackAccountComparison === TokenComparison.SAME
+      || roleArnAndScopeStackAccountComparison === TokenComparison.BOTH_UNRESOLVED
+      || roleArnAndScopeStackAccountComparison === TokenComparison.ONE_UNRESOLVED;
     // we only return an immutable Role if both accounts were explicitly provided, and different
     return options.mutable !== false && equalOrAnyUnresolved
       ? importedRole

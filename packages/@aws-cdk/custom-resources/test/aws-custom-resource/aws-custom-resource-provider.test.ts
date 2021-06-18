@@ -72,9 +72,9 @@ test('create event with physical resource id path', async () => {
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'second-key-etag' &&
-    body.Data!['Contents.0.Key'] === 'first-key',
+    body.Status === 'SUCCESS'
+    && body.PhysicalResourceId === 'second-key-etag'
+    && body.Data!['Contents.0.Key'] === 'first-key',
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -111,8 +111,8 @@ test('update event with physical resource id', async () => {
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'topicarn',
+    body.Status === 'SUCCESS'
+    && body.PhysicalResourceId === 'topicarn',
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -143,9 +143,9 @@ test('delete event', async () => {
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'physicalResourceId' &&
-    Object.keys(body.Data!).length === 0,
+    body.Status === 'SUCCESS'
+    && body.PhysicalResourceId === 'physicalResourceId'
+    && Object.keys(body.Data!).length === 0,
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -177,8 +177,8 @@ test('delete event with Delete call and no physical resource id in call', async 
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'physicalResourceId',
+    body.Status === 'SUCCESS'
+    && body.PhysicalResourceId === 'physicalResourceId',
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -211,8 +211,8 @@ test('create event with Delete call only', async () => {
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'logicalResourceId',
+    body.Status === 'SUCCESS'
+    && body.PhysicalResourceId === 'logicalResourceId',
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -247,9 +247,9 @@ test('catch errors', async () => {
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'physicalResourceId' &&
-    Object.keys(body.Data!).length === 0,
+    body.Status === 'SUCCESS'
+    && body.PhysicalResourceId === 'physicalResourceId'
+    && Object.keys(body.Data!).length === 0,
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -291,10 +291,10 @@ test('restrict output path', async () => {
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'id' &&
-    body.Data!['Contents.0.Key'] === 'first-key' &&
-    body.Data!['Contents.1.Key'] === undefined,
+    body.Status === 'SUCCESS'
+    && body.PhysicalResourceId === 'id'
+    && body.Data!['Contents.0.Key'] === 'first-key'
+    && body.Data!['Contents.1.Key'] === undefined,
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -336,9 +336,9 @@ test('restrict output paths', async () => {
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'id' &&
-    JSON.stringify(body.Data) === JSON.stringify({
+    body.Status === 'SUCCESS'
+    && body.PhysicalResourceId === 'id'
+    && JSON.stringify(body.Data) === JSON.stringify({
       'Contents.0.Key': 'first-key',
       'Contents.1.Key': 'second-key',
     }),
@@ -374,9 +374,9 @@ test('can specify apiVersion and region', async () => {
   };
 
   const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.Data!.apiVersion === '2010-03-31' &&
-    body.Data!.region === 'eu-west-1',
+    body.Status === 'SUCCESS'
+    && body.Data!.apiVersion === '2010-03-31'
+    && body.Data!.region === 'eu-west-1',
   );
 
   await handler(event, {} as AWSLambda.Context);

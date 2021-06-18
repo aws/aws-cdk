@@ -1558,8 +1558,8 @@ nodeunitShim({
     const template = stackAssembly.template;
 
     test.equal(
-      template.Resources.EcsCluster97242B84.Properties === undefined ||
-      template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
+      template.Resources.EcsCluster97242B84.Properties === undefined
+      || template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
       true,
       'ClusterSettings should not be defined',
     );
@@ -1579,12 +1579,12 @@ nodeunitShim({
     const assembly = app.synth();
     const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
     test.ok(Object.entries(parameters).some(
-      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
-        (v as any).Default.includes('/bottlerocket/'),
+      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs')
+        && (v as any).Default.includes('/bottlerocket/'),
     ), 'Bottlerocket AMI should be in ssm parameters');
     test.ok(Object.entries(parameters).some(
-      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
-        (v as any).Default.includes('/aws-ecs-1/'),
+      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs')
+        && (v as any).Default.includes('/aws-ecs-1/'),
     ), 'ecs variant should be in ssm parameters');
     test.done();
   },

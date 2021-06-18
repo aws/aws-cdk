@@ -1002,8 +1002,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
   private toOriginProperty(originConfig: SourceConfigurationRender, originId: string): CfnDistribution.OriginProperty {
     if (
-      !originConfig.s3OriginSource &&
-      !originConfig.customOriginSource
+      !originConfig.s3OriginSource
+      && !originConfig.customOriginSource
     ) {
       throw new Error(
         'There must be at least one origin source - either an s3OriginSource, a customOriginSource',
@@ -1091,16 +1091,16 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
           httpPort: originConfig.customOriginSource.httpPort || 80,
           httpsPort: originConfig.customOriginSource.httpsPort || 443,
           originKeepaliveTimeout:
-            (originConfig.customOriginSource.originKeepaliveTimeout &&
-              originConfig.customOriginSource.originKeepaliveTimeout.toSeconds()) ||
-            5,
+            (originConfig.customOriginSource.originKeepaliveTimeout
+              && originConfig.customOriginSource.originKeepaliveTimeout.toSeconds())
+            || 5,
           originReadTimeout:
-            (originConfig.customOriginSource.originReadTimeout &&
-              originConfig.customOriginSource.originReadTimeout.toSeconds()) ||
-            30,
+            (originConfig.customOriginSource.originReadTimeout
+              && originConfig.customOriginSource.originReadTimeout.toSeconds())
+            || 30,
           originProtocolPolicy:
-            originConfig.customOriginSource.originProtocolPolicy ||
-            OriginProtocolPolicy.HTTPS_ONLY,
+            originConfig.customOriginSource.originProtocolPolicy
+            || OriginProtocolPolicy.HTTPS_ONLY,
           originSslProtocols: originConfig.customOriginSource
             .allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2],
         }

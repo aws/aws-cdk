@@ -673,9 +673,9 @@ export class CfnParser {
     }
 
     const key = objectKeys[0];
-    return key === 'Ref' || key.startsWith('Fn::') ||
+    return key === 'Ref' || key.startsWith('Fn::')
         // special intrinsic only available in the 'Conditions' section
-        (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
+        || (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
       ? key
       : undefined;
   }

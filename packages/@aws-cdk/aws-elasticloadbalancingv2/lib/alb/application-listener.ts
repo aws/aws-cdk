@@ -907,8 +907,8 @@ export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse
 
 function checkAddRuleProps(props: AddRuleProps) {
   const conditionsCount = props.conditions?.length || 0;
-  const hasAnyConditions = conditionsCount !== 0 ||
-    props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
+  const hasAnyConditions = conditionsCount !== 0
+    || props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
   const hasPriority = props.priority !== undefined;
   if (hasAnyConditions !== hasPriority) {
     throw new Error('Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');

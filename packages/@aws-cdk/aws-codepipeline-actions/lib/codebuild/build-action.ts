@@ -205,8 +205,8 @@ export class CodeBuildAction extends Action {
 
     const configuration: any = {
       ProjectName: this.props.project.projectName,
-      EnvironmentVariables: this.props.environmentVariables &&
-        cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables,
+      EnvironmentVariables: this.props.environmentVariables
+        && cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables,
           this.props.checkSecretsInPlainTextEnvVariables ?? true, this.props.project)),
     };
     if ((this.actionProperties.inputs || []).length > 1) {

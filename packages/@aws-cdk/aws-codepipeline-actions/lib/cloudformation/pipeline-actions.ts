@@ -317,8 +317,8 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
 
     SingletonPolicy.forRole(options.role).grantPassRole(this._deploymentRole);
 
-    const providedCapabilities = this.props2.cfnCapabilities ??
-      this.props2.capabilities?.map(c => {
+    const providedCapabilities = this.props2.cfnCapabilities
+      ?? this.props2.capabilities?.map(c => {
         switch (c) {
           case cloudformation.CloudFormationCapabilities.NONE: return cdk.CfnCapabilities.NONE;
           case cloudformation.CloudFormationCapabilities.ANONYMOUS_IAM: return cdk.CfnCapabilities.ANONYMOUS_IAM;

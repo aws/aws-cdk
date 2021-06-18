@@ -126,11 +126,11 @@ export class Policy extends Resource implements IPolicy {
 
   constructor(scope: Construct, id: string, props: PolicyProps = {}) {
     super(scope, id, {
-      physicalName: props.policyName ||
+      physicalName: props.policyName
         // generatePolicyName will take the last 128 characters of the logical id since
         // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
         // that shouod be sufficient to ensure uniqueness within a principal.
-        Lazy.string({ produce: () => generatePolicyName(scope, resource.logicalId) }),
+        || Lazy.string({ produce: () => generatePolicyName(scope, resource.logicalId) }),
     });
 
     const self = this;

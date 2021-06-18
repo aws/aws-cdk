@@ -131,8 +131,8 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
-    if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== ComputeType.LARGE) {
+    if (buildEnvironment.computeType
+        && buildEnvironment.computeType !== ComputeType.LARGE) {
       ret.push(`GPU images only support ComputeType '${ComputeType.LARGE}' - ` +
         `'${buildEnvironment.computeType}' was given`);
     }

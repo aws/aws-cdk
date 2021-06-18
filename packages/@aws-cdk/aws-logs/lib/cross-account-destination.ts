@@ -71,9 +71,9 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
 
   constructor(scope: Construct, id: string, props: CrossAccountDestinationProps) {
     super(scope, id, {
-      physicalName: props.destinationName ||
+      physicalName: props.destinationName
         // In the underlying model, the name is not optional, but we make it so anyway.
-        cdk.Lazy.string({ produce: () => this.generateUniqueName() }),
+        || cdk.Lazy.string({ produce: () => this.generateUniqueName() }),
     });
 
     this.resource = new CfnDestination(this, 'Resource', {

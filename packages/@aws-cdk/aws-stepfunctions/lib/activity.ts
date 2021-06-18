@@ -59,8 +59,8 @@ export class Activity extends Resource implements IActivity {
 
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
-      physicalName: props.activityName ||
-                Lazy.string({ produce: () => this.generateName() }),
+      physicalName: props.activityName
+                || Lazy.string({ produce: () => this.generateName() }),
     });
 
     const resource = new CfnActivity(this, 'Resource', {

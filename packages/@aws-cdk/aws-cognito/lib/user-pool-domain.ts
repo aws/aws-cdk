@@ -104,9 +104,9 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
       throw new Error('One of, and only one of, cognitoDomain or customDomain must be specified');
     }
 
-    if (props.cognitoDomain?.domainPrefix &&
-      !Token.isUnresolved(props.cognitoDomain?.domainPrefix) &&
-      !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
+    if (props.cognitoDomain?.domainPrefix
+      && !Token.isUnresolved(props.cognitoDomain?.domainPrefix)
+      && !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
       throw new Error('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens');
     }
 

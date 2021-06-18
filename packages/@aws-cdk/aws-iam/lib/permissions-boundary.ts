@@ -36,8 +36,8 @@ export class PermissionsBoundary {
         if (node instanceof CfnRole || node instanceof CfnUser) {
           node.permissionsBoundary = boundaryPolicy.managedPolicyArn;
         } else if (
-          node instanceof CfnResource &&
-            (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME || node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
+          node instanceof CfnResource
+            && (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME || node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
         ) {
           node.addPropertyOverride('PermissionsBoundary', boundaryPolicy.managedPolicyArn);
         }
@@ -54,8 +54,8 @@ export class PermissionsBoundary {
         if (node instanceof CfnRole || node instanceof CfnUser) {
           node.permissionsBoundary = undefined;
         } else if (
-          node instanceof CfnResource &&
-            (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME || node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
+          node instanceof CfnResource
+            && (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME || node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
         ) {
           node.addPropertyDeletionOverride('PermissionsBoundary');
         }

@@ -388,8 +388,8 @@ export abstract class BaseService extends Resource
     this.taskDefinition = taskDefinition;
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
-    const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
-      props.capacityProviderStrategies !== undefined ?
+    const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL
+      || props.capacityProviderStrategies !== undefined ?
       undefined : props.launchType;
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;

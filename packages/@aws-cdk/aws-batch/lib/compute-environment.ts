@@ -446,8 +446,8 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         // VALIDATE FOR SPOT
 
         // Bid percentage must be from 0 - 100
-        if (props.computeResources.bidPercentage !== undefined &&
-          (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
+        if (props.computeResources.bidPercentage !== undefined
+          && (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
           throw new Error('Bid percentage can only be a value between 0 and 100');
         }
       }
@@ -459,8 +459,8 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         }
 
         // minvCpus cannot exceed max vCpus
-        if (props.computeResources.maxvCpus &&
-          props.computeResources.minvCpus > props.computeResources.maxvCpus) {
+        if (props.computeResources.maxvCpus
+          && props.computeResources.minvCpus > props.computeResources.maxvCpus) {
           throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
         }
       }

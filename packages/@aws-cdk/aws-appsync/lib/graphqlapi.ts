@@ -403,8 +403,8 @@ export class GraphqlApi extends GraphqlApiBase {
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
 
-    const defaultMode = props.authorizationConfig?.defaultAuthorization ??
-      { authorizationType: AuthorizationType.API_KEY };
+    const defaultMode = props.authorizationConfig?.defaultAuthorization
+      ?? { authorizationType: AuthorizationType.API_KEY };
     const additionalModes = props.authorizationConfig?.additionalAuthorizationModes ?? [];
     const modes = [defaultMode, ...additionalModes];
 

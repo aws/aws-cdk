@@ -62,7 +62,8 @@ module.exports = {
     'brace-style': ['error', '1tbs', { allowSingleLine: true }], // enforce one true brace style
     'space-before-blocks': 'error', // require space before blocks
     'curly': ['error', 'multi-line', 'consistent'], // require curly braces for multiline control statements
-    'padded-blocks': ['error', 'never'], // No empty lines before or after an indented block
+    'padded-blocks': ['error', 'never'], // no empty lines before or after an indented block
+    'operator-linebreak': ["error", "before", { "overrides": { "?": "ignore", ":": "ignore", "+": "ignore", "-": "ignore", "=": "ignore"} }], // to differentiate the case where multiline if-statements align with the next block
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [

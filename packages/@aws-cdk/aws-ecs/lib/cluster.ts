@@ -174,8 +174,8 @@ export class Cluster extends Resource implements ICluster {
     }
 
     if (props.executeCommandConfiguration) {
-      if ((props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE) !==
-        (props.executeCommandConfiguration.logConfiguration !== undefined)) {
+      if ((props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE)
+        !== (props.executeCommandConfiguration.logConfiguration !== undefined)) {
         throw new Error('Execute command log configuration must only be specified when logging is OVERRIDE.');
       }
       this._executeCommandConfiguration = props.executeCommandConfiguration;

@@ -408,8 +408,8 @@ export class Secret extends SecretBase {
       secretArn = attrs.secretArn;
       secretArnIsPartial = false;
     } else {
-      if ((attrs.secretCompleteArn && attrs.secretPartialArn) ||
-          (!attrs.secretCompleteArn && !attrs.secretPartialArn)) {
+      if ((attrs.secretCompleteArn && attrs.secretPartialArn)
+          || (!attrs.secretCompleteArn && !attrs.secretPartialArn)) {
         throw new Error('must use only one of `secretCompleteArn` or `secretPartialArn`');
       }
       if (attrs.secretCompleteArn && !arnIsComplete(attrs.secretCompleteArn)) {
@@ -440,9 +440,9 @@ export class Secret extends SecretBase {
       physicalName: props.secretName,
     });
 
-    if (props.generateSecretString &&
-        (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
-        !(props.generateSecretString.secretStringTemplate && props.generateSecretString.generateStringKey)) {
+    if (props.generateSecretString
+        && (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey)
+        && !(props.generateSecretString.secretStringTemplate && props.generateSecretString.generateStringKey)) {
       throw new Error('`secretStringTemplate` and `generateStringKey` must be specified together.');
     }
 

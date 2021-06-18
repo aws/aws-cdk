@@ -127,8 +127,8 @@ export class Bootstrapper {
     //     * undefined if we already had a value in place (reusing what we had)
     //     * '-' if this is the first time we're deploying this stack (or upgrading from old to new bootstrap)
     const currentKmsKeyId = current.parameters.FileAssetsBucketKmsKeyId;
-    const kmsKeyId = params.kmsKeyId ??
-      (params.createCustomerMasterKey === true ? CREATE_NEW_KEY :
+    const kmsKeyId = params.kmsKeyId
+      ?? (params.createCustomerMasterKey === true ? CREATE_NEW_KEY :
         params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_AWS_MANAGED_KEY :
           undefined);
 

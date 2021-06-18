@@ -495,8 +495,8 @@ async function rewriteImports(fromFile: string, targetDir: string, libraries: re
   function rewrittenImport(moduleSpecifier: string): ts.StringLiteral | undefined {
     const sourceLibrary = libraries.find(
       lib =>
-        moduleSpecifier === lib.packageJson.name ||
-        moduleSpecifier.startsWith(`${lib.packageJson.name}/`),
+        moduleSpecifier === lib.packageJson.name
+        || moduleSpecifier.startsWith(`${lib.packageJson.name}/`),
     );
     if (sourceLibrary == null) { return undefined; }
 

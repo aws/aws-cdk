@@ -167,9 +167,9 @@ export function fromCfnFactoryName(typeName: CodeName): CodeName {
 }
 
 function isCloudFormationTagCodeName(codeName: CodeName): boolean {
-  return codeName.className === TAG_NAME.className &&
-    codeName.packageName === TAG_NAME.packageName &&
-    codeName.namespace === TAG_NAME.namespace;
+  return codeName.className === TAG_NAME.className
+    && codeName.packageName === TAG_NAME.packageName
+    && codeName.namespace === TAG_NAME.namespace;
 }
 
 /**

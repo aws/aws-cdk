@@ -999,8 +999,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
-    if (this.maxInstanceLifetime &&
-      (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
+    if (this.maxInstanceLifetime
+      && (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
       throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
     }
 

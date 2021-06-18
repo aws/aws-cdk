@@ -282,7 +282,7 @@ export class CidrBlock {
    * Returns true if this CidrBlock fully contains the provided CidrBlock
    */
   public containsCidr(other: CidrBlock): boolean {
-    return (this.maxAddress() >= other.maxAddress()) &&
-      (this.minAddress() <= other.minAddress());
+    return (this.maxAddress() >= other.maxAddress())
+      && (this.minAddress() <= other.minAddress());
   }
 }

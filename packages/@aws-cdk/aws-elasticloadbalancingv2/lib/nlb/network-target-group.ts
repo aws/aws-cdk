@@ -178,8 +178,8 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       }
     }
 
-    if (healthCheck.healthyThresholdCount && healthCheck.unhealthyThresholdCount &&
-      healthCheck.healthyThresholdCount !== healthCheck.unhealthyThresholdCount) {
+    if (healthCheck.healthyThresholdCount && healthCheck.unhealthyThresholdCount
+      && healthCheck.healthyThresholdCount !== healthCheck.unhealthyThresholdCount) {
       ret.push([
         `Healthy and Unhealthy Threshold Counts must be the same: ${healthCheck.healthyThresholdCount}`,
         `is not equal to ${healthCheck.unhealthyThresholdCount}.`,

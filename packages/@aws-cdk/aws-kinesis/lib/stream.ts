@@ -799,8 +799,8 @@ export class Stream extends StreamBase {
     }
 
     // default based on whether encryption key is specified
-    const encryptionType = props.encryption ??
-      (props.encryptionKey ? StreamEncryption.KMS : StreamEncryption.UNENCRYPTED);
+    const encryptionType = props.encryption
+      ?? (props.encryptionKey ? StreamEncryption.KMS : StreamEncryption.UNENCRYPTED);
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {

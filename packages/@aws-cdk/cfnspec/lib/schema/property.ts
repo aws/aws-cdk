@@ -187,9 +187,9 @@ export function isPrimitiveMapProperty(prop: Property): prop is PrimitiveMapProp
 }
 
 export function isMapOfStructsProperty(prop: Property): prop is MapOfStructs {
-  return isMapProperty(prop) &&
-    !isPrimitiveMapProperty(prop) &&
-    !isMapOfListsOfPrimitivesProperty(prop);
+  return isMapProperty(prop)
+    && !isPrimitiveMapProperty(prop)
+    && !isMapOfListsOfPrimitivesProperty(prop);
 }
 
 // note: this (and the MapOfListsOfPrimitives type) are not actually valid in the CFN spec!
@@ -263,21 +263,21 @@ export function isTagPropertyName(name?: string): name is TagPropertyName {
  */
 export function isTagProperty(prop: Property): prop is TagProperty {
   return (
-    isTagPropertyStandard(prop) ||
-    isTagPropertyAutoScalingGroup(prop) ||
-    isTagPropertyJson(prop) ||
-    isTagPropertyStringMap(prop)
+    isTagPropertyStandard(prop)
+    || isTagPropertyAutoScalingGroup(prop)
+    || isTagPropertyJson(prop)
+    || isTagPropertyStringMap(prop)
   );
 }
 
 export function isTagPropertyStandard(prop: Property): prop is TagPropertyStandard {
   return (
-    (prop as TagPropertyStandard).ItemType === 'Tag' ||
-    (prop as TagPropertyStandard).ItemType === 'TagsEntry' ||
-    (prop as TagPropertyStandard).Type === 'Tags' ||
-    (prop as TagPropertyStandard).ItemType === 'TagRef' ||
-    (prop as TagPropertyStandard).ItemType === 'ElasticFileSystemTag' ||
-    (prop as TagPropertyStandard).ItemType === 'HostedZoneTag'
+    (prop as TagPropertyStandard).ItemType === 'Tag'
+    || (prop as TagPropertyStandard).ItemType === 'TagsEntry'
+    || (prop as TagPropertyStandard).Type === 'Tags'
+    || (prop as TagPropertyStandard).ItemType === 'TagRef'
+    || (prop as TagPropertyStandard).ItemType === 'ElasticFileSystemTag'
+    || (prop as TagPropertyStandard).ItemType === 'HostedZoneTag'
   );
 }
 

@@ -22,8 +22,8 @@ export class CloudFrontTarget implements route53.IAliasRecordTarget {
     const scopeStack = Stack.of(scope);
 
     let mapping =
-      (scopeStack.node.tryFindChild(mappingName) as CfnMapping) ??
-      new CfnMapping(scopeStack, mappingName, {
+      (scopeStack.node.tryFindChild(mappingName) as CfnMapping)
+      ?? new CfnMapping(scopeStack, mappingName, {
         mapping: {
           ['aws']: {
             zoneId: 'Z2FDTNDATAQYW2', // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-aliastarget.html

@@ -652,12 +652,12 @@ export class Volume extends VolumeBase {
     }
 
     if (
-      props.volumeType &&
-      [
+      props.volumeType
+      && [
         EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
         EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
-      ].includes(props.volumeType) &&
-      !props.iops
+      ].includes(props.volumeType)
+      && !props.iops
     ) {
       throw new Error(
         '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD` or `PROVISIONED_IOPS_SSD_IO2`.',

@@ -1415,12 +1415,12 @@ export = {
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
       test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/amazon-linux-2/'),
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami')
+          && (v as any).Default.includes('/amazon-linux-2/'),
       ), 'EKS STANDARD AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes(LATEST_KUBERNETES_VERSION),
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami')
+          && (v as any).Default.includes(LATEST_KUBERNETES_VERSION),
       ), 'LATEST_KUBERNETES_VERSION should be in ssm parameters');
       test.done();
     },
@@ -1436,12 +1436,12 @@ export = {
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
       test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/amazon-linux-2/'),
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami')
+          && (v as any).Default.includes('/amazon-linux-2/'),
       ), 'EKS STANDARD AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.20/'),
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami')
+          && (v as any).Default.includes('/1.20/'),
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
@@ -1524,8 +1524,8 @@ export = {
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
       test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('amazon-linux-2-arm64/'),
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami')
+          && (v as any).Default.includes('amazon-linux-2-arm64/'),
       ), 'Amazon Linux 2 AMI for ARM64 should be in ssm parameters');
       test.done();
     },
@@ -1585,12 +1585,12 @@ export = {
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
       test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/bottlerocket/'),
+        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws')
+          && (v as any).Default.includes('/bottlerocket/'),
       ), 'BottleRocket AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.20/'),
+        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws')
+          && (v as any).Default.includes('/aws-k8s-1.20/'),
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },

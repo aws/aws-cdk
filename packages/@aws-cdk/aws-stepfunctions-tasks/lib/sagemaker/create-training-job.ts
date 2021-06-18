@@ -310,8 +310,8 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   private makePolicyStatements(): iam.PolicyStatement[] {
     // set the sagemaker role or create new one
     this._grantPrincipal = this._role =
-      this.props.role ||
-      new iam.Role(this, 'SagemakerRole', {
+      this.props.role
+      || new iam.Role(this, 'SagemakerRole', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
         inlinePolicies: {
           CreateTrainingJob: new iam.PolicyDocument({

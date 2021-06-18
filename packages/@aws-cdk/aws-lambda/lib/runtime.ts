@@ -237,8 +237,8 @@ export class Runtime {
   }
 
   public runtimeEquals(other: Runtime): boolean {
-    return other.name === this.name &&
-      other.family === this.family &&
-      other.supportsInlineCode === this.supportsInlineCode;
+    return other.name === this.name
+      && other.family === this.family
+      && other.supportsInlineCode === this.supportsInlineCode;
   }
 }

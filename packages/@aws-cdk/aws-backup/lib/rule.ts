@@ -148,8 +148,8 @@ export class BackupPlanRule {
 
   /** @param props Rule properties */
   constructor(public readonly props: BackupPlanRuleProps) {
-    if (props.deleteAfter && props.moveToColdStorageAfter &&
-        props.deleteAfter.toSeconds() < props.moveToColdStorageAfter.toSeconds()) {
+    if (props.deleteAfter && props.moveToColdStorageAfter
+        && props.deleteAfter.toSeconds() < props.moveToColdStorageAfter.toSeconds()) {
       throw new Error('`deleteAfter` must be greater than `moveToColdStorageAfter`');
     }
 

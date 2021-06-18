@@ -86,9 +86,9 @@ class AsgFormatter implements ITagFormatter {
     }
 
     for (const tag of cfnPropertyTags) {
-      if (tag.key === undefined ||
-        tag.value === undefined ||
-        tag.propagateAtLaunch === undefined) {
+      if (tag.key === undefined
+        || tag.value === undefined
+        || tag.propagateAtLaunch === undefined) {
         throw new Error(`Invalid tag input expected {key, value, propagateAtLaunch} have ${JSON.stringify(tag)}`);
       }
       // using interp to ensure Token is now string

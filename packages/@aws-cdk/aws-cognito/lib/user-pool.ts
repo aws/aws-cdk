@@ -859,8 +859,8 @@ export class UserPool extends UserPoolBase {
         smsMessage,
       };
     } else {
-      const emailMessage = props.userVerification?.emailBody ??
-        `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
+      const emailMessage = props.userVerification?.emailBody
+        ?? `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
       if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
       }
@@ -965,8 +965,8 @@ export class UserPool extends UserPoolBase {
     if (props.mfa === undefined || props.mfa === Mfa.OFF) {
       // since default is OFF, treat undefined and OFF the same way
       return undefined;
-    } else if (props.mfaSecondFactor === undefined &&
-      (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
+    } else if (props.mfaSecondFactor === undefined
+      && (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
       return ['SMS_MFA'];
     } else {
       const enabledMfas = [];

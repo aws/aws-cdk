@@ -176,8 +176,8 @@ function loadProfilesProper(filename: string) {
     });
   }
   var profilesFromCreds: Record<string, Record<string, string>> = iniLoader.loadFrom({
-    filename: filename ||
-      (process.env[util.configOptInEnv] && process.env[util.sharedCredentialsFileEnv]),
+    filename: filename
+      || (process.env[util.configOptInEnv] && process.env[util.sharedCredentialsFileEnv]),
   });
   for (const [name, profile] of Object.entries(profilesFromConfig)) {
     profiles[name] = profile;

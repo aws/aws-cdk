@@ -1205,8 +1205,8 @@ export class Project extends ProjectBase {
       // (that would cause an illegal reference, as KMS keys don't have physical names)
       const keyStack = Stack.of(options.artifactBucket.encryptionKey);
       const projectStack = Stack.of(this);
-      if (!(options.artifactBucket.encryptionKey instanceof kms.Key &&
-          (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
+      if (!(options.artifactBucket.encryptionKey instanceof kms.Key
+          && (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
         this.encryptionKey = options.artifactBucket.encryptionKey;
       }
     }
@@ -1462,9 +1462,9 @@ export class Project extends ProjectBase {
     const sourceType = this.source.type;
     const artifactsType = artifacts.type;
 
-    if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
-        artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
-        (sourceType !== artifactsType)) {
+    if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE
+        || artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE)
+        && (sourceType !== artifactsType)) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
@@ -1618,8 +1618,8 @@ class ArmBuildImage implements IBuildImage {
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
-    if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== ComputeType.LARGE) {
+    if (buildEnvironment.computeType
+        && buildEnvironment.computeType !== ComputeType.LARGE) {
       ret.push(`ARM images only support ComputeType '${ComputeType.LARGE}' - ` +
         `'${buildEnvironment.computeType}' was given`);
     }

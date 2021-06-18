@@ -291,8 +291,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       applicationName: this.application.applicationName,
       deploymentGroupName: this.physicalName,
       serviceRoleArn: this.role.roleArn,
-      deploymentConfigName: props.deploymentConfig &&
-        props.deploymentConfig.deploymentConfigName,
+      deploymentConfigName: props.deploymentConfig
+        && props.deploymentConfig.deploymentConfigName,
       autoScalingGroups: cdk.Lazy.list({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
       loadBalancerInfo: this.loadBalancerInfo(props.loadBalancer),
       deploymentStyle: props.loadBalancer === undefined
