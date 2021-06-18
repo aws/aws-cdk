@@ -331,6 +331,7 @@ const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTa
 In addition to using the constructs, users can also add logic to customize these constructs:
 
 ### Configure HTTPS on an ApplicationLoadBalancedFargateService
+
 ```ts
 import { ApplicationLoadBalancedFargateService } from './application-load-balanced-fargate-service';
 import { HostedZone } from '@aws-cdk/aws-route53';
