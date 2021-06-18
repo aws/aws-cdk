@@ -37,7 +37,7 @@ export interface BasicAuthParameters {
   /**
    * The password associated with the user name to use for Basic authorization.
    */
-  readonly password: string;
+  readonly password: SecretValue;
 
   /**
    * The user name to use for Basic authorization.
@@ -57,7 +57,7 @@ export interface ClientParameters {
   /**
    * The client ID to use for OAuth authorization for the connection.
    */
-  readonly clientSecret: string;
+  readonly clientSecret: SecretValue;
 }
 
 /**
@@ -146,7 +146,7 @@ export interface AuthParameters {
   readonly basicAuthParameters?: BasicAuthParameters;
 
   /**
-   * Contains the API key authorization parameters to use for the connection.
+   * Contains the invocation parameters to use for the connection.
    * @default - None
    */
   readonly invocationHttpParameters?: HttpParameters;
@@ -158,23 +158,41 @@ export interface AuthParameters {
   readonly oAuthParameters?: OAuthParameters;
 }
 
+export class AuthParameters {
+  public static apiAuth(apiKeyName: string, apiKeyValue: SecretValue): AuthParameters {
+    return new AuthParameters({
+      authorizationType: AuthorizationType.API_KEY,
+      apiKeyAuthParameters: { apiKeyName, apiKeyValue },
+    });
+  }
+
+  public static basicAuth(username: string, password: SecretValue): AuthParameters {
+    return new AuthParameters({
+      authorizationType: AuthorizationType.BASIC,
+      basicAuthParameters: { username, password },
+    });
+  }
+
+  constructor(public readonly authParametersJson: any) {
+  }
+}
+
 /**
  * The event connection base properties
  */
 export interface BaseConnectionProps {
-  /**
-   * The name of the connection.
-   *
-   * @default - none
-   */
-  readonly authorizationType: AuthorizationType;
+  // /**
+  //  * The authorization type for the connection.
+  //  *
+  //  */
+  // readonly authorizationType: AuthorizationType;
 
-  /**
-   * Authentication method for this Connection
-   *
-   * @default - none
-   */
-  readonly authParameters?: AuthParameters;
+  // /**
+  //  * The authentication parameters for the connection
+  //  *
+  //  */
+  // readonly authParameters: AuthParameters;
+  readonly authParameters: AuthParameters
 
   /**
    * The name of the connection.
@@ -188,7 +206,7 @@ export interface BaseConnectionProps {
    *
    * @default - none
    */
-  readonly connectionName: string;
+  readonly connectionName?: string;
 }
 
 
@@ -220,13 +238,6 @@ export interface IConnection extends IResource {
    * @attribute
    */
   readonly connectionSecretArn: string;
-}
-
-/**
- * The event connection properties
- */
-export interface ConnectionProps extends BaseConnectionProps {
-
 }
 
 /**
@@ -308,52 +319,52 @@ export class Connection extends Resource implements IConnection {
 
     let authParameters: any;
 
-    if (props.authorizationType === AuthorizationType.API_KEY) {
-      if (props.authParameters?.apiKeyAuthParameters !== undefined) {
-        authParameters = {
-          ApiKeyAuthParameters: {
-            ApiKeyName: props.authParameters?.apiKeyAuthParameters?.apiKeyName,
-            ApiKeyValue: props.authParameters?.apiKeyAuthParameters?.apiKeyValue,
-          },
-        };
-      } else {
-        throw new Error(`You must supply apiKeyName and apiKeyValue for AuthorizationType: ${props.authorizationType}`);
-      };
-    };
+    // if (props.authorizationType === AuthorizationType.API_KEY) {
+    //   if (props.authParameters?.apiKeyAuthParameters !== undefined) {
+    //     authParameters = {
+    //       ApiKeyAuthParameters: {
+    //         ApiKeyName: props.authParameters?.apiKeyAuthParameters?.apiKeyName,
+    //         ApiKeyValue: props.authParameters?.apiKeyAuthParameters?.apiKeyValue,
+    //       },
+    //     };
+    //   } else {
+    //     throw new Error(`You must supply apiKeyName and apiKeyValue for AuthorizationType: ${props.authorizationType}`);
+    //   };
+    // };
 
-    if (props.authorizationType === AuthorizationType.BASIC) {
-      if (props.authParameters?.basicAuthParameters !== undefined) {
-        authParameters = {
-          BasicAuthParameters: {
-            Password: props.authParameters?.basicAuthParameters?.password,
-            Username: props.authParameters?.basicAuthParameters?.username,
-          },
-        };
-      } else {
-        throw new Error(`You must supply password and username for AuthorizationType: ${props.authorizationType}`);
-      };
-    };
+    // if (props.authorizationType === AuthorizationType.BASIC) {
+    //   if (props.authParameters?.basicAuthParameters !== undefined) {
+    //     authParameters = {
+    //       BasicAuthParameters: {
+    //         Password: props.authParameters?.basicAuthParameters?.password,
+    //         Username: props.authParameters?.basicAuthParameters?.username,
+    //       },
+    //     };
+    //   } else {
+    //     throw new Error(`You must supply password and username for AuthorizationType: ${props.authorizationType}`);
+    //   };
+    // };
 
-    if (props.authorizationType === AuthorizationType.OAUTH_CLIENT_CREDENTIALS) {
-      if (props.authParameters?.oAuthParameters !== undefined) {
-        authParameters = {
-          OAuthParameters: {
-            AuthorizationEndpoint: props.authParameters?.oAuthParameters?.authorizationEndpoint,
-            ClientParameters: {
-              ClientID: props.authParameters?.oAuthParameters?.clientParameters.clientID,
-              ClientSecret: props.authParameters?.oAuthParameters?.clientParameters.clientSecret,
-            },
-            HttpMethod: props.authParameters?.oAuthParameters?.httpMethod,
-            OAuthHttpParameters: {
-              //HeaderParameters: buildParamaters(props.authParameters?.oAuthParameters?.oAuthHttpParameters?.headerParameters),
-              //QueryStringParameters: buildParamaters(props.authParameters?.oAuthParameters?.oAuthHttpParameters?.queryStringParameters),
-            },
-          },
-        };
-      } else {
-        throw new Error(`You must supply authorizationEndpoint, clientID and clientSecret for AuthorizationType: ${props.authorizationType}`);
-      };
-    };
+    // if (props.authorizationType === AuthorizationType.OAUTH_CLIENT_CREDENTIALS) {
+    //   if (props.authParameters?.oAuthParameters !== undefined) {
+    //     authParameters = {
+    //       OAuthParameters: {
+    //         AuthorizationEndpoint: props.authParameters?.oAuthParameters?.authorizationEndpoint,
+    //         ClientParameters: {
+    //           ClientID: props.authParameters?.oAuthParameters?.clientParameters.clientID,
+    //           ClientSecret: props.authParameters?.oAuthParameters?.clientParameters.clientSecret,
+    //         },
+    //         HttpMethod: props.authParameters?.oAuthParameters?.httpMethod,
+    //         OAuthHttpParameters: {
+    //           //HeaderParameters: buildParamaters(props.authParameters?.oAuthParameters?.oAuthHttpParameters?.headerParameters),
+    //           //QueryStringParameters: buildParamaters(props.authParameters?.oAuthParameters?.oAuthHttpParameters?.queryStringParameters),
+    //         },
+    //       },
+    //     };
+    //   } else {
+    //     throw new Error(`You must supply authorizationEndpoint, clientID and clientSecret for AuthorizationType: ${props.authorizationType}`);
+    //   };
+    // };
 
     if (props.authParameters?.invocationHttpParameters !== undefined) {
       if (props.authParameters?.invocationHttpParameters?.headerParameters !== undefined) {
@@ -373,8 +384,9 @@ export class Connection extends Resource implements IConnection {
     };
 
     let connection = new CfnConnection(this, 'Connection', {
-      authorizationType: props.authorizationType,
-      authParameters,
+      authorizationType: props.authParameters.authParametersJson.authorizationType,
+      // Need to parse this?
+      authParameters: props.authParameters.authParametersJson,
       description: props.description,
       name: this.physicalName,
     });

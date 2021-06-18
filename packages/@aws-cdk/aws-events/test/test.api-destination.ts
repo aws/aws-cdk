@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Stack, Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ApiDestination, HttpMethod } from '../lib/api-destination';
-import { AuthorizationType, Connection } from '../lib/connection';
+import { AuthParameters, AuthorizationType, Connection } from '../lib/connection';
 
 
 export = {
@@ -10,13 +10,7 @@ export = {
     // GIVEN
     const stack = new Stack();
     const connection = new Connection(stack, 'Connection', {
-      authorizationType: AuthorizationType.BASIC,
-      authParameters: {
-        basicAuthParameters: {
-          password: 'password',
-          username: 'username',
-        },
-      },
+      authParameters: AuthParameters.basicAuth('username', 'password'),
       connectionName: 'testConnection',
       description: 'ConnectionDescription',
     });

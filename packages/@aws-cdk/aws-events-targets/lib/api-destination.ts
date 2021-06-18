@@ -9,12 +9,11 @@ export interface ApiDestinationProps extends TargetBaseProps {
   /**
    * The event to send
    *
-   * @default the entire EventBridge event
+   * @default - the entire EventBridge event
    */
   readonly event?: events.RuleTargetInput;
   /**
    * The role to assume before invoking the target
-   * (i.e., the pipeline) when the given rule is triggered.
    *
    * @default - a new role will be created
    */
