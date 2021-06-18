@@ -48,6 +48,42 @@ test('Cannot create a Fargate task without a default container', () => {
   ).toThrowError(/must have at least one essential container/);
 });
 
+test('Cannot override container definitions when container is not in task definition', () => {
+  const taskDefinitionA = new ecs.TaskDefinition(stack, 'TaskDefinitionA', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  taskDefinitionA.addContainer('TheContainerA', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  const taskDefinitionB = new ecs.TaskDefinition(stack, 'TaskDefinitionB', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinitionB = taskDefinitionB.addContainer('TheContainerB', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition: taskDefinitionA,
+      containerOverrides: [
+        {
+          containerDefinition: containerDefinitionB,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson(),
+  ).toThrowError(/no such container in task definition/);
+});
+
 test('Running a Fargate Task', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
