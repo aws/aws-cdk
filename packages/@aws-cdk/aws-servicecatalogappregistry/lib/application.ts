@@ -47,7 +47,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
 /**
  * A Service Catalog AppRegistry Application.
  */
-export class Application extends ApplicationBase implements IApplication {
+export class Application extends ApplicationBase {
   /**
    * Imports an Application construct that represents an external application.
    *
@@ -75,8 +75,8 @@ export class Application extends ApplicationBase implements IApplication {
   public readonly applicationId: string;
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
-    super(scope, id, {
-    });
+    super(scope, id);
+
     this.validateApplicationProps(props);
 
     const application = new CfnApplication(this, 'Resource', {
@@ -87,6 +87,7 @@ export class Application extends ApplicationBase implements IApplication {
     this.applicationArn = application.attrArn;
     this.applicationId = application.attrId;
   }
+
   private validateApplicationProps(props: ApplicationProps) {
     InputValidator.validateLength(this.node.path, 'application name', 1, 256, props.applicationName);
     InputValidator.validateRegex(this.node.path, 'application name', /^[a-zA-Z0-9-_]+$/, props.applicationName);

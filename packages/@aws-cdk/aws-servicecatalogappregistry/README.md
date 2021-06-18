@@ -45,6 +45,6 @@ An application that has been created outside of the stack can be imported into y
 Applications can be imported by their ARN via the `Application.fromApplicationArn()` API:
 
 ```ts
-const importedApplication = appreg.Application.fromArn(this, 'MyImportedApplication', 
+const importedApplication = appreg.Application.fromApplicationArn(this, 'MyImportedApplication',
   'arn:aws:servicecatalog:us-east-1:012345678910:/applications/0aqmvxvgmry0ecc4mjhwypun6i');
 ```
