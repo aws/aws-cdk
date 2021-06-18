@@ -439,7 +439,7 @@ test('Cannot create an EC2 task with WAIT_FOR_TASK_TOKEN if no TaskToken provide
       launchTarget: new tasks.EcsEc2LaunchTarget(),
       taskDefinition,
     }).toStateJson(),
-  ).toThrowError(/Task Token is required in `containerOverrides`/);
+  ).toThrowError(/Task Token is required in at least one `containerOverrides.environment`/);
 });
 
 test('Running an EC2 Task with WAIT_FOR_TASK_TOKEN and task token in environment', () => {
