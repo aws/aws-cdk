@@ -97,6 +97,12 @@ test('domain list from asset', () => {
   });
 });
 
+test('throws with invalid domain', () => {
+  expect(() => new FirewallDomainList(stack, 'List', {
+    domains: FirewallDomains.fromList(['valid.fr', 'inv@lid.com']),
+  })).toThrow(/Invalid domain/);
+});
+
 test('throws with fromAsset and not .txt', () => {
   expect(() => new FirewallDomainList(stack, 'List', {
     domains: FirewallDomains.fromAsset(stack, 'Domains', 'image.jpg'),

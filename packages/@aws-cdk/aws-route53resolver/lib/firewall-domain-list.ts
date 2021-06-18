@@ -44,6 +44,11 @@ export abstract class FirewallDomains {
    * @param list the list of domains
    */
   public static fromList(list: string[]): FirewallDomains {
+    for (const domain of list) {
+      if (!/^[\w-.]{1,128}$/.test(domain)) {
+        throw new Error(`Invalid domain: ${domain}. The name must have 1-128 characters. Valid characters: A-Z, a-z, 0-9, _, -, .`);
+      }
+    }
     return { list };
   }
 
