@@ -411,3 +411,209 @@ test('Running an EC2 Task with overridden number values', () => {
     Type: 'Task',
   });
 });
+
+test('Cannot create an EC2 task with WAIT_FOR_TASK_TOKEN if no TaskToken provided', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDefinition', {
+    compatibility: ecs.Compatibility.EC2,
+  });
+
+  const containerDefinition = taskDefinition.addContainer('ContainerDefinition', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  });
+
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'RunTask', {
+      cluster,
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [
+            {
+              name: 'Foo.$',
+              value: 'Bar',
+            },
+          ],
+        },
+      ],
+      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      launchTarget: new tasks.EcsEc2LaunchTarget(),
+      taskDefinition,
+    }).toStateJson(),
+  ).toThrowError(/Task Token is required in `containerOverrides`/);
+});
+
+test('Running an EC2 Task with WAIT_FOR_TASK_TOKEN and task token in environment', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDefinition', {
+    compatibility: ecs.Compatibility.EC2,
+  });
+
+  const primaryContainerDef = taskDefinition.addContainer('PrimaryContainerDef', {
+    image: ecs.ContainerImage.fromRegistry('foo/primary'),
+    essential: true,
+  });
+
+  const sidecarContainerDef = taskDefinition.addContainer('SideCarContainerDef', {
+    image: ecs.ContainerImage.fromRegistry('foo/sidecar'),
+    essential: false,
+  });
+
+  // WHEN task token is provided in at least one containerOverride.environment (need not be essential container)
+  const runTask = new tasks.EcsRunTask(stack, 'RunTask', {
+    cluster,
+    containerOverrides: [
+      {
+        containerDefinition: primaryContainerDef,
+        environment: [
+          {
+            name: 'Foo.$',
+            value: 'Bar',
+          },
+        ],
+      },
+      {
+        containerDefinition: sidecarContainerDef,
+        environment: [
+          {
+            name: 'TaskToken.$',
+            value: sfn.JsonPath.taskToken,
+          },
+        ],
+      },
+    ],
+    integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
+    taskDefinition,
+  });
+
+  // THEN
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
+    End: true,
+    Parameters: {
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+      LaunchType: 'EC2',
+      Overrides: {
+        ContainerOverrides: [
+          {
+            Environment: [
+              {
+                'Name': 'Foo.$',
+                'Value': 'Bar',
+              },
+            ],
+            Name: 'PrimaryContainerDef',
+          },
+          {
+            Environment: [
+              {
+                'Name': 'TaskToken.$',
+                'Value.$': '$$.Task.Token',
+              },
+            ],
+            Name: 'SideCarContainerDef',
+          },
+        ],
+      },
+      TaskDefinition: 'TaskDefinition',
+    },
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:', {
+            'Ref': 'AWS::Partition',
+          },
+          ':states:::ecs:runTask.waitForTaskToken',
+        ],
+      ],
+    },
+    Type: 'Task',
+  });
+});
+
+test('Running an EC2 Task with WAIT_FOR_TASK_TOKEN and task token in command', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDefinition', {
+    compatibility: ecs.Compatibility.EC2,
+  });
+
+  const primaryContainerDef = taskDefinition.addContainer('PrimaryContainerDef', {
+    image: ecs.ContainerImage.fromRegistry('foo/primary'),
+    essential: true,
+  });
+
+  const sidecarContainerDef = taskDefinition.addContainer('SideCarContainerDef', {
+    image: ecs.ContainerImage.fromRegistry('foo/sidecar'),
+    essential: false,
+  });
+
+  // WHEN task token is provided in at least one containerOverride.environment (need not be essential container)
+  const runTask = new tasks.EcsRunTask(stack, 'RunTask', {
+    cluster,
+    containerOverrides: [
+      {
+        containerDefinition: primaryContainerDef,
+        environment: [
+          {
+            name: 'Foo.$',
+            value: 'Bar',
+          },
+        ],
+      },
+      {
+        containerDefinition: sidecarContainerDef,
+        environment: [
+          {
+            name: 'TaskToken.$',
+            value: sfn.JsonPath.taskToken,
+          },
+        ],
+      },
+    ],
+    integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
+    taskDefinition,
+  });
+
+  // THEN
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
+    End: true,
+    Parameters: {
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+      LaunchType: 'EC2',
+      Overrides: {
+        ContainerOverrides: [
+          {
+            Environment: [
+              {
+                'Name': 'Foo.$',
+                'Value': 'Bar',
+              },
+            ],
+            Name: 'PrimaryContainerDef',
+          },
+          {
+            Environment: [
+              {
+                'Name': 'TaskToken.$',
+                'Value.$': '$$.Task.Token',
+              },
+            ],
+            Name: 'SideCarContainerDef',
+          },
+        ],
+      },
+      TaskDefinition: 'TaskDefinition',
+    },
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:', {
+            'Ref': 'AWS::Partition',
+          },
+          ':states:::ecs:runTask.waitForTaskToken',
+        ],
+      ],
+    },
+    Type: 'Task',
+  });
+});
