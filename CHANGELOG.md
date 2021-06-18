@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.109.0](https://github.com/aws/aws-cdk/compare/v1.108.1...v1.109.0) (2021-06-16)
 
-
 ### Features
 
 * **apigateway:** disable execute api endpoint ([#14526](https://github.com/aws/aws-cdk/issues/14526)) ([b3a7d5b](https://github.com/aws/aws-cdk/commit/b3a7d5ba67bec09e422c0c843d7dee4653fe9aec))
@@ -62,6 +61,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
 * **cfnspec:** `imageScanningConfiguration` property of `ecr.CfnRepository` now accepts `scanOnPush` instead of `ScanOnPush` (notice the casing change).
+* **bootstrap:** users of the modern bootstrap stack (notably: CDK Pipelines users) will need to re-run `cdk bootstrap` to update to bootstrap stack version '6'.
 
 ### Features
 
