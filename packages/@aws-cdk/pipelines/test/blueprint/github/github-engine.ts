@@ -136,7 +136,7 @@ export class GitHubEngine implements IDeploymentEngine {
 
     const workflow = {
       name: this.workflowName,
-      on: snakeCaseKeys(this.workflowTriggers),
+      on: snakeCaseKeys(this.workflowTriggers, '_'),
       jobs: jobmap,
     };
 
@@ -461,13 +461,13 @@ interface Job {
   readonly definition: github.Job;
 }
 
-function snakeCaseKeys<T = unknown>(obj: T): T {
+function snakeCaseKeys<T = unknown>(obj: T, sep = '-'): T {
   if (typeof obj !== 'object' || obj == null) {
     return obj;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(snakeCaseKeys) as any;
+    return obj.map(o => snakeCaseKeys(o, sep)) as any;
   }
 
   const result: Record<string, unknown> = {};
@@ -475,7 +475,7 @@ function snakeCaseKeys<T = unknown>(obj: T): T {
     if (typeof v === 'object' && v != null) {
       v = snakeCaseKeys(v);
     }
-    result[decamelize(k, { separator: '-' })] = v;
+    result[decamelize(k, { separator: sep })] = v;
   }
   return result as any;
 }

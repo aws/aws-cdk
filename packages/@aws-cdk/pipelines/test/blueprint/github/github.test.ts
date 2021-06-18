@@ -35,7 +35,10 @@ test('single wave/stage/stack', () => {
     workflowPath: `${mkoutdir()}/deploy.yml`,
   });
 
-  const stage = new Stage(app, 'MyStack');
+  const stage = new Stage(app, 'MyStack', {
+    env: { account: '111111111111', region: 'us-east-1' },
+  });
+
   const stack = new Stack(stage, 'MyStack');
 
   new lambda.Function(stack, 'Function', {
