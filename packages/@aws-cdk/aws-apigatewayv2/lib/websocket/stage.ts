@@ -13,6 +13,11 @@ export interface IWebSocketStage extends IStage {
    * The API this stage is associated to.
    */
   readonly api: IWebSocketApi;
+
+  /**
+   * The callback URL to this stage.
+   */
+  readonly callbackUrl: string;
 }
 
 /**
@@ -57,6 +62,10 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       get url(): string {
         throw new Error('url is not available for imported stages.');
       }
+
+      get callbackUrl(): string {
+        throw new Error('callback url is not available for imported stages.');
+      }
     }
     return new Import(scope, id);
   }
@@ -86,11 +95,20 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
   }
 
   /**
-   * The URL to this stage.
+   * The websocket URL to this stage.
    */
   public get url(): string {
     const s = Stack.of(this);
     const urlPath = this.stageName;
     return `wss://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}`;
+  }
+
+  /**
+   * The callback URL to this stage.
+   */
+  public get callbackUrl(): string {
+    const s = Stack.of(this);
+    const urlPath = this.stageName;
+    return `https://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}`;
   }
 }
