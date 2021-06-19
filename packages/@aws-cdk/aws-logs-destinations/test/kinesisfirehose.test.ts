@@ -20,7 +20,7 @@ test('firehose can be subscription destination', () => {
   // THEN: subscription target is firehose
   expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
     DestinationArn: { 'Fn::GetAtt': ['MyFirehose', 'Arn'] },
-    RoleArn: { 'Fn::GetAtt': ['SubscriptionCloudWatchLogsCanPutRecordsIntoKinesisFirehoseC45D3D89', 'Arn'] },
+    RoleArn: { 'Fn::GetAtt': ['MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehose30DECEBA', 'Arn'] },
   });
 
   // THEN: we have a role to write to the firehose
@@ -84,16 +84,16 @@ test('firehose can be subscription destination twice, without duplicating permis
   expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
     LogGroupName: { Ref: 'LogGroup106AAD846' },
     DestinationArn: { 'Fn::GetAtt': ['MyFirehose', 'Arn'] },
-    RoleArn: { 'Fn::GetAtt': ['Subscription1CloudWatchLogsCanPutRecordsIntoKinesisFirehoseEAD271F9', 'Arn'] },
+    RoleArn: { 'Fn::GetAtt': ['MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehose30DECEBA', 'Arn'] },
   });
   expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
     LogGroupName: { Ref: 'LogGroup2477F707C' },
     DestinationArn: { 'Fn::GetAtt': ['MyFirehose', 'Arn'] },
-    RoleArn: { 'Fn::GetAtt': ['Subscription2CloudWatchLogsCanPutRecordsIntoKinesisFirehoseB0757929', 'Arn'] },
+    RoleArn: { 'Fn::GetAtt': ['MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehose30DECEBA', 'Arn'] },
   });
 
   // THEN: we have a single role to write to the Firehose
-  expect(stack).toCountResources('AWS::IAM::Role', 1); // TODO: This one fails - somehow it still creates 2 roles...
+  expect(stack).toCountResources('AWS::IAM::Role', 1);
   expect(stack).toHaveResource('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
