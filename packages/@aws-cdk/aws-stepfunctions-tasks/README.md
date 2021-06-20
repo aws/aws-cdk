@@ -885,7 +885,7 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
   },
   resourceConfig: {
     instanceCount: 1,
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+    instanceType: new ec2.InstanceType(JsonPath.stringAt('$.InstanceType')),
     volumeSize: cdk.Size.gibibytes(50),
   }, // optional: default is 1 instance of EC2 `M4.XLarge` with `10GB` volume
   stoppingCondition: {

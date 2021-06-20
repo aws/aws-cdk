@@ -204,9 +204,9 @@ export interface ResourceConfig {
   readonly instanceCount: number;
 
   /**
-   * ML compute instance type.
+   * ML compute instance type.  Can be fixed or instantiated with a JsonPath pointing to an instance type string in the task input.
    *
-   * @default is the 'm4.xlarge' instance type.
+   * @default is the 'ml.m4.xlarge' instance type.
    */
   readonly instanceType: ec2.InstanceType;
 
