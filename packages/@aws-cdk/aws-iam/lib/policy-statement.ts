@@ -30,7 +30,7 @@ export class PolicyStatement {
    * @param obj the PolicyStatement in object form.
    */
   public static fromJson(obj: any) {
-    return new PolicyStatement({
+    const ret = new PolicyStatement({
       sid: obj.Sid,
       actions: ensureArrayOrUndefined(obj.Action),
       resources: ensureArrayOrUndefined(obj.Resource),
@@ -41,6 +41,14 @@ export class PolicyStatement {
       principals: obj.Principal ? [new JsonPrincipal(obj.Principal)] : undefined,
       notPrincipals: obj.NotPrincipal ? [new JsonPrincipal(obj.NotPrincipal)] : undefined,
     });
+
+    // validate that the PolicyStatement has the correct shape
+    const errors = ret.validateForAnyPolicy();
+    if (errors.length > 0) {
+      throw new Error('Incorrect Policy Statement: ' + errors.join('\n'));
+    }
+
+    return ret;
   }
 
   /**
@@ -317,18 +325,18 @@ export class PolicyStatement {
    */
   public toStatementJson(): any {
     return noUndef({
-      Action: _norm(this.action),
-      NotAction: _norm(this.notAction),
+      Action: _norm(this.action, { unique: true }),
+      NotAction: _norm(this.notAction, { unique: true }),
       Condition: _norm(this.condition),
       Effect: _norm(this.effect),
       Principal: _normPrincipal(this.principal),
       NotPrincipal: _normPrincipal(this.notPrincipal),
-      Resource: _norm(this.resource),
-      NotResource: _norm(this.notResource),
+      Resource: _norm(this.resource, { unique: true }),
+      NotResource: _norm(this.notResource, { unique: true }),
       Sid: _norm(this.sid),
     });
 
-    function _norm(values: any) {
+    function _norm(values: any, { unique }: { unique: boolean } = { unique: false }) {
 
       if (typeof(values) === 'undefined') {
         return undefined;
@@ -347,7 +355,7 @@ export class PolicyStatement {
           return values[0];
         }
 
-        return values;
+        return unique ? [...new Set(values)] : values;
       }
 
       if (typeof(values) === 'object') {
