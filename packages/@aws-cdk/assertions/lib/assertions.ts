@@ -1,6 +1,5 @@
 import { Stack, Stage } from '@aws-cdk/core';
-import { Match } from './match';
-import { LiteralMatch } from './matchers';
+import { LiteralMatch, Match } from './match';
 import * as assert from './vendored/assert';
 
 /**
