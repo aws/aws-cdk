@@ -3,6 +3,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { embeddedAsmPath } from '../private/construct-internals';
 
@@ -21,8 +22,16 @@ export interface UpdatePipelineActionProps {
 
   /**
    * Name of the pipeline stack
+   *
+   * @deprecated - Use `pipelineStackHierarchicalId` instead.
+   * @default - none
    */
-  readonly pipelineStackName: string;
+  readonly pipelineStackName?: string;
+
+  /**
+   * Hierarchical id of the pipeline stack
+   */
+  readonly pipelineStackHierarchicalId: string;
 
   /**
    * Version of CDK CLI to 'npm install'.
@@ -63,6 +72,7 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
 
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
 
+    const stackIdentifier = props.pipelineStackHierarchicalId ?? props.pipelineStackName;
     const selfMutationProject = new codebuild.PipelineProject(this, 'SelfMutation', {
       projectName: props.projectName,
       environment: {
@@ -78,7 +88,7 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
           build: {
             commands: [
               // Cloud Assembly is in *current* directory.
-              `cdk -a ${embeddedAsmPath(scope)} deploy ${props.pipelineStackName} --require-approval=never --verbose`,
+              `cdk -a ${embeddedAsmPath(scope)} deploy ${stackIdentifier} --require-approval=never --verbose`,
             ],
           },
         },
@@ -88,7 +98,12 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
     // allow the self-mutating project permissions to assume the bootstrap Action role
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: ['arn:*:iam::*:role/*-deploy-role-*', 'arn:*:iam::*:role/*-publishing-role-*'],
+      resources: [`arn:*:iam::${Stack.of(this).account}:role/*`],
+      conditions: {
+        'ForAnyValue:StringEquals': {
+          'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
+        },
+      },
     }));
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['cloudformation:DescribeStacks'],

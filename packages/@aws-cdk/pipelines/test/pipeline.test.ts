@@ -16,6 +16,7 @@ import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import { Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
+import { behavior } from './helpers/compliance';
 import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
@@ -32,26 +33,29 @@ afterEach(() => {
   app.cleanup();
 });
 
-test('references stack template in subassembly', () => {
-  // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'App'));
+behavior('references stack template in subassembly', (tests) => {
+  tests.legacy(() => {
+    // WHEN
+    pipeline.addApplicationStage(new OneStackApp(app, 'App'));
 
-  // THEN
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
-      Name: 'App',
-      Actions: arrayWith(
-        objectLike({
-          Name: 'Stack.Prepare',
-          InputArtifacts: [objectLike({})],
-          Configuration: objectLike({
-            StackName: 'App-Stack',
-            TemplatePath: stringLike('*::assembly-App/*.template.json'),
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: arrayWith({
+        Name: 'App',
+        Actions: arrayWith(
+          objectLike({
+            Name: 'Stack.Prepare',
+            InputArtifacts: [objectLike({})],
+            Configuration: objectLike({
+              StackName: 'App-Stack',
+              TemplatePath: stringLike('*::assembly-App/*.template.json'),
+            }),
           }),
-        }),
-      ),
-    }),
+        ),
+      }),
+    });
   });
+
 });
 
 test('obvious error is thrown when stage contains no stacks', () => {
@@ -334,7 +338,7 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
           build: {
-            commands: arrayWith('cdk -a assembly-PipelineStage deploy PipelineStage-PipelineStack --require-approval=never --verbose'),
+            commands: arrayWith('cdk -a assembly-PipelineStage deploy PipelineStage/PipelineStack --require-approval=never --verbose'),
           },
         },
       })),

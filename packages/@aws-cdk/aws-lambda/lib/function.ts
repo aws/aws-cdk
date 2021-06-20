@@ -336,7 +336,7 @@ export interface FunctionProps extends FunctionOptions {
 }
 
 /**
- * Deploys a file from from inside the construct library as a function.
+ * Deploys a file from inside the construct library as a function.
  *
  * The supplied file is subject to the 4096 bytes limit of being embedded in a
  * CloudFormation template.
@@ -383,6 +383,23 @@ export class Function extends FunctionBase {
     return this._currentVersion;
   }
 
+  /** @internal */
+  public static _VER_PROPS: { [key: string]: boolean } = {};
+
+  /**
+   * Record whether specific properties in the `AWS::Lambda::Function` resource should
+   * also be associated to the Version resource.
+   * See 'currentVersion' section in the module README for more details.
+   * @param propertyName The property to classify
+   * @param locked whether the property should be associated to the version or not.
+   */
+  public static classifyVersionProperty(propertyName: string, locked: boolean) {
+    this._VER_PROPS[propertyName] = locked;
+  }
+
+  /**
+   * Import a lambda function into the CDK using its ARN
+   */
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
     return Function.fromFunctionAttributes(scope, id, { functionArn });
   }
@@ -668,6 +685,10 @@ export class Function extends FunctionBase {
     this.runtime = props.runtime;
 
     if (props.layers) {
+      if (props.runtime === Runtime.FROM_IMAGE) {
+        throw new Error('Layers are not supported for container image functions');
+      }
+
       this.addLayers(...props.layers);
     }
 

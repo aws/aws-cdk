@@ -20,6 +20,7 @@ import {
   Operation,
   CfnTable,
 } from '../lib';
+import { ReplicaProvider } from '../lib/replica-provider';
 
 jest.mock('@aws-cdk/custom-resources');
 
@@ -766,6 +767,104 @@ describe('when billing mode is PAY_PER_REQUEST', () => {
       readCapacity: 1,
       writeCapacity: 1,
     })).toThrow(/PAY_PER_REQUEST/);
+  });
+});
+
+describe('schema details', () => {
+  let stack: Stack;
+  let table: Table;
+
+  beforeEach(() => {
+    stack = new Stack();
+    table = new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+    });
+  });
+
+  test('get scheama for table with hash key only', () => {
+    expect(table.schema()).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: undefined,
+    });
+  });
+
+  test('get scheama for table with hash key + range key', () => {
+    table = new Table(stack, 'TableB', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
+
+    expect(table.schema()).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
+  });
+
+  test('get scheama for GSI with hash key', () => {
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+    });
+
+    expect(table.schema(GSI_NAME)).toEqual({
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: undefined,
+    });
+  });
+
+  test('get scheama for GSI with hash key + range key', () => {
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+
+    expect(table.schema(GSI_NAME)).toEqual({
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+  });
+
+  test('get scheama for LSI', () => {
+    table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY,
+    });
+
+    expect(table.schema(LSI_NAME)).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: LSI_SORT_KEY,
+    });
+  });
+
+  test('get scheama for multiple secondary indexes', () => {
+    table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY,
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+
+    expect(table.schema(LSI_NAME)).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: LSI_SORT_KEY,
+    });
+
+    expect(table.schema(GSI_NAME)).toEqual({
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+  });
+
+  test('get scheama for unknown secondary index', () => {
+    expect(() => table.schema(GSI_NAME))
+      .toThrow(/Cannot find schema for index: MyGSI. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index/);
   });
 });
 
@@ -2281,6 +2380,10 @@ describe('import', () => {
 });
 
 describe('global', () => {
+  beforeEach(() => {
+    (ReplicaProvider as any).getOrCreateCalls.clear();
+  });
+
   test('create replicas', () => {
     // GIVEN
     const stack = new Stack();
@@ -2826,6 +2929,29 @@ describe('global', () => {
     expect(cr.Provider).toHaveBeenCalledWith(expect.anything(), expect.any(String), expect.objectContaining({
       totalTimeout: Duration.hours(1),
     }));
+  });
+
+  test('throws when reaching the maximum table with replication limit', () => {
+    // GIVEN
+    const stack = new Stack();
+    for (let i = 1; i <= 10; i++) {
+      new Table(stack, `Table${i}`, {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING,
+        },
+        replicationRegions: ['eu-central-1'],
+      });
+    }
+
+    // THEN
+    expect(() => new Table(stack, 'OverLimit', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: ['eu-central-1'],
+    })).toThrow(/cannot have more than 10 global tables/);
   });
 });
 

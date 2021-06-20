@@ -44,6 +44,16 @@ If `requirements.txt` or `Pipfile` exists at the entry path, the construct will 
 all required modules in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-python3.7)
 according to the `runtime`.
 
+Python bundles are only recreated and published when a file in a source directory has changed. 
+Therefore (and as a general best-practice), it is highly recommended to commit a lockfile with a
+list of all transitive dependencies and their exact versions. 
+This will ensure that when any dependency version is updated, the bundle asset is recreated and uploaded.
+
+To that end, we recommend using [`pipenv`] or [`poetry`] which has lockfile support.
+
+[`pipenv`]: https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-lock
+[`poetry`]: https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+
 **Lambda with a requirements.txt**
 
 ```plaintext

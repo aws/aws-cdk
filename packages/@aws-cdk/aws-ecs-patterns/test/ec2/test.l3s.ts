@@ -28,6 +28,7 @@ export = {
           TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
           TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
         },
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
       },
       desiredCount: 2,
     });
@@ -54,6 +55,10 @@ export = {
             },
           ],
           Memory: 1024,
+          DockerLabels: {
+            label1: 'labelValue1',
+            label2: 'labelValue2',
+          },
         },
       ],
     }));
@@ -389,6 +394,7 @@ export = {
           TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
           TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
         },
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
       },
       desiredCount: 2,
     });
@@ -415,6 +421,10 @@ export = {
               'awslogs-stream-prefix': 'Service',
               'awslogs-region': { Ref: 'AWS::Region' },
             },
+          },
+          DockerLabels: {
+            label1: 'labelValue1',
+            label2: 'labelValue2',
           },
         },
       ],

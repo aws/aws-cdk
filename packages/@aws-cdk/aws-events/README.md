@@ -80,6 +80,18 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+Or using an Object:
+
+```ts
+onCommitRule.addTarget(new targets.SnsTopic(topic, {
+  message: events.RuleTargetInput.fromObject(
+    {
+      DataType: `custom_${events.EventField.fromPath('$.detail-type')}`
+    }
+  )
+}));
+```
+
 ## Scheduling
 
 You can configure a Rule to run on a schedule (cron or rate).
@@ -190,8 +202,8 @@ bus.archive('MyArchive', {
 
 ## Granting PutEvents to an existing EventBus
 
-To import an existing EventBus into your CDK application, use `EventBus.fromEventBusArn` or `EventBus.fromEventBusAttributes`
-factory method.
+To import an existing EventBus into your CDK application, use `EventBus.fromEventBusArn`, `EventBus.fromEventBusAttributes`
+or `EventBus.fromEventBusName` factory method.
 
 Then, you can use the `grantPutEventsTo` method to grant `event:PutEvents` to the eventBus.
 
