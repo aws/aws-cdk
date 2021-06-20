@@ -1,6 +1,6 @@
 import { CfnResource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { TemplateAssertions } from '../lib';
+import { Match, TemplateAssertions } from '../lib';
 
 describe('StackAssertions', () => {
   describe('fromString', () => {
@@ -132,12 +132,12 @@ describe('StackAssertions', () => {
             Properties: { baz: 'waldo' },
           },
         },
-      })).resolves;
+      })).toThrowError();
     });
   });
 
   describe('hasResource', () => {
-    test('matches', () => {
+    test('exact match', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
@@ -148,6 +148,51 @@ describe('StackAssertions', () => {
       inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'qux' },
       });
+
+      expect(() => inspect.hasResource('Foo::Bar', {
+        Properties: { baz: 'waldo' },
+      })).toThrow('MYERROR');
+
+      expect(() => inspect.hasResource('Foo::Bar', {
+        Properties: { baz: 'qux', fred: 'waldo' },
+      })).toThrow('MYERROR');
+    });
+
+    test('arrayWith', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: ['qux', 'quy'] },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+      inspect.hasResource('Foo::Bar', {
+        Properties: { baz: Match.arrayWith(['qux']) },
+      });
+
+      expect(() => inspect.hasResource('Foo::Bar', {
+        Properties: { baz: Match.arrayWith(['waldo']) },
+      })).toThrow('MYERROR');
+    });
+
+    test('objectLike', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+      inspect.hasResource('Foo::Bar', {
+        Properties: Match.objectLike({ baz: 'qux' }),
+      });
+      inspect.hasResource('Foo::Bar', {
+        Properties: Match.objectLike({ fred: 'waldo' }),
+      });
+
+      expect(() => inspect.hasResource('Foo::Bar', {
+        Properties: Match.objectLike({ baz: 'waldo' }),
+      })).toThrow('MYERROR');
     });
   });
 });

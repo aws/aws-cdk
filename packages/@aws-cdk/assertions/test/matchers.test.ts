@@ -147,6 +147,11 @@ describe('ObjectLikeMatch', () => {
     expect(matcher.test({ foo: 'bar', baz: 'qux' })).toEqual(true);
   });
 
+  test('not an object', () => {
+    matcher = new ObjectLikeMatch({ foo: new ObjectLikeMatch({ baz: 'qux' }) });
+    expect(matcher.test({ foo: 'baz' })).toEqual(false);
+  });
+
   test('nested with ArrayLike', () => {
     matcher = new ObjectLikeMatch({
       foo: new ArrayWithMatch(['bar']),
