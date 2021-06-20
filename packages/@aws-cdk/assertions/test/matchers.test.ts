@@ -1,5 +1,5 @@
 import { CfnResource, Stack } from '@aws-cdk/core';
-import { ArrayWithMatch, LiteralMatch, Match, TemplateAssertions } from '../lib';
+import { ArrayWithMatch, LiteralMatch, Match, ObjectLikeMatch, TemplateAssertions } from '../lib';
 
 describe('Match', () => {
   test('absent', () => {
@@ -22,7 +22,7 @@ describe('Match', () => {
   });
 });
 
-describe('LiteralMatcher', () => {
+describe('LiteralMatch', () => {
   let matcher: LiteralMatch;
 
   test('simple literals', () => {
@@ -85,7 +85,7 @@ describe('LiteralMatcher', () => {
   });
 });
 
-describe('ArrayWithMatcher', () => {
+describe('ArrayWithMatch', () => {
   let matcher: ArrayWithMatch;
 
   test('basic', () => {
@@ -110,16 +110,43 @@ describe('ArrayWithMatcher', () => {
     expect(matcher.test([{ baz: 'qux' }])).toEqual(false);
   });
 
+  test('not array', () => {
+    matcher = new ArrayWithMatch([3]);
+    expect(matcher.test(3)).toEqual(false);
+    expect(matcher.test('3')).toEqual(false);
+    expect(matcher.test({ val: 3 })).toEqual(false);
+  });
+
   test('out of order', () => {
     matcher = new ArrayWithMatch([3, 5]);
     expect(matcher.test([5, 3])).toEqual(false);
   });
 
-  test('mix with LiteralMatcher', () => {
-    matcher = new ArrayWithMatch([new LiteralMatch({ foo: 'bar' })]);
-    expect(matcher.test([{ baz: 'qux' }, { foo: 'bar' }, { fred: 'waldo' }])).toEqual(true);
+  test('nested with ObjectLike', () => {
+    matcher = new ArrayWithMatch([new ObjectLikeMatch({ foo: 'bar' })]);
+    expect(matcher.test([{ baz: 'qux' }, { foo: 'bar' }])).toEqual(true);
+    expect(matcher.test([{ baz: 'qux' }, { foo: 'bar', fred: 'waldo' }])).toEqual(true);
+  });
+});
 
-    matcher = new ArrayWithMatch([{ foo: new LiteralMatch('bar') }]);
-    expect(matcher.test([{ baz: 'qux' }, { foo: 'bar' }, { fred: 'waldo' }])).toEqual(true);
+describe('ObjectLikeMatch', () => {
+  let matcher: ObjectLikeMatch;
+
+  test('basic', () => {
+    matcher = new ObjectLikeMatch({ foo: 'bar' });
+    expect(matcher.test({ foo: 'bar' })).toEqual(true);
+    expect(matcher.test({ foo: 'baz' })).toEqual(false);
+    expect(matcher.test({ foo: ['bar'] })).toEqual(false);
+    expect(matcher.test({ bar: 'foo' })).toEqual(false);
+
+    matcher = new ObjectLikeMatch({ foo: 'bar' });
+    expect(matcher.test({ foo: 'bar', baz: 'qux' })).toEqual(true);
+  });
+
+  test('nested with ArrayLike', () => {
+    matcher = new ObjectLikeMatch({
+      foo: new ArrayWithMatch(['bar']),
+    });
+    expect(matcher.test({ foo: ['bar', 'baz'], fred: 'waldo' })).toEqual(true);
   });
 });

@@ -15,6 +15,10 @@ export abstract class Match {
     return new ArrayWithMatch(pattern);
   }
 
+  public static objectLike(pattern: {[key: string]: any}): Match {
+    return new ObjectLikeMatch(pattern);
+  }
+
   public static isMatcher(x: any): x is Match {
     return x && x instanceof Match;
   }
@@ -28,6 +32,10 @@ export class LiteralMatch extends Match {
   }
 
   public test(actual: any): boolean {
+    if (Match.isMatcher(actual)) {
+      throw new Error('LiteralMatch cannot be nested with another matcher at the top level. Deeper nesting is allowed.');
+    }
+
     if (Array.isArray(actual) !== Array.isArray(this.pattern)) {
       return false;
     }
@@ -57,11 +65,8 @@ export class LiteralMatch extends Match {
       const sameKeys = new LiteralMatch(patternKeys).test(actualKeys);
       if (!sameKeys) return false;
 
-      for (const [patternKey, patternVal] of Object.entries(this.pattern)) {
-        if (!(patternKey in actual)) return false;
-        const matcher = Match.isMatcher(patternVal) ? patternVal : new LiteralMatch(patternVal);
-        if (!matcher.test(actual[patternKey])) return false;
-      }
+      const objectMatch = new ObjectLikeMatch(this.pattern).test(actual);
+      if (!objectMatch) return false;
 
       return true;
     }
@@ -80,6 +85,7 @@ export class ArrayWithMatch extends Match {
   }
 
   public test(actual: any): boolean {
+    if (!Array.isArray(actual)) return false;
     if (this.pattern.length > actual.length) return false;
 
     let patternIdx = 0;
@@ -100,5 +106,23 @@ export class ArrayWithMatch extends Match {
       return true;
     }
     return false;
+  }
+}
+
+export class ObjectLikeMatch extends Match {
+  constructor(private readonly pattern: {[key: string]: any}) {
+    super();
+  }
+
+  public test(actual: any): boolean {
+    if (typeof actual !== 'object') return false;
+
+    for (const [patternKey, patternVal] of Object.entries(this.pattern)) {
+      if (!(patternKey in actual)) return false;
+      const matcher = Match.isMatcher(patternVal) ? patternVal : new LiteralMatch(patternVal);
+      if (!matcher.test(actual[patternKey])) return false;
+    }
+
+    return true;
   }
 }
