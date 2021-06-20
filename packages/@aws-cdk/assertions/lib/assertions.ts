@@ -1,5 +1,5 @@
 import { Stack, Stage } from '@aws-cdk/core';
-import { LiteralMatch, Match } from './match';
+import { ExactMatch, Match } from './match';
 import * as assert from './vendored/assert';
 
 /**
@@ -74,7 +74,7 @@ export class TemplateAssertions {
   }
 
   public hasResource(type: string, props: any): void {
-    const matcher = Match.isMatcher(props) ? props : new LiteralMatch(props);
+    const matcher = Match.isMatcher(props) ? props : new ExactMatch(props);
     for (const logicalId of Object.keys(this.inspector.value.Resources || {})) {
       const resource = this.inspector.value.Resources[logicalId];
       if (resource.Type === type) {

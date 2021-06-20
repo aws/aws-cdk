@@ -26,16 +26,16 @@ export abstract class Match {
   public abstract test(actual: any): boolean;
 }
 
-export class LiteralMatch extends Match {
+export class ExactMatch extends Match {
   constructor(private readonly pattern: any) {
     super();
+
+    if (Match.isMatcher(this.pattern)) {
+      throw new Error('ExactMatch cannot be nested with another matcher at the top level. Deeper nesting is allowed.');
+    }
   }
 
   public test(actual: any): boolean {
-    if (Match.isMatcher(actual)) {
-      throw new Error('LiteralMatch cannot be nested with another matcher at the top level. Deeper nesting is allowed.');
-    }
-
     if (Array.isArray(actual) !== Array.isArray(this.pattern)) {
       return false;
     }
@@ -47,7 +47,7 @@ export class LiteralMatch extends Match {
 
       for (let i = 0; i < this.pattern.length; i++) {
         const p = this.pattern[i];
-        const matcher = Match.isMatcher(p) ? p : new LiteralMatch(p);
+        const matcher = Match.isMatcher(p) ? p : new ExactMatch(p);
         if (!matcher.test(actual[i])) return false;
       }
 
@@ -62,7 +62,7 @@ export class LiteralMatch extends Match {
       const patternKeys = Object.keys(this.pattern).sort();
       const actualKeys = Object.keys(actual).sort();
 
-      const sameKeys = new LiteralMatch(patternKeys).test(actualKeys);
+      const sameKeys = new ExactMatch(patternKeys).test(actualKeys);
       if (!sameKeys) return false;
 
       const objectMatch = new ObjectLikeMatch(this.pattern).test(actual);
@@ -93,7 +93,7 @@ export class ArrayWithMatch extends Match {
 
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       let patternElement = this.pattern[patternIdx];
-      let matcher = Match.isMatcher(patternElement) ? patternElement : new LiteralMatch(patternElement);
+      let matcher = Match.isMatcher(patternElement) ? patternElement : new ExactMatch(patternElement);
       const m = matcher.test(actual[actualIdx]);
       if (m) {
         patternIdx++;
@@ -119,7 +119,7 @@ export class ObjectLikeMatch extends Match {
 
     for (const [patternKey, patternVal] of Object.entries(this.pattern)) {
       if (!(patternKey in actual)) return false;
-      const matcher = Match.isMatcher(patternVal) ? patternVal : new LiteralMatch(patternVal);
+      const matcher = Match.isMatcher(patternVal) ? patternVal : new ExactMatch(patternVal);
       if (!matcher.test(actual[patternKey])) return false;
     }
 
