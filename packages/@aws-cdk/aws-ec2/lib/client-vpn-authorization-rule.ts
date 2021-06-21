@@ -35,13 +35,14 @@ export interface ClientVpnAuthorizationRuleOptions {
 export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationRuleOptions {
   /**
    * The client VPN endpoint to which to add the rule.
+   * @default clientVpnEndpoint is required
    */
-  readonly clientVpnEndpoint: IClientVpnEndpoint;
+  readonly clientVpnEndpoint?: IClientVpnEndpoint;
 
   /**
    * The client VPN endpoint to which to add the rule.
    * @deprecated Use `clientVpnEndpoint` instead
-   * @default no-description
+   * @default clientVpnEndpoint is required
    */
   readonly clientVpnEndoint?: IClientVpnEndpoint;
 }
@@ -54,7 +55,7 @@ export class ClientVpnAuthorizationRule extends Resource {
     super(scope, id);
 
     new CfnClientVpnAuthorizationRule(this, 'Resource', {
-      clientVpnEndpointId: props.clientVpnEndpoint.endpointId,
+      clientVpnEndpointId: props.clientVpnEndpoint!.endpointId,
       targetNetworkCidr: props.cidr,
       accessGroupId: props.groupId,
       authorizeAllGroups: !props.groupId,
