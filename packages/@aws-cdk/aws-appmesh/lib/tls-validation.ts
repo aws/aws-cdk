@@ -34,7 +34,7 @@ export interface TlsValidation extends TlsValidationCommonProperty {
 /**
  * Represents the properties needed to define TLS Validation context
  */
-export interface MutualTLSAuthEligibleTlsValidation extends TlsValidationCommonProperty {
+export interface MutualTlsAuthEligibleTlsValidation extends TlsValidationCommonProperty {
   /**
    * Reference to where to retrieve the trust chain.
    */

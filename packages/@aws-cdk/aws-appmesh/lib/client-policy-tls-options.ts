@@ -1,4 +1,4 @@
-import { MutualTLSAuthEligibleCertificate } from './tls-certificate';
+import { MutualTlsAuthEligibleCertificate } from './tls-certificate';
 import { TlsValidation } from './tls-validation';
 
 /**
@@ -31,5 +31,5 @@ export interface ClientPolicyTlsOptions {
    *
    * @default - client TLS certificate is not provided
    */
-  readonly mutualTlsAuthCertificate?: MutualTLSAuthEligibleCertificate;
+  readonly mutualTlsAuthCertificate?: MutualTlsAuthEligibleCertificate;
 }

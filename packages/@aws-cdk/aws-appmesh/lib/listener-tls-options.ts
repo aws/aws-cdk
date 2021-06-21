@@ -1,5 +1,5 @@
 import { TlsCertificate } from './tls-certificate';
-import { MutualTLSAuthEligibleTlsValidation } from './tls-validation';
+import { MutualTlsAuthEligibleTlsValidation } from './tls-validation';
 
 /**
  * Enum of supported TLS modes
@@ -41,5 +41,5 @@ export interface ListenerTlsOptions {
    *
    * @default - client TLS certificate is not required
    */
-  readonly mutualTlsAuthValidation?: MutualTLSAuthEligibleTlsValidation
+  readonly mutualTlsAuthValidation?: MutualTlsAuthEligibleTlsValidation
 }
