@@ -64,7 +64,7 @@ describe('Application', () => {
     expect(() => {
       appreg.Application.fromApplicationArn(stack, 'MyApplication',
         'arn:aws:servicecatalog:us-east-1:123456789012:/applications/');
-    }).toThrow(/Malformed ARN, cannot determine application ID from:/);
+    }).toThrow(/Missing required Application ID from Application ARN:/);
   }),
 
   test('application created with a token description does not throw validation error and creates', () => {

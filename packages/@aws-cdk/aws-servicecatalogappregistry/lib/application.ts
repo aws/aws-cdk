@@ -58,8 +58,9 @@ export class Application extends ApplicationBase {
   public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
     const arn = cdk.Stack.of(scope).splitArn(applicationArn, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
     const applicationId = arn.resourceName;
-    if (applicationArn.split('/').length != 3 || applicationId.length == 0) {
-      throw new Error('Malformed ARN, cannot determine application ID from: ' + applicationArn);
+
+    if (!applicationId) {
+      throw new Error('Missing required Application ID from Application ARN: ' + applicationArn);
     }
 
     class Import extends ApplicationBase {
