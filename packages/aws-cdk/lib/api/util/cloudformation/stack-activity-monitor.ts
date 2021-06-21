@@ -420,6 +420,10 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
       delete this.resourcesInProgress[activity.event.LogicalResourceId];
     }
 
+    if (status.endsWith('_COMPLETE_CLEANUP_IN_PROGRESS')) {
+      this.resourcesDone++;
+    }
+
     if (status.endsWith('_COMPLETE')) {
       const prevState = this.resourcesPrevCompleteState[activity.event.LogicalResourceId];
       if (!prevState) {
@@ -475,6 +479,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
   public addActivity(activity: StackActivity) {
     super.addActivity(activity);
     this.printable.push(activity);
+    this.print();
   }
 
   public print() {
