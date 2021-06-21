@@ -29,5 +29,3 @@ export class InputValidator {
     return string;
   }
 }
-
-
