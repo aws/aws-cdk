@@ -26,7 +26,7 @@ enables organizations to create and manage repositores of applications and assoc
 
 
 ```ts
-import * as appreg from '@aws-cdk/aws-servicecatalogappregistry'
+import * as appreg from '@aws-cdk/aws-servicecatalogappregistry';
 ```
 
 ## Application
