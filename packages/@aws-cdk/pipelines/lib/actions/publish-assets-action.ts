@@ -8,11 +8,11 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Lazy, ISynthesisSession, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { toPosixPath } from '../private/fs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-import { toPosixPath } from '../private/fs';
 
 /**
  * Type of the asset that is being published
@@ -137,15 +137,6 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
       buildSpec: props.createBuildspecFile ? codebuild.BuildSpec.fromSourceFilename(this.getBuildSpecFileName()) : this.buildSpec,
       role: props.role,
     });
-
-    const rolePattern = props.assetType === AssetType.DOCKER_IMAGE
-      ? 'arn:*:iam::*:role/*-image-publishing-role-*'
-      : 'arn:*:iam::*:role/*-file-publishing-role-*';
-
-    project.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      resources: [rolePattern],
-    }));
 
     this.action = new codepipeline_actions.CodeBuildAction({
       actionName: props.actionName,
