@@ -252,26 +252,9 @@ test('support granting permissions', () => {
           Action: 'elasticfilesystem:ClientWrite',
           Effect: 'Allow',
           Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':elasticfilesystem:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':file-system/',
-                {
-                  Ref: 'EfsFileSystem37910666',
-                },
-              ],
+            'Fn::GetAtt': [
+              'EfsFileSystem37910666',
+              'Arn',
             ],
           },
         },
