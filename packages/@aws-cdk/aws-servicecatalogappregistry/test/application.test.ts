@@ -67,23 +67,33 @@ describe('Application', () => {
     }).toThrow(/Malformed ARN, cannot determine application ID from:/);
   }),
 
-  test('application created with a token description does not throw validation error', () => {
-    const tokenDescription = cdk.Lazy.string({ produce: () => 'token description'.repeat(1000) });
-    expect(() => {
-      new appreg.Application(stack, 'MyApplication', {
-        applicationName: 'myApplication',
-        description: tokenDescription,
-      });
-    }).not.toThrow(/Invalid application description for resource/);
+  test('application created with a token description does not throw validation error and creates', () => {
+    const tokenDescription = new cdk.CfnParameter(stack, 'Description');
+
+    new appreg.Application(stack, 'MyApplication', {
+      applicationName: 'myApplication',
+      description: tokenDescription.valueAsString,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::Application', {
+      Description: {
+        Ref: 'Description',
+      },
+    });
   }),
 
-  test('application created with a token name does not throw validation error', () => {
-    const tokenName = cdk.Lazy.string({ produce: () => 'token Application Name' });
-    expect(() => {
-      new appreg.Application(stack, 'MyApplication', {
-        applicationName: tokenName,
-      });
-    }).not.toThrow(/Invalid application name for resource/);
+  test('application created with a token application name does not throw validation error', () => {
+    const tokenApplicationName= new cdk.CfnParameter(stack, 'ApplicationName');
+
+    new appreg.Application(stack, 'MyApplication', {
+      applicationName: tokenApplicationName.valueAsString,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::Application', {
+      Name: {
+        Ref: 'ApplicationName',
+      },
+    });
   }),
 
   test('fails for application with description length longer than allowed', () => {
