@@ -333,11 +333,8 @@ export class FileSystem extends FileSystemBase {
     filesystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = filesystem.ref;
-    this.fileSystemArn = Stack.of(scope).formatArn({
-      service: 'elasticfilesystem',
-      resource: 'file-system',
-      resourceName: this.fileSystemId,
-    });
+    this.fileSystemArn = filesystem.attrArn;
+
     Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
@@ -403,7 +400,11 @@ class ImportedFileSystem extends FileSystemBase {
     super(scope, id);
 
     if (!attrs.fileSystemId && !attrs.fileSystemArn) {
-      throw new Error('You must specify the fileSystem id or arn in order to import a FileSystem resource.');
+      throw new Error('One of fileSystemId or fileSystemArn must be provided.');
+    }
+
+    if (attrs.fileSystemId && attrs.fileSystemArn) {
+      throw new Error('Only one of fileSystemId or fileSystemArn must be provided.');
     }
 
     this.fileSystemArn = attrs.fileSystemArn ?? Stack.of(scope).formatArn({
