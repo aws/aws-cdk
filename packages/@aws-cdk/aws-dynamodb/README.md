@@ -185,3 +185,19 @@ const { partitionKey, sortKey } = table.schema();
 
 const { partitionKey, sortKey } = table.schema(INDEX_NAME);
 ```
+
+## Kinesis Stream
+
+A Kinesis Data Stream can be configured on the DynamoDB table to capture item-level changes.
+
+```ts
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as kinesis from '@aws-cdk/aws-kinesis';
+
+const stream = new kinesis.Stream(this, 'Stream');
+
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  kinesisStream: stream,
+});
+```
