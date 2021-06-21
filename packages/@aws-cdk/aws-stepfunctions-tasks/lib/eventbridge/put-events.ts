@@ -9,48 +9,51 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * An entry to be sent to EventBridge
  * @see https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEventsRequestEntry.html
  */
-export interface IEventBridgePutEventsEntry {
+export interface EventBridgePutEventsEntry {
   /**
    * JSON object that contains information about the event
    * The service generating the event determines the content of this field
    * Consists of a valid JSON string which can contain nested subobjects
    * i.e. "{ \"instance-id\": \" i-1234567890abcdef0\", \"state\": \"terminated\" }"
+   * @default - service dependent
    */
   readonly detail?: sfn.TaskInput;
 
   /**
    * Along with the source field help identify fields and values of detail field
-   * i.e. Events by CloudTrail have a "detail-type": "AWS API Call via CloudTrail",
+   * For example, events by CloudTrail have detail type "AWS API Call via CloudTrail"
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html
+   * @default - service dependent
    */
   readonly detailType?: string;
 
   /**
    * The event bus the entry will be sent to.
-   * @default Send event to account's default event bus
+   *
+   * @default - event is sent to account's default event bus
    */
   readonly eventBus?: events.IEventBus;
 
   /**
    * JSON array containing ARNs of resources used in the event
-   * i.e. Auto Scaling events include ARNs for both instances and Auto Scaling groups
+   *
+   * For example, auto scaling events include ARNs for both instances and auto scaling groups
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html
-   * @default empty If the event does not include resource ARNs
+   * @default []
    */
   readonly resources?: string[];
 
   /**
-   * The service that generated the event
-   * i.e aws.cloudfront
+   * The service that generated the event such as com.mycompany.myapp
+   * @example 'com.example.service'
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html
+   * @default - service dependent
    */
   readonly source?: string;
 
   /**
-   * The timestamp of the event for the entry in ISO 8601 date format
-   * If there is no timestamp, timestamp of the PutEvents call
-   * i.e. 2016-08-12T15:15:01.100001Z
-   * @default Event's entry time in ISO 8601 format
+   * Timestamp of the event entry
+   * @default Timestamp of the PutEvents call
    */
   readonly timestamp?: number;
 }
@@ -62,7 +65,7 @@ export interface EventBridgePutEventsProps extends sfn.TaskStateBaseProps {
   /**
    * The entries that will be sent (must be at least 1)
    */
-  readonly entries: IEventBridgePutEventsEntry[];
+  readonly entries: EventBridgePutEventsEntry[];
 }
 
 /**
@@ -105,7 +108,7 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
   /**
    * Returns an array of EventBusArn strings based on this.props.entries
    */
-  get eventBusArns(): string[] {
+  private get eventBusArns(): string[] {
     return this.props.entries
       .map(entry => {
         if (entry.eventBus) {
@@ -132,21 +135,25 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('events', 'putEvents', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        Entries: this.getEntries(),
+        Entries: this.rendertEntries(),
       }),
     };
   }
 
-  private getEntries(): Object[] {
+  private rendertEntries(): Object[] {
     return this.props.entries.map(entry => {
-      return {
-        Detail: entry.detail?.value,
-        DetailType: entry.detailType,
-        EventBusName: entry.eventBus?.eventBusArn,
-        Resources: entry.resources,
-        Source: entry.source,
-        Time: entry.timestamp,
-      };
+      if (entry.source?.startsWith('aws')) {
+        throw new Error('Source cannot start with aws.');
+      } else {
+        return {
+          Detail: entry.detail?.value,
+          DetailType: entry.detailType,
+          EventBusName: entry.eventBus?.eventBusArn,
+          Resources: entry.resources,
+          Source: entry.source,
+          Time: entry.timestamp,
+        };
+      }
     });
   }
 

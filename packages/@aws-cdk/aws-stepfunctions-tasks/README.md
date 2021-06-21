@@ -764,7 +764,7 @@ new tasks.EventBridgePutEvents(stack, 'Send an event to EventBridge', {
     detail: sfn.TaskInput.fromObject({
       Message: 'Hello from Step Functions!',
     }),
-    myEventBus,
+    eventBus: myEventBus,
     detailType: 'MessageFromStepFunctions',
     source: 'step.functions',
   }],

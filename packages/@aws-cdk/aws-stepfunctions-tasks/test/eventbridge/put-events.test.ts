@@ -162,10 +162,6 @@ describe('Put Events', () => {
       }],
     });
 
-    expect(task.eventBusArns).toEqual([
-      eventBus.eventBusArn,
-    ]);
-
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
@@ -200,13 +196,6 @@ describe('Put Events', () => {
     const task = new EventBridgePutEvents(stack, 'PutEvents', {
       entries: [{}],
     });
-
-    expect(task.eventBusArns.length).toEqual(1);
-    const eventBusArnParts: string[] = task.eventBusArns[0].split(':');
-    expect(eventBusArnParts.length).toBe(6);
-    expect(eventBusArnParts[0]).toEqual('arn');
-    expect(eventBusArnParts[2]).toEqual('events');
-    expect(eventBusArnParts[5]).toEqual('event-bus/default');
 
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
