@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -82,6 +83,14 @@ export interface BucketDeploymentProps {
    * @default 128
    */
   readonly memoryLimit?: number;
+
+  /**
+   *  Create and use an efs file system as temp storage assets before using s3 sync instead of /tmp
+   *  Enable this if your assets are 500 megabytes on disk.
+   *
+   * @default - Not set
+   */
+  readonly enableTempEfsStorage?: boolean
 
   /**
    * Execution role associated with this function
@@ -167,6 +176,7 @@ export interface BucketDeploymentProps {
 
   /**
    * The VPC network to place the deployment lambda handler in.
+   * It is required to be set if using lambda with EFS storage.
    *
    * @default None
    */
@@ -193,11 +203,42 @@ export class BucketDeployment extends CoreConstruct {
       throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
+    if (props.enableTempEfsStorage && !props.vpc) {
+      throw new Error('Vpc must be specified if enableTempEfsStorage is true');
+    }
+
+    const ACCESS_POINT_PATH = '/lambda';
+    const ACCESS_MODE = '0777';
+    let accessPoint;
+    if (props.enableTempEfsStorage && props.vpc) {
+      const fileSystem = new efs.FileSystem(this, 'FileSystem', {
+        vpc: props.vpc,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      accessPoint = fileSystem.addAccessPoint('AccessPoint', {
+        path: ACCESS_POINT_PATH,
+        createAcl: {
+          ownerUid: '1001',
+          ownerGid: '1001',
+          permissions: ACCESS_MODE,
+        },
+        posixUser: {
+          uid: '1001',
+          gid: '1001',
+        },
+      });
+    }
+
+    const MOUNT_PATH = `/mnt${ACCESS_POINT_PATH}`;
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       runtime: lambda.Runtime.PYTHON_3_6,
+      environment: props.enableTempEfsStorage ? {
+        IS_EFS_ENABLED: 'true',
+        MOUNT_PATH: MOUNT_PATH,
+      } : undefined,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
@@ -205,6 +246,10 @@ export class BucketDeployment extends CoreConstruct {
       memorySize: props.memoryLimit,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
+      filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
+        accessPoint,
+        MOUNT_PATH,
+      ): undefined,
     });
 
     const handlerRole = handler.role;

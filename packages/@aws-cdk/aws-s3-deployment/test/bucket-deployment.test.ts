@@ -203,6 +203,21 @@ test('deploy from a local .zip file', () => {
 
 });
 
+test('deploy from a local .zip file when efs is enabled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    enableTempEfsStorage: true,
+    vpc: new ec2.Vpc(stack, 'Vpc'),
+  });
+
+});
+
 test('honors passed asset options', () => {
   // GIVEN
   const stack = new cdk.Stack();
