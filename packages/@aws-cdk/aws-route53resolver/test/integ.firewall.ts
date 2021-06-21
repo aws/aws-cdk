@@ -18,7 +18,7 @@ class TestStack extends Stack {
     });
 
     new route53resolver.FirewallDomainList(this, 'OtherList', {
-      domains: route53resolver.FirewallDomains.fromAsset(this, 'Domains', path.join(__dirname, 'domains.txt')),
+      domains: route53resolver.FirewallDomains.fromAsset(path.join(__dirname, 'domains.txt')),
     });
 
     const ruleGroup = new route53resolver.FirewallRuleGroup(this, 'RuleGroup');

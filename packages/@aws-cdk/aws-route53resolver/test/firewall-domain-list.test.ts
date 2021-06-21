@@ -27,7 +27,7 @@ test('domain list from strings', () => {
 test('domain list from S3 URI', () => {
   // WHEN
   new FirewallDomainList(stack, 'List', {
-    domains: FirewallDomains.fromS3Uri('s3://bucket/prefix/object'),
+    domains: FirewallDomains.fromS3Url('s3://bucket/prefix/object'),
   });
 
   // THEN
@@ -51,7 +51,7 @@ test('domain list from S3', () => {
 test('domain list from asset', () => {
   // WHEN
   new FirewallDomainList(stack, 'List', {
-    domains: FirewallDomains.fromAsset(stack, 'Domains', path.join(__dirname, 'domains.txt')),
+    domains: FirewallDomains.fromAsset(path.join(__dirname, 'domains.txt')),
   });
 
   // THEN
@@ -105,12 +105,12 @@ test('throws with invalid domain', () => {
 
 test('throws with fromAsset and not .txt', () => {
   expect(() => new FirewallDomainList(stack, 'List', {
-    domains: FirewallDomains.fromAsset(stack, 'Domains', 'image.jpg'),
+    domains: FirewallDomains.fromAsset('image.jpg'),
   })).toThrow(/expects a file with the .txt extension/);
 });
 
 test('throws with invalid S3 URI', () => {
   expect(() => new FirewallDomainList(stack, 'List', {
-    domains: FirewallDomains.fromS3Uri('https://invalid/bucket/uri'),
+    domains: FirewallDomains.fromS3Url('https://invalid/bucket/uri'),
   })).toThrow(/The S3 URI must start with s3:\/\//);
 });

@@ -49,22 +49,31 @@ export abstract class FirewallDomains {
         throw new Error(`Invalid domain: ${domain}. The name must have 1-128 characters. Valid characters: A-Z, a-z, 0-9, _, -, .`);
       }
     }
-    return { list };
+
+    return {
+      bind(_scope: Construct): DomainsConfig {
+        return { domains: list };
+      },
+    };
   }
 
   /**
-   * Firewall domains created from the URI of a file stored in Amazon S3.
+   * Firewall domains created from the URL of a file stored in Amazon S3.
    * The file must be a text file and must contain a single domain per line.
    * The content type of the S3 object must be `plain/text`.
    *
-   * @param s3Uri S3 bucket uri (s3://bucket/prefix/objet).
+   * @param url S3 bucket url (s3://bucket/prefix/objet).
    */
-  public static fromS3Uri(s3Uri: string): FirewallDomains {
-    if (!Token.isUnresolved(s3Uri) && !s3Uri.startsWith('s3://')) {
-      throw new Error(`The S3 URI must start with s3://, got ${s3Uri}`);
+  public static fromS3Url(url: string): FirewallDomains {
+    if (!Token.isUnresolved(url) && !url.startsWith('s3://')) {
+      throw new Error(`The S3 URI must start with s3://, got ${url}`);
     }
 
-    return { s3Uri };
+    return {
+      bind(_scope: Construct): DomainsConfig {
+        return { domainFileUrl: url };
+      },
+    };
   }
 
   /**
@@ -76,7 +85,7 @@ export abstract class FirewallDomains {
    * @param key S3 key
    */
   public static fromS3(bucket: IBucket, key: string): FirewallDomains {
-    return this.fromS3Uri(bucket.s3UrlForObject(key));
+    return this.fromS3Url(bucket.s3UrlForObject(key));
   }
 
   /**
@@ -86,27 +95,50 @@ export abstract class FirewallDomains {
    *
    * @param assetPath path to the text file
    */
-  public static fromAsset(scope: Construct, id: string, assetPath: string): FirewallDomains {
+  public static fromAsset(assetPath: string): FirewallDomains {
     // cdk-assets will correctly set the content type for the S3 object
     // if the file has the correct extension
     if (path.extname(assetPath) !== '.txt') {
       throw new Error(`FirewallDomains.fromAsset() expects a file with the .txt extension, got ${assetPath}`);
     }
 
-    const asset = new Asset(scope, id, { path: assetPath });
+    return {
+      bind(scope: Construct): DomainsConfig {
+        const asset = new Asset(scope, 'Domains', { path: assetPath });
 
-    if (!asset.isFile) {
-      throw new Error('FirewallDomains.fromAsset() expects a file');
-    }
+        if (!asset.isFile) {
+          throw new Error('FirewallDomains.fromAsset() expects a file');
+        }
 
-    return this.fromS3Uri(asset.s3ObjectUrl);
+        return { domainFileUrl: asset.s3ObjectUrl };
+      },
+    };
+
   }
 
-  /** S3 bucket URI of text file with domain list */
-  public abstract s3Uri?: string;
+  /** Binds the domains to a domain list */
+  public abstract bind(scope: Construct): DomainsConfig;
+}
 
-  /** List of domains */
-  public abstract readonly list?: string[];
+/**
+ * Domains configuration
+ */
+export interface DomainsConfig {
+  /**
+   * The fully qualified URL or URI of the file stored in Amazon S3 that contains
+   * the list of domains to import. The file must be a text file and must contain
+   * a single domain per line. The content type of the S3 object must be `plain/text`.
+   *
+   * @default - use `domains`
+   */
+  readonly domainFileUrl?: string;
+
+  /**
+   * A list of domains
+   *
+   * @default - use `domainFileUrl`
+   */
+  readonly domains?: string[];
 }
 
 /**
@@ -178,10 +210,11 @@ export class FirewallDomainList extends Resource implements IFirewallDomainList 
   constructor(scope: Construct, id: string, props: FirewallDomainListProps) {
     super(scope, id);
 
+    const domainsConfig = props.domains.bind(this);
     const domainList = new CfnFirewallDomainList(this, 'Resource', {
       name: props.name,
-      domainFileUrl: props.domains.s3Uri,
-      domains: props.domains.list,
+      domainFileUrl: domainsConfig.domainFileUrl,
+      domains: domainsConfig.domains,
     });
 
     this.firewallDomainListId = domainList.attrId;

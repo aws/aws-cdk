@@ -51,7 +51,7 @@ const s3List = new route53resolver.FirewallDomainList(this, 'S3List', {
 });
 
 const assetList = new route53resolver.FirewallDomainList(this, 'AssetList', {
-  domains: route53resolver.FirewallDomains.fromAsset(this, 'Asset', '/path/to/domains.txt'),
+  domains: route53resolver.FirewallDomains.fromAsset('/path/to/domains.txt'),
 });
 ```
 
