@@ -1,5 +1,5 @@
-
 import * as cdk from '@aws-cdk/core';
+
 /**
  * Class to validate that inputs match requirements.
  */
