@@ -56,7 +56,8 @@ export class Application extends ApplicationBase {
    * @param applicationArn the Amazon Resource Name of the existing AppRegistry Application
    */
   public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
-    const applicationId = applicationArn.split('/').pop()!;
+    const arn = cdk.Stack.of(scope).splitArn(applicationArn, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
+    const applicationId = arn.resourceName;
     if (applicationArn.split('/').length != 3 || applicationId.length == 0) {
       throw new Error('Malformed ARN, cannot determine application ID from: ' + applicationArn);
     }
