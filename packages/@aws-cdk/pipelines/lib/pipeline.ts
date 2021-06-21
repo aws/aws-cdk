@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, Aws, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
+import { Annotations, App, Aws, CfnOutput, Fn, Lazy, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
@@ -342,7 +342,7 @@ export class CdkPipeline extends CoreConstruct {
     return flatMap(this._pipeline.stages, s => s.actions.filter(isDeployAction));
   }
 
-  private * validateDeployOrder(): IterableIterator<string> {
+  private* validateDeployOrder(): IterableIterator<string> {
     const stackActions = this.stackActions;
     for (const stackAction of stackActions) {
       // For every dependency, it must be executed in an action before this one is prepared.
@@ -360,7 +360,7 @@ export class CdkPipeline extends CoreConstruct {
     }
   }
 
-  private * validateRequestedOutputs(): IterableIterator<string> {
+  private* validateRequestedOutputs(): IterableIterator<string> {
     const artifactIds = this.stackActions.map(s => s.stackArtifactId);
 
     for (const artifactId of Object.keys(this._outputArtifacts)) {
@@ -398,6 +398,7 @@ class AssetPublishing extends CoreConstruct {
 
   private readonly publishers: Record<string, PublishAssetsAction> = {};
   private readonly assetRoles: Record<string, iam.IRole> = {};
+  private readonly assetPublishingRoles: Record<string, Set<string>> = {};
   private readonly myCxAsmRoot: string;
 
   private readonly lastStageBeforePublishing?: codepipeline.IStage;
@@ -440,6 +441,7 @@ class AssetPublishing extends CoreConstruct {
     if (!this.assetRoles[command.assetType]) {
       this.generateAssetRole(command.assetType);
     }
+    this.assetPublishingRoles[command.assetType] = (this.assetPublishingRoles[command.assetType] ?? new Set()).add(command.assetPublishingRoleArn);
 
     const publisherKey = this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId;
 
@@ -483,6 +485,7 @@ class AssetPublishing extends CoreConstruct {
         role: this.assetRoles[command.assetType],
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
+        createBuildspecFile: this.props.singlePublisherPerType,
       });
       this.stages[stageIndex].addAction(action);
     }
@@ -545,12 +548,11 @@ class AssetPublishing extends CoreConstruct {
     }));
 
     // Publishing role access
-    const rolePattern = assetType === AssetType.DOCKER_IMAGE
-      ? 'arn:*:iam::*:role/*-image-publishing-role-*'
-      : 'arn:*:iam::*:role/*-file-publishing-role-*';
+    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
+    // Lazy-evaluated so all asset publishing roles are included.
     assetRole.addToPolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: [rolePattern],
+      resources: Lazy.list({ produce: () => [...this.assetPublishingRoles[assetType]].map(arn => Fn.sub(arn)) }),
     }));
 
     // Artifact access

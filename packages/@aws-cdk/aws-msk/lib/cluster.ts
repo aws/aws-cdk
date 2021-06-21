@@ -1,3 +1,4 @@
+import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -336,7 +337,7 @@ export interface TlsAuthProps {
    *
    * @default - none
    */
-  readonly certificateAuthorityArns?: string[];
+  readonly certificateAuthorities?: acmpca.ICertificateAuthority[];
 }
 
 /**
@@ -577,8 +578,9 @@ export class Cluster extends ClusterBase {
     ) {
       clientAuthentication = {
         tls: {
-          certificateAuthorityArnList:
-            props.clientAuthentication?.tlsProps?.certificateAuthorityArns,
+          certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities.map(
+            (ca) => ca.certificateAuthorityArn,
+          ),
         },
       };
     }
