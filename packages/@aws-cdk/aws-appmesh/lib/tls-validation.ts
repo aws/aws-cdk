@@ -13,9 +13,12 @@ interface TlsValidationCommonProperty {
    * Represents the subject alternative names (SANs) secured by the certificate.
    * SANs must be in the FQDN or URI format.
    *
-   * @default - the Envoy proxy for that node doesn't verify the SAN on a peer client certificate.
+   * @default - If you don't specify SANs on the terminating mesh endpoint,
+   * the Envoy proxy for that node doesn't verify the SAN on a peer client certificate.
+   * If you don't specify SANs on the originating mesh endpoint,
+   * the SAN on the certificate provided by the terminating endpoint must match the mesh endpoint service discovery configuration.
    */
-  readonly subjectAlternativeNames?: SubjectiveAlternativeNames;
+  readonly subjectAlternativeNames?: SubjectAlternativeNames;
 }
 
 /**
@@ -159,11 +162,42 @@ class TlsValidationSdsTrust extends MutualTLSAuthEligibleTlsValidationTrust {
 }
 
 /**
- * Represents the properties needed to define subject alternative names
+ * All Properties for Subject Alternative Names Matcher for both Client Policy and Listener.
  */
-export interface SubjectiveAlternativeNames {
+export interface SubjectAlternativeNamesMatcherConfig {
+  /**
+   * VirtualNode CFN configuration for subject alternative names secured by the certificate.
+   */
+  readonly subjectAlternativeNamesMatch: CfnVirtualNode.SubjectAlternativeNameMatchersProperty;
+}
+
+/**
+ * Used to generate Subject Alternative Names Matchers
+ */
+export abstract class SubjectAlternativeNames {
   /**
    * The values of the SAN must match the specified values exactly.
+   *
+   * @param subjectAlternativeNames The exact values to test against.
    */
-  readonly exactMatch: string[];
+  public static exactMatch(subjectAlternativeNames: string[]): SubjectAlternativeNames {
+    return new SubjectAlternativeNamesImpl({ exact: subjectAlternativeNames });
+  }
+
+  /**
+   * Returns Subject Alternative Names Matcher based on method type.
+   */
+  public abstract bind(scope: Construct): SubjectAlternativeNamesMatcherConfig;
+}
+
+class SubjectAlternativeNamesImpl extends SubjectAlternativeNames {
+  constructor(
+    private readonly matchProperty: CfnVirtualNode.SubjectAlternativeNameMatchersProperty,
+  ) { super(); }
+
+  public bind(_scope: Construct): SubjectAlternativeNamesMatcherConfig {
+    return {
+      subjectAlternativeNamesMatch: this.matchProperty,
+    };
+  }
 }

@@ -119,9 +119,7 @@ const node4 = mesh.addVirtualNode('node4', {
       certificate: appmesh.TlsCertificate.sds('spiffe://domain.local/backend-service'),
       mutualTlsAuthValidation: {
         trust: appmesh.TlsValidationTrust.sds('spiffe://domain.local'),
-        subjectAlternativeNames: {
-          exactMatch: ['client.domain.local'],
-        },
+        subjectAlternativeNames: appmesh.SubjectAlternativeNames.exactMatch(['client.domain.local']),
       },
     },
     healthCheck: appmesh.HealthCheck.http({
@@ -136,9 +134,7 @@ const node4 = mesh.addVirtualNode('node4', {
     clientPolicyTls: {
       mutualTlsAuthCertificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
       validation: {
-        subjectAlternativeNames: {
-          exactMatch: ['mymesh.local'],
-        },
+        subjectAlternativeNames: appmesh.SubjectAlternativeNames.exactMatch(['mymesh.local']),
         trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
       },
     },

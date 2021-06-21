@@ -334,9 +334,7 @@ const node2 = new appmesh.VirtualNode(stack, 'node2', {
     clientPolicyTls: {
       ports: [8080, 8081],
       validation: {
-        subjectAlternativeNames: {
-          exactMatch: ['mesh-endpoint.apps.local'],
-        },
+        subjectAlternativeNames: appmesh.SubjectAlternativeNames.exactMatch(['mesh-endpoint.apps.local']),
         trust: appmesh.TlsValidationTrust
           .acm([acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
       },

@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
-import { ClientPolicyTls } from './client-policy-tls';
+import { ClientPolicyTlsOptions } from './client-policy-tls-options';
 import { renderTlsClientPolicy } from './private/utils';
 import { IVirtualService } from './virtual-service';
 
@@ -177,7 +177,7 @@ export interface BackendDefaults {
    *
    * @default - none
    */
-  readonly clientPolicyTls?: ClientPolicyTls;
+  readonly clientPolicyTls?: ClientPolicyTlsOptions;
 }
 
 /**
@@ -190,7 +190,7 @@ export interface VirtualServiceBackendOptions {
    *
    * @default - none
    */
-  readonly clientPolicyTls?: ClientPolicyTls;
+  readonly clientPolicyTls?: ClientPolicyTlsOptions;
 }
 
 /**
@@ -227,7 +227,7 @@ export abstract class Backend {
 class VirtualServiceBackend extends Backend {
 
   constructor (private readonly virtualService: IVirtualService,
-    private readonly clientPolicyTls: ClientPolicyTls | undefined) {
+    private readonly clientPolicyTls: ClientPolicyTlsOptions | undefined) {
     super();
   }
 

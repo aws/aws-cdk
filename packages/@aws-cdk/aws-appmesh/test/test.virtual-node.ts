@@ -381,9 +381,7 @@ export = {
               mutualTlsAuthCertificate: appmesh.TlsCertificate.sds( 'secret_certificate'),
               ports: [8080, 8081],
               validation: {
-                subjectAlternativeNames: {
-                  exactMatch: ['mesh-endpoint.apps.local'],
-                },
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.exactMatch(['mesh-endpoint.apps.local']),
                 trust: appmesh.TlsValidationTrust.sds('secret_validation'),
               },
             },

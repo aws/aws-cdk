@@ -24,7 +24,7 @@ export enum TlsMode {
 /**
  * Represents TLS properties for listener
  */
-export interface ListenerTls {
+export interface ListenerTlsOptions {
   /**
    * Represents TLS certificate
    */

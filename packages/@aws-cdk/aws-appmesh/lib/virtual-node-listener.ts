@@ -1,6 +1,6 @@
 import { CfnVirtualNode } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
-import { ListenerTls } from './listener-tls';
+import { ListenerTlsOptions } from './listener-tls-options';
 import { ConnectionPoolConfig, renderListenerTls } from './private/utils';
 import {
   GrpcConnectionPool, GrpcTimeout, Http2ConnectionPool, HttpConnectionPool,
@@ -44,7 +44,7 @@ interface VirtualNodeListenerCommonOptions {
    *
    * @default - none
    */
-  readonly tls?: ListenerTls;
+  readonly tls?: ListenerTlsOptions;
 
   /**
    * Represents the configuration for enabling outlier detection
@@ -173,7 +173,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     private readonly healthCheck: HealthCheck | undefined,
     private readonly timeout: HttpTimeout | undefined,
     private readonly port: number = 8080,
-    private readonly tls: ListenerTls | undefined,
+    private readonly tls: ListenerTlsOptions | undefined,
     private readonly outlierDetection: OutlierDetection | undefined,
     private readonly connectionPool: ConnectionPoolConfig | undefined) { super(); }
 
