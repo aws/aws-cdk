@@ -12,7 +12,8 @@ export class LoadBalancerContextProviderPlugin implements ContextProviderPlugin 
   }
 
   async getValue(query: cxschema.LoadBalancerContextQuery): Promise<cxapi.LoadBalancerContextResponse> {
-    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading)).elbv2();
+    const options = { assumeRoleArn: query.lookupRoleArn };
+    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading, options)).elbv2();
 
     if (!query.loadBalancerArn && !query.loadBalancerTags) {
       throw new Error('The load balancer lookup query must specify either `loadBalancerArn` or `loadBalancerTags`');
@@ -57,7 +58,8 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
   }
 
   async getValue(query: LoadBalancerListenerQuery): Promise<LoadBalancerListenerResponse> {
-    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading)).elbv2();
+    const options = { assumeRoleArn: query.lookupRoleArn };
+    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading, options)).elbv2();
 
     if (!query.listenerArn && !query.loadBalancerArn && !query.loadBalancerTags) {
       throw new Error('The load balancer listener query must specify at least one of: `listenerArn`, `loadBalancerArn` or `loadBalancerTags`');

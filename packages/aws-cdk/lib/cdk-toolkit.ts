@@ -8,7 +8,7 @@ import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob 
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
-import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
+import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -108,7 +108,7 @@ export class CdkToolkit {
   }
 
   public async deploy(options: DeployOptions) {
-    const stacks = await this.selectStacksForDeploy(options.stackNames, options.exclusively);
+    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively);
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -143,7 +143,7 @@ export class CdkToolkit {
         } else {
           warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.displayName));
           await this.destroy({
-            stackNames: [stack.stackName],
+            selector: { patterns: [stack.stackName] },
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
@@ -233,7 +233,7 @@ export class CdkToolkit {
   }
 
   public async destroy(options: DestroyOptions) {
-    let stacks = await this.selectStacksForDestroy(options.stackNames, options.exclusively);
+    let stacks = await this.selectStacksForDestroy(options.selector, options.exclusively);
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks = stacks.reversed();
@@ -371,18 +371,18 @@ export class CdkToolkit {
     }));
   }
 
-  private async selectStacksForList(selectors: string[]) {
+  private async selectStacksForList(patterns: string[]) {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(selectors, { defaultBehavior: DefaultSelection.AllStacks });
+    const stacks = await assembly.selectStacks({ patterns }, { defaultBehavior: DefaultSelection.AllStacks });
 
     // No validation
 
     return stacks;
   }
 
-  private async selectStacksForDeploy(stackNames: string[], exclusively?: boolean) {
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean) {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(stackNames, {
+    const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
@@ -395,7 +395,7 @@ export class CdkToolkit {
   private async selectStacksForDiff(stackNames: string[], exclusively?: boolean) {
     const assembly = await this.assembly();
 
-    const selectedForDiff = await assembly.selectStacks(stackNames, {
+    const selectedForDiff = await assembly.selectStacks({ patterns: stackNames }, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.MainAssembly,
     });
@@ -408,9 +408,9 @@ export class CdkToolkit {
     return selectedForDiff;
   }
 
-  private async selectStacksForDestroy(stackNames: string[], exclusively?: boolean) {
+  private async selectStacksForDestroy(selector: StackSelector, exclusively?: boolean) {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(stackNames, {
+    const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
@@ -437,7 +437,7 @@ export class CdkToolkit {
   private async selectSingleStackByName(stackName: string) {
     const assembly = await this.assembly();
 
-    const stacks = await assembly.selectStacks([stackName], {
+    const stacks = await assembly.selectStacks({ patterns: [stackName] }, {
       extend: ExtendedStackSelection.None,
       defaultBehavior: DefaultSelection.None,
     });
@@ -507,9 +507,9 @@ export interface DiffOptions {
 
 export interface DeployOptions {
   /**
-   * Stack names to deploy
+   * Criteria for selecting stacks to deploy
    */
-  stackNames: string[];
+  selector: StackSelector;
 
   /**
    * Only select the given stack
@@ -610,9 +610,9 @@ export interface DeployOptions {
 
 export interface DestroyOptions {
   /**
-   * The names of the stacks to delete
+   * Criteria for selecting stacks to deploy
    */
-  stackNames: string[];
+  selector: StackSelector;
 
   /**
    * Whether to exclude stacks that depend on the stacks to be deleted

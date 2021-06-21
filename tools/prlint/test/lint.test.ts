@@ -1,10 +1,19 @@
 import * as GitHub from 'github-api';
 import * as linter from '../lint';
+import * as path from 'path';
 
 jest.mock('github-api');
 
 beforeEach(() => {
   GitHub.mockClear();
+});
+
+beforeAll(() => {
+  process.env.REPO_ROOT = path.join(__dirname, '..', '..', '..');
+});
+
+afterAll(() => {
+  process.env.REPO_ROOT = undefined;
 });
 
 describe('breaking changes format', () => {
@@ -39,12 +48,54 @@ describe('breaking changes format', () => {
 
   test('valid title', async () => {
     const issue = {
-      title: 'chore(foo): some title',
+      title: 'chore(cdk-build-tools): some title',
       body: 'BREAKING CHANGE: this breaking change',
       labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
     };
     configureMock(issue, undefined);
-    await linter.validatePr(1000); // not throw
+    await expect(linter.validatePr(1000)).resolves; // not throw
+  });
+});
+
+describe('ban breaking changes in stable modules', () => {
+  test('breaking change in stable module', async () => {
+    const issue = {
+      title: 'chore(s3): some title',
+      body: 'BREAKING CHANGE: this breaking change',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+    };
+    configureMock(issue, undefined);
+    await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
+  });
+
+  test('breaking changes multiple in stable modules', async () => {
+    const issue = {
+      title: 'chore(lambda): some title',
+      body: `
+        BREAKING CHANGE: this breaking change
+        continued message
+        * **ecs**: further breaking in ecs
+      `,
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+    };
+    configureMock(issue, undefined);
+    await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
+  });
+
+  test('with additional "closes" footer', async () => {
+    const issue = {
+      title: 'chore(s3): some title',
+      body: `
+        description of the commit
+
+        closes #123456789
+
+        BREAKING CHANGE: this breaking change
+      `,
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }]
+    };
+    configureMock(issue, undefined);
+    await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
   });
 });
 
