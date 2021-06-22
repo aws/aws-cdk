@@ -13,6 +13,15 @@ export class InputValidator {
     }
   }
 
+  /**
+   * Validates a regex.
+   */
+  public static validateRegex(resourceName: string, inputName: string, regex: RegExp, inputString?: string): void {
+    if (!cdk.Token.isUnresolved(inputString) && inputString !== undefined && !regex.test(inputString)) {
+      throw new Error(`Invalid ${inputName} for resource ${resourceName}, must match regex pattern ${regex}, got: '${this.truncateString(inputString, 100)}'`);
+    }
+  }
+
   private static truncateString(string: string, maxLength: number): string {
     if (string.length > maxLength) {
       return string.substring(0, maxLength) + '[truncated]';
