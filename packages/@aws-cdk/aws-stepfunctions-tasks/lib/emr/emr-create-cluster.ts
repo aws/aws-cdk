@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import * as semver from 'semver';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import {
@@ -198,6 +199,14 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     }
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
+
+    // Step Concurrency Level is only valid with EMR release label >= emr-5.28.0
+    if (this.props.stepConcurrencyLevel !== undefined && this.props.stepConcurrencyLevel > 1) {
+      const minSupported = '5.28.0'
+      if (this.props.releaseLabel !== undefined && semver.lt(this.props.releaseLabel.substring(4), minSupported)) {
+        throw new Error('Step Concurrency Level can not be specified with release label less then emr-5.28.0.');
+      }
+    }
   }
 
   /**
