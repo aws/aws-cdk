@@ -1,4 +1,3 @@
-
 import { bold, reset, green, yellow, red } from 'colors/safe';
 import { HistoryActivityPrinter } from '../../lib/api/util/cloudformation/stack-activity-monitor';
 import { stderr } from './console-listener';
