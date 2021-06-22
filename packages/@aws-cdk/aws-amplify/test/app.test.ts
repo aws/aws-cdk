@@ -43,6 +43,9 @@ test('create an app connected to a GitHub repository', () => {
     },
     OauthToken: 'secret',
     Repository: 'https://github.com/aws/aws-cdk',
+    BasicAuthConfig: {
+      EnableBasicAuth: false,
+    },
   });
 
   expect(stack).toHaveResource('AWS::IAM::Role', {
