@@ -93,6 +93,8 @@ const router = new VirtualRouter(appStack, 'router', {
 });
 ```
 
+The same is true for other `add*()` methods in the AppMesh library.
+
 The _VirtualRouterListener_ class provides an easy interface for defining new protocol specific listeners.
 The `http()`, `http2()`, `grpc()` and `tcp()` methods are available for use.
 They accept a single port parameter, that is used to define what port to match requests on.
