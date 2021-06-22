@@ -1,9 +1,6 @@
 import { EventEmitter } from 'events';
 
 export type Output = ReadonlyArray<string>;
-export type OutputCallback = (output: Output) => void;
-export type NoOutputCallback = () => void;
-export type Restore = () => void;
 
 export interface Options {
   isTTY?: boolean;
@@ -11,7 +8,7 @@ export interface Options {
 
 export interface Inspector {
   output: Output;
-  restore: Restore;
+  restore: () => void;
 }
 
 class TestStream {
@@ -52,7 +49,7 @@ class TestStream {
     return (res as Inspector);
   }
 
-  inspectSync(fn: OutputCallback): Output {
+  inspectSync(fn: (output: Output) => void): Output {
     const inspect = this.inspect();
     try {
       fn(inspect.output);
