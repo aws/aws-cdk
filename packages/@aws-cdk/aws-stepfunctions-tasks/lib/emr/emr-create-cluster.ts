@@ -131,6 +131,13 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
   readonly securityConfiguration?: string;
 
   /**
+   * Specifies the step concurrency level to allow multiple steps to run in parallel. Requires Amazon EMR release label >=emr-5.28.0
+   *
+   * @default - EMR selected default
+   */
+  readonly stepConcurrencyLevel?: number;
+
+  /**
    * A list of tags to associate with a cluster and propagate to Amazon EC2 instances.
    *
    * @default - None
@@ -252,6 +259,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         ReleaseLabel: cdk.stringToCloudFormation(this.props.releaseLabel),
         ScaleDownBehavior: cdk.stringToCloudFormation(this.props.scaleDownBehavior?.valueOf()),
         SecurityConfiguration: cdk.stringToCloudFormation(this.props.securityConfiguration),
+        StepConcurrencyLevel: cdk.numberToCloudFormation(this.props.stepConcurrencyLevel),
         ...(this.props.tags ? this.renderTags(this.props.tags) : undefined),
         VisibleToAllUsers: cdk.booleanToCloudFormation(this.visibleToAllUsers),
       }),
