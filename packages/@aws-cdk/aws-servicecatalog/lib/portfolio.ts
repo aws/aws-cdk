@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Names, Resource, Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { AcceptLanguage } from './common';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -29,7 +29,7 @@ export interface PortfolioShareOptions {
 /**
  * A Service Catalog portfolio.
  */
-export interface IPortfolio extends IResource {
+export interface IPortfolio extends cdk.IResource {
   /**
    * The ARN of the portfolio.
    * @attribute
@@ -68,7 +68,7 @@ export interface IPortfolio extends IResource {
   shareWithAccount(accountId: string, options?: PortfolioShareOptions): void;
 }
 
-abstract class PortfolioBase extends Resource implements IPortfolio {
+abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   public abstract readonly portfolioArn: string;
   public abstract readonly portfolioId: string;
   private readonly associatedPrincipals: Set<string> = new Set();
@@ -156,7 +156,7 @@ export class Portfolio extends PortfolioBase {
    * @param portfolioArn the Amazon Resource Name of the existing portfolio.
    */
   public static fromPortfolioArn(scope: Construct, id: string, portfolioArn: string): IPortfolio {
-    const arn = Stack.of(scope).parseArn(portfolioArn);
+    const arn = cdk.Stack.of(scope).parseArn(portfolioArn);
     const portfolioId = arn.resourceName;
 
     if (!portfolioId) {
@@ -193,7 +193,7 @@ export class Portfolio extends PortfolioBase {
       acceptLanguage: props.acceptLanguage,
     });
     this.portfolioId = this.portfolio.ref;
-    this.portfolioArn = Stack.of(this).formatArn({
+    this.portfolioArn = cdk.Stack.of(this).formatArn({
       service: 'servicecatalog',
       resource: 'portfolio',
       resourceName: this.portfolioId,
@@ -201,7 +201,7 @@ export class Portfolio extends PortfolioBase {
   }
 
   protected generateUniqueHash(value: string): string {
-    return hashValues(Names.nodeUniqueId(this.portfolio.node), value);
+    return hashValues(cdk.Names.nodeUniqueId(this.portfolio.node), value);
   }
 
   private validatePortfolioProps(props: PortfolioProps) {
