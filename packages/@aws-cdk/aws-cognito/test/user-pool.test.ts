@@ -517,7 +517,7 @@ describe('User Pool', () => {
     });
   });
 
-  test('sign in case sensitive is Match.absentProperty() by default', () => {
+  test('sign in case sensitive is absent by default', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -628,7 +628,7 @@ describe('User Pool', () => {
     });
   });
 
-  test('schema is Match.absentProperty() when attributes are not specified', () => {
+  test('schema is absent when attributes are not specified', () => {
     // GIVEN
     const stack = new Stack();
 

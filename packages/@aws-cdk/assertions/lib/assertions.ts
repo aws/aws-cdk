@@ -77,7 +77,7 @@ export class TemplateAssertions {
     const matcher = Match.isMatcher(props) ? props : Match.objectLike(props);
     let closestResult: MatchFailure[] | undefined = undefined;
     let count: number = 0;
-    for (const logicalId of Object.keys(this.inspector.value.Resources || {})) {
+    for (const logicalId of Object.keys(this.inspector.value.Resources ?? {})) {
       const resource = this.inspector.value.Resources[logicalId];
       if (resource.Type === type) {
         count++;

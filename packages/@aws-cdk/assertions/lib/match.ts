@@ -99,7 +99,8 @@ export class LiteralMatch extends Match {
     this.partialObjects = options.partialObjects ?? false;
 
     if (Match.isMatcher(this.pattern)) {
-      throw new Error('ExactMatch cannot be nested with another matcher at the top level. Deeper nesting is allowed.');
+      throw new Error('LiteralMatch cannot directly contain another matcher. ' +
+        'Remove the top-level matcher or nest it more deeply.');
     }
   }
 
@@ -117,7 +118,7 @@ export class LiteralMatch extends Match {
     }
 
     if (this.pattern === ABSENT) {
-      throw new Error('ABSENT can only be used in an object matcher');
+      throw new Error('absentProperty() can only be used in an object matcher');
     }
 
     if (actual !== this.pattern) {
@@ -165,8 +166,8 @@ export class ArrayMatch extends Match {
 
     const failures: MatchFailure[] = [];
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
-      let patternElement = this.pattern[patternIdx];
-      let matcher = Match.isMatcher(patternElement) ? patternElement : new LiteralMatch(patternElement);
+      const patternElement = this.pattern[patternIdx];
+      const matcher = Match.isMatcher(patternElement) ? patternElement : new LiteralMatch(patternElement);
       const innerFailures = matcher.test(actual[actualIdx]);
 
       if (!this.partial || innerFailures.length === 0) {
@@ -179,9 +180,9 @@ export class ArrayMatch extends Match {
     }
 
     for (; patternIdx < this.pattern.length; patternIdx++) {
-      const p = this.pattern[patternIdx];
-      const e = (Match.isMatcher(p) || typeof p === 'object') ? ' ' : ` [${p}] `;
-      failures.push({ path: [], message: `Missing element${e}at pattern index ${patternIdx}` });
+      const pattern = this.pattern[patternIdx];
+      const element = (Match.isMatcher(pattern) || typeof pattern === 'object') ? ' ' : ` [${pattern}] `;
+      failures.push({ path: [], message: `Missing element${element}at pattern index ${patternIdx}` });
     }
 
     return failures;

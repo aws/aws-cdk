@@ -90,7 +90,7 @@ describe('LiteralMatch', () => {
   });
 });
 
-describe('ArrayWithMatch', () => {
+describe('ArrayMatch', () => {
   let matcher: ArrayMatch;
 
   test('subset match', () => {
@@ -146,7 +146,7 @@ describe('ArrayWithMatch', () => {
   });
 });
 
-describe('ObjectLikeMatch', () => {
+describe('ObjectMatch', () => {
   let matcher: ObjectMatch;
 
   test('basic', () => {
@@ -155,8 +155,6 @@ describe('ObjectLikeMatch', () => {
     expect(matcher.test({ foo: 'baz' })).toEqual([{ path: ['/foo'], message: 'Expected bar but received baz' }]);
     expect(matcher.test({ foo: ['bar'] })).toEqual([{ path: ['/foo'], message: 'Expected type string but received array' }]);
     expect(matcher.test({ bar: 'foo' })).toEqual([{ path: ['/foo'], message: 'Missing key' }]);
-
-    matcher = new ObjectMatch({ foo: 'bar' });
     expect(matcher.test({ foo: 'bar', baz: 'qux' })).toEqual([]);
   });
 
@@ -182,7 +180,7 @@ describe('ObjectLikeMatch', () => {
     expect(matcher.test({ foo: 'bar', baz: { fred: 'waldo', wobble: 'flob' } })).toEqual([]);
   });
 
-  test('nested with ArrayLike', () => {
+  test('nested with ArrayMatch', () => {
     matcher = new ObjectMatch({
       foo: new ArrayMatch(['bar']),
     });
