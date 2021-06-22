@@ -358,6 +358,9 @@ test('with auto branch creation', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Amplify::App', {
     AutoBranchCreationConfig: {
+      BasicAuthConfig: {
+        EnableBasicAuth: false,
+      },
       EnableAutoBranchCreation: true,
       EnableAutoBuild: true,
       EnablePullRequestPreview: true,
