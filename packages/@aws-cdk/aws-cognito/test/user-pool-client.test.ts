@@ -879,8 +879,10 @@ describe('User Pool Client', () => {
 
       // EXPECT
       TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-        ReadAttributes: Match.arrayWith(['name', 'given_name', 'family_name', 'middle_name', 'nickname', 'preferred_username', 'profile', 'picture', 'website', 'email', 'email_verified', 'gender', 'birthdate', 'zoneinfo', 'locale', 'phone_number', 'phone_number_verified', 'address', 'updated_at']),
-        WriteAttributes: Match.arrayWith(['given_name', 'family_name', 'custom:my_first']),
+        ReadAttributes: Match.arrayWith(['address', 'birthdate', 'email', 'email_verified', 'family_name', 'gender',
+          'given_name', 'locale', 'middle_name', 'name', 'nickname', 'phone_number', 'phone_number_verified', 'picture',
+          'preferred_username', 'profile', 'updated_at', 'website', 'zoneinfo']),
+        WriteAttributes: Match.arrayWith(['custom:my_first', 'family_name', 'given_name']),
       });
     });
   });
