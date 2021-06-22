@@ -73,122 +73,114 @@ behavior('SimpleSynthAction takes arrays of commands', (suite) => {
 });
 
 behavior('%s build automatically determines artifact base-directory', (suite) => {
-  ['npm', 'yarn'].forEach(npmYarn => {
-    suite.legacy(() => {
-      // WHEN
-      new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        sourceArtifact,
-        cloudAssemblyArtifact,
-        synthAction: npmYarnBuild(npmYarn)({ sourceArtifact, cloudAssemblyArtifact }),
-      });
+  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+    // WHEN
+    new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: npmYarnBuild(npmYarn)({ sourceArtifact, cloudAssemblyArtifact }),
+    });
 
-      // THEN
-      expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
-        Environment: {
-          Image: 'aws/codebuild/standard:5.0',
-        },
-        Source: {
-          BuildSpec: encodedJson(deepObjectLike({
-            artifacts: {
-              'base-directory': 'cdk.out',
-            },
-          })),
-        },
-      });
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: {
+        Image: 'aws/codebuild/standard:5.0',
+      },
+      Source: {
+        BuildSpec: encodedJson(deepObjectLike({
+          artifacts: {
+            'base-directory': 'cdk.out',
+          },
+        })),
+      },
     });
   });
 });
 
 behavior('%s build respects subdirectory', (suite) => {
-  ['npm', 'yarn'].forEach(npmYarn => {
-    suite.legacy(() => {
-      // WHEN
-      new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+    // WHEN
+    new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: npmYarnBuild(npmYarn)({
         sourceArtifact,
         cloudAssemblyArtifact,
-        synthAction: npmYarnBuild(npmYarn)({
-          sourceArtifact,
-          cloudAssemblyArtifact,
-          subdirectory: 'subdir',
-        }),
-      });
+        subdirectory: 'subdir',
+      }),
+    });
 
-      // THEN
-      expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
-        Environment: {
-          Image: 'aws/codebuild/standard:5.0',
-        },
-        Source: {
-          BuildSpec: encodedJson(deepObjectLike({
-            phases: {
-              pre_build: {
-                commands: arrayWith('cd subdir'),
-              },
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: {
+        Image: 'aws/codebuild/standard:5.0',
+      },
+      Source: {
+        BuildSpec: encodedJson(deepObjectLike({
+          phases: {
+            pre_build: {
+              commands: arrayWith('cd subdir'),
             },
-            artifacts: {
-              'base-directory': 'subdir/cdk.out',
-            },
-          })),
-        },
-      });
+          },
+          artifacts: {
+            'base-directory': 'subdir/cdk.out',
+          },
+        })),
+      },
     });
   });
 });
 
 behavior('%s build sets UNSAFE_PERM=true', (suite) => {
-  ['npm', 'yarn'].forEach(npmYarn => {
-    suite.legacy(() => {
-      // WHEN
-      new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+    // WHEN
+    new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: npmYarnBuild(npmYarn)({
         sourceArtifact,
         cloudAssemblyArtifact,
-        synthAction: npmYarnBuild(npmYarn)({
-          sourceArtifact,
-          cloudAssemblyArtifact,
-        }),
-      });
+      }),
+    });
 
-      // THEN
-      expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
-        Environment: {
-          EnvironmentVariables: [
-            {
-              Name: 'NPM_CONFIG_UNSAFE_PERM',
-              Type: 'PLAINTEXT',
-              Value: 'true',
-            },
-          ],
-        },
-      });
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: {
+        EnvironmentVariables: [
+          {
+            Name: 'NPM_CONFIG_UNSAFE_PERM',
+            Type: 'PLAINTEXT',
+            Value: 'true',
+          },
+        ],
+      },
     });
   });
 });
 
 behavior('%s assumes no build step by default', (suite) => {
-  ['npm', 'yarn'].forEach(npmYarn => {
-    suite.legacy(() => {
-      // WHEN
-      new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        sourceArtifact,
-        cloudAssemblyArtifact,
-        synthAction: npmYarnBuild(npmYarn)({ sourceArtifact, cloudAssemblyArtifact }),
-      });
+  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+    // WHEN
+    new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: npmYarnBuild(npmYarn)({ sourceArtifact, cloudAssemblyArtifact }),
+    });
 
-      // THEN
-      expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
-        Environment: {
-          Image: 'aws/codebuild/standard:5.0',
-        },
-        Source: {
-          BuildSpec: encodedJson(deepObjectLike({
-            phases: {
-              build: {
-                commands: ['npx cdk synth'],
-              },
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: {
+        Image: 'aws/codebuild/standard:5.0',
+      },
+      Source: {
+        BuildSpec: encodedJson(deepObjectLike({
+          phases: {
+            build: {
+              commands: ['npx cdk synth'],
             },
-          })),
-        },
-      });
+          },
+        })),
+      },
     });
   });
 });
@@ -324,38 +316,36 @@ behavior('%s can have its install command overridden', (suite) => {
 });
 
 behavior('%s can have its test commands set', (suite) => {
-  ['npm', 'yarn'].forEach(npmYarn => {
-    suite.legacy(() => {
-      // WHEN
-      new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+    // WHEN
+    new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: npmYarnBuild(npmYarn)({
         sourceArtifact,
         cloudAssemblyArtifact,
-        synthAction: npmYarnBuild(npmYarn)({
-          sourceArtifact,
-          cloudAssemblyArtifact,
-          installCommand: '/bin/true',
-          testCommands: ['echo "Running tests"'],
-        }),
-      });
+        installCommand: '/bin/true',
+        testCommands: ['echo "Running tests"'],
+      }),
+    });
 
-      // THEN
-      expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
-        Environment: {
-          Image: 'aws/codebuild/standard:5.0',
-        },
-        Source: {
-          BuildSpec: encodedJson(objectLike({
-            phases: {
-              pre_build: {
-                commands: ['/bin/true'],
-              },
-              build: {
-                commands: ['echo "Running tests"', 'npx cdk synth'],
-              },
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: {
+        Image: 'aws/codebuild/standard:5.0',
+      },
+      Source: {
+        BuildSpec: encodedJson(objectLike({
+          phases: {
+            pre_build: {
+              commands: ['/bin/true'],
             },
-          })),
-        },
-      });
+            build: {
+              commands: ['echo "Running tests"', 'npx cdk synth'],
+            },
+          },
+        })),
+      },
     });
   });
 });
