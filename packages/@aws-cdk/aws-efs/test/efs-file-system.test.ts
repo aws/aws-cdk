@@ -234,6 +234,36 @@ test('existing file system is imported correctly using arn', () => {
   expect(fs.fileSystemId).toEqual('fs-12912923');
 });
 
+test('must throw an error when trying to import a fileSystem without specifying id or arn', () => {
+  // WHEN
+  expect(() => {
+    FileSystem.fromFileSystemAttributes(stack, 'existingFS', {
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false,
+      }),
+    });
+  }).toThrow(/One of fileSystemId or fileSystemArn, but not both, must be provided./);
+});
+
+test('must throw an error when trying to import a fileSystem specifying both id and arn', () => {
+  // WHEN
+  const arn = stack.formatArn({
+    service: 'elasticfilesystem',
+    resource: 'file-system',
+    resourceName: 'fs-12912923',
+  });
+
+  expect(() => {
+    FileSystem.fromFileSystemAttributes(stack, 'existingFS', {
+      fileSystemArn: arn,
+      fileSystemId: 'fs-12343435',
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false,
+      }),
+    });
+  }).toThrow(/One of fileSystemId or fileSystemArn, but not both, must be provided./);
+});
+
 test('support granting permissions', () => {
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', {
     vpc,

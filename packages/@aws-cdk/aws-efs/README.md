@@ -58,10 +58,10 @@ const importedFileSystem = efs.FileSystem.fromFileSystemAttributes(this, 'existi
 });
 ```
 
-### Granting fileSystem permissions to resources
+### Permissions
 
-If you need to grant file system permissions to another resource, you can use the `.grant()` method.
-As an example, the following code gives ClientWrite permissions to an IAM role.
+If you need to grant file system permissions to another resource, you can use the `.grant()` API.
+As an example, the following code gives `elasticfilesystem:ClientWrite` permissions to an IAM role.
 
 ```ts fixture=with-filesystem-instance
 const role = new iam.Role(this, 'Role', {

@@ -399,12 +399,8 @@ class ImportedFileSystem extends FileSystemBase {
   constructor(scope: Construct, id: string, attrs: FileSystemAttributes) {
     super(scope, id);
 
-    if (!attrs.fileSystemId && !attrs.fileSystemArn) {
-      throw new Error('One of fileSystemId or fileSystemArn must be provided.');
-    }
-
-    if (attrs.fileSystemId && attrs.fileSystemArn) {
-      throw new Error('Only one of fileSystemId or fileSystemArn must be provided.');
+    if (!!attrs.fileSystemId === !!attrs.fileSystemArn) {
+      throw new Error('One of fileSystemId or fileSystemArn, but not both, must be provided.');
     }
 
     this.fileSystemArn = attrs.fileSystemArn ?? Stack.of(scope).formatArn({
@@ -416,10 +412,10 @@ class ImportedFileSystem extends FileSystemBase {
     const parsedArn = Stack.of(scope).parseArn(this.fileSystemArn);
 
     if (!parsedArn.resourceName) {
-      throw new Error('Invalid FileSystem Arn.');
+      throw new Error(`Invalid FileSystem Arn ${this.fileSystemArn}`);
     }
 
-    this.fileSystemId = attrs.fileSystemId ?? Stack.of(scope).parseArn(this.fileSystemArn).resourceName!;
+    this.fileSystemId = attrs.fileSystemId ?? parsedArn.resourceName;
 
     this.connections = new ec2.Connections({
       securityGroups: [attrs.securityGroup],
