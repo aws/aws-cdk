@@ -138,6 +138,12 @@ export class ObjectLikeMatch extends Match {
     }
 
     for (const [patternKey, patternVal] of Object.entries(this.pattern)) {
+      if (patternVal === ABSENT) {
+        if (patternKey in actual) {
+          failures.push({ path: [], message: `Expected key '${patternKey}' to be absent but present` });
+        }
+        continue;
+      }
       if (!(patternKey in actual)) {
         failures.push({ path: [], message: `Missing key '${patternKey}'` });
         continue;

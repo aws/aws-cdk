@@ -188,4 +188,10 @@ describe('ObjectLikeMatch', () => {
     expect(matcher.test({ foo: ['bar', 'baz'], fred: 'waldo' })).toEqual([]);
     expect(matcher.test({ foo: ['baz'], fred: 'waldo' })).toEqual([{ path: ['/foo'], message: 'Missing element [bar] at pattern index 0' }]);
   });
+
+  test('absent', () => {
+    matcher = new ObjectLikeMatch({ foo: Match.absentProperty() });
+    expect(matcher.test({ bar: 'baz' })).toEqual([]);
+    expect(matcher.test({ foo: 'baz' })).toEqual([{ path: [], message: "Expected key 'foo' to be absent but present" }]);
+  });
 });
