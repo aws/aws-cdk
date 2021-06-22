@@ -18,4 +18,4 @@ export * from './gateway-route-spec';
 export * from './health-checks';
 export * from './listener-tls-options';
 export * from './tls-validation';
-export * from './client-policy-tls-options';
+export * from './tls-client-policy';

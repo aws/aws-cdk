@@ -4,7 +4,7 @@ import { TlsValidation } from './tls-validation';
 /**
  * Represents the properties needed to define client policy
  */
-export interface ClientPolicyTlsOptions {
+export interface TlsClientPolicy {
   /**
    * Whether the policy is enforced.
    *

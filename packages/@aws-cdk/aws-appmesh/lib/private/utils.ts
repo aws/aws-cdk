@@ -1,6 +1,6 @@
 import { CfnVirtualNode } from '../appmesh.generated';
-import { ClientPolicyTlsOptions } from '../client-policy-tls-options';
 import { ListenerTlsOptions } from '../listener-tls-options';
+import { TlsClientPolicy } from '../tls-client-policy';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -35,23 +35,23 @@ export interface ConnectionPoolConfig {
 /**
  * This is the helper method to render TLS property of client policy.
  */
-export function renderClientPolicyTlsOptions(scope: Construct, clientPolicyTls: ClientPolicyTlsOptions | undefined)
+export function renderTlsClientPolicy(scope: Construct, tlsClientPolicy: TlsClientPolicy | undefined)
   : CfnVirtualNode.ClientPolicyTlsProperty | undefined {
-  const certificate = clientPolicyTls?.mutualTlsCertificate?.bind(scope).tlsCertificate;
-  const sans = clientPolicyTls?.validation.subjectAlternativeNames;
+  const certificate = tlsClientPolicy?.mutualTlsCertificate?.bind(scope).tlsCertificate;
+  const sans = tlsClientPolicy?.validation.subjectAlternativeNames;
 
-  return clientPolicyTls
+  return tlsClientPolicy
     ? {
       certificate: certificate,
-      ports: clientPolicyTls.ports,
-      enforce: clientPolicyTls.enforce,
+      ports: tlsClientPolicy.ports,
+      enforce: tlsClientPolicy.enforce,
       validation: {
         subjectAlternativeNames: sans
           ? {
             match: sans.bind(scope).subjectAlternativeNamesMatch,
           }
           : undefined,
-        trust: clientPolicyTls.validation.trust.bind(scope).tlsValidationTrust,
+        trust: tlsClientPolicy.validation.trust.bind(scope).tlsValidationTrust,
       },
     }
     : undefined;

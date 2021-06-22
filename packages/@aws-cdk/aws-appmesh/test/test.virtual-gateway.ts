@@ -356,7 +356,7 @@ export = {
               mode: appmesh.TlsMode.STRICT,
               certificate: appmesh.TlsCertificate.sds('secret_certificate'),
               mutualTlsValidation: {
-                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly(['mesh-endpoint.apps.local']),
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
                 trust: appmesh.TlsValidationTrust.sds('secret_validation'),
               },
             },
@@ -538,7 +538,7 @@ export = {
         virtualGatewayName: 'virtual-gateway',
         mesh: mesh,
         backendDefaults: {
-          clientPolicyTls: {
+          tlsClientPolicy: {
             validation: {
               trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
             },
@@ -582,10 +582,10 @@ export = {
           virtualGatewayName: 'virtual-gateway',
           mesh: mesh,
           backendDefaults: {
-            clientPolicyTls: {
+            tlsClientPolicy: {
               mutualTlsCertificate: appmesh.TlsCertificate.sds( 'secret_certificate'),
               validation: {
-                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly(['mesh-endpoint.apps.local']),
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
                 trust: appmesh.TlsValidationTrust.sds('secret_validation'),
               },
             },

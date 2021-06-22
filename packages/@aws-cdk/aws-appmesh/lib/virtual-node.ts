@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
-import { renderClientPolicyTlsOptions } from './private/utils';
+import { renderTlsClientPolicy } from './private/utils';
 import { ServiceDiscovery } from './service-discovery';
 import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
@@ -200,7 +200,7 @@ export class VirtualNode extends VirtualNodeBase {
         backendDefaults: props.backendDefaults !== undefined
           ? {
             clientPolicy: {
-              tls: renderClientPolicyTlsOptions(this, props.backendDefaults?.clientPolicyTls),
+              tls: renderTlsClientPolicy(this, props.backendDefaults?.tlsClientPolicy),
             },
           }
           : undefined,

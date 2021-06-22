@@ -331,7 +331,7 @@ export = {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           backendDefaults: {
-            clientPolicyTls: {
+            tlsClientPolicy: {
               ports: [8080, 8081],
               validation: {
                 trust: appmesh.TlsValidationTrust.acm([acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
@@ -377,11 +377,11 @@ export = {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           backendDefaults: {
-            clientPolicyTls: {
+            tlsClientPolicy: {
               mutualTlsCertificate: appmesh.TlsCertificate.sds('secret_certificate'),
               ports: [8080, 8081],
               validation: {
-                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly(['mesh-endpoint.apps.local']),
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
                 trust: appmesh.TlsValidationTrust.sds('secret_validation'),
               },
             },
@@ -443,7 +443,7 @@ export = {
         });
 
         node.addBackend(appmesh.Backend.virtualService(service1, {
-          clientPolicyTls: {
+          tlsClientPolicy: {
             ports: [8080, 8081],
             validation: {
               trust: appmesh.TlsValidationTrust.file('path-to-certificate'),

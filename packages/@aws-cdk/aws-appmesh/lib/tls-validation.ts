@@ -178,10 +178,10 @@ export abstract class SubjectAlternativeNames {
   /**
    * The values of the SAN must match the specified values exactly.
    *
-   * @param subjectAlternativeNames The exact values to test against.
+   * @param names The exact values to test against.
    */
-  public static matchingExactly(subjectAlternativeNames: string[]): SubjectAlternativeNames {
-    return new SubjectAlternativeNamesImpl({ exact: subjectAlternativeNames });
+  public static matchingExactly(...names: string[]): SubjectAlternativeNames {
+    return new SubjectAlternativeNamesImpl({ exact: names });
   }
 
   /**
