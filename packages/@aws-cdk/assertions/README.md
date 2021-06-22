@@ -99,23 +99,21 @@ literal values, as seen in the above examples, can also have special matchers
 encoded. 
 They are available as part of the `Match` class.
 
-### objectLike()
+### Object Matchers
 
 The `Match.objectLike()` API can be used to assert that the target is a superset
 object of the provided pattern.
-
-By default, this API will perform a deep partial match on the target. This can be
-modified via the `partial` property, and enforce an exact match.
+This API will perform a deep partial match on the target.
 
 ```ts
-assert.hasResource('Foo::Bar', Match.objectLike(
-  {
-    Foo: 'Bar',
-    Baz: 'Boom',
-  }, 
-  { partial: false },
-)});
+assert.hasResource('Foo::Bar', Match.objectLike({
+  Foo: 'Bar',
+  Baz: 'Boom',
+}});
 ```
+
+The `Match.objectEquals()` API can be used to assert a target as a deep exact
+match.
 
 In addition, the `Match.absentProperty()` can be used to specify that a specific
 property should not exist. This can be used within `Match.objectLike()` or outside
@@ -131,13 +129,11 @@ assert.hasResource('Foo::Bar', {
 )});
 ```
 
-### arrayWith()
+### Array Matchers
 
 The `Match.arrayWith()` API can be used to assert that the target is equal to or a subset
 array of the target.
-
-By default, this API will perform subset match on the target. This can modified via the
-`partial` property, and enforce an exact match.
+This API will perform subset match on the target.
 
 ```ts
 assert.hasResource('Foo::Bar', {
@@ -148,6 +144,9 @@ assert.hasResource('Foo::Bar', {
 
 *Note:* The list of items in the array should be in order as they appear in the target array.
 Out of order will be recorded as a match failure.
+
+Alternatively, the `Match.arrayEquals()` API can be used to assert that the target is
+exactly equal to the target array.
 
 ## Strongly typed languages
 

@@ -29,20 +29,36 @@ export abstract class Match {
    * Matches the specified pattern with the array found in the same relative path of the target.
    * The set of elements (or matchers) must be in the same order as would be found.
    * @param pattern the pattern to match
-   * @param options options to configure the matcher
    */
-  public static arrayWith(pattern: any[], options: ArrayMatchOptions = {}): Match {
-    return new ArrayMatch(pattern, options);
+  public static arrayWith(pattern: any[]): Match {
+    return new ArrayMatch(pattern);
+  }
+
+  /**
+   * Matches the specified pattern with the array found in the same relative path of the target.
+   * The set of elements (or matchers) must match exactly and in order.
+   * @param pattern the pattern to match
+   */
+  public static arrayEquals(pattern: any[]): Match {
+    return new ArrayMatch(pattern, { partial: false });
   }
 
   /**
    * Matches the specified pattern to an object found in the same relative path of the target.
    * The keys and their values (or matchers) must be present in the target but the target can be a superset.
    * @param pattern the pattern to match
-   * @param options options to configure the matcher
    */
-  public static objectLike(pattern: {[key: string]: any}, options: ObjectMatchOptions = {}): Match {
-    return new ObjectMatch(pattern, options);
+  public static objectLike(pattern: {[key: string]: any}): Match {
+    return new ObjectMatch(pattern);
+  }
+
+  /**
+   * Matches the specified pattern to an object found in the same relative path of the target.
+   * The keys and their values (or matchers) must match exactly with the target.
+   * @param pattern the pattern to match
+   */
+  public static objectEquals(pattern: {[key: string]: any}): Match {
+    return new ObjectMatch(pattern, { partial: false });
   }
 
   /**
