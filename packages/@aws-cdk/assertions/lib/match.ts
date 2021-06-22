@@ -61,12 +61,26 @@ export abstract class Match {
 }
 
 /**
+ * Options when initializing the `LiteralMatch` class.
+ */
+export interface LiteralMatchOptions {
+  /**
+   * Whether objects nested at any level should be matched partially.
+   * @default false
+   */
+  readonly partialObjects?: boolean;
+}
+
+/**
  * A Match class that expects the target to match with the pattern exactly.
  * The pattern may be nested with other matchers that are then deletegated to.
  */
-export class ExactMatch extends Match {
-  constructor(private readonly pattern: any) {
+export class LiteralMatch extends Match {
+  private readonly partialObjects: boolean;
+
+  constructor(private readonly pattern: any, options: LiteralMatchOptions = {}) {
     super();
+    this.partialObjects = options.partialObjects ?? false;
 
     if (Match.isMatcher(this.pattern)) {
       throw new Error('ExactMatch cannot be nested with another matcher at the top level. Deeper nesting is allowed.');
@@ -79,7 +93,7 @@ export class ExactMatch extends Match {
     }
 
     if (typeof this.pattern === 'object') {
-      return new ObjectMatch(this.pattern, { partial: false }).test(actual);
+      return new ObjectMatch(this.pattern, { partial: this.partialObjects }).test(actual);
     }
 
     if (typeof this.pattern !== typeof actual) {
@@ -132,7 +146,7 @@ export class ArrayMatch extends Match {
     const failures: MatchFailure[] = [];
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       let patternElement = this.pattern[patternIdx];
-      let matcher = Match.isMatcher(patternElement) ? patternElement : new ExactMatch(patternElement);
+      let matcher = Match.isMatcher(patternElement) ? patternElement : new LiteralMatch(patternElement);
       const innerFailures = matcher.test(actual[actualIdx]);
 
       if (!this.partial || innerFailures.length === 0) {
@@ -204,7 +218,7 @@ export class ObjectMatch extends Match {
         failures.push({ path: [], message: `Missing key '${patternKey}'` });
         continue;
       }
-      const matcher = Match.isMatcher(patternVal) ? patternVal : new ExactMatch(patternVal);
+      const matcher = Match.isMatcher(patternVal) ? patternVal : new LiteralMatch(patternVal, { partialObjects: this.partial });
       const innerFailures = matcher.test(actual[patternKey]);
       failures.push(...composeFailures(`/${patternKey}`, innerFailures));
     }

@@ -61,8 +61,8 @@ export class TemplateAssertions {
    */
   public hasResourceProperties(type: string, props: any): void {
     this.hasResource(type, Match.objectLike({
-      Properties: Match.isMatcher(props) ? props : Match.objectLike(props),
-    }));
+      Properties: Match.isMatcher(props) ? props : Match.objectLike(props, { partial: true }),
+    }, { partial: true }));
   }
 
   /**
@@ -74,7 +74,7 @@ export class TemplateAssertions {
    * @param props the entire defintion of the resource as should be expected in the template.
    */
   public hasResource(type: string, props: any): void {
-    const matcher = Match.isMatcher(props) ? props : Match.objectLike(props);
+    const matcher = Match.isMatcher(props) ? props : Match.objectLike(props, { partial: true });
     let closestResult: MatchFailure[] | undefined = undefined;
     let count: number = 0;
     for (const logicalId of Object.keys(this.inspector.value.Resources || {})) {

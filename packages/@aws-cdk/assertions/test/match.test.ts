@@ -1,37 +1,37 @@
-import { ArrayMatch, ExactMatch, Match, ObjectMatch } from '../lib';
+import { ArrayMatch, LiteralMatch, Match, ObjectMatch } from '../lib';
 
 describe('ExactMatch', () => {
-  let matcher: ExactMatch;
+  let matcher: LiteralMatch;
 
   test('simple literals', () => {
-    matcher = new ExactMatch('foo');
+    matcher = new LiteralMatch('foo');
     expect(matcher.test('foo')).toEqual([]);
     expect(matcher.test('bar')).toEqual([{ path: [], message: 'Expected foo but received bar' }]);
     expect(matcher.test(5)).toEqual([{ path: [], message: 'Expected type string but received number' }]);
 
-    matcher = new ExactMatch(3);
+    matcher = new LiteralMatch(3);
     expect(matcher.test(3)).toEqual([]);
     expect(matcher.test(5)).toEqual([{ path: [], message: 'Expected 3 but received 5' }]);
     expect(matcher.test('foo')).toEqual([{ path: [], message: 'Expected type number but received string' }]);
 
-    matcher = new ExactMatch(true);
+    matcher = new LiteralMatch(true);
     expect(matcher.test(true)).toEqual([]);
     expect(matcher.test(false)).toEqual([{ path: [], message: 'Expected true but received false' }]);
     expect(matcher.test('foo')).toEqual([{ path: [], message: 'Expected type boolean but received string' }]);
   });
 
   test('arrays', () => {
-    matcher = new ExactMatch([4]);
+    matcher = new LiteralMatch([4]);
     expect(matcher.test([4])).toEqual([]);
     expect(matcher.test([4, 5])).toEqual([{ path: [], message: 'Expected array of length 1 but received 2' }]);
     expect(matcher.test('foo')).toEqual([{ path: [], message: 'Expected type array but received string' }]);
 
-    matcher = new ExactMatch(['foo', 3]);
+    matcher = new LiteralMatch(['foo', 3]);
     expect(matcher.test(['foo', 3])).toEqual([]);
     expect(matcher.test(['bar', 3])).toEqual([{ path: ['[0]'], message: 'Expected foo but received bar' }]);
     expect(matcher.test(['foo', 5])).toEqual([{ path: ['[1]'], message: 'Expected 3 but received 5' }]);
 
-    matcher = new ExactMatch([{ foo: 'bar', baz: 'qux' }, { waldo: 'fred', wobble: 'flob' }]);
+    matcher = new LiteralMatch([{ foo: 'bar', baz: 'qux' }, { waldo: 'fred', wobble: 'flob' }]);
     expect(matcher.test([{ foo: 'bar', baz: 'qux' }, { waldo: 'fred', wobble: 'flob' }])).toEqual([]);
     expect(matcher.test([{ foo: 'bar', baz: 'qux' }])).toEqual([{ path: [], message: 'Expected array of length 2 but received 1' }]);
     expect(matcher.test([{ foo: 'bar', baz: 'qux' }, { waldo: 'flob', wobble: 'fred' }])).toEqual([
@@ -44,7 +44,7 @@ describe('ExactMatch', () => {
   });
 
   test('objects', () => {
-    matcher = new ExactMatch({ foo: 'bar' });
+    matcher = new LiteralMatch({ foo: 'bar' });
     expect(matcher.test({ foo: 'bar' })).toEqual([]);
     expect(matcher.test(5)).toEqual([{ path: [], message: 'Expected type object but received number' }]);
     expect(matcher.test(['3', 5])).toEqual([{ path: [], message: 'Expected type object but received array' }]);
@@ -53,11 +53,11 @@ describe('ExactMatch', () => {
       { path: [], message: "Missing key 'foo'" },
     ]);
 
-    matcher = new ExactMatch({ foo: 'bar', baz: 5 });
+    matcher = new LiteralMatch({ foo: 'bar', baz: 5 });
     expect(matcher.test({ foo: 'bar', baz: '5' })).toEqual([{ path: ['/baz'], message: 'Expected type number but received string' }]);
     expect(matcher.test({ foo: 'bar', baz: 5, qux: 7 })).toEqual([{ path: [], message: "Unexpected key 'qux'" }]);
 
-    matcher = new ExactMatch({ foo: [2, 3], bar: 'baz' });
+    matcher = new LiteralMatch({ foo: [2, 3], bar: 'baz' });
     expect(matcher.test({ foo: [2, 3], bar: 'baz' })).toEqual([]);
     expect(matcher.test({})).toEqual([
       { path: [], message: "Missing key 'foo'" },
@@ -73,8 +73,16 @@ describe('ExactMatch', () => {
     ]);
   });
 
+  test('partial objects', () => {
+    matcher = new LiteralMatch({ foo: 'bar' }, { partialObjects: true });
+    expect(matcher.test({ foo: 'bar', baz: { fred: 'waldo' } })).toEqual([]);
+
+    matcher = new LiteralMatch({ baz: { fred: 'waldo' } }, { partialObjects: true });
+    expect(matcher.test({ foo: 'bar', baz: { fred: 'waldo', wobble: 'flob' } })).toEqual([]);
+  });
+
   test('nesting', () => {
-    expect(() => new ExactMatch(new ArrayMatch(['foo']))).toThrow(/cannot be nested/);
+    expect(() => new LiteralMatch(new ArrayMatch(['foo']))).toThrow(/cannot be nested/);
   });
 });
 
@@ -156,6 +164,14 @@ describe('ObjectLikeMatch', () => {
 
     matcher = new ObjectMatch({ foo: new ObjectMatch({ baz: 'qux' }) });
     expect(matcher.test({ foo: 'baz' })).toEqual([{ path: ['/foo'], message: 'Expected type object but received string' }]);
+  });
+
+  test('partial', () => {
+    matcher = new ObjectMatch({ foo: 'bar' }, { partial: true });
+    expect(matcher.test({ foo: 'bar', baz: { fred: 'waldo' } })).toEqual([]);
+
+    matcher = new ObjectMatch({ baz: { fred: 'waldo' } }, { partial: true });
+    expect(matcher.test({ foo: 'bar', baz: { fred: 'waldo', wobble: 'flob' } })).toEqual([]);
   });
 
   test('nested with ArrayLike', () => {
