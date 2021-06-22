@@ -73,9 +73,11 @@ const router = mesh.addVirtualRouter('router', {
 ```
 
 The router can also be created using the constructor and passing in the mesh instead of calling the `addVirtualRouter()` method for the mesh.
-It is important to note when calling the `addVirtualRouter()` method for the mesh, router is created in the same stack where the mesh is called.
-On the other hands, when the router is created using the constructor, it is created in the current stack.
-The same pattern applies to all constructs within the appmesh library, for any mesh.addXZY method, a new constuctor can also be used.
+Note that creating the router using the `addVirtualRouter()` method places it in the same Stack that the mesh belongs to
+(which might be different from the current Stack).
+The same pattern applies to all constructs within the appmesh library, for any mesh.addXZY method, a new constructor can also be used.
+(For example, see [Adding a VirtualNode](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-appmesh-readme.html#adding-a-virtualnode)
+ and [Adding a Virtual Gateway](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-appmesh-readme.html#adding-a-virtual-gateway) sections)
 This is particularly useful for cross stack resources are required.
 Where creating the `mesh` as part of an infrastructure stack and creating the `resources` such as `nodes` is more useful to keep in the application stack.
 
