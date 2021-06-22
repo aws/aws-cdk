@@ -1,7 +1,7 @@
 import { CfnVirtualNode } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
 import { ListenerTlsOptions } from './listener-tls-options';
-import { ConnectionPoolConfig, renderListenerTls } from './private/utils';
+import { ConnectionPoolConfig, renderListenerTlsOptions } from './private/utils';
 import {
   GrpcConnectionPool, GrpcTimeout, Http2ConnectionPool, HttpConnectionPool,
   HttpTimeout, OutlierDetection, Protocol, TcpConnectionPool, TcpTimeout,
@@ -186,7 +186,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
         },
         healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualNodeHealthCheck,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
-        tls: renderListenerTls(scope, this.tls),
+        tls: renderListenerTlsOptions(scope, this.tls),
         outlierDetection: this.outlierDetection ? this.renderOutlierDetection(this.outlierDetection) : undefined,
         connectionPool: this.connectionPool ? this.renderConnectionPool(this.connectionPool) : undefined,
       },

@@ -35,9 +35,9 @@ export interface ConnectionPoolConfig {
 /**
  * This is the helper method to render TLS property of client policy.
  */
-export function renderTlsClientPolicy(scope: Construct, clientPolicyTls: ClientPolicyTlsOptions | undefined)
+export function renderClientPolicyTlsOptions(scope: Construct, clientPolicyTls: ClientPolicyTlsOptions | undefined)
   : CfnVirtualNode.ClientPolicyTlsProperty | undefined {
-  const certificate = clientPolicyTls?.mutualTlsAuthCertificate?.bind(scope).tlsCertificate;
+  const certificate = clientPolicyTls?.mutualTlsCertificate?.bind(scope).tlsCertificate;
   const sans = clientPolicyTls?.validation.subjectAlternativeNames;
 
   return clientPolicyTls
@@ -60,11 +60,9 @@ export function renderTlsClientPolicy(scope: Construct, clientPolicyTls: ClientP
 /**
  * This is the helper method to render the TLS config for a listener.
  */
-export function renderListenerTls(scope: Construct, listenerTls: ListenerTlsOptions | undefined): CfnVirtualNode.ListenerTlsProperty | undefined {
-  const tlsValidation = listenerTls?.mutualTlsAuthValidation;
-  if (tlsValidation?.trust.bind(scope).tlsValidationTrust.acm) {
-    throw new Error('ACM certificate source is currently not supported for server validation in a listener TLS configuration.');
-  }
+export function renderListenerTlsOptions(scope: Construct, listenerTls: ListenerTlsOptions | undefined)
+  : CfnVirtualNode.ListenerTlsProperty | undefined {
+  const tlsValidation = listenerTls?.mutualTlsValidation;
 
   return listenerTls
     ? {

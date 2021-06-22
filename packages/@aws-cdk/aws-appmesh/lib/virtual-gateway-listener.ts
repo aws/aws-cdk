@@ -1,7 +1,7 @@
 import { CfnVirtualGateway } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
 import { ListenerTlsOptions } from './listener-tls-options';
-import { ConnectionPoolConfig, renderListenerTls } from './private/utils';
+import { ConnectionPoolConfig, renderListenerTlsOptions } from './private/utils';
 import {
   GrpcConnectionPool,
   Http2ConnectionPool,
@@ -142,7 +142,7 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
           protocol: this.protocol,
         },
         healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualGatewayHealthCheck,
-        tls: renderListenerTls(scope, this.listenerTls),
+        tls: renderListenerTlsOptions(scope, this.listenerTls),
         connectionPool: this.connectionPool ? renderConnectionPool(this.connectionPool, this.protocol) : undefined,
       },
     };

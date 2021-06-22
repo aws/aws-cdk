@@ -8,7 +8,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Represents the properties needed to define TLS Validation context
  */
-interface TlsValidationCommonProperty {
+interface TlsValidationCommon {
   /**
    * Represents the subject alternative names (SANs) secured by the certificate.
    * SANs must be in the FQDN or URI format.
@@ -24,7 +24,7 @@ interface TlsValidationCommonProperty {
 /**
  * Represents the properties needed to define TLS Validation context
  */
-export interface TlsValidation extends TlsValidationCommonProperty {
+export interface TlsValidation extends TlsValidationCommon {
   /**
    * Reference to where to retrieve the trust chain.
    */
@@ -34,7 +34,7 @@ export interface TlsValidation extends TlsValidationCommonProperty {
 /**
  * Represents the properties needed to define TLS Validation context
  */
-export interface MutualTlsAuthEligibleTlsValidation extends TlsValidationCommonProperty {
+export interface MutualTlsAuthEligibleTlsValidation extends TlsValidationCommon {
   /**
    * Reference to where to retrieve the trust chain.
    */
@@ -180,7 +180,7 @@ export abstract class SubjectAlternativeNames {
    *
    * @param subjectAlternativeNames The exact values to test against.
    */
-  public static exactMatch(subjectAlternativeNames: string[]): SubjectAlternativeNames {
+  public static matchingExactly(subjectAlternativeNames: string[]): SubjectAlternativeNames {
     return new SubjectAlternativeNamesImpl({ exact: subjectAlternativeNames });
   }
 

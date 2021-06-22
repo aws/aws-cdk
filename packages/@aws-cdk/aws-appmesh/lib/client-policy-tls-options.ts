@@ -31,5 +31,5 @@ export interface ClientPolicyTlsOptions {
    *
    * @default - client TLS certificate is not provided
    */
-  readonly mutualTlsAuthCertificate?: MutualTlsAuthEligibleCertificate;
+  readonly mutualTlsCertificate?: MutualTlsAuthEligibleCertificate;
 }

@@ -378,10 +378,10 @@ export = {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           backendDefaults: {
             clientPolicyTls: {
-              mutualTlsAuthCertificate: appmesh.TlsCertificate.sds( 'secret_certificate'),
+              mutualTlsCertificate: appmesh.TlsCertificate.sds('secret_certificate'),
               ports: [8080, 8081],
               validation: {
-                subjectAlternativeNames: appmesh.SubjectAlternativeNames.exactMatch(['mesh-endpoint.apps.local']),
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly(['mesh-endpoint.apps.local']),
                 trust: appmesh.TlsValidationTrust.sds('secret_validation'),
               },
             },

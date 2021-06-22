@@ -117,9 +117,9 @@ const node4 = mesh.addVirtualNode('node4', {
     tls: {
       mode: appmesh.TlsMode.STRICT,
       certificate: appmesh.TlsCertificate.sds('spiffe://domain.local/backend-service'),
-      mutualTlsAuthValidation: {
+      mutualTlsValidation: {
         trust: appmesh.TlsValidationTrust.sds('spiffe://domain.local'),
-        subjectAlternativeNames: appmesh.SubjectAlternativeNames.exactMatch(['client.domain.local']),
+        subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly(['client.domain.local']),
       },
     },
     healthCheck: appmesh.HealthCheck.http({
@@ -132,9 +132,9 @@ const node4 = mesh.addVirtualNode('node4', {
   })],
   backendDefaults: {
     clientPolicyTls: {
-      mutualTlsAuthCertificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+      mutualTlsCertificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
       validation: {
-        subjectAlternativeNames: appmesh.SubjectAlternativeNames.exactMatch(['mymesh.local']),
+        subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly(['mymesh.local']),
         trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
       },
     },
@@ -283,14 +283,14 @@ new appmesh.VirtualGateway(stack, 'gateway3', {
     tls: {
       mode: appmesh.TlsMode.STRICT,
       certificate: appmesh.TlsCertificate.sds('secret_certificate'),
-      mutualTlsAuthValidation: {
+      mutualTlsValidation: {
         trust: appmesh.TlsValidationTrust.file('path/to/certChain'),
       },
     },
   })],
   backendDefaults: {
     clientPolicyTls: {
-      mutualTlsAuthCertificate: appmesh.TlsCertificate.sds('secret_validation'),
+      mutualTlsCertificate: appmesh.TlsCertificate.sds('secret_validation'),
       validation: {
         trust: appmesh.TlsValidationTrust.file('path/to/certChain'),
       },

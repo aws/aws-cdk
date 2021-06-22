@@ -298,7 +298,7 @@ const gateway2 = new appmesh.VirtualGateway(this, 'gateway2', {
 
 Mutual TLS authentication is an optional component of TLS that offers two-way peer authentication. 
 To enable mutual TLS authentication, 
-add `certificate` property to TLS Client Policy and/or `validation` property to TLS Listener.
+add `mutualTlsCertificate` property to TLS Client Policy and/or `mutualTlsCertificate` property to TLS Listener.
 
 `tls.validation` and `clientPolicyTls.certificate` can be sourced from either:
 
@@ -320,7 +320,7 @@ const node1 = new appmesh.VirtualNode(stack, 'node1', {
       mode: appmesh.TlsMode.STRICT,
       certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
       // Validate a file client certificates to enable mutual TLS authentication when a client provides a certificate.
-      validation: {
+      mutualTlsValidation: {
         trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
       },
     },
@@ -339,7 +339,7 @@ const node2 = new appmesh.VirtualNode(stack, 'node2', {
           .acm([acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
       },
       // Provide a SDS client certificate when a server requests it and enable mutual TLS authentication.
-      certificate: appmesh.TlsCertificate.sds('secret_certificate'),
+      mutualTlsCertificate: appmesh.TlsCertificate.sds('secret_certificate'),
     },
   },
 });

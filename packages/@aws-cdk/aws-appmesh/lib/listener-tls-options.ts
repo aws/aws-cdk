@@ -41,5 +41,5 @@ export interface ListenerTlsOptions {
    *
    * @default - client TLS certificate is not required
    */
-  readonly mutualTlsAuthValidation?: MutualTlsAuthEligibleTlsValidation
+  readonly mutualTlsValidation?: MutualTlsAuthEligibleTlsValidation;
 }

@@ -301,7 +301,7 @@ export = {
             tls: {
               mode: appmesh.TlsMode.STRICT,
               certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
-              mutualTlsAuthValidation: {
+              mutualTlsValidation: {
                 trust: appmesh.TlsValidationTrust.file('path/to/certChain'),
               },
             },
@@ -355,8 +355,8 @@ export = {
             tls: {
               mode: appmesh.TlsMode.STRICT,
               certificate: appmesh.TlsCertificate.sds('secret_certificate'),
-              mutualTlsAuthValidation: {
-                subjectAlternativeNames: appmesh.SubjectAlternativeNames.exactMatch(['mesh-endpoint.apps.local']),
+              mutualTlsValidation: {
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly(['mesh-endpoint.apps.local']),
                 trust: appmesh.TlsValidationTrust.sds('secret_validation'),
               },
             },
@@ -583,9 +583,9 @@ export = {
           mesh: mesh,
           backendDefaults: {
             clientPolicyTls: {
-              mutualTlsAuthCertificate: appmesh.TlsCertificate.sds( 'secret_certificate'),
+              mutualTlsCertificate: appmesh.TlsCertificate.sds( 'secret_certificate'),
               validation: {
-                subjectAlternativeNames: appmesh.SubjectAlternativeNames.exactMatch(['mesh-endpoint.apps.local']),
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly(['mesh-endpoint.apps.local']),
                 trust: appmesh.TlsValidationTrust.sds('secret_validation'),
               },
             },
