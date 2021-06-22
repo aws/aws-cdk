@@ -78,34 +78,76 @@ assert.hasResourceProperties('Foo::Bar', {
 });
 ```
 
-The same method allows asserting the complete definition of the 'Resource'
-which can be used to verify things other sections like `DependsOn`, `Metadata`,
-`DeletionProperty`, etc.
+Alternatively, if you would like to assert the entire resource definition, you
+can use the `hasResource()` API.
 
 ```ts
-assert.hasResourceDefinition('Foo::Bar', {
+assert.hasResource('Foo::Bar', {
   Properties: { Foo: 'Bar' },
   DependsOn: [ 'Waldo', 'Fred' ],
 });
 ```
+
+By default, the `hasResource()` and `hasResourceProperties()` APIs perform deep
+partial object matching. This behavior can be configured using matchers.
+See subsequent section on [special matchers](#special-matchers).
 
 ## Special Matchers
 
 The expectation provided to the `hasResourceXXX()` methods, besides carrying
 literal values, as seen in the above examples, can also have special matchers
 encoded. 
-They are available as part of the `Matchers` class and can be used as follows -
+They are available as part of the `Match` class.
+
+### objectLike()
+
+The `Match.objectLike()` API can be used to assert that the target is a superset
+object of the provided pattern.
+
+By default, this API will perform a deep partial match on the target. This can be
+modified via the `partial` property, and enforce an exact match.
 
 ```ts
-assert.hasResourceProperties('Foo::Bar', {
-  Foo: 'Bar',
-  Baz: Match.absentProperty(),
-})
+assert.hasResource('Foo::Bar', Match.objectLike(
+  {
+    Foo: 'Bar',
+    Baz: 'Boom',
+  }, 
+  { partial: false },
+)});
 ```
 
-The list of available matchers are -
+In addition, the `Match.absentProperty()` can be used to specify that a specific
+property should not exist. This can be used within `Match.objectLike()` or outside
+of any matchers.
 
-* `absentProperty()`: Specifies that this key must not be present.
+```ts
+assert.hasResource('Foo::Bar', {
+    Foo: 'Bar',
+    Baz: {
+      Fred: Matcher.absentProperty()
+    },
+  },
+)});
+```
+
+### arrayWith()
+
+The `Match.arrayWith()` API can be used to assert that the target is equal to or a subset
+array of the target.
+
+By default, this API will perform subset match on the target. This can modified via the
+`partial` property, and enforce an exact match.
+
+```ts
+assert.hasResource('Foo::Bar', {
+  Foo: 'Bar',
+  Baz: Match.arrayWith(['Fred', 'Waldo']),
+});
+```
+
+*Note:* The list of items in the array should be in order as they appear in the target array.
+Out of order will be recorded as a match failure.
 
 ## Strongly typed languages
 

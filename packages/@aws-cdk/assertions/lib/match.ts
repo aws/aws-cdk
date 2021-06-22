@@ -100,6 +100,10 @@ export class LiteralMatch extends Match {
       return [{ path: [], message: `Expected type ${typeof this.pattern} but received ${getType(actual)}` }];
     }
 
+    if (this.pattern === ABSENT) {
+      throw new Error('ABSENT can only be used in an object matcher');
+    }
+
     if (actual !== this.pattern) {
       return [{ path: [], message: `Expected ${this.pattern} but received ${actual}` }];
     }

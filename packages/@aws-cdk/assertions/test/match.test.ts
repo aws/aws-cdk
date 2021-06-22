@@ -84,6 +84,10 @@ describe('ExactMatch', () => {
   test('nesting', () => {
     expect(() => new LiteralMatch(new ArrayMatch(['foo']))).toThrow(/cannot be nested/);
   });
+
+  test('absent', () => {
+    expect(() => new LiteralMatch(Match.absentProperty()).test('foo')).toThrow(/ABSENT/);
+  });
 });
 
 describe('ArrayWithMatch', () => {
@@ -135,6 +139,10 @@ describe('ArrayWithMatch', () => {
     expect(matcher.test([{ baz: 'qux' }, { foo: 'bar' }])).toEqual([]);
     expect(matcher.test([{ baz: 'qux' }, { foo: 'bar', fred: 'waldo' }])).toEqual([]);
     expect(matcher.test([{ foo: 'baz', fred: 'waldo' }])).toEqual([{ path: [], message: 'Missing element at pattern index 0' }]);
+  });
+
+  test('absent', () => {
+    expect(() => new ArrayMatch([Match.absentProperty()]).test([])).toThrow(/ABSENT/);
   });
 });
 
