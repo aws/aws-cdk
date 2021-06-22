@@ -89,7 +89,7 @@ else
     die "Docker is not running"
 fi
 
-# [.NET >= 3.1.x]
+# [.NET == 3.1.x, == 5.x]
 app="dotnet"
 app_min="3.1.0"
 check_which $app $app_min
