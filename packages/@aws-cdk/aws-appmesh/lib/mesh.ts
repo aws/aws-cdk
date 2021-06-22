@@ -43,21 +43,21 @@ export interface IMesh extends cdk.IResource {
   /**
    * Creates a new VirtualRouter in this Mesh.
    * Note that the Router is created in the same Stack that this Mesh belongs to,
-   * which might be different than current stack.
+   * which might be different than the current stack.
    */
   addVirtualRouter(id: string, props?: VirtualRouterBaseProps): VirtualRouter;
 
   /**
    * Creates a new VirtualNode in this Mesh.
    * Note that the Node is created in the same Stack that this Mesh belongs to,
-   * which might be different than current stack.
+   * which might be different than the current stack.
    */
   addVirtualNode(id: string, props?: VirtualNodeBaseProps): VirtualNode;
 
   /**
    * Creates a new VirtualGateway in this Mesh.
    * Note that the Gateway is created in the same Stack that this Mesh belongs to,
-   * which might be different than current stack.
+   * which might be different than the current stack.
    */
   addVirtualGateway(id: string, props?: VirtualGatewayBaseProps): VirtualGateway;
 }
