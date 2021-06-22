@@ -2,6 +2,7 @@ import { arrayWith, ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-int
 import '@aws-cdk/assert-internal/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
@@ -319,6 +320,7 @@ describe('default properties', () => {
 
 test('when specifying every property', () => {
   const stack = new Stack();
+  const stream = new kinesis.Stream(stack, 'MyStream');
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     readCapacity: 42,
@@ -331,6 +333,7 @@ test('when specifying every property', () => {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
     contributorInsightsEnabled: true,
+    kinesisStream: stream,
   });
   Tags.of(table).add('Environment', 'Production');
 
@@ -355,6 +358,11 @@ test('when specifying every property', () => {
       Tags: [{ Key: 'Environment', Value: 'Production' }],
       TimeToLiveSpecification: { AttributeName: 'timeToLive', Enabled: true },
       ContributorInsightsSpecification: { Enabled: true },
+      KinesisStreamSpecification: {
+        StreamArn: {
+          'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
+        },
+      },
     },
   );
 });
