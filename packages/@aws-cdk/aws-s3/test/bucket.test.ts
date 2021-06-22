@@ -2385,7 +2385,6 @@ describe('bucket', () => {
         'Statement': [
           {
             'Action': [
-              's3:GetObject*',
               's3:GetBucket*',
               's3:List*',
               's3:DeleteObject*',
