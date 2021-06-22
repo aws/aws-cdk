@@ -72,25 +72,24 @@ const router = mesh.addVirtualRouter('router', {
 });
 ```
 
-The router can also be created using the constructor and passing in the mesh instead of calling the `addVirtualRouter()` method for the mesh.
 Note that creating the router using the `addVirtualRouter()` method places it in the same Stack that the mesh belongs to
 (which might be different from the current Stack).
-The same pattern applies to all constructs within the appmesh library, for any mesh.addXZY method, a new constructor can also be used.
-(For example, see [Adding a VirtualNode](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-appmesh-readme.html#adding-a-virtualnode)
- and [Adding a Virtual Gateway](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-appmesh-readme.html#adding-a-virtual-gateway) sections)
-This is particularly useful for cross stack resources are required.
-Where creating the `mesh` as part of an infrastructure stack and creating the `resources` such as `nodes` is more useful to keep in the application stack.
+The router can also be created using the constructor of `VirtualRouter` and passing in the mesh instead of calling the `addVirtualRouter()` method.
+This is particularly useful when splitting your resources between many Stacks,
+like creating the `mesh` as part of an infrastructure stack,
+but the other resources, such as routers, in the application stack:
 
 ```ts
-const mesh = new Mesh(stack, 'AppMesh', {
+const mesh = new Mesh(infraStack, 'AppMesh', {
   meshName: 'myAwsmMesh',
-  egressFilter: MeshFilterType.Allow_All,
+  egressFilter: MeshFilterType.ALLOW_ALL,
 });
 
-const router = new VirtualRouter(stack, 'router', {
-  mesh, // notice that mesh is a required property when creating a router with a new statement
-  listeners: [ appmesh.VirtualRouterListener.http(8081) ]
-  }
+// the VirtualRouter will belong to 'appStack',
+// even though the Mesh belongs to 'infraStack'
+const router = new VirtualRouter(appStack, 'router', {
+  mesh: mesh, // notice that mesh is a required property when creating a router with the 'new' statement
+  listeners: [appmesh.VirtualRouterListener.http(8081)],
 });
 ```
 
