@@ -222,7 +222,7 @@ export class ObjectMatch extends Match {
     if (!this.partial) {
       for (const a of Object.keys(actual)) {
         if (!(a in this.pattern)) {
-          failures.push({ path: [], message: `Unexpected key '${a}'` });
+          failures.push({ path: [`/${a}`], message: 'Unexpected key' });
         }
       }
     }
@@ -230,12 +230,12 @@ export class ObjectMatch extends Match {
     for (const [patternKey, patternVal] of Object.entries(this.pattern)) {
       if (patternVal === ABSENT) {
         if (patternKey in actual) {
-          failures.push({ path: [], message: `Expected key '${patternKey}' to be absent but present` });
+          failures.push({ path: [`/${patternKey}`], message: 'Key should be absent' });
         }
         continue;
       }
       if (!(patternKey in actual)) {
-        failures.push({ path: [], message: `Missing key '${patternKey}'` });
+        failures.push({ path: [`/${patternKey}`], message: 'Missing key' });
         continue;
       }
       const matcher = Match.isMatcher(patternVal) ? patternVal : new LiteralMatch(patternVal, { partialObjects: this.partial });

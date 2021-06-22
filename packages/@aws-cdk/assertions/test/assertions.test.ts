@@ -108,7 +108,7 @@ describe('TemplateAssertions', () => {
 
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'qux', fred: 'waldo' },
-      })).toThrow(/Missing key 'fred' at \/Properties/);
+      })).toThrow(/Missing key at \/Properties\/fred/);
     });
 
     test('arrayWith', () => {
@@ -161,7 +161,7 @@ describe('TemplateAssertions', () => {
       });
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ baz: Match.absentProperty() }),
-      })).toThrow(/Expected key 'baz' to be absent/);
+      })).toThrow(/Key should be absent at \/Properties\/baz/);
     });
 
     test('incorrect types', () => {

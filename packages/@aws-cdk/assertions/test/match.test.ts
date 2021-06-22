@@ -1,6 +1,6 @@
 import { ArrayMatch, LiteralMatch, Match, ObjectMatch } from '../lib';
 
-describe('ExactMatch', () => {
+describe('LiteralMatch', () => {
   let matcher: LiteralMatch;
 
   test('simple literals', () => {
@@ -39,7 +39,7 @@ describe('ExactMatch', () => {
       { path: ['[1]', '/wobble'], message: 'Expected flob but received fred' },
     ]);
     expect(matcher.test([{ foo: 'bar', baz: 'qux' }, { waldo: 'fred' }])).toEqual([
-      { path: ['[1]'], message: "Missing key 'wobble'" },
+      { path: ['[1]', '/wobble'], message: 'Missing key' },
     ]);
   });
 
@@ -49,19 +49,19 @@ describe('ExactMatch', () => {
     expect(matcher.test(5)).toEqual([{ path: [], message: 'Expected type object but received number' }]);
     expect(matcher.test(['3', 5])).toEqual([{ path: [], message: 'Expected type object but received array' }]);
     expect(matcher.test({ baz: 'qux' })).toEqual([
-      { path: [], message: "Unexpected key 'baz'" },
-      { path: [], message: "Missing key 'foo'" },
+      { path: ['/baz'], message: 'Unexpected key' },
+      { path: ['/foo'], message: 'Missing key' },
     ]);
 
     matcher = new LiteralMatch({ foo: 'bar', baz: 5 });
     expect(matcher.test({ foo: 'bar', baz: '5' })).toEqual([{ path: ['/baz'], message: 'Expected type number but received string' }]);
-    expect(matcher.test({ foo: 'bar', baz: 5, qux: 7 })).toEqual([{ path: [], message: "Unexpected key 'qux'" }]);
+    expect(matcher.test({ foo: 'bar', baz: 5, qux: 7 })).toEqual([{ path: ['/qux'], message: 'Unexpected key' }]);
 
     matcher = new LiteralMatch({ foo: [2, 3], bar: 'baz' });
     expect(matcher.test({ foo: [2, 3], bar: 'baz' })).toEqual([]);
     expect(matcher.test({})).toEqual([
-      { path: [], message: "Missing key 'foo'" },
-      { path: [], message: "Missing key 'bar'" },
+      { path: ['/foo'], message: 'Missing key' },
+      { path: ['/bar'], message: 'Missing key' },
     ]);
     expect(matcher.test({ bar: [2, 3], foo: 'baz' })).toEqual([
       { path: ['/foo'], message: 'Expected type array but received string' },
@@ -142,7 +142,7 @@ describe('ArrayWithMatch', () => {
   });
 
   test('absent', () => {
-    expect(() => new ArrayMatch([Match.absentProperty()]).test([])).toThrow(/ABSENT/);
+    expect(() => new ArrayMatch([Match.absentProperty()]).test(['foo'])).toThrow(/ABSENT/);
   });
 });
 
@@ -154,7 +154,7 @@ describe('ObjectLikeMatch', () => {
     expect(matcher.test({ foo: 'bar' })).toEqual([]);
     expect(matcher.test({ foo: 'baz' })).toEqual([{ path: ['/foo'], message: 'Expected bar but received baz' }]);
     expect(matcher.test({ foo: ['bar'] })).toEqual([{ path: ['/foo'], message: 'Expected type string but received array' }]);
-    expect(matcher.test({ bar: 'foo' })).toEqual([{ path: [], message: "Missing key 'foo'" }]);
+    expect(matcher.test({ bar: 'foo' })).toEqual([{ path: ['/foo'], message: 'Missing key' }]);
 
     matcher = new ObjectMatch({ foo: 'bar' });
     expect(matcher.test({ foo: 'bar', baz: 'qux' })).toEqual([]);
@@ -162,7 +162,7 @@ describe('ObjectLikeMatch', () => {
 
   test('exact match', () => {
     matcher = new ObjectMatch({ foo: 'bar' }, { partial: false });
-    expect(matcher.test({ foo: 'bar', baz: 'qux' })).toEqual([{ path: [], message: "Unexpected key 'baz'" }]);
+    expect(matcher.test({ foo: 'bar', baz: 'qux' })).toEqual([{ path: ['/baz'], message: 'Unexpected key' }]);
   });
 
   test('not an object', () => {
@@ -193,6 +193,6 @@ describe('ObjectLikeMatch', () => {
   test('absent', () => {
     matcher = new ObjectMatch({ foo: Match.absentProperty() });
     expect(matcher.test({ bar: 'baz' })).toEqual([]);
-    expect(matcher.test({ foo: 'baz' })).toEqual([{ path: [], message: "Expected key 'foo' to be absent but present" }]);
+    expect(matcher.test({ foo: 'baz' })).toEqual([{ path: ['/foo'], message: 'Key should be absent' }]);
   });
 });
