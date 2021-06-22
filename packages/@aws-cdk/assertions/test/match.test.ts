@@ -1,26 +1,4 @@
-import { CfnResource, Stack } from '@aws-cdk/core';
-import { ArrayWithMatch, ExactMatch, Match, ObjectLikeMatch, TemplateAssertions } from '../lib';
-
-describe('Match', () => {
-  test('absent', () => {
-    const stack = new Stack();
-    new CfnResource(stack, 'Resource', {
-      type: 'Foo::Bar',
-      properties: {
-        baz: 'qux',
-      },
-    });
-
-    const inspect = TemplateAssertions.fromStack(stack);
-    inspect.hasResourceProperties('Foo::Bar', {
-      fred: Match.absentProperty(),
-    });
-
-    expect(() => inspect.hasResourceProperties('Foo::Bar', {
-      baz: Match.absentProperty(),
-    })).toThrow(/None .* matches resource 'Foo::Bar'/);
-  });
-});
+import { ArrayMatch, ExactMatch, Match, ObjectMatch } from '../lib';
 
 describe('ExactMatch', () => {
   let matcher: ExactMatch;
@@ -96,30 +74,30 @@ describe('ExactMatch', () => {
   });
 
   test('nesting', () => {
-    expect(() => new ExactMatch(new ArrayWithMatch(['foo']))).toThrow(/cannot be nested/);
+    expect(() => new ExactMatch(new ArrayMatch(['foo']))).toThrow(/cannot be nested/);
   });
 });
 
 describe('ArrayWithMatch', () => {
-  let matcher: ArrayWithMatch;
+  let matcher: ArrayMatch;
 
   test('subset match', () => {
-    matcher = new ArrayWithMatch([]);
+    matcher = new ArrayMatch([]);
     expect(matcher.test([])).toEqual([]);
     expect(matcher.test([3])).toEqual([]);
 
-    matcher = new ArrayWithMatch([3]);
+    matcher = new ArrayMatch([3]);
     expect(matcher.test([3])).toEqual([]);
     expect(matcher.test([3, 5])).toEqual([]);
     expect(matcher.test([1, 3, 5])).toEqual([]);
     expect(matcher.test([5])).toEqual([{ path: [], message: 'Missing element [3] at pattern index 0' }]);
 
-    matcher = new ArrayWithMatch([5, false]);
+    matcher = new ArrayMatch([5, false]);
     expect(matcher.test([5, false, 'foo'])).toEqual([]);
     expect(matcher.test([5, 'foo', false])).toEqual([]);
     expect(matcher.test([5, 'foo'])).toEqual([{ path: [], message: 'Missing element [false] at pattern index 1' }]);
 
-    matcher = new ArrayWithMatch([{ foo: 'bar' }]);
+    matcher = new ArrayMatch([{ foo: 'bar' }]);
     expect(matcher.test([{ fred: 'waldo' }, { foo: 'bar' }, { baz: 'qux' }])).toEqual([]);
     expect(matcher.test([{ foo: 'bar' }])).toEqual([]);
     expect(matcher.test([{ foo: 'baz' }])).toEqual([{ path: [], message: 'Missing element at pattern index 0' }]);
@@ -127,25 +105,25 @@ describe('ArrayWithMatch', () => {
   });
 
   test('exact match', () => {
-    matcher = new ArrayWithMatch([5, false], { exact: true });
+    matcher = new ArrayMatch([5, false], { partial: false });
     expect(matcher.test([5, false])).toEqual([]);
     expect(matcher.test([5, 'foo', false])).toEqual([{ path: [], message: 'Expected array of length 2 but received 3' }]);
     expect(matcher.test([5, 'foo'])).toEqual([{ path: ['[1]'], message: 'Expected type boolean but received string' }]);
   });
 
   test('not array', () => {
-    matcher = new ArrayWithMatch([3]);
+    matcher = new ArrayMatch([3]);
     expect(matcher.test(3)).toEqual([{ path: [], message: 'Expected type array but received number' }]);
     expect(matcher.test({ val: 3 })).toEqual([{ path: [], message: 'Expected type array but received object' }]);
   });
 
   test('out of order', () => {
-    matcher = new ArrayWithMatch([3, 5]);
+    matcher = new ArrayMatch([3, 5]);
     expect(matcher.test([5, 3])).toEqual([{ path: [], message: 'Missing element [5] at pattern index 1' }]);
   });
 
   test('nested with ObjectLike', () => {
-    matcher = new ArrayWithMatch([new ObjectLikeMatch({ foo: 'bar' })]);
+    matcher = new ArrayMatch([new ObjectMatch({ foo: 'bar' })]);
     expect(matcher.test([{ baz: 'qux' }, { foo: 'bar' }])).toEqual([]);
     expect(matcher.test([{ baz: 'qux' }, { foo: 'bar', fred: 'waldo' }])).toEqual([]);
     expect(matcher.test([{ foo: 'baz', fred: 'waldo' }])).toEqual([{ path: [], message: 'Missing element at pattern index 0' }]);
@@ -153,43 +131,43 @@ describe('ArrayWithMatch', () => {
 });
 
 describe('ObjectLikeMatch', () => {
-  let matcher: ObjectLikeMatch;
+  let matcher: ObjectMatch;
 
   test('basic', () => {
-    matcher = new ObjectLikeMatch({ foo: 'bar' });
+    matcher = new ObjectMatch({ foo: 'bar' });
     expect(matcher.test({ foo: 'bar' })).toEqual([]);
     expect(matcher.test({ foo: 'baz' })).toEqual([{ path: ['/foo'], message: 'Expected bar but received baz' }]);
     expect(matcher.test({ foo: ['bar'] })).toEqual([{ path: ['/foo'], message: 'Expected type string but received array' }]);
     expect(matcher.test({ bar: 'foo' })).toEqual([{ path: [], message: "Missing key 'foo'" }]);
 
-    matcher = new ObjectLikeMatch({ foo: 'bar' });
+    matcher = new ObjectMatch({ foo: 'bar' });
     expect(matcher.test({ foo: 'bar', baz: 'qux' })).toEqual([]);
   });
 
   test('exact match', () => {
-    matcher = new ObjectLikeMatch({ foo: 'bar' }, { exact: true });
+    matcher = new ObjectMatch({ foo: 'bar' }, { partial: false });
     expect(matcher.test({ foo: 'bar', baz: 'qux' })).toEqual([{ path: [], message: "Unexpected key 'baz'" }]);
   });
 
   test('not an object', () => {
-    matcher = new ObjectLikeMatch({ foo: 'bar' });
+    matcher = new ObjectMatch({ foo: 'bar' });
     expect(matcher.test(['foo', 'bar'])).toEqual([{ path: [], message: 'Expected type object but received array' }]);
     expect(matcher.test('foo')).toEqual([{ path: [], message: 'Expected type object but received string' }]);
 
-    matcher = new ObjectLikeMatch({ foo: new ObjectLikeMatch({ baz: 'qux' }) });
+    matcher = new ObjectMatch({ foo: new ObjectMatch({ baz: 'qux' }) });
     expect(matcher.test({ foo: 'baz' })).toEqual([{ path: ['/foo'], message: 'Expected type object but received string' }]);
   });
 
   test('nested with ArrayLike', () => {
-    matcher = new ObjectLikeMatch({
-      foo: new ArrayWithMatch(['bar']),
+    matcher = new ObjectMatch({
+      foo: new ArrayMatch(['bar']),
     });
     expect(matcher.test({ foo: ['bar', 'baz'], fred: 'waldo' })).toEqual([]);
     expect(matcher.test({ foo: ['baz'], fred: 'waldo' })).toEqual([{ path: ['/foo'], message: 'Missing element [bar] at pattern index 0' }]);
   });
 
   test('absent', () => {
-    matcher = new ObjectLikeMatch({ foo: Match.absentProperty() });
+    matcher = new ObjectMatch({ foo: Match.absentProperty() });
     expect(matcher.test({ bar: 'baz' })).toEqual([]);
     expect(matcher.test({ foo: 'baz' })).toEqual([{ path: [], message: "Expected key 'foo' to be absent but present" }]);
   });

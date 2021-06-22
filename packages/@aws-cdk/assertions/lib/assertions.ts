@@ -1,5 +1,5 @@
 import { Stack, Stage } from '@aws-cdk/core';
-import { Match, MatchFailure, ObjectLikeMatch } from './match';
+import { Match, MatchFailure } from './match';
 import * as assert from './vendored/assert';
 
 /**
@@ -54,27 +54,27 @@ export class TemplateAssertions {
   /**
    * Assert that a resource of the given type and properties exists in the
    * CloudFormation template.
+   * By default, performs partial matching on the `Properties` key of the resource, via the
+   * `Match.objectLike()`. To configure different behavour, use other matchers in the `Match` class.
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param props the 'Properties' section of the resource as should be expected in the template.
    */
   public hasResourceProperties(type: string, props: any): void {
-    const assertion = assert.haveResource(type, props, assert.ResourcePart.Properties);
-    assertion.assertOrThrow(this.inspector);
+    this.hasResource(type, Match.objectLike({
+      Properties: Match.isMatcher(props) ? props : Match.objectLike(props),
+    }));
   }
 
   /**
    * Assert that a resource of the given type and given definition exists in the
    * CloudFormation template.
+   * By default, performs partial matching on the resource, via the `Match.objectLike()`.
+   * To configure different behavour, use other matchers in the `Match` class.
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param props the entire defintion of the resource as should be expected in the template.
    */
-  public hasResourceDefinition(type: string, props: any): void {
-    const assertion = assert.haveResource(type, props, assert.ResourcePart.CompleteDefinition);
-    assertion.assertOrThrow(this.inspector);
-  }
-
   public hasResource(type: string, props: any): void {
-    const matcher = Match.isMatcher(props) ? props : new ObjectLikeMatch(props);
+    const matcher = Match.isMatcher(props) ? props : Match.objectLike(props);
     let closestResult: MatchFailure[] | undefined = undefined;
     let count: number = 0;
     for (const logicalId of Object.keys(this.inspector.value.Resources || {})) {

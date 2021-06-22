@@ -2,7 +2,7 @@ import { CfnResource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Match, TemplateAssertions } from '../lib';
 
-describe('StackAssertions', () => {
+describe('TemplateAssertions', () => {
   describe('fromString', () => {
     test('default', () => {
       const assertions = TemplateAssertions.fromString(`{
@@ -48,53 +48,6 @@ describe('StackAssertions', () => {
       inspect.resourceCountIs('Foo::Bar', 0);
 
       expect(() => inspect.resourceCountIs('Foo::Bar', 1)).toThrow(/has 0 resource of type Foo::Bar/);
-    });
-  });
-
-  describe('hasResourceXXX', () => {
-    test('property matching', () => {
-      const stack = new Stack();
-      new CfnResource(stack, 'Resource', {
-        type: 'Foo::Bar',
-        properties: {
-          baz: 'qux',
-        },
-      });
-
-      const inspect = TemplateAssertions.fromStack(stack);
-      inspect.hasResourceProperties('Foo::Bar', { baz: 'qux' });
-
-      expect(
-        () => inspect.hasResourceProperties('Foo::Bar', { fred: 'waldo' }),
-      ).toThrow(/None .* matches resource 'Foo::Bar'/);
-      expect(
-        () => inspect.hasResourceProperties('Foo::Baz', {}),
-      ).toThrow(/None .* matches resource 'Foo::Baz'/);
-    });
-
-    test('no resource', () => {
-      const stack = new Stack();
-      new CfnResource(stack, 'Resource', {
-        type: 'Foo::Bar',
-      });
-
-      const inspect = TemplateAssertions.fromStack(stack);
-      expect(
-        () => inspect.hasResourceProperties('Foo::Baz', {}),
-      ).toThrow(/None .* matches resource 'Foo::Baz'/);
-    });
-
-    test('complete definition', () => {
-      const stack = new Stack();
-      const bar = new CfnResource(stack, 'Bar', { type: 'Foo::Bar', properties: { baz: 'qux' } });
-      const baz = new CfnResource(stack, 'Baz', { type: 'Foo::Baz' });
-      bar.node.addDependency(baz);
-
-      const inspect = TemplateAssertions.fromStack(stack);
-      inspect.hasResourceDefinition('Foo::Bar', {
-        Properties: { baz: 'qux' },
-        DependsOn: ['Baz'],
-      });
     });
   });
 
@@ -193,6 +146,35 @@ describe('StackAssertions', () => {
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ baz: 'waldo' }),
       })).toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+    });
+
+    test('absent', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+      inspect.hasResource('Foo::Bar', {
+        Properties: Match.objectLike({ foo: Match.absentProperty() }),
+      });
+      expect(() => inspect.hasResource('Foo::Bar', {
+        Properties: Match.objectLike({ baz: Match.absentProperty() }),
+      })).toThrow(/Expected key 'baz' to be absent/);
+    });
+
+    test('incorrect types', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+      expect(() => inspect.hasResource('Foo::Baz', {
+        Properties: Match.objectLike({ baz: 'qux' }),
+      })).toThrow(/No resource/);
     });
   });
 });
