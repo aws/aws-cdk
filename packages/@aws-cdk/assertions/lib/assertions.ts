@@ -1,5 +1,5 @@
 import { Stack, Stage } from '@aws-cdk/core';
-import { ExactMatch, Match } from './match';
+import { Match, MatchFailure, ObjectLikeMatch } from './match';
 import * as assert from './vendored/assert';
 
 /**
@@ -74,19 +74,29 @@ export class TemplateAssertions {
   }
 
   public hasResource(type: string, props: any): void {
-    const matcher = Match.isMatcher(props) ? props : new ExactMatch(props);
+    const matcher = Match.isMatcher(props) ? props : new ObjectLikeMatch(props);
+    let closestResult: MatchFailure[] | undefined = undefined;
+    let count: number = 0;
     for (const logicalId of Object.keys(this.inspector.value.Resources || {})) {
       const resource = this.inspector.value.Resources[logicalId];
       if (resource.Type === type) {
-        // FIXME: replace by ObjectLikeMatch
-        const typeOmitted = { ...resource };
-        delete typeOmitted.Type;
-        if (matcher.test(typeOmitted)) {
+        count++;
+        const result = matcher.test(resource);
+        if (result.length === 0) {
           return;
+        }
+        if (closestResult === undefined || closestResult.length > result.length) {
+          closestResult = result;
         }
       }
     }
-    throw new Error('MYERROR');
+    if (closestResult === undefined) {
+      throw new Error(`No resource with type ${type} found`);
+    }
+    const messages: string[] = closestResult.map(r => `\t${r.message} at ${r.path.join('')}`);
+    messages.unshift(`${count} resources with type ${type} found, but none match as expected.` +
+      'The closest result had the following mismatches:');
+    throw new Error(messages.join('\n'));
   }
 
   /**

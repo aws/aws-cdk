@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-commented-out-tests */
 import { CfnResource, Stack } from '@aws-cdk/core';
 import { ArrayWithMatch, ExactMatch, Match, ObjectLikeMatch, TemplateAssertions } from '../lib';
 
