@@ -22,7 +22,7 @@ export abstract class TlsCertificate {
   /**
    * Returns an File TLS Certificate
    */
-  public static file(certificateChainPath: string, privateKeyPath: string): MutualTlsAuthEligibleCertificate {
+  public static file(certificateChainPath: string, privateKeyPath: string): MutualTlsCertificate {
     return new FileTlsCertificate(certificateChainPath, privateKeyPath);
   }
 
@@ -36,7 +36,7 @@ export abstract class TlsCertificate {
   /**
    * Returns an SDS TLS Certificate
    */
-  public static sds(secretName: string): MutualTlsAuthEligibleCertificate {
+  public static sds(secretName: string): MutualTlsCertificate {
     return new SdsTlsCertificate(secretName);
   }
 
@@ -50,7 +50,7 @@ export abstract class TlsCertificate {
 /**
  * Represents a TLS certificate that is supported for mutual TLS authentication.
  */
-export abstract class MutualTlsAuthEligibleCertificate extends TlsCertificate {
+export abstract class MutualTlsCertificate extends TlsCertificate {
   // TypeScript uses structural typing, so we need a property different from TlsCertificate
   protected readonly differentiator = false;
 }
@@ -83,7 +83,7 @@ class AcmTlsCertificate extends TlsCertificate {
 /**
  * Represents a file provided TLS certificate
  */
-class FileTlsCertificate extends MutualTlsAuthEligibleCertificate {
+class FileTlsCertificate extends MutualTlsCertificate {
   /**
    * The file path of the certificate chain file.
    */
@@ -115,7 +115,7 @@ class FileTlsCertificate extends MutualTlsAuthEligibleCertificate {
 /**
  * Represents a SDS provided TLS certificate
  */
-class SdsTlsCertificate extends MutualTlsAuthEligibleCertificate {
+class SdsTlsCertificate extends MutualTlsCertificate {
   /**
    * The name of the secret requested from the Secret Discovery Service provider.
    */

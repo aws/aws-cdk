@@ -34,11 +34,11 @@ export interface TlsValidation extends TlsValidationCommon {
 /**
  * Represents the properties needed to define TLS Validation context
  */
-export interface MutualTlsAuthEligibleTlsValidation extends TlsValidationCommon {
+export interface MutualTlsValidation extends TlsValidationCommon {
   /**
    * Reference to where to retrieve the trust chain.
    */
-  readonly trust: MutualTLSAuthEligibleTlsValidationTrust;
+  readonly trust: MutualTlsValidationTrust;
 }
 
 /**
@@ -58,7 +58,7 @@ export abstract class TlsValidationTrust {
   /**
    * Tells envoy where to fetch the validation context from
    */
-  public static file(certificateChain: string): MutualTLSAuthEligibleTlsValidationTrust {
+  public static file(certificateChain: string): MutualTlsValidationTrust {
     return new TlsValidationFileTrust(certificateChain);
   }
 
@@ -72,7 +72,7 @@ export abstract class TlsValidationTrust {
   /**
    * TLS Validation Context Trust for Envoy' service discovery service.
    */
-  public static sds(secretName: string): MutualTLSAuthEligibleTlsValidationTrust {
+  public static sds(secretName: string): MutualTlsValidationTrust {
     return new TlsValidationSdsTrust(secretName);
   }
 
@@ -85,7 +85,7 @@ export abstract class TlsValidationTrust {
 /**
  * Represents a TLS Validation Context Trust that is supported for mutual TLS authentication.
  */
-export abstract class MutualTLSAuthEligibleTlsValidationTrust extends TlsValidationTrust {
+export abstract class MutualTlsValidationTrust extends TlsValidationTrust {
   // TypeScript uses structural typing, so we need a property different from TlsValidationTrust
   protected readonly differentiator = false;
 }
@@ -117,7 +117,7 @@ class TlsValidationAcmTrust extends TlsValidationTrust {
   }
 }
 
-class TlsValidationFileTrust extends MutualTLSAuthEligibleTlsValidationTrust {
+class TlsValidationFileTrust extends MutualTlsValidationTrust {
   /**
    * Path to the Certificate Chain file on the file system where the Envoy is deployed.
    */
@@ -139,7 +139,7 @@ class TlsValidationFileTrust extends MutualTLSAuthEligibleTlsValidationTrust {
   }
 }
 
-class TlsValidationSdsTrust extends MutualTLSAuthEligibleTlsValidationTrust {
+class TlsValidationSdsTrust extends MutualTlsValidationTrust {
   /**
    * The name of the secret for Envoy to fetch from a specific endpoint through the Secrets Discovery Protocol.
    */
