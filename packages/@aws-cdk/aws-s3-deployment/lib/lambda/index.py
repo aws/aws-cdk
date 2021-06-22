@@ -18,7 +18,6 @@ cloudfront = boto3.client('cloudfront')
 
 CFN_SUCCESS = "SUCCESS"
 CFN_FAILED = "FAILED"
-ENV_KEY_IS_EFS_ENABLED = "IS_EFS_ENABLED"
 ENV_KEY_MOUNT_PATH = "MOUNT_PATH"
 
 def handler(event, context):
@@ -115,7 +114,7 @@ def handler(event, context):
 # populate all files from s3_source_zips to a destination bucket
 def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune):
     # create a temporary working directory in /tmp or if enabled an attached efs volume
-    if ENV_KEY_IS_EFS_ENABLED in os.environ:
+    if ENV_KEY_MOUNT_PATH in os.environ:
         workdir = os.getenv(ENV_KEY_MOUNT_PATH) + "/" + str(uuid4())
         os.mkdir(workdir)
     else:

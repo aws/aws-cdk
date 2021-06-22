@@ -212,10 +212,69 @@ test('deploy from a local .zip file when efs is enabled', () => {
   new s3deploy.BucketDeployment(stack, 'Deploy', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
     destinationBucket: bucket,
-    enableTempEfsStorage: true,
+    useEfs: true,
     vpc: new ec2.Vpc(stack, 'Vpc'),
   });
 
+  //THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Environment: {
+      Variables: {
+        MOUNT_PATH: '/mnt/lambda',
+      },
+    },
+    FileSystemConfigs: [
+      {
+        Arn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':elasticfilesystem:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':access-point/',
+              {
+                Ref: 'DeployFileSystemAccessPoint260D9391',
+              },
+            ],
+          ],
+        },
+        LocalMountPath: '/mnt/lambda',
+      },
+    ],
+    Layers: [
+      {
+        Ref: 'DeployAwsCliLayer8445CB38',
+      },
+    ],
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledSecurityGroup655146DE',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'VpcPrivateSubnet1Subnet536B997A',
+        },
+        {
+          Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+        },
+      ],
+    },
+  });
 });
 
 test('honors passed asset options', () => {

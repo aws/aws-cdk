@@ -85,12 +85,11 @@ export interface BucketDeploymentProps {
   readonly memoryLimit?: number;
 
   /**
-   *  Create and use an efs file system as temp storage assets before using s3 sync instead of /tmp
-   *  Enable this if your assets are 500 megabytes on disk.
+   *  Mount an EFS file system. Enable this if your assets are large and you encounter disk space errors.
    *
-   * @default - Not set
+   * @default - No EFS. Lambda has access only to 512MB of disk space.
    */
-  readonly enableTempEfsStorage?: boolean
+  readonly useEfs?: boolean
 
   /**
    * Execution role associated with this function
@@ -176,7 +175,7 @@ export interface BucketDeploymentProps {
 
   /**
    * The VPC network to place the deployment lambda handler in.
-   * It is required to be set if using lambda with EFS storage.
+   * This is required if `useEfs` is set.
    *
    * @default None
    */
@@ -203,24 +202,24 @@ export class BucketDeployment extends CoreConstruct {
       throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
-    if (props.enableTempEfsStorage && !props.vpc) {
-      throw new Error('Vpc must be specified if enableTempEfsStorage is true');
+    if (props.useEfs && !props.vpc) {
+      throw new Error('Vpc must be specified if useEfs is set');
     }
 
-    const ACCESS_POINT_PATH = '/lambda';
-    const ACCESS_MODE = '0777';
+    const accessPointPath = '/lambda';
     let accessPoint;
-    if (props.enableTempEfsStorage && props.vpc) {
+    if (props.useEfs && props.vpc) {
+      const accessMode = '0777';
       const fileSystem = new efs.FileSystem(this, 'FileSystem', {
         vpc: props.vpc,
         removalPolicy: cdk.RemovalPolicy.DESTROY,
       });
       accessPoint = fileSystem.addAccessPoint('AccessPoint', {
-        path: ACCESS_POINT_PATH,
+        path: accessPointPath,
         createAcl: {
           ownerUid: '1001',
           ownerGid: '1001',
-          permissions: ACCESS_MODE,
+          permissions: accessMode,
         },
         posixUser: {
           uid: '1001',
@@ -229,15 +228,14 @@ export class BucketDeployment extends CoreConstruct {
       });
     }
 
-    const MOUNT_PATH = `/mnt${ACCESS_POINT_PATH}`;
+    const mountPath = `/mnt${accessPointPath}`;
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
-      uuid: this.renderSingletonUuid(props.memoryLimit),
+      uuid: this.renderSingletonUuid(props.memoryLimit, props.useEfs),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       runtime: lambda.Runtime.PYTHON_3_6,
-      environment: props.enableTempEfsStorage ? {
-        IS_EFS_ENABLED: 'true',
-        MOUNT_PATH: MOUNT_PATH,
+      environment: props.useEfs ? {
+        MOUNT_PATH: mountPath,
       } : undefined,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
@@ -248,7 +246,7 @@ export class BucketDeployment extends CoreConstruct {
       vpcSubnets: props.vpcSubnets,
       filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
         accessPoint,
-        MOUNT_PATH,
+        mountPath,
       ): undefined,
     });
 
@@ -285,7 +283,7 @@ export class BucketDeployment extends CoreConstruct {
 
   }
 
-  private renderSingletonUuid(memoryLimit?: number) {
+  private renderSingletonUuid(memoryLimit?: number, useEfs?: boolean) {
     let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
 
     // if user specify a custom memory limit, define another singleton handler
@@ -297,6 +295,16 @@ export class BucketDeployment extends CoreConstruct {
       }
 
       uuid += `-${memoryLimit.toString()}MiB`;
+    }
+
+    // if user specify to use Efs storage, define another singleton handler
+    // with this configuration. otherwise, it won't be possible to use multiple
+    // configurations since we have a singleton.
+    if (useEfs) {
+      if (cdk.Token.isUnresolved(useEfs)) {
+        throw new Error('Can\'t use tokens when specifying "useEfs" since we use it to identify the singleton custom resource handler');
+      }
+      uuid += '-EfsEnabled';
     }
 
     return uuid;
