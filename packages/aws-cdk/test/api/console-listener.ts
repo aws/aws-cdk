@@ -11,7 +11,7 @@ export interface Inspector {
   restore: () => void;
 }
 
-class TestStream {
+class ConsoleListener {
   private _stream: NodeJS.WriteStream;
   private _options?: Options
 
@@ -61,5 +61,5 @@ class TestStream {
 
 }
 
-export const stdout = new TestStream(process.stdout);
-export const stderr = new TestStream(process.stderr);
+export const stdout = new ConsoleListener(process.stdout);
+export const stderr = new ConsoleListener(process.stderr);
