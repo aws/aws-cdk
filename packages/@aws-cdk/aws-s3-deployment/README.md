@@ -44,11 +44,6 @@ This is what happens under the hood:
    `websiteBucket`). If there is more than one source, the sources will be
    downloaded and merged pre-deployment at this step.
 
-**IMPORTANT** The `aws-s3-deployment` module is only intended to be used with
-assets built by the CDK CLI and Zip files from sources you trust. If you use
-`Source.bucket()` to reference a zip file from an untrusted source, it might
-execute arbitrary code in the context of the Lambda Function and read or write
-unexpected files in the S3 bucket.
 
 ## Supported sources
 
@@ -62,6 +57,14 @@ To create a source from a single file, you can pass `AssetOptions` to exclude
 all but a single file:
 
  - Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
+
+**IMPORTANT** The `aws-s3-deployment` module is only intended to be used with
+zip files from trusted sources. Assets built by the CDK CLI can always be
+trusted. If you are using `Source.bucket()` to reference existing zip files in
+an S3 bucket, make sure you trust the file you are referencing. Zips from
+untrusted sources might be able to execute arbitrary code in the Lambda Function
+used by this module, and use its permissions to read or write unexpected files in
+the S3 bucket.
 
 ## Retain on Delete
 
