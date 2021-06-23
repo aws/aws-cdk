@@ -5,7 +5,6 @@ import { IDependable, Stack } from '@aws-cdk/core';
 
 /**
  * FileSystem configurations for the Lambda function
- * @experimental
  */
 export interface FileSystemConfig {
   /**
@@ -42,7 +41,6 @@ export interface FileSystemConfig {
 
 /**
  * Represents the filesystem for the Lambda function
- * @experimental
  */
 export class FileSystem {
   /**
@@ -50,7 +48,7 @@ export class FileSystem {
    * @param ap the Amazon EFS access point
    * @param mountPath the target path in the lambda runtime environment
    */
-  public static fromEfsAccessPoint(ap: efs.AccessPoint, mountPath: string): FileSystem {
+  public static fromEfsAccessPoint(ap: efs.IAccessPoint, mountPath: string): FileSystem {
     return new FileSystem({
       localMountPath: mountPath,
       arn: ap.accessPointArn,

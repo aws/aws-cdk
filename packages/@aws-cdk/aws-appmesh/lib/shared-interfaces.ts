@@ -1,7 +1,67 @@
-import { Duration } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
+import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
+import { renderTlsClientPolicy } from './private/utils';
+import { TlsClientPolicy } from './tls-client-policy';
+import { IVirtualService } from './virtual-service';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/**
+ * Represents timeouts for HTTP protocols.
+ */
+export interface HttpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for GRPC protocols.
+ */
+export interface GrpcTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for TCP protocols.
+ */
+export interface TcpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+}
 
 /**
  * Enum of supported AppMesh protocols
+ *
+ * @deprecated not for use outside package
  */
 export enum Protocol {
   HTTP = 'http',
@@ -11,90 +71,236 @@ export enum Protocol {
 }
 
 /**
- * Properties used to define healthchecks when creating virtual nodes.
- * All values have a default if only specified as {} when creating.
- * If property not set, then no healthchecks will be defined.
+ * Represents the outlier detection for a listener.
  */
-export interface HealthCheck {
+export interface OutlierDetection {
   /**
-   * Number of successful attempts before considering the node UP
-   *
-   * @default 2
+   * The base amount of time for which a host is ejected.
    */
-  readonly healthyThreshold?: number;
+  readonly baseEjectionDuration: cdk.Duration;
+
   /**
-   * Interval in milliseconds to re-check
-   *
-   * @default 5 seconds
+   * The time interval between ejection sweep analysis.
    */
-  readonly interval?: Duration;
+  readonly interval: cdk.Duration;
+
   /**
-   * The path where the application expects any health-checks, this can also be the application path.
-   *
-   * @default /
+   * Maximum percentage of hosts in load balancing pool for upstream service that can be ejected. Will eject at
+   * least one host regardless of the value.
    */
-  readonly path?: string;
+  readonly maxEjectionPercent: number;
+
   /**
-   * The TCP port number for the healthcheck
-   *
-   * @default - same as corresponding port mapping
+   * Number of consecutive 5xx errors required for ejection.
    */
-  readonly port?: number;
-  /**
-   * The protocol to use for the healthcheck, for convinience a const enum has been defined.
-   * Protocol.HTTP or Protocol.TCP
-   *
-   * @default - same as corresponding port mapping
-   */
-  readonly protocol?: Protocol;
-  /**
-   * Timeout in milli-seconds for the healthcheck to be considered a fail.
-   *
-   * @default 2 seconds
-   */
-  readonly timeout?: Duration;
-  /**
-   * Number of failed attempts before considering the node DOWN.
-   *
-   * @default 2
-   */
-  readonly unhealthyThreshold?: number;
+  readonly maxServerErrors: number;
 }
 
 /**
- * Port mappings for resources that require these attributes, such as VirtualNodes and Routes
+ * All Properties for Envoy Access logs for mesh endpoints
  */
-export interface PortMapping {
-  /**
-   * Port mapped to the VirtualNode / Route
-   *
-   * @default 8080
-   */
-  readonly port: number;
+export interface AccessLogConfig {
 
   /**
-   * Protocol for the VirtualNode / Route, only GRPC, HTTP, HTTP2, or TCP is supported
+   * VirtualNode CFN configuration for Access Logging
    *
-   * @default HTTP
+   * @default - no access logging
    */
-  readonly protocol: Protocol;
+  readonly virtualNodeAccessLog?: CfnVirtualNode.AccessLogProperty;
+
+  /**
+   * VirtualGateway CFN configuration for Access Logging
+   *
+   * @default - no access logging
+   */
+  readonly virtualGatewayAccessLog?: CfnVirtualGateway.VirtualGatewayAccessLogProperty;
 }
 
 /**
- * Represents the properties needed to define healthy and active listeners for nodes.
+ * Configuration for Envoy Access logs for mesh endpoints
  */
-export interface VirtualNodeListener {
+export abstract class AccessLog {
   /**
-   * Array of PortMappingProps for the listener
+   * Path to a file to write access logs to
    *
-   * @default - HTTP port 8080
+   * @default - no file based access logging
    */
-  readonly portMapping?: PortMapping;
+  public static fromFilePath(filePath: string): AccessLog {
+    return new FileAccessLog(filePath);
+  }
 
   /**
-   * Array fo HealthCheckProps for the node(s)
-   *
-   * @default - no healthcheck
+   * Called when the AccessLog type is initialized. Can be used to enforce
+   * mutual exclusivity with future properties
    */
-  readonly healthCheck?: HealthCheck;
+  public abstract bind(scope: Construct): AccessLogConfig;
+}
+
+/**
+ * Configuration for Envoy Access logs for mesh endpoints
+ */
+class FileAccessLog extends AccessLog {
+  /**
+   * Path to a file to write access logs to
+   *
+   * @default - no file based access logging
+   */
+  public readonly filePath: string;
+
+  constructor(filePath: string) {
+    super();
+    this.filePath = filePath;
+  }
+
+  public bind(_scope: Construct): AccessLogConfig {
+    return {
+      virtualNodeAccessLog: {
+        file: {
+          path: this.filePath,
+        },
+      },
+      virtualGatewayAccessLog: {
+        file: {
+          path: this.filePath,
+        },
+      },
+    };
+  }
+}
+
+/**
+ * Represents the properties needed to define backend defaults
+ */
+export interface BackendDefaults {
+  /**
+   * TLS properties for Client policy for backend defaults
+   *
+   * @default - none
+   */
+  readonly tlsClientPolicy?: TlsClientPolicy;
+}
+
+/**
+ * Represents the properties needed to define a Virtual Service backend
+ */
+export interface VirtualServiceBackendOptions {
+
+  /**
+   * TLS properties for  Client policy for the backend
+   *
+   * @default - none
+   */
+  readonly tlsClientPolicy?: TlsClientPolicy;
+}
+
+/**
+ * Properties for a backend
+ */
+export interface BackendConfig {
+  /**
+   * Config for a Virtual Service backend
+   */
+  readonly virtualServiceBackend: CfnVirtualNode.BackendProperty;
+}
+
+
+/**
+ * Contains static factory methods to create backends
+ */
+export abstract class Backend {
+  /**
+   * Construct a Virtual Service backend
+   */
+  public static virtualService(virtualService: IVirtualService, props: VirtualServiceBackendOptions = {}): Backend {
+    return new VirtualServiceBackend(virtualService, props.tlsClientPolicy);
+  }
+
+  /**
+   * Return backend config
+   */
+  public abstract bind(_scope: Construct): BackendConfig;
+}
+
+/**
+ * Represents the properties needed to define a Virtual Service backend
+ */
+class VirtualServiceBackend extends Backend {
+
+  constructor (private readonly virtualService: IVirtualService,
+    private readonly tlsClientPolicy: TlsClientPolicy | undefined) {
+    super();
+  }
+
+  /**
+   * Return config for a Virtual Service backend
+   */
+  public bind(scope: Construct): BackendConfig {
+    return {
+      virtualServiceBackend: {
+        virtualService: {
+          virtualServiceName: this.virtualService.virtualServiceName,
+          clientPolicy: this.tlsClientPolicy
+            ? {
+              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),
+            }
+            : undefined,
+        },
+      },
+    };
+  }
+}
+
+/**
+ * Connection pool properties for HTTP listeners
+ */
+export interface HttpConnectionPool {
+  /**
+   * The maximum connections in the pool
+   *
+   * @default - none
+   */
+  readonly maxConnections: number;
+
+  /**
+   * The maximum pending requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxPendingRequests: number;
+}
+
+/**
+ * Connection pool properties for TCP listeners
+ */
+export interface TcpConnectionPool {
+  /**
+   * The maximum connections in the pool
+   *
+   * @default - none
+   */
+  readonly maxConnections: number;
+}
+
+/**
+ * Connection pool properties for gRPC listeners
+ */
+export interface GrpcConnectionPool {
+  /**
+   * The maximum requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxRequests: number;
+}
+
+/**
+ * Connection pool properties for HTTP2 listeners
+ */
+export interface Http2ConnectionPool {
+  /**
+   * The maximum requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxRequests: number;
 }

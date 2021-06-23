@@ -1,5 +1,6 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
-import { Construct, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { RemovalPolicy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IBucket } from './bucket';
 import { CfnBucketPolicy } from './s3.generated';
 

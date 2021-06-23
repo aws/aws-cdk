@@ -68,10 +68,29 @@ test('stop executing if context providers are not making progress', async () => 
   const cxasm = await cloudExecutable.synthesize();
 
   // WHEN
-  await cxasm.selectStacks(['thestack'], { defaultBehavior: DefaultSelection.AllStacks });
+  await cxasm.selectStacks({ patterns: ['thestack'] }, { defaultBehavior: DefaultSelection.AllStacks });
 
   // THEN: the test finishes normally});
 });
+
+test('fails if lookups are disabled and missing context is synthesized', async () => {
+  // GIVEN
+  const cloudExecutable = new MockCloudExecutable({
+    stacks: [{
+      stackName: 'thestack',
+      template: { resource: 'noerrorresource' },
+    }],
+    // Always return the same missing keys, synthesis should still finish.
+    missing: [
+      { key: 'abcdef', props: { account: '1324', region: 'us-east-1' }, provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER },
+    ],
+  });
+  cloudExecutable.configuration.settings.set(['lookups'], false);
+
+  // WHEN
+  await expect(cloudExecutable.synthesize()).rejects.toThrow(/Context lookups have been disabled/);
+});
+
 
 async function testCloudExecutable({ env, versionReporting = true }: { env?: string, versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({

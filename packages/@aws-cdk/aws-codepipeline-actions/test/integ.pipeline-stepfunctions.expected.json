@@ -49,23 +49,7 @@
         "KeyPolicy": {
           "Statement": [
             {
-              "Action": [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource"
-              ],
+              "Action": "kms:*",
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -86,45 +70,23 @@
                 }
               },
               "Resource": "*"
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "MyPipelineRoleC0D47CA4",
-                    "Arn"
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": [
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "MyPipelineSourceCodePipelineActionRoleAA05D76F",
-                    "Arn"
-                  ]
-                }
-              },
-              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "MyPipelineArtifactsBucketEncryptionKeyAlias9D4F8C59": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-awscdkcodepipelinestepfunctionsmypipelinece88aa28",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+            "Arn"
+          ]
         }
       },
       "UpdateReplacePolicy": "Delete",
@@ -158,20 +120,6 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "MyPipelineArtifactsBucketEncryptionKeyAlias9D4F8C59": {
-      "Type": "AWS::KMS::Alias",
-      "Properties": {
-        "AliasName": "alias/codepipeline-awscdkcodepipelinestepfunctionsmypipelinece88aa28",
-        "TargetKeyId": {
-          "Fn::GetAtt": [
-            "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
-            "Arn"
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -200,7 +148,7 @@
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -437,7 +385,7 @@
             {
               "Action": [
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -468,7 +416,8 @@
               "Action": [
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:Decrypt"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -557,7 +506,17 @@
                     },
                     ":execution:",
                     {
-                      "Ref": "SimpleStateMachineE8E2CF40"
+                      "Fn::Select": [
+                        6,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "SimpleStateMachineE8E2CF40"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     ":*"
                   ]

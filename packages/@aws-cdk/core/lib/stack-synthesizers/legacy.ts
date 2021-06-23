@@ -5,8 +5,8 @@ import { Fn } from '../cfn-fn';
 import { Construct, ISynthesisSession } from '../construct-compat';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
-import { addStackArtifactToAssembly, assertBound } from './_shared';
-import { IStackSynthesizer } from './types';
+import { assertBound } from './_shared';
+import { StackSynthesizer } from './stack-synthesizer';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker
@@ -32,7 +32,7 @@ const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-n
  * This is the only StackSynthesizer that supports customizing asset behavior
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.
  */
-export class LegacyStackSynthesizer implements IStackSynthesizer {
+export class LegacyStackSynthesizer extends StackSynthesizer {
   private stack?: Stack;
   private cycle = false;
 
@@ -48,6 +48,9 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
   private readonly addedImageAssets = new Set<string>();
 
   public bind(stack: Stack): void {
+    if (this.stack !== undefined) {
+      throw new Error('A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack');
+    }
     this.stack = stack;
   }
 
@@ -94,11 +97,16 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
     }
   }
 
-  public synthesizeStackArtifacts(session: ISynthesisSession): void {
+  /**
+   * Synthesize the associated stack to the session
+   */
+  public synthesize(session: ISynthesisSession): void {
     assertBound(this.stack);
 
+    this.synthesizeStackTemplate(this.stack, session);
+
     // Just do the default stuff, nothing special
-    addStackArtifactToAssembly(session, this.stack, {}, []);
+    this.emitStackArtifact(this.stack, session);
   }
 
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
@@ -112,6 +120,10 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
 
     // only add every image (identified by source hash) once for each stack that uses it.
     if (!this.addedImageAssets.has(assetId)) {
+      if (!asset.directoryName) {
+        throw new Error(`LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
+      }
+
       const metadata: cxschema.ContainerImageAssetMetadataEntry = {
         repositoryName,
         imageTag,
@@ -140,6 +152,10 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
     let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
+
+      if (!asset.fileName || !asset.packaging) {
+        throw new Error(`LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
+      }
 
       const metadata: cxschema.FileAssetMetadataEntry = {
         path: asset.fileName,

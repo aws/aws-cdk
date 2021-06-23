@@ -1,9 +1,18 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy } from '@aws-cdk/core';
+import { Lazy, ISynthesisSession, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { toPosixPath } from '../private/fs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Type of the asset that is being published
@@ -59,6 +68,38 @@ export interface PublishAssetsActionProps {
    * @default - Automatically generated
    */
   readonly role?: iam.IRole;
+
+  /**
+   * The VPC where to execute the PublishAssetsAction.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * Use a file buildspec written to the cloud assembly instead of an inline buildspec.
+   * This prevents size limitation errors as inline specs have a max length of 25600 characters
+   *
+   * @default false
+   */
+  readonly createBuildspecFile?: boolean;
+
+  /**
+   * Additional commands to run before installing cdk-assert
+   * Use this to setup proxies or npm mirrors
+   *
+   * @default -
+   */
+  readonly preInstallCommands?: string[];
 }
 
 /**
@@ -70,51 +111,67 @@ export interface PublishAssetsActionProps {
  * You do not need to instantiate this action -- it will automatically
  * be added by the pipeline when you add stacks that use assets.
  */
-export class PublishAssetsAction extends Construct implements codepipeline.IAction {
+export class PublishAssetsAction extends CoreConstruct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;
   private readonly commands = new Array<string>();
+
+  private readonly buildSpec: codebuild.BuildSpec;
 
   constructor(scope: Construct, id: string, private readonly props: PublishAssetsActionProps) {
     super(scope, id);
 
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
+    const installCommand = `npm install -g cdk-assets${installSuffix}`;
+
+    this.buildSpec = codebuild.BuildSpec.fromObject({
+      version: '0.2',
+      phases: {
+        install: {
+          commands: props.preInstallCommands ? [...props.preInstallCommands, installCommand] : installCommand,
+        },
+        build: {
+          commands: Lazy.list({ produce: () => this.commands }),
+        },
+      },
+    });
 
     const project = new codebuild.PipelineProject(this, 'Default', {
       projectName: this.props.projectName,
       environment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
         privileged: (props.assetType === AssetType.DOCKER_IMAGE) ? true : undefined,
       },
-      buildSpec: codebuild.BuildSpec.fromObject({
-        version: '0.2',
-        phases: {
-          install: {
-            commands: `npm install -g cdk-assets${installSuffix}`,
-          },
-          build: {
-            commands: Lazy.listValue({ produce: () => this.commands }),
-          },
-        },
-      }),
+      vpc: props.vpc,
+      subnetSelection: props.subnetSelection,
+      buildSpec: props.createBuildspecFile ? codebuild.BuildSpec.fromSourceFilename(this.getBuildSpecFileName()) : this.buildSpec,
       role: props.role,
     });
-
-    const rolePattern = props.assetType === AssetType.DOCKER_IMAGE
-      ? 'arn:*:iam::*:role/*-image-publishing-role-*'
-      : 'arn:*:iam::*:role/*-file-publishing-role-*';
-
-    project.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      resources: [rolePattern],
-    }));
 
     this.action = new codepipeline_actions.CodeBuildAction({
       actionName: props.actionName,
       project,
       input: this.props.cloudAssemblyInput,
       role: props.role,
+      // Add this purely so that the pipeline will selfupdate if the CLI version changes
+      environmentVariables: props.cdkCliVersion ? {
+        CDK_CLI_VERSION: { value: props.cdkCliVersion },
+      } : undefined,
     });
   }
+
+  private getBuildSpecFileName(): string {
+    return `buildspec-assets-${this.props.actionName}.yaml`;
+  }
+
+  protected synthesize(session: ISynthesisSession): void {
+    super.synthesize(session);
+
+    if (this.props.createBuildspecFile) {
+      const specFile = path.join(session.outdir, this.getBuildSpecFileName());
+      fs.writeFileSync(specFile, Stack.of(this).resolve(this.buildSpec.toBuildSpec()), { encoding: 'utf-8' });
+    }
+  }
+
 
   /**
    * Add a single publishing command
@@ -122,7 +179,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
    * Manifest path should be relative to the root Cloud Assembly.
    */
   public addPublishCommand(relativeManifestPath: string, assetSelector: string) {
-    const command = `cdk-assets --path "${relativeManifestPath}" --verbose publish "${assetSelector}"`;
+    const command = `cdk-assets --path "${toPosixPath(relativeManifestPath)}" --verbose publish "${assetSelector}"`;
     if (!this.commands.includes(command)) {
       this.commands.push(command);
     }
@@ -131,8 +188,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
   /**
    * Exists to implement IAction
    */
-  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     return this.action.bind(scope, stage, options);
   }
 

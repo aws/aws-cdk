@@ -14,11 +14,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
+              "Action": "s3:GetObject",
               "Effect": "Allow",
               "Principal": {
                 "CanonicalUser": {
@@ -28,28 +24,20 @@
                   ]
                 }
               },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "Bucket83908E77",
-                    "Arn"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
                   ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "Bucket83908E77",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -60,7 +48,7 @@
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
       "Properties": {
         "CloudFrontOriginAccessIdentityConfig": {
-          "Comment": "Access identity for cloudfronts3originDistributionOrigin1741C4E95"
+          "Comment": "Identity for cloudfronts3originDistributionOrigin1741C4E95"
         }
       }
     },
@@ -69,9 +57,8 @@
       "Properties": {
         "DistributionConfig": {
           "DefaultCacheBehavior": {
-            "ForwardedValues": {
-              "QueryString": false
-            },
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
             "TargetOriginId": "cloudfronts3originDistributionOrigin1741C4E95",
             "ViewerProtocolPolicy": "allow-all"
           },

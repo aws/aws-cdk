@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDatabase } from './glue.generated';
 
 export interface IDatabase extends IResource {
@@ -66,7 +67,7 @@ export class Database extends Resource implements IDatabase {
   public readonly catalogArn: string;
 
   /**
-   * ID of the Glue catalog in which this database is stored.
+   * The catalog id of the database (usually, the AWS account id).
    */
   public readonly catalogId: string;
 

@@ -1,7 +1,8 @@
 /// !cdk-integ PipelineStack
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
-import { App, CfnResource, Construct, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import { App, CfnResource, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 
 class MyStage extends Stage {

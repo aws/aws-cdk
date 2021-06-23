@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { IRestApi } from '../restapi';
@@ -12,7 +13,7 @@ export interface LambdaAuthorizerProps {
   /**
    * An optional human friendly name for the authorizer. Note that, this is not the primary identifier of the authorizer.
    *
-   * @default this.node.uniqueId
+   * @default - the unique construcrt ID
    */
   readonly authorizerName?: string;
 
@@ -96,7 +97,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   protected setupPermissions() {
     if (!this.role) {
-      this.handler.addPermission(`${this.node.uniqueId}:Permissions`, {
+      this.handler.addPermission(`${Names.uniqueId(this)}:Permissions`, {
         principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
         sourceArn: this.authorizerArn,
       });
@@ -117,7 +118,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    * Throws an error, during token resolution, if no RestApi is attached to this authorizer.
    */
   protected lazyRestApiId() {
-    return Lazy.stringValue({
+    return Lazy.string({
       produce: () => {
         if (!this.restApiId) {
           throw new Error(`Authorizer (${this.node.path}) must be attached to a RestApi`);
@@ -167,7 +168,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
 
     const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
-      name: props.authorizerName ?? this.node.uniqueId,
+      name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'TOKEN',
       authorizerUri: lambdaAuthorizerArn(props.handler),
@@ -229,7 +230,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
 
     const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
-      name: props.authorizerName ?? this.node.uniqueId,
+      name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'REQUEST',
       authorizerUri: lambdaAuthorizerArn(props.handler),

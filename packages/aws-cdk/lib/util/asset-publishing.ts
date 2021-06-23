@@ -39,6 +39,10 @@ class PublishingAws implements cdk_assets.IAws {
     private readonly targetEnv: cxapi.Environment) {
   }
 
+  public async discoverPartition(): Promise<string> {
+    return (await this.aws.baseCredentialsPartition(this.targetEnv, Mode.ForWriting)) ?? 'aws';
+  }
+
   public async discoverDefaultRegion(): Promise<string> {
     return this.targetEnv.region;
   }
@@ -64,10 +68,10 @@ class PublishingAws implements cdk_assets.IAws {
       region: options.region ?? this.targetEnv.region, // Default: same region as the stack
     };
 
-    return options.assumeRoleArn
-      ? this.aws.withAssumedRole(options.assumeRoleArn, options.assumeRoleExternalId, env.region)
-      : this.aws.forEnvironment(env, Mode.ForWriting);
-
+    return this.aws.forEnvironment(env, Mode.ForWriting, {
+      assumeRoleArn: options.assumeRoleArn,
+      assumeRoleExternalId: options.assumeRoleExternalId,
+    });
   }
 }
 

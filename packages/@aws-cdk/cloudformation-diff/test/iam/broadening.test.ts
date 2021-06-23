@@ -1,4 +1,4 @@
-import { diffTemplate } from '../../lib';
+import { diffTemplate, formatSecurityChanges } from '../../lib';
 import { poldoc, resource, template } from '../util';
 
 describe('broadening is', () => {
@@ -18,6 +18,31 @@ describe('broadening is', () => {
 
     // THEN
     expect(diff.permissionsBroadened).toBe(true);
+  });
+
+  test('permissions diff can be printed', () => {
+    // GIVEN
+    const diff = diffTemplate({}, template({
+      QueuePolicy: resource('AWS::SQS::QueuePolicy', {
+        Queues: [{ Ref: 'MyQueue' }],
+        PolicyDocument: poldoc({
+          Effect: 'Allow',
+          Action: 'sqs:SendMessage',
+          Resource: '*',
+          Principal: { Service: 'sns.amazonaws.com' },
+        }),
+      }),
+    }));
+
+    // WHEN
+    // Behave like process.stderr, but have a 'columns' property to trigger the column width calculation
+    const stdErrMostly = Object.create(process.stderr, {
+      columns: { value: 80 },
+    });
+    formatSecurityChanges(stdErrMostly, diff);
+
+    // THEN: does not throw
+    expect(true).toBeTruthy();
   });
 
   test('adding of positive statements to an existing policy', () => {

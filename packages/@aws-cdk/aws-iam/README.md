@@ -1,5 +1,6 @@
-## AWS Identity and Access Management Construct Library
+# AWS Identity and Access Management Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Define a role and add permissions to it. This will automatically create and
@@ -23,22 +25,22 @@ Managed policies can be attached using `xxx.addManagedPolicy(ManagedPolicy.fromA
 
 [attaching managed policies](test/example.managedpolicy.lit.ts)
 
-### Granting permissions to resources
+## Granting permissions to resources
 
 Many of the AWS CDK resources have `grant*` methods that allow you to grant other resources access to that resource. As an example, the following code gives a Lambda function write permissions (Put, Update, Delete) to a DynamoDB table.
 
-```typescript
-const fn = new lambda.Function(...);
-const table = new dynamodb.Table(...);
+```ts
+const fn = new lambda.Function(this, 'Function', functionProps);
+const table = new dynamodb.Table(this, 'Table', tableProps);
 
 table.grantWriteData(fn);
 ```
 
 The more generic `grant` method allows you to give specific permissions to a resource:
 
-```typescript
-const fn = new lambda.Function(...);
-const table = new dynamodb.Table(...);
+```ts
+const fn = new lambda.Function(this, 'Function', functionProps);
+const table = new dynamodb.Table(this, 'Table', tableProps);
 
 table.grant(fn, 'dynamodb:PutItem');
 ```
@@ -47,7 +49,7 @@ The `grant*` methods accept an `IGrantable` object. This interface is implemente
 
 You can find which `grant*` methods exist for a resource in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 
-### Roles
+## Roles
 
 Many AWS resources require *Roles* to operate. These Roles define the AWS API
 calls an instance or other AWS service is allowed to make.
@@ -66,7 +68,7 @@ an *AWS Lambda Function*, the Pipeline's Role will automatically get
 or if you explicitly grant permissions using `grant` functions (see the
 previous section).
 
-#### Opting out of automatic permissions management
+### Opting out of automatic permissions management
 
 You may prefer to manage a Role's permissions yourself instead of having the
 CDK automatically manage them for you. This may happen in one of the
@@ -98,12 +100,12 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 
 // You now have to manage the Role policies yourself
 role.addToPolicy(new iam.PolicyStatement({
-  action: [/* whatever actions you want */],
-  resource: [/* whatever resources you intend to touch */],
-});
+  actions: [/* whatever actions you want */],
+  resources: [/* whatever resources you intend to touch */],
+}));
 ```
 
-#### Using existing roles
+### Using existing roles
 
 If there are Roles in your account that have already been created which you
 would like to use in your CDK application, you can use `Role.fromRoleArn` to
@@ -118,7 +120,7 @@ const role = iam.Role.fromRoleArn(this, 'Role', 'arn:aws:iam::123456789012:role/
 });
 ```
 
-### Configuring an ExternalId
+## Configuring an ExternalId
 
 If you need to create Roles that will be assumed by third parties, it is generally a good idea to [require an `ExternalId`
 to assume them](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).  Configuring
@@ -126,7 +128,7 @@ an `ExternalId` works like this:
 
 [supplying an external ID](test/example.external-id.lit.ts)
 
-### Principals vs Identities
+## Principals vs Identities
 
 When we say *Principal*, we mean an entity you grant permissions to. This
 entity can be an AWS Service, a Role, or something more abstract such as "all
@@ -134,7 +136,7 @@ users in this account" or even "all users in this organization". An
 *Identity* is an IAM representing a single IAM entity that can have
 a policy attached, one of `Role`, `User`, or `Group`.
 
-### IAM Principals
+## IAM Principals
 
 When defining policy statements as part of an AssumeRole policy or as part of a
 resource policy, statements would usually refer to a specific IAM principal
@@ -160,7 +162,7 @@ To add a principal to a policy statement you can either use the abstract
 If multiple principals are added to the policy statement, they will be merged together:
 
 ```ts
-const statement = new PolicyStatement();
+const statement = new iam.PolicyStatement();
 statement.addServicePrincipal('cloudwatch.amazonaws.com');
 statement.addServicePrincipal('ec2.amazonaws.com');
 statement.addArnPrincipal('arn:aws:boom:boom');
@@ -214,7 +216,7 @@ const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com')
   });
 ```
 
-### Parsing JSON Policy Documents
+## Parsing JSON Policy Documents
 
 The `PolicyDocument.fromJson` and `PolicyStatement.fromJson` static methods can be used to parse JSON objects. For example:
 
@@ -250,11 +252,63 @@ const policyDocument = {
   ]
 };
 
-const newPolicyDocument = PolicyDocument.fromJson(policyDocument);
+const customPolicyDocument = iam.PolicyDocument.fromJson(policyDocument);
 
+// You can pass this document as an initial document to a ManagedPolicy
+// or inline Policy.
+const newManagedPolicy = new ManagedPolicy(stack, 'MyNewManagedPolicy', {
+  document: customPolicyDocument
+});
+const newPolicy = new Policy(stack, 'MyNewPolicy', {
+  document: customPolicyDocument
+});
 ```
 
-### OpenID Connect Providers
+## Permissions Boundaries
+
+[Permissions
+Boundaries](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html)
+can be used as a mechanism to prevent privilege esclation by creating new
+`Role`s. Permissions Boundaries are a Managed Policy, attached to Roles or
+Users, that represent the *maximum* set of permissions they can have. The
+effective set of permissions of a Role (or User) will be the intersection of
+the Identity Policy and the Permissions Boundary attached to the Role (or
+User). Permissions Boundaries are typically created by account
+Administrators, and their use on newly created `Role`s will be enforced by
+IAM policies.
+
+It is possible to attach Permissions Boundaries to all Roles created in a construct
+tree all at once:
+
+```ts
+// This imports an existing policy.
+const boundary = iam.ManagedPolicy.fromManagedPolicyArn(this, 'Boundary', 'arn:aws:iam::123456789012:policy/boundary');
+
+// This creates a new boundary
+const boundary2 = new iam.ManagedPolicy(this, 'Boundary2', {
+  statements: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.DENY,
+      actions: ['iam:*'],
+      resources: ['*'],
+    }),
+  ],
+});
+
+// Directly apply the boundary to a Role you create
+iam.PermissionsBoundary.of(role).apply(boundary);
+
+// Apply the boundary to an Role that was implicitly created for you
+iam.PermissionsBoundary.of(lambdaFunction).apply(boundary);
+
+// Apply the boundary to all Roles in a stack
+iam.PermissionsBoundary.of(stack).apply(boundary);
+
+// Remove a Permissions Boundary that is inherited, for example from the Stack level
+iam.PermissionsBoundary.of(customResource).clear();
+```
+
+## OpenID Connect Providers
 
 OIDC identity providers are entities in IAM that describe an external identity
 provider (IdP) service that supports the [OpenID Connect] (OIDC) standard, such
@@ -275,9 +329,9 @@ The following examples defines an OpenID Connect provider. Two client IDs
 https://openid/connect.
 
 ```ts
-const provider = new OpenIdConnectProvider(this, 'MyProvider', {
+const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
   url: 'https://openid/connect',
-  clients: [ 'myclient1', 'myclient2' ]
+  clientIds: [ 'myclient1', 'myclient2' ],
 });
 ```
 
@@ -294,21 +348,104 @@ you can reference the provider's ARN as follows:
 
 ```ts
 new cognito.CfnIdentityPool(this, 'IdentityPool', {
-  openIdConnectProviderARNs: [ provider.openIdConnectProviderArn ]
+  openIdConnectProviderArns: [myProvider.openIdConnectProviderArn],
+  // And the other properties for your identity pool
+  allowUnauthenticatedIdentities,
 });
 ```
 
 The `OpenIdConnectPrincipal` class can be used as a principal used with a `OpenIdConnectProvider`, for example:
 
 ```ts
-const provider = new OpenIdConnectProvider(this, 'MyProvider', {
+const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
   url: 'https://openid/connect',
-  clients: [ 'myclient1', 'myclient2' ]
+  clientIds: [ 'myclient1', 'myclient2' ]
 });
 const principal = new iam.OpenIdConnectPrincipal(provider);
 ```
 
-### Features
+## SAML provider
+
+An IAM SAML 2.0 identity provider is an entity in IAM that describes an external
+identity provider (IdP) service that supports the SAML 2.0 (Security Assertion
+Markup Language 2.0) standard. You use an IAM identity provider when you want
+to establish trust between a SAML-compatible IdP such as Shibboleth or Active
+Directory Federation Services and AWS, so that users in your organization can
+access AWS resources. IAM SAML identity providers are used as principals in an
+IAM trust policy.
+
+```ts
+new iam.SamlProvider(this, 'Provider', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+});
+```
+
+The `SamlPrincipal` class can be used as a principal with a `SamlProvider`:
+
+```ts
+const provider = new iam.SamlProvider(this, 'Provider', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+});
+const principal = new iam.SamlPrincipal(provider, {
+  StringEquals: {
+    'SAML:iss': 'issuer',
+  },
+});
+```
+
+When creating a role for programmatic and AWS Management Console access, use the `SamlConsolePrincipal`
+class:
+
+```ts
+const provider = new iam.SamlProvider(this, 'Provider', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+});
+new iam.Role(this, 'Role', {
+  assumedBy: new iam.SamlConsolePrincipal(provider),
+});
+```
+
+## Users
+
+IAM manages users for your AWS account. To create a new user:
+
+```ts
+const user = new User(this, 'MyUser');
+```
+
+To import an existing user by name [with path](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-friendly-names):
+
+```ts
+const user = User.fromUserName(stack, 'MyImportedUserByName', 'johnsmith');
+```
+
+To import an existing user by ARN:
+
+```ts
+const user = User.fromUserArn(this, 'MyImportedUserByArn', 'arn:aws:iam::123456789012:user/johnsmith');
+```
+
+To import an existing user by attributes:
+
+```ts
+const user = User.fromUserAttributes(stack, 'MyImportedUserByAttributes', {
+  userArn: 'arn:aws:iam::123456789012:user/johnsmith',
+});
+```
+
+To add a user to a group (both for a new and imported user/group):
+
+```ts
+const user = new User(this, 'MyUser'); // or User.fromUserName(stack, 'User', 'johnsmith');
+const group = new Group(this, 'MyGroup'); // or Group.fromGroupArn(stack, 'Group', 'arn:aws:iam::account-id:group/group-name');
+
+user.addToGroup(group);
+// or
+group.addUser(user);
+```
+
+
+## Features
 
  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
    principal, the attachment will fail.

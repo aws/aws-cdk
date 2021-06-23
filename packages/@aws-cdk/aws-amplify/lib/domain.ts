@@ -1,4 +1,6 @@
-import { Construct, Lazy, Resource, IResolvable } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { Lazy, Resource, IResolvable } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDomain } from './amplify.generated';
 import { IApp } from './app';
 import { IBranch } from './branch';
@@ -20,6 +22,20 @@ export interface DomainOptions {
    * @default - use `addSubDomain()` to add subdomains
    */
   readonly subDomains?: SubDomain[];
+
+  /**
+   * Automatically create subdomains for connected branches
+   *
+   * @default false
+   */
+  readonly enableAutoSubdomain?: boolean;
+
+  /**
+   * Branches which should automatically create subdomains
+   *
+   * @default - all repository branches ['*', 'pr*']
+   */
+  readonly autoSubdomainCreationPatterns?: string[];
 }
 
 /**
@@ -30,6 +46,12 @@ export interface DomainProps extends DomainOptions {
    * The application to which the domain must be connected
    */
   readonly app: IApp;
+
+  /**
+   * The IAM role with access to Route53 when using enableAutoSubdomain
+   * @default the IAM role from App.grantPrincipal
+   */
+  readonly autoSubDomainIamRole?: iam.IRole;
 }
 
 /**
@@ -104,7 +126,10 @@ export class Domain extends Resource {
     const domain = new CfnDomain(this, 'Resource', {
       appId: props.app.appId,
       domainName,
-      subDomainSettings: Lazy.anyValue({ produce: () => this.renderSubDomainSettings() }, { omitEmptyArray: true }),
+      subDomainSettings: Lazy.any({ produce: () => this.renderSubDomainSettings() }, { omitEmptyArray: true }),
+      enableAutoSubDomain: !!props.enableAutoSubdomain,
+      autoSubDomainCreationPatterns: props.autoSubdomainCreationPatterns || ['*', 'pr*'],
+      autoSubDomainIamRole: props.autoSubDomainIamRole?.roleArn,
     });
 
     this.arn = domain.attrArn;
@@ -146,7 +171,7 @@ export class Domain extends Resource {
   private renderSubDomainSettings() {
     return this.subDomains.map(s => ({
       branchName: s.branch.branchName,
-      prefix: s.prefix === undefined ? s.branch.branchName : s.prefix,
+      prefix: s.prefix ?? s.branch.branchName,
     }));
   }
 }

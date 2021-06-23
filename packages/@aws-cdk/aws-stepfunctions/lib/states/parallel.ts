@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
@@ -45,6 +45,20 @@ export interface ParallelProps {
    * @default $
    */
   readonly resultPath?: string;
+
+  /**
+   * The JSON that will replace the state's raw result and become the effective
+   * result before ResultPath is applied.
+   *
+   * You can use ResultSelector to create a payload with values that are static
+   * or selected from the state's raw result.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
+   *
+   * @default - None
+   */
+  readonly resultSelector?: { [key: string]: any };
 }
 
 /**
@@ -58,7 +72,7 @@ export interface ParallelProps {
 export class Parallel extends State implements INextable {
   public readonly endStates: INextable[];
 
-  constructor(scope: cdk.Construct, id: string, props: ParallelProps = {}) {
+  constructor(scope: Construct, id: string, props: ParallelProps = {}) {
     super(scope, id, props);
 
     this.endStates = [this];
@@ -117,6 +131,7 @@ export class Parallel extends State implements INextable {
       ...this.renderInputOutput(),
       ...this.renderRetryCatch(),
       ...this.renderBranches(),
+      ...this.renderResultSelector(),
     };
   }
 

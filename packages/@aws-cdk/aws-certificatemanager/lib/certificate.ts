@@ -1,5 +1,6 @@
 import * as route53 from '@aws-cdk/aws-route53';
-import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -54,7 +55,7 @@ export interface CertificateProps {
   readonly validationMethod?: ValidationMethod;
 
   /**
-   * How to validate this certifcate
+   * How to validate this certificate
    *
    * @default CertificateValidation.fromEmail()
    */
@@ -99,7 +100,7 @@ export interface CertificationValidationProps {
  */
 export class CertificateValidation {
   /**
-   * Validate the certifcate with DNS
+   * Validate the certificate with DNS
    *
    * IMPORTANT: If `hostedZone` is not specified, DNS records must be added
    * manually and the stack will not complete creating until the records are
@@ -115,7 +116,7 @@ export class CertificateValidation {
   }
 
   /**
-   * Validate the certifcate with automatically created DNS records in multiple
+   * Validate the certificate with automatically created DNS records in multiple
    * Amazon Route 53 hosted zones.
    *
    * @param hostedZones a map of hosted zones where DNS records must be created
@@ -129,7 +130,7 @@ export class CertificateValidation {
   }
 
   /**
-   * Validate the certifcate with Email
+   * Validate the certificate with Email
    *
    * IMPORTANT: if you are creating a certificate as part of your stack, the stack
    * will not complete creating until you read and follow the instructions in the

@@ -859,6 +859,9 @@
               "Ref": "vpcPrivateSubnet3Subnet985AC459"
             }
           ],
+          "Tags": {
+            "compute-env-tag": "123XYZ"
+          },
           "Type": "EC2"
         },
         "State": "ENABLED"

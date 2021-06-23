@@ -375,6 +375,34 @@ test('adding and removing quotes from a numeric property causes no changes', () 
   expect(differences.resources.differenceCount).toBe(0);
 });
 
+test('versions are correctly detected as not numbers', () => {
+  const currentTemplate = {
+    Resources: {
+      ImageBuilderComponent: {
+        Type: 'AWS::ImageBuilder::Component',
+        Properties: {
+          Platform: 'Linux',
+          Version: '0.0.1',
+        },
+      },
+    },
+  };
+  const newTemplate = {
+    Resources: {
+      ImageBuilderComponent: {
+        Type: 'AWS::ImageBuilder::Component',
+        Properties: {
+          Platform: 'Linux',
+          Version: '0.0.2',
+        },
+      },
+    },
+  };
+
+  const differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+});
+
 test('single element arrays are equivalent to the single element in DependsOn expressions', () => {
   // GIVEN
   const currentTemplate = {
@@ -402,7 +430,6 @@ test('single element arrays are equivalent to the single element in DependsOn ex
   differences = diffTemplate(newTemplate, currentTemplate);
   expect(differences.resources.differenceCount).toBe(0);
 });
-
 
 test('array equivalence is independent of element order in DependsOn expressions', () => {
   // GIVEN
@@ -481,6 +508,73 @@ test('arrays that differ only in element order are considered unequal outside of
     },
   };
 
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+
+  differences = diffTemplate(newTemplate, currentTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+});
+
+test('boolean properties are considered equal with their stringified counterparts', () => {
+  // GIVEN
+  const currentTemplate = {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: 'true',
+          },
+        },
+      },
+    },
+  };
+  const newTemplate = {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: true,
+          },
+        },
+      },
+    },
+  };
+
+  // WHEN
+  const differences = diffTemplate(currentTemplate, newTemplate);
+
+  // THEN
+  expect(differences.differenceCount).toBe(0);
+});
+
+test('when a property changes including equivalent DependsOn', () => {
+  // GIVEN
+  const bucketName = 'ShineyBucketName';
+  const currentTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['SomeResource'],
+        BucketName: bucketName,
+      },
+    },
+  };
+
+  // WHEN
+  const newBucketName = `${bucketName}-v2`;
+  const newTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['SomeResource'],
+        BucketName: newBucketName,
+      },
+    },
+  };
+
+  // THEN
   let differences = diffTemplate(currentTemplate, newTemplate);
   expect(differences.resources.differenceCount).toBe(1);
 

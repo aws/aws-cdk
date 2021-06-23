@@ -1,7 +1,10 @@
-import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from '../index';
 import { removeEmpty } from './utils';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The configuration to use when creating a log driver.
@@ -61,7 +64,7 @@ export class GenericLogDriver extends LogDriver {
   /**
    * Called when the log driver is configured on a container.
    */
-  public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
+  public bind(_scope: CoreConstruct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: this.logDriver,
       options: removeEmpty(this.options),

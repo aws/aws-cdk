@@ -1,0 +1,16 @@
+{
+  "ResourceTypes": {
+    "AWS::SageMaker::ModelPackageGroup": {
+      "patch": {
+        "description": "Correct the missing type of the ModelPackageGroupPolicy property for the AWS::SageMaker::ModelPackageGroup resource type",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/ModelPackageGroupPolicy/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    }
+  }
+}

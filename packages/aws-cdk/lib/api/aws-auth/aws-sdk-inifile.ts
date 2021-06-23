@@ -20,7 +20,11 @@ import * as AWS from 'aws-sdk';
  *     `getProfilesFromSharedConfig` overwrites ALL `config` data with `credentials`
  *     data, so we also need to do extra work to fish the `region` out of the config.
  *
+ * 3.  The 'credential_source' option is not supported. Meaning credentials
+ *     for assume-role cannot be fetched using EC2/ESC metadata.
+ *
  * See https://github.com/aws/aws-sdk-js/issues/3418 for all the gory details.
+ * See https://github.com/aws/aws-sdk-js/issues/1916 for some more glory details.
  */
 export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredentials {
   declare private profile: string;
@@ -53,40 +57,30 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     var roleSessionName = roleProfile.role_session_name;
     var externalId = roleProfile.external_id;
     var mfaSerial = roleProfile.mfa_serial;
-    var sourceProfileName = roleProfile.source_profile;
+    var sourceProfile = roleProfile.source_profile;
+    var credentialSource = roleProfile.credential_source;
 
-    if (!sourceProfileName) {
-      throw (AWS as any).util.error(
-        new Error('source_profile is not set using profile ' + this.profile),
-        { code: 'SharedIniFileCredentialsProviderFailure' },
-      );
-    }
-
-    var sourceProfileExistanceTest = creds[sourceProfileName];
-
-    if (typeof sourceProfileExistanceTest !== 'object') {
-      throw (AWS as any).util.error(
-        new Error('source_profile ' + sourceProfileName + ' using profile '
-          + this.profile + ' does not exist'),
-        { code: 'SharedIniFileCredentialsProviderFailure' },
-      );
-    }
-
-    var sourceCredentials = new AWS.SharedIniFileCredentials(
-      (AWS as any).util.merge(this.options || {}, {
-        profile: sourceProfileName,
-        preferStaticCredentials: true,
-      }),
+    const credentialError = (AWS as any).util.error(
+      new Error(`When using 'role_arn' in profile ('${this.profile}'), you must also configure exactly one of 'source_profile' or 'credential_source'`),
+      { code: 'SharedIniFileCredentialsProviderFailure' },
     );
 
-    // --------- THIS IS NEW ----------------------
+    if (sourceProfile && credentialSource) {
+      throw credentialError;
+    }
+
+    if (!sourceProfile && !credentialSource) {
+      throw credentialError;
+    }
+
     const profiles = loadProfilesProper(this.filename);
     const region = profiles[this.profile]?.region ?? profiles.default?.region ?? 'us-east-1';
-    // --------- /THIS IS NEW ----------------------
+
+    const stsCreds = sourceProfile ? this.sourceProfileCredentials(sourceProfile, creds) : this.credentialSourceCredentials(credentialSource);
 
     this.roleArn = roleArn;
     var sts = new AWS.STS({
-      credentials: sourceCredentials,
+      credentials: stsCreds,
       region,
       httpOptions: this.httpOptions,
     });
@@ -124,6 +118,48 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
       return;
     }
     sts.assumeRole(roleParams, callback);
+  }
+
+  private sourceProfileCredentials(sourceProfile: string, profiles: Record<string, Record<string, string>>) {
+
+    var sourceProfileExistanceTest = profiles[sourceProfile];
+
+    if (typeof sourceProfileExistanceTest !== 'object') {
+      throw (AWS as any).util.error(
+        new Error('source_profile ' + sourceProfile + ' using profile '
+          + this.profile + ' does not exist'),
+        { code: 'SharedIniFileCredentialsProviderFailure' },
+      );
+    }
+
+    return new AWS.SharedIniFileCredentials(
+      (AWS as any).util.merge(this.options || {}, {
+        profile: sourceProfile,
+        preferStaticCredentials: true,
+      }),
+    );
+
+  }
+
+  // the aws-sdk for js does not support 'credential_source' (https://github.com/aws/aws-sdk-js/issues/1916)
+  // so unfortunately we need to implement this ourselves.
+  private credentialSourceCredentials(sourceCredential: string) {
+
+    // see https://docs.aws.amazon.com/credref/latest/refdocs/setting-global-credential_source.html
+    switch (sourceCredential) {
+      case 'Environment': {
+        return new AWS.EnvironmentCredentials('AWS');
+      }
+      case 'Ec2InstanceMetadata': {
+        return new AWS.EC2MetadataCredentials();
+      }
+      case 'EcsContainer': {
+        return new AWS.ECSCredentials();
+      }
+      default: {
+        throw new Error(`credential_source ${sourceCredential} in profile ${this.profile} is unsupported. choose one of [Environment, Ec2InstanceMetadata, EcsContainer]`);
+      }
+    }
 
   }
 }

@@ -24,3 +24,5 @@ tsconfig.json
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
+test/
+!*.lit.ts

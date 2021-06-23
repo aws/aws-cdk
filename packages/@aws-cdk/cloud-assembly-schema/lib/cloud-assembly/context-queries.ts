@@ -1,3 +1,4 @@
+import { Tag } from './metadata-schema';
 
 /**
  * Identifier for the context provider
@@ -33,6 +34,20 @@ export enum ContextProvider {
    */
   ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER = 'endpoint-service-availability-zones',
 
+  /**
+   * Load balancer provider
+   */
+  LOAD_BALANCER_PROVIDER = 'load-balancer',
+
+  /**
+   * Load balancer listener provider
+   */
+  LOAD_BALANCER_LISTENER_PROVIDER = 'load-balancer-listener',
+
+  /**
+   * Security group provider
+   */
+  SECURITY_GROUP_PROVIDER = 'security-group',
 }
 
 /**
@@ -48,6 +63,13 @@ export interface AmiContextQuery {
    * Region to query
    */
   readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
 
   /**
    * Owners to DescribeImages call
@@ -75,6 +97,14 @@ export interface AvailabilityZonesContextQuery {
    * Query region
    */
   readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
 }
 
 /**
@@ -90,6 +120,13 @@ export interface HostedZoneContextQuery {
    * Query region
    */
   readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
 
   /**
    * The domain name e.g. example.com to lookup
@@ -129,6 +166,13 @@ export interface SSMParameterContextQuery {
   readonly region: string;
 
   /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
    * Parameter name to query
    */
   readonly parameterName: string;
@@ -147,6 +191,13 @@ export interface VpcContextQuery {
    * Query region
    */
   readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
 
   /**
    * Filters to apply to the VPC
@@ -191,9 +242,177 @@ export interface EndpointServiceAvailabilityZonesContextQuery {
   readonly region: string;
 
   /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
    * Query service name
    */
   readonly serviceName: string;
+}
+
+/**
+ * Type of load balancer
+ */
+export enum LoadBalancerType {
+  /**
+   * Network load balancer
+   */
+  NETWORK = 'network',
+
+  /**
+   * Application load balancer
+   */
+  APPLICATION = 'application',
+}
+
+/**
+ * Filters for selecting load balancers
+ */
+export interface LoadBalancerFilter {
+  /**
+   * Filter load balancers by their type
+   */
+  readonly loadBalancerType: LoadBalancerType;
+
+  /**
+   * Find by load balancer's ARN
+   * @default - does not search by load balancer arn
+   */
+  readonly loadBalancerArn?: string;
+
+  /**
+   * Match load balancer tags
+   * @default - does not match load balancers by tags
+   */
+  readonly loadBalancerTags?: Tag[];
+}
+
+/**
+ * Query input for looking up a load balancer
+ */
+export interface LoadBalancerContextQuery extends LoadBalancerFilter {
+  /**
+   * Query account
+   */
+  readonly account: string;
+
+  /**
+   * Query region
+   */
+  readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+}
+
+/**
+ * The protocol for connections from clients to the load balancer
+ */
+export enum LoadBalancerListenerProtocol {
+  /**
+   * HTTP protocol
+   */
+  HTTP = 'HTTP',
+
+  /**
+   * HTTPS protocol
+   */
+  HTTPS = 'HTTPS',
+
+  /**
+   * TCP protocol
+   */
+  TCP = 'TCP',
+
+  /**
+   * TLS protocol
+   */
+  TLS = 'TLS',
+
+  /**
+   * UDP protocol
+   * */
+  UDP = 'UDP',
+
+  /**
+   * TCP and UDP protocol
+   * */
+  TCP_UDP = 'TCP_UDP',
+}
+
+/**
+ * Query input for looking up a load balancer listener
+ */
+export interface LoadBalancerListenerContextQuery extends LoadBalancerFilter {
+  /**
+   * Query account
+   */
+  readonly account: string;
+
+  /**
+   * Query region
+   */
+  readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
+   * Find by listener's arn
+   * @default - does not find by listener arn
+   */
+  readonly listenerArn?: string;
+
+  /**
+   * Filter by listener protocol
+   * @default - does not filter by listener protocol
+   */
+  readonly listenerProtocol?: LoadBalancerListenerProtocol;
+
+  /**
+   * Filter listeners by listener port
+   * @default - does not filter by a listener port
+   */
+  readonly listenerPort?: number;
+}
+
+/**
+ * Query input for looking up a security group
+ */
+export interface SecurityGroupContextQuery {
+  /**
+   * Query account
+   */
+  readonly account: string;
+
+  /**
+   * Query region
+   */
+  readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
+   * Security group id
+   */
+  readonly securityGroupId: string;
 }
 
 export type ContextQueryProperties = AmiContextQuery
@@ -201,4 +420,7 @@ export type ContextQueryProperties = AmiContextQuery
 | HostedZoneContextQuery
 | SSMParameterContextQuery
 | VpcContextQuery
-| EndpointServiceAvailabilityZonesContextQuery;
+| EndpointServiceAvailabilityZonesContextQuery
+| LoadBalancerContextQuery
+| LoadBalancerListenerContextQuery
+| SecurityGroupContextQuery;

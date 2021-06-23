@@ -3,8 +3,13 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { embeddedAsmPath } from '../private/construct-internals';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Props for the UpdatePipelineAction
@@ -17,8 +22,16 @@ export interface UpdatePipelineActionProps {
 
   /**
    * Name of the pipeline stack
+   *
+   * @deprecated - Use `pipelineStackHierarchicalId` instead.
+   * @default - none
    */
-  readonly pipelineStackName: string;
+  readonly pipelineStackName?: string;
+
+  /**
+   * Hierarchical id of the pipeline stack
+   */
+  readonly pipelineStackHierarchicalId: string;
 
   /**
    * Version of CDK CLI to 'npm install'.
@@ -33,6 +46,13 @@ export interface UpdatePipelineActionProps {
    * @default - Automatically generated
    */
   readonly projectName?: string;
+
+  /**
+   * Whether the build step should run in privileged mode.
+   *
+   * @default - false
+   */
+  readonly privileged?: boolean
 }
 
 /**
@@ -44,7 +64,7 @@ export interface UpdatePipelineActionProps {
  * You do not need to instantiate this action -- it will automatically
  * be added by the pipeline.
  */
-export class UpdatePipelineAction extends Construct implements codepipeline.IAction {
+export class UpdatePipelineAction extends CoreConstruct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;
 
   constructor(scope: Construct, id: string, props: UpdatePipelineActionProps) {
@@ -52,9 +72,13 @@ export class UpdatePipelineAction extends Construct implements codepipeline.IAct
 
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
 
+    const stackIdentifier = props.pipelineStackHierarchicalId ?? props.pipelineStackName;
     const selfMutationProject = new codebuild.PipelineProject(this, 'SelfMutation', {
       projectName: props.projectName,
-      environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+        privileged: props.privileged ?? false,
+      },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {
@@ -64,7 +88,7 @@ export class UpdatePipelineAction extends Construct implements codepipeline.IAct
           build: {
             commands: [
               // Cloud Assembly is in *current* directory.
-              `cdk -a ${embeddedAsmPath(scope)} deploy ${props.pipelineStackName} --require-approval=never --verbose`,
+              `cdk -a ${embeddedAsmPath(scope)} deploy ${stackIdentifier} --require-approval=never --verbose`,
             ],
           },
         },
@@ -74,7 +98,12 @@ export class UpdatePipelineAction extends Construct implements codepipeline.IAct
     // allow the self-mutating project permissions to assume the bootstrap Action role
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: ['arn:*:iam::*:role/*-deploy-role-*', 'arn:*:iam::*:role/*-publishing-role-*'],
+      resources: [`arn:*:iam::${Stack.of(this).account}:role/*`],
+      conditions: {
+        'ForAnyValue:StringEquals': {
+          'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
+        },
+      },
     }));
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['cloudformation:DescribeStacks'],
@@ -89,13 +118,17 @@ export class UpdatePipelineAction extends Construct implements codepipeline.IAct
       actionName: 'SelfMutate',
       input: props.cloudAssemblyInput,
       project: selfMutationProject,
+      // Add this purely so that the pipeline will selfupdate if the CLI version changes
+      environmentVariables: props.cdkCliVersion ? {
+        CDK_CLI_VERSION: { value: props.cdkCliVersion },
+      } : undefined,
     });
   }
 
   /**
    * Exists to implement IAction
    */
-  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     return this.action.bind(scope, stage, options);
   }

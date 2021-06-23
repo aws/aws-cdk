@@ -1,9 +1,13 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Duration } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { kebab as toKebabCase } from 'case';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 // Class copied verbatim from the aws-s3-deployment module.
 // Yes, it sucks that we didn't abstract this properly in a common class,
@@ -110,6 +114,12 @@ export class S3DeployAction extends Action {
   codepipeline.ActionConfig {
     // pipeline needs permissions to write to the S3 bucket
     this.props.bucket.grantWrite(options.role);
+
+    if (this.props.accessControl !== undefined) {
+      // we need to modify the ACL settings of objects within the Bucket,
+      // so grant the Action's Role permissions to do that
+      this.props.bucket.grantPutAcl(options.role);
+    }
 
     // the Action Role also needs to read from the Pipeline's bucket
     options.bucket.grantRead(options.role);

@@ -6,16 +6,26 @@
  */
 
 import * as path from 'path';
-import * as fastJsonPatch from 'fast-json-patch';
 import * as fs from 'fs-extra';
 import * as md5 from 'md5';
 import { schema } from '../lib';
-import { detectScrutinyTypes } from './scrutiny';
+import { decorateResourceTypes, forEachSection, massageSpec, merge, normalize, patch } from './massage-spec';
 
 async function main() {
   const inputDir = path.join(process.cwd(), 'spec-source');
-  const files = await fs.readdir(inputDir);
+  const outDir = path.join(process.cwd(), 'spec');
+
+  await generateResourceSpecification(inputDir, path.join(outDir, 'specification.json'));
+  await mergeSpecificationFromDirs(path.join(inputDir, 'cfn-lint'), path.join(outDir, 'cfn-lint.json'));
+}
+
+/**
+ * Generate CloudFormation resource specification from sources and patches
+ */
+async function generateResourceSpecification(inputDir: string, outFile: string) {
   const spec: schema.Specification = { PropertyTypes: {}, ResourceTypes: {}, Fingerprint: '' };
+
+  const files = await fs.readdir(inputDir);
   for (const file of files.filter(n => n.endsWith('.json')).sort()) {
     const data = await fs.readJson(path.join(inputDir, file));
     if (file.indexOf('patch') === -1) {
@@ -30,127 +40,49 @@ async function main() {
 
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 
-  const outDir = path.join(process.cwd(), 'spec');
-  await fs.mkdirp(outDir);
-  await fs.writeJson(path.join(outDir, 'specification.json'), spec, { spaces: 2 });
-}
-
-export function massageSpec(spec: schema.Specification) {
-  detectScrutinyTypes(spec);
-  replaceIncompleteTypes(spec);
-  dropTypelessAttributes(spec);
-}
-
-function forEachSection(spec: schema.Specification, data: any, cb: (spec: any, fragment: any, path: string[]) => void) {
-  cb(spec.PropertyTypes, data.PropertyTypes, ['PropertyTypes']);
-  cb(spec.ResourceTypes, data.ResourceTypes, ['ResourceTypes']);
-  // Per-resource specs are keyed on ResourceType (singular), but we want it in ResourceTypes (plural)
-  cb(spec.ResourceTypes, data.ResourceType, ['ResourceType']);
-}
-
-function decorateResourceTypes(data: any) {
-  const requiredTransform = data.ResourceSpecificationTransform as string | undefined;
-  if (!requiredTransform) { return; }
-  const resourceTypes = data.ResourceTypes || data.ResourceType;
-  for (const name of Object.keys(resourceTypes)) {
-    resourceTypes[name].RequiredTransform = requiredTransform;
-  }
+  await fs.mkdirp(path.dirname(outFile));
+  await fs.writeJson(outFile, spec, { spaces: 2 });
 }
 
 /**
- * Fix incomplete type definitions in PropertyTypes
- *
- * Some user-defined types are defined to not have any properties, and not
- * be a collection of other types either. They have no definition at all.
- *
- * Add a property object type with empty properties.
+ * Generate Cfnlint spec annotations from sources and patches
  */
-function replaceIncompleteTypes(spec: schema.Specification) {
-  for (const [name, definition] of Object.entries(spec.PropertyTypes)) {
-    if (!schema.isRecordType(definition)
-    && !schema.isCollectionProperty(definition)
-    && !schema.isScalarProperty(definition)
-    && !schema.isPrimitiveProperty(definition)) {
-      // eslint-disable-next-line no-console
-      console.log(`[${name}] Incomplete type, adding empty "Properties" field`);
+async function mergeSpecificationFromDirs(inputDir: string, outFile: string) {
+  const spec: any = {};
 
-      (definition as unknown as schema.RecordProperty).Properties = {};
-    }
+  for (const child of await fs.readdir(inputDir)) {
+    const fullPath = path.join(inputDir, child);
+    if (!(await fs.stat(fullPath)).isDirectory()) { continue; }
+
+    const subspec = await loadMergedSpec(fullPath);
+    spec[child] = subspec;
   }
+
+  await fs.mkdirp(path.dirname(outFile));
+  await fs.writeJson(outFile, spec, { spaces: 2 });
 }
 
 /**
- * Drop Attributes specified with the different ResourceTypes that have
- * no type specified.
+ * Load all files in the given directory, merge them and apply patches in the order found
+ *
+ * The base structure is always an empty object
  */
-function dropTypelessAttributes(spec: schema.Specification) {
-  const resourceTypes = spec.ResourceTypes;
-  Object.values(resourceTypes).forEach((resourceType) => {
-    const attributes = resourceType.Attributes ?? {};
-    Object.keys(attributes).forEach((attrKey) => {
-      const attrVal = attributes[attrKey];
-      if (Object.keys(attrVal).length === 0) {
-        delete attributes[attrKey];
-      }
-    });
-  });
-}
+async function loadMergedSpec(inputDir: string) {
+  const structure: any = {};
 
-function merge(spec: any, fragment: any, jsonPath: string[]) {
-  if (!fragment) { return; }
-  for (const key of Object.keys(fragment)) {
-    if (key in spec) {
-      const specVal = spec[key];
-      const fragVal = fragment[key];
-      if (typeof specVal !== typeof fragVal) {
-        // eslint-disable-next-line max-len
-        throw new Error(`Attempted to merge ${JSON.stringify(fragVal)} into incompatible ${JSON.stringify(specVal)} at path ${jsonPath.join('/')}/${key}`);
-      }
-      if (typeof specVal !== 'object') {
-        // eslint-disable-next-line max-len
-        throw new Error(`Conflict when attempting to merge ${JSON.stringify(fragVal)} into ${JSON.stringify(specVal)} at path ${jsonPath.join('/')}/${key}`);
-      }
-      merge(specVal, fragVal, [...jsonPath, key]);
+  const files = await fs.readdir(inputDir);
+  for (const file of files.filter(n => n.endsWith('.json')).sort()) {
+    const data = await fs.readJson(path.join(inputDir, file));
+    if (file.indexOf('patch') === -1) {
+      // Copy properties from current object into structure, adding/overwriting whatever is found
+      Object.assign(structure, data);
     } else {
-      spec[key] = fragment[key];
+      // Apply the loaded file as a patch onto the current structure
+      patch(structure, data);
     }
   }
-}
 
-function patch(spec: any, fragment: any) {
-  if (!fragment) { return; }
-  if ('patch' in fragment) {
-    // eslint-disable-next-line no-console
-    console.log(`Applying patch: ${fragment.patch.description}`);
-    fastJsonPatch.applyPatch(spec, fragment.patch.operations);
-  } else {
-    for (const key of Object.keys(fragment)) {
-      patch(spec[key], fragment[key]);
-    }
-  }
-}
-
-/**
- * Modifies the provided specification so that ``ResourceTypes`` and ``PropertyTypes`` are listed in alphabetical order.
- *
- * @param spec an AWS CloudFormation Resource Specification document.
- *
- * @returns ``spec``, after having sorted the ``ResourceTypes`` and ``PropertyTypes`` sections alphabetically.
- */
-function normalize(spec: schema.Specification): schema.Specification {
-  spec.ResourceTypes = normalizeSection(spec.ResourceTypes);
-  if (spec.PropertyTypes) {
-    spec.PropertyTypes = normalizeSection(spec.PropertyTypes);
-  }
-  return spec;
-
-  function normalizeSection<T>(section: { [name: string]: T }): { [name: string]: T } {
-    const result: { [name: string]: T } = {};
-    for (const key of Object.keys(section).sort()) {
-      result[key] = section[key];
-    }
-    return result;
-  }
+  return structure;
 }
 
 main()

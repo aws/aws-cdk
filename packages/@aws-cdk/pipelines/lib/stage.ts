@@ -1,10 +1,15 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
-import { Construct, Stage, Aspects } from '@aws-cdk/core';
+import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction } from './actions';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from './private/asset-manifest';
 import { topologicalSort } from './private/toposort';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Construction properties for a CdkStage
@@ -37,7 +42,7 @@ export interface CdkStageProps {
  * You don't need to instantiate this class directly. Use
  * `cdkPipeline.addStage()` instead.
  */
-export class CdkStage extends Construct {
+export class CdkStage extends CoreConstruct {
   private _nextSequentialRunOrder = 1; // Must start at 1 eh
   private _manualApprovalCounter = 1;
   private readonly pipelineStage: codepipeline.IStage;
@@ -70,7 +75,8 @@ export class CdkStage extends Construct {
    * publishing stage.
    */
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
-    const asm = appStage.synth();
+    const asm = appStage.synth({ validateOnSynthesis: true });
+    const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
 
     if (asm.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
@@ -83,14 +89,14 @@ export class CdkStage extends Construct {
       stack => stack.dependencies.map(d => d.id));
 
     for (const stacks of sortedTranches) {
-      const runOrder = this.nextSequentialRunOrder(2); // We need 2 actions
-      let executeRunOrder = runOrder + 1;
+      const runOrder = this.nextSequentialRunOrder(extraRunOrderSpace + 2); // 2 actions for Prepare/Execute ChangeSet
+      let executeRunOrder = runOrder + extraRunOrderSpace + 1;
 
       // If we need to insert a manual approval action, then what's the executeRunOrder
       // now is where we add a manual approval step, and we allocate 1 more runOrder
       // for the execute.
       if (options.manualApprovals) {
-        this.addManualApprovalAction({ runOrder: executeRunOrder });
+        this.addManualApprovalAction({ runOrder: runOrder + 1 });
         executeRunOrder = this.nextSequentialRunOrder();
       }
 
@@ -240,7 +246,7 @@ export class CdkStage extends Construct {
         if (entry instanceof DockerImageManifestEntry) {
           assetType = AssetType.DOCKER_IMAGE;
         } else if (entry instanceof FileManifestEntry) {
-          // Don't publishg the template for this stack
+          // Don't publish the template for this stack
           if (entry.source.packaging === 'file' && entry.source.path === stackArtifact.templateFile) {
             continue;
           }
@@ -250,11 +256,16 @@ export class CdkStage extends Construct {
           throw new Error(`Unrecognized asset type: ${entry.type}`);
         }
 
+        if (!entry.destination.assumeRoleArn) {
+          throw new Error('assumeRoleArn is missing on asset and required');
+        }
+
         this.host.publishAsset({
           assetManifestPath: manifestArtifact.file,
           assetId: entry.id.assetId,
           assetSelector: entry.id.toString(),
           assetType,
+          assetPublishingRoleArn: entry.destination.assumeRoleArn,
         });
       }
     }
@@ -351,6 +362,11 @@ export interface AssetPublishingCommand {
    * Type of asset to publish
    */
   readonly assetType: AssetType;
+
+  /**
+   * ARN of the IAM Role used to publish this asset.
+   */
+  readonly assetPublishingRoleArn: string;
 }
 
 /**
@@ -366,6 +382,15 @@ export interface AddStageOptions {
    * @default false
    */
   readonly manualApprovals?: boolean;
+  /**
+   * Add room for extra actions
+   *
+   * You can use this to make extra room in the runOrder sequence between the
+   * changeset 'prepare' and 'execute' actions and insert your own actions there.
+   *
+   * @default 0
+   */
+  readonly extraRunOrderSpace?: number;
 }
 
 /**

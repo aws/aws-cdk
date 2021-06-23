@@ -1,10 +1,12 @@
 # Lifecycle Hook for the CDK AWS AutoScaling Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library contains integration classes for AutoScaling lifecycle hooks.

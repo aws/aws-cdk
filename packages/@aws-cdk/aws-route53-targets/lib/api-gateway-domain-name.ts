@@ -5,12 +5,12 @@ import * as route53 from '@aws-cdk/aws-route53';
  * Defines an API Gateway domain name as the alias target.
  *
  * Use the `ApiGateway` class if you wish to map the alias to an REST API with a
- * domain name defined throug the `RestApiProps.domainName` prop.
+ * domain name defined through the `RestApiProps.domainName` prop.
  */
 export class ApiGatewayDomain implements route53.IAliasRecordTarget {
   constructor(private readonly domainName: apig.IDomainName) { }
 
-  public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
+  public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     return {
       dnsName: this.domainName.domainNameAliasDomainName,
       hostedZoneId: this.domainName.domainNameAliasHostedZoneId,

@@ -3,7 +3,7 @@ import { Duration } from '@aws-cdk/core';
 
 /**
  * The set of properties for event sources that follow the streaming model,
- * such as, Dynamo and Kinesis.
+ * such as, Dynamo, Kinesis and Kafka.
  */
 export interface StreamEventSourceProps {
   /**
@@ -41,7 +41,7 @@ export interface StreamEventSourceProps {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
-   * @default Duration.days(7)
+   * @default - the retention period configured on the stream
    */
   readonly maxRecordAge?: Duration;
 
@@ -51,7 +51,7 @@ export interface StreamEventSourceProps {
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default 10000
+   * @default - retry until the record expires
    */
   readonly retryAttempts?: number;
 
@@ -71,12 +71,36 @@ export interface StreamEventSourceProps {
   readonly startingPosition: lambda.StartingPosition;
 
   /**
+   * Allow functions to return partially successful responses for a batch of records.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
+   *
+   * @default false
+   */
+  readonly reportBatchItemFailures?: boolean;
+
+  /**
    * The maximum amount of time to gather records before invoking the function.
    * Maximum of Duration.minutes(5)
    *
    * @default Duration.seconds(0)
    */
   readonly maxBatchingWindow?: Duration;
+
+  /**
+   * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
+   * Valid Range: 0 - 15 minutes
+   *
+   * @default - None
+   */
+  readonly tumblingWindow?: Duration;
+
+  /**
+   * If the stream event source mapping should be enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
 }
 
 /**
@@ -94,11 +118,14 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       batchSize: this.props.batchSize || 100,
       bisectBatchOnError: this.props.bisectBatchOnError,
       startingPosition: this.props.startingPosition,
+      reportBatchItemFailures: this.props.reportBatchItemFailures,
       maxBatchingWindow: this.props.maxBatchingWindow,
       maxRecordAge: this.props.maxRecordAge,
       retryAttempts: this.props.retryAttempts,
       parallelizationFactor: this.props.parallelizationFactor,
       onFailure: this.props.onFailure,
+      tumblingWindow: this.props.tumblingWindow,
+      enabled: this.props.enabled,
     };
   }
 }

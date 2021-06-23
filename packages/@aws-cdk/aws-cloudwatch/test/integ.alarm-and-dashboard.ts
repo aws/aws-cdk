@@ -13,13 +13,19 @@ const stack = new cdk.Stack(app, 'aws-cdk-cloudwatch-alarms');
 
 const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 
-const metric = new cloudwatch.Metric({
+const numberOfMessagesVisibleMetric = new cloudwatch.Metric({
   namespace: 'AWS/SQS',
   metricName: 'ApproximateNumberOfMessagesVisible',
   dimensions: { QueueName: queue.getAtt('QueueName') },
 });
 
-const alarm = metric.createAlarm(stack, 'Alarm', {
+const sentMessageSizeMetric = new cloudwatch.Metric({
+  namespace: 'AWS/SQS',
+  metricName: 'SentMessageSize',
+  dimensions: { QueueName: queue.getAtt('QueueName') },
+});
+
+const alarm = numberOfMessagesVisibleMetric.createAlarm(stack, 'Alarm', {
   threshold: 100,
   evaluationPeriods: 3,
   datapointsToAlarm: 2,
@@ -41,12 +47,12 @@ dashboard.addWidgets(new cloudwatch.AlarmWidget({
 }));
 dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: 'More messages in queue with alarm annotation',
-  left: [metric],
+  left: [numberOfMessagesVisibleMetric],
   leftAnnotations: [alarm.toAnnotation()],
 }));
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Current messages in queue',
-  metrics: [metric],
+  metrics: [numberOfMessagesVisibleMetric],
 }));
 dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   title: 'Errors in my log group',
@@ -81,6 +87,16 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   logGroupNames: ['my-log-group'],
   queryString: `fields @message
                 | filter @message like /Error/`,
+}));
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
+  title: 'Sent message size',
+  metrics: [sentMessageSizeMetric],
+  fullPrecision: false,
+}));
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
+  title: 'Sent message size with full precision',
+  metrics: [sentMessageSizeMetric],
+  fullPrecision: true,
 }));
 
 app.synth();

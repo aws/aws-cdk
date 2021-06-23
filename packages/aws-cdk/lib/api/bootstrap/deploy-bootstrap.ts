@@ -21,11 +21,6 @@ import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSIO
  *
  * And do something in between the two phases (such as look at the
  * current bootstrap stack and doing something intelligent).
- *
- * This class is different from `ToolkitInfo` in that `ToolkitInfo`
- * is purely read-only, and `ToolkitInfo.lookup()` returns `undefined`
- * if the stack does not exist. But honestly, these classes could and
- * should probably be merged at some point.
  */
 export class BootstrapStack {
   public static async lookup(sdkProvider: SdkProvider, environment: cxapi.Environment, toolkitStackName?: string) {
@@ -33,6 +28,7 @@ export class BootstrapStack {
 
     const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment);
     const sdk = await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting);
+
     const currentToolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, sdk, toolkitStackName);
 
     return new BootstrapStack(sdkProvider, sdk, resolvedEnvironment, toolkitStackName, currentToolkitInfo);
@@ -43,15 +39,15 @@ export class BootstrapStack {
     private readonly sdk: ISDK,
     private readonly resolvedEnvironment: cxapi.Environment,
     private readonly toolkitStackName: string,
-    private readonly currentToolkitInfo?: ToolkitInfo) {
+    private readonly currentToolkitInfo: ToolkitInfo) {
   }
 
   public get parameters(): Record<string, string> {
-    return this.currentToolkitInfo?.parameters ?? {};
+    return this.currentToolkitInfo.found ? this.currentToolkitInfo.bootstrapStack.parameters : {};
   }
 
   public get terminationProtection() {
-    return this.currentToolkitInfo?.stack?.terminationProtection;
+    return this.currentToolkitInfo.found ? this.currentToolkitInfo.bootstrapStack.terminationProtection : undefined;
   }
 
   public async partition(): Promise<string> {
@@ -68,7 +64,7 @@ export class BootstrapStack {
   ): Promise<DeployStackResult> {
 
     const newVersion = bootstrapVersionFromTemplate(template);
-    if (this.currentToolkitInfo && newVersion < this.currentToolkitInfo.version && !options.force) {
+    if (this.currentToolkitInfo.found && newVersion < this.currentToolkitInfo.version && !options.force) {
       throw new Error(`Not downgrading existing bootstrap stack from version '${this.currentToolkitInfo.version}' to version '${newVersion}'. Use --force to force.`);
     }
 
@@ -99,6 +95,8 @@ export class BootstrapStack {
       execute: options.execute,
       parameters,
       usePreviousParameters: true,
+      // Obviously we can't need a bootstrap stack to deploy a bootstrap stack
+      toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(this.sdk),
     });
   }
 }

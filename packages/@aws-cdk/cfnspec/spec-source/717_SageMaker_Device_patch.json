@@ -1,0 +1,25 @@
+{
+  "ResourceTypes": {
+    "AWS::SageMaker::Device": {
+      "patch": {
+        "description": "Correct the AWS::SageMaker::Device resource type",
+        "operations": [
+          {
+            "op": "replace",
+            "path": "/Properties/Tags/Type",
+            "value": "List"
+          },
+          {
+            "op": "replace",
+            "path": "/Properties/Tags/ItemType",
+            "value": "Tag"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/Device/PrimitiveType"
+          }
+        ]
+      }
+    }
+  }
+}

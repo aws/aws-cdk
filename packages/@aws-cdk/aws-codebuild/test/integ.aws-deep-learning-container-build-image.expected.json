@@ -84,7 +84,8 @@
                 "codebuild:CreateReportGroup",
                 "codebuild:CreateReport",
                 "codebuild:UpdateReport",
-                "codebuild:BatchPutTestCases"
+                "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -208,7 +209,8 @@
         "Source": {
           "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"ls\"\n      ]\n    }\n  }\n}",
           "Type": "NO_SOURCE"
-        }
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     }
   },

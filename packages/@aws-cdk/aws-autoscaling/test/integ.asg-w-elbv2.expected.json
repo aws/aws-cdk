@@ -568,7 +568,7 @@
               ]
             }
           },
-          "TargetValue": 1
+          "TargetValue": 60
         }
       },
       "DependsOn": [

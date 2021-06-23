@@ -60,6 +60,13 @@ export interface AwsIntegrationProps {
    * Integration options, such as content handling, request/response mapping, etc.
    */
   readonly options?: IntegrationOptions
+
+  /**
+   * The region of the integrated AWS service.
+   *
+   * @default - same region as the stack
+   */
+  readonly region?: string;
 }
 
 /**
@@ -78,7 +85,7 @@ export class AwsIntegration extends Integration {
     super({
       type,
       integrationHttpMethod: props.integrationHttpMethod || 'POST',
-      uri: cdk.Lazy.stringValue({
+      uri: cdk.Lazy.string({
         produce: () => {
           if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
           return cdk.Stack.of(this.scope).formatArn({
@@ -87,6 +94,7 @@ export class AwsIntegration extends Integration {
             resource: apiType,
             sep: '/',
             resourceName: apiValue,
+            region: props.region,
           });
         },
       }),

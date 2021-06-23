@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as targets from '../lib';
 
 class TestStack extends Stack {
@@ -14,7 +15,7 @@ class TestStack extends Stack {
     const listener = lb.addListener('Listener', { port: 80 });
 
     const fn = new lambda.Function(this, 'Fun', {
-      code: lambda.Code.inline(`
+      code: lambda.Code.fromInline(`
 def handler(event, context):
   return {
     "isBase64Encoded": False,

@@ -1,10 +1,15 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnComponents, Construct, CustomResource, Token, Stack, Lazy } from '@aws-cdk/core';
+import { ArnComponents, CustomResource, Token, Stack, Lazy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnCluster } from './eks.generated';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
@@ -16,6 +21,8 @@ export interface ClusterResourceProps {
   readonly endpointPublicAccess: boolean;
   readonly publicAccessCidrs?: string[];
   readonly vpc: ec2.IVpc;
+  readonly environment?: { [key: string]: string };
+  readonly subnets?: ec2.ISubnet[];
   readonly secretsEncryptionKey?: kms.IKey;
 }
 
@@ -29,7 +36,7 @@ export interface ClusterResourceProps {
  * cluster via `kubectl` to enable Kubernetes management capabilities like apply
  * manifest and IAM role/user RBAC mapping.
  */
-export class ClusterResource extends Construct {
+export class ClusterResource extends CoreConstruct {
   public readonly attrEndpoint: string;
   public readonly attrArn: string;
   public readonly attrCertificateAuthorityData: string;
@@ -52,6 +59,9 @@ export class ClusterResource extends Construct {
 
     const provider = ClusterResourceProvider.getOrCreate(this, {
       adminRole: this.adminRole,
+      subnets: props.subnets,
+      vpc: props.vpc,
+      environment: props.environment,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -117,7 +127,7 @@ export class ClusterResource extends Construct {
     // this role to manage all clusters in the account. this must be lazy since
     // `props.name` may contain a lazy value that conditionally resolves to a
     // physical name.
-    const resourceArns = Lazy.listValue({
+    const resourceArns = Lazy.list({
       produce: () => {
         const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.name)));
         return stack.resolve(props.name)
@@ -126,19 +136,11 @@ export class ClusterResource extends Construct {
       },
     });
 
-    const fargateProfileResourceArn = Lazy.stringValue({
+    const fargateProfileResourceArn = Lazy.string({
       produce: () => stack.resolve(props.name)
         ? stack.formatArn({ service: 'eks', resource: 'fargateprofile', resourceName: stack.resolve(props.name) + '/*' })
         : '*',
     });
-
-    creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'ec2:DescribeSubnets',
-        'ec2:DescribeRouteTables',
-      ],
-      resources: ['*'],
-    }));
 
     creationRole.addToPolicy(new iam.PolicyStatement({
       actions: [
@@ -171,13 +173,19 @@ export class ClusterResource extends Construct {
     }));
 
     // see https://github.com/aws/aws-cdk/issues/9027
+    // these actions are the combined 'ec2:Describe*' actions taken from the EKS SLR policies.
+    // (AWSServiceRoleForAmazonEKS, AWSServiceRoleForAmazonEKSForFargate, AWSServiceRoleForAmazonEKSNodegroup)
     creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['ec2:DescribeVpcs'],
-      resources: [stack.formatArn({
-        service: 'ec2',
-        resource: 'vpc',
-        resourceName: props.vpc.vpcId,
-      })],
+      actions: [
+        'ec2:DescribeInstances',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DescribeSecurityGroups',
+        'ec2:DescribeSubnets',
+        'ec2:DescribeRouteTables',
+        'ec2:DescribeDhcpOptions',
+        'ec2:DescribeVpcs',
+      ],
+      resources: ['*'],
     }));
 
     // grant cluster creation role sufficient permission to access the specified key

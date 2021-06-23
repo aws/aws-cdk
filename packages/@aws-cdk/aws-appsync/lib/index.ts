@@ -1,4 +1,5 @@
 // AWS::AppSync CloudFormation Resources:
+export * from './appsync-function';
 export * from './appsync.generated';
 export * from './key';
 export * from './data-source';

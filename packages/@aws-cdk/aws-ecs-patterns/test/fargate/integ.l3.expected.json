@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc"
           }
         ]
       }
@@ -35,7 +35,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -132,7 +132,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -146,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -184,7 +184,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -204,7 +204,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -229,7 +229,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -243,7 +243,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -291,7 +291,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -305,7 +305,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -339,7 +339,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc"
+            "Value": "aws-ecs-integ-lb-fargate/Vpc"
           }
         ]
       }
@@ -358,7 +358,7 @@
     "FargateCluster7CCD5F93": {
       "Type": "AWS::ECS::Cluster"
     },
-    "L3LB212FC0E0": {
+    "ALBFargateServiceLB64A0074E": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
         "LoadBalancerAttributes": [
@@ -371,7 +371,7 @@
         "SecurityGroups": [
           {
             "Fn::GetAtt": [
-              "L3LBSecurityGroupEDE61198",
+              "ALBFargateServiceLBSecurityGroup5DC3060E",
               "GroupId"
             ]
           }
@@ -391,10 +391,10 @@
         "VpcPublicSubnet2DefaultRoute97F91067"
       ]
     },
-    "L3LBSecurityGroupEDE61198": {
+    "ALBFargateServiceLBSecurityGroup5DC3060E": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Automatically created Security Group for ELB awsecsintegL3LB6453BA0A",
+        "GroupDescription": "Automatically created Security Group for ELB awsecsinteglbfargateALBFargateServiceLBF93E98F2",
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -409,12 +409,12 @@
         }
       }
     },
-    "L3LBSecurityGrouptoawsecsintegL3ServiceSecurityGroup7B96C87F8094933E0A": {
+    "ALBFargateServiceLBSecurityGrouptoawsecsinteglbfargateALBFargateServiceSecurityGroup0D9B5AEB80C5CFCE6C": {
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
           "Fn::GetAtt": [
-            "L3LBSecurityGroupEDE61198",
+            "ALBFargateServiceLBSecurityGroup5DC3060E",
             "GroupId"
           ]
         },
@@ -422,7 +422,7 @@
         "Description": "Load balancer to target",
         "DestinationSecurityGroupId": {
           "Fn::GetAtt": [
-            "L3ServiceSecurityGroup677B0897",
+            "ALBFargateServiceSecurityGroup82F7A67E",
             "GroupId"
           ]
         },
@@ -430,25 +430,25 @@
         "ToPort": 80
       }
     },
-    "L3LBPublicListener156FFC0F": {
+    "ALBFargateServiceLBPublicListener3489002A": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "Properties": {
         "DefaultActions": [
           {
             "TargetGroupArn": {
-              "Ref": "L3LBPublicListenerECSGroup648EEA11"
+              "Ref": "ALBFargateServiceLBPublicListenerECSGroup6871FB8C"
             },
             "Type": "forward"
           }
         ],
         "LoadBalancerArn": {
-          "Ref": "L3LB212FC0E0"
+          "Ref": "ALBFargateServiceLB64A0074E"
         },
         "Port": 80,
         "Protocol": "HTTP"
       }
     },
-    "L3LBPublicListenerECSGroup648EEA11": {
+    "ALBFargateServiceLBPublicListenerECSGroup6871FB8C": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
       "Properties": {
         "Port": 80,
@@ -459,7 +459,7 @@
         }
       }
     },
-    "L3TaskDefTaskRole21C75D10": {
+    "ALBFargateServiceTaskDefTaskRole11408723": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -476,7 +476,7 @@
         }
       }
     },
-    "L3TaskDef48D8ACB8": {
+    "ALBFargateServiceTaskDefF69F17D6": {
       "Type": "AWS::ECS::TaskDefinition",
       "Properties": {
         "ContainerDefinitions": [
@@ -487,9 +487,9 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "L3TaskDefwebLogGroupC6E4A38A"
+                  "Ref": "ALBFargateServiceTaskDefwebLogGroup7073A41D"
                 },
-                "awslogs-stream-prefix": "L3",
+                "awslogs-stream-prefix": "ALBFargateService",
                 "awslogs-region": {
                   "Ref": "AWS::Region"
                 }
@@ -507,11 +507,11 @@
         "Cpu": "512",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
-            "L3TaskDefExecutionRole49AF0996",
+            "ALBFargateServiceTaskDefExecutionRole9E885E7B",
             "Arn"
           ]
         },
-        "Family": "awsecsintegL3TaskDefAA25240E",
+        "Family": "awsecsinteglbfargateALBFargateServiceTaskDef26FE75C0",
         "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
@@ -519,18 +519,18 @@
         ],
         "TaskRoleArn": {
           "Fn::GetAtt": [
-            "L3TaskDefTaskRole21C75D10",
+            "ALBFargateServiceTaskDefTaskRole11408723",
             "Arn"
           ]
         }
       }
     },
-    "L3TaskDefwebLogGroupC6E4A38A": {
+    "ALBFargateServiceTaskDefwebLogGroup7073A41D": {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "L3TaskDefExecutionRole49AF0996": {
+    "ALBFargateServiceTaskDefExecutionRole9E885E7B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -547,7 +547,7 @@
         }
       }
     },
-    "L3TaskDefExecutionRoleDefaultPolicy4656E642": {
+    "ALBFargateServiceTaskDefExecutionRoleDefaultPolicy574B9EAD": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -560,7 +560,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "L3TaskDefwebLogGroupC6E4A38A",
+                  "ALBFargateServiceTaskDefwebLogGroup7073A41D",
                   "Arn"
                 ]
               }
@@ -568,15 +568,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "L3TaskDefExecutionRoleDefaultPolicy4656E642",
+        "PolicyName": "ALBFargateServiceTaskDefExecutionRoleDefaultPolicy574B9EAD",
         "Roles": [
           {
-            "Ref": "L3TaskDefExecutionRole49AF0996"
+            "Ref": "ALBFargateServiceTaskDefExecutionRole9E885E7B"
           }
         ]
       }
     },
-    "L3Service616D5A93": {
+    "ALBFargateService90FDCE10": {
       "Type": "AWS::ECS::Service",
       "Properties": {
         "Cluster": {
@@ -586,7 +586,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
@@ -595,7 +594,7 @@
             "ContainerName": "web",
             "ContainerPort": 80,
             "TargetGroupArn": {
-              "Ref": "L3LBPublicListenerECSGroup648EEA11"
+              "Ref": "ALBFargateServiceLBPublicListenerECSGroup6871FB8C"
             }
           }
         ],
@@ -605,7 +604,7 @@
             "SecurityGroups": [
               {
                 "Fn::GetAtt": [
-                  "L3ServiceSecurityGroup677B0897",
+                  "ALBFargateServiceSecurityGroup82F7A67E",
                   "GroupId"
                 ]
               }
@@ -621,18 +620,18 @@
           }
         },
         "TaskDefinition": {
-          "Ref": "L3TaskDef48D8ACB8"
+          "Ref": "ALBFargateServiceTaskDefF69F17D6"
         }
       },
       "DependsOn": [
-        "L3LBPublicListenerECSGroup648EEA11",
-        "L3LBPublicListener156FFC0F"
+        "ALBFargateServiceLBPublicListenerECSGroup6871FB8C",
+        "ALBFargateServiceLBPublicListener3489002A"
       ]
     },
-    "L3ServiceSecurityGroup677B0897": {
+    "ALBFargateServiceSecurityGroup82F7A67E": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-ecs-integ/L3/Service/SecurityGroup",
+        "GroupDescription": "aws-ecs-integ-lb-fargate/ALBFargateService/Service/SecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -645,7 +644,7 @@
         }
       }
     },
-    "L3ServiceSecurityGroupfromawsecsintegL3LBSecurityGroupA70DA46C80DBDFBCD6": {
+    "ALBFargateServiceSecurityGroupfromawsecsinteglbfargateALBFargateServiceLBSecurityGroupCD911D2880462ECC11": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
@@ -653,30 +652,269 @@
         "FromPort": 80,
         "GroupId": {
           "Fn::GetAtt": [
-            "L3ServiceSecurityGroup677B0897",
+            "ALBFargateServiceSecurityGroup82F7A67E",
             "GroupId"
           ]
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
-            "L3LBSecurityGroupEDE61198",
+            "ALBFargateServiceLBSecurityGroup5DC3060E",
             "GroupId"
           ]
         },
         "ToPort": 80
       }
+    },
+    "NLBFargateServiceLB659EC17C": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
+        "Scheme": "internet-facing",
+        "Subnets": [
+          {
+            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+          },
+          {
+            "Ref": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "Type": "network"
+      },
+      "DependsOn": [
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet2DefaultRoute97F91067"
+      ]
+    },
+    "NLBFargateServiceLBPublicListenerB0DCA73C": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "NLBFargateServiceLBPublicListenerECSGroupC469CAA2"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "NLBFargateServiceLB659EC17C"
+        },
+        "Port": 80,
+        "Protocol": "TCP"
+      }
+    },
+    "NLBFargateServiceLBPublicListenerECSGroupC469CAA2": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Port": 80,
+        "Protocol": "TCP",
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "NLBFargateServiceTaskDefTaskRole6C88F40B": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "NLBFargateServiceTaskDefB836FA89": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Essential": true,
+            "Image": "amazon/amazon-ecs-sample",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "NLBFargateServiceTaskDefwebLogGroupC4A42FE2"
+                },
+                "awslogs-stream-prefix": "NLBFargateService",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "Name": "web",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ]
+          }
+        ],
+        "Cpu": "512",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "NLBFargateServiceTaskDefExecutionRoleF6D642D5",
+            "Arn"
+          ]
+        },
+        "Family": "awsecsinteglbfargateNLBFargateServiceTaskDef1265FF34",
+        "Memory": "1024",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "NLBFargateServiceTaskDefTaskRole6C88F40B",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "NLBFargateServiceTaskDefwebLogGroupC4A42FE2": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "NLBFargateServiceTaskDefExecutionRoleF6D642D5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "NLBFargateServiceTaskDefExecutionRoleDefaultPolicy90080805": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "NLBFargateServiceTaskDefwebLogGroupC4A42FE2",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "NLBFargateServiceTaskDefExecutionRoleDefaultPolicy90080805",
+        "Roles": [
+          {
+            "Ref": "NLBFargateServiceTaskDefExecutionRoleF6D642D5"
+          }
+        ]
+      }
+    },
+    "NLBFargateServiceB92AC095": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "FargateCluster7CCD5F93"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "EnableECSManagedTags": false,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "web",
+            "ContainerPort": 80,
+            "TargetGroupArn": {
+              "Ref": "NLBFargateServiceLBPublicListenerECSGroupC469CAA2"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "NLBFargateServiceSecurityGroup9D81388B",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "VpcPrivateSubnet1Subnet536B997A"
+              },
+              {
+                "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+              }
+            ]
+          }
+        },
+        "TaskDefinition": {
+          "Ref": "NLBFargateServiceTaskDefB836FA89"
+        }
+      },
+      "DependsOn": [
+        "NLBFargateServiceLBPublicListenerECSGroupC469CAA2",
+        "NLBFargateServiceLBPublicListenerB0DCA73C"
+      ]
+    },
+    "NLBFargateServiceSecurityGroup9D81388B": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ-lb-fargate/NLBFargateService/Service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
     }
   },
   "Outputs": {
-    "L3LoadBalancerDNSC6CB4A70": {
+    "ALBFargateServiceLoadBalancerDNSAFB2EDDB": {
       "Value": {
         "Fn::GetAtt": [
-          "L3LB212FC0E0",
+          "ALBFargateServiceLB64A0074E",
           "DNSName"
         ]
       }
     },
-    "L3ServiceURL0F065F2D": {
+    "ALBFargateServiceServiceURL4A19CF25": {
       "Value": {
         "Fn::Join": [
           "",
@@ -684,11 +922,19 @@
             "http://",
             {
               "Fn::GetAtt": [
-                "L3LB212FC0E0",
+                "ALBFargateServiceLB64A0074E",
                 "DNSName"
               ]
             }
           ]
+        ]
+      }
+    },
+    "NLBFargateServiceLoadBalancerDNSC2B2922F": {
+      "Value": {
+        "Fn::GetAtt": [
+          "NLBFargateServiceLB659EC17C",
+          "DNSName"
         ]
       }
     }

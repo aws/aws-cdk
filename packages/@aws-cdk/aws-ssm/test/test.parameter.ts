@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -69,7 +69,7 @@ export = {
     test.doesNotThrow(() => {
       new ssm.StringParameter(stack, 'Parameter', {
         allowedPattern: '^Bar$',
-        stringValue: cdk.Lazy.stringValue({ produce: () => 'Foo!' }),
+        stringValue: cdk.Lazy.string({ produce: () => 'Foo!' }),
       });
     });
     test.done();
@@ -239,7 +239,7 @@ export = {
     // THEN
     test.doesNotThrow(() => new ssm.StringListParameter(stack, 'Parameter', {
       allowedPattern: '^(Foo|Bar)$',
-      stringListValue: ['Foo', cdk.Lazy.stringValue({ produce: () => 'Baz!' })],
+      stringListValue: ['Foo', cdk.Lazy.string({ produce: () => 'Baz!' })],
     }));
     test.done();
   },

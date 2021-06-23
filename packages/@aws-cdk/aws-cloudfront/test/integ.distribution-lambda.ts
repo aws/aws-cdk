@@ -15,6 +15,7 @@ const lambdaFunction = new lambda.Function(stack, 'Lambda', {
 new cloudfront.Distribution(stack, 'Dist', {
   defaultBehavior: {
     origin: new TestOrigin('www.example.com'),
+    cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
     edgeLambdas: [{
       functionVersion: lambdaFunction.currentVersion,
       eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,

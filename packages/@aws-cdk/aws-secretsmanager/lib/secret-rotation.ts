@@ -1,8 +1,13 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as serverless from '@aws-cdk/aws-sam';
-import { Construct, Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, Names, Stack, Token, CfnMapping, Aws } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ISecret } from './secret';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Options for a SecretRotationApplication
@@ -15,6 +20,7 @@ export interface SecretRotationApplicationOptions {
    */
   readonly isMultiUser?: boolean;
 }
+
 /**
  * A secret rotation serverless application.
  */
@@ -105,11 +111,15 @@ export class SecretRotationApplication {
 
   /**
    * The application identifier of the rotation application
+   *
+   * @deprecated only valid when deploying to the 'aws' partition. Use `applicationArnForPartition` instead.
    */
   public readonly applicationId: string;
 
   /**
    * The semantic version of the rotation application
+   *
+   * @deprecated only valid when deploying to the 'aws' partition. Use `semanticVersionForPartition` instead.
    */
   public readonly semanticVersion: string;
 
@@ -118,10 +128,44 @@ export class SecretRotationApplication {
    */
   public readonly isMultiUser?: boolean;
 
+  /**
+   * The application name of the rotation application
+   */
+  private readonly applicationName: string;
+
   constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
     this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
     this.semanticVersion = semanticVersion;
+    this.applicationName = applicationId;
     this.isMultiUser = options && options.isMultiUser;
+  }
+
+  /**
+   * Returns the application ARN for the current partition.
+   * Can be used in combination with a `CfnMapping` to automatically select the correct ARN based on the current partition.
+   */
+  public applicationArnForPartition(partition: string) {
+    if (partition === 'aws') {
+      return this.applicationId;
+    } else if (partition === 'aws-cn') {
+      return `arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/${this.applicationName}`;
+    } else {
+      throw new Error(`unsupported partition: ${partition}`);
+    }
+  }
+
+  /**
+   * The semantic version of the app for the current partition.
+   * Can be used in combination with a `CfnMapping` to automatically select the correct version based on the current partition.
+   */
+  public semanticVersionForPartition(partition: string) {
+    if (partition === 'aws') {
+      return this.semanticVersion;
+    } else if (partition === 'aws-cn') {
+      return '1.1.37';
+    } else {
+      throw new Error(`unsupported partition: ${partition}`);
+    }
   }
 }
 
@@ -131,6 +175,7 @@ export class SecretRotationApplication {
 export interface SecretRotationProps {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
+   *
    * ```
    * {
    *   "engine": <required: database engine>,
@@ -143,8 +188,8 @@ export interface SecretRotationProps {
    * }
    * ```
    *
-   * This is typically the case for a secret referenced from an
-   * AWS::SecretsManager::SecretTargetAttachment or an `ISecret` returned by the `attach()` method of `Secret`.
+   * This is typically the case for a secret referenced from an `AWS::SecretsManager::SecretTargetAttachment`
+   * or an `ISecret` returned by the `attach()` method of `Secret`.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html
    */
@@ -205,7 +250,7 @@ export interface SecretRotationProps {
 /**
  * Secret rotation for a service or database
  */
-export class SecretRotation extends Construct {
+export class SecretRotation extends CoreConstruct {
   constructor(scope: Construct, id: string, props: SecretRotationProps) {
     super(scope, id);
 
@@ -218,7 +263,7 @@ export class SecretRotation extends Construct {
     }
 
     // Max length of 64 chars, get the last 64 chars
-    const uniqueId = this.node.uniqueId;
+    const uniqueId = Names.uniqueId(this);
     const rotationFunctionName = uniqueId.substring(Math.max(uniqueId.length - 64, 0), uniqueId.length);
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -233,7 +278,7 @@ export class SecretRotation extends Construct {
       vpcSecurityGroupIds: securityGroup.securityGroupId,
     };
 
-    if (props.excludeCharacters) {
+    if (props.excludeCharacters !== undefined) {
       parameters.excludeCharacters = props.excludeCharacters;
     }
 
@@ -249,8 +294,23 @@ export class SecretRotation extends Construct {
       }
     }
 
+    const sarMapping = new CfnMapping(this, 'SARMapping', {
+      mapping: {
+        'aws': {
+          applicationId: props.application.applicationArnForPartition('aws'),
+          semanticVersion: props.application.semanticVersionForPartition('aws'),
+        },
+        'aws-cn': {
+          applicationId: props.application.applicationArnForPartition('aws-cn'),
+          semanticVersion: props.application.semanticVersionForPartition('aws-cn'),
+        },
+      },
+    });
     const application = new serverless.CfnApplication(this, 'Resource', {
-      location: props.application,
+      location: {
+        applicationId: sarMapping.findInMap(Aws.PARTITION, 'applicationId'),
+        semanticVersion: sarMapping.findInMap(Aws.PARTITION, 'semanticVersion'),
+      },
       parameters,
     });
 
@@ -265,8 +325,7 @@ export class SecretRotation extends Construct {
       automaticallyAfter: props.automaticallyAfter,
     });
 
-    // Prevent secrets deletions when rotation is in place
-    props.secret.denyAccountRootDelete();
+    // Prevent master secret deletion when rotation is in place
     if (props.masterSecret) {
       props.masterSecret.denyAccountRootDelete();
     }

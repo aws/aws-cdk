@@ -1,0 +1,176 @@
+{
+  "Resources": {
+    "SharedDACC02AA": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Ref": "AssetParameters66cf329731482a1903f36e710c64efa07dd7fc320739e9a1c0d915fe3cfa3aa0S3BucketF123FCA1"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters66cf329731482a1903f36e710c64efa07dd7fc320739e9a1c0d915fe3cfa3aa0S3VersionKey6FABFCA9"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters66cf329731482a1903f36e710c64efa07dd7fc320739e9a1c0d915fe3cfa3aa0S3VersionKey6FABFCA9"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "CompatibleRuntimes": [
+          "python3.6"
+        ]
+      }
+    },
+    "myhandlerServiceRole77891068": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "myhandlerD202FA8E": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters2355f1daf8ff0670c3287d5f2b9bf5061dce576b20f03dddb2f016ba7a203c86S3Bucket03A296A2"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters2355f1daf8ff0670c3287d5f2b9bf5061dce576b20f03dddb2f016ba7a203c86S3VersionKey90B885D0"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters2355f1daf8ff0670c3287d5f2b9bf5061dce576b20f03dddb2f016ba7a203c86S3VersionKey90B885D0"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "myhandlerServiceRole77891068",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "SharedDACC02AA"
+          }
+        ],
+        "Runtime": "python3.6"
+      },
+      "DependsOn": [
+        "myhandlerServiceRole77891068"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParameters66cf329731482a1903f36e710c64efa07dd7fc320739e9a1c0d915fe3cfa3aa0S3BucketF123FCA1": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"66cf329731482a1903f36e710c64efa07dd7fc320739e9a1c0d915fe3cfa3aa0\""
+    },
+    "AssetParameters66cf329731482a1903f36e710c64efa07dd7fc320739e9a1c0d915fe3cfa3aa0S3VersionKey6FABFCA9": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"66cf329731482a1903f36e710c64efa07dd7fc320739e9a1c0d915fe3cfa3aa0\""
+    },
+    "AssetParameters66cf329731482a1903f36e710c64efa07dd7fc320739e9a1c0d915fe3cfa3aa0ArtifactHash0384F1C8": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"66cf329731482a1903f36e710c64efa07dd7fc320739e9a1c0d915fe3cfa3aa0\""
+    },
+    "AssetParameters2355f1daf8ff0670c3287d5f2b9bf5061dce576b20f03dddb2f016ba7a203c86S3Bucket03A296A2": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"2355f1daf8ff0670c3287d5f2b9bf5061dce576b20f03dddb2f016ba7a203c86\""
+    },
+    "AssetParameters2355f1daf8ff0670c3287d5f2b9bf5061dce576b20f03dddb2f016ba7a203c86S3VersionKey90B885D0": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"2355f1daf8ff0670c3287d5f2b9bf5061dce576b20f03dddb2f016ba7a203c86\""
+    },
+    "AssetParameters2355f1daf8ff0670c3287d5f2b9bf5061dce576b20f03dddb2f016ba7a203c86ArtifactHash937218E0": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"2355f1daf8ff0670c3287d5f2b9bf5061dce576b20f03dddb2f016ba7a203c86\""
+    }
+  },
+  "Outputs": {
+    "FunctionArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "myhandlerD202FA8E",
+          "Arn"
+        ]
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
-import { Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
 import { IWidget } from './widget';
@@ -93,7 +94,7 @@ export class Dashboard extends Resource {
 
     new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,
-      dashboardBody: Lazy.stringValue({
+      dashboardBody: Lazy.string({
         produce: () => {
           const column = new Column(...this.rows);
           column.position(0, 0);

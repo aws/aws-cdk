@@ -1,0 +1,78 @@
+{
+  "Resources": {
+    "CachePolicy26D8A535": {
+      "Type": "AWS::CloudFront::CachePolicy",
+      "Properties": {
+        "CachePolicyConfig": {
+          "DefaultTTL": 86400,
+          "MaxTTL": 31536000,
+          "MinTTL": 0,
+          "Name": "ACustomCachePolicy",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none"
+            },
+            "EnableAcceptEncodingGzip": false,
+            "EnableAcceptEncodingBrotli": false,
+            "HeadersConfig": {
+              "HeaderBehavior": "none"
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none"
+            }
+          }
+        }
+      }
+    },
+    "OriginRequestPolicy3EFDB4FA": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "CookiesConfig": {
+            "CookieBehavior": "none"
+          },
+          "HeadersConfig": {
+            "HeaderBehavior": "allViewerAndWhitelistCloudFront",
+            "Headers": [
+              "CloudFront-Forwarded-Proto"
+            ]
+          },
+          "Name": "ACustomOriginRequestPolicy",
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "none"
+          }
+        }
+      }
+    },
+    "DistB3B78991": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "DefaultCacheBehavior": {
+            "CachePolicyId": {
+              "Ref": "CachePolicy26D8A535"
+            },
+            "Compress": true,
+            "OriginRequestPolicyId": {
+              "Ref": "OriginRequestPolicy3EFDB4FA"
+            },
+            "TargetOriginId": "integdistributionpoliciesDistOrigin17849EF2C",
+            "ViewerProtocolPolicy": "allow-all"
+          },
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "https-only"
+              },
+              "DomainName": "www.example.com",
+              "Id": "integdistributionpoliciesDistOrigin17849EF2C"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

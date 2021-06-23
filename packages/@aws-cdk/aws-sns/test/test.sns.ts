@@ -1,4 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -81,7 +82,7 @@ export = {
       test.done();
     },
 
-    'specify both'(test: Test) {
+    'specify displayName and topicName'(test: Test) {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
@@ -100,6 +101,122 @@ export = {
           },
         },
       });
+
+      test.done();
+    },
+
+    // NOTE: This test case should be invalid when CloudFormation problem reported in CDK issue 12386 is resolved
+    // see https://github.com/aws/aws-cdk/issues/12386
+    'throw with missing topicName on fifo topic'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+      }), /FIFO SNS topics must be given a topic name./);
+
+      test.done();
+    },
+
+    'specify fifo without .fifo suffix in topicName'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+        topicName: 'topicName',
+      });
+
+      expect(stack).toMatch({
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'FifoTopic': true,
+              'TopicName': 'topicName.fifo',
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
+
+    'specify fifo with .fifo suffix in topicName'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+        topicName: 'topicName.fifo',
+      });
+
+      expect(stack).toMatch({
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'FifoTopic': true,
+              'TopicName': 'topicName.fifo',
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
+
+    'specify fifo without contentBasedDeduplication'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+        topicName: 'topicName',
+      });
+
+      expect(stack).toMatch({
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'FifoTopic': true,
+              'TopicName': 'topicName.fifo',
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
+
+    'specify fifo with contentBasedDeduplication'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new sns.Topic(stack, 'MyTopic', {
+        contentBasedDeduplication: true,
+        fifo: true,
+        topicName: 'topicName',
+      });
+
+      expect(stack).toMatch({
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'ContentBasedDeduplication': true,
+              'FifoTopic': true,
+              'TopicName': 'topicName.fifo',
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
+
+    'throw with contentBasedDeduplication on non-fifo topic'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => new sns.Topic(stack, 'MyTopic', {
+        contentBasedDeduplication: true,
+      }), /Content based deduplication can only be enabled for FIFO SNS topics./);
 
       test.done();
     },
@@ -157,6 +274,97 @@ export = {
       },
     }));
 
+    test.done();
+  },
+
+  'TopicPolicy passed document'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'MyTopic');
+    const ps = new iam.PolicyStatement({
+      actions: ['service:statement0'],
+      principals: [new iam.ArnPrincipal('arn')],
+    });
+
+    // WHEN
+    new sns.TopicPolicy(stack, 'topicpolicy', { topics: [topic], policyDocument: new iam.PolicyDocument({ assignSids: true, statements: [ps] }) });
+
+    // THEN
+    expect(stack).toMatch({
+      'Resources': {
+        'MyTopic86869434': {
+          'Type': 'AWS::SNS::Topic',
+        },
+        'topicpolicyF8CF12FD': {
+          'Type': 'AWS::SNS::TopicPolicy',
+          'Properties': {
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'service:statement0',
+                  'Effect': 'Allow',
+                  'Principal': { 'AWS': 'arn' },
+                  'Sid': '0',
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+            'Topics': [
+              {
+                'Ref': 'MyTopic86869434',
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'Add statements to policy'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    // WHEN
+    const topicPolicy = new sns.TopicPolicy(stack, 'TopicPolicy', {
+      topics: [topic],
+    });
+    topicPolicy.document.addStatements(new iam.PolicyStatement({
+      actions: ['service:statement0'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    expect(stack).toMatch({
+      'Resources': {
+        'MyTopic86869434': {
+          'Type': 'AWS::SNS::Topic',
+        },
+        'TopicPolicyA24B096F': {
+          'Type': 'AWS::SNS::TopicPolicy',
+          'Properties': {
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'service:statement0',
+                  'Effect': 'Allow',
+                  'Principal': { 'AWS': 'arn' },
+                  'Sid': '0',
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+            'Topics': [
+              {
+                'Ref': 'MyTopic86869434',
+              },
+            ],
+          },
+        },
+      },
+    });
     test.done();
   },
 
@@ -323,6 +531,40 @@ export = {
 
     // THEN
     test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+    test.done();
+  },
+
+  'topic policy should be set if topic as a notifications rule target'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const topic = new sns.Topic(stack, 'Topic');
+    const rule = new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      source: {
+        bindAsNotificationRuleSource: () => ({
+          sourceArn: 'ARN',
+        }),
+      },
+      events: ['codebuild-project-build-state-succeeded'],
+    });
+
+    rule.addTarget(topic);
+
+    expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          'Sid': '0',
+          'Action': 'sns:Publish',
+          'Effect': 'Allow',
+          'Principal': { 'Service': 'codestar-notifications.amazonaws.com' },
+          'Resource': { 'Ref': 'TopicBFC7AF6E' },
+        }],
+      },
+      Topics: [{
+        Ref: 'TopicBFC7AF6E',
+      }],
+    }));
+
     test.done();
   },
 };

@@ -2,53 +2,33 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// From https://github.com/errwischt/stacktrace-parser/blob/master/src/stack-trace-parser.js
-const STACK_RE = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
-
-/**
- * A parsed stack trace line
- */
-export interface StackTrace {
-  readonly file: string;
-  readonly methodName?: string;
-  readonly lineNumber: number;
-  readonly column: number;
+export interface CallSite {
+  getThis(): any;
+  getTypeName(): string;
+  getFunctionName(): string;
+  getMethodName(): string;
+  getFileName(): string;
+  getLineNumber(): number;
+  getColumnNumber(): number;
+  getFunction(): Function;
+  getEvalOrigin(): string;
+  isNative(): boolean;
+  isToplevel(): boolean;
+  isEval(): boolean;
+  isConstructor(): boolean;
 }
 
 /**
- * Parses the stack trace of an error
+ * Get callsites from the V8 stack trace API
+ *
+ * https://github.com/sindresorhus/callsites
  */
-export function parseStackTrace(error?: Error): StackTrace[] {
-  const err = error || new Error();
-
-  if (!err.stack) {
-    return [];
-  }
-
-  const lines = err.stack.split('\n');
-
-  const stackTrace: StackTrace[] = [];
-
-  for (const line of lines) {
-    const results = STACK_RE.exec(line);
-    if (results) {
-      stackTrace.push({
-        file: results[2],
-        methodName: results[1],
-        lineNumber: parseInt(results[3], 10),
-        column: parseInt(results[4], 10),
-      });
-    }
-  }
-
-  return stackTrace;
-}
-
-/**
- * Returns the major version of node installation
- */
-export function nodeMajorVersion(): number {
-  return parseInt(process.versions.node.split('.')[0], 10);
+export function callsites(): CallSite[] {
+  const _prepareStackTrace = Error.prepareStackTrace;
+  Error.prepareStackTrace = (_, stack) => stack;
+  const stack = new Error().stack?.slice(1);
+  Error.prepareStackTrace = _prepareStackTrace;
+  return stack as unknown as CallSite[];
 }
 
 /**
@@ -57,8 +37,9 @@ export function nodeMajorVersion(): number {
 export function findUp(name: string, directory: string = process.cwd()): string | undefined {
   const absoluteDirectory = path.resolve(directory);
 
-  if (fs.existsSync(path.join(directory, name))) {
-    return directory;
+  const file = path.join(directory, name);
+  if (fs.existsSync(file)) {
+    return file;
   }
 
   const { root } = path.parse(absoluteDirectory);
@@ -87,4 +68,45 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
+}
+
+/**
+ * Returns a module version by requiring its package.json file
+ */
+export function tryGetModuleVersion(mod: string): string | undefined {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(`${mod}/package.json`).version;
+  } catch (err) {
+    return undefined;
+  }
+}
+
+/**
+ * Extract versions for a list of modules.
+ *
+ * First lookup the version in the package.json and then fallback to requiring
+ * the module's package.json. The fallback is needed for transitive dependencies.
+ */
+export function extractDependencies(pkgPath: string, modules: string[]): { [key: string]: string } {
+  const dependencies: { [key: string]: string } = {};
+
+  // Use require for cache
+  const pkgJson = require(pkgPath); // eslint-disable-line @typescript-eslint/no-require-imports
+
+  const pkgDependencies = {
+    ...pkgJson.dependencies ?? {},
+    ...pkgJson.devDependencies ?? {},
+    ...pkgJson.peerDependencies ?? {},
+  };
+
+  for (const mod of modules) {
+    const version = pkgDependencies[mod] ?? tryGetModuleVersion(mod);
+    if (!version) {
+      throw new Error(`Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
+    }
+    dependencies[mod] = version;
+  }
+
+  return dependencies;
 }

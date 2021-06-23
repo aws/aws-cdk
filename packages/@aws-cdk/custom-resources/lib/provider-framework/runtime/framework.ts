@@ -39,7 +39,7 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   // determine if this is an async provider based on whether we have an isComplete handler defined.
   // if it is not defined, then we are basically ready to return a positive response.
   if (!process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV]) {
-    return await cfnResponse.submitResponse('SUCCESS', resourceEvent);
+    return cfnResponse.submitResponse('SUCCESS', resourceEvent);
   }
 
   // ok, we are not complete, so kick off the waiter workflow

@@ -7,7 +7,7 @@ const stack = new core.Stack(app, 'ParentStack');
 
 new inc.CfnInclude(stack, 'ParentStack', {
   templateFile: 'test-templates/nested/parent-one-child.json',
-  nestedStacks: {
+  loadNestedStacks: {
     ChildStack: {
       templateFile: 'test-templates/nested/grandchild-import-stack.json',
     },

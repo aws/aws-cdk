@@ -115,17 +115,10 @@ test('throws an error during diffs on stack with error metadata', async () => {
   const buffer = new StringWritable();
 
   // WHEN
-  try {
-    const exitCode = await toolkit.diff({
-      stackNames: ['C'],
-      stream: buffer,
-    });
-
-    // THEN
-    expect(exitCode).toBe(1);
-  } catch (e) {
-    expect(e.toString()).toContain('Found errors');
-  }
+  await expect(() => toolkit.diff({
+    stackNames: ['C'],
+    stream: buffer,
+  })).rejects.toThrow(/Found errors/);
 });
 
 class StringWritable extends Writable {

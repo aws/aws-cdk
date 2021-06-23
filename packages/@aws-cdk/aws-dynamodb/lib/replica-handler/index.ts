@@ -5,27 +5,34 @@ import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-
 export async function onEventHandler(event: OnEventRequest): Promise<OnEventResponse> {
   console.log('Event: %j', event);
 
-  /**
-   * Process only Create and Delete requests. We shouldn't receive any
-   * update request and in case we do there is nothing to update.
-   */
-  if (event.RequestType === 'Create' || event.RequestType === 'Delete') {
-    const dynamodb = new DynamoDB();
+  const dynamodb = new DynamoDB();
 
-    const data = await dynamodb.updateTable({
-      TableName: event.ResourceProperties.TableName,
-      ReplicaUpdates: [
-        {
-          [event.RequestType]: {
-            RegionName: event.ResourceProperties.Region,
-          },
-        },
-      ],
-    }).promise();
-    console.log('Update table: %j', data);
+  let updateTableAction: 'Create' | 'Update' | 'Delete';
+  if (event.RequestType === 'Create' || event.RequestType === 'Delete') {
+    updateTableAction = event.RequestType;
+  } else { // Update
+    // This can only be a table replacement so we create a replica
+    // in the new table. The replica for the "old" table will be
+    // deleted when CF issues a Delete event on the old physical
+    // resource id.
+    updateTableAction = 'Create';
   }
 
-  return { PhysicalResourceId: event.ResourceProperties.Region };
+  const data = await dynamodb.updateTable({
+    TableName: event.ResourceProperties.TableName,
+    ReplicaUpdates: [
+      {
+        [updateTableAction]: {
+          RegionName: event.ResourceProperties.Region,
+        },
+      },
+    ],
+  }).promise();
+  console.log('Update table: %j', data);
+
+  return event.RequestType === 'Create' || event.RequestType === 'Update'
+    ? { PhysicalResourceId: `${event.ResourceProperties.TableName}-${event.ResourceProperties.Region}` }
+    : {};
 }
 
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {

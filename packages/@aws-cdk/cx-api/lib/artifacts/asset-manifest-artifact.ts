@@ -17,6 +17,13 @@ export class AssetManifestArtifact extends CloudArtifact {
    */
   public readonly requiresBootstrapStackVersion: number;
 
+  /**
+   * Name of SSM parameter with bootstrap stack version
+   *
+   * @default - Discover SSM parameter by reading stack
+   */
+  public readonly bootstrapStackVersionSsmParameter?: string;
+
   constructor(assembly: CloudAssembly, name: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, name, artifact);
 
@@ -26,5 +33,6 @@ export class AssetManifestArtifact extends CloudArtifact {
     }
     this.file = path.resolve(this.assembly.directory, properties.file);
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion ?? 1;
+    this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
   }
 }

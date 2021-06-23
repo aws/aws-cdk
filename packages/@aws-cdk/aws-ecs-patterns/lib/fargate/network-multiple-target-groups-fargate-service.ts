@@ -1,6 +1,7 @@
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Construct } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import {
   NetworkMultipleTargetGroupsServiceBase,
   NetworkMultipleTargetGroupsServiceBaseProps,
@@ -113,7 +114,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
   constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsFargateServiceProps = {}) {
     super(scope, id, props);
 
-    this.assignPublicIp = props.assignPublicIp !== undefined ? props.assignPublicIp : false;
+    this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
       throw new Error('You must specify only one of TaskDefinition or TaskImageOptions.');
@@ -129,12 +130,13 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
         family: taskImageOptions.family,
       });
 
-      const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
+      const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         logging: this.logDriver,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       if (taskImageOptions.containerPorts) {
         for (const containerPort of taskImageOptions.containerPorts) {
@@ -168,9 +170,11 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
   }
 
   private createFargateService(props: NetworkMultipleTargetGroupsFargateServiceProps): FargateService {
+    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+
     return new FargateService(this, 'Service', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,

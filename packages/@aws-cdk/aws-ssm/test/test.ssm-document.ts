@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ssm from '../lib';
@@ -11,11 +11,19 @@ export = {
     // WHEN
     new ssm.CfnAssociation(stack, 'Assoc', {
       name: 'document',
+      parameters: {
+        a: ['a'],
+        B: [],
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SSM::Association', {
       Name: 'document',
+      Parameters: {
+        a: ['a'],
+        B: [],
+      },
     }));
     test.done();
   },

@@ -39,7 +39,6 @@ export class SnsTopic implements events.IRuleTarget {
     this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
 
     return {
-      id: '',
       arn: this.topic.topicArn,
       input: this.props.message,
       targetResource: this.topic,

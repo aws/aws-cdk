@@ -1,0 +1,289 @@
+{
+  "Resources": {
+    "MyHttpApi8AEAAC21": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "MyHttpApi",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "MyHttpApiDefaultStageDCB9BC49": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "MyHttpApi8AEAAC21"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true
+      }
+    },
+    "MyHttpApiGETAuthorizerIntegMyHttpApiGET16D02385PermissionBB02EBFE": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "lambda8B5974B5",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MyHttpApi8AEAAC21"
+              },
+              "/*/*/"
+            ]
+          ]
+        }
+      }
+    },
+    "MyHttpApiGETHttpIntegration6f095b8469365f72e33fa33d9711b140516EBE31": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "MyHttpApi8AEAAC21"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "lambda8B5974B5",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      }
+    },
+    "MyHttpApiGETE0EFC6F8": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "MyHttpApi8AEAAC21"
+        },
+        "RouteKey": "GET /",
+        "AuthorizationType": "JWT",
+        "AuthorizerId": {
+          "Ref": "MyHttpApiUserPoolAuthorizer8754262B"
+        },
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "MyHttpApiGETHttpIntegration6f095b8469365f72e33fa33d9711b140516EBE31"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MyHttpApiUserPoolAuthorizer8754262B": {
+      "Type": "AWS::ApiGatewayV2::Authorizer",
+      "Properties": {
+        "ApiId": {
+          "Ref": "MyHttpApi8AEAAC21"
+        },
+        "AuthorizerType": "JWT",
+        "IdentitySource": [
+          "$request.header.Authorization"
+        ],
+        "Name": "UserPoolAuthorizer",
+        "JwtConfiguration": {
+          "Audience": [
+            {
+              "Ref": "userpoolmyclientFAD947AB"
+            }
+          ],
+          "Issuer": {
+            "Fn::Join": [
+              "",
+              [
+                "https://cognito-idp.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".amazonaws.com/",
+                {
+                  "Ref": "userpool0AC4AA96"
+                }
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "userpool0AC4AA96": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2
+            }
+          ]
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": true
+        },
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
+        "EmailVerificationSubject": "Verify your new account",
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "The verification code to your new account is {####}",
+          "EmailSubject": "Verify your new account",
+          "SmsMessage": "The verification code to your new account is {####}"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "userpoolmyclientFAD947AB": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "userpool0AC4AA96"
+        },
+        "AllowedOAuthFlows": [
+          "implicit",
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://example.com"
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ]
+      }
+    },
+    "lambdaServiceRole494E4CA6": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "lambda8B5974B5": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdS3Bucket0AFE1748"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdS3VersionKey8E654BCC"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdS3VersionKey8E654BCC"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "lambdaServiceRole494E4CA6",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs12.x"
+      },
+      "DependsOn": [
+        "lambdaServiceRole494E4CA6"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdS3Bucket0AFE1748": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cd\""
+    },
+    "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdS3VersionKey8E654BCC": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cd\""
+    },
+    "AssetParameters7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cdArtifactHashC4761AE9": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cd\""
+    }
+  }
+}

@@ -1,10 +1,10 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ISubnet, Subnet, SubnetType } from './vpc';
 
 /**
  * Turn an arbitrary string into one that can be used as a CloudFormation identifier by stripping special characters
  *
- * (At the moment, no efforts are taken to prevent collissions, but we can add that later when it becomes necessary).
+ * (At the moment, no efforts are taken to prevent collisions, but we can add that later when it becomes necessary).
  */
 export function slugify(x: string): string {
   return x.replace(/[^a-zA-Z0-9]/g, '');
@@ -70,7 +70,7 @@ export class ImportSubnetGroup {
     this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
   }
 
-  public import(scope: cdk.Construct): ISubnet[] {
+  public import(scope: Construct): ISubnet[] {
     return range(this.subnetIds.length).map(i => {
       const k = Math.floor(i / this.availabilityZones.length);
       return Subnet.fromSubnetAttributes(scope, subnetId(this.names[k], i), {

@@ -1,6 +1,11 @@
-import { Construct, CustomResource, Token, Duration } from '@aws-cdk/core';
+import { CustomResource, Token, Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties for KubernetesObjectValue.
@@ -50,7 +55,7 @@ export interface KubernetesObjectValueProps {
  * Represents a value of a specific object deployed in the cluster.
  * Use this to fetch any information available by the `kubectl get` command.
  */
-export class KubernetesObjectValue extends Construct {
+export class KubernetesObjectValue extends CoreConstruct {
   /**
    * The CloudFormation reosurce type.
    */

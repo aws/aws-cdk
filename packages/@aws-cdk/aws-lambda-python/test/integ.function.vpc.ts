@@ -1,7 +1,9 @@
+/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import { Vpc, SubnetType } from '@aws-cdk/aws-ec2';
 import { Runtime } from '@aws-cdk/aws-lambda';
-import { App, CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core';
+import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
 /*

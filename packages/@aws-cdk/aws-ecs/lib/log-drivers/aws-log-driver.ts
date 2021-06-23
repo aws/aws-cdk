@@ -1,8 +1,29 @@
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
+/**
+ * awslogs provides two modes for delivering messages from the container to the log driver
+ */
+export enum AwsLogDriverMode {
+
+  /**
+   * (default) direct, blocking delivery from container to driver.
+   */
+  BLOCKING = 'blocking',
+
+  /**
+   * The non-blocking message delivery mode prevents applications from blocking due to logging back pressure.
+   * Applications are likely to fail in unexpected ways when STDERR or STDOUT streams block.
+   */
+  NON_BLOCKING = 'non-blocking'
+}
 
 /**
  * Specifies the awslogs log driver configuration options.
@@ -58,6 +79,13 @@ export interface AwsLogDriverProps {
    * @default - No multiline matching.
    */
   readonly multilinePattern?: string;
+
+  /**
+   * The delivery mode of log messages from the container to awslogs.
+   *
+   * @default - AwsLogDriverMode.BLOCKING
+   */
+  readonly mode?: AwsLogDriverMode;
 }
 
 /**
@@ -87,7 +115,7 @@ export class AwsLogDriver extends LogDriver {
   /**
    * Called when the log driver is configured on a container
    */
-  public bind(scope: Construct, containerDefinition: ContainerDefinition): LogDriverConfig {
+  public bind(scope: CoreConstruct, containerDefinition: ContainerDefinition): LogDriverConfig {
     this.logGroup = this.props.logGroup || new logs.LogGroup(scope, 'LogGroup', {
       retention: this.props.logRetention || Infinity,
     });
@@ -102,6 +130,7 @@ export class AwsLogDriver extends LogDriver {
         'awslogs-region': Stack.of(containerDefinition).region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
+        'mode': this.props.mode,
       }),
     };
   }

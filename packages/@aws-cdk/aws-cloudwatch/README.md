@@ -1,5 +1,6 @@
-## Amazon CloudWatch Construct Library
+# Amazon CloudWatch Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 ## Metric objects
@@ -36,7 +38,7 @@ const hostedZone = new route53.HostedZone(this, 'MyHostedZone', { zoneName: "exa
 const metric = new Metric({
   namespace: 'AWS/Route53',
   metricName: 'DNSQueries',
-  dimensions: {
+  dimensionsMap: {
     HostedZoneId: hostedZone.hostedZoneId
   }
 })
@@ -51,7 +53,7 @@ you can instantiate a `Metric` object to represent it. For example:
 const metric = new Metric({
   namespace: 'MyNamespace',
   metricName: 'MyMetric',
-  dimensions: {
+  dimensionsMap: {
     ProcessingStep: 'Download'
   }
 });
@@ -251,6 +253,8 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+Using the methods `addLeftMetric()` and `addRightMetric()` you can add metrics to a graph widget later on.
+
 Graph widgets can also display annotations attached to the left or the right y-axis.
 
 ```ts
@@ -287,6 +291,17 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+The graph view can be changed from default 'timeSeries' to 'bar' or 'pie'.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  view: GraphWidgetView.BAR,
+}));
+```
+
 ### Alarm widget
 
 An alarm widget shows the graph and the alarm line of a single alarm:
@@ -306,6 +321,17 @@ to a graph of the value over time):
 ```ts
 dashboard.addWidgets(new SingleValueWidget({
   metrics: [visitorCount, purchaseCount],
+}));
+```
+
+Show as many digits as can fit, before rounding.
+
+```ts
+dashboard.addWidgets(new SingleValueWidget({
+  // ..
+  // ..
+
+  fullPrecision: true,
 }));
 ```
 

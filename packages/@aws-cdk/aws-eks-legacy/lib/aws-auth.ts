@@ -1,8 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy, Stack } from '@aws-cdk/core';
+import { Lazy, Stack } from '@aws-cdk/core';
 import { Mapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
 import { KubernetesResource } from './k8s-resource';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 export interface AwsAuthProps {
   /**
@@ -92,7 +96,7 @@ export class AwsAuth extends Construct {
   }
 
   private synthesizeMapRoles() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
         rolearn: m.role.roleArn,
         username: m.mapping.username,
@@ -102,7 +106,7 @@ export class AwsAuth extends Construct {
   }
 
   private synthesizeMapUsers() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
         userarn: m.user.userArn,
         username: m.mapping.username,
@@ -112,7 +116,7 @@ export class AwsAuth extends Construct {
   }
 
   private synthesizeMapAccounts() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.accounts),
     });
   }

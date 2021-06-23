@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { DatabaseCluster } from '../lib';
 import { ClusterParameterGroup } from '../lib/parameter-group';
 
@@ -10,7 +11,7 @@ import { ClusterParameterGroup } from '../lib/parameter-group';
  */
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2 });
@@ -34,11 +35,9 @@ class TestStack extends cdk.Stack {
         username: 'docdb',
         password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
-        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-        vpc,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      vpc,
       parameterGroup: params,
       kmsKey,
       removalPolicy: cdk.RemovalPolicy.DESTROY,

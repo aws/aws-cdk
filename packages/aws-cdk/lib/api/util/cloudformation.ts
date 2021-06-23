@@ -242,9 +242,15 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
  * there are changes to Outputs, the change set can still be executed.
  */
 export function changeSetHasNoChanges(description: CloudFormation.DescribeChangeSetOutput) {
+  const noChangeErrorPrefixes = [
+    // Error message for a regular template
+    'The submitted information didn\'t contain changes.',
+    // Error message when a Transform is involved (see #10650)
+    'No updates are to be performed.',
+  ];
+
   return description.Status === 'FAILED'
-      && description.StatusReason
-      && description.StatusReason.startsWith('The submitted information didn\'t contain changes.');
+    && noChangeErrorPrefixes.some(p => (description.StatusReason ?? '').startsWith(p));
 }
 
 /**
@@ -325,6 +331,9 @@ export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
   });
 }
 
+/**
+ * The set of (formal) parameters that have been declared in a template
+ */
 export class TemplateParameters {
   public static fromTemplate(template: Template) {
     return new TemplateParameters(template.Parameters || {});
@@ -339,8 +348,8 @@ export class TemplateParameters {
    * Will throw if parameters without a Default value or a Previous value are not
    * supplied.
    */
-  public toStackParameters(updates: Record<string, string | undefined>): StackParameters {
-    return new StackParameters(this.params, updates);
+  public supplyAll(updates: Record<string, string | undefined>): ParameterValues {
+    return new ParameterValues(this.params, updates);
   }
 
   /**
@@ -351,44 +360,50 @@ export class TemplateParameters {
    * throw if parameters without a Default value or a Previous value are not
    * supplied.
    */
-  public diff(updates: Record<string, string | undefined>, previousValues: Record<string, string>): StackParameters {
-    return new StackParameters(this.params, updates, previousValues);
+  public updateExisting(updates: Record<string, string | undefined>, previousValues: Record<string, string>): ParameterValues {
+    return new ParameterValues(this.params, updates, previousValues);
   }
 }
 
-export class StackParameters {
-  /**
-   * The CloudFormation parameters to pass to the CreateStack or UpdateStack API
-   */
+/**
+ * The set of parameters we're going to pass to a Stack
+ */
+export class ParameterValues {
+  public readonly values: Record<string, string> = {};
   public readonly apiParameters: CloudFormation.Parameter[] = [];
 
-  private _changes = false;
-
   constructor(
-    private readonly params: Record<string, TemplateParameter>,
+    private readonly formalParams: Record<string, TemplateParameter>,
     updates: Record<string, string | undefined>,
     previousValues: Record<string, string> = {}) {
 
     const missingRequired = new Array<string>();
 
-    for (const [key, param] of Object.entries(this.params)) {
-      // If any of the parameters are SSM parameters, they will always lead to a change
-      if (param.Type.startsWith('AWS::SSM::Parameter::')) {
-        this._changes = true;
-      }
-
-      if (key in updates && updates[key]) {
+    for (const [key, formalParam] of Object.entries(this.formalParams)) {
+      // Check updates first, then use the previous value (if available), then use
+      // the default (if available).
+      //
+      // If we don't find a parameter value using any of these methods, then that's an error.
+      const updatedValue = updates[key];
+      if (updatedValue !== undefined) {
+        this.values[key] = updatedValue;
         this.apiParameters.push({ ParameterKey: key, ParameterValue: updates[key] });
-
-        // If the updated value is different than the current value, this will lead to a change
-        if (!(key in previousValues) || updates[key] !== previousValues[key]) {
-          this._changes = true;
-        }
-      } else if (key in previousValues) {
-        this.apiParameters.push({ ParameterKey: key, UsePreviousValue: true });
-      } else if (param.Default === undefined) {
-        missingRequired.push(key);
+        continue;
       }
+
+      if (key in previousValues) {
+        this.values[key] = previousValues[key];
+        this.apiParameters.push({ ParameterKey: key, UsePreviousValue: true });
+        continue;
+      }
+
+      if (formalParam.Default !== undefined) {
+        this.values[key] = formalParam.Default;
+        continue;
+      }
+
+      // Oh no
+      missingRequired.push(key);
     }
 
     if (missingRequired.length > 0) {
@@ -398,9 +413,10 @@ export class StackParameters {
     // Just append all supplied overrides that aren't really expected (this
     // will fail CFN but maybe people made typos that they want to be notified
     // of)
-    const unknownParam = ([key, _]: [string, any]) => this.params[key] === undefined;
+    const unknownParam = ([key, _]: [string, any]) => this.formalParams[key] === undefined;
     const hasValue = ([_, value]: [string, any]) => !!value;
     for (const [key, value] of Object.entries(updates).filter(unknownParam).filter(hasValue)) {
+      this.values[key] = value!;
       this.apiParameters.push({ ParameterKey: key, ParameterValue: value });
     }
   }
@@ -408,7 +424,24 @@ export class StackParameters {
   /**
    * Whether this set of parameter updates will change the actual stack values
    */
-  public get changed() {
-    return this._changes;
+  public hasChanges(currentValues: Record<string, string>): boolean {
+    // If any of the parameters are SSM parameters, deploying must always happen
+    // because we can't predict what the values will be.
+    if (Object.values(this.formalParams).some(p => p.Type.startsWith('AWS::SSM::Parameter::'))) {
+      return true;
+    }
+
+    // Otherwise we're dirty if:
+    // - any of the existing values are removed, or changed
+    if (Object.entries(currentValues).some(([key, value]) => !(key in this.values) || value !== this.values[key])) {
+      return true;
+    }
+
+    // - any of the values we're setting are new
+    if (Object.keys(this.values).some(key => !(key in currentValues))) {
+      return true;
+    }
+
+    return false;
   }
 }

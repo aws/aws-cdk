@@ -2,6 +2,10 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
 import { GlobalTableCoordinator } from './global-table-coordinator';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Properties for the multiple DynamoDB tables to mash together into a
  * global table
@@ -26,7 +30,7 @@ export interface GlobalTableProps extends cdk.StackProps, dynamodb.TableOptions 
  *
  * @deprecated use `@aws-cdk/aws-dynamodb.Table.replicationRegions` instead
  */
-export class GlobalTable extends cdk.Construct {
+export class GlobalTable extends Construct {
   /**
    * Creates the cloudformation custom resource that launches a lambda to tie it all together
    */
@@ -37,7 +41,7 @@ export class GlobalTable extends cdk.Construct {
    */
   private readonly _regionalTables = new Array<dynamodb.Table>();
 
-  constructor(scope: cdk.Construct, id: string, props: GlobalTableProps) {
+  constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id);
 
     cdk.Annotations.of(this).addWarning('The @aws-cdk/aws-dynamodb-global module has been deprecated in favor of @aws-cdk/aws-dynamodb.Table.replicationRegions');

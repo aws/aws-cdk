@@ -88,7 +88,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2S3BucketD831F708"
+            "Ref": "AssetParameters192597c3e09c72bcb5fca6899fca0b42745cb003a702e275a7f96123a9baf590S3BucketF43FE553"
           },
           "S3Key": {
             "Fn::Join": [
@@ -101,7 +101,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2S3VersionKeyEAC17D61"
+                          "Ref": "AssetParameters192597c3e09c72bcb5fca6899fca0b42745cb003a702e275a7f96123a9baf590S3VersionKey1CA1DD38"
                         }
                       ]
                     }
@@ -114,7 +114,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2S3VersionKeyEAC17D61"
+                          "Ref": "AssetParameters192597c3e09c72bcb5fca6899fca0b42745cb003a702e275a7f96123a9baf590S3VersionKey1CA1DD38"
                         }
                       ]
                     }
@@ -124,13 +124,13 @@
             ]
           }
         },
-        "Handler": "index.onEvent",
         "Role": {
           "Fn::GetAtt": [
             "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRole999CEEB6",
             "Arn"
           ]
         },
+        "Handler": "index.onEvent",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -200,7 +200,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3Bucket0EEA1C2E"
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
           },
           "S3Key": {
             "Fn::Join": [
@@ -213,7 +213,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
                         }
                       ]
                     }
@@ -226,7 +226,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
                         }
                       ]
                     }
@@ -236,14 +236,12 @@
             ]
           }
         },
-        "Handler": "framework.onEvent",
         "Role": {
           "Fn::GetAtt": [
             "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
         "Description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider)",
         "Environment": {
           "Variables": {
@@ -255,6 +253,8 @@
             }
           }
         },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs14.x",
         "Timeout": 900
       },
       "DependsOn": [
@@ -377,13 +377,13 @@
             ]
           }
         },
-        "Handler": "index.on_event",
         "Role": {
           "Fn::GetAtt": [
             "comamazonawscdkcustomresourcess3assertproviders3assertoneventServiceRole012C0033",
             "Arn"
           ]
         },
+        "Handler": "index.on_event",
         "Runtime": "python3.7"
       },
       "DependsOn": [
@@ -487,13 +487,13 @@
             ]
           }
         },
-        "Handler": "index.is_complete",
         "Role": {
           "Fn::GetAtt": [
             "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleACAA755A",
             "Arn"
           ]
         },
+        "Handler": "index.is_complete",
         "Runtime": "python3.7"
       },
       "DependsOn": [
@@ -580,7 +580,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3Bucket0EEA1C2E"
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
           },
           "S3Key": {
             "Fn::Join": [
@@ -593,7 +593,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
                         }
                       ]
                     }
@@ -606,7 +606,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
                         }
                       ]
                     }
@@ -616,14 +616,12 @@
             ]
           }
         },
-        "Handler": "framework.onEvent",
         "Role": {
           "Fn::GetAtt": [
             "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
         "Description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
         "Environment": {
           "Variables": {
@@ -644,6 +642,8 @@
             }
           }
         },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs14.x",
         "Timeout": 900
       },
       "DependsOn": [
@@ -723,7 +723,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3Bucket0EEA1C2E"
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
           },
           "S3Key": {
             "Fn::Join": [
@@ -736,7 +736,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
                         }
                       ]
                     }
@@ -749,7 +749,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
                         }
                       ]
                     }
@@ -759,14 +759,12 @@
             ]
           }
         },
-        "Handler": "framework.isComplete",
         "Role": {
           "Fn::GetAtt": [
             "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
         "Description": "AWS CDK resource provider framework - isComplete (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
         "Environment": {
           "Variables": {
@@ -784,6 +782,8 @@
             }
           }
         },
+        "Handler": "framework.isComplete",
+        "Runtime": "nodejs14.x",
         "Timeout": 900
       },
       "DependsOn": [
@@ -863,7 +863,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3Bucket0EEA1C2E"
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
           },
           "S3Key": {
             "Fn::Join": [
@@ -876,7 +876,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
                         }
                       ]
                     }
@@ -889,7 +889,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
                         }
                       ]
                     }
@@ -899,14 +899,12 @@
             ]
           }
         },
-        "Handler": "framework.onTimeout",
         "Role": {
           "Fn::GetAtt": [
             "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
         "Description": "AWS CDK resource provider framework - onTimeout (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
         "Environment": {
           "Variables": {
@@ -924,6 +922,8 @@
             }
           }
         },
+        "Handler": "framework.onTimeout",
+        "Runtime": "nodejs14.x",
         "Timeout": 900
       },
       "DependsOn": [
@@ -1034,29 +1034,29 @@
     }
   },
   "Parameters": {
-    "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2S3BucketD831F708": {
+    "AssetParameters192597c3e09c72bcb5fca6899fca0b42745cb003a702e275a7f96123a9baf590S3BucketF43FE553": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"fd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2\""
+      "Description": "S3 bucket for asset \"192597c3e09c72bcb5fca6899fca0b42745cb003a702e275a7f96123a9baf590\""
     },
-    "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2S3VersionKeyEAC17D61": {
+    "AssetParameters192597c3e09c72bcb5fca6899fca0b42745cb003a702e275a7f96123a9baf590S3VersionKey1CA1DD38": {
       "Type": "String",
-      "Description": "S3 key for asset version \"fd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2\""
+      "Description": "S3 key for asset version \"192597c3e09c72bcb5fca6899fca0b42745cb003a702e275a7f96123a9baf590\""
     },
-    "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2ArtifactHashDD841113": {
+    "AssetParameters192597c3e09c72bcb5fca6899fca0b42745cb003a702e275a7f96123a9baf590ArtifactHashBBCB8F76": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"fd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2\""
+      "Description": "Artifact hash for asset \"192597c3e09c72bcb5fca6899fca0b42745cb003a702e275a7f96123a9baf590\""
     },
-    "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3Bucket0EEA1C2E": {
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3\""
+      "Description": "S3 bucket for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
     },
-    "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9": {
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F": {
       "Type": "String",
-      "Description": "S3 key for asset version \"956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3\""
+      "Description": "S3 key for asset version \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
     },
-    "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3ArtifactHash2CBB11D2": {
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1ArtifactHashA521A16F": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3\""
+      "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
     },
     "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF": {
       "Type": "String",

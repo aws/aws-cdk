@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnReportGroup } from './codebuild.generated';
 import { renderReportGroupArn, reportGroupArnComponents } from './report-group-utils';
 
@@ -104,7 +105,7 @@ export class ReportGroup extends ReportGroupBase {
    * defined outside of the CDK code,
    * by name.
    */
-  public static fromReportGroupName(scope: cdk.Construct, id: string, reportGroupName: string): IReportGroup {
+  public static fromReportGroupName(scope: Construct, id: string, reportGroupName: string): IReportGroup {
     class Import extends ReportGroupBase {
       public readonly reportGroupName = reportGroupName;
       public readonly reportGroupArn = renderReportGroupArn(scope, reportGroupName);
@@ -118,7 +119,7 @@ export class ReportGroup extends ReportGroupBase {
   public readonly reportGroupName: string;
   protected readonly exportBucket?: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, props: ReportGroupProps = {}) {
+  constructor(scope: Construct, id: string, props: ReportGroupProps = {}) {
     super(scope, id, {
       physicalName: props.reportGroupName,
     });
@@ -136,6 +137,7 @@ export class ReportGroup extends ReportGroupBase {
           }
           : undefined,
       },
+      name: props.reportGroupName,
     });
     resource.applyRemovalPolicy(props.removalPolicy, {
       default: cdk.RemovalPolicy.RETAIN,

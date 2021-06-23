@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -30,7 +30,7 @@ beforeEach(() => {
       actions: [
         'sts:AssumeRole',
       ],
-    })
+    }),
   );
 });
 
@@ -131,7 +131,7 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
-    name: sfn.TaskInput.fromDataAt('$.ClusterName').value,
+    name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
     serviceRole,
     autoScalingRole,
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,

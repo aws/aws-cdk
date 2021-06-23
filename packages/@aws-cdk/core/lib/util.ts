@@ -1,4 +1,4 @@
-import { IConstruct } from './construct-compat';
+import { IConstruct } from 'constructs';
 import { Intrinsic } from './private/intrinsic';
 import { IPostProcessor, IResolveContext } from './resolvable';
 import { Stack } from './stack';
@@ -80,7 +80,7 @@ export function filterUndefined(obj: any): any {
  */
 export class PostResolveToken extends Intrinsic implements IPostProcessor {
   constructor(value: any, private readonly processor: (x: any) => any) {
-    super(value);
+    super(value, { stackTrace: false });
   }
 
   public resolve(context: IResolveContext) {
@@ -119,4 +119,8 @@ export function findLastCommonElement<T>(path1: T[], path2: T[]): T | undefined 
   }
 
   return path1[i - 1];
+}
+
+export function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
+  return Object.values(object).some(v => v !== undefined) ? object : undefined;
 }

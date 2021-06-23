@@ -6,7 +6,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ICluster } from '../cluster';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 // Reference for the source in this package:
 //
@@ -48,12 +53,12 @@ export interface InstanceDrainHookProps {
 /**
  * A hook to drain instances from ECS traffic before they're terminated
  */
-export class InstanceDrainHook extends cdk.Construct {
+export class InstanceDrainHook extends CoreConstruct {
 
   /**
    * Constructs a new instance of the InstanceDrainHook class.
    */
-  constructor(scope: cdk.Construct, id: string, props: InstanceDrainHookProps) {
+  constructor(scope: Construct, id: string, props: InstanceDrainHookProps) {
     super(scope, id);
 
     const drainTime = props.drainTime || cdk.Duration.minutes(5);

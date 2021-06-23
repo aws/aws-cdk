@@ -5,7 +5,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTrail } from './cloudtrail.generated';
 
 /**
@@ -97,7 +98,7 @@ export interface TrailProps {
   readonly snsTopic?: sns.ITopic;
 
   /**
-   * The name of the trail. We recoomend customers do not set an explicit name.
+   * The name of the trail. We recommend customers do not set an explicit name.
    *
    * @default - AWS CloudFormation generated name.
    */
@@ -245,7 +246,7 @@ export class Trail extends Resource {
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
-      logsRole.addToPolicy(new iam.PolicyStatement({
+      logsRole.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
         resources: [this.logGroup.logGroupArn],
       }));

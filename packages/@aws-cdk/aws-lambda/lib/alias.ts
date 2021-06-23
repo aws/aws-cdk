@@ -1,7 +1,7 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
@@ -97,7 +97,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       public readonly grantPrincipal = attrs.aliasVersion.grantPrincipal;
       public readonly role = attrs.aliasVersion.role;
 
-      protected readonly canCreatePermissions = false;
+      protected readonly canCreatePermissions = this._isStackAccount();
       protected readonly qualifier = attrs.aliasName;
     }
     return new Imported(scope, id);
@@ -196,7 +196,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   }
 
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
-    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differes from the base behavior.
+    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
       dimensions: {
         FunctionName: this.lambda.functionName,

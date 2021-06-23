@@ -3,6 +3,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerOverride } from '..';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -235,14 +236,15 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   private networkConfiguration?: any;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: EcsRunTaskProps) {
+  constructor(scope: Construct, id: string, private readonly props: EcsRunTaskProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, EcsRunTask.SUPPORTED_INTEGRATION_PATTERNS);
 
-    if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN && !sfn.FieldUtils.containsTaskToken(props.containerOverrides)) {
-      throw new Error('Task Token is required in `containerOverrides` for callback. Use Context.taskToken to set the token.');
+    if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
+      && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
+      throw new Error('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
     }
 
     if (!this.props.taskDefinition.defaultContainer) {
@@ -278,7 +280,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         Cluster: this.props.cluster.clusterArn,
-        TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
+        TaskDefinition: this.props.taskDefinition.family,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
@@ -293,7 +295,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       AwsvpcConfiguration: {
         AssignPublicIp: this.props.assignPublicIp ? (this.props.assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
-        SecurityGroups: cdk.Lazy.listValue({ produce: () => this.securityGroups?.map(sg => sg.securityGroupId) }),
+        SecurityGroups: cdk.Lazy.list({ produce: () => this.securityGroups?.map(sg => sg.securityGroupId) }),
       },
     };
 
@@ -317,7 +319,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['ecs:RunTask'],
-        resources: [this.props.taskDefinition.taskDefinitionArn],
+        resources: [this.getTaskDefinitionFamilyArn()],
       }),
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -345,6 +347,23 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     }
 
     return policyStatements;
+  }
+
+  /**
+   * Returns the ARN of the task definition family by removing the
+   * revision from the task definition ARN
+   * Before - arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world:8
+   * After - arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world
+   */
+  private getTaskDefinitionFamilyArn(): string {
+    const arnComponents = cdk.Stack.of(this).parseArn(this.props.taskDefinition.taskDefinitionArn);
+    let { resourceName } = arnComponents;
+
+    if (resourceName) {
+      resourceName = resourceName.split(':')[0];
+    }
+
+    return cdk.Stack.of(this).formatArn({ ...arnComponents, resourceName });
   }
 
   private taskExecutionRoles(): iam.IRole[] {

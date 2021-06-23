@@ -1,0 +1,21 @@
+{
+  "ResourceTypes": {
+    "AWS::SageMaker::DeviceFleet": {
+      "patch": {
+        "description": "Correct the Tags definition for the AWS::SageMaker::DeviceFleet resource type",
+        "operations": [
+          {
+            "op": "replace",
+            "path": "/Properties/Tags/Type",
+            "value": "List"
+          },
+          {
+            "op": "replace",
+            "path": "/Properties/Tags/ItemType",
+            "value": "Tag"
+          }
+        ]
+      }
+    }
+  }
+}

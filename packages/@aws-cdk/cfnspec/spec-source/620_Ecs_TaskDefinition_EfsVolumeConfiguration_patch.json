@@ -1,0 +1,29 @@
+{
+  "PropertyTypes": {
+    "patch": {
+      "description": "Reverting EfsVolumeConfiguration casing",
+      "operations": [
+        {
+          "path": "/AWS::ECS::TaskDefinition.Volume/Properties/EFSVolumeConfiguration/Type",
+          "op": "replace",
+          "value": "EfsVolumeConfiguration"
+        },
+        {
+          "from": "/AWS::ECS::TaskDefinition.EFSVolumeConfiguration/Properties/FilesystemId",
+          "path": "/AWS::ECS::TaskDefinition.EFSVolumeConfiguration/Properties/FileSystemId",
+          "op": "move"
+        },
+        {
+          "from": "/AWS::ECS::TaskDefinition.Volume/Properties/EFSVolumeConfiguration",
+          "path": "/AWS::ECS::TaskDefinition.Volume/Properties/EfsVolumeConfiguration",
+          "op": "move"
+        },
+        {
+          "from": "/AWS::ECS::TaskDefinition.EFSVolumeConfiguration",
+          "path": "/AWS::ECS::TaskDefinition.EfsVolumeConfiguration",
+          "op": "move"
+        }
+      ]
+    }
+  }
+}

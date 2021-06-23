@@ -81,8 +81,14 @@ interface FieldHandlers {
   handleBoolean(key: string, x: boolean): {[key: string]: boolean};
 }
 
-export function recurseObject(obj: object | undefined, handlers: FieldHandlers): object | undefined {
+export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
   if (obj === undefined) { return undefined; }
+
+  // Avoiding infinite recursion
+  if (visited.includes(obj)) { return {}; }
+
+  // Marking current object as visited for the current recursion path
+  visited.push(obj);
 
   const ret: any = {};
   for (const [key, value] of Object.entries(obj)) {
@@ -91,15 +97,19 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers):
     } else if (typeof value === 'number') {
       Object.assign(ret, handlers.handleNumber(key, value));
     } else if (Array.isArray(value)) {
-      Object.assign(ret, recurseArray(key, value, handlers));
+      Object.assign(ret, recurseArray(key, value, handlers, visited));
     } else if (typeof value === 'boolean') {
       Object.assign(ret, handlers.handleBoolean(key, value));
     } else if (value === null || value === undefined) {
       // Nothing
     } else if (typeof value === 'object') {
-      ret[key] = recurseObject(value, handlers);
+      ret[key] = recurseObject(value, handlers, visited);
     }
   }
+
+  // Removing from visited after leaving the current recursion path
+  // Allowing it to be visited again if it's not causing a recursion (circular reference)
+  visited.pop();
 
   return ret;
 }
@@ -107,7 +117,7 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers):
 /**
  * Render an array that may or may not contain a string list token
  */
-function recurseArray(key: string, arr: any[], handlers: FieldHandlers): {[key: string]: any[] | string} {
+function recurseArray(key: string, arr: any[], handlers: FieldHandlers, visited: object[] = []): {[key: string]: any[] | string} {
   if (isStringArray(arr)) {
     const path = jsonPathStringList(arr);
     if (path !== undefined) {
@@ -126,7 +136,7 @@ function recurseArray(key: string, arr: any[], handlers: FieldHandlers): {[key: 
         throw new Error('Cannot use JsonPath fields in an array, they must be used in objects');
       }
       if (typeof value === 'object' && value !== null) {
-        return recurseObject(value, handlers);
+        return recurseObject(value, handlers, visited);
       }
       return value;
     }),

@@ -1,13 +1,13 @@
 /*
  * We write unit tests using the Jest framework
  * (some modules might still use NodeUnit,
- * but it's considered legacy, and we want to migrate to Jest).
+ * but it's considered Names, and we want to migrate to Jest).
  */
 
 // import the various CDK assertion helpers
-import { ABSENT, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 // always import our Jest-specific helpers
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';

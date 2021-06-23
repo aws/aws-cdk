@@ -50,4 +50,11 @@ const python37 = new Function(stack, 'PYTHON_3_7', {
 });
 new CfnOutput(stack, 'PYTHON_3_7-functionName', { value: python37.functionName });
 
+const python38 = new Function(stack, 'PYTHON_3_8', {
+  code: new InlineCode('def handler(event, context):\n  return "success"'),
+  handler: 'index.handler',
+  runtime: Runtime.PYTHON_3_8,
+});
+new CfnOutput(stack, 'PYTHON_3_8-functionName', { value: python38.functionName });
+
 app.synth();

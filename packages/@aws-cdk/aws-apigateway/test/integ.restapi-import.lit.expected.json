@@ -130,7 +130,9 @@
             "Ref": "RestApi0C43BF4B"
           }
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "integrestapiimportBooksStackNestedStackintegrestapiimportBooksStackNestedStackResource395C2C9B": {
       "Type": "AWS::CloudFormation::Stack",
@@ -192,7 +194,9 @@
             "Ref": "RestApi0C43BF4B"
           }
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "integrestapiimportDeployStackNestedStackintegrestapiimportDeployStackNestedStackResource0D0EE737": {
       "Type": "AWS::CloudFormation::Stack",
@@ -252,7 +256,9 @@
       "DependsOn": [
         "integrestapiimportBooksStackNestedStackintegrestapiimportBooksStackNestedStackResource395C2C9B",
         "integrestapiimportPetsStackNestedStackintegrestapiimportPetsStackNestedStackResource2B31898B"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   },
   "Outputs": {

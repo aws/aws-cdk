@@ -3,6 +3,19 @@ import { captureStackTrace } from '../stack-trace';
 import { Token } from '../token';
 
 /**
+ * Customization properties for an Intrinsic token
+ *
+ */
+export interface IntrinsicProps {
+  /**
+   * Capture the stack trace of where this token is created
+   *
+   * @default true
+   */
+  readonly stackTrace?: boolean;
+}
+
+/**
  * Token subclass that represents values intrinsic to the target document language
  *
  * WARNING: this class should not be externally exposed, but is currently visible
@@ -10,7 +23,6 @@ import { Token } from '../token';
  *
  * This class will disappear in a future release and should not be used.
  *
- * @experimental
  */
 export class Intrinsic implements IResolvable {
   /**
@@ -20,12 +32,12 @@ export class Intrinsic implements IResolvable {
 
   private readonly value: any;
 
-  constructor(value: any) {
+  constructor(value: any, options: IntrinsicProps = {}) {
     if (isFunction(value)) {
       throw new Error(`Argument to Intrinsic must be a plain value object, got ${value}`);
     }
 
-    this.creationStack = captureStackTrace();
+    this.creationStack = options.stackTrace ?? true ? captureStackTrace() : [];
     this.value = value;
   }
 

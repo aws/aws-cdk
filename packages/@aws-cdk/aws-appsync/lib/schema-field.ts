@@ -1,3 +1,4 @@
+import { IAppsyncFunction } from './appsync-function';
 import { BaseDataSource } from './data-source';
 import { AuthorizationType } from './graphqlapi';
 import { MappingTemplate } from './mapping-template';
@@ -10,7 +11,6 @@ import { Type, IField, IIntermediateType, Directive } from './schema-base';
  * @option isRequired - is this attribute non-nullable
  * @option isRequiredList - is this attribute a non-nullable list
  *
- * @experimental
  */
 export interface BaseTypeOptions {
   /**
@@ -47,7 +47,6 @@ export interface BaseTypeOptions {
  * @option isRequiredList - is this attribute a non-nullable list
  * @option objectType - the object type linked to this attribute
  *
- * @experimental
  */
 export interface GraphqlTypeOptions extends BaseTypeOptions {
   /**
@@ -423,7 +422,7 @@ export interface ResolvableFieldOptions extends FieldOptions {
    * @default - no pipeline resolver configuration
    * An empty array or undefined prop will set resolver to be of type unit
    */
-  readonly pipelineConfig?: string[];
+  readonly pipelineConfig?: IAppsyncFunction[];
   /**
    * The request mapping template for this resolver
    *

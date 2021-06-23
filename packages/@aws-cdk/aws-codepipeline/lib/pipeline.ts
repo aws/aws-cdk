@@ -1,17 +1,24 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
-  App, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
-  IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token, TokenComparison,
+  App, BootstraplessSynthesizer, DefaultStackSynthesizer,
+  IStackSynthesizer, Lazy, Names, PhysicalName, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
-import { ActionCategory, IAction, IPipeline, IStage } from './action';
+import { Construct } from 'constructs';
+import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
 import { CfnPipeline } from './codepipeline.generated';
-import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './cross-region-support-stack';
-import { FullActionDescriptor } from './full-action-descriptor';
-import { Stage } from './stage';
-import { validateName, validateNamespaceName, validateSourceAction } from './validation';
+import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
+import { FullActionDescriptor } from './private/full-action-descriptor';
+import { RichAction } from './private/rich-action';
+import { Stage } from './private/stage';
+import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -91,7 +98,6 @@ export interface PipelineProps {
    * the construct will automatically create a Stack containing an S3 Bucket in that region.
    *
    * @default - None.
-   * @experimental
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
 
@@ -103,6 +109,23 @@ export interface PipelineProps {
    * @default - None.
    */
   readonly stages?: StageProps[];
+
+  /**
+   * Create KMS keys for cross-account deployments
+   *
+   * This controls whether the pipeline is enabled for cross-account deployments.
+   *
+   * By default cross-account deployments are enabled, but this feature requires
+   * that KMS Customer Master Keys are created which have a cost of $1/month.
+   *
+   * If you do not need cross-account deployments, you can set this to `false` to
+   * not create those keys and save on that cost (the artifact bucket will be
+   * encrypted with an AWS-managed key). However, cross-account deployments will
+   * no longer be possible.
+   *
+   * @default true
+   */
+  readonly crossAccountKeys?: boolean;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -140,6 +163,89 @@ abstract class PipelineBase extends Resource implements IPipeline {
     return rule;
   }
 
+  public bindAsNotificationRuleSource(_scope: Construct): notifications.NotificationRuleSourceConfig {
+    return {
+      sourceArn: this.pipelineArn,
+    };
+  }
+
+  public notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: PipelineNotifyOnOptions,
+  ): notifications.INotificationRule {
+    return new notifications.NotificationRule(this, id, {
+      ...options,
+      source: this,
+      targets: [target],
+    });
+  }
+
+  public notifyOnExecutionStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [
+        PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_CANCELED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_STARTED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_RESUMED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_SUCCEEDED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_SUPERSEDED,
+      ],
+    });
+  }
+
+  public notifyOnAnyStageStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [
+        PipelineNotificationEvents.STAGE_EXECUTION_CANCELED,
+        PipelineNotificationEvents.STAGE_EXECUTION_FAILED,
+        PipelineNotificationEvents.STAGE_EXECUTION_RESUMED,
+        PipelineNotificationEvents.STAGE_EXECUTION_STARTED,
+        PipelineNotificationEvents.STAGE_EXECUTION_SUCCEEDED,
+      ],
+    });
+  }
+
+  public notifyOnAnyActionStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [
+        PipelineNotificationEvents.ACTION_EXECUTION_CANCELED,
+        PipelineNotificationEvents.ACTION_EXECUTION_FAILED,
+        PipelineNotificationEvents.ACTION_EXECUTION_STARTED,
+        PipelineNotificationEvents.ACTION_EXECUTION_SUCCEEDED,
+      ],
+    });
+  }
+
+  public notifyOnAnyManualApprovalStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [
+        PipelineNotificationEvents.MANUAL_APPROVAL_FAILED,
+        PipelineNotificationEvents.MANUAL_APPROVAL_NEEDED,
+        PipelineNotificationEvents.MANUAL_APPROVAL_SUCCEEDED,
+      ],
+    });
+  }
 }
 
 /**
@@ -150,7 +256,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
  * const pipeline = new Pipeline(this, 'Pipeline');
  *
  * // add a stage
- * const sourceStage = pipeline.addStage({ name: 'Source' });
+ * const sourceStage = pipeline.addStage({ stageName: 'Source' });
  *
  * // add a source action to the stage
  * sourceStage.addAction(new codepipeline_actions.CodeCommitSourceAction({
@@ -210,6 +316,7 @@ export class Pipeline extends PipelineBase {
   private readonly crossRegionBucketsPassed: boolean;
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
+  private readonly crossAccountKeys: boolean;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -223,26 +330,36 @@ export class Pipeline extends PipelineBase {
       throw new Error('Only one of artifactBucket and crossRegionReplicationBuckets can be specified!');
     }
 
+
+    // @deprecated(v2): switch to default false
+    this.crossAccountKeys = props.crossAccountKeys ?? true;
+
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
+
     if (!propsBucket) {
-      const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey', {
-        // remove the key - there is a grace period of a few days before it's gone for good,
-        // that should be enough for any emergency access to the bucket artifacts
-        removalPolicy: RemovalPolicy.DESTROY,
-      });
+      let encryptionKey;
+
+      if (this.crossAccountKeys) {
+        encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey', {
+          // remove the key - there is a grace period of a few days before it's gone for good,
+          // that should be enough for any emergency access to the bucket artifacts
+          removalPolicy: RemovalPolicy.DESTROY,
+        });
+        // add an alias to make finding the key in the console easier
+        new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
+          aliasName: this.generateNameForDefaultBucketKeyAlias(),
+          targetKey: encryptionKey,
+          removalPolicy: RemovalPolicy.DESTROY, // destroy the alias along with the key
+        });
+      }
+
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
-        encryption: s3.BucketEncryption.KMS,
+        encryption: encryptionKey ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
         blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
         removalPolicy: RemovalPolicy.RETAIN,
-      });
-      // add an alias to make finding the key in the console easier
-      new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
-        aliasName: this.generateNameForDefaultBucketKeyAlias(),
-        targetKey: encryptionKey,
-        removalPolicy: RemovalPolicy.DESTROY, // destroy the alias along with the key
       });
     }
     this.artifactBucket = propsBucket;
@@ -253,9 +370,9 @@ export class Pipeline extends PipelineBase {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: Lazy.anyValue({ produce: () => this.renderArtifactStoreProperty() }),
-      artifactStores: Lazy.anyValue({ produce: () => this.renderArtifactStoresProperty() }),
-      stages: Lazy.anyValue({ produce: () => this.renderStages() }),
+      artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
+      artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
+      stages: Lazy.any({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: this.physicalName,
@@ -314,7 +431,7 @@ export class Pipeline extends PipelineBase {
    * Adds a statement to the pipeline role.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -352,7 +469,6 @@ export class Pipeline extends PipelineBase {
    * Returns all of the {@link CrossRegionSupportStack}s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
    *
-   * @experimental
    */
   public get crossRegionSupport(): { [region: string]: CrossRegionSupport } {
     const ret: { [region: string]: CrossRegionSupport } = {};
@@ -363,23 +479,29 @@ export class Pipeline extends PipelineBase {
   }
 
   /** @internal */
-  public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: Construct): FullActionDescriptor {
-    // handle cross-region actions here
-    const crossRegionInfo = this.ensureReplicationResourcesExistFor(action);
+  public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: CoreConstruct): FullActionDescriptor {
+    const richAction = new RichAction(action, this);
 
-    // get the role for the given action
-    const actionRole = this.getRoleForAction(stage, action, actionScope);
+    // handle cross-region actions here
+    const crossRegionInfo = this.ensureReplicationResourcesExistFor(richAction);
+
+    // get the role for the given action, handling if it's cross-account
+    const actionRole = this.getRoleForAction(stage, richAction, actionScope);
 
     // // CodePipeline Variables
-    validateNamespaceName(action.actionProperties.variablesNamespace);
+    validateNamespaceName(richAction.actionProperties.variablesNamespace);
 
     // bind the Action
-    const actionConfig = action.bind(actionScope, stage, {
+    const actionConfig = richAction.bind(actionScope, stage, {
       role: actionRole ? actionRole : this.role,
       bucket: crossRegionInfo.artifactBucket,
     });
 
     return new FullActionDescriptor({
+      // must be 'action', not 'richAction',
+      // as those are returned by the IStage.actions property,
+      // and it's important customers of Pipeline get the same instance
+      // back as they added to the pipeline
       action,
       actionConfig,
       actionRole,
@@ -404,53 +526,16 @@ export class Pipeline extends PipelineBase {
     ];
   }
 
-  private ensureReplicationResourcesExistFor(action: IAction): CrossRegionInfo {
-    const pipelineStack = Stack.of(this);
-
-    let actionRegion: string | undefined;
-    let otherStack: Stack | undefined;
-
-    const actionResource = action.actionProperties.resource;
-    if (actionResource) {
-      const pipelineAndActionRegionComparison = Token.compareStrings(this.env.region, actionResource.env.region);
-      const pipelineAndActionInDifferentRegions = pipelineAndActionRegionComparison === TokenComparison.ONE_UNRESOLVED ||
-        pipelineAndActionRegionComparison === TokenComparison.DIFFERENT;
-      if (pipelineAndActionInDifferentRegions) {
-        actionRegion = actionResource.env.region;
-
-        // if the resource is from a different stack in another region but the same account,
-        // use that stack as home for the cross-region support resources
-        const actionResourceStack = Stack.of(actionResource);
-        const actionResourceAndItsStackRegionComparison = Token.compareStrings(actionResource.env.region, actionResourceStack.region);
-        const actionResourceInSameRegionAsItsStack = actionResourceAndItsStackRegionComparison === TokenComparison.SAME ||
-          actionResourceAndItsStackRegionComparison === TokenComparison.BOTH_UNRESOLVED;
-        const pipelineAndActionResourceStackAccountComparison = Token.compareStrings(this.env.account, actionResourceStack.account);
-        const pipelineAndActionResourceStackInSameAccount = pipelineAndActionResourceStackAccountComparison === TokenComparison.SAME ||
-          pipelineAndActionResourceStackAccountComparison === TokenComparison.BOTH_UNRESOLVED;
-        if (pipelineAndActionResourceStackInSameAccount && actionResourceInSameRegionAsItsStack) {
-          otherStack = actionResourceStack;
-        }
-      }
-    } else {
-      actionRegion = action.actionProperties.region;
-    }
-
-    // if actionRegion is undefined,
-    // it means the action is in the same region as the pipeline -
-    // so, just return the artifactBucket
-    if (!actionRegion) {
+  private ensureReplicationResourcesExistFor(action: RichAction): CrossRegionInfo {
+    if (!action.isCrossRegion) {
       return {
         artifactBucket: this.artifactBucket,
       };
     }
-    // get the region the Pipeline itself is in
-    const pipelineRegion = this.requireRegion();
-    // if the action is in the same region as the pipeline, nothing to do
-    if (actionRegion === pipelineRegion) {
-      return {
-        artifactBucket: this.artifactBucket,
-      };
-    }
+
+    // The action has a specific region,
+    // require the pipeline to have a known region as well.
+    this.requireRegion();
 
     // source actions have to be in the same region as the pipeline
     if (action.actionProperties.category === ActionCategory.SOURCE) {
@@ -459,21 +544,33 @@ export class Pipeline extends PipelineBase {
 
     // check whether we already have a bucket in that region,
     // either passed from the outside or previously created
-    let crossRegionSupport = this._crossRegionSupport[actionRegion];
-    if (!crossRegionSupport) {
-      // we need to create scaffolding resources for this region
-      crossRegionSupport = this.createSupportResourcesForRegion(otherStack, actionRegion);
-      this._crossRegionSupport[actionRegion] = crossRegionSupport;
-    }
+    const crossRegionSupport = this.obtainCrossRegionSupportFor(action);
 
     // the stack containing the replication bucket must be deployed before the pipeline
-    pipelineStack.addDependency(crossRegionSupport.stack);
+    Stack.of(this).addDependency(crossRegionSupport.stack);
+    // The Pipeline role must be able to replicate to that bucket
     crossRegionSupport.replicationBucket.grantReadWrite(this.role);
 
     return {
       artifactBucket: crossRegionSupport.replicationBucket,
-      region: actionRegion,
+      region: action.effectiveRegion,
     };
+  }
+
+  /**
+   * Get or create the cross-region support construct for the given action
+   */
+  private obtainCrossRegionSupportFor(action: RichAction) {
+    // this method is never called for non cross-region actions
+    const actionRegion = action.effectiveRegion!;
+    let crossRegionSupport = this._crossRegionSupport[actionRegion];
+    if (!crossRegionSupport) {
+      // we need to create scaffolding resources for this region
+      const otherStack = action.resourceStack;
+      crossRegionSupport = this.createSupportResourcesForRegion(otherStack, actionRegion);
+      this._crossRegionSupport[actionRegion] = crossRegionSupport;
+    }
+    return crossRegionSupport;
   }
 
   private createSupportResourcesForRegion(otherStack: Stack | undefined, actionRegion: string):
@@ -484,7 +581,9 @@ export class Pipeline extends PipelineBase {
       const id = `CrossRegionReplicationSupport-d823f1d8-a990-4e5c-be18-4ac698532e65-${actionRegion}`;
       let crossRegionSupportConstruct = otherStack.node.tryFindChild(id) as CrossRegionSupportConstruct;
       if (!crossRegionSupportConstruct) {
-        crossRegionSupportConstruct = new CrossRegionSupportConstruct(otherStack, id);
+        crossRegionSupportConstruct = new CrossRegionSupportConstruct(otherStack, id, {
+          createKmsKey: this.crossAccountKeys,
+        });
       }
 
       return {
@@ -509,6 +608,7 @@ export class Pipeline extends PipelineBase {
         region: actionRegion,
         account: pipelineAccount,
         synthesizer: this.getCrossRegionSupportSynthesizer(),
+        createKmsKey: this.crossAccountKeys,
       });
     }
 
@@ -538,7 +638,7 @@ export class Pipeline extends PipelineBase {
   private generateNameForDefaultBucketKeyAlias(): string {
     const prefix = 'alias/codepipeline-';
     const maxAliasLength = 256;
-    const uniqueId = this.node.uniqueId;
+    const uniqueId = Names.uniqueId(this);
     // take the last 256 - (prefix length) characters of uniqueId
     const startIndex = Math.max(0, uniqueId.length - (maxAliasLength - prefix.length));
     return prefix + uniqueId.substring(startIndex).toLowerCase();
@@ -552,7 +652,7 @@ export class Pipeline extends PipelineBase {
    * @param action the action to return/create a role for
    * @param actionScope the scope, unique to the action, to create new resources in
    */
-  private getRoleForAction(stage: Stage, action: IAction, actionScope: Construct): iam.IRole | undefined {
+  private getRoleForAction(stage: Stage, action: RichAction, actionScope: Construct): iam.IRole | undefined {
     const pipelineStack = Stack.of(this);
 
     let actionRole = this.getRoleFromActionPropsOrGenerateIfCrossAccount(stage, action);
@@ -566,7 +666,7 @@ export class Pipeline extends PipelineBase {
 
     // the pipeline role needs assumeRole permissions to the action role
     if (actionRole) {
-      this.role.addToPolicy(new iam.PolicyStatement({
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['sts:AssumeRole'],
         resources: [actionRole.roleArn],
       }));
@@ -575,8 +675,21 @@ export class Pipeline extends PipelineBase {
     return actionRole;
   }
 
-  private getRoleFromActionPropsOrGenerateIfCrossAccount(stage: Stage, action: IAction): iam.IRole | undefined {
+  private getRoleFromActionPropsOrGenerateIfCrossAccount(stage: Stage, action: RichAction): iam.IRole | undefined {
     const pipelineStack = Stack.of(this);
+
+    // if we have a cross-account action, the pipeline's bucket must have a KMS key
+    // (otherwise we can't configure cross-account trust policies)
+    if (action.isCrossAccount) {
+      const artifactBucket = this.ensureReplicationResourcesExistFor(action).artifactBucket;
+      if (!artifactBucket.encryptionKey) {
+        throw new Error(
+          `Artifact Bucket must have a KMS Key to add cross-account action '${action.actionProperties.actionName}' ` +
+          `(pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(action.effectiveAccount)}'). ` +
+          'Create Pipeline with \'crossAccountKeys: true\' (or pass an existing Bucket with a key)',
+        );
+      }
+    }
 
     // if a Role has been passed explicitly, always use it
     // (even if the backing resource is from a different account -
@@ -610,17 +723,9 @@ export class Pipeline extends PipelineBase {
       return undefined;
     }
 
-    // if we have a cross-account action, the pipeline's bucket must have a KMS key
-    if (!this.artifactBucket.encryptionKey) {
-      throw new Error('The Pipeline is being used in a cross-account manner, ' +
-        'but its artifact bucket does not have a KMS key defined. ' +
-        'A KMS key is required for a cross-account Pipeline. ' +
-        'Make sure to pass a Bucket with a Key when creating the Pipeline');
-    }
-
     // generate a role in the other stack, that the Pipeline will assume for executing this action
     const ret = new iam.Role(otherAccountStack,
-      `${this.node.uniqueId}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
+      `${Names.uniqueId(this)}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
         assumedBy: new iam.AccountPrincipal(pipelineStack.account),
         roleName: PhysicalName.GENERATE_IF_NEEDED,
       });
@@ -639,35 +744,51 @@ export class Pipeline extends PipelineBase {
    * @param action the Action to return the Stack for
    */
   private getOtherStackIfActionIsCrossAccount(action: IAction): Stack | undefined {
-    const pipelineStack = Stack.of(this);
+    const targetAccount = action.actionProperties.resource
+      ? action.actionProperties.resource.env.account
+      : action.actionProperties.account;
 
-    if (action.actionProperties.resource) {
-      const resourceStack = Stack.of(action.actionProperties.resource);
-      // check if resource is from a different account
-      if (pipelineStack.account === resourceStack.account) {
+    if (targetAccount === undefined) {
+      // if the account of the Action is not specified,
+      // then it defaults to the same account the pipeline itself is in
+      return undefined;
+    }
+
+    // check whether the action's account is a static string
+    if (Token.isUnresolved(targetAccount)) {
+      if (Token.isUnresolved(this.env.account)) {
+        // the pipeline is also env-agnostic, so that's fine
         return undefined;
       } else {
-        this._crossAccountSupport[resourceStack.account] = resourceStack;
-        return resourceStack;
+        throw new Error(`The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`);
       }
     }
 
-    if (!action.actionProperties.account) {
-      return undefined;
-    }
-
-    const targetAccount = action.actionProperties.account;
-    // check whether the account is a static string
-    if (Token.isUnresolved(targetAccount)) {
-      throw new Error(`The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`);
-    }
-    // check whether the pipeline account is a static string
-    if (Token.isUnresolved(pipelineStack.account)) {
+    // At this point, we know that the action's account is a static string.
+    // In this case, the pipeline's account must also be a static string.
+    if (Token.isUnresolved(this.env.account)) {
       throw new Error('Pipeline stack which uses cross-environment actions must have an explicitly set account');
     }
 
-    if (pipelineStack.account === targetAccount) {
+    // at this point, we know that both the Pipeline's account,
+    // and the action-backing resource's account are static strings
+
+    // if they are identical - nothing to do (the action is not cross-account)
+    if (this.env.account === targetAccount) {
       return undefined;
+    }
+
+    // at this point, we know that the action is certainly cross-account,
+    // so we need to return a Stack in its account to create the helper Role in
+
+    const candidateActionResourceStack = action.actionProperties.resource
+      ? Stack.of(action.actionProperties.resource)
+      : undefined;
+    if (candidateActionResourceStack?.account === targetAccount) {
+      // we always use the "latest" action-backing resource's Stack for this account,
+      // even if a different one was used earlier
+      this._crossAccountSupport[targetAccount] = candidateActionResourceStack;
+      return candidateActionResourceStack;
     }
 
     let targetAccountStack: Stack | undefined = this._crossAccountSupport[targetAccount];
@@ -676,11 +797,15 @@ export class Pipeline extends PipelineBase {
       const app = this.requireApp();
       targetAccountStack = app.node.tryFindChild(stackId) as Stack;
       if (!targetAccountStack) {
+        const actionRegion = action.actionProperties.resource
+          ? action.actionProperties.resource.env.region
+          : action.actionProperties.region;
+        const pipelineStack = Stack.of(this);
         targetAccountStack = new Stack(app, stackId, {
           stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
           env: {
             account: targetAccount,
-            region: action.actionProperties.region ? action.actionProperties.region : pipelineStack.region,
+            region: actionRegion ?? pipelineStack.region,
           },
         });
       }
@@ -893,7 +1018,6 @@ export class Pipeline extends PipelineBase {
  * the cross-region capabilities of CodePipeline.
  * You get instances of this interface from the {@link Pipeline#crossRegionSupport} property.
  *
- * @experimental
  */
 export interface CrossRegionSupport {
   /**
@@ -954,4 +1078,11 @@ class PipelineLocation {
     // runOrders are 1-based, so make the stageIndex also 1-based otherwise it's going to be confusing.
     return `Stage ${this.stageIndex + 1} Action ${this.action.runOrder} ('${this.stageName}'/'${this.actionName}')`;
   }
+}
+
+/**
+ * Render an env dimension without showing the ugly stringified tokens
+ */
+function renderEnvDimension(s: string | undefined) {
+  return Token.isUnresolved(s) ? '(current)' : s;
 }

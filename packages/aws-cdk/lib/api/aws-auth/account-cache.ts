@@ -43,7 +43,6 @@ export class AccountAccessKeyCache {
     // try to get account ID based on this access key ID from disk.
     const cached = await this.get(accessKeyId);
     if (cached) {
-
       debug(`Retrieved account ID ${cached.accountId} from disk cache`);
       return cached;
     }
@@ -83,6 +82,9 @@ export class AccountAccessKeyCache {
       // File doesn't exist or is not readable. This is a cache,
       // pretend we successfully loaded an empty map.
       if (e.code === 'ENOENT' || e.code === 'EACCES') { return {}; }
+      // File is not JSON, could be corrupted because of concurrent writes.
+      // Again, an empty cache is fine.
+      if (e instanceof SyntaxError) { return {}; }
       throw e;
     }
   }

@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { Construct } from 'constructs';
+import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -57,15 +58,6 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
-
-  /**
-   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
-   * Tags can only be propagated to the tasks within the service during service creation.
-   *
-   * @deprecated Use `propagateTags` instead.
-   * @default PropagatedTagSource.NONE
-   */
-  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 
 /**
@@ -109,7 +101,7 @@ export class FargateService extends BaseService implements IFargateService {
   /**
    * Imports from the specified service ARN.
    */
-  public static fromFargateServiceArn(scope: cdk.Construct, id: string, fargateServiceArn: string): IFargateService {
+  public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
       public readonly serviceName = cdk.Stack.of(scope).parseArn(fargateServiceArn).resourceName as string;
@@ -120,34 +112,32 @@ export class FargateService extends BaseService implements IFargateService {
   /**
    * Imports from the specified service attrributes.
    */
-  public static fromFargateServiceAttributes(scope: cdk.Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
+  public static fromFargateServiceAttributes(scope: Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
     return fromServiceAtrributes(scope, id, attrs);
   }
 
   /**
    * Constructs a new instance of the FargateService class.
    */
-  constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
+  constructor(scope: Construct, id: string, props: FargateServiceProps) {
     if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
-    }
-
-    if (props.propagateTags && props.propagateTaskTagsFrom) {
-      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
     }
 
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
-    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
-      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
-
+    if (props.taskDefinition.referencesSecretJsonField
+        && props.platformVersion
+        && SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS.includes(props.platformVersion)) {
+      throw new Error(`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`);
+    }
     super(scope, id, {
       ...props,
-      desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
+      desiredCount: props.desiredCount,
       launchType: LaunchType.FARGATE,
-      propagateTags: propagateTagsFromSource,
+      capacityProviderStrategies: props.capacityProviderStrategies,
       enableECSManagedTags: props.enableECSManagedTags,
     }, {
       cluster: props.cluster.clusterName,
@@ -164,9 +154,9 @@ export class FargateService extends BaseService implements IFargateService {
 
     this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
 
-    if (!props.taskDefinition.defaultContainer) {
-      throw new Error('A TaskDefinition must have at least one essential container');
-    }
+    this.node.addValidation({
+      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+    });
   }
 }
 
@@ -218,3 +208,10 @@ export enum FargatePlatformVersion {
    */
   VERSION1_0 = '1.0.0',
 }
+
+const SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS = [
+  FargatePlatformVersion.VERSION1_0,
+  FargatePlatformVersion.VERSION1_1,
+  FargatePlatformVersion.VERSION1_2,
+  FargatePlatformVersion.VERSION1_3,
+];

@@ -5,17 +5,16 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Duration, Size } from '@aws-cdk/core';
+import { Duration, Size } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Task to train a machine learning model using Amazon SageMaker
- * @experimental
  */
 export interface ISageMakerTask extends iam.IGrantable {}
 
 /**
  * Specify the training algorithm and algorithm-specific metadata
- * @experimental
  */
 export interface AlgorithmSpecification {
 
@@ -53,7 +52,6 @@ export interface AlgorithmSpecification {
 /**
  *  Describes the training, validation or test dataset and the Amazon S3 location where it is stored.
  *
- * @experimental
  */
 export interface Channel {
 
@@ -108,7 +106,6 @@ export interface Channel {
 /**
  * Configuration for a shuffle option for input data in a channel.
  *
- * @experimental
  */
 export interface ShuffleConfig {
   /**
@@ -120,7 +117,6 @@ export interface ShuffleConfig {
 /**
  * Location of the channel data.
  *
- * @experimental
  */
 export interface DataSource {
   /**
@@ -134,7 +130,6 @@ export interface DataSource {
  *
  * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_S3DataSource.html
  *
- * @experimental
  */
 export interface S3DataSource {
   /**
@@ -166,7 +161,6 @@ export interface S3DataSource {
 
 /**
  * Configures the S3 bucket where SageMaker will save the result of model training
- * @experimental
  */
 export interface OutputDataConfig {
   /**
@@ -186,7 +180,6 @@ export interface OutputDataConfig {
  * Specifies a limit to how long a model training job can run.
  * When the job reaches the time limit, Amazon SageMaker ends the training job.
  *
- * @experimental
  */
 export interface StoppingCondition {
   /**
@@ -200,7 +193,6 @@ export interface StoppingCondition {
 /**
  * Specifies the resources, ML compute instances, and ML storage volumes to deploy for model training.
  *
- * @experimental
  */
 export interface ResourceConfig {
 
@@ -214,7 +206,11 @@ export interface ResourceConfig {
   /**
    * ML compute instance type.
    *
-   * @default is the 'm4.xlarge' instance type.
+   * @example To provide an instance type from the task input, write
+   * `new ec2.InstanceType(sfn.JsonPath.stringAt('$.path.to.instanceType'))`, where the value in the task input is an EC2 instance type prepended with "ml.".
+   * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ResourceConfig.html#sagemaker-Type-ResourceConfig-InstanceType
+   *
+   * @default ec2.InstanceType(ec2.InstanceClass.M4, ec2.InstanceType.XLARGE)
    */
   readonly instanceType: ec2.InstanceType;
 
@@ -236,7 +232,6 @@ export interface ResourceConfig {
 /**
  * Specifies the VPC that you want your Amazon SageMaker training job to connect to.
  *
- * @experimental
  */
 export interface VpcConfig {
   /**
@@ -255,7 +250,6 @@ export interface VpcConfig {
 /**
  * Specifies the metric name and regular expressions used to parse algorithm logs.
  *
- * @experimental
  */
 export interface MetricDefinition {
 
@@ -273,7 +267,6 @@ export interface MetricDefinition {
 /**
  * Stores information about the location of an object in Amazon S3
  *
- * @experimental
  */
 export interface S3LocationConfig {
 
@@ -286,7 +279,6 @@ export interface S3LocationConfig {
 /**
  * Constructs `IS3Location` objects.
  *
- * @experimental
  */
 export abstract class S3Location {
   /**
@@ -320,7 +312,6 @@ export abstract class S3Location {
 /**
  * Options for binding an S3 Location.
  *
- * @experimental
  */
 export interface S3LocationBindOptions {
   /**
@@ -341,7 +332,6 @@ export interface S3LocationBindOptions {
 /**
  * Configuration for a using Docker image.
  *
- * @experimental
  */
 export interface DockerImageConfig {
   /**
@@ -353,7 +343,6 @@ export interface DockerImageConfig {
 /**
  * Creates `IDockerImage` instances.
  *
- * @experimental
  */
 export abstract class DockerImage {
   /**
@@ -408,7 +397,6 @@ export abstract class DockerImage {
 /**
  * S3 Data Type.
  *
- * @experimental
  */
 export enum S3DataType {
   /**
@@ -430,7 +418,6 @@ export enum S3DataType {
 /**
  * S3 Data Distribution Type.
  *
- * @experimental
  */
 export enum S3DataDistributionType {
   /**
@@ -447,7 +434,6 @@ export enum S3DataDistributionType {
 /**
  * Define the format of the input data.
  *
- * @experimental
  */
 export enum RecordWrapperType {
   /**
@@ -464,7 +450,6 @@ export enum RecordWrapperType {
 /**
  *  Input mode that the algorithm supports.
  *
- * @experimental
  */
 export enum InputMode {
   /**
@@ -481,7 +466,6 @@ export enum InputMode {
 /**
  * Compression type of the data.
  *
- * @experimental
  */
 export enum CompressionType {
   /**
@@ -500,9 +484,29 @@ export enum CompressionType {
 //
 
 /**
+ * Configures the timeout and maximum number of retries for processing a transform job invocation.
+ *
+ */
+export interface ModelClientOptions {
+
+  /**
+   * The maximum number of retries when invocation requests are failing.
+   *
+   * @default 0
+   */
+  readonly invocationsMaxRetries?: number;
+
+  /**
+   * The timeout duration for an invocation request.
+   *
+   * @default Duration.minutes(1)
+   */
+  readonly invocationsTimeout?: Duration;
+}
+
+/**
  *  Dataset to be transformed and the Amazon S3 location where it is stored.
  *
- *  @experimental
  */
 export interface TransformInput {
 
@@ -536,7 +540,6 @@ export interface TransformInput {
 /**
  * S3 location of the input data that the model can consume.
  *
- *  @experimental
  */
 export interface TransformDataSource {
 
@@ -549,7 +552,6 @@ export interface TransformDataSource {
 /**
  * Location of the channel data.
  *
- *  @experimental
  */
 export interface TransformS3DataSource {
 
@@ -569,7 +571,6 @@ export interface TransformS3DataSource {
 /**
  * S3 location where you want Amazon SageMaker to save the results from the transform job.
  *
- *  @experimental
  */
 export interface TransformOutput {
 
@@ -603,7 +604,6 @@ export interface TransformOutput {
 /**
  * ML compute instances for the transform job.
  *
- *  @experimental
  */
 export interface TransformResources {
 
@@ -626,9 +626,213 @@ export interface TransformResources {
 }
 
 /**
+ * Properties to define a ContainerDefinition
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
+ */
+export interface ContainerDefinitionOptions {
+  /**
+   * The Amazon EC2 Container Registry (Amazon ECR) path where inference code is stored.
+   *
+   * @default - None
+   */
+  readonly image?: DockerImage;
+  /**
+   * The environment variables to set in the Docker container
+   *
+   * @default - No variables
+   */
+  readonly environmentVariables?: sfn.TaskInput;
+  /**
+   * The name or Amazon Resource Name (ARN) of the model package to use to create the model.
+   *
+   * @default - None
+   */
+  readonly modelPackageName?: string;
+  /**
+   * Defines how many models the container hosts
+   *
+   * @default - Mode.SINGLE_MODEL
+   */
+  readonly mode?: Mode;
+  /**
+   * This parameter is ignored for models that contain only a PrimaryContainer.
+   * When a ContainerDefinition is part of an inference pipeline,
+   * the value of the parameter uniquely identifies the container for the purposes of logging and metrics.
+   *
+   * @default - None
+   */
+  readonly containerHostName?: string;
+  /**
+   * The S3 path where the model artifacts, which result from model training, are stored.
+   * This path must point to a single gzip compressed tar archive (.tar.gz suffix).
+   * The S3 path is required for Amazon SageMaker built-in algorithms, but not if you use your own algorithms.
+   *
+   * @default - None
+   */
+  readonly modelS3Location?: S3Location;
+}
+
+/**
+ * Describes the container, as part of model definition.
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
+ */
+export class ContainerDefinition implements IContainerDefinition {
+
+  constructor(private readonly options: ContainerDefinitionOptions) {}
+
+  /**
+   * Called when the ContainerDefinition type configured on Sagemaker Task
+   */
+  public bind(task: ISageMakerTask): ContainerDefinitionConfig {
+    return {
+      parameters: {
+        ContainerHostname: this.options.containerHostName,
+        Image: this.options.image?.bind(task).imageUri,
+        Mode: this.options.mode,
+        ModelDataUrl: this.options.modelS3Location?.bind(task, { forReading: true }).uri,
+        ModelPackageName: this.options.modelPackageName,
+        Environment: this.options.environmentVariables?.value,
+      },
+    };
+  }
+}
+
+/**
+ * Configuration of the container used to host the model
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
+ */
+export interface IContainerDefinition {
+  /**
+   * Called when the ContainerDefinition is used by a SageMaker task.
+   */
+  bind(task: ISageMakerTask): ContainerDefinitionConfig;
+}
+
+/**
+ * Configuration options for the ContainerDefinition
+ */
+export interface ContainerDefinitionConfig {
+  /**
+   * Additional parameters to pass to the base task
+   *
+   * @default - No additional parameters passed
+   */
+  readonly parameters?: { [key: string]: any };
+}
+
+/**
+ * Specifies how many models the container hosts
+ *
+ */
+export enum Mode {
+  /**
+   * Container hosts a single model
+   */
+  SINGLE_MODEL = 'SingleModel',
+  /**
+   * Container hosts multiple models
+   *
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/multi-model-endpoints.html
+   */
+  MULTI_MODEL = 'MultiModel',
+}
+
+/**
+ * Identifies a model that you want to host and the resources to deploy for hosting it.
+ *
+ * @see  https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ProductionVariant.html
+ */
+export interface ProductionVariant {
+  /**
+   * The size of the Elastic Inference (EI) instance to use for the production variant.
+   *
+   * @default - None
+   */
+  readonly acceleratorType?: AcceleratorType;
+  /**
+   * Number of instances to launch initially.
+   *
+   * @default - 1
+   */
+  readonly initialInstanceCount?: number;
+  /**
+   * Determines initial traffic distribution among all of the models that you specify in the endpoint configuration.
+   *
+   * @default - 1.0
+   */
+  readonly initialVariantWeight?: number;
+  /**
+   * The ML compute instance type
+   */
+  readonly instanceType: ec2.InstanceType;
+  /**
+   * The name of the production variant.
+   */
+  readonly variantName: string;
+  /**
+   * The name of the model that you want to host. This is the name that you specified when creating the model.
+   */
+  readonly modelName: string;
+}
+
+/**
+ * The generation of Elastic Inference (EI) instance
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html
+ */
+export class AcceleratorClass {
+  /**
+   * Elastic Inference accelerator 1st generation
+   */
+  public static readonly EIA1 = AcceleratorClass.of('eia1');
+  /**
+   * Elastic Inference accelerator 2nd generation
+   */
+  public static readonly EIA2 = AcceleratorClass.of('eia2');
+  /**
+   * Custom AcceleratorType
+   * @param version - Elastic Inference accelerator generation
+  */
+  public static of(version: string) { return new AcceleratorClass(version); }
+  /**
+   * @param version - Elastic Inference accelerator generation
+   */
+  private constructor(public readonly version: string) { }
+}
+
+/**
+ * The size of the Elastic Inference (EI) instance to use for the production variant.
+ * EI instances provide on-demand GPU computing for inference
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html
+ */
+export class AcceleratorType {
+  /**
+   * AcceleratorType
+   *
+   * This class takes a combination of a class and size.
+   */
+  public static of(acceleratorClass: AcceleratorClass, instanceSize: ec2.InstanceSize) {
+    return new AcceleratorType(`ml.${acceleratorClass}.${instanceSize}`);
+  }
+
+  constructor(private readonly instanceTypeIdentifier: string) {
+  }
+
+  /**
+   * Return the accelerator type as a dotted string
+   */
+  public toString(): string {
+    return this.instanceTypeIdentifier;
+  }
+}
+
+/**
  * Specifies the number of records to include in a mini-batch for an HTTP inference request.
  *
- * @experimental
  */
 export enum BatchStrategy {
 
@@ -646,7 +850,6 @@ export enum BatchStrategy {
 /**
  * Method to use to split the transform job's data files into smaller batches.
  *
- * @experimental
  */
 export enum SplitType {
 
@@ -674,7 +877,6 @@ export enum SplitType {
 /**
  * How to assemble the results of the transform job as a single S3 object.
  *
- * @experimental
  */
 export enum AssembleWith {
 
@@ -708,7 +910,7 @@ class StandardDockerImage extends DockerImage {
       this.repository.grantPull(task);
     }
     if (this.allowAnyEcrImagePull) {
-      task.grantPrincipal.addToPolicy(new iam.PolicyStatement({
+      task.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: [
           'ecr:BatchCheckLayerAvailability',
           'ecr:GetDownloadUrlForLayer',
@@ -751,7 +953,7 @@ class StandardS3Location extends S3Location {
       if (opts.forWriting) {
         actions.push('s3:PutObject');
       }
-      task.grantPrincipal.addToPolicy(new iam.PolicyStatement({ actions, resources: ['*'] }));
+      task.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({ actions, resources: ['*'] }));
     }
     return { uri: this.uri };
   }

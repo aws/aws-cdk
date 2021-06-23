@@ -1,6 +1,6 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import { Lazy, Token } from '@aws-cdk/core';
-import * as validation from './validation';
+import * as validation from './private/validation';
 
 /**
  * An output artifact of an action. Artifacts can be used as input by some actions.
@@ -132,17 +132,17 @@ export class ArtifactPath {
   public get location() {
     const artifactName = this.artifact.artifactName
       ? this.artifact.artifactName
-      : Lazy.stringValue({ produce: () => this.artifact.artifactName });
+      : Lazy.string({ produce: () => this.artifact.artifactName });
     return `${artifactName}::${this.fileName}`;
   }
 }
 
 function artifactAttribute(artifact: Artifact, attributeName: string) {
-  const lazyArtifactName = Lazy.stringValue({ produce: () => artifact.artifactName });
+  const lazyArtifactName = Lazy.string({ produce: () => artifact.artifactName });
   return Token.asString({ 'Fn::GetArtifactAtt': [lazyArtifactName, attributeName] });
 }
 
 function artifactGetParam(artifact: Artifact, jsonFile: string, keyName: string) {
-  const lazyArtifactName = Lazy.stringValue({ produce: () => artifact.artifactName });
+  const lazyArtifactName = Lazy.string({ produce: () => artifact.artifactName });
   return Token.asString({ 'Fn::GetParam': [lazyArtifactName, jsonFile, keyName] });
 }

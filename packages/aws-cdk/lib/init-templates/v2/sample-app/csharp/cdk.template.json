@@ -1,0 +1,3 @@
+{
+  "app": "dotnet run -p src/%name.PascalCased%/%name.PascalCased%.csproj"
+}

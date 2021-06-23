@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws, Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -11,7 +12,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  *
  * @default CONTINUE
  *
- * @experimental
  */
 export enum ActionOnFailure {
   /**
@@ -33,7 +33,6 @@ export enum ActionOnFailure {
 /**
  * Properties for EmrAddStep
  *
- * @experimental
  */
 export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
   /**
@@ -99,7 +98,6 @@ export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
  *
  * OUTPUT: the StepId
  *
- * @experimental
  */
 export class EmrAddStep extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
@@ -164,7 +162,13 @@ export class EmrAddStep extends sfn.TaskStateBase {
           'elasticmapreduce:DescribeStep',
           'elasticmapreduce:CancelSteps',
         ],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        resources: [
+          stack.formatArn({
+            service: 'elasticmapreduce',
+            resource: 'cluster',
+            resourceName: '*',
+          }),
+        ],
       }),
     ];
 

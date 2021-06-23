@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -34,7 +35,7 @@ export interface StepFunctionsStartExecutionProps extends sfn.TaskStateBaseProps
 /**
  * A Step Functions Task to call StartExecution on another state machine.
  *
- * It supports three service integration patterns: FIRE_AND_FORGET, SYNC and WAIT_FOR_TASK_TOKEN.
+ * It supports three service integration patterns: REQUEST_RESPONSE, RUN_JOB, and WAIT_FOR_TASK_TOKEN.
  */
 export class StepFunctionsStartExecution extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS = [
@@ -72,7 +73,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     return {
       Resource: `${integrationResourceArn('states', 'startExecution', this.integrationPattern)}${suffix}`,
       Parameters: sfn.FieldUtils.renderObject({
-        Input: this.props.input ? this.props.input.value : sfn.TaskInput.fromDataAt('$').value,
+        Input: this.props.input ? this.props.input.value : sfn.TaskInput.fromJsonPathAt('$').value,
         StateMachineArn: this.props.stateMachine.stateMachineArn,
         Name: this.props.name,
       }),

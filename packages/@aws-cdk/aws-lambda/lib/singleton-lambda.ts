@@ -1,5 +1,7 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Function as LambdaFunction, FunctionProps } from './function';
 import { FunctionBase } from './function-base';
 import { Version } from './lambda-version';
@@ -48,7 +50,7 @@ export class SingletonFunction extends FunctionBase {
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: LambdaFunction;
 
-  constructor(scope: cdk.Construct, id: string, props: SingletonFunctionProps) {
+  constructor(scope: Construct, id: string, props: SingletonFunctionProps) {
     super(scope, id);
 
     this.lambdaFunction = this.ensureLambda(props);
@@ -60,6 +62,20 @@ export class SingletonFunction extends FunctionBase {
     this.grantPrincipal = this.lambdaFunction.grantPrincipal;
 
     this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public get isBoundToVpc(): boolean {
+    return this.lambdaFunction.isBoundToVpc;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public get connections(): ec2.Connections {
+    return this.lambdaFunction.connections;
   }
 
   /**

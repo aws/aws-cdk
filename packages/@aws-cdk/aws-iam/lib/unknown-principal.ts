@@ -1,4 +1,5 @@
-import { Annotations, ConcreteDependable, IConstruct, Stack } from '@aws-cdk/core';
+import { Annotations, ConcreteDependable, Stack } from '@aws-cdk/core';
+import { IConstruct, Node } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 
@@ -34,7 +35,7 @@ export class UnknownPrincipal implements IPrincipal {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new Error(`Cannot get policy fragment of ${this.resource.node.path}, resource imported without a role`);
+    throw new Error(`Cannot get policy fragment of ${Node.of(this.resource).path}, resource imported without a role`);
   }
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {

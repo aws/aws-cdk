@@ -382,7 +382,7 @@ function invokeMethod(stack: cdk.Stack, method: reflect.Callable, parameters: an
  * an `Fn::GetAtt`.
  */
 function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
-  return cdk.Lazy.stringValue({ produce: () => {
+  return cdk.Lazy.string({ produce: () => {
     const res = stack.node.tryFindChild(id);
     if (!res) {
       const include = stack.node.tryFindChild('Include') as cdk.CfnInclude;

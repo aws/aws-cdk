@@ -1,14 +1,15 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Duration, Lazy, Size, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Size, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig, S3DataType, StoppingCondition, VpcConfig } from './base-types';
+import { renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker training job
  *
- * @experimental
  */
 export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps {
   /**
@@ -82,7 +83,6 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
 /**
  * Class representing the SageMaker Create Training Job task.
  *
- * @experimental
  */
 export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
@@ -224,7 +224,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
       ...this.renderResourceConfig(this.resourceConfig),
       ...this.renderStoppingCondition(this.stoppingCondition),
       ...this.renderHyperparameters(this.props.hyperparameters),
-      ...this.renderTags(this.props.tags),
+      ...renderTags(this.props.tags),
       ...this.renderVpcConfig(this.props.vpcConfig),
     };
   }
@@ -277,7 +277,8 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     return {
       ResourceConfig: {
         InstanceCount: config.instanceCount,
-        InstanceType: 'ml.' + config.instanceType,
+        InstanceType: sfn.JsonPath.isEncodedJsonPath(config.instanceType.toString())
+          ? config.instanceType.toString() : `ml.${config.instanceType}`,
         VolumeSizeInGB: config.volumeSize.toGibibytes(),
         ...(config.volumeEncryptionKey ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn } : {}),
       },
@@ -296,15 +297,11 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     return params ? { HyperParameters: params } : {};
   }
 
-  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
-    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
-  }
-
   private renderVpcConfig(config: VpcConfig | undefined): { [key: string]: any } {
     return config
       ? {
         VpcConfig: {
-          SecurityGroupIds: Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
+          SecurityGroupIds: Lazy.list({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
           Subnets: this.subnets,
         },
       }

@@ -78,7 +78,7 @@ export class Lambda implements ses.IReceiptRuleAction {
       lambdaAction: {
         functionArn: this.props.function.functionArn,
         invocationType: this.props.invocationType,
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+        topicArn: this.props.topic?.topicArn,
       },
     };
   }

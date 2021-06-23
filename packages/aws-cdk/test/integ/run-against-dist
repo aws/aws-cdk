@@ -23,8 +23,11 @@ if [[ ! -f $dist_root/build.json ]]; then
   exit 1
 fi
 
+export CANDIDATE_VERSION=$(node -p "require('${dist_root}/build.json').version")
+export TEST_RUNNER=dist
 
 serve_npm_packages
+install_cli
 
 prepare_java_packages
 prepare_nuget_packages

@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
@@ -51,6 +52,20 @@ export interface TaskStateBaseProps {
   readonly resultPath?: string;
 
   /**
+   * The JSON that will replace the state's raw result and become the effective
+   * result before ResultPath is applied.
+   *
+   * You can use ResultSelector to create a payload with values that are static
+   * or selected from the state's raw result.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
+   *
+   * @default - None
+   */
+  readonly resultSelector?: { [key: string]: any };
+
+  /**
    * Timeout for the state machine
    *
    * @default - None
@@ -95,7 +110,7 @@ export abstract class TaskStateBase extends State implements INextable {
   private readonly timeout?: cdk.Duration;
   private readonly heartbeat?: cdk.Duration;
 
-  constructor(scope: cdk.Construct, id: string, props: TaskStateBaseProps) {
+  constructor(scope: Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
     this.endStates = [this];
     this.timeout = props.timeout;
@@ -268,6 +283,7 @@ export abstract class TaskStateBase extends State implements INextable {
       InputPath: renderJsonPath(this.inputPath),
       OutputPath: renderJsonPath(this.outputPath),
       ResultPath: renderJsonPath(this.resultPath),
+      ...this.renderResultSelector(),
     };
   }
 }

@@ -11,13 +11,24 @@
 export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
 
 /**
- * Disable the collection and reporting of version information.
+ * Enable the collection and reporting of version information.
  */
-export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
+export const ANALYTICS_REPORTING_ENABLED_CONTEXT = 'aws:cdk:version-reporting';
 
 /**
- * If this is set, asset staging is disabled. This means that assets will not be copied to
- * the output directory and will be referenced with absolute source paths.
+ * Disable asset staging (for use with SAM CLI).
+ *
+ * Disabling asset staging means that copyable assets will not be copied to the
+ * output directory and will be referenced with absolute paths.
+ *
+ * Not copied to the output directory: this is so users can iterate on the
+ * Lambda source and run SAM CLI without having to re-run CDK (note: we
+ * cannot achieve this for bundled assets, if assets are bundled they
+ * will have to re-run CDK CLI to re-bundle updated versions).
+ *
+ * Absolute path: SAM CLI expects `cwd`-relative paths in a resource's
+ * `aws:asset:path` metadata. In order to be predictable, we will always output
+ * absolute paths.
  */
 export const DISABLE_ASSET_STAGING_CONTEXT = 'aws:cdk:disable-asset-staging';
 
@@ -27,3 +38,8 @@ export const DISABLE_ASSET_STAGING_CONTEXT = 'aws:cdk:disable-asset-staging';
  * Omits stack traces from construct metadata entries.
  */
 export const DISABLE_METADATA_STACK_TRACE = 'aws:cdk:disable-stack-trace';
+
+/**
+ * Run bundling for stacks specified in this context key
+ */
+export const BUNDLING_STACKS = 'aws:cdk:bundling-stacks';

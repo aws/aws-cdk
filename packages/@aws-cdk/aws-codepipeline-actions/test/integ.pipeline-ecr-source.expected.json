@@ -33,7 +33,7 @@
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -216,7 +216,7 @@
             {
               "Action": [
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -348,8 +348,8 @@
     },
     "MyEcrRepo767466D0": {
       "Type": "AWS::ECR::Repository",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyEcrRepoawscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule911FDB6D": {
       "Type": "AWS::Events::Rule",
@@ -367,6 +367,9 @@
                 {
                   "Ref": "MyEcrRepo767466D0"
                 }
+              ],
+              "imageTag": [
+                "latest"
               ]
             },
             "eventName": [

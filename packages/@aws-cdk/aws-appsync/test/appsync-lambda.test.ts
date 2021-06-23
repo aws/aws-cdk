@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
@@ -71,6 +71,22 @@ describe('Lambda Data Source configuration', () => {
       api.addLambdaDataSource('ds', func);
       api.addLambdaDataSource('ds', func);
     }).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
+  });
+
+  test('lambda data sources dont require mapping templates', () => {
+    // WHEN
+    const ds = api.addLambdaDataSource('ds', func, {
+      name: 'custom',
+      description: 'custom description',
+    });
+
+    ds.createResolver({
+      typeName: 'test',
+      fieldName: 'field',
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::AppSync::Resolver');
   });
 });
 

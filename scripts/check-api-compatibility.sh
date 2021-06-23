@@ -9,6 +9,10 @@ package_name() {
     node -pe "require('$1/package.json').name"
 }
 
+package_name_and_dist_tag() {
+    node -pe "const pkg = require('$1/package.json'); pkg.name + '@' + pkg.publishConfig.tag"
+}
+
 # Determine whether an NPM package exists on NPM
 #
 # Doesn't use 'npm view' as that is slow. Direct curl'ing npmjs is better
@@ -17,7 +21,6 @@ package_exists_on_npm() {
     ver=$2 # optional
     curl -I 2>/dev/null https://registry.npmjs.org/$pkg/$ver | head -n 1 | grep 200 >/dev/null
 }
-
 
 #----------------------------------------------------------------------
 
@@ -33,12 +36,11 @@ jsii_package_dirs=$(list_jsii_packages)
 
 #----------------------------------------------------------------------
 
-# Input a directory, output the package name IF it exists on GitHub
-dirs_to_existing_names() {
+# Input a directory, output the directory IF it exists on NPM
+dirs_for_existing_pkgs() {
     local dir="$1"
-    local name=$(package_name "$dir")
-    if package_exists_on_npm $name; then
-        echo "$name"
+    if package_exists_on_npm $(package_name $dir); then
+        echo "$dir"
         echo -n "." >&2
     else
         echo -n "x" >&2
@@ -46,29 +48,35 @@ dirs_to_existing_names() {
 }
 
 export -f package_name
+export -f package_name_and_dist_tag
 export -f package_exists_on_npm
-export -f dirs_to_existing_names
+export -f dirs_for_existing_pkgs
 
 if ! ${SKIP_DOWNLOAD:-false}; then
     echo "Filtering on existing packages on NPM..." >&2
     # In parallel
-    existing_names=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_to_existing_names "$@"' _ {})
+    existing_pkg_dirs=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_for_existing_pkgs "$@"' _ {})
+    existing_names=$(echo "$existing_pkg_dirs" | xargs -n1 -P4 -I {} bash -c 'package_name "$@"' _ {})
     echo " Done." >&2
 
-    current_version=$(node -p 'require("./lerna.json").version')
-    echo "Current version in lerna.json is $current_version"
-    if ! ${DOWNLOAD_LATEST:-false} && package_exists_on_npm aws-cdk $current_version; then
-        echo "Using package version ${current_version} as baseline"
-        existing_names=$(echo "$existing_names" | sed -e "s/$/@$current_version/")
+    echo "Determining baseline version..." >&2
+    version=$(node -p 'require("./scripts/resolve-version.js").version')
+    echo "  Current version is $version." >&2
+
+    if ! package_exists_on_npm aws-cdk $version; then
+        echo "  Version $version does not exist in npm. Falling back to package dist tags" >&2
+        existing_names=$(echo "$existing_pkg_dirs" | xargs -n1 -P4 -I {} bash -c 'package_name_and_dist_tag "$@"' _ {})
     else
-        echo "However, using the latest version from NPM as the baseline"
+        echo "Using version '$version' as the baseline..."
+        existing_names=$(echo "$existing_names" | sed -e "s/$/@$version/")
     fi
 
     rm -rf $tmpdir
     mkdir -p $tmpdir
 
     echo "Installing from NPM..." >&2
-    (cd $tmpdir && npm install --prefix $tmpdir $existing_names)
+    # use npm7 to automatically install peer dependencies
+    (cd $tmpdir && npx npm@^7.0.0 install --prefix $tmpdir $existing_names)
 fi
 
 #----------------------------------------------------------------------

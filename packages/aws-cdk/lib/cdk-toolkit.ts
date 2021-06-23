@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { format } from 'util';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
@@ -9,7 +8,7 @@ import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob 
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
-import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
+import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -109,9 +108,9 @@ export class CdkToolkit {
   }
 
   public async deploy(options: DeployOptions) {
-    const stacks = await this.selectStacksForDeploy(options.stackNames, options.exclusively);
+    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively);
 
-    const requireApproval = options.requireApproval !== undefined ? options.requireApproval : RequireApproval.Broadening;
+    const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
     const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
     for (const key in options.parameters) {
@@ -144,7 +143,7 @@ export class CdkToolkit {
         } else {
           warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.displayName));
           await this.destroy({
-            stackNames: [stack.stackName],
+            selector: { patterns: [stack.stackName] },
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
@@ -187,6 +186,7 @@ export class CdkToolkit {
           notificationArns: options.notificationArns,
           tags,
           execute: options.execute,
+          changeSetName: options.changeSetName,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
@@ -206,7 +206,7 @@ export class CdkToolkit {
           stackOutputs[stack.stackName] = result.outputs;
         }
 
-        for (const name of Object.keys(result.outputs)) {
+        for (const name of Object.keys(result.outputs).sort()) {
           const value = result.outputs[name];
           print('%s.%s = %s', colors.cyan(stack.id), colors.cyan(name), colors.underline(colors.cyan(value)));
         }
@@ -233,14 +233,14 @@ export class CdkToolkit {
   }
 
   public async destroy(options: DestroyOptions) {
-    let stacks = await this.selectStacksForDestroy(options.stackNames, options.exclusively);
+    let stacks = await this.selectStacksForDestroy(options.selector, options.exclusively);
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks = stacks.reversed();
 
     if (!options.force) {
       // eslint-disable-next-line max-len
-      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.stackArtifacts.map(s => s.id).join(', '))} (y/n)?`);
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.stackArtifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
@@ -281,7 +281,7 @@ export class CdkToolkit {
 
     // just print stack IDs
     for (const stack of stacks.stackArtifacts) {
-      data(stack.id);
+      data(stack.hierarchicalId);
     }
 
     return 0; // exit-code
@@ -296,12 +296,15 @@ export class CdkToolkit {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  public async synth(stackNames: string[], exclusively: boolean): Promise<any> {
-    const stacks = await this.selectStacksForDiff(stackNames, exclusively);
+  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean, autoValidate?: boolean): Promise<any> {
+    const stacks = await this.selectStacksForDiff(stackNames, exclusively, autoValidate);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
-      return stacks.firstStack.template;
+      if (!quiet) {
+        return stacks.firstStack.template;
+      }
+      return undefined;
     }
 
     // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
@@ -368,18 +371,18 @@ export class CdkToolkit {
     }));
   }
 
-  private async selectStacksForList(selectors: string[]) {
+  private async selectStacksForList(patterns: string[]) {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(selectors, { defaultBehavior: DefaultSelection.AllStacks });
+    const stacks = await assembly.selectStacks({ patterns }, { defaultBehavior: DefaultSelection.AllStacks });
 
     // No validation
 
     return stacks;
   }
 
-  private async selectStacksForDeploy(stackNames: string[], exclusively?: boolean) {
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean) {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(stackNames, {
+    const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
@@ -389,21 +392,27 @@ export class CdkToolkit {
     return stacks;
   }
 
-  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean) {
+  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean, autoValidate?: boolean) {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(stackNames, {
+
+    const selectedForDiff = await assembly.selectStacks({ patterns: stackNames }, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
-      defaultBehavior: DefaultSelection.AllStacks,
+      defaultBehavior: DefaultSelection.MainAssembly,
     });
 
-    await this.validateStacks(stacks);
+    const allStacks = await this.selectStacksForList([]);
+    const autoValidateStacks = autoValidate
+      ? allStacks.filter(art => art.validateOnSynth ?? false)
+      : new StackCollection(assembly, []);
 
-    return stacks;
+    await this.validateStacks(selectedForDiff.concat(autoValidateStacks));
+
+    return selectedForDiff;
   }
 
-  private async selectStacksForDestroy(stackNames: string[], exclusively?: boolean) {
+  private async selectStacksForDestroy(selector: StackSelector, exclusively?: boolean) {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(stackNames, {
+    const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
@@ -430,7 +439,7 @@ export class CdkToolkit {
   private async selectSingleStackByName(stackName: string) {
     const assembly = await this.assembly();
 
-    const stacks = await assembly.selectStacks([stackName], {
+    const stacks = await assembly.selectStacks({ patterns: [stackName] }, {
       extend: ExtendedStackSelection.None,
       defaultBehavior: DefaultSelection.None,
     });
@@ -500,9 +509,9 @@ export interface DiffOptions {
 
 export interface DeployOptions {
   /**
-   * Stack names to deploy
+   * Criteria for selecting stacks to deploy
    */
-  stackNames: string[];
+  selector: StackSelector;
 
   /**
    * Only select the given stack
@@ -553,6 +562,12 @@ export interface DeployOptions {
   execute?: boolean;
 
   /**
+   * Optional name to use for the CloudFormation change set.
+   * If not provided, a name will be generated automatically.
+   */
+  changeSetName?: string;
+
+  /**
    * Always deploy, even if templates are identical.
    * @default false
    */
@@ -597,9 +612,9 @@ export interface DeployOptions {
 
 export interface DestroyOptions {
   /**
-   * The names of the stacks to delete
+   * Criteria for selecting stacks to deploy
    */
-  stackNames: string[];
+  selector: StackSelector;
 
   /**
    * Whether to exclude stacks that depend on the stacks to be deleted
@@ -626,21 +641,7 @@ export interface DestroyOptions {
  * @returns an array with the tags available in the stack metadata.
  */
 function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-  const tagLists = stack.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS).map(
-    // the tags in the cloud assembly are stored differently
-    // unfortunately.
-    x => toCloudFormationTags(x.data as cxschema.Tag[]));
-  return Array.prototype.concat([], ...tagLists);
-}
-
-/**
- * Transform tags as they are retrieved from the cloud assembly,
- * to the way that CloudFormation expects them. (Different casing).
- */
-function toCloudFormationTags(tags: cxschema.Tag[]): Tag[] {
-  return tags.map(t => {
-    return { Key: t.key, Value: t.value };
-  });
+  return Object.entries(stack.tags).map(([Key, Value]) => ({ Key, Value }));
 }
 
 export interface Tag {

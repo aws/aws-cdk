@@ -1,12 +1,12 @@
 # AWS Cloud Development Kit (AWS CDK)
 
 ![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiSy9rWmVENzRDbXBoVlhYaHBsNks4OGJDRXFtV1IySmhCVjJoaytDU2dtVWhhVys3NS9Odk5DbC9lR2JUTkRvSWlHSXZrNVhYQ3ZsaUJFY3o4OERQY1pnPSIsIml2UGFyYW1ldGVyU3BlYyI6IlB3ODEyRW9KdU0yaEp6NDkiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/awslabs/aws-cdk)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/aws/aws-cdk)
 [![NPM version](https://badge.fury.io/js/aws-cdk.svg)](https://badge.fury.io/js/aws-cdk)
 [![PyPI version](https://badge.fury.io/py/aws-cdk.core.svg)](https://badge.fury.io/py/aws-cdk.core)
 [![NuGet version](https://badge.fury.io/nu/Amazon.CDK.svg)](https://badge.fury.io/nu/Amazon.CDK)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/core)
+[![Go Reference](https://pkg.go.dev/badge/github.com/aws/aws-cdk-go/awscdk.svg)](https://pkg.go.dev/github.com/aws/aws-cdk-go/awscdk)
 [![Mergify](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/aws/aws-cdk&style=flat)](https://mergify.io)
 
 The **AWS Cloud Development Kit (AWS CDK)** is an open-source software development
@@ -25,6 +25,8 @@ The CDK is available in the following languages:
 * Python ([Python ≥ 3.6](https://www.python.org/downloads/))
 * Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
 * .NET ([.NET Core ≥ 3.1](https://dotnet.microsoft.com/download))
+* Go ([Go ≥ 1.16.4](https://golang.org/))
+  - Go is currently in developer preview and is not recommended for production use.
 
 \
 Jump To:
@@ -57,7 +59,7 @@ Modules in the AWS Construct Library are designated Experimental while we build
 them; experimental modules may have breaking API changes in any release.  After
 a module is designated Stable, it adheres to [semantic versioning](https://semver.org/),
 and only major releases can have breaking changes. Each module's stability designation
-is available on its Overview page in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html). 
+is available on its Overview page in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 For more information, see [Versioning](https://docs.aws.amazon.com/cdk/latest/guide/reference.html#versioning)
 in the CDK Developer Guide.
 
@@ -78,7 +80,7 @@ For a detailed walkthrough, see the [tutorial](https://docs.aws.amazon.com/cdk/l
 Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 10.13.0](https://nodejs.org/download/release/latest-v10.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 
-```bash
+```console
 $ npm i -g aws-cdk
 ```
 
@@ -86,7 +88,7 @@ $ npm i -g aws-cdk
 
 Initialize a project:
 
-```bash
+```console
 $ mkdir hello-cdk
 $ cd hello-cdk
 $ cdk init sample-app --language=typescript
@@ -112,7 +114,7 @@ export class HelloCdkStack extends cdk.Stack {
 
 Deploy this to your account:
 
-```bash
+```console
 $ cdk deploy
 ```
 
@@ -130,13 +132,11 @@ If you have a support plan with AWS Support, you can also create a new [support 
 
 You may also find help on these community resources:
 * Look through the [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) or [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide)
+* The #aws-cdk Slack channel in [cdk.dev](https://cdk.dev)
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
   and tag it with `aws-cdk`
-* Come join the AWS CDK community on [Gitter](https://gitter.im/awslabs/aws-cdk)
-* Talk in the CDK channel of the [AWS Developers Slack workspace](https://awsdevelopers.slack.com) (invite required)
-* Check out the [partitions.io board](https://partitions.io/cdk)
 
-### Roadmap
+## Roadmap
 
 The [AWS CDK Roadmap project board](https://github.com/orgs/aws/projects/7) lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP.md](https://github.com/aws/aws-cdk/blob/master/ROADMAP.md) for more information and FAQs.
 
@@ -146,9 +146,15 @@ We welcome community contributions and pull requests. See
 [CONTRIBUTING.md](./CONTRIBUTING.md) for information on how to set up a development
 environment and submit code.
 
+## Metrics collection
+This solution collects anonymous operational metrics to help AWS improve the
+quality and features of the CDK. For more information, including how to disable
+this capability, please see the 
+[developer guide](https://docs.aws.amazon.com/cdk/latest/guide/cli.html#version_reporting).
+
 ## More Resources
 * [CDK Workshop](https://cdkworkshop.com/)
 * [Examples](https://github.com/aws-samples/aws-cdk-examples)
 * [Changelog](./CHANGELOG.md)
 * [NOTICE](./NOTICE)
-* [License](./LICENSE) 
+* [License](./LICENSE)

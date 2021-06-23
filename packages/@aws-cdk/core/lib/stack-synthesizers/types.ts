@@ -28,9 +28,7 @@ export interface IStackSynthesizer {
   addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation;
 
   /**
-   * Synthesize all artifacts required for the stack into the session
-   *
-   * @experimental
+   * Synthesize the associated stack to the session
    */
-  synthesizeStackArtifacts(session: ISynthesisSession): void;
+  synthesize(session: ISynthesisSession): void;
 }

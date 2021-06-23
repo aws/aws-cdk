@@ -73,6 +73,19 @@ export function fileShouldBe(ruleName: string, pkg: PackageJson, fileName: strin
 }
 
 /**
+ * Export a package-level file to contain specific content
+ */
+export function fileShouldBeginWith(ruleName: string, pkg: PackageJson, fileName: string, ...lines: string[]) {
+  const isContent = pkg.fileBeginsWith(fileName, ...lines);
+  if (!isContent) {
+    pkg.report({
+      ruleName,
+      message: `${fileName} does NOT begin with ${lines}'`,
+    });
+  }
+}
+
+/**
  * Enforce a dev dependency
  */
 export function expectDevDependency(ruleName: string, pkg: PackageJson, packageName: string, version: string) {
@@ -151,7 +164,7 @@ export function findUpward(dir: string, pred: (x: string) => boolean): string | 
 }
 
 export function monoRepoRoot() {
-  const ret = findUpward(process.cwd(), d => fs.existsSync(path.join(d, 'lerna.json')));
+  const ret = findUpward(process.cwd(), d => fs.existsSync(path.join(d, 'lerna.json')) || fs.existsSync(path.join(d, '.nzmroot')));
   if (!ret) {
     throw new Error('Could not find lerna.json');
   }

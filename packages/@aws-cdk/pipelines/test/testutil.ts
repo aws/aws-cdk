@@ -1,9 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { annotateMatcher, InspectionFailure, PropertyMatcher } from '@aws-cdk/assert-internal';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, AppProps, Construct, Environment, SecretValue, Stack, StackProps, Stage } from '@aws-cdk/core';
+import { App, AppProps, Environment, SecretValue, Stack, StackProps, Stage } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { assemblyBuilderOf } from '../lib/private/construct-internals';
 
@@ -20,7 +22,6 @@ export class TestApp extends App {
       },
       stackTraces: false,
       autoSynth: false,
-      runtimeInfo: false,
       treeMetadata: false,
       ...props,
     });
@@ -110,4 +111,20 @@ export function stackTemplate(stack: Stack) {
   const stage = Stage.of(stack);
   if (!stage) { throw new Error('stack not in a Stage'); }
   return stage.synth().getStackArtifact(stack.artifactId);
+}
+
+export function stringNoLongerThan(length: number): PropertyMatcher {
+  return annotateMatcher({ $stringIsNoLongerThan: length }, (value: any, failure: InspectionFailure) => {
+    if (typeof value !== 'string') {
+      failure.failureReason = `Expected a string, but got '${typeof value}'`;
+      return false;
+    }
+
+    if (value.length > length) {
+      failure.failureReason = `String is ${value.length} characters long. Expected at most ${length} characters`;
+      return false;
+    }
+
+    return true;
+  });
 }

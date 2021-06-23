@@ -1,10 +1,12 @@
 # CDK Construct library for higher-level Route 53 Constructs
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library provides higher-level Amazon Route 53 constructs which follow common
@@ -27,7 +29,7 @@ The `HttpsRedirect` constructs creates:
 * Amazon CloudFront distribution - makes website available from data centres
   around the world
 * Amazon S3 bucket - empty bucket used for website hosting redirect (`websiteRedirect`) capabilities.
-* Amazon Route 53 Alias record - routes traffic to the CloudFront distribution
+* Amazon Route 53 A/AAAA Alias records - routes traffic to the CloudFront distribution
 * AWS Certificate Manager certificate - SSL/TLS certificate used by
   CloudFront for your domain
 

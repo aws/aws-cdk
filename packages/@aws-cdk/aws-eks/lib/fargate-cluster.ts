@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
 import { FargateProfileOptions } from './fargate-profile';
 
@@ -27,7 +27,6 @@ export class FargateCluster extends Cluster {
     super(scope, id, {
       ...props,
       defaultCapacity: 0,
-      kubectlEnabled: true,
       coreDnsComputeType: props.coreDnsComputeType ?? CoreDnsComputeType.FARGATE,
       version: props.version,
     });

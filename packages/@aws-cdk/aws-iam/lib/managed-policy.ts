@@ -1,4 +1,5 @@
-import { Construct, IResolveContext, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResolveContext, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
@@ -155,7 +156,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
    */
   public static fromAwsManagedPolicyName(managedPolicyName: string): IManagedPolicy {
     class AwsManagedPolicy implements IManagedPolicy {
-      public readonly managedPolicyArn = Lazy.stringValue({
+      public readonly managedPolicyArn = Lazy.uncachedString({
         produce(ctx: IResolveContext) {
           return Stack.of(ctx.scope).formatArn({
             service: 'iam',

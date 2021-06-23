@@ -1,6 +1,6 @@
-import { Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, Color, GraphWidget, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -61,6 +61,35 @@ export = {
     test.done();
   },
 
+  'add metrics to graphs on either axis lazily'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My fancy graph',
+    });
+    widget.addLeftMetric(new Metric({ namespace: 'CDK', metricName: 'Test' }));
+    widget.addRightMetric(new Metric({ namespace: 'CDK', metricName: 'Tast' }));
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My fancy graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+          ['CDK', 'Tast', { yAxis: 'right' }],
+        ],
+        yAxis: {},
+      },
+    }]);
+
+    test.done();
+  },
+
   'label and color are respected in constructor'(test: Test) {
     // WHEN
     const stack = new Stack();
@@ -79,6 +108,30 @@ export = {
         metrics: [
           ['CDK', 'Test', { label: 'MyMetric', color: '000000' }],
         ],
+        yAxis: {},
+      },
+    }]);
+
+    test.done();
+  },
+
+  'bar view'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'Test widget',
+      view: GraphWidgetView.BAR,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'bar',
+        title: 'Test widget',
+        region: { Ref: 'AWS::Region' },
         yAxis: {},
       },
     }]);
@@ -504,6 +557,35 @@ export = {
     test.done();
   },
 
+  'add singleValueFullPrecision to singleValueWidget'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new SingleValueWidget({
+      metrics: [metric],
+      fullPrecision: true,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        singleValueFullPrecision: true,
+      },
+    }]);
+
+    test.done();
+  },
+
   'allows overriding custom values of dashboard widgets'(test: Test) {
     class HiddenMetric extends Metric {
       public toMetricConfig() {
@@ -573,6 +655,63 @@ export = {
         legend: {
           position: 'right',
         },
+      },
+    }]);
+
+    test.done();
+  },
+
+  'add setPeriodToTimeRange to GraphWidget'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      view: GraphWidgetView.PIE,
+      setPeriodToTimeRange: true,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'pie',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        setPeriodToTimeRange: true,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'GraphWidget supports stat and period'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      statistic: 'Average',
+      period: Duration.days(2),
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        stat: 'Average',
+        period: 172800,
       },
     }]);
 

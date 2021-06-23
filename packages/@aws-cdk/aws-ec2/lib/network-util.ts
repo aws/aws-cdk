@@ -219,7 +219,7 @@ export class CidrBlock {
    * mask expects a number
    *
    * If the given `cidr` or `ipAddress` is not the beginning of the block,
-   * then the next avaiable block will be returned. For example, if
+   * then the next available block will be returned. For example, if
    * `10.0.3.1/28` is given the returned block will represent `10.0.3.16/28`.
    */
   constructor(cidr: string)
@@ -244,7 +244,7 @@ export class CidrBlock {
   }
 
   /*
-   * The maximum IP in the CIDR Blcok e.g. '10.0.8.255'
+   * The maximum IP in the CIDR Block e.g. '10.0.8.255'
    */
   public maxIp(): string {
     // min + (2^(32-mask)) - 1 [zero needs to count]
@@ -252,7 +252,7 @@ export class CidrBlock {
   }
 
   /*
-   * The minimum IP in the CIDR Blcok e.g. '10.0.0.0'
+   * The minimum IP in the CIDR Block e.g. '10.0.0.0'
    */
   public minIp(): string {
     return NetworkUtils.numToIp(this.minAddress());

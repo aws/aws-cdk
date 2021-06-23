@@ -27,7 +27,9 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "myuserpoolmyuserpoolclientAFB2274E": {
       "Type": "AWS::Cognito::UserPoolClient",
@@ -62,6 +64,27 @@
         "PreventUserExistenceErrors": "ENABLED",
         "SupportedIdentityProviders": [
           "COGNITO"
+        ],
+        "WriteAttributes": [
+          "address",
+          "birthdate",
+          "custom:attribute_one",
+          "custom:attribute_two",
+          "email",
+          "family_name",
+          "gender",
+          "given_name",
+          "locale",
+          "middle_name",
+          "name",
+          "nickname",
+          "phone_number",
+          "picture",
+          "preferred_username",
+          "profile",
+          "updated_at",
+          "website",
+          "zoneinfo"
         ]
       }
     }

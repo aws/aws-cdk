@@ -114,11 +114,29 @@ export class AlarmWidget extends ConcreteWidget {
           alarms: [this.props.alarm.alarmArn],
         },
         yAxis: {
-          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
+          left: this.props.leftYAxis ?? undefined,
         },
       },
     }];
   }
+}
+
+/**
+ * Types of view
+ */
+export enum GraphWidgetView {
+  /**
+   * Display as a line graph.
+   */
+  TIME_SERIES = 'timeSeries',
+  /**
+   * Display as a bar graph.
+   */
+  BAR = 'bar',
+  /**
+   * Display as a pie graph.
+   */
+  PIE = 'pie',
 }
 
 /**
@@ -187,17 +205,75 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    * @default false
    */
   readonly liveData?: boolean;
+
+  /**
+   * Display this metric
+   *
+   * @default TimeSeries
+   */
+  readonly view?: GraphWidgetView;
+
+  /**
+   * Whether to show the value from the entire time range. Only applicable for Bar and Pie charts.
+   *
+   * If false, values will be from the most recent period of your chosen time range;
+   * if true, shows the value from the entire time range.
+   *
+   * @default false
+   */
+  readonly setPeriodToTimeRange?: boolean;
+
+  /**
+   * The default period for all metrics in this widget.
+   * The period is the length of time represented by one data point on the graph.
+   * This default can be overridden within each metric definition.
+   *
+   * @default cdk.Duration.seconds(300)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * The default statistic to be displayed for each metric.
+   * This default can be overridden within the definition of each individual metric
+   *
+   * @default - The statistic for each metric is used
+   */
+  readonly statistic?: string;
 }
 
 /**
  * A dashboard widget that displays metrics
  */
 export class GraphWidget extends ConcreteWidget {
+
   private readonly props: GraphWidgetProps;
+
+  private readonly leftMetrics: IMetric[];
+  private readonly rightMetrics: IMetric[];
 
   constructor(props: GraphWidgetProps) {
     super(props.width || 6, props.height || 6);
     this.props = props;
+    this.leftMetrics = props.left ?? [];
+    this.rightMetrics = props.right ?? [];
+  }
+
+  /**
+   * Add another metric to the left Y axis of the GraphWidget
+   *
+   * @param metric the metric to add
+   */
+  public addLeftMetric(metric: IMetric) {
+    this.leftMetrics.push(metric);
+  }
+
+  /**
+   * Add another metric to the right Y axis of the GraphWidget
+   *
+   * @param metric the metric to add
+   */
+  public addRightMetric(metric: IMetric) {
+    this.rightMetrics.push(metric);
   }
 
   public toJson(): any[] {
@@ -206,7 +282,7 @@ export class GraphWidget extends ConcreteWidget {
       ...(this.props.rightAnnotations || []).map(mapAnnotation('right')),
     ];
 
-    const metrics = allMetricsGraphJson(this.props.left || [], this.props.right || []);
+    const metrics = allMetricsGraphJson(this.leftMetrics, this.rightMetrics);
     return [{
       type: 'metric',
       width: this.width,
@@ -214,18 +290,21 @@ export class GraphWidget extends ConcreteWidget {
       x: this.x,
       y: this.y,
       properties: {
-        view: 'timeSeries',
+        view: this.props.view ?? GraphWidgetView.TIME_SERIES,
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
         metrics: metrics.length > 0 ? metrics : undefined,
         annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
         yAxis: {
-          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
-          right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
+          left: this.props.leftYAxis ?? undefined,
+          right: this.props.rightYAxis ?? undefined,
         },
         legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
         liveData: this.props.liveData,
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+        period: this.props.period?.toSeconds(),
+        stat: this.props.statistic,
       },
     }];
   }
@@ -246,6 +325,13 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    * @default false
    */
   readonly setPeriodToTimeRange?: boolean;
+
+  /**
+   * Whether to show as many digits as can fit, before rounding.
+   *
+   * @default false
+   */
+  readonly fullPrecision?: boolean;
 }
 
 /**
@@ -272,6 +358,7 @@ export class SingleValueWidget extends ConcreteWidget {
         region: this.props.region || cdk.Aws.REGION,
         metrics: allMetricsGraphJson(this.props.metrics, []),
         setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+        singleValueFullPrecision: this.props.fullPrecision,
       },
     }];
   }

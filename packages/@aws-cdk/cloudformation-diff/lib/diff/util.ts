@@ -15,9 +15,16 @@
  */
 export function deepEqual(lvalue: any, rvalue: any): boolean {
   if (lvalue === rvalue) { return true; }
+  // CloudFormation allows passing strings into boolean-typed fields
+  if (((typeof lvalue === 'string' && typeof rvalue === 'boolean') ||
+      (typeof lvalue === 'boolean' && typeof rvalue === 'string')) &&
+      lvalue.toString() === rvalue.toString()) {
+    return true;
+  }
   // allows a numeric 10 and a literal "10" to be equivalent;
   // this is consistent with CloudFormation.
-  if (((typeof lvalue === 'string') || (typeof rvalue === 'string')) && (parseFloat(lvalue) === parseFloat(rvalue))) {
+  if ((typeof lvalue === 'string' || typeof rvalue === 'string') &&
+      safeParseFloat(lvalue) === safeParseFloat(rvalue)) {
     return true;
   }
   if (typeof lvalue !== typeof rvalue) { return false; }
@@ -38,7 +45,11 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
     if (keys.length !== Object.keys(rvalue).length) { return false; }
     for (const key of keys) {
       if (!rvalue.hasOwnProperty(key)) { return false; }
-      if (key === 'DependsOn') { return dependsOnEqual(lvalue[key], rvalue[key]); }
+      if (key === 'DependsOn') {
+        if (!dependsOnEqual(lvalue[key], rvalue[key])) { return false; };
+        // check differences other than `DependsOn`
+        continue;
+      }
       if (!deepEqual(lvalue[key], rvalue[key])) { return false; }
     }
     return true;
@@ -121,4 +132,21 @@ export function unionOf(lv: string[] | Set<string>, rv: string[] | Set<string>):
     result.add(v);
   }
   return new Array(...result);
+}
+
+/**
+ * A parseFloat implementation that does the right thing for
+ * strings like '0.0.0'
+ * (for which JavaScript's parseFloat() returns 0).
+ */
+function safeParseFloat(str: string): number {
+  const ret = parseFloat(str);
+  if (ret === 0) {
+    // if the str is exactly '0', that's OK;
+    // but parseFloat() also returns 0 for things like '0.0';
+    // in this case, return NaN, so we'll fall back to string comparison
+    return str === '0' ? ret : NaN;
+  } else {
+    return ret;
+  }
 }

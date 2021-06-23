@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation } from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
@@ -6,7 +7,7 @@ import { ISubnet, IVpc, SubnetSelection } from './vpc';
 /**
  * A NetworkAcl
  *
- * @experimental
+ *
  */
 export interface INetworkAcl extends IResource {
   /**
@@ -24,7 +25,7 @@ export interface INetworkAcl extends IResource {
 /**
  * A NetworkAclBase that is not created in this template
  *
- * @experimental
+ *
  */
 abstract class NetworkAclBase extends Resource implements INetworkAcl {
   public abstract readonly networkAclId: string;
@@ -44,7 +45,7 @@ abstract class NetworkAclBase extends Resource implements INetworkAcl {
 /**
  * Properties to create NetworkAcl
  *
- * @experimental
+ *
  */
 export interface NetworkAclProps {
   /**
@@ -79,7 +80,7 @@ export interface NetworkAclProps {
  * By default, will deny all inbound and outbound traffic unless entries are
  * added explicitly allowing it.
  *
- * @experimental
+ *
  */
 export class NetworkAcl extends NetworkAclBase {
   /**
@@ -143,7 +144,7 @@ export class NetworkAcl extends NetworkAclBase {
 /**
  * What action to apply to traffic matching the ACL
  *
- * @experimental
+ *
  */
 export enum Action {
   /**
@@ -160,7 +161,7 @@ export enum Action {
 /**
  * A NetworkAclEntry
  *
- * @experimental
+ *
  */
 export interface INetworkAclEntry extends IResource {
   /**
@@ -173,7 +174,7 @@ export interface INetworkAclEntry extends IResource {
 /**
  * Base class for NetworkAclEntries
  *
- * @experimental
+ *
  */
 abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry {
   public abstract readonly networkAcl: INetworkAcl;
@@ -182,7 +183,7 @@ abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry 
 /**
  * Direction of traffic the AclEntry applies to
  *
- * @experimental
+ *
  */
 export enum TrafficDirection {
   /**
@@ -199,7 +200,7 @@ export enum TrafficDirection {
 /**
  * Basic NetworkACL entry props
  *
- * @experimental
+ *
  */
 export interface CommonNetworkAclEntryOptions {
   /**
@@ -249,7 +250,7 @@ export interface CommonNetworkAclEntryOptions {
 /**
  * Properties to create NetworkAclEntry
  *
- * @experimental
+ *
  */
 export interface NetworkAclEntryProps extends CommonNetworkAclEntryOptions {
   /**
@@ -261,7 +262,7 @@ export interface NetworkAclEntryProps extends CommonNetworkAclEntryOptions {
 /**
  * Define an entry in a Network ACL table
  *
- * @experimental
+ *
  */
 export class NetworkAclEntry extends NetworkAclEntryBase {
   public readonly networkAcl: INetworkAcl;
@@ -276,7 +277,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
     new CfnNetworkAclEntry(this, 'Resource', {
       networkAclId: this.networkAcl.networkAclId,
       ruleNumber: props.ruleNumber,
-      ruleAction: props.ruleAction !== undefined ? props.ruleAction : Action.ALLOW,
+      ruleAction: props.ruleAction ?? Action.ALLOW,
       egress: props.direction !== undefined ? props.direction === TrafficDirection.EGRESS : undefined,
       ...props.traffic.toTrafficConfig(),
       ...props.cidr.toCidrConfig(),
@@ -287,7 +288,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
 /**
  * A SubnetNetworkAclAssociation
  *
- * @experimental
+ *
  */
 export interface ISubnetNetworkAclAssociation extends IResource {
   /**
@@ -300,7 +301,7 @@ export interface ISubnetNetworkAclAssociation extends IResource {
 /**
  * Properties to create a SubnetNetworkAclAssociation
  *
- * @experimental
+ *
  */
 export interface SubnetNetworkAclAssociationProps {
   /**
@@ -330,7 +331,7 @@ export interface SubnetNetworkAclAssociationProps {
 /**
  * Associate a network ACL with a subnet
  *
- * @experimental
+ *
  */
 abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubnetNetworkAclAssociation {
   public abstract readonly subnetNetworkAclAssociationAssociationId: string;

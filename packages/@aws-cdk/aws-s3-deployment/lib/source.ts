@@ -1,8 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import * as cdk from '@aws-cdk/core';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/**
+ * Source information.
+ */
 export interface SourceConfig {
   /**
    * The source bucket to deploy from.
@@ -33,7 +39,7 @@ export interface ISource {
    * Binds the source to a bucket deployment.
    * @param scope The construct tree context.
    */
-  bind(scope: cdk.Construct, context?: DeploymentSourceContext): SourceConfig;
+  bind(scope: Construct, context?: DeploymentSourceContext): SourceConfig;
 }
 
 /**
@@ -54,7 +60,7 @@ export class Source {
    */
   public static bucket(bucket: s3.IBucket, zipObjectKey: string): ISource {
     return {
-      bind: (_: cdk.Construct, context?: DeploymentSourceContext) => {
+      bind: (_: Construct, context?: DeploymentSourceContext) => {
         if (!context) {
           throw new Error('To use a Source.bucket(), context must be provided');
         }
@@ -71,7 +77,7 @@ export class Source {
    */
   public static asset(path: string, options?: s3_assets.AssetOptions): ISource {
     return {
-      bind(scope: cdk.Construct, context?: DeploymentSourceContext): SourceConfig {
+      bind(scope: Construct, context?: DeploymentSourceContext): SourceConfig {
         if (!context) {
           throw new Error('To use a Source.asset(), context must be provided');
         }

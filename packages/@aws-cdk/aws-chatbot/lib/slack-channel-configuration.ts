@@ -1,8 +1,10 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnSlackChannelConfiguration } from './chatbot.generated';
 
 /**
@@ -104,7 +106,7 @@ export enum LoggingLevel {
 /**
  * Represents a Slack channel configuration
  */
-export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantable {
+export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantable, notifications.INotificationRuleTarget {
 
   /**
    * The ARN of the Slack channel configuration
@@ -178,6 +180,13 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
       ...props,
     });
   }
+
+  public bindAsNotificationRuleTarget(_scope: Construct): notifications.NotificationRuleTargetConfig {
+    return {
+      targetType: 'AWSChatbotSlack',
+      targetAddress: this.slackChannelConfigurationArn,
+    };
+  }
 }
 
 /**
@@ -193,7 +202,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    *
    * @returns a reference to the existing Slack channel configuration
    */
-  public static fromSlackChannelConfigurationArn(scope: cdk.Construct, id: string, slackChannelConfigurationArn: string): ISlackChannelConfiguration {
+  public static fromSlackChannelConfigurationArn(scope: Construct, id: string, slackChannelConfigurationArn: string): ISlackChannelConfiguration {
     const re = /^slack-channel\//;
     const resourceName = cdk.Stack.of(scope).parseArn(slackChannelConfigurationArn).resourceName as string;
 
@@ -220,7 +229,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
        */
       readonly slackChannelConfigurationName = resourceName.substring('slack-channel/'.length);
 
-      constructor(s: cdk.Construct, i: string) {
+      constructor(s: Construct, i: string) {
         super(s, i);
         this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
       }
@@ -251,7 +260,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
   readonly grantPrincipal: iam.IPrincipal;
 
-  constructor(scope: cdk.Construct, id: string, props: SlackChannelConfigurationProps) {
+  constructor(scope: Construct, id: string, props: SlackChannelConfigurationProps) {
     super(scope, id, {
       physicalName: props.slackChannelConfigurationName,
     });

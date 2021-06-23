@@ -4,8 +4,8 @@ import { PropertyChange, PropertyMap, ResourceChange } from '../diff/types';
 import { DiffableCollection } from '../diffable';
 import { renderIntrinsics } from '../render-intrinsics';
 import { deepRemoveUndefined, dropIfEmpty, flatMap, makeComparator } from '../util';
-import { ManagedPolicyAttachment, ManagedPolicyJson, parseManagedPolicies } from './managed-policy';
-import { parseLambdaPermission, parseStatements, renderCondition, Statement, StatementJson, Targets } from './statement';
+import { ManagedPolicyAttachment, ManagedPolicyJson } from './managed-policy';
+import { parseLambdaPermission, parseStatements, Statement, StatementJson } from './statement';
 
 export interface IamChangesProps {
   propertyChanges: PropertyChange[];
@@ -69,23 +69,25 @@ export class IamChanges {
 
     // First generate all lines, then sort on Resource so that similar resources are together
     for (const statement of this.statements.additions) {
+      const renderedStatement = statement.render();
       ret.push([
         '+',
-        renderTargets(statement.resources),
-        statement.effect,
-        renderTargets(statement.actions),
-        renderTargets(statement.principals),
-        renderCondition(statement.condition),
+        renderedStatement.resource,
+        renderedStatement.effect,
+        renderedStatement.action,
+        renderedStatement.principal,
+        renderedStatement.condition,
       ].map(s => colors.green(s)));
     }
     for (const statement of this.statements.removals) {
+      const renderedStatement = statement.render();
       ret.push([
         colors.red('-'),
-        renderTargets(statement.resources),
-        statement.effect,
-        renderTargets(statement.actions),
-        renderTargets(statement.principals),
-        renderCondition(statement.condition),
+        renderedStatement.resource,
+        renderedStatement.effect,
+        renderedStatement.action,
+        renderedStatement.principal,
+        renderedStatement.condition,
       ].map(s => colors.red(s)));
     }
 
@@ -125,14 +127,17 @@ export class IamChanges {
   }
 
   /**
-   * Return a machine-readable version of the changes
+   * Return a machine-readable version of the changes.
+   * This is only used in tests.
+   *
+   * @internal
    */
-  public toJson(): IamChangesJson {
+  public _toJson(): IamChangesJson {
     return deepRemoveUndefined({
-      statementAdditions: dropIfEmpty(this.statements.additions.map(s => s.toJson())),
-      statementRemovals: dropIfEmpty(this.statements.removals.map(s => s.toJson())),
-      managedPolicyAdditions: dropIfEmpty(this.managedPolicies.additions.map(s => s.toJson())),
-      managedPolicyRemovals: dropIfEmpty(this.managedPolicies.removals.map(s => s.toJson())),
+      statementAdditions: dropIfEmpty(this.statements.additions.map(s => s._toJson())),
+      statementRemovals: dropIfEmpty(this.statements.removals.map(s => s._toJson())),
+      managedPolicyAdditions: dropIfEmpty(this.managedPolicies.additions.map(s => s._toJson())),
+      managedPolicyRemovals: dropIfEmpty(this.managedPolicies.removals.map(s => s._toJson())),
     });
   }
 
@@ -184,7 +189,11 @@ export class IamChanges {
     const appliesToPrincipal = 'AWS:${' + logicalId + '}';
 
     return flatMap(policies, (policy: any) => {
-      return defaultPrincipal(appliesToPrincipal, parseStatements(renderIntrinsics(policy.PolicyDocument.Statement)));
+      // check if the Policy itself is not an intrinsic, like an Fn::If
+      const unparsedStatement = policy.PolicyDocument?.Statement
+        ? policy.PolicyDocument.Statement
+        : policy;
+      return defaultPrincipal(appliesToPrincipal, parseStatements(renderIntrinsics(unparsedStatement)));
     });
   }
 
@@ -234,11 +243,11 @@ export class IamChanges {
     });
   }
 
-  private readManagedPolicies(policyArns: string[] | undefined, logicalId: string): ManagedPolicyAttachment[] {
+  private readManagedPolicies(policyArns: any, logicalId: string): ManagedPolicyAttachment[] {
     if (!policyArns) { return []; }
 
     const rep = '${' + logicalId + '}';
-    return parseManagedPolicies(rep, renderIntrinsics(policyArns));
+    return ManagedPolicyAttachment.parseManagedPolicies(rep, renderIntrinsics(policyArns));
   }
 
   private readLambdaStatements(properties?: PropertyMap): Statement[] {
@@ -264,16 +273,6 @@ function defaultResource(resource: string, statements: Statement[]) {
   statements.forEach(s => s.resources.replaceEmpty(resource));
   statements.forEach(s => s.resources.replaceStar(resource));
   return statements;
-}
-
-/**
- * Render into a summary table cell
- */
-function renderTargets(targets: Targets): string {
-  if (targets.not) {
-    return targets.values.map(s => `NOT ${s}`).join('\n');
-  }
-  return targets.values.join('\n');
 }
 
 export interface IamChangesJson {

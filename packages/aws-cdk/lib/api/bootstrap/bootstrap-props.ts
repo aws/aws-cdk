@@ -1,14 +1,9 @@
 import { Tag } from '../../cdk-toolkit';
 
-/** @experimental */
 export const BUCKET_NAME_OUTPUT = 'BucketName';
-/** @experimental */
 export const REPOSITORY_NAME_OUTPUT = 'RepositoryName';
-/** @experimental */
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
-/** @experimental */
 export const BOOTSTRAP_VERSION_OUTPUT = 'BootstrapVersion';
-/** @experimental */
 export const BOOTSTRAP_VERSION_RESOURCE = 'CdkBootstrapVersion';
 
 /**
@@ -55,9 +50,19 @@ export interface BootstrappingParameters {
   /**
    * The ID of an existing KMS key to be used for encrypting items in the bucket.
    *
-   * @default - the default KMS key for S3 will be used.
+   * @default - use the default KMS key or create a custom one
    */
   readonly kmsKeyId?: string;
+
+  /**
+   * Whether or not to create a new customer master key (CMK)
+   *
+   * Only applies to modern bootstrapping. Legacy bootstrapping will never create
+   * a CMK, only use the default S3 key.
+   *
+   * @default false
+   */
+  readonly createCustomerMasterKey?: boolean;
 
   /**
    * The list of AWS account IDs that are trusted to deploy into the environment being bootstrapped.
@@ -65,6 +70,13 @@ export interface BootstrappingParameters {
    * @default - only the bootstrapped account can deploy into this environment
    */
   readonly trustedAccounts?: string[];
+
+  /**
+   * The list of AWS account IDs that are trusted to look up values in the environment being bootstrapped.
+   *
+   * @default - only the bootstrapped account can look up values in this environment
+   */
+  readonly trustedAccountsForLookup?: string[];
 
   /**
    * The ARNs of the IAM managed policies that should be attached to the role performing CloudFormation deployments.

@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { Lazy, Duration } from '@aws-cdk/core';
 import { Method } from './method';
-import { IVpcLink } from './vpc-link';
+import { IVpcLink, VpcLink } from './vpc-link';
 
 export interface IntegrationOptions {
   /**
@@ -80,6 +81,14 @@ export interface IntegrationOptions {
   readonly requestTemplates?: { [contentType: string]: string };
 
   /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
+
+  /**
    * The response that API Gateway provides after a method's backend completes
    * processing a request. API Gateway intercepts the response from the
    * backend so that you can control how API Gateway surfaces backend
@@ -90,7 +99,7 @@ export interface IntegrationOptions {
 
   /**
    * The type of network connection to the integration endpoint.
-   * @default ConnectionType.Internet
+   * @default - ConnectionType.VPC_LINK if `vpcLink` property is configured; ConnectionType.Internet otherwise.
    */
   readonly connectionType?: ConnectionType;
 
@@ -192,6 +201,10 @@ export class Integration {
     if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
       throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
+
+    if (options.timeout && !options.timeout.isUnresolved() && (options.timeout.toMilliseconds() < 50 || options.timeout.toMilliseconds() > 29000)) {
+      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+    }
   }
 
   /**
@@ -199,10 +212,34 @@ export class Integration {
    * being integrated, access the REST API object, method ARNs, etc.
    */
   public bind(_method: Method): IntegrationConfig {
+    let uri = this.props.uri;
+    const options = this.props.options;
+
+    if (options?.connectionType === ConnectionType.VPC_LINK && uri === undefined) {
+      uri = Lazy.string({
+        // needs to be a lazy since the targets can be added to the VpcLink construct after initialization.
+        produce: () => {
+          const vpcLink = options.vpcLink;
+          if (vpcLink instanceof VpcLink) {
+            const targets = vpcLink._targetDnsNames;
+            if (targets.length > 1) {
+              throw new Error("'uri' is required when there are more than one NLBs in the VPC Link");
+            } else {
+              return `http://${targets[0]}`;
+            }
+          } else {
+            throw new Error("'uri' is required when the 'connectionType' is VPC_LINK");
+          }
+        },
+      });
+    }
     return {
-      options: this.props.options,
+      options: {
+        ...options,
+        connectionType: options?.vpcLink ? ConnectionType.VPC_LINK : options?.connectionType,
+      },
       type: this.props.type,
-      uri: this.props.uri,
+      uri,
       integrationHttpMethod: this.props.integrationHttpMethod,
     };
   }

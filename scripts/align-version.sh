@@ -13,7 +13,7 @@ files="./package.json $(npx lerna ls -p -a | xargs -n1 -I@ echo @/package.json)"
 ${scriptdir}/align-version.js ${files}
 
 # validation
-marker=$(node -p "require('./scripts/get-version-marker').replace(/\./g, '\\\.')")
+marker=$(node -p "require('./scripts/resolve-version').marker.replace(/\./g, '\\\.')")
 
 # Get a list of all package.json files. None of them shouldn contain 0.0.0 anymore.
 # Exclude a couple of specific ones that we don't care about.

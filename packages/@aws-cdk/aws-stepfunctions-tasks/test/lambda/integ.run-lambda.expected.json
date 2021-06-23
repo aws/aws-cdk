@@ -37,13 +37,13 @@
         "Code": {
           "ZipFile": "exports.handler = async () => {\n        return {\n          statusCode: '200',\n          body: 'hello, world!'\n        };\n      };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "submitJobLambdaServiceRole4D897ABD",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -87,13 +87,13 @@
         "Code": {
           "ZipFile": "exports.handler = async function(event, context) {\n        return {\n          status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED'\n        };\n  };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "checkJobStateLambdaServiceRoleB8B57B65",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -167,6 +167,12 @@
     "StateMachine2E01A3A5": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
         "DefinitionString": {
           "Fn::Join": [
             "",
@@ -189,12 +195,6 @@
               },
               ":states:::lambda:invoke\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"Received a status that was not 200\",\"Cause\":\"Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
             ]
-          ]
-        },
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "StateMachineRoleB840431D",
-            "Arn"
           ]
         }
       },

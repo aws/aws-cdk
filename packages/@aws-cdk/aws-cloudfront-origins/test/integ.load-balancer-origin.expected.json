@@ -411,9 +411,8 @@
       "Properties": {
         "DistributionConfig": {
           "DefaultCacheBehavior": {
-            "ForwardedValues": {
-              "QueryString": false
-            },
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
             "TargetOriginId": "cloudfrontloadbalanceroriginDistributionOrigin1BCC75186",
             "ViewerProtocolPolicy": "allow-all"
           },
@@ -423,7 +422,10 @@
           "Origins": [
             {
               "CustomOriginConfig": {
-                "OriginProtocolPolicy": "https-only"
+                "OriginProtocolPolicy": "https-only",
+                "OriginSSLProtocols": [
+                  "TLSv1.2"
+                ]
               },
               "DomainName": {
                 "Fn::GetAtt": [

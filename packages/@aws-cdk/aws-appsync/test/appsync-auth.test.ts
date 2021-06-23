@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as cdk from '@aws-cdk/core';
@@ -86,6 +86,71 @@ describe('AppSync API Key Authorization', () => {
     expect(stack).toHaveResourceLike('AWS::AppSync::ApiKey', {
       Description: 'Custom Description',
     });
+  });
+
+  test('apiKeyConfig creates default with valid expiration date', () => {
+    const expirationDate: number = cdk.Expiration.after(cdk.Duration.days(10)).toEpoch();
+
+    // WHEN
+    new appsync.GraphqlApi(stack, 'API', {
+      name: 'apiKeyUnitTest',
+      schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.auth.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.API_KEY,
+          apiKeyConfig: {
+            expires: cdk.Expiration.after(cdk.Duration.days(10)),
+          },
+        },
+      },
+    });
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::ApiKey', {
+      ApiId: { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+      Expires: expirationDate,
+    });
+  });
+
+  test('apiKeyConfig fails if expire argument less than a day', () => {
+    // WHEN
+    const when = () => {
+      new appsync.GraphqlApi(stack, 'API', {
+        name: 'apiKeyUnitTest',
+        schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.auth.graphql')),
+        authorizationConfig: {
+          defaultAuthorization: {
+            authorizationType: appsync.AuthorizationType.API_KEY,
+            apiKeyConfig: {
+              expires: cdk.Expiration.after(cdk.Duration.hours(1)),
+            },
+          },
+        },
+      });
+    };
+
+    // THEN
+    expect(when).toThrowError('API key expiration must be between 1 and 365 days.');
+  });
+
+  test('apiKeyConfig fails if expire argument greater than 365 day', () => {
+    // WHEN
+    const when = () => {
+      new appsync.GraphqlApi(stack, 'API', {
+        name: 'apiKeyUnitTest',
+        schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.auth.graphql')),
+        authorizationConfig: {
+          defaultAuthorization: {
+            authorizationType: appsync.AuthorizationType.API_KEY,
+            apiKeyConfig: {
+              expires: cdk.Expiration.after(cdk.Duration.days(366)),
+            },
+          },
+        },
+      });
+    };
+
+    // THEN
+    expect(when).toThrowError('API key expiration must be between 1 and 365 days.');
   });
 
   test('appsync creates configured api key with additionalAuthorizationModes (not as first element)', () => {
@@ -340,7 +405,7 @@ describe('AppSync User Pool Authorization', () => {
     });
   });
 
-  test('User Pool property defaultAction does not configure when in additional auth', () => {
+  test('User Pool property defaultAction does not configure when in additional auth (complex)', () => {
     // WHEN
     new appsync.GraphqlApi(stack, 'api', {
       name: 'api',

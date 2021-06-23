@@ -2,14 +2,15 @@
  * Get access to construct internals that we need but got removed from the Stages PR.
  */
 import * as path from 'path';
-import { App, IConstruct, Stage } from '@aws-cdk/core';
+import { App, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct, Node } from 'constructs';
 
 export function appOf(construct: IConstruct): App {
-  const root = construct.node.root;
+  const root = Node.of(construct).root;
 
   if (!App.isApp(root)) {
-    throw new Error(`Construct must be created under an App, but is not: ${construct.node.path}`);
+    throw new Error(`Construct must be created under an App, but is not: ${Node.of(construct).path}`);
   }
 
   return root;

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { CfnParameter, Duration, Stack, App } from '@aws-cdk/core';
@@ -18,9 +18,15 @@ export = {
       'Resources': {
         'Queue4A7E3555': {
           'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
+
+    expect(stack).to(haveResource('AWS::SQS::Queue', {
+      DeletionPolicy: 'Delete',
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
@@ -33,6 +39,8 @@ export = {
       'Resources': {
         'DLQ581697C4': {
           'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
         'Queue4A7E3555': {
           'Type': 'AWS::SQS::Queue',
@@ -47,6 +55,8 @@ export = {
               'maxReceiveCount': 3,
             },
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
@@ -65,7 +75,7 @@ export = {
 
     test.throws(() => new sqs.Queue(stack, 'AnotherQueue', {
       retentionPeriod: Duration.days(15),
-    }), /message retention period must be 1209600 seconds of less/);
+    }), /message retention period must be 1209600 seconds or less/);
 
     test.done();
   },
@@ -99,6 +109,8 @@ export = {
               'Ref': 'myretentionperiod',
             },
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
@@ -119,6 +131,8 @@ export = {
       'Resources': {
         'MyQueueE6CA6235': {
           'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
         'MyQueuePolicy6BBEDDAC': {
           'Type': 'AWS::SQS::QueuePolicy',
@@ -162,7 +176,7 @@ export = {
       test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
       test.deepEqual(stack.resolve(imports.queueUrl), {
         'Fn::Join':
-        ['', ['https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1']],
+        ['', ['https://sqs.us-east-1.', { Ref: 'AWS::URLSuffix' }, '/123456789012/queue1']],
       });
       test.deepEqual(stack.resolve(imports.queueName), 'queue1');
       test.done();
@@ -174,6 +188,25 @@ export = {
       const fifoQueue = sqs.Queue.fromQueueArn(stack, 'FifoQueue', 'arn:aws:sqs:us-east-1:123456789012:queue2.fifo');
       test.deepEqual(stdQueue.fifo, false);
       test.deepEqual(fifoQueue.fifo, true);
+      test.done();
+    },
+
+    'importing works correctly for cross region queue'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+      // WHEN
+      const imports = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-west-2:123456789012:queue1');
+
+      // THEN
+
+      // "import" returns an IQueue bound to `Fn::ImportValue`s.
+      test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-west-2:123456789012:queue1');
+      test.deepEqual(stack.resolve(imports.queueUrl), {
+        'Fn::Join':
+        ['', ['https://sqs.us-west-2.', { Ref: 'AWS::URLSuffix' }, '/123456789012/queue1']],
+      });
+      test.deepEqual(stack.resolve(imports.queueName), 'queue1');
       test.done();
     },
   },
@@ -292,6 +325,8 @@ export = {
             'Properties': {
               'KmsMasterKeyId': 'alias/aws/sqs',
             },
+            'UpdateReplacePolicy': 'Delete',
+            'DeletionPolicy': 'Delete',
           },
         },
       });
@@ -359,6 +394,8 @@ export = {
             'QueueName': 'MyQueue.fifo',
             'FifoQueue': true,
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
@@ -381,6 +418,8 @@ export = {
           'Properties': {
             'FifoQueue': true,
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });

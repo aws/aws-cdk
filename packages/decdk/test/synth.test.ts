@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as reflect from 'jsii-reflect';
 import * as path from 'path';
+import { FUTURE_FLAGS } from '@aws-cdk/cx-api';
 import { DeclarativeStack, loadTypeSystem, readTemplate, stackNameFromFileName } from '../lib';
 
 const VALIDATE_ASSEMBLIES = true;
@@ -31,7 +32,11 @@ for (const templateFile of fs.readdirSync(dir)) {
     const template = await readTemplate(path.resolve(dir, templateFile));
     const typeSystem = await obtainTypeSystem();
 
-    const app = new cdk.App();
+    const app = new cdk.App({
+      context: {
+        ...FUTURE_FLAGS,
+      }
+    });
     const stackName = stackNameFromFileName(templateFile);
 
     new DeclarativeStack(app, stackName, {

@@ -1,7 +1,11 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
+import { IDomain } from '@aws-cdk/aws-elasticsearch';
 import { IFunction } from '@aws-cdk/aws-lambda';
+import { IServerlessCluster } from '@aws-cdk/aws-rds';
+import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import { CfnResource, IResource, Resource } from '@aws-cdk/core';
-import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
+import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, RdsDataSource, AwsIamConfig, ElasticsearchDataSource } from './data-source';
+import { Resolver, ExtendedResolverProps } from './resolver';
 
 /**
  * Optional configuration for data sources
@@ -20,6 +24,18 @@ export interface DataSourceOptions {
    * @default - No description
    */
   readonly description?: string;
+}
+
+/**
+ * Optional configuration for Http data sources
+ */
+export interface HttpDataSourceOptions extends DataSourceOptions {
+  /**
+   * The authorization config in case the HTTP endpoint requires authorization
+   *
+   * @default - none
+   */
+  readonly authorizationConfig?: AwsIamConfig;
 }
 
 /**
@@ -67,7 +83,7 @@ export interface IGraphqlApi extends IResource {
    * @param endpoint The http endpoint
    * @param options The optional configuration for this data source
    */
-  addHttpDataSource(id: string, endpoint: string, options?: DataSourceOptions): HttpDataSource;
+  addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource;
 
   /**
    * add a new Lambda data source to this API
@@ -77,6 +93,37 @@ export interface IGraphqlApi extends IResource {
    * @param options The optional configuration for this data source
    */
   addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource;
+
+  /**
+   * add a new Rds data source to this API
+   *
+   * @param id The data source's id
+   * @param serverlessCluster The serverless cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the serverless cluster
+   * @param databaseName The optional name of the database to use within the cluster
+   * @param options The optional configuration for this data source
+   */
+  addRdsDataSource(
+    id: string,
+    serverlessCluster: IServerlessCluster,
+    secretStore: ISecret,
+    databaseName?: string,
+    options?: DataSourceOptions
+  ): RdsDataSource;
+
+  /**
+   * add a new elasticsearch data source to this API
+   *
+   * @param id The data source's id
+   * @param domain The elasticsearch domain for this data source
+   * @param options The optional configuration for this data source
+   */
+  addElasticsearchDataSource(id: string, domain: IDomain, options?: DataSourceOptions): ElasticsearchDataSource;
+
+  /**
+   * creates a new resolver for this datasource and API using the given properties
+   */
+  createResolver(props: ExtendedResolverProps): Resolver;
 
   /**
    * Add schema dependency if not imported
@@ -140,12 +187,13 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param endpoint The http endpoint
    * @param options The optional configuration for this data source
    */
-  public addHttpDataSource(id: string, endpoint: string, options?: DataSourceOptions): HttpDataSource {
+  public addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource {
     return new HttpDataSource(this, id, {
       api: this,
       endpoint,
       name: options?.name,
       description: options?.description,
+      authorizationConfig: options?.authorizationConfig,
     });
   }
 
@@ -162,6 +210,57 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       lambdaFunction,
       name: options?.name,
       description: options?.description,
+    });
+  }
+
+  /**
+   * add a new Rds data source to this API
+   * @param id The data source's id
+   * @param serverlessCluster The serverless cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the serverless cluster
+   * @param databaseName The optional name of the database to use within the cluster
+   * @param options The optional configuration for this data source
+   */
+  public addRdsDataSource(
+    id: string,
+    serverlessCluster: IServerlessCluster,
+    secretStore: ISecret,
+    databaseName?: string,
+    options?: DataSourceOptions,
+  ): RdsDataSource {
+    return new RdsDataSource(this, id, {
+      api: this,
+      name: options?.name,
+      description: options?.description,
+      serverlessCluster,
+      secretStore,
+      databaseName,
+    });
+  }
+
+  /**
+   * add a new elasticsearch data source to this API
+   *
+   * @param id The data source's id
+   * @param domain The elasticsearch domain for this data source
+   * @param options The optional configuration for this data source
+   */
+  public addElasticsearchDataSource(id: string, domain: IDomain, options?: DataSourceOptions): ElasticsearchDataSource {
+    return new ElasticsearchDataSource(this, id, {
+      api: this,
+      name: options?.name,
+      description: options?.description,
+      domain,
+    });
+  }
+
+  /**
+   * creates a new resolver for this datasource and API using the given properties
+   */
+  public createResolver(props: ExtendedResolverProps): Resolver {
+    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+      api: this,
+      ...props,
     });
   }
 

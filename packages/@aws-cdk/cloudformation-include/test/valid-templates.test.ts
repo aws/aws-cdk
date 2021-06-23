@@ -1,9 +1,11 @@
 import * as path from 'path';
-import { ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as ssm from '@aws-cdk/aws-ssm';
 import * as core from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
@@ -114,6 +116,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('accepts booleans for properties with type string', () => {
+    includeTestTemplate(stack, 'boolean-for-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('boolean-for-string.json'),
+    );
+  });
+
   test('correctly changes the logical IDs, including references, if imported with preserveLogicalIds=false', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-encryption-key.json', {
       preserveLogicalIds: false,
@@ -213,11 +223,29 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can correctly ingest a resource with a property of type: Map of Lists of primitive types', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'ssm-association.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('ssm-association.json'),
+    );
+    const association = cfnTemplate.getResource('Association') as ssm.CfnAssociation;
+    expect(Object.keys(association.parameters as any)).toHaveLength(2);
+  });
+
   test('can ingest a template with intrinsic functions and conditions, and output it unchanged', () => {
     includeTestTemplate(stack, 'functions-and-conditions.json');
 
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('functions-and-conditions.json'),
+    );
+  });
+
+  test('can ingest a JSON template with string-form Fn::GetAtt, and output it unchanged', () => {
+    includeTestTemplate(stack, 'get-att-string-form.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('get-att-string-form.json'),
     );
   });
 
@@ -242,6 +270,14 @@ describe('CDK Include', () => {
 
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('fn-sub-map-dotted-attributes.json'),
+    );
+  });
+
+  test('preserves an empty map passed to Fn::Sub', () => {
+    includeTestTemplate(stack, 'fn-sub-map-empty.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-map-empty.json'),
     );
   });
 
@@ -296,6 +332,44 @@ describe('CDK Include', () => {
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('fn-sub-brace-edges.json'),
     );
+  });
+
+  test('when a parameter in an Fn::Sub expression is substituted with a deploy-time value, it adds a new key to the Fn::Sub map', () => {
+    const parameter = new core.CfnParameter(stack, 'AnotherParam');
+    includeTestTemplate(stack, 'fn-sub-parameters.json', {
+      parameters: {
+        'MyParam': `it's_a_${parameter.valueAsString}_concatenation`,
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        "AnotherParam": {
+          "Type": "String",
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Sub": [
+                "${MyParam}",
+                {
+                  "MyParam": {
+                    "Fn::Join": ["", [
+                      "it's_a_",
+                      { "Ref": "AnotherParam" },
+                      "_concatenation",
+                    ]],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
   });
 
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
@@ -726,6 +800,14 @@ describe('CDK Include', () => {
     }).toThrow(/Mapping with name 'NonExistentMapping' was not found in the template/);
   });
 
+  test('can ingest a template that uses Fn::FindInMap with the first argument being a dynamic reference', () => {
+    includeTestTemplate(stack, 'find-in-map-with-dynamic-mapping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('find-in-map-with-dynamic-mapping.json'),
+    );
+  });
+
   test('handles renaming Mapping references', () => {
     const cfnTemplate = includeTestTemplate(stack, 'only-mapping-and-bucket.json');
     const someMapping = cfnTemplate.getMapping('SomeMapping');
@@ -755,6 +837,14 @@ describe('CDK Include', () => {
         },
       },
     });
+  });
+
+  test('can ingest a template that uses Fn::FindInMap for the value of a boolean property', () => {
+    includeTestTemplate(stack, 'find-in-map-for-boolean-property.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('find-in-map-for-boolean-property.json'),
+    );
   });
 
   test('can ingest a template that contains Rules, and allows retrieving those Rules', () => {
@@ -971,6 +1061,14 @@ describe('CDK Include', () => {
       });
     }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
   });
+
+  test('can ingest a template that contains properties not in the current CFN spec, and output it unchanged', () => {
+    includeTestTemplate(stack, 'properties-not-in-cfn-spec.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('properties-not-in-cfn-spec.json'),
+    );
+  });
 });
 
 interface IncludeTestTemplateProps {
@@ -981,7 +1079,7 @@ interface IncludeTestTemplateProps {
   readonly parameters?: { [parameterName: string]: any }
 }
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string, props: IncludeTestTemplateProps = {}): inc.CfnInclude {
+function includeTestTemplate(scope: constructs.Construct, testTemplate: string, props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
     parameters: props.parameters,

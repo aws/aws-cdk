@@ -1,7 +1,10 @@
 import { DockerImageAsset, DockerImageAssetOptions } from '@aws-cdk/aws-ecr-assets';
-import * as cdk from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for building an AssetImage.
@@ -22,7 +25,7 @@ export class AssetImage extends ContainerImage {
     super();
   }
 
-  public bind(scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+  public bind(scope: CoreConstruct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     const asset = new DockerImageAsset(scope, 'AssetImage', {
       directory: this.directory,
       ...this.props,

@@ -1,0 +1,19 @@
+{
+  "ResourceTypes": {
+    "AWS::ElastiCache::User": {
+      "patch": {
+        "description": "Remove the Authentication and UserGroupIds attributes from the AWS::ElastiCache::User resource type, as they have a complex type",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Attributes/Authentication"
+          },
+          {
+            "op": "remove",
+            "path": "/Attributes/UserGroupIds"
+          }
+        ]
+      }
+    }
+  }
+}

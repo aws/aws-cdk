@@ -98,7 +98,7 @@ export async function latestVersionIfHigher(currentVersion: string, cacheFile: V
 }
 
 export async function displayVersionMessage(): Promise<void> {
-  if (!process.stdout.isTTY) {
+  if (!process.stdout.isTTY || process.env.CDK_DISABLE_VERSION_CHECK) {
     return;
   }
 
@@ -108,7 +108,7 @@ export async function displayVersionMessage(): Promise<void> {
     if (laterVersion) {
       const bannerMsg = formatAsBanner([
         `Newer version of CDK is available [${colors.green(laterVersion as string)}]`,
-        'Upgrade recommended',
+        'Upgrade recommended (npm install -g aws-cdk)',
       ]);
       bannerMsg.forEach((e) => print(e));
     }

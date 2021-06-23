@@ -1,0 +1,16 @@
+{
+  "PropertyTypes": {
+      "AWS::ECS::Service.LoadBalancer": {
+          "patch": {
+            "description": "Optionality was changed in v18.4 from true to false. We need to preserve it as compatibility checker will fail. Patch can be dropped when https://github.com/aws/jsii/issues/2064 is closed",
+            "operations": [
+              {
+                "op": "replace",
+                "path": "/Properties/ContainerPort/Required",
+                "value": true
+              }
+            ]
+          }
+      }
+  }
+}

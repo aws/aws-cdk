@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { App, Construct, Stack } from '@aws-cdk/core';
-import { Cluster, KubernetesVersion } from '../lib';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { Cluster, ClusterProps, KubernetesVersion } from '../lib';
 
 const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
@@ -17,9 +18,13 @@ export function testFixtureNoVpc() {
   return { stack, app };
 }
 
-export function testFixtureCluster() {
+export function testFixtureCluster(props: Omit<ClusterProps, 'version'> = {}) {
   const { stack, app } = testFixtureNoVpc();
-  const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: CLUSTER_VERSION,
+    prune: false, // mainly because this feature was added later and we wanted to avoid having to update all test expectations....
+    ...props,
+  });
 
   return { stack, app, cluster };
 }

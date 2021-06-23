@@ -118,7 +118,12 @@ export class Schema {
 
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
-        definition,
+        definition: this.mode === SchemaMode.CODE?
+          Lazy.string({
+            produce: () => this.types.reduce((acc, type) => `${acc}${type._bindToGraphqlApi(api).toString()}\n`,
+              `${this.declareSchema()}${this.definition}`),
+          })
+          : this.definition,
         definitionS3Location,
       });
     }
@@ -133,7 +138,6 @@ export class Schema {
    * @param delimiter the delimiter between schema and addition
    * @default - ''
    *
-   * @experimental
    */
   public addToSchema(addition: string, delimiter?: string): void {
     if (this.mode !== SchemaMode.CODE) {
@@ -144,8 +148,8 @@ export class Schema {
   }
 
   /**
-   * Add a query field to the schema's Query. If one isn't set by
-   * the user, CDK will create an Object Type called 'Query'. For example,
+   * Add a query field to the schema's Query. CDK will create an
+   * Object Type called 'Query'. For example,
    *
    * type Query {
    *   fieldName: Field.returnType
@@ -156,7 +160,7 @@ export class Schema {
    */
   public addQuery(fieldName: string, field: ResolvableField): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
-      throw new Error(`Unable to add query. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
+      throw new Error(`Unable to add query. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this.mode}`);
     }
     if (!this.query) {
       this.query = new ObjectType('Query', { definition: {} });
@@ -167,8 +171,8 @@ export class Schema {
   }
 
   /**
-   * Add a mutation field to the schema's Mutation. If one isn't set by
-   * the user, CDK will create an Object Type called 'Mutation'. For example,
+   * Add a mutation field to the schema's Mutation. CDK will create an
+   * Object Type called 'Mutation'. For example,
    *
    * type Mutation {
    *   fieldName: Field.returnType
@@ -179,7 +183,7 @@ export class Schema {
    */
   public addMutation(fieldName: string, field: ResolvableField): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
-      throw new Error(`Unable to add mutation. Schema definition mode must be ${SchemaMode.CODE} Received: ${this.mode}`);
+      throw new Error(`Unable to add mutation. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this.mode}`);
     }
     if (!this.mutation) {
       this.mutation = new ObjectType('Mutation', { definition: {} });
@@ -190,11 +194,37 @@ export class Schema {
   }
 
   /**
+   * Add a subscription field to the schema's Subscription. CDK will create an
+   * Object Type called 'Subscription'. For example,
+   *
+   * type Subscription {
+   *   fieldName: Field.returnType
+   * }
+   *
+   * @param fieldName the name of the Subscription
+   * @param field the resolvable field to for this Subscription
+   */
+  public addSubscription(fieldName: string, field: ResolvableField): ObjectType {
+    if (this.mode !== SchemaMode.CODE) {
+      throw new Error(`Unable to add subscription. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this.mode}`);
+    }
+    if (!this.subscription) {
+      this.subscription = new ObjectType('Subscription', { definition: {} });
+      this.addType(this.subscription);
+    }
+    const directives = field.fieldOptions?.directives?.filter((directive) => directive.mutationFields);
+    if (directives && directives.length > 1) {
+      throw new Error(`Subscription fields must not have more than one @aws_subscribe directives. Received: ${directives.length}`);
+    }
+    this.subscription.addField({ fieldName, field });
+    return this.subscription;
+  }
+
+  /**
    * Add type to the schema
    *
    * @param type the intermediate type to add to the schema
    *
-   * @experimental
    */
   public addType(type: IIntermediateType): IIntermediateType {
     if (this.mode !== SchemaMode.CODE) {

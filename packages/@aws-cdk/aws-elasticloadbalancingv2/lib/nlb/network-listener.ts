@@ -1,5 +1,7 @@
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
-import { BaseListener } from '../shared/base-listener';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';
@@ -86,11 +88,51 @@ export interface NetworkListenerProps extends BaseNetworkListenerProps {
 }
 
 /**
+ * Options for looking up a network listener.
+ */
+export interface NetworkListenerLookupOptions extends BaseListenerLookupOptions {
+  /**
+   * Protocol of the listener port
+   * @default - listener is not filtered by protocol
+   */
+  readonly listenerProtocol?: Protocol;
+}
+
+/**
  * Define a Network Listener
  *
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
 export class NetworkListener extends BaseListener implements INetworkListener {
+  /**
+   * Looks up a network listener
+   */
+  public static fromLookup(scope: Construct, id: string, options: NetworkListenerLookupOptions): INetworkListener {
+    let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
+    if (options.listenerProtocol) {
+      validateNetworkProtocol(options.listenerProtocol);
+
+      switch (options.listenerProtocol) {
+        case Protocol.TCP: listenerProtocol = cxschema.LoadBalancerListenerProtocol.TCP; break;
+        case Protocol.UDP: listenerProtocol = cxschema.LoadBalancerListenerProtocol.UDP; break;
+        case Protocol.TCP_UDP: listenerProtocol = cxschema.LoadBalancerListenerProtocol.TCP_UDP; break;
+        case Protocol.TLS: listenerProtocol = cxschema.LoadBalancerListenerProtocol.TLS; break;
+      }
+    }
+
+    const props = BaseListener._queryContextProvider(scope, {
+      userOptions: options,
+      listenerProtocol: listenerProtocol,
+      loadBalancerType: cxschema.LoadBalancerType.NETWORK,
+    });
+
+    class LookedUp extends Resource implements INetworkListener {
+      public listenerArn = props.listenerArn;
+    }
+
+    return new LookedUp(scope, id);
+  }
+
   /**
    * Import an existing listener
    */
@@ -105,7 +147,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * The load balancer this listener is attached to
    */
-  private readonly loadBalancer: INetworkLoadBalancer;
+  public readonly loadBalancer: INetworkLoadBalancer;
 
   /**
    * the protocol of the listener
@@ -197,6 +239,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       port: props.port,
       protocol: props.protocol ?? this.protocol,
       proxyProtocolV2: props.proxyProtocolV2,
+      preserveClientIp: props.preserveClientIp,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
       vpc: this.loadBalancer.vpc,
@@ -290,6 +333,14 @@ export interface AddNetworkTargetsProps {
    * @default false
    */
   readonly proxyProtocolV2?: boolean;
+
+  /**
+   * Indicates whether client IP preservation is enabled.
+   *
+   * @default false if the target group type is IP address and the
+   * target group protocol is TCP or TLS. Otherwise, true.
+   */
+  readonly preserveClientIp?: boolean;
 
   /**
    * Health check configuration

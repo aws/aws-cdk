@@ -1,0 +1,32 @@
+{
+  "PropertyTypes": {
+    "AWS::DataBrew::Recipe.Action": {
+      "patch": {
+        "description": "AWS::DataBrew::Recipe.Action.Parameters does not have a type",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/Parameters/Type",
+            "value": "Map"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Parameters/PrimitiveItemType",
+            "value": "String"
+          }
+        ]
+      }
+    },
+    "AWS::DataBrew::Recipe.RecipeStep": {
+      "patch": {
+        "description": "AWS::DataBrew::Recipe.RecipeStep.Action has both PrimitiveType and Type",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Action/PrimitiveType"
+          }
+        ]
+      }
+    }
+  }
+}

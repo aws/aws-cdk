@@ -1,11 +1,18 @@
 import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, CfnOutput, Construct, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
+import { Annotations, App, Aws, CfnOutput, Fn, Lazy, PhysicalName, Stack, Stage } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
 
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
+const CODE_BUILD_LENGTH_LIMIT = 100;
 /**
  * Properties for a CdkPipeline
  */
@@ -55,6 +62,26 @@ export interface CdkPipelineProps {
   readonly pipelineName?: string;
 
   /**
+   * Create KMS keys for cross-account deployments
+   *
+   * This controls whether the pipeline is enabled for cross-account deployments.
+   *
+   * Can only be set if `codePipeline` is not set.
+   *
+   * By default cross-account deployments are enabled, but this feature requires
+   * that KMS Customer Master Keys are created which have a cost of $1/month.
+   *
+   * If you do not need cross-account deployments, you can set this to `false` to
+   * not create those keys and save on that cost (the artifact bucket will be
+   * encrypted with an AWS-managed key). However, cross-account deployments will
+   * no longer be possible.
+   *
+   * @default true
+   */
+  readonly crossAccountKeys?: boolean;
+  // @deprecated(v2): switch to default false
+
+  /**
    * CDK CLI version to use in pipeline
    *
    * Some Actions in the pipeline will download and run a version of the CDK
@@ -63,6 +90,67 @@ export interface CdkPipelineProps {
    * @default - Latest version
    */
   readonly cdkCliVersion?: string;
+
+  /**
+   * The VPC where to execute the CdkPipeline actions.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * Whether the pipeline will update itself
+   *
+   * This needs to be set to `true` to allow the pipeline to reconfigure
+   * itself when assets or stages are being added to it, and `true` is the
+   * recommended setting.
+   *
+   * You can temporarily set this to `false` while you are iterating
+   * on the pipeline itself and prefer to deploy changes using `cdk deploy`.
+   *
+   * @default true
+   */
+  readonly selfMutating?: boolean;
+
+  /**
+   * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
+   *
+   * @default false
+   */
+  readonly singlePublisherPerType?: boolean;
+
+  /**
+   * Additional commands to run before installing cdk-assets during the asset publishing step
+   * Use this to setup proxies or npm mirrors
+   *
+   * @default -
+   */
+  readonly assetPreInstallCommands?: string[];
+
+  /**
+   * Whether the pipeline needs to build Docker images in the UpdatePipeline stage.
+   *
+   * If the UpdatePipeline stage tries to build a Docker image and this flag is not
+   * set to `true`, the build step will run in non-privileged mode and consequently
+   * will fail with a message like:
+   *
+   * > Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
+   * > Is the docker daemon running?
+   *
+   * This flag has an effect only if `selfMutating` is also `true`.
+   *
+   * @default - false
+   */
+  readonly supportDockerAssets?: boolean;
 }
 
 /**
@@ -77,7 +165,7 @@ export interface CdkPipelineProps {
  * - Keeping the pipeline up-to-date as the CDK apps change.
  * - Using stack outputs later on in the pipeline.
  */
-export class CdkPipeline extends Construct {
+export class CdkPipeline extends CoreConstruct {
   private readonly _pipeline: codepipeline.Pipeline;
   private readonly _assets: AssetPublishing;
   private readonly _stages: CdkStage[] = [];
@@ -98,11 +186,15 @@ export class CdkPipeline extends Construct {
       if (props.pipelineName) {
         throw new Error('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (props.crossAccountKeys !== undefined) {
+        throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
 
       this._pipeline = props.codePipeline;
     } else {
       this._pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
         pipelineName: props.pipelineName,
+        crossAccountKeys: props.crossAccountKeys,
         restartExecutionOnUpdate: true,
       });
     }
@@ -116,12 +208,6 @@ export class CdkPipeline extends Construct {
     }
     if (!props.sourceAction && (!props.codePipeline || props.codePipeline.stages.length < 1)) {
       throw new Error('You must pass a \'sourceAction\' (or a \'codePipeline\' that already has a Source stage)');
-    }
-    if (!props.synthAction && (!props.codePipeline || props.codePipeline.stages.length < 2)) {
-      // This looks like a weirdly specific requirement, but actually the underlying CodePipeline
-      // requires that a Pipeline has at least 2 stages. We're just hitching onto upstream
-      // requirements to do this check.
-      throw new Error('You must pass a \'synthAction\' (or a \'codePipeline\' that already has a Build stage)');
     }
 
     if (props.sourceAction) {
@@ -138,24 +224,29 @@ export class CdkPipeline extends Construct {
       });
     }
 
-    this._pipeline.addStage({
-      stageName: 'UpdatePipeline',
-      actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
-        cloudAssemblyInput: this._cloudAssemblyArtifact,
-        pipelineStackName: pipelineStack.stackName,
-        cdkCliVersion: props.cdkCliVersion,
-        projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
-      })],
-    });
+    if (props.selfMutating ?? true) {
+      this._pipeline.addStage({
+        stageName: 'UpdatePipeline',
+        actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
+          cloudAssemblyInput: this._cloudAssemblyArtifact,
+          pipelineStackHierarchicalId: pipelineStack.node.path,
+          cdkCliVersion: props.cdkCliVersion,
+          projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+          privileged: props.supportDockerAssets,
+        })],
+      });
+    }
 
     this._assets = new AssetPublishing(this, 'Assets', {
       cloudAssemblyInput: this._cloudAssemblyArtifact,
       cdkCliVersion: props.cdkCliVersion,
       pipeline: this._pipeline,
       projectName: maybeSuffix(props.pipelineName, '-publish'),
+      vpc: props.vpc,
+      subnetSelection: props.subnetSelection,
+      singlePublisherPerType: props.singlePublisherPerType,
+      preInstallCommands: props.assetPreInstallCommands,
     });
-
-    Aspects.of(this).add({ visit: () => this._assets.removeAssetsStageIfEmpty() });
   }
 
   /**
@@ -230,7 +321,9 @@ export class CdkPipeline extends Construct {
     if (!this._outputArtifacts[stack.artifactId]) {
       // We should have stored the ArtifactPath in the map, but its Artifact
       // property isn't publicly readable...
-      this._outputArtifacts[stack.artifactId] = new codepipeline.Artifact(`Artifact_${stack.artifactId}_Outputs`);
+      const artifactName = `${stack.artifactId}_Outputs`;
+      const compactName = artifactName.slice(artifactName.length - Math.min(artifactName.length, CODE_BUILD_LENGTH_LIMIT));
+      this._outputArtifacts[stack.artifactId] = new codepipeline.Artifact(compactName);
     }
 
     return new StackOutput(this._outputArtifacts[stack.artifactId].atPath('outputs.json'), cfnOutput.logicalId);
@@ -258,7 +351,7 @@ export class CdkPipeline extends Construct {
     return flatMap(this._pipeline.stages, s => s.actions.filter(isDeployAction));
   }
 
-  private* validateDeployOrder(): IterableIterator<string> {
+  private * validateDeployOrder(): IterableIterator<string> {
     const stackActions = this.stackActions;
     for (const stackAction of stackActions) {
       // For every dependency, it must be executed in an action before this one is prepared.
@@ -267,16 +360,16 @@ export class CdkPipeline extends Construct {
 
         if (depAction === undefined) {
           Annotations.of(this).addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
-              `'${depId}', but that dependency is not deployed through the pipeline!`);
+            `'${depId}', but that dependency is not deployed through the pipeline!`);
         } else if (!(depAction.executeRunOrder < stackAction.prepareRunOrder)) {
           yield `Stack '${stackAction.stackName}' depends on stack ` +
-              `'${depAction.stackName}', but is deployed before it in the pipeline!`;
+            `'${depAction.stackName}', but is deployed before it in the pipeline!`;
         }
       }
     }
   }
 
-  private* validateRequestedOutputs(): IterableIterator<string> {
+  private * validateRequestedOutputs(): IterableIterator<string> {
     const artifactIds = this.stackActions.map(s => s.stackArtifactId);
 
     for (const artifactId of Object.keys(this._outputArtifacts)) {
@@ -300,29 +393,40 @@ interface AssetPublishingProps {
   readonly pipeline: codepipeline.Pipeline;
   readonly cdkCliVersion?: string;
   readonly projectName?: string;
+  readonly vpc?: ec2.IVpc;
+  readonly subnetSelection?: ec2.SubnetSelection;
+  readonly singlePublisherPerType?: boolean;
+  readonly preInstallCommands?: string[];
 }
 
 /**
  * Add appropriate publishing actions to the asset publishing stage
  */
-class AssetPublishing extends Construct {
+class AssetPublishing extends CoreConstruct {
+  // CodePipelines has a hard limit of 50 actions per stage. See https://github.com/aws/aws-cdk/issues/9353
+  private readonly MAX_PUBLISHERS_PER_STAGE = 50;
+
   private readonly publishers: Record<string, PublishAssetsAction> = {};
   private readonly assetRoles: Record<string, iam.IRole> = {};
+  private readonly assetPublishingRoles: Record<string, Set<string>> = {};
   private readonly myCxAsmRoot: string;
 
-  private readonly stage: codepipeline.IStage;
+  private readonly lastStageBeforePublishing?: codepipeline.IStage;
+  private readonly stages: codepipeline.IStage[] = [];
   private readonly pipeline: codepipeline.Pipeline;
-  private _fileAssetCtr = 1;
-  private _dockerAssetCtr = 1;
+
+  private _fileAssetCtr = 0;
+  private _dockerAssetCtr = 0;
 
   constructor(scope: Construct, id: string, private readonly props: AssetPublishingProps) {
     super(scope, id);
     this.myCxAsmRoot = path.resolve(assemblyBuilderOf(appOf(this)).outdir);
 
-    // We MUST add the Stage immediately here, otherwise it will be in the wrong place
-    // in the pipeline!
-    this.stage = this.props.pipeline.addStage({ stageName: 'Assets' });
     this.pipeline = this.props.pipeline;
+    // Hacks to get access to the innards of Pipeline
+    const stages: codepipeline.IStage[] = (this.props.pipeline as any)._stages;
+    // Any asset publishing stages will be added directly after the last stage that currently exists.
+    this.lastStageBeforePublishing = stages.slice(-1)[0];
   }
 
   /**
@@ -347,47 +451,57 @@ class AssetPublishing extends Construct {
     if (!this.assetRoles[command.assetType]) {
       this.generateAssetRole(command.assetType);
     }
+    this.assetPublishingRoles[command.assetType] = (this.assetPublishingRoles[command.assetType] ?? new Set()).add(command.assetPublishingRoleArn);
 
-    let action = this.publishers[command.assetId];
+    const publisherKey = this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId;
+
+    let action = this.publishers[publisherKey];
     if (!action) {
+      // Dynamically create new stages as needed, with `MAX_PUBLISHERS_PER_STAGE` assets per stage.
+      const stageIndex = this.props.singlePublisherPerType ? 0 :
+        Math.floor((this._fileAssetCtr + this._dockerAssetCtr) / this.MAX_PUBLISHERS_PER_STAGE);
+
+      if (!this.props.singlePublisherPerType && stageIndex >= this.stages.length) {
+        const previousStage = this.stages.slice(-1)[0] ?? this.lastStageBeforePublishing;
+        this.stages.push(this.pipeline.addStage({
+          stageName: `Assets${stageIndex > 0 ? stageIndex + 1 : ''}`,
+          placement: { justAfter: previousStage },
+        }));
+      } else if (this.props.singlePublisherPerType && this.stages.length == 0) {
+        this.stages.push(this.pipeline.addStage({
+          stageName: 'Assets',
+          placement: { justAfter: this.lastStageBeforePublishing },
+        }));
+      }
+
       // The asset ID would be a logical candidate for the construct path and project names, but if the asset
       // changes it leads to recreation of a number of Role/Policy/Project resources which is slower than
       // necessary. Number sequentially instead.
       //
       // FIXME: The ultimate best solution is probably to generate a single Project per asset type
       // and reuse that for all assets.
-      const id = command.assetType === AssetType.FILE ? `FileAsset${this._fileAssetCtr++}` : `DockerAsset${this._dockerAssetCtr++}`;
+      const id = this.props.singlePublisherPerType ?
+        command.assetType === AssetType.FILE ? 'FileAsset' : 'DockerAsset' :
+        command.assetType === AssetType.FILE ? `FileAsset${++this._fileAssetCtr}` : `DockerAsset${++this._dockerAssetCtr}`;
 
       // NOTE: It's important that asset changes don't force a pipeline self-mutation.
       // This can cause an infinite loop of updates (see https://github.com/aws/aws-cdk/issues/9080).
       // For that reason, we use the id as the actionName below, rather than the asset hash.
-      action = this.publishers[command.assetId] = new PublishAssetsAction(this, id, {
+      action = this.publishers[publisherKey] = new PublishAssetsAction(this, id, {
         actionName: id,
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
         role: this.assetRoles[command.assetType],
+        vpc: this.props.vpc,
+        subnetSelection: this.props.subnetSelection,
+        createBuildspecFile: this.props.singlePublisherPerType,
+        preInstallCommands: this.props.preInstallCommands,
       });
-      this.stage.addAction(action);
+      this.stages[stageIndex].addAction(action);
     }
 
     action.addPublishCommand(relativePath, command.assetSelector);
-  }
-
-  /**
-   * Remove the Assets stage if it turns out we didn't add any Assets to publish
-   */
-  public removeAssetsStageIfEmpty() {
-    if (Object.keys(this.publishers).length === 0) {
-      // Hacks to get access to innards of Pipeline
-      // Modify 'stages' array in-place to remove Assets stage if empty
-      const stages: codepipeline.IStage[] = (this.props.pipeline as any)._stages;
-
-      const ix = stages.indexOf(this.stage);
-      if (ix > -1) {
-        stages.splice(ix, 1);
-      }
-    }
   }
 
   /**
@@ -429,6 +543,7 @@ class AssetPublishing extends Construct {
         'codebuild:CreateReport',
         'codebuild:UpdateReport',
         'codebuild:BatchPutTestCases',
+        'codebuild:BatchPutCodeCoverages',
       ],
       resources: [codeBuildArn],
     }));
@@ -444,16 +559,49 @@ class AssetPublishing extends Construct {
     }));
 
     // Publishing role access
-    const rolePattern = assetType === AssetType.DOCKER_IMAGE
-      ? 'arn:*:iam::*:role/*-image-publishing-role-*'
-      : 'arn:*:iam::*:role/*-file-publishing-role-*';
+    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
+    // Lazy-evaluated so all asset publishing roles are included.
     assetRole.addToPolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: [rolePattern],
+      resources: Lazy.list({ produce: () => [...this.assetPublishingRoles[assetType]].map(arn => Fn.sub(arn)) }),
     }));
 
     // Artifact access
     this.pipeline.artifactBucket.grantRead(assetRole);
+
+    // VPC permissions required for CodeBuild
+    // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
+    // we need to do this.
+    if (this.props.vpc) {
+      assetRole.attachInlinePolicy(new iam.Policy(assetRole, 'VpcPolicy', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
+            actions: ['ec2:CreateNetworkInterfacePermission'],
+            conditions: {
+              StringEquals: {
+                'ec2:Subnet': this.props.vpc
+                  .selectSubnets(this.props.subnetSelection).subnetIds
+                  .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
+                'ec2:AuthorizedService': 'codebuild.amazonaws.com',
+              },
+            },
+          }),
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: [
+              'ec2:CreateNetworkInterface',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeDhcpOptions',
+              'ec2:DescribeVpcs',
+            ],
+          }),
+        ],
+      }));
+    }
 
     this.assetRoles[assetType] = assetRole.withoutPolicyUpdates();
     return this.assetRoles[assetType];
