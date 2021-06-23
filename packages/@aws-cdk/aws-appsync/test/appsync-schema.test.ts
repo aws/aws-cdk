@@ -1,5 +1,5 @@
 import { join } from 'path';
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -372,7 +372,7 @@ describe('testing schema definition mode `s3`', () => {
     // THEN
     expect(() => {
       api.addQuery('blah', new appsync.ResolvableField({ returnType: t.string }));
-    }).toThrowError('Unable to add query. Schema definition mode must be CODE Received: S3');
+    }).toThrowError('Unable to add query. Schema definition mode must be CODE. Received: S3');
   });
 
   test('definition mode `s3` errors when addMutation is called', () => {
@@ -385,6 +385,6 @@ describe('testing schema definition mode `s3`', () => {
     // THEN
     expect(() => {
       api.addMutation('blah', new appsync.ResolvableField({ returnType: t.string }));
-    }).toThrowError('Unable to add mutation. Schema definition mode must be CODE Received: S3');
+    }).toThrowError('Unable to add mutation. Schema definition mode must be CODE. Received: S3');
   });
 });

@@ -110,7 +110,7 @@ export class Schema {
       } else if (this.mode === SchemaMode.S3) {
         definitionS3Location = this.definition;
       } else {
-        definition = Lazy.stringValue({
+        definition = Lazy.string({
           produce: () => this.types.reduce((acc, type) => { return `${acc}${type._bindToGraphqlApi(api).toString()}\n`; },
             `${this.declareSchema()}${this.definition}`),
         });
@@ -118,12 +118,7 @@ export class Schema {
 
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
-        definition: this.mode === SchemaMode.CODE?
-          Lazy.string({
-            produce: () => this.types.reduce((acc, type) => `${acc}${type._bindToGraphqlApi(api).toString()}\n`,
-              `${this.declareSchema()}${this.definition}`),
-          })
-          : this.definition,
+        definition,
         definitionS3Location,
       });
     }
