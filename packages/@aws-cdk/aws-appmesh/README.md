@@ -298,9 +298,9 @@ const gateway2 = new appmesh.VirtualGateway(this, 'gateway2', {
 
 Mutual TLS authentication is an optional component of TLS that offers two-way peer authentication. 
 To enable mutual TLS authentication, 
-add `mutualTlsCertificate` property to TLS Client Policy and/or `mutualTlsCertificate` property to TLS Listener.
+add `mutualTlsCertificate` property to TLS Client Policy and/or `mutualTlsValidation` property to TLS Listener.
 
-`tls.validation` and `tlsClientPolicy.certificate` can be sourced from either:
+`tls.mutualTlsValidation` and `tlsClientPolicy.mutualTlsCertificate` can be sourced from either:
 
 - A customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
 
@@ -335,8 +335,8 @@ const node2 = new appmesh.VirtualNode(stack, 'node2', {
       ports: [8080, 8081],
       validation: {
         subjectAlternativeNames: appmesh.SubjectAlternativeNames.exactMatch(['mesh-endpoint.apps.local']),
-        trust: appmesh.TlsValidationTrust
-          .acm([acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
+        trust: appmesh.TlsValidationTrust.acm([
+          acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
       },
       // Provide a SDS client certificate when a server requests it and enable mutual TLS authentication.
       mutualTlsCertificate: appmesh.TlsCertificate.sds('secret_certificate'),
@@ -568,8 +568,8 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
     tlsClientPolicy: {
       ports: [8080, 8081],
       validation: {
-        trust: appmesh.TlsValidationTrust
-          .acm([acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
+        trust: appmesh.TlsValidationTrust.acm([
+          acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
       },
     },
   },
