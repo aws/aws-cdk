@@ -111,8 +111,12 @@ const product = new servicecatalog.Product(this, 'MyFirstProduct', {
   owner: "Product Owner",
   provisioningArtifacts: [
     {
-      name: "v1",
-      templateUrl:'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'
+      name: "url",
+      template: servicecatalog.Template.fromUrl('https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ServiceCatalog/Product.yaml')
+    },
+    {
+      name: "asset",
+      template: servicecatalog.Template.fromAsset(path.join(__dirname, 'development-environment.template'))
     },
   ]
 });

@@ -1,4 +1,5 @@
 export * from './common';
+export * from './template';
 export * from './portfolio';
 export * from './product';
 

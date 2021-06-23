@@ -17,7 +17,7 @@ export class InputValidator {
    * Validates string matches the allowed regex pattern.
    */
   public static validateRegex(resourceName: string, inputName: string, regexp: RegExp, inputString?: string): void {
-    if (inputString !== undefined && !regexp.test(inputString)) {
+    if (!cdk.Token.isUnresolved(inputString) && inputString !== undefined && !regexp.test(inputString)) {
       throw new Error(`Invalid ${inputName} for resource ${resourceName}, must match regex pattern ${regexp}, got: '${this.truncateString(inputString, 100)}'`);
     }
   }

@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { AcceptLanguage } from './common';
 import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
+import { Template } from './template';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
@@ -19,11 +20,6 @@ export interface IProduct extends IResource {
    * @attribute
    */
   readonly productId: string;
-
-  /**
-   * The name of the product
-   */
-  readonly productName: string;
 }
 
 /**
@@ -44,7 +40,6 @@ export interface ProductAttributes {
 abstract class ProductBase extends Resource implements IProduct {
   public abstract readonly productArn: string;
   public abstract readonly productId: string;
-  public abstract readonly productName: string;
 }
 
 /**
@@ -64,9 +59,9 @@ export interface ProvisioningArtifactProperties {
   readonly disableTemplateValidation?: boolean;
 
   /**
-   * The S3 url that points to the provisioning artifacts template
+   * The S3 template that points to the provisioning artifacts template
    */
-  readonly templateUrl: string;
+  readonly template: Template;
 
   /**
    * The name of the provisioning artifact.
@@ -78,11 +73,21 @@ export interface ProvisioningArtifactProperties {
 /**
  * Properties for a Cloudformation Product
  */
-export interface ProductProps {
+export interface CloudFormationProductProps {
+  /**
+   * The owner of the product.
+   */
+  readonly owner: string;
+
   /**
    * The name of the product.
    */
   readonly productName: string;
+
+  /**
+   * The configuration of the provisioning artifact (also known as a version).
+   */
+  readonly provisioningArtifacts: ProvisioningArtifactProperties[];
 
   /**
    * The language code.
@@ -103,17 +108,7 @@ export interface ProductProps {
   readonly distributor?: string;
 
   /**
-   * The owner of the product.
-   */
-  readonly owner: string;
-
-  /**
-   * The configuration of the provisioning artifact (also known as a version).
-   */
-  readonly provisioningArtifacts: ProvisioningArtifactProperties[];
-
-  /**
-   * ReplaceProvisioningArtifacts
+   * Whether to give provisioning artifacts a new unique identifier when the product attributes or provisioning artifacts is updated
    * @default false
    */
   readonly replaceProvisioningParameters?: boolean;
@@ -138,40 +133,41 @@ export interface ProductProps {
 }
 
 /**
- * A Service Catalog Cloudformation Product.
- * @resource AWS::ServiceCatalog::CloudFormationProduct
+ * Abstract class for Service Catalog Product.
  */
-export class Product extends ProductBase {
+export abstract class Product extends ProductBase {
   /**
    * Creates a Product construct that represents an external product.
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param attrs Product import properties
    */
-  public static fromProductAttributes(scope: Construct, id: string, attrs: ProductAttributes): IProduct {
+  public static fromProductArn(scope: Construct, id: string, attrs: ProductAttributes): IProduct {
     const parts = Stack.of(scope).parseArn(attrs.productArn);
-    function throwError(errorMessage: string): never {
-      throw new Error(errorMessage);
+    if (!parts.resourceName) {
+      throw new Error(`Product arn ${attrs.productArn} missing Product ID during import from attributes`);
     }
     class Import extends ProductBase {
-      public readonly productId = parts.resourceName ?? throwError('Product arn missing Product ID during import from attributes');
+      public readonly productId = parts.resourceName!;
       public readonly productArn = attrs.productArn;
-      public readonly productName = attrs.productName;
     }
     return new Import(scope, id);
   }
+}
 
+/**
+ * A Service Catalog Cloudformation Product.
+ */
+export class CloudFormationProduct extends Product {
   public readonly productArn: string;
-  public readonly productName: string;
   public readonly productId: string;
-  private readonly product: CfnCloudFormationProduct;
 
-  constructor(scope: Construct, id: string, props: ProductProps) {
-    super(scope, id, {});
+  constructor(scope: Construct, id: string, props: CloudFormationProductProps) {
+    super(scope, id);
 
     this.validateProductProps(props);
 
-    this.product = new CfnCloudFormationProduct(this, 'Resource', {
+    const product = new CfnCloudFormationProduct(this, 'Resource', {
       acceptLanguage: props.acceptLanguage,
       description: props.description,
       distributor: props.distributor,
@@ -184,41 +180,42 @@ export class Product extends ProductBase {
       supportUrl: props.supportUrl,
     });
 
-    this.productArn = this.getResourceArnAttribute(this.product.ref, {
+    this.productArn = Stack.of(this).formatArn({
       service: 'catalog',
       resource: 'product',
-      resourceName: this.product.ref,
+      resourceName: product.ref,
     });
 
-    this.productName = this.getResourceNameAttribute(props.productName);
-    this.productId = this.getResourceNameAttribute(this.product.ref);
+    this.productId = product.ref;
   }
 
-  private generateProvisioningArtifactParameters(props: ProductProps): any[] {
+  private generateProvisioningArtifactParameters(
+    props: CloudFormationProductProps): CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] {
     return props.provisioningArtifacts.map(pa => {
+      const template = pa.template.bind(this);
+      InputValidator.validateUrl(this.node.path, 'provisioning template url', template.httpUrl);
       return {
         name: pa.name,
         description: pa.description,
         disableTemplateValidation: pa.disableTemplateValidation,
         info: {
-          LoadTemplateFromURL: pa.templateUrl,
+          LoadTemplateFromURL: template.httpUrl,
         },
       };
     });
   };
 
-  private validateProductProps(props: ProductProps) {
-    InputValidator.validateLength(this.node.path, 'portfolio product name', 1, 100, props.productName);
-    InputValidator.validateLength(this.node.path, 'portfolio owner', 1, 8191, props.owner);
-    InputValidator.validateLength(this.node.path, 'portfolio description', 0, 8191, props.description);
-    InputValidator.validateLength(this.node.path, 'portfolio distributer', 0, 8191, props.distributor);
+  private validateProductProps(props: CloudFormationProductProps) {
+    InputValidator.validateLength(this.node.path, 'product product name', 1, 100, props.productName);
+    InputValidator.validateLength(this.node.path, 'product owner', 1, 8191, props.owner);
+    InputValidator.validateLength(this.node.path, 'product description', 0, 8191, props.description);
+    InputValidator.validateLength(this.node.path, 'product distributer', 0, 8191, props.distributor);
     InputValidator.validateEmail(this.node.path, 'support email', props.supportEmail);
     InputValidator.validateUrl(this.node.path, 'support url', props.supportUrl);
     InputValidator.validateLength(this.node.path, 'support description', 0, 8191, props.supportDescription);
     props.provisioningArtifacts.map(pa => {
       InputValidator.validateLength(this.node.path, 'provisioning artifact name', 0, 100, pa.name);
       InputValidator.validateLength(this.node.path, 'provisioning artifact description', 0, 8191, pa.description);
-      InputValidator.validateUrl(this.node.path, 'provisioning template url', pa.templateUrl);
     });
   }
 }

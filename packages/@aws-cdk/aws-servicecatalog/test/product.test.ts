@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
@@ -13,10 +14,10 @@ describe('Product', () => {
   });
 
   test('default product test', () => {
-    new servicecatalog.Product(stack, 'MyProduct', {
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',
       owner: 'testOwner',
-      provisioningArtifacts: [{ templateUrl: 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template' }],
+      provisioningArtifacts: [{ template: servicecatalog.Template.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template') }],
     });
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::CloudFormationProduct', {
@@ -32,8 +33,70 @@ describe('Product', () => {
     });
   }),
 
+  test('product test from Asset', () => {
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      provisioningArtifacts: [{ template: servicecatalog.Template.fromAsset(path.join(__dirname, 'development-environment.template')) }],
+    });
+
+    const assembly = app.synth();
+    const synthesized = assembly.stacks[0];
+    expect(synthesized.assets.length).toEqual(1);
+  }),
+
+  test('product test from multiple sources', () => {
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      provisioningArtifacts: [
+        {
+          name: 'v1',
+          template: servicecatalog.Template.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+        },
+        {
+          name: 'v2',
+          template: servicecatalog.Template.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment-v2.template'),
+        },
+        {
+          name: 'v3',
+          template: servicecatalog.Template.fromAsset(path.join(__dirname, 'development-environment.template')),
+        },
+      ],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::CloudFormationProduct', {
+      Name: 'testProduct',
+      Owner: 'testOwner',
+      ProvisioningArtifactParameters: [
+        {
+          'Info': {
+            'LoadTemplateFromURL': 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template',
+          },
+        },
+      ],
+    });
+  }),
+
+  test('fails if template is bound with a second stack', () => {
+    const template = servicecatalog.Template.fromAsset(path.join(__dirname, 'development-environment.template'));
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      provisioningArtifacts: [{ template: template }],
+    });
+
+    const stack2 = new cdk.Stack(app, 'Stack2');
+    expect(() => new servicecatalog.CloudFormationProduct(stack2, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      provisioningArtifacts: [{ template: template }],
+    })).toThrow(/already associated/);
+  }),
+
   test('product from attributes', () => {
-    const product = servicecatalog.Product.fromProductAttributes(stack, 'MyProduct', {
+    const product = servicecatalog.Product.fromProductArn(stack, 'MyProduct', {
       productArn: 'arn:aws:catalog:region:account-id:product/prod-djh8932wr',
       productName: 'MyProduct',
     });
@@ -43,19 +106,19 @@ describe('Product', () => {
 
   test('fails product from attributes without resource name in arn', () => {
     expect(() => {
-      servicecatalog.Product.fromProductAttributes(stack, 'MyProduct', {
+      servicecatalog.Product.fromProductArn(stack, 'MyProduct', {
         productArn: 'arn:aws:catalog:region:account-id:product',
         productName: 'MyProduct',
       });
-    }).toThrowError('Product arn missing Product ID during import from attributes');
+    }).toThrowError('Product arn arn:aws:catalog:region:account-id:product missing Product ID during import from attributes');
   }),
 
   test('fails product creation with invalid email', () => {
     expect(() => {
-      new servicecatalog.Product(stack, 'MyProduct', {
+      new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
         productName: 'testProduct',
         owner: 'testOwner',
-        provisioningArtifacts: [{ templateUrl: 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template' }],
+        provisioningArtifacts: [{ template: servicecatalog.Template.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template') }],
         supportEmail: 'invalid email',
       });
     }).toThrowError(/Invalid support email for resource Default\/MyProduct/);
@@ -63,10 +126,10 @@ describe('Product', () => {
 
   test('fails product creation with invalid url', () => {
     expect(() => {
-      new servicecatalog.Product(stack, 'MyProduct', {
+      new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
         productName: 'testProduct',
         owner: 'testOwner',
-        provisioningArtifacts: [{ templateUrl: 'invalid url' }],
+        provisioningArtifacts: [{ template: servicecatalog.Template.fromUrl('invalid url') }],
       });
     }).toThrowError(/Invalid provisioning template url for resource Default\/MyProduct/);
   });
