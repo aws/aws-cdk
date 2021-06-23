@@ -113,8 +113,7 @@
   },
   "nozem": {
     "ostools": [
-      "docker",
-      "com.docker.cli"
+      "docker"
     ]
   },
   "publishConfig": {

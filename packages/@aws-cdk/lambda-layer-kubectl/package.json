@@ -110,8 +110,7 @@
   "nozem": {
     "ostools": [
       "dirname",
-      "docker",
-      "com.docker.cli"
+      "docker"
     ]
   },
   "ubergen": {
