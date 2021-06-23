@@ -24,6 +24,10 @@
 [AWS Service Catalog App Registry](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/appregistry.html) 
 enables organizations to create and manage repositores of applications and associated resources.
 
+## Table Of Contents
+
+- [Application](#application)
+- [Attribute-Group](#attribute-group)
 
 ```ts
 import * as appreg from '@aws-cdk/aws-servicecatalogappregistry';
@@ -47,4 +51,28 @@ Applications can be imported by their ARN via the `Application.fromApplicationAr
 ```ts
 const importedApplication = appreg.Application.fromApplicationArn(this, 'MyImportedApplication',
   'arn:aws:servicecatalog:us-east-1:012345678910:/applications/0aqmvxvgmry0ecc4mjhwypun6i');
+```
+
+## Attribute Group
+
+An AppRegistry attribute group acts as a container for user-defined attributes for an application.
+Metadata is attached in a machine-readble format to integrate with automated workflows and tools.
+
+```ts
+const attributeGroup = new appreg.AttributeGroup(this, 'MyFirstAttributeGroup', {
+  attributeGroupName: 'MyFirstAttributeGroupName', 
+  description: 'description for my attribute group', // the description is optional,
+  attributes: {
+    project: 'foo',
+    team: ['member1', 'member2', 'member3']
+  }
+});
+```
+
+An attribute group that has been created outside of the stack can be imported into your CDK app.
+Attribute groups can be imported by their ARN via the `AttributeGroup.fromAttributeGroupArn()` API:
+
+```ts
+const importedAttributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(this, 'MyImportedAttrGroup',
+  'arn:aws:servicecatalog:us-east-1:012345678910:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i');
 ```
