@@ -24,15 +24,6 @@ export interface IAttributeGroup extends cdk.IResource {
 }
 
 /**
- * Attributes for the attribute group, defined by a nested list of
- * key-value pairs.
- */
-export interface Attribute {
-  [key: string]: string | number | boolean | Attribute |
-  string[] | number[] | boolean[] | Attribute[];
-}
-
-/**
  * Properties for a Service Catalog AppRegistry Attribute Group
  */
 export interface AttributeGroupProps {
@@ -51,7 +42,7 @@ export interface AttributeGroupProps {
    * A JSON of nested key-value pairs that represent the attributes in the group.
    * Attributes maybe an empty JSON '{}', but must be explicitly stated.
    */
-  readonly attributes: Attribute;
+  readonly attributes: {[key: string]: any };
 }
 
 abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGroup {
@@ -105,6 +96,7 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
     this.attributeGroupArn = attributeGroup.attrArn;
     this.attributeGroupId = attributeGroup.attrId;
   }
+
   private validateAttributeGroupProps(props: AttributeGroupProps) {
     InputValidator.validateLength(this.node.path, 'attribute group name', 1, 256, props.attributeGroupName);
     InputValidator.validateRegex(this.node.path, 'attribute group name', /^[a-zA-Z0-9-_]+$/, props.attributeGroupName);

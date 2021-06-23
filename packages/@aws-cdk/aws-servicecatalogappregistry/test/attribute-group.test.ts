@@ -98,7 +98,7 @@ describe('Attribute Group', () => {
   }),
 
   test('attribute group created with a token attribute group name does not throw validation error', () => {
-    const tokenAttributeGroupName= new cdk.CfnParameter(stack, 'AttributeGroupName');
+    const tokenAttributeGroupName = new cdk.CfnParameter(stack, 'AttributeGroupName');
 
     new appreg.AttributeGroup(stack, 'MyAttributeGroup', {
       attributeGroupName: tokenAttributeGroupName.valueAsString,
@@ -164,6 +164,7 @@ describe('Attribute Group', () => {
       attributeGroupName: 'testAttributeGroup',
       attributes: {},
     });
+
     expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
       Attributes: {},
     });
