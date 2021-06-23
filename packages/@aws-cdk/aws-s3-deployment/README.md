@@ -44,6 +44,12 @@ This is what happens under the hood:
    `websiteBucket`). If there is more than one source, the sources will be
    downloaded and merged pre-deployment at this step.
 
+**IMPORTANT** The `aws-s3-deployment` module is only intended to be used with
+assets built by the CDK CLI and Zip files from sources you trust. If you use
+`Source.bucket()` to reference a zip file from an untrusted source, it might
+execute arbitrary code in the context of the Lambda Function and read or write
+unexpected files in the S3 bucket.
+
 ## Supported sources
 
 The following source types are supported for bucket deployments:
