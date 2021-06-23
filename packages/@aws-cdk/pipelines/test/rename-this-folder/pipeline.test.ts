@@ -47,14 +47,14 @@ behavior('references stack template in subassembly', (suite) => {
       Stages: arrayWith({
         Name: 'App',
         Actions: arrayWith(
-        objectLike({
-          Name: 'Stack.Prepare',
-          InputArtifacts: [objectLike({})],
-          Configuration: objectLike({
-            StackName: 'App-Stack',
-            TemplatePath: stringLike('*::assembly-App/*.template.json'),
+          objectLike({
+            Name: 'Stack.Prepare',
+            InputArtifacts: [objectLike({})],
+            Configuration: objectLike({
+              StackName: 'App-Stack',
+              TemplatePath: stringLike('*::assembly-App/*.template.json'),
+            }),
           }),
-        }),
         ),
       }),
     });
@@ -69,14 +69,14 @@ behavior('references stack template in subassembly', (suite) => {
       Stages: arrayWith({
         Name: 'AppMain',
         Actions: arrayWith(
-        objectLike({
-          Name: 'Prepare',
-          InputArtifacts: [objectLike({})],
-          Configuration: objectLike({
-            StackName: 'AppMain-Stack',
-            TemplatePath: stringLike('*::assembly-AppMain/*.template.json'),
+          objectLike({
+            Name: 'Prepare',
+            InputArtifacts: [objectLike({})],
+            Configuration: objectLike({
+              StackName: 'AppMain-Stack',
+              TemplatePath: stringLike('*::assembly-AppMain/*.template.json'),
+            }),
           }),
-        }),
         ),
       }),
     });
@@ -423,7 +423,7 @@ behavior('generates CodeBuild project in privileged mode', (suite) => {
         PrivilegedMode: true,
       },
     });
-  })
+  });
 });
 
 behavior('overridden stack names are respected', (suite) => {
@@ -435,24 +435,24 @@ behavior('overridden stack names are respected', (suite) => {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       Stages: arrayWith(
-      {
-        Name: 'App1',
-        Actions: arrayWith(objectLike({
-          Name: 'MyFancyStack.Prepare',
-          Configuration: objectLike({
-            StackName: 'MyFancyStack',
-          }),
-        })),
-      },
-      {
-        Name: 'App2',
-        Actions: arrayWith(objectLike({
-          Name: 'MyFancyStack.Prepare',
-          Configuration: objectLike({
-            StackName: 'MyFancyStack',
-          }),
-        })),
-      },
+        {
+          Name: 'App1',
+          Actions: arrayWith(objectLike({
+            Name: 'MyFancyStack.Prepare',
+            Configuration: objectLike({
+              StackName: 'MyFancyStack',
+            }),
+          })),
+        },
+        {
+          Name: 'App2',
+          Actions: arrayWith(objectLike({
+            Name: 'MyFancyStack.Prepare',
+            Configuration: objectLike({
+              StackName: 'MyFancyStack',
+            }),
+          })),
+        },
       ),
     });
   });
@@ -548,14 +548,14 @@ behavior('tags get reflected in legacyPipeline', (suite) => {
       Stages: arrayWith({
         Name: 'App',
         Actions: arrayWith(
-        objectLike({
-          Name: 'Stack.Prepare',
-          InputArtifacts: [objectLike({})],
-          Configuration: objectLike({
-            StackName: 'App-Stack',
-            TemplateConfiguration: templateConfig.capture(stringLike('*::assembly-App/*.template.*json')),
+          objectLike({
+            Name: 'Stack.Prepare',
+            InputArtifacts: [objectLike({})],
+            Configuration: objectLike({
+              StackName: 'App-Stack',
+              TemplateConfiguration: templateConfig.capture(stringLike('*::assembly-App/*.template.*json')),
+            }),
           }),
-        }),
         ),
       }),
     });

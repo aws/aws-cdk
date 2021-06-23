@@ -1,7 +1,4 @@
-import { Blueprint } from './blueprint';
-import { ScriptStep, StackOutputReference } from './script-step';
-import { StackDeployment } from './stack-deployment';
-import { Step } from './step';
+import { Step, ScriptStep, StackOutputReference, Blueprint, StackDeployment } from '../blueprint';
 
 /**
  * Answer some questions about a pipeline blueprint

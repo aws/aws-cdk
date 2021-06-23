@@ -1,6 +1,5 @@
 import { AssetType, Blueprint, BlueprintQueries, FileSet, ScriptStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
-import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from '../private/graph';
-import { CodePipelineSource } from './codepipeline-source';
+import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 
 export interface PipelineStructureProps {
   /**
@@ -213,7 +212,7 @@ export class PipelineStructure {
 
     // If the step is a source step, change the parent to a special "Source" stage
     // (CodePipeline wants it that way)
-    if (step instanceof CodePipelineSource) {
+    if (step.isSource) {
       parent = this.topLevelGraph('Source');
     }
 

@@ -1,8 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import '@aws-cdk/assert-internal/jest';
 import * as cdkp from '../../../lib';
-import { PipelineStructure } from '../../../lib/codepipeline/_pipeline-structure';
-import { Graph, GraphNode } from '../../../lib/private/graph';
+import { Graph, GraphNode, PipelineStructure } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
 import { AppWithOutput, OneStackApp } from '../test-app';
 import { TestApp } from '../testutil';

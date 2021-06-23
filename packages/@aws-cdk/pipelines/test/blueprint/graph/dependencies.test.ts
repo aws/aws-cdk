@@ -1,4 +1,4 @@
-import { Graph, GraphNode } from '../../../lib/private/graph';
+import { Graph, GraphNode } from '../../../lib/helpers-internal';
 
 class PlainNode extends GraphNode<any> { }
 

@@ -5,6 +5,7 @@ export abstract class Step implements IFileSet {
   public abstract readonly primaryOutput?: FileSet;
 
   public readonly requiredFileSets: FileSet[] = [];
+  public readonly isSource: boolean = false;
 
   constructor(public readonly id: string) {
   }
