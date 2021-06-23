@@ -1,4 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
+import { ISynthesisSession } from './construct-compat';
+import { addCustomSynthesis } from './private/synthesis';
 import { TreeMetadata } from './private/tree-metadata';
 import { Stage } from './stage';
 
@@ -94,6 +97,18 @@ export class App extends Stage {
   }
 
   /**
+   * Add a custom synthesis for the given construct
+   *
+   * When the construct is being synthesized, this allows it to add additional items
+   * into the Cloud Assembly output.
+   *
+   * This feature is intended for library authors; CDK users should almost never need to use this.
+   */
+  public static addCustomSynthesis(construct: Construct, synthesis: ICustomSynthesis): void {
+    addCustomSynthesis(construct, synthesis);
+  }
+
+  /**
    * Initializes a CDK application.
    * @param props initialization properties
    */
@@ -144,4 +159,19 @@ export class App extends Stage {
       this.node.setContext(k, v);
     }
   }
+}
+
+/**
+ * Interface for constructs that want to do something custom during synthesis
+ *
+ * This interface is intended for library authors; CDK users should almost
+ * never need to use this.
+ *
+ * @subclassable
+ */
+export interface ICustomSynthesis {
+  /**
+   * Called when the construct is synthesized
+   */
+  onSynthesize(session: ISynthesisSession): void;
 }

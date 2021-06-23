@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import { Annotations } from '../annotations';
+import { ICustomSynthesis } from '../app';
 import { Aspects, IAspect } from '../aspect';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
 import { Stack } from '../stack';
@@ -39,6 +40,12 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   synthesizeTree(root, builder, options.validateOnSynthesis);
 
   return builder.buildAssembly();
+}
+
+const CUSTOM_SYNTHESIS_MAP = new WeakMap<constructs.IConstruct, ICustomSynthesis>();
+
+export function addCustomSynthesis(construct: constructs.IConstruct, synthesis: ICustomSynthesis): void {
+  CUSTOM_SYNTHESIS_MAP.set(construct, synthesis);
 }
 
 /**
@@ -158,6 +165,9 @@ function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, v
       construct.synthesizer.synthesize(session);
     } else if (construct instanceof TreeMetadata) {
       construct._synthesizeTree(session);
+    } else {
+      const custom = CUSTOM_SYNTHESIS_MAP.get(construct);
+      custom?.onSynthesize(session);
     }
 
     // this will soon be deprecated and removed in 2.x
