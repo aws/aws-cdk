@@ -405,6 +405,7 @@ export = {
       mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
       virtualRouterName: virtualRouterName,
     });
+
     // THEN
     test.equal(virtualRouter1.mesh.meshName, meshName);
     test.equal(virtualRouter1.virtualRouterName, virtualRouterName);
