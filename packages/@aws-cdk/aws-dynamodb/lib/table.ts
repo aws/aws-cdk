@@ -1,6 +1,7 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import {
   Aws, CfnCondition, CfnCustomResource, CfnResource, CustomResource, Duration,
@@ -247,6 +248,13 @@ export interface TableProps extends TableOptions {
    * @default <generated>
    */
   readonly tableName?: string;
+
+  /**
+   * Kinesis Data Stream to capture item-level changes for the table.
+   *
+   * @default - no Kinesis Data Stream
+   */
+  readonly kinesisStream?: kinesis.IStream;
 }
 
 /**
@@ -1116,6 +1124,7 @@ export class Table extends TableBase {
       streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
+      kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
