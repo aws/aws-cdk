@@ -42,7 +42,7 @@ export interface AttributeGroupProps {
    * A JSON of nested key-value pairs that represent the attributes in the group.
    * Attributes maybe an empty JSON '{}', but must be explicitly stated.
    */
-  readonly attributes: {[key: string]: any };
+  readonly attributes: { [key: string]: any };
 }
 
 abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGroup {
