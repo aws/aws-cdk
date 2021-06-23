@@ -1,6 +1,6 @@
 import { Stack, Stage } from '@aws-cdk/core';
 import { Match } from './match';
-import { MatchResult } from './match-result';
+import { IMatcher, MatchResult } from './matcher';
 import * as assert from './vendored/assert';
 
 /**
@@ -62,7 +62,7 @@ export class TemplateAssertions {
    */
   public hasResourceProperties(type: string, props: any): void {
     this.hasResource(type, Match.objectLike({
-      Properties: Match.isMatcher(props) ? props : Match.objectLike(props),
+      Properties: props instanceof IMatcher ? props : Match.objectLike(props),
     }));
   }
 
@@ -75,7 +75,7 @@ export class TemplateAssertions {
    * @param props the entire defintion of the resource as should be expected in the template.
    */
   public hasResource(type: string, props: any): void {
-    const matcher = Match.isMatcher(props) ? props : Match.objectLike(props);
+    const matcher = IMatcher.isMatcher(props) ? props : Match.objectLike(props);
     let closestResult: MatchResult | undefined = undefined;
     let count: number = 0;
     for (const logicalId of Object.keys(this.inspector.value.Resources ?? {})) {

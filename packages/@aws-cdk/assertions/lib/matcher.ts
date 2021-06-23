@@ -1,4 +1,24 @@
 /**
+ * Represents a matcher that can perform special data matching
+ * capabilities between a given pattern and a target.
+ */
+export abstract class IMatcher {
+  /**
+   * Check whether the provided object is a subtype of the `IMatcher`.
+   */
+  public static isMatcher(x: any): x is IMatcher {
+    return x && x instanceof IMatcher;
+  }
+
+  /**
+   * Test whether a target matches the provided pattern.
+   * @param actual the target to match
+   * @return the list of match failures. An empty array denotes a successful match.
+   */
+  public abstract test(actual: any): MatchResult;
+}
+
+/**
  * The result of `Match.test()`.
  */
 export class MatchResult {
