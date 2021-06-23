@@ -12,7 +12,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
-    schema: appsync.Schema.fromAsset(path.resolve(__dirname, 'appsync.lambda.graphql')),
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
   });
 });
 
@@ -24,7 +24,7 @@ describe('Lambda Mapping Templates', () => {
 
   beforeEach(() => {
     func = new lambda.Function(stack, 'func', {
-      code: lambda.Code.fromAsset(path.resolve(__dirname, 'verify/lambda-tutorial')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'verify/lambda-tutorial')),
       handler: 'lambda-tutorial.handler',
       runtime: lambda.Runtime.NODEJS_12_X,
     });
