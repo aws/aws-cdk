@@ -227,9 +227,9 @@ test('existing file system is imported correctly using arn', () => {
   fs.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
   // THEN
-  expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
     GroupId: 'sg-123456789',
-  }));
+  });
 
   expect(fs.fileSystemArn).toEqual(arn);
   expect(fs.fileSystemId).toEqual('fs-12912923');
@@ -276,7 +276,7 @@ test('support granting permissions', () => {
 
   fileSystem.grant(role, 'elasticfilesystem:ClientWrite');
 
-  expectCDK(stack).to(haveResource('AWS::IAM::Policy', {
+  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -298,7 +298,7 @@ test('support granting permissions', () => {
         Ref: 'Role1ABCC5F0',
       },
     ],
-  }));
+  });
 });
 
 test('support tags', () => {
