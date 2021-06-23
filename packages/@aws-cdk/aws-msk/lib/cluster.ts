@@ -573,8 +573,7 @@ export class Cluster extends ClusterBase {
         },
       };
     } else if (
-      props.clientAuthentication?.tlsProps?.certificateAuthorityArns !==
-      undefined
+      props.clientAuthentication?.tlsProps?.certificateAuthorities !== undefined
     ) {
       clientAuthentication = {
         tls: {
