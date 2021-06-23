@@ -1,18 +1,5 @@
+import { MatchResult } from './match-result';
 import { ABSENT } from './vendored/assert';
-
-/**
- * Denotes a failure when matching patterns to targets.
- */
-export interface MatchFailure {
-  /**
-   * The relative path at which the failure occurred.
-   */
-  readonly path: string[];
-  /**
-   * Description of the match failure.
-   */
-  readonly message: string;
-}
 
 /**
  * Partial and special matching during template assertions.
@@ -73,7 +60,7 @@ export abstract class Match {
    * @param actual the target to match
    * @return the list of match failures. An empty array denotes a successful match.
    */
-  public abstract test(actual: any): MatchFailure[];
+  public abstract test(actual: any): MatchResult;
 }
 
 /**
@@ -104,7 +91,7 @@ export class LiteralMatch extends Match {
     }
   }
 
-  public test(actual: any): MatchFailure[] {
+  public test(actual: any): MatchResult {
     if (Array.isArray(this.pattern)) {
       return new ArrayMatch(this.pattern, { partial: false }).test(actual);
     }
@@ -113,8 +100,10 @@ export class LiteralMatch extends Match {
       return new ObjectMatch(this.pattern, { partial: this.partialObjects }).test(actual);
     }
 
+    const result = new MatchResult();
     if (typeof this.pattern !== typeof actual) {
-      return [{ path: [], message: `Expected type ${typeof this.pattern} but received ${getType(actual)}` }];
+      result.push([], `Expected type ${typeof this.pattern} but received ${getType(actual)}`);
+      return result;
     }
 
     if (this.pattern === ABSENT) {
@@ -122,10 +111,10 @@ export class LiteralMatch extends Match {
     }
 
     if (actual !== this.pattern) {
-      return [{ path: [], message: `Expected ${this.pattern} but received ${actual}` }];
+      result.push([], `Expected ${this.pattern} but received ${actual}`);
     }
 
-    return [];
+    return result;
   }
 }
 
@@ -153,25 +142,25 @@ export class ArrayMatch extends Match {
     this.partial = options.partial ?? true;
   }
 
-  public test(actual: any): MatchFailure[] {
+  public test(actual: any): MatchResult {
     if (!Array.isArray(actual)) {
-      return [{ path: [], message: `Expected type array but received ${getType(actual)}` }];
+      return new MatchResult().push([], `Expected type array but received ${getType(actual)}`);
     }
     if (!this.partial && this.pattern.length !== actual.length) {
-      return [{ path: [], message: `Expected array of length ${this.pattern.length} but received ${actual.length}` }];
+      return new MatchResult().push([], `Expected array of length ${this.pattern.length} but received ${actual.length}`);
     }
 
     let patternIdx = 0;
     let actualIdx = 0;
 
-    const failures: MatchFailure[] = [];
+    const result = new MatchResult();
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
       const matcher = Match.isMatcher(patternElement) ? patternElement : new LiteralMatch(patternElement);
-      const innerFailures = matcher.test(actual[actualIdx]);
+      const innerResult = matcher.test(actual[actualIdx]);
 
-      if (!this.partial || innerFailures.length === 0) {
-        failures.push(...composeFailures(`[${actualIdx}]`, innerFailures));
+      if (!this.partial || !innerResult.hasFailed()) {
+        result.compose(`[${actualIdx}]`, innerResult);
         patternIdx++;
         actualIdx++;
       } else {
@@ -182,10 +171,10 @@ export class ArrayMatch extends Match {
     for (; patternIdx < this.pattern.length; patternIdx++) {
       const pattern = this.pattern[patternIdx];
       const element = (Match.isMatcher(pattern) || typeof pattern === 'object') ? ' ' : ` [${pattern}] `;
-      failures.push({ path: [], message: `Missing element${element}at pattern index ${patternIdx}` });
+      result.push([], `Missing element${element}at pattern index ${patternIdx}`);
     }
 
-    return failures;
+    return result;
   }
 }
 
@@ -214,16 +203,16 @@ export class ObjectMatch extends Match {
     this.partial = options.partial ?? true;
   }
 
-  public test(actual: any): MatchFailure[] {
+  public test(actual: any): MatchResult {
     if (typeof actual !== 'object' || Array.isArray(actual)) {
-      return [{ path: [], message: `Expected type object but received ${getType(actual)}` }];
+      return new MatchResult().push([], `Expected type object but received ${getType(actual)}`);
     }
 
-    const failures: MatchFailure[] = [];
+    const result = new MatchResult();
     if (!this.partial) {
       for (const a of Object.keys(actual)) {
         if (!(a in this.pattern)) {
-          failures.push({ path: [`/${a}`], message: 'Unexpected key' });
+          result.push([`/${a}`], 'Unexpected key');
         }
       }
     }
@@ -231,29 +220,23 @@ export class ObjectMatch extends Match {
     for (const [patternKey, patternVal] of Object.entries(this.pattern)) {
       if (patternVal === ABSENT) {
         if (patternKey in actual) {
-          failures.push({ path: [`/${patternKey}`], message: 'Key should be absent' });
+          result.push([`/${patternKey}`], 'Key should be absent');
         }
         continue;
       }
       if (!(patternKey in actual)) {
-        failures.push({ path: [`/${patternKey}`], message: 'Missing key' });
+        result.push([`/${patternKey}`], 'Missing key');
         continue;
       }
       const matcher = Match.isMatcher(patternVal) ? patternVal : new LiteralMatch(patternVal, { partialObjects: this.partial });
-      const innerFailures = matcher.test(actual[patternKey]);
-      failures.push(...composeFailures(`/${patternKey}`, innerFailures));
+      const inner = matcher.test(actual[patternKey]);
+      result.compose(`/${patternKey}`, inner);
     }
 
-    return failures;
+    return result;
   }
 }
 
 function getType(obj: any): string {
   return Array.isArray(obj) ? 'array' : typeof obj;
-}
-
-function composeFailures(relativePath: string, inner: MatchFailure[]): MatchFailure[] {
-  return inner.map(f => {
-    return { path: [relativePath, ...f.path], message: f.message };
-  });
 }
