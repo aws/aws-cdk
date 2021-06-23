@@ -32,7 +32,7 @@ export interface TlsValidation extends TlsValidationCommon {
 }
 
 /**
- * Represents the properties needed to define TLS Validation context
+ * Represents the properties needed to define TLS Validation context that is supported for mutual TLS authentication.
  */
 export interface MutualTlsValidation extends TlsValidationCommon {
   /**
