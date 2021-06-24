@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import '@aws-cdk/assert-internal/jest';
 import * as cdkp from '../../../lib';
-import { Graph, GraphNode, PipelineStructure } from '../../../lib/helpers-internal';
+import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
 import { AppWithOutput, OneStackApp } from '../test-app';
 import { TestApp } from '../testutil';
@@ -30,7 +30,7 @@ describe('blueprint with one stage', () => {
 
   test('simple app gets graphed correctly', () => {
     // WHEN
-    const graph = new PipelineStructure(blueprint).graph;
+    const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
     expect(childrenAt(graph)).toEqual([
@@ -51,7 +51,7 @@ describe('blueprint with one stage', () => {
 
   test('self mutation gets inserted at the right place', () => {
     // WHEN
-    const graph = new PipelineStructure(blueprint, { selfMutation: true }).graph;
+    const graph = new PipelineGraph(blueprint, { selfMutation: true }).graph;
 
     // THEN
     expect(childrenAt(graph)).toEqual([
@@ -87,7 +87,7 @@ describe('blueprint with wave and stage', () => {
     blueprint.waves[0].stages[0].addPost(new cdkp.ManualApprovalStep('Approve'));
 
     // WHEN
-    const graph = new PipelineStructure(blueprint).graph;
+    const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
     expect(childrenAt(graph, 'Wave')).toEqual([
@@ -106,7 +106,7 @@ describe('blueprint with wave and stage', () => {
     blueprint.waves[0].stages[0].addPre(new cdkp.ManualApprovalStep('Gogogo'));
 
     // WHEN
-    const graph = new PipelineStructure(blueprint).graph;
+    const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
     expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
@@ -127,7 +127,7 @@ describe('options for other engines', () => {
     blueprint.addStage(new OneStackApp(app, 'Alpha'));
 
     // WHEN
-    const graph = new PipelineStructure(blueprint, {
+    const graph = new PipelineGraph(blueprint, {
       publishTemplate: true,
     });
 
@@ -145,7 +145,7 @@ describe('options for other engines', () => {
     blueprint.addStage(new OneStackApp(app, 'Alpha'));
 
     // WHEN
-    const graph = new PipelineStructure(blueprint, {
+    const graph = new PipelineGraph(blueprint, {
       prepareStep: false,
     });
 
@@ -185,7 +185,7 @@ describe('with app with output', () => {
     });
 
     // WHEN
-    const graph = new PipelineStructure(blueprint).graph;
+    const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
     expect(childrenAt(graph, 'Alpha')).toEqual([
@@ -204,7 +204,7 @@ describe('with app with output', () => {
     });
 
     // WHEN
-    const graph = new PipelineStructure(blueprint).graph;
+    const graph = new PipelineGraph(blueprint).graph;
     expect(() => {
       assertGraph(nodeAt(graph, 'Alpha')).sortedLeaves();
     }).toThrow(/Dependency cycle/);
@@ -218,7 +218,7 @@ describe('with app with output', () => {
 
     // WHEN
     expect(() => {
-      new PipelineStructure(blueprint).graph;
+      new PipelineGraph(blueprint).graph;
     }).toThrow(/is not in the pipeline/);
   });
 });

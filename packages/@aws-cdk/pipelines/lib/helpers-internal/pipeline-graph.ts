@@ -1,7 +1,7 @@
 import { AssetType, Blueprint, BlueprintQueries, FileSet, ScriptStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 
-export interface PipelineStructureProps {
+export interface PipelineGraphProps {
   /**
    * Add a self-mutation step.
    *
@@ -30,7 +30,7 @@ export interface PipelineStructureProps {
  *
  * This code makes all the decisions on how to lay out the CodePipeline
  */
-export class PipelineStructure {
+export class PipelineGraph {
   public readonly graph: AGraph = Graph.of('', { type: 'group' });
   public readonly cloudAssemblyFileSet: FileSet;
   public readonly queries: BlueprintQueries;
@@ -47,7 +47,7 @@ export class PipelineStructure {
   private _fileAssetCtr = 0;
   private _dockerAssetCtr = 0;
 
-  constructor(public readonly blueprint: Blueprint, props: PipelineStructureProps = {}) {
+  constructor(public readonly blueprint: Blueprint, props: PipelineGraphProps = {}) {
     this.publishTemplate = props.publishTemplate ?? false;
     this.prepareStep = props.prepareStep ?? true;
 

@@ -8,7 +8,7 @@ import { Aws, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { AssetType, BlueprintQueries, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
-import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineStructure } from '../helpers-internal';
+import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { BuildDeploymentOptions, IDeploymentEngine } from '../main/engine';
 import { appOf, assemblyBuilderOf, embeddedAsmPath } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
@@ -89,7 +89,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       restartExecutionOnUpdate: true,
     });
 
-    const graphFromBp = new PipelineStructure(options.blueprint, {
+    const graphFromBp = new PipelineGraph(options.blueprint, {
       selfMutation: this.selfMutation,
     });
 
@@ -124,7 +124,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
     return this._scope;
   }
 
-  private pipelineStagesAndActionsFromGraph(structure: PipelineStructure) {
+  private pipelineStagesAndActionsFromGraph(structure: PipelineGraph) {
     // Translate graph into Pipeline Stages and Actions
     let beforeSelfMutation = this.selfMutation;
     for (const stageNode of flatten(structure.graph.sortedChildren())) {
@@ -455,7 +455,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
 }
 
 interface MakeActionOptions {
-  readonly graphFromBp: PipelineStructure;
+  readonly graphFromBp: PipelineGraph;
   readonly runOrder: number;
   readonly node: AGraphNode;
   readonly sharedParent: AGraphNode;
