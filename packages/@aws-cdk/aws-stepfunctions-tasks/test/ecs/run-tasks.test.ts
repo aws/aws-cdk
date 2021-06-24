@@ -84,6 +84,44 @@ test('Cannot override container definitions when container is not in task defini
   ).toThrowError(/no such container in task definition/);
 });
 
+test('Running a task with container override and container has explicitly set a container name', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
+    containerName: 'ExplicitContainerName',
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(stack.resolve(
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson())).toHaveProperty('Parameters.Overrides', {
+    ContainerOverrides: [
+      {
+        Environment: [
+          {
+            Name: 'SOME_KEY',
+            'Value.$': '$.SomeKey',
+          },
+        ],
+        Name: 'ExplicitContainerName',
+      },
+    ],
+  });
+});
+
 test('Running a Fargate Task', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
