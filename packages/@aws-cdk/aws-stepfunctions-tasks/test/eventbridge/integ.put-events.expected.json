@@ -95,18 +95,18 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Put Custom Events\",\"States\":{\"Put Custom Events\":{\"Next\":\"Final step\",\"Type\":\"Task\",\"Resource\":\"arn:",
+              "{\"StartAt\":\"Put Custom Events\",\"States\":{\"Put Custom Events\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::events:putEvents\",\"Parameters\":{\"Entries\":[{\"Detail\":{\"Message\":\"Hello from Step Functions!\"},\"DetailType\":\"MessageFromStepFunctions\",\"Resources\":[\"MyResourceA\",\"MyResourceB\"],\"Source\":\"step.functions\",\"Time\":1619711704},{\"Detail\":{\"Message\":\"Hello from Step Functions!\"},\"DetailType\":\"MessageFromStepFunctions\",\"EventBusName\":\"",
+              ":states:::events:putEvents\",\"Parameters\":{\"Entries\":[{\"Detail\":{\"Message\":\"Hello from Step Functions!\"},\"DetailType\":\"MessageFromStepFunctions\",\"Source\":\"step.functions\"},{\"Detail\":{\"Message\":\"Hello from Step Functions!\"},\"DetailType\":\"MessageFromStepFunctions\",\"EventBusName\":\"",
               {
                 "Fn::GetAtt": [
                   "EventBus7B8748AA",
                   "Arn"
                 ]
               },
-              "\",\"Source\":\"step.functions\"}]}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+              "\",\"Source\":\"step.functions\"}]}}},\"TimeoutSeconds\":30}"
             ]
           ]
         }

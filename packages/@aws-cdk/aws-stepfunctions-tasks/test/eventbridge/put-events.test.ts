@@ -18,9 +18,7 @@ describe('Put Events', () => {
       entries: [{
         detail: sfn.TaskInput.fromText('MyDetail'),
         detailType: 'MyDetailType',
-        resources: ['MyResourceA', 'MyResourceB'],
         source: 'my.source',
-        timestamp: 1619711704,
       }],
     });
 
@@ -44,9 +42,7 @@ describe('Put Events', () => {
         Entries: [{
           Detail: 'MyDetail',
           DetailType: 'MyDetailType',
-          Resources: ['MyResourceA', 'MyResourceB'],
           Source: 'my.source',
-          Time: 1619711704,
         }],
       },
     });
@@ -148,7 +144,7 @@ describe('Put Events', () => {
         entries: [{}],
       });
     // THEN
-    }).toThrowError('Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,WAIT_FOR_TASK_TOKEN. Received: RUN_JOB');
+    }).toThrowError('Unsupported service integration pattern');
   });
 
   test('provided EventBus', () => {
@@ -187,34 +183,6 @@ describe('Put Events', () => {
             ],
           },
         }],
-      },
-    });
-  });
-
-  test('provided no EventBus', () => {
-    // WHEN
-    const task = new EventBridgePutEvents(stack, 'PutEvents', {
-      entries: [{}],
-    });
-
-    // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::events:putEvents',
-          ],
-        ],
-      },
-      End: true,
-      Parameters: {
-        Entries: [{}],
       },
     });
   });

@@ -15,19 +15,14 @@ const eventBus = new events.EventBus(stack, 'EventBus', {
   eventBusName: 'MyEventBus1',
 });
 
-const putEventsTaskState = new EventBridgePutEvents(stack, 'Put Custom Events', {
+const putEventsTask = new EventBridgePutEvents(stack, 'Put Custom Events', {
   entries: [{
     // Entry with no event bus specified
     detail: sfn.TaskInput.fromObject({
       Message: 'Hello from Step Functions!',
     }),
     detailType: 'MessageFromStepFunctions',
-    resources: [
-      'MyResourceA',
-      'MyResourceB',
-    ],
     source: 'step.functions',
-    timestamp: 1619711704,
   }, {
     // Entry with EventBus provided as object
     detail: sfn.TaskInput.fromObject({
@@ -39,13 +34,8 @@ const putEventsTaskState = new EventBridgePutEvents(stack, 'Put Custom Events', 
   }],
 });
 
-const finalState = new sfn.Pass(stack, 'Final step');
-
-const chain = sfn.Chain.start(putEventsTaskState)
-  .next(finalState);
-
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definition: putEventsTask,
   timeout: cdk.Duration.seconds(30),
 });
 

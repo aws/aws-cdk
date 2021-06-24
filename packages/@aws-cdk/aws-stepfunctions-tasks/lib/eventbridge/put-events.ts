@@ -7,23 +7,26 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * An entry to be sent to EventBridge
+ *
  * @see https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEventsRequestEntry.html
  */
 export interface EventBridgePutEventsEntry {
   /**
    * JSON object that contains information about the event
+   *
    * The service generating the event determines the content of this field
    * Consists of a valid JSON string which can contain nested subobjects
    * i.e. "{ \"instance-id\": \" i-1234567890abcdef0\", \"state\": \"terminated\" }"
-   * @default - service dependent
+   * @default - nothing
    */
   readonly detail?: sfn.TaskInput;
 
   /**
    * Along with the source field help identify fields and values of detail field
+   *
    * For example, events by CloudTrail have detail type "AWS API Call via CloudTrail"
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html
-   * @default - service dependent
+   * @default - nothing
    */
   readonly detailType?: string;
 
@@ -35,27 +38,13 @@ export interface EventBridgePutEventsEntry {
   readonly eventBus?: events.IEventBus;
 
   /**
-   * JSON array containing ARNs of resources used in the event
+   * The service or application that caused this event to be generated
    *
-   * For example, auto scaling events include ARNs for both instances and auto scaling groups
-   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html
-   * @default []
-   */
-  readonly resources?: string[];
-
-  /**
-   * The service that generated the event such as com.mycompany.myapp
    * @example 'com.example.service'
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html
-   * @default - service dependent
+   * @default - nothing
    */
   readonly source?: string;
-
-  /**
-   * Timestamp of the event entry
-   * @default Timestamp of the PutEvents call
-   */
-  readonly timestamp?: number;
 }
 
 /**
@@ -90,7 +79,7 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, EventBridgePutEvents.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
-      if (!sfn.FieldUtils.containsTaskToken(props.entries)) {
+      if (!sfn.FieldUtils.containsTaskToken(props.entries.map(entry => entry.detail))) {
         throw new Error('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
       }
     }
@@ -135,23 +124,21 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('events', 'putEvents', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        Entries: this.rendertEntries(),
+        Entries: this.renderEntries(),
       }),
     };
   }
 
-  private rendertEntries(): Object[] {
+  private renderEntries(): Object[] {
     return this.props.entries.map(entry => {
       if (entry.source?.startsWith('aws')) {
-        throw new Error('Source cannot start with aws.');
+        throw new Error('Event source cannot start with "aws."');
       } else {
         return {
           Detail: entry.detail?.value,
           DetailType: entry.detailType,
           EventBusName: entry.eventBus?.eventBusArn,
-          Resources: entry.resources,
           Source: entry.source,
-          Time: entry.timestamp,
         };
       }
     });
