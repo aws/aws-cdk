@@ -59,12 +59,12 @@ all but a single file:
  - Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
 
 **IMPORTANT** The `aws-s3-deployment` module is only intended to be used with
-zip files from trusted sources. Assets built by the CDK CLI can always be
-trusted. If you are using `Source.bucket()` to reference existing zip files in
-an S3 bucket, make sure you trust the file you are referencing. Zips from
-untrusted sources might be able to execute arbitrary code in the Lambda Function
-used by this module, and use its permissions to read or write unexpected files in
-the S3 bucket.
+zip files from trusted sources. Directories bundled by the CDK CLI (by using
+`Source.asset()` on a directory) are safe. If you are using `Source.asset()` or
+`Source.bucket()` to reference an existing zip file, make sure you trust the
+file you are referencing. Zips from untrusted sources might be able to execute
+arbitrary code in the Lambda Function used by this module, and use its permissions
+to read or write unexpected files in the S3 bucket.
 
 ## Retain on Delete
 
