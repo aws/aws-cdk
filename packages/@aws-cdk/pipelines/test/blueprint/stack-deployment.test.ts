@@ -21,17 +21,33 @@ test('"templateAsset"  represents the CFN template of the stack', () => {
   expect(sd.stacks[0].templateAsset?.isTemplate).toBeTruthy();
 });
 
-test('"templateUrl" includes the https:// s3 URL of the template file', () => {
-  // GIVEN
-  const stage = new Stage(new TestApp(), 'MyStage', { env: { account: '111', region: 'us-east-1' } });
-  new Stack(stage, 'MyStack');
+describe('templateUrl', () => {
+  test('includes the https:// s3 URL of the template file', () => {
+    // GIVEN
+    const stage = new Stage(new TestApp(), 'MyStage', { env: { account: '111', region: 'us-east-1' } });
+    new Stack(stage, 'MyStack');
 
-  // WHEN
-  const sd = StageDeployment.fromStage(stage);
+    // WHEN
+    const sd = StageDeployment.fromStage(stage);
 
-  // THEN
-  expect(sd.stacks[0].templateUrl).toBe('https://cdk-hnb659fds-assets-111-us-east-1.s3.amazonaws.com/4ef627170a212f66f5d1d9240d967ef306f4820ff9cb05b3a7ec703df6af6c3e.json');
+    // THEN
+    expect(sd.stacks[0].templateUrl).toBe('https://cdk-hnb659fds-assets-111-us-east-1.s3.us-east-1.amazonaws.com/4ef627170a212f66f5d1d9240d967ef306f4820ff9cb05b3a7ec703df6af6c3e.json');
+  });
+
+  test('without region', () => {
+    // GIVEN
+    const stage = new Stage(new TestApp(), 'MyStage', { env: { account: '111' } });
+    new Stack(stage, 'MyStack');
+
+    // WHEN
+    const sd = StageDeployment.fromStage(stage);
+
+    // THEN
+    expect(sd.stacks[0].templateUrl).toBe('https://cdk-hnb659fds-assets-111-.s3.amazonaws.com/$%7BAWS::Region%7D/4ef627170a212f66f5d1d9240d967ef306f4820ff9cb05b3a7ec703df6af6c3e.json');
+  });
+
 });
+
 
 test('"requiredAssets" contain only assets that are not the template', () => {
   // GIVEN

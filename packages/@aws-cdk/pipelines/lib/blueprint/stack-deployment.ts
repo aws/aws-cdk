@@ -84,7 +84,7 @@ export class StackDeployment {
     this.stackName = props.stackName;
     this.customCloudAssembly = props.customCloudAssembly?.primaryOutput;
     this.absoluteTemplatePath = props.absoluteTemplatePath;
-    this.templateUrl = props.templateS3Uri ? s3UrlFromUri(props.templateS3Uri) : undefined;
+    this.templateUrl = props.templateS3Uri ? s3UrlFromUri(props.templateS3Uri, props.region) : undefined;
 
     this.requiredAssets = new Array<StackAsset>();
 
@@ -174,7 +174,7 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
   return ret;
 }
 
-function s3UrlFromUri(uri: string) {
+function s3UrlFromUri(uri: string, region: string | undefined) {
   const url = parseUrl(uri);
-  return `https://${url.hostname}.s3.amazonaws.com${url.path}`;
+  return `https://${url.hostname}.s3.${region ? `${region}.` : ''}amazonaws.com${url.path}`;
 }
