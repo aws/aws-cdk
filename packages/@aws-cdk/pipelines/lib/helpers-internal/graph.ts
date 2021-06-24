@@ -1,7 +1,7 @@
 /**
  * A library for nested graphs
  */
-import { addAll, extract, flatMap } from '../../private/javascript';
+import { addAll, extract, flatMap } from '../private/javascript';
 import { topoSort } from './toposort';
 
 export interface GraphNodeProps<A> {
@@ -19,6 +19,23 @@ export class GraphNode<A> {
 
   constructor(public readonly id: string, props: GraphNodeProps<A> = {}) {
     this.data = props.data;
+  }
+
+  /**
+   * A graph-wide unique identifier for this node. Rendered by joining the IDs
+   * of all ancestors with hyphens.
+   */
+  public get uniqueId(): string {
+    return this.ancestorPath(this.root).map(x => x.id).join('-');
+  }
+
+  /**
+   * The union of all dependencies of this node and the dependencies of all
+   * parent graphs.
+   */
+  public get allDeps(): GraphNode<A>[] {
+    const fromParent = this.parentGraph?.allDeps ?? [];
+    return [...this.dependencies, ...fromParent];
   }
 
   public dependOn(...dependencies: GraphNode<A>[]) {

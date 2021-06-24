@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { parse as parseUrl } from 'url';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
@@ -17,7 +18,8 @@ export interface StackDeploymentProps {
   readonly tags?: Record<string, string>;
   readonly customCloudAssembly?: IFileSet;
   readonly absoluteTemplatePath: string;
-  readonly requiredAssets?: StackAsset[];
+  readonly assets?: StackAsset[];
+  readonly templateS3Uri?: string;
 }
 
 export class StackDeployment {
@@ -38,7 +40,8 @@ export class StackDeployment {
       absoluteTemplatePath: path.join(stackArtifact.assembly.directory, stackArtifact.templateFile),
       assumeRoleArn: stackArtifact.assumeRoleArn,
       executionRoleArn: stackArtifact.cloudFormationExecutionRoleArn,
-      requiredAssets: extractStackAssets(stackArtifact),
+      assets: extractStackAssets(stackArtifact),
+      templateS3Uri: stackArtifact.stackTemplateAssetObjectUrl,
     });
   }
 
@@ -53,8 +56,22 @@ export class StackDeployment {
   public readonly customCloudAssembly?: FileSet;
   public readonly absoluteTemplatePath: string;
   public readonly requiredAssets: StackAsset[];
-
   public readonly dependsOnStacks: StackDeployment[] = [];
+
+  /**
+   * The asset that represents the CloudFormation template for this stack.
+   */
+  public readonly templateAsset?: StackAsset;
+
+  /**
+   * The S3 URL which points to the template asset location in the publishing
+   * bucket.
+   *
+   * This is `undefined` if the stack template is not published.
+   *
+   * @example https://bucket.s3.amazonaws.com/object/key
+   */
+  public readonly templateUrl?: string;
 
   constructor(props: StackDeploymentProps) {
     this.stackArtifactId = props.stackArtifactId;
@@ -67,7 +84,17 @@ export class StackDeployment {
     this.stackName = props.stackName;
     this.customCloudAssembly = props.customCloudAssembly?.primaryOutput;
     this.absoluteTemplatePath = props.absoluteTemplatePath;
-    this.requiredAssets = props.requiredAssets ?? [];
+    this.templateUrl = props.templateS3Uri ? s3UrlFromUri(props.templateS3Uri, props.region) : undefined;
+
+    this.requiredAssets = new Array<StackAsset>();
+
+    for (const asset of props.assets ?? []) {
+      if (asset.isTemplate) {
+        this.templateAsset = asset;
+      } else {
+        this.requiredAssets.push(asset);
+      }
+    }
   }
 
   public relativeTemplatePath(root: string) {
@@ -107,6 +134,11 @@ export interface StackAsset {
    * Type of asset to publish
    */
   readonly assetType: AssetType;
+
+  /**
+   * Does this asset represent the template.
+   */
+  readonly isTemplate?: boolean;
 }
 
 function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): StackAsset[] {
@@ -118,14 +150,12 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
 
     for (const entry of manifest.entries) {
       let assetType: AssetType;
+      let isTemplate;
+
       if (entry instanceof DockerImageManifestEntry) {
         assetType = AssetType.DOCKER_IMAGE;
       } else if (entry instanceof FileManifestEntry) {
-        // Don't publishg the template for this stack
-        if (entry.source.packaging === 'file' && entry.source.path === stackArtifact.templateFile) {
-          continue;
-        }
-
+        isTemplate = entry.source.packaging === 'file' && entry.source.path === stackArtifact.templateFile;
         assetType = AssetType.FILE;
       } else {
         throw new Error(`Unrecognized asset type: ${entry.type}`);
@@ -136,9 +166,22 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
         assetId: entry.id.assetId,
         assetSelector: entry.id.toString(),
         assetType,
+        isTemplate,
       });
     }
   }
 
   return ret;
+}
+
+/**
+ * Takes an s3://bucket/object-key uri and returns a region-aware https:// url for it
+ *
+ * @param uri The s3 URI
+ * @param region The region (if undefined, we will return the global endpoint)
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html#virtual-hosted-style-access
+ */
+function s3UrlFromUri(uri: string, region: string | undefined) {
+  const url = parseUrl(uri);
+  return `https://${url.hostname}.s3.${region ? `${region}.` : ''}amazonaws.com${url.path}`;
 }

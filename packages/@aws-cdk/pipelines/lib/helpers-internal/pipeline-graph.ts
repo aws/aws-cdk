@@ -1,9 +1,28 @@
 import { AssetType, Blueprint, BlueprintQueries, FileSet, ScriptStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
-import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from '../private/graph';
-import { CodePipelineSource } from './codepipeline-source';
+import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 
-export interface PipelineStructureProps {
+export interface PipelineGraphProps {
+  /**
+   * Add a self-mutation step.
+   *
+   * @default false
+   */
   readonly selfMutation?: boolean;
+
+  /**
+   * Publishes the template asset to S3.
+   *
+   * @default false
+   */
+  readonly publishTemplate?: boolean;
+
+  /**
+   * Add a "prepare" step for each stack which can be used to create the change
+   * set. If this is disbled, only the "execute" step will be included.
+   *
+   * @default true
+   */
+  readonly prepareStep?: boolean;
 }
 
 /**
@@ -11,7 +30,7 @@ export interface PipelineStructureProps {
  *
  * This code makes all the decisions on how to lay out the CodePipeline
  */
-export class PipelineStructure {
+export class PipelineGraph {
   public readonly graph: AGraph = Graph.of('', { type: 'group' });
   public readonly cloudAssemblyFileSet: FileSet;
   public readonly queries: BlueprintQueries;
@@ -21,11 +40,17 @@ export class PipelineStructure {
   private readonly synthNode: AGraphNode;
   private readonly selfMutateNode?: AGraphNode;
   private readonly stackOutputDependencies = new DependencyBuilders<StackDeployment, any>();
+  private readonly publishTemplate: boolean;
+  private readonly prepareStep: boolean;
+
   private lastPreparationNode: AGraphNode;
   private _fileAssetCtr = 0;
   private _dockerAssetCtr = 0;
 
-  constructor(public readonly blueprint: Blueprint, props: PipelineStructureProps = {}) {
+  constructor(public readonly blueprint: Blueprint, props: PipelineGraphProps = {}) {
+    this.publishTemplate = props.publishTemplate ?? false;
+    this.prepareStep = props.prepareStep ?? true;
+
     this.queries = new BlueprintQueries(blueprint);
 
     this.synthNode = this.addBuildStep(blueprint.synthStep);
@@ -90,7 +115,7 @@ export class PipelineStructure {
 
     for (const stack of stage.stacks) {
       const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
-      const prepareNode: AGraphNode = GraphNode.of('Prepare', { type: 'prepare', stack });
+      const prepareNode: AGraphNode | undefined = this.prepareStep ? GraphNode.of('Prepare', { type: 'prepare', stack }) : undefined;
       const deployNode: AGraphNode = GraphNode.of('Deploy', {
         type: 'execute',
         stack,
@@ -98,20 +123,39 @@ export class PipelineStructure {
       });
 
       retGraph.add(stackGraph);
-      stackGraph.add(prepareNode, deployNode);
-      deployNode.dependOn(prepareNode);
+
+      stackGraph.add(deployNode);
+      let firstDeployNode;
+      if (prepareNode) {
+        stackGraph.add(prepareNode);
+        deployNode.dependOn(prepareNode);
+        firstDeployNode = prepareNode;
+      } else {
+        firstDeployNode = deployNode;
+      }
+
       stackGraphs.set(stack, stackGraph);
 
       // Depend on Cloud Assembly
       const cloudAssembly = stack.customCloudAssembly?.primaryOutput ?? this.cloudAssemblyFileSet;
-      prepareNode.dependOn(this.addAndRecurse(cloudAssembly.producer, retGraph));
+
+      firstDeployNode.dependOn(this.addAndRecurse(cloudAssembly.producer, retGraph));
+
+      // add the template asset
+      if (this.publishTemplate) {
+        if (!stack.templateAsset) {
+          throw new Error(`"publishTemplate" is enabled, but stack ${stack.stackArtifactId} does not have a template asset`);
+        }
+
+        firstDeployNode.dependOn(this.publishAsset(stack.templateAsset));
+      }
 
       // Depend on Assets
       // FIXME: Custom Cloud Assembly currently doesn't actually help separating
       // out templates from assets!!!
       for (const asset of stack.requiredAssets) {
         const assetNode = this.publishAsset(asset);
-        prepareNode.dependOn(assetNode);
+        firstDeployNode.dependOn(assetNode);
       }
 
       // Add stack output synchronization point
@@ -122,7 +166,15 @@ export class PipelineStructure {
 
     for (const stack of stage.stacks) {
       for (const dep of stack.dependsOnStacks) {
-        stackGraphs.get(stack)?.dependOn(stackGraphs.get(dep)!);
+        const stackNode = stackGraphs.get(stack);
+        const depNode = stackGraphs.get(dep);
+        if (!stackNode) {
+          throw new Error(`cannot find node for ${stack.stackName}`);
+        }
+        if (!depNode) {
+          throw new Error(`cannot find node for ${dep.stackName}`);
+        }
+        stackNode.dependOn(depNode);
       }
     }
 
@@ -160,7 +212,7 @@ export class PipelineStructure {
 
     // If the step is a source step, change the parent to a special "Source" stage
     // (CodePipeline wants it that way)
-    if (step instanceof CodePipelineSource) {
+    if (step.isSource) {
       parent = this.topLevelGraph('Source');
     }
 

@@ -22,6 +22,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
     return new GitHubSource(repoString, props);
   }
 
+  // tells `PipelineGraph` to hoist a "Source" step
+  public readonly isSource = true;
+
   public abstract produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult;
 }
 

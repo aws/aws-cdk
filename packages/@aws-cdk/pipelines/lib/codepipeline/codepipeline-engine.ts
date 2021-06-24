@@ -8,14 +8,13 @@ import { Aws, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { AssetType, BlueprintQueries, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
+import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { BuildDeploymentOptions, IDeploymentEngine } from '../main/engine';
 import { appOf, assemblyBuilderOf, embeddedAsmPath } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
-import { GraphNode, GraphNodeCollection, isGraph } from '../private/graph';
 import { enumerate, flatten, maybeSuffix } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
 import { CodeBuildFactory, mergeBuildEnvironments, stackVariableNamespace } from './_codebuild-factory';
-import { AGraphNode, PipelineStructure } from './_pipeline-structure';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
@@ -90,7 +89,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       restartExecutionOnUpdate: true,
     });
 
-    const graphFromBp = new PipelineStructure(options.blueprint, {
+    const graphFromBp = new PipelineGraph(options.blueprint, {
       selfMutation: this.selfMutation,
     });
 
@@ -125,7 +124,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
     return this._scope;
   }
 
-  private pipelineStagesAndActionsFromGraph(structure: PipelineStructure) {
+  private pipelineStagesAndActionsFromGraph(structure: PipelineGraph) {
     // Translate graph into Pipeline Stages and Actions
     let beforeSelfMutation = this.selfMutation;
     for (const stageNode of flatten(structure.graph.sortedChildren())) {
@@ -456,7 +455,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
 }
 
 interface MakeActionOptions {
-  readonly graphFromBp: PipelineStructure;
+  readonly graphFromBp: PipelineGraph;
   readonly runOrder: number;
   readonly node: AGraphNode;
   readonly sharedParent: AGraphNode;

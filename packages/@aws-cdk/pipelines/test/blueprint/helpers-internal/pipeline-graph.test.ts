@@ -1,8 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import '@aws-cdk/assert-internal/jest';
 import * as cdkp from '../../../lib';
-import { PipelineStructure } from '../../../lib/codepipeline/_pipeline-structure';
-import { Graph, GraphNode } from '../../../lib/private/graph';
+import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
 import { AppWithOutput, OneStackApp } from '../test-app';
 import { TestApp } from '../testutil';
@@ -31,7 +30,7 @@ describe('blueprint with one stage', () => {
 
   test('simple app gets graphed correctly', () => {
     // WHEN
-    const graph = new PipelineStructure(blueprint).graph;
+    const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
     expect(childrenAt(graph)).toEqual([
@@ -52,7 +51,7 @@ describe('blueprint with one stage', () => {
 
   test('self mutation gets inserted at the right place', () => {
     // WHEN
-    const graph = new PipelineStructure(blueprint, { selfMutation: true }).graph;
+    const graph = new PipelineGraph(blueprint, { selfMutation: true }).graph;
 
     // THEN
     expect(childrenAt(graph)).toEqual([
@@ -88,7 +87,7 @@ describe('blueprint with wave and stage', () => {
     blueprint.waves[0].stages[0].addPost(new cdkp.ManualApprovalStep('Approve'));
 
     // WHEN
-    const graph = new PipelineStructure(blueprint).graph;
+    const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
     expect(childrenAt(graph, 'Wave')).toEqual([
@@ -107,7 +106,7 @@ describe('blueprint with wave and stage', () => {
     blueprint.waves[0].stages[0].addPre(new cdkp.ManualApprovalStep('Gogogo'));
 
     // WHEN
-    const graph = new PipelineStructure(blueprint).graph;
+    const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
     expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
@@ -116,6 +115,47 @@ describe('blueprint with wave and stage', () => {
     ]);
   });
 });
+
+describe('options for other engines', () => {
+  test('"publishTemplate" will add steps to publish CFN templates as assets', () => {
+    // GIVEN
+    const blueprint = new cdkp.Blueprint({
+      synthStep: new cdkp.SynthStep('Synth', {
+        commands: ['build'],
+      }),
+    });
+    blueprint.addStage(new OneStackApp(app, 'Alpha'));
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint, {
+      publishTemplate: true,
+    });
+
+    // THEN
+    expect(childrenAt(graph.graph, 'Assets')).toStrictEqual(['FileAsset1']);
+  });
+
+  test('"prepareStep: false" can be used to disable the "prepare" step for stack deployments', () => {
+    // GIVEN
+    const blueprint = new cdkp.Blueprint({
+      synthStep: new cdkp.SynthStep('Synth', {
+        commands: ['build'],
+      }),
+    });
+    blueprint.addStage(new OneStackApp(app, 'Alpha'));
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint, {
+      prepareStep: false,
+    });
+
+    // THEN
+    // if "prepareStep" was true (default), the "Stack" node would have "Prepare" and "Deploy"
+    // since "prepareStep" is false, it only has "Deploy".
+    expect(childrenAt(graph.graph, 'Alpha', 'Stack')).toStrictEqual(['Deploy']);
+  });
+});
+
 
 describe('with app with output', () => {
   let blueprint: cdkp.Blueprint;
@@ -145,7 +185,7 @@ describe('with app with output', () => {
     });
 
     // WHEN
-    const graph = new PipelineStructure(blueprint).graph;
+    const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
     expect(childrenAt(graph, 'Alpha')).toEqual([
@@ -164,7 +204,7 @@ describe('with app with output', () => {
     });
 
     // WHEN
-    const graph = new PipelineStructure(blueprint).graph;
+    const graph = new PipelineGraph(blueprint).graph;
     expect(() => {
       assertGraph(nodeAt(graph, 'Alpha')).sortedLeaves();
     }).toThrow(/Dependency cycle/);
@@ -178,7 +218,7 @@ describe('with app with output', () => {
 
     // WHEN
     expect(() => {
-      new PipelineStructure(blueprint).graph;
+      new PipelineGraph(blueprint).graph;
     }).toThrow(/is not in the pipeline/);
   });
 });

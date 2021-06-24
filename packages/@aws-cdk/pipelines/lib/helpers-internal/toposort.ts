@@ -1,4 +1,4 @@
-import { GraphNode } from './index';
+import { GraphNode } from './graph';
 
 export function printDependencyMap<A>(dependencies: Map<GraphNode<A>, Set<GraphNode<A>>>) {
   const lines = ['---'];
