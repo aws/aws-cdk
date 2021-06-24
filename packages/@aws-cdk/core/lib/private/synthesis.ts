@@ -42,10 +42,17 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   return builder.buildAssembly();
 }
 
-const CUSTOM_SYNTHESIS_MAP = new WeakMap<constructs.IConstruct, ICustomSynthesis>();
+const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
 
 export function addCustomSynthesis(construct: constructs.IConstruct, synthesis: ICustomSynthesis): void {
-  CUSTOM_SYNTHESIS_MAP.set(construct, synthesis);
+  Object.defineProperty(construct, CUSTOM_SYNTHESIS_SYM, {
+    value: synthesis,
+    enumerable: false,
+  });
+}
+
+function getCustomSynthesis(construct: constructs.IConstruct): ICustomSynthesis | undefined {
+  return (construct as any)[CUSTOM_SYNTHESIS_SYM];
 }
 
 /**
@@ -166,7 +173,7 @@ function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, v
     } else if (construct instanceof TreeMetadata) {
       construct._synthesizeTree(session);
     } else {
-      const custom = CUSTOM_SYNTHESIS_MAP.get(construct);
+      const custom = getCustomSynthesis(construct);
       custom?.onSynthesize(session);
     }
 
