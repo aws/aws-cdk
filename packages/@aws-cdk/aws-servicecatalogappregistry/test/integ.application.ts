@@ -10,4 +10,3 @@ new appreg.Application(stack, 'TestApplication', {
 });
 
 app.synth();
-
