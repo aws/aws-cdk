@@ -8,12 +8,12 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Represents the Product Provisioning Artifact Template.
  */
-export abstract class Template {
+export abstract class CloudFormationTemplate {
   /**
    * Template from URL
    * @param url The url that points to the provisioning artifacts template
    */
-  public static fromUrl(url: string): UrlTemplate {
+  public static fromUrl(url: string): CloudFormationTemplate {
     return new UrlTemplate(url);
   }
 
@@ -22,7 +22,7 @@ export abstract class Template {
    *
    * @param path A file containing the provisioning artifacts
    */
-  public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetTemplate {
+  public static fromAsset(path: string, options?: s3_assets.AssetOptions): CloudFormationTemplate {
     return new AssetTemplate(path, options);
   }
 
@@ -49,7 +49,7 @@ export interface TemplateConfig {
 /**
  * Template code from a Url.
  */
-export class UrlTemplate extends Template {
+class UrlTemplate extends CloudFormationTemplate {
   constructor(private url: string) {
     super();
   }
@@ -64,7 +64,7 @@ export class UrlTemplate extends Template {
 /**
  * Template from a local file.
  */
-export class AssetTemplate extends Template {
+class AssetTemplate extends CloudFormationTemplate {
   private asset?: s3_assets.Asset;
 
   /**

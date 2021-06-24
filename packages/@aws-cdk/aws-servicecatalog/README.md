@@ -102,21 +102,39 @@ portfolio.shareWithAccount('012345678901');
 ## Product
 
 Products are the resources you are allowing end users to provision and utilize. 
-The cdk currently only supports adding products of type Cloudformation product. 
-Using the CDK, a new Product can be created with the `Product` construct:
+The CDK currently only supports adding products of type Cloudformation product. 
+Using the CDK, a new Product can be created with the `CloudFormationProduct` construct.
+`CloudFormationTemplate.fromUrl` can be utilized to create a Product using a Cloudformation template directly from an URL:
 
 ```ts
-const product = new servicecatalog.Product(this, 'MyFirstProduct', {
+const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
   productName: "My Product",
   owner: "Product Owner",
-  provisioningArtifacts: [
+  productVersions: [
     {
-      name: "url",
-      template: servicecatalog.Template.fromUrl('https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ServiceCatalog/Product.yaml')
+      name: "v1",
+      template: servicecatalog.CloudFormationTemplate.fromUrl('https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ServiceCatalog/Product.yaml')
+    },
+  ]
+});
+```
+
+A `CloudFormationProduct` can also be created using a Cloudformation template from an Asset.
+Assets are files that are uploaded to an S3 Bucket before deployment.
+`CloudFormationTemplate.fromAsset` can be utilized to create a Product by passing the path to a local template file on your disk:
+
+```ts
+const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    {
+      name: "v1",
+      template: servicecatalog.CloudFormationTemplate.fromUrl('https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ServiceCatalog/Product.yaml')
     },
     {
-      name: "asset",
-      template: servicecatalog.Template.fromAsset(path.join(__dirname, 'development-environment.template'))
+      name: "v2",
+      template: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template'))
     },
   ]
 });
