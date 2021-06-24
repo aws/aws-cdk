@@ -294,6 +294,52 @@ test('grantRead cross account', () => {
       Ref: 'SecretA720EF05',
     },
   });
+
+  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: [
+        {},
+        {},
+        {},
+        {
+          Action: 'kms:Decrypt',
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::1234:root',
+                ],
+              ],
+            },
+          },
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
 });
 
 test('grantRead with version label constraint', () => {
