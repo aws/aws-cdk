@@ -172,9 +172,7 @@ export = {
           port: 8080,
           tls: {
             mode: appmesh.TlsMode.STRICT,
-            certificate: appmesh.TlsCertificate.acm({
-              certificate: cert,
-            }),
+            certificate: appmesh.TlsCertificate.acm(cert),
           },
         })],
       });
@@ -218,10 +216,7 @@ export = {
           port: 8080,
           tls: {
             mode: appmesh.TlsMode.STRICT,
-            certificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-            }),
+            certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
           },
         })],
       });
@@ -248,6 +243,155 @@ export = {
       test.done();
     },
 
+    'with an http2 listener with a TLS certificate from SDS'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      // WHEN
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.http2({
+          port: 8080,
+          tls: {
+            mode: appmesh.TlsMode.STRICT,
+            certificate: appmesh.TlsCertificate.sds('secret_certificate'),
+          },
+        })],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              TLS: {
+                Mode: appmesh.TlsMode.STRICT,
+                Certificate: {
+                  SDS: {
+                    SecretName: 'secret_certificate',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'with an grpc listener with a TLS validation from file': {
+      'the listener should include the TLS configuration'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        // WHEN
+        new appmesh.VirtualGateway(stack, 'testGateway', {
+          virtualGatewayName: 'test-gateway',
+          mesh: mesh,
+          listeners: [appmesh.VirtualGatewayListener.grpc({
+            port: 8080,
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+              mutualTlsValidation: {
+                trust: appmesh.TlsValidationTrust.file('path/to/certChain'),
+              },
+            },
+          })],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+          Spec: {
+            Listeners: [
+              {
+                TLS: {
+                  Mode: appmesh.TlsMode.STRICT,
+                  Certificate: {
+                    File: {
+                      CertificateChain: 'path/to/certChain',
+                      PrivateKey: 'path/to/privateKey',
+                    },
+                  },
+                  Validation: {
+                    Trust: {
+                      File: {
+                        CertificateChain: 'path/to/certChain',
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'with an http2 listener with a TLS validation from SDS': {
+      'the listener should include the TLS configuration'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        // WHEN
+        new appmesh.VirtualGateway(stack, 'testGateway', {
+          virtualGatewayName: 'test-gateway',
+          mesh: mesh,
+          listeners: [appmesh.VirtualGatewayListener.http2({
+            port: 8080,
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.sds('secret_certificate'),
+              mutualTlsValidation: {
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
+                trust: appmesh.TlsValidationTrust.sds('secret_validation'),
+              },
+            },
+          })],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+          Spec: {
+            Listeners: [
+              {
+                TLS: {
+                  Mode: appmesh.TlsMode.STRICT,
+                  Certificate: {
+                    SDS: {
+                      SecretName: 'secret_certificate',
+                    },
+                  },
+                  Validation: {
+                    SubjectAlternativeNames: {
+                      Match: {
+                        Exact: ['mesh-endpoint.apps.local'],
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
     'with an grpc listener with the TLS mode permissive'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -264,10 +408,7 @@ export = {
           port: 8080,
           tls: {
             mode: appmesh.TlsMode.PERMISSIVE,
-            certificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-            }),
+            certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
           },
         })],
       });
@@ -399,9 +540,7 @@ export = {
         backendDefaults: {
           tlsClientPolicy: {
             validation: {
-              trust: appmesh.TlsValidationTrust.file({
-                certificateChain: 'path-to-certificate',
-              }),
+              trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
             },
           },
         },
@@ -428,6 +567,63 @@ export = {
       }));
 
       test.done();
+    },
+
+    "with client's TLS certificate from SDS": {
+      'should add a backend default to the resource with TLS certificate'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        // WHEN
+        new appmesh.VirtualGateway(stack, 'virtual-gateway', {
+          virtualGatewayName: 'virtual-gateway',
+          mesh: mesh,
+          backendDefaults: {
+            tlsClientPolicy: {
+              mutualTlsCertificate: appmesh.TlsCertificate.sds( 'secret_certificate'),
+              validation: {
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
+                trust: appmesh.TlsValidationTrust.sds('secret_validation'),
+              },
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+          VirtualGatewayName: 'virtual-gateway',
+          Spec: {
+            BackendDefaults: {
+              ClientPolicy: {
+                TLS: {
+                  Certificate: {
+                    SDS: {
+                      SecretName: 'secret_certificate',
+                    },
+                  },
+                  Validation: {
+                    SubjectAlternativeNames: {
+                      Match: {
+                        Exact: ['mesh-endpoint.apps.local'],
+                      },
+                    },
+                    Trust: {
+                      SDS: {
+                        SecretName: 'secret_validation',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
     },
   },
 

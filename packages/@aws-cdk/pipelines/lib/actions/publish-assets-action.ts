@@ -92,6 +92,14 @@ export interface PublishAssetsActionProps {
    * @default false
    */
   readonly createBuildspecFile?: boolean;
+
+  /**
+   * Additional commands to run before installing cdk-assert
+   * Use this to setup proxies or npm mirrors
+   *
+   * @default -
+   */
+  readonly preInstallCommands?: string[];
 }
 
 /**
@@ -113,12 +121,13 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
     super(scope, id);
 
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
+    const installCommand = `npm install -g cdk-assets${installSuffix}`;
 
     this.buildSpec = codebuild.BuildSpec.fromObject({
       version: '0.2',
       phases: {
         install: {
-          commands: `npm install -g cdk-assets${installSuffix}`,
+          commands: props.preInstallCommands ? [...props.preInstallCommands, installCommand] : installCommand,
         },
         build: {
           commands: Lazy.list({ produce: () => this.commands }),
