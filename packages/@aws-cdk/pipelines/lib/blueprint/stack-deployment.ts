@@ -174,6 +174,13 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
   return ret;
 }
 
+/**
+ * Takes an s3://bucket/object-key uri and returns a region-aware https:// url for it
+ *
+ * @param uri The s3 URI
+ * @param region The region (if undefined, we will return the global endpoint)
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html#virtual-hosted-style-access
+ */
 function s3UrlFromUri(uri: string, region: string | undefined) {
   const url = parseUrl(uri);
   return `https://${url.hostname}.s3.${region ? `${region}.` : ''}amazonaws.com${url.path}`;
