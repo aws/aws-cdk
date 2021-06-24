@@ -360,140 +360,6 @@
         "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
       ]
     },
-    "DeployMeWithEfsStorageFileSystemF970009E": {
-      "Type": "AWS::EFS::FileSystem",
-      "Properties": {
-        "Encrypted": true,
-        "FileSystemTags": [
-          {
-            "Key": "Name",
-            "Value": "test-bucket-deployments-2/DeployMeWithEfsStorage/FileSystem"
-          }
-        ]
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "DeployMeWithEfsStorageFileSystemEfsSecurityGroupBBB42D31": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "test-bucket-deployments-2/DeployMeWithEfsStorage/FileSystem/EfsSecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "test-bucket-deployments-2/DeployMeWithEfsStorage/FileSystem"
-          }
-        ],
-        "VpcId": {
-          "Fn::ImportValue": "test-dependencies-2:ExportsOutputRefVpc8378EB38272D6E3A"
-        }
-      }
-    },
-    "DeployMeWithEfsStorageFileSystemEfsSecurityGroupfromtestbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledSecurityGroup21344F73204981C0ED3A": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "tcp",
-        "Description": "from testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledSecurityGroup21344F73:2049",
-        "FromPort": 2049,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "DeployMeWithEfsStorageFileSystemEfsSecurityGroupBBB42D31",
-            "GroupId"
-          ]
-        },
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledSecurityGroup655146DE",
-            "GroupId"
-          ]
-        },
-        "ToPort": 2049
-      }
-    },
-    "DeployMeWithEfsStorageFileSystemEfsMountTarget168ECC828": {
-      "Type": "AWS::EFS::MountTarget",
-      "Properties": {
-        "FileSystemId": {
-          "Ref": "DeployMeWithEfsStorageFileSystemF970009E"
-        },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "DeployMeWithEfsStorageFileSystemEfsSecurityGroupBBB42D31",
-              "GroupId"
-            ]
-          }
-        ],
-        "SubnetId": {
-          "Fn::ImportValue": "test-dependencies-2:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
-        }
-      }
-    },
-    "DeployMeWithEfsStorageFileSystemEfsMountTarget2ED98B1FD": {
-      "Type": "AWS::EFS::MountTarget",
-      "Properties": {
-        "FileSystemId": {
-          "Ref": "DeployMeWithEfsStorageFileSystemF970009E"
-        },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "DeployMeWithEfsStorageFileSystemEfsSecurityGroupBBB42D31",
-              "GroupId"
-            ]
-          }
-        ],
-        "SubnetId": {
-          "Fn::ImportValue": "test-dependencies-2:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
-        }
-      }
-    },
-    "DeployMeWithEfsStorageFileSystemEfsMountTarget304ACC278": {
-      "Type": "AWS::EFS::MountTarget",
-      "Properties": {
-        "FileSystemId": {
-          "Ref": "DeployMeWithEfsStorageFileSystemF970009E"
-        },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "DeployMeWithEfsStorageFileSystemEfsSecurityGroupBBB42D31",
-              "GroupId"
-            ]
-          }
-        ],
-        "SubnetId": {
-          "Fn::ImportValue": "test-dependencies-2:ExportsOutputRefVpcPrivateSubnet3SubnetF258B56EC7CF32DD"
-        }
-      }
-    },
-    "DeployMeWithEfsStorageFileSystemAccessPoint3170307F": {
-      "Type": "AWS::EFS::AccessPoint",
-      "Properties": {
-        "FileSystemId": {
-          "Ref": "DeployMeWithEfsStorageFileSystemF970009E"
-        },
-        "PosixUser": {
-          "Gid": "1001",
-          "Uid": "1001"
-        },
-        "RootDirectory": {
-          "CreationInfo": {
-            "OwnerGid": "1001",
-            "OwnerUid": "1001",
-            "Permissions": "0777"
-          },
-          "Path": "/lambda"
-        }
-      }
-    },
     "DeployMeWithEfsStorageAwsCliLayer1619A3EE": {
       "Type": "AWS::Lambda::LayerVersion",
       "Properties": {
@@ -543,7 +409,7 @@
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
-            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledCB63FB4C",
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D77166F45D674",
             "Arn"
           ]
         },
@@ -597,7 +463,141 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledServiceRole479B370E": {
+    "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716E08E7F16": {
+      "Type": "AWS::EFS::FileSystem",
+      "Properties": {
+        "Encrypted": true,
+        "FileSystemTags": [
+          {
+            "Key": "Name",
+            "Value": "test-bucket-deployments-2/Efs-C809D1811ADCB65CE72F9AEB256E2E4547417D7716"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsSecurityGroupABE50D83": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "test-bucket-deployments-2/Efs-C809D1811ADCB65CE72F9AEB256E2E4547417D7716/EfsSecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "test-bucket-deployments-2/Efs-C809D1811ADCB65CE72F9AEB256E2E4547417D7716"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "test-dependencies-2:ExportsOutputRefVpc8378EB38272D6E3A"
+        }
+      }
+    },
+    "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsSecurityGroupfromtestbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716SecurityGroupA3D8DE2220494B960E0D": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "from testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716SecurityGroupA3D8DE22:2049",
+        "FromPort": 2049,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsSecurityGroupABE50D83",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716SecurityGroupBD2918C0",
+            "GroupId"
+          ]
+        },
+        "ToPort": 2049
+      }
+    },
+    "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget1D077BA5E": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716E08E7F16"
+        },
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsSecurityGroupABE50D83",
+              "GroupId"
+            ]
+          }
+        ],
+        "SubnetId": {
+          "Fn::ImportValue": "test-dependencies-2:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+        }
+      }
+    },
+    "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget24D6B2D93": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716E08E7F16"
+        },
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsSecurityGroupABE50D83",
+              "GroupId"
+            ]
+          }
+        ],
+        "SubnetId": {
+          "Fn::ImportValue": "test-dependencies-2:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+        }
+      }
+    },
+    "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget38FC30A74": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716E08E7F16"
+        },
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsSecurityGroupABE50D83",
+              "GroupId"
+            ]
+          }
+        ],
+        "SubnetId": {
+          "Fn::ImportValue": "test-dependencies-2:ExportsOutputRefVpcPrivateSubnet3SubnetF258B56EC7CF32DD"
+        }
+      }
+    },
+    "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716AccessPoint58186946": {
+      "Type": "AWS::EFS::AccessPoint",
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716E08E7F16"
+        },
+        "PosixUser": {
+          "Gid": "1001",
+          "Uid": "1001"
+        },
+        "RootDirectory": {
+          "CreationInfo": {
+            "OwnerGid": "1001",
+            "OwnerUid": "1001",
+            "Permissions": "0777"
+          },
+          "Path": "/lambda"
+        }
+      }
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716ServiceRole17021AEB": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -640,12 +640,12 @@
         ]
       },
       "DependsOn": [
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget168ECC828",
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget2ED98B1FD",
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget304ACC278"
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget1D077BA5E",
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget24D6B2D93",
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget38FC30A74"
       ]
     },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledServiceRoleDefaultPolicyFB8033EE": {
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716ServiceRoleDefaultPolicy0DCD5EA5": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -672,7 +672,7 @@
                         },
                         ":access-point/",
                         {
-                          "Ref": "DeployMeWithEfsStorageFileSystemAccessPoint3170307F"
+                          "Ref": "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716AccessPoint58186946"
                         }
                       ]
                     ]
@@ -703,7 +703,7 @@
                     },
                     ":file-system/",
                     {
-                      "Ref": "DeployMeWithEfsStorageFileSystemF970009E"
+                      "Ref": "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716E08E7F16"
                     }
                   ]
                 ]
@@ -786,23 +786,23 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledServiceRoleDefaultPolicyFB8033EE",
+        "PolicyName": "tomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716ServiceRoleDefaultPolicy0DCD5EA5",
         "Roles": [
           {
-            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledServiceRole479B370E"
+            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716ServiceRole17021AEB"
           }
         ]
       },
       "DependsOn": [
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget168ECC828",
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget2ED98B1FD",
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget304ACC278"
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget1D077BA5E",
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget24D6B2D93",
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget38FC30A74"
       ]
     },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledSecurityGroup655146DE": {
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716SecurityGroupBD2918C0": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Automatic security group for Lambda Function testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabled601F4543",
+        "GroupDescription": "Automatic security group for Lambda Function testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D77164CAE4DC6",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -815,12 +815,12 @@
         }
       },
       "DependsOn": [
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget168ECC828",
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget2ED98B1FD",
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget304ACC278"
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget1D077BA5E",
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget24D6B2D93",
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget38FC30A74"
       ]
     },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledCB63FB4C": {
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D77166F45D674": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -863,7 +863,7 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledServiceRole479B370E",
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716ServiceRole17021AEB",
             "Arn"
           ]
         },
@@ -892,7 +892,7 @@
                   },
                   ":access-point/",
                   {
-                    "Ref": "DeployMeWithEfsStorageFileSystemAccessPoint3170307F"
+                    "Ref": "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716AccessPoint58186946"
                   }
                 ]
               ]
@@ -912,7 +912,7 @@
           "SecurityGroupIds": [
             {
               "Fn::GetAtt": [
-                "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledSecurityGroup655146DE",
+                "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716SecurityGroupBD2918C0",
                 "GroupId"
               ]
             }
@@ -931,12 +931,12 @@
         }
       },
       "DependsOn": [
-        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledServiceRoleDefaultPolicyFB8033EE",
-        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledServiceRole479B370E",
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget168ECC828",
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget2ED98B1FD",
-        "DeployMeWithEfsStorageFileSystemEfsMountTarget304ACC278",
-        "DeployMeWithEfsStorageFileSystemEfsSecurityGroupfromtestbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledSecurityGroup21344F73204981C0ED3A"
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716ServiceRoleDefaultPolicy0DCD5EA5",
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716ServiceRole17021AEB",
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget1D077BA5E",
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget24D6B2D93",
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsMountTarget38FC30A74",
+        "EfsC809D1811ADCB65CE72F9AEB256E2E4547417D7716EfsSecurityGroupfromtestbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC809D1811ADCB65CE72F9AEB256E2E4547417D7716SecurityGroupA3D8DE2220494B960E0D"
       ]
     },
     "Destination281A09BDF": {

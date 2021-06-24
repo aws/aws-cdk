@@ -210,7 +210,7 @@ export class BucketDeployment extends CoreConstruct {
     let accessPoint;
     if (props.useEfs && props.vpc) {
       const accessMode = '0777';
-      const fileSystem = new efs.FileSystem(this, 'FileSystem', {
+      const fileSystem = this.getOrCreateEfsFileSystem(scope, {
         vpc: props.vpc,
         removalPolicy: cdk.RemovalPolicy.DESTROY,
       });
@@ -230,7 +230,7 @@ export class BucketDeployment extends CoreConstruct {
 
     const mountPath = `/mnt${accessPointPath}`;
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
-      uuid: this.renderSingletonUuid(props.memoryLimit, props.useEfs),
+      uuid: this.renderSingletonUuid(props.memoryLimit, props.vpc),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       runtime: lambda.Runtime.PYTHON_3_6,
@@ -283,7 +283,7 @@ export class BucketDeployment extends CoreConstruct {
 
   }
 
-  private renderSingletonUuid(memoryLimit?: number, useEfs?: boolean) {
+  private renderSingletonUuid(memoryLimit?: number, vpc?: ec2.IVpc) {
     let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
 
     // if user specify a custom memory limit, define another singleton handler
@@ -297,17 +297,27 @@ export class BucketDeployment extends CoreConstruct {
       uuid += `-${memoryLimit.toString()}MiB`;
     }
 
-    // if user specify to use Efs storage, define another singleton handler
+    // if user specify to use VPC, define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
     // configurations since we have a singleton.
-    if (useEfs) {
-      if (cdk.Token.isUnresolved(useEfs)) {
-        throw new Error('Can\'t use tokens when specifying "useEfs" since we use it to identify the singleton custom resource handler');
-      }
-      uuid += '-EfsEnabled';
+    // A VPC is a must if EFS storage is used and that's why we are only using VPC in uuid.
+    if (vpc) {
+      uuid += `-${vpc.node.addr.toUpperCase()}`;
     }
 
     return uuid;
+  }
+
+  /**
+   * Function to get/create a stack singleton instance of EFS FileSystem per vpc.
+   *
+   * @param scope Construct
+   * @param fileSystemProps EFS FileSystemProps
+   */
+  private getOrCreateEfsFileSystem(scope: Construct, fileSystemProps: efs.FileSystemProps): efs.FileSystem {
+    const stack = cdk.Stack.of(scope);
+    const uuid = `Efs-${fileSystemProps.vpc.node.addr.toUpperCase()}`;
+    return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
   }
 }
 

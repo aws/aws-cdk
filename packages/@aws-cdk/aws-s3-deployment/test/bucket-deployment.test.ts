@@ -243,7 +243,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
               },
               ':access-point/',
               {
-                Ref: 'DeployFileSystemAccessPoint260D9391',
+                Ref: 'EfsC8FD940ACB9A3F95AD0E87FB4C3A2482B1900BA175AccessPoint5E4EC619',
               },
             ],
           ],
@@ -260,7 +260,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
       SecurityGroupIds: [
         {
           'Fn::GetAtt': [
-            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CEfsEnabledSecurityGroup655146DE',
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC8FD940ACB9A3F95AD0E87FB4C3A2482B1900BA175SecurityGroup18DD298D',
             'GroupId',
           ],
         },
@@ -721,7 +721,7 @@ test('deployment allows vpc to be implicitly supplied to lambda', () => {
       SecurityGroupIds: [
         {
           'Fn::GetAtt': [
-            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CSecurityGroup4B1A9777',
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC81CEC990A9A5D64A5922E5708AD8067EEB95C53D1SecurityGroup38E82F7F',
             'GroupId',
           ],
         },
@@ -765,7 +765,7 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
       SecurityGroupIds: [
         {
           'Fn::GetAtt': [
-            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CSecurityGroup4B1A9777',
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC8A39596CB8641929FCF6A288BC9DB5AB7B0F656ADSecurityGroupA1413B04',
             'GroupId',
           ],
         },

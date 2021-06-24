@@ -74,6 +74,8 @@ class TestDependenciesStack extends cdk.Stack {
 
 const app = new cdk.App();
 
+// TestDependencies stack is left after execution since cdk-integ tests can only work on one stack.
+// It is created since it is a dependency but not removed after execution.
 const testDependencies = new TestDependenciesStack(app, 'test-dependencies-2');
 new TestBucketDeployment(app, 'test-bucket-deployments-2', { vpc: testDependencies.vpc } );
 
