@@ -27,7 +27,7 @@ export abstract class Match {
    * @param pattern the pattern to match
    */
   public static arrayEquals(pattern: any[]): IMatcher {
-    return new ArrayMatch(pattern, { partial: false });
+    return new ArrayMatch(pattern, { subsequence: false });
   }
 
   /**
@@ -87,7 +87,7 @@ class LiteralMatch extends IMatcher {
 
   public test(actual: any): MatchResult {
     if (Array.isArray(this.pattern)) {
-      return new ArrayMatch(this.pattern, { partial: false }).test(actual);
+      return new ArrayMatch(this.pattern, { subsequence: false }).test(actual);
     }
 
     if (typeof this.pattern === 'object') {
@@ -117,12 +117,12 @@ class LiteralMatch extends IMatcher {
  */
 interface ArrayMatchOptions {
   /**
-   * Whether the pattern should partially match with the target.
-   * The target array can contain more elements than expected by the pattern.
-   * Matching elements in the target must be present in the same order as in the pattern.
+   * Whether the pattern is a subsequence of the target.
+   * A subsequence is a sequence that can be derived from another sequence by deleting
+   * some or no elements without changing the order of the remaining elements.
    * @default true
    */
-  readonly partial?: boolean;
+  readonly subsequence?: boolean;
 }
 
 /**
@@ -133,7 +133,7 @@ class ArrayMatch extends IMatcher {
 
   constructor(private readonly pattern: any[], options: ArrayMatchOptions = {}) {
     super();
-    this.partial = options.partial ?? true;
+    this.partial = options.subsequence ?? true;
   }
 
   public test(actual: any): MatchResult {

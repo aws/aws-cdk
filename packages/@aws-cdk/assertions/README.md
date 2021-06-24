@@ -108,10 +108,34 @@ Deep partial matching is where objects are matched partially recursively. At eac
 level, the list of keys in the target is a subset of the provided pattern.
 
 ```ts
-assert.hasResource('Foo::Bar', Match.objectLike({
-  Foo: 'Bar',
-  Baz: 'Boom',
-}});
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": {
+//           "Wobble": "Flob",
+//           "Bob": "Cat"
+//         }
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: Match.objectLike({
+    Wobble: 'Flob',
+  }),
+});
+
+// The following will throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: Match.objectLike({
+    Brew: 'Coffee',
+  })
+});
 ```
 
 The `Match.objectEquals()` API can be used to assert a target as a deep exact
@@ -122,13 +146,33 @@ property should not exist on the target. This can be used within `Match.objectLi
 or outside of any matchers.
 
 ```ts
-assert.hasResource('Foo::Bar', {
-    Foo: 'Bar',
-    Baz: {
-      Fred: Matcher.absentProperty()
-    },
-  },
-)});
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": {
+//           "Wobble": "Flob",
+//         }
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: Match.objectLike({
+    Bob: Match.absentProperty(),
+  }),
+});
+
+// The following will throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: Match.objectLike({
+    Wobble: Match.absentProperty(),
+  })
+});
 ```
 
 ### Array Matchers
@@ -138,10 +182,27 @@ of the provided pattern array.
 This API will perform subset match on the target.
 
 ```ts
-assert.hasResource('Foo::Bar', {
-  Foo: 'Bar',
-  Baz: Match.arrayWith(['Fred', 'Waldo']),
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Flob", "Cat"]
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: Match.arrayWith(['Flob']),
 });
+
+// The following will throw an assertion error
+assert.hasResourceProperties('Foo::Bar', Match.objectLike({
+  Fred: Match.arrayWith(['Wobble']);
+}});
 ```
 
 *Note:* The list of items in the pattern array should be in order as they appear in the
