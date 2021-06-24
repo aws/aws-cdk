@@ -1,5 +1,5 @@
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, IConstruct, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { App, IConstruct, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName } from '@aws-cdk/core';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
@@ -442,6 +442,7 @@ export class Rule extends Resource implements IRule {
     if (existing) { return existing; }
 
     const role = new Role(scope as CoreConstruct, id, {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new ServicePrincipal('events.amazonaws.com'),
     });
 
