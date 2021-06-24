@@ -11,6 +11,11 @@ export abstract class IMatcher {
   }
 
   /**
+   * A name for the matcher. This is collected as part of the result and may be presented to the user.
+   */
+  public abstract readonly name: string;
+
+  /**
    * Test whether a target matches the provided pattern.
    * @param actual the target to match
    * @return the list of match failures. An empty array denotes a successful match.
@@ -32,8 +37,8 @@ export class MatchResult {
    * @param path the path at which the failure occurred.
    * @param message the failure
    */
-  public push(path: string[], message: string): this {
-    this.failures.push({ path, message });
+  public push(matcher: IMatcher, path: string[], message: string): this {
+    this.failures.push({ matcher, path, message });
     return this;
   }
 
@@ -54,7 +59,7 @@ export class MatchResult {
   public compose(id: string, inner: MatchResult): this {
     const innerF = (inner as any).failures as MatchFailure[];
     this.failures.push(...innerF.map(f => {
-      return { path: [id, ...f.path], message: f.message };
+      return { path: [id, ...f.path], message: f.message, matcher: f.matcher };
     }));
     return this;
   }
@@ -65,12 +70,13 @@ export class MatchResult {
   public toHumanStrings(): string[] {
     return this.failures.map(r => {
       const loc = r.path.length === 0 ? '' : ` at ${r.path.join('')}`;
-      return '' + r.message + loc;
+      return '' + r.message + loc + ` (using ${r.matcher.name} matcher)`;
     });
   }
 }
 
 type MatchFailure = {
+  matcher: IMatcher;
   path: string[];
   message: string;
 }
