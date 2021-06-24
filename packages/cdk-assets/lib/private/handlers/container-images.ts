@@ -52,7 +52,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     await this.docker.tag(localTagName, imageUri);
 
     if (cdkDockerCredentialsConfigured) {
-      this.docker.createCleanConfig();
+      this.docker.resetAuthPlugins();
       await this.docker.login(ecr);
     }
 

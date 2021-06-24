@@ -16,6 +16,8 @@ export interface DockerCredentialsConfig {
 
 export interface DockerDomainCredentialSource {
   readonly secretsManagerSecretId?: string;
+  readonly secretsUsernameField?: string;
+  readonly secretsPasswordField?: string;
   readonly ecrRepository?: boolean;
   readonly assumeRoleArn?: string;
 }
@@ -50,11 +52,14 @@ export async function fetchDockerLoginCredentials(aws: IAws, config: DockerCrede
     if (!secretValue.SecretString) { throw new Error(`unable to fetch SecretString from secret: ${domainConfig.secretsManagerSecretId}`); };
 
     const secret = JSON.parse(secretValue.SecretString);
-    if (!secret.username || !secret.secret) {
-      throw new Error('malformed secret string ("username" or "secret" field missing)');
+
+    const usernameField = domainConfig.secretsUsernameField ?? 'username';
+    const secretField = domainConfig.secretsPasswordField ?? 'secret';
+    if (!secret[usernameField] || !secret[secretField]) {
+      throw new Error(`malformed secret string ("${usernameField}" or "${secretField}" field missing)`);
     }
 
-    return { Username: secret.username, Secret: secret.secret };
+    return { Username: secret[usernameField], Secret: secret[secretField] };
   } else if (domainConfig.ecrRepository) {
     const ecr = await aws.ecrClient({ assumeRoleArn: domainConfig.assumeRoleArn });
     const ecrAuthData = await obtainEcrCredentials(ecr);

@@ -99,14 +99,16 @@ export class Docker {
     const config = cdkCredentialsConfig();
     if (!config) { return false; }
 
-    const configDir = this.createCleanConfig();
+    this.resetAuthPlugins();
+    // Should never happen; means resetAuthPlugins is broken.
+    if (!this.configDir) { throw new Error('no active docker config directory selected'); }
 
     const domains = Object.keys(config.domainCredentials);
     const credHelpers = domains.reduce(function(map: Record<string, string>, domain) {
       map[domain] = 'cdk-assets'; // Use docker-credential-cdk-assets for this domain
       return map;
     }, {});
-    fs.writeFileSync(path.join(configDir, 'config.json'), JSON.stringify({ credHelpers }), { encoding: 'utf-8' });
+    fs.writeFileSync(path.join(this.configDir, 'config.json'), JSON.stringify({ credHelpers }), { encoding: 'utf-8' });
 
     return true;
   }
@@ -119,7 +121,7 @@ export class Docker {
    *
    * @returns the path to the directory
    */
-  public createCleanConfig(): string {
+  public resetAuthPlugins() {
     this.configDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdkDockerConfig'));
     return this.configDir;
   }

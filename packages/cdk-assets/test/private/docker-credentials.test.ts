@@ -74,6 +74,12 @@ describe('fetchDockerLoginCredentials', () => {
           secretsManagerSecretId: 'mySecret',
           assumeRoleArn: 'arn:aws:iam::0123456789012:role/my-role',
         },
+        'secretwithcustomfields.example.com': {
+          secretsManagerSecretId: 'mySecret',
+          secretsUsernameField: 'name',
+          secretsPasswordField: 'apiKey',
+          assumeRoleArn: 'arn:aws:iam::0123456789012:role/my-role',
+        },
         'ecr.example.com': { ecrRepository: true },
         'ecrwithrole.example.com': {
           ecrRepository: true,
@@ -107,6 +113,23 @@ describe('fetchDockerLoginCredentials', () => {
       await expect(fetchDockerLoginCredentials(aws, config, 'secret.example.com')).rejects.toThrow(errMessage);
     });
 
+    test('supports assuming a role', async () => {
+      mockSecretWithSecretString({ username: 'secretUser', secret: 'secretPass' });
+
+      const creds = await fetchDockerLoginCredentials(aws, config, 'secretwithrole.example.com');
+
+      expect(creds).toEqual({ Username: 'secretUser', Secret: 'secretPass' });
+      expect(aws.secretsManagerClient).toHaveBeenCalledWith({ assumeRoleArn: 'arn:aws:iam::0123456789012:role/my-role' });
+    });
+
+    test('supports configuring the secret fields', async () => {
+      mockSecretWithSecretString({ name: 'secretUser', apiKey: '01234567' });
+
+      const creds = await fetchDockerLoginCredentials(aws, config, 'secretwithcustomfields.example.com');
+
+      expect(creds).toEqual({ Username: 'secretUser', Secret: '01234567' });
+    });
+
     test('throws when secret does not have the correct fields - key/value', async () => {
       mockSecretWithSecretString({ principal: 'foo', credential: 'bar' });
 
@@ -133,6 +156,15 @@ describe('fetchDockerLoginCredentials', () => {
       aws.mockEcr.getAuthorizationToken = mockedApiFailure('ServerException', 'uhoh');
 
       await expect(fetchDockerLoginCredentials(aws, config, 'ecr.example.com')).rejects.toThrow(/uhoh/);
+    });
+
+    test('supports assuming a role', async () => {
+      mockEcrAuthorizationData(Buffer.from('myFoo:myBar', 'utf-8').toString('base64'));
+
+      const creds = await fetchDockerLoginCredentials(aws, config, 'ecrwithrole.example.com');
+
+      expect(creds).toEqual({ Username: 'myFoo', Secret: 'myBar' });
+      expect(aws.ecrClient).toHaveBeenCalledWith({ assumeRoleArn: 'arn:aws:iam::0123456789012:role/my-role' });
     });
 
     test('throws if ECR returns no authData', async () => {
