@@ -116,6 +116,47 @@ describe('blueprint with wave and stage', () => {
   });
 });
 
+describe('options for other engines', () => {
+  test('"publishTemplate" will add steps to publish CFN templates as assets', () => {
+    // GIVEN
+    const blueprint = new cdkp.Blueprint({
+      synthStep: new cdkp.SynthStep('Synth', {
+        commands: ['build'],
+      }),
+    });
+    blueprint.addStage(new OneStackApp(app, 'Alpha'));
+
+    // WHEN
+    const graph = new PipelineStructure(blueprint, {
+      publishTemplate: true,
+    });
+
+    // THEN
+    expect(childrenAt(graph.graph, 'Assets')).toStrictEqual(['FileAsset1']);
+  });
+
+  test('"prepareStep: false" can be used to disable the "prepare" step for stack deployments', () => {
+    // GIVEN
+    const blueprint = new cdkp.Blueprint({
+      synthStep: new cdkp.SynthStep('Synth', {
+        commands: ['build'],
+      }),
+    });
+    blueprint.addStage(new OneStackApp(app, 'Alpha'));
+
+    // WHEN
+    const graph = new PipelineStructure(blueprint, {
+      prepareStep: false,
+    });
+
+    // THEN
+    // if "prepareStep" was true (default), the "Stack" node would have "Prepare" and "Deploy"
+    // since "prepareStep" is false, it only has "Deploy".
+    expect(childrenAt(graph.graph, 'Alpha', 'Stack')).toStrictEqual(['Deploy']);
+  });
+});
+
+
 describe('with app with output', () => {
   let blueprint: cdkp.Blueprint;
   let myApp: AppWithOutput;
