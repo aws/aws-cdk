@@ -159,7 +159,7 @@ test('Bundling Docker with build args', () => {
     },
   });
 
-  expect(fromBuildMock).toHaveBeenCalledWith(expect.stringMatching(/\/tmp\/python-bundling$/),
+  expect(fromBuildMock).toHaveBeenCalledWith(expect.stringContaining('/tmp/python-bundling'),
     expect.objectContaining({
       buildArgs: expect.objectContaining({
         HELLO: 'WORLD',
