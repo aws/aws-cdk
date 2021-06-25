@@ -227,7 +227,6 @@ test('when external credentials are present, explicit Docker config directories 
   // Setup -- Mock that we have CDK credentials, and mock fs operations.
   jest.spyOn(dockercreds, 'cdkCredentialsConfig').mockReturnValue({ version: '0.1', domainCredentials: {} });
   jest.spyOn(fs, 'mkdtempSync').mockImplementationOnce(() => '/tmp/mockedTempDir');
-  jest.spyOn(fs, 'mkdtempSync').mockImplementationOnce(() => '/tmp/otherMockedTempDir');
   jest.spyOn(fs, 'writeFileSync').mockImplementation(jest.fn());
 
   let pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
@@ -243,9 +242,9 @@ test('when external credentials are present, explicit Docker config directories 
     { commandLine: ['docker', '--config', '/tmp/mockedTempDir', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
     { commandLine: ['docker', '--config', '/tmp/mockedTempDir', 'build', '--tag', 'cdkasset-theasset', '.'], cwd: absoluteDockerPath },
     { commandLine: ['docker', '--config', '/tmp/mockedTempDir', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
-    // Prior to push, change to a new (fresh) config directory
-    { commandLine: ['docker', '--config', '/tmp/otherMockedTempDir', 'login'], prefix: true },
-    { commandLine: ['docker', '--config', '/tmp/otherMockedTempDir', 'push', '12345.amazonaws.com/repo:abcdef'] },
+    // Prior to push, revert to the default config directory
+    { commandLine: ['docker', 'login'], prefix: true },
+    { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:abcdef'] },
   );
 
   await pub.publish();

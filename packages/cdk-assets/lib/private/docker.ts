@@ -99,12 +99,10 @@ export class Docker {
     const config = cdkCredentialsConfig();
     if (!config) { return false; }
 
-    this.resetAuthPlugins();
-    // Should never happen; means resetAuthPlugins is broken.
-    if (!this.configDir) { throw new Error('no active docker config directory selected'); }
+    this.configDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdkDockerConfig'));
 
     const domains = Object.keys(config.domainCredentials);
-    const credHelpers = domains.reduce(function(map: Record<string, string>, domain) {
+    const credHelpers = domains.reduce((map: Record<string, string>, domain) => {
       map[domain] = 'cdk-assets'; // Use docker-credential-cdk-assets for this domain
       return map;
     }, {});
@@ -114,16 +112,13 @@ export class Docker {
   }
 
   /**
-   * Creates a new empty Docker config directory.
-   * All future commands (e.g., `build`, `push`) will use this config.
+   * Removes any configured Docker config directory.
+   * All future commands (e.g., `build`, `push`) will use the default config.
    *
    * This is useful after calling `configureCdkCredentials` to reset to default credentials.
-   *
-   * @returns the path to the directory
    */
   public resetAuthPlugins() {
-    this.configDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdkDockerConfig'));
-    return this.configDir;
+    this.configDir = undefined;
   }
 
   private async execute(args: string[], options: ShellOptions = {}) {
