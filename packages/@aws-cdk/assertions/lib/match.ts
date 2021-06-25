@@ -18,7 +18,7 @@ export abstract class Match {
    * @param pattern the pattern to match
    */
   public static arrayWith(pattern: any[]): IMatcher {
-    return new ArrayMatch(pattern);
+    return new ArrayMatch('arrayWith', pattern);
   }
 
   /**
@@ -27,7 +27,7 @@ export abstract class Match {
    * @param pattern the pattern to match
    */
   public static arrayEquals(pattern: any[]): IMatcher {
-    return new ArrayMatch(pattern, { subsequence: false });
+    return new ArrayMatch('arrayEquals', pattern, { subsequence: false });
   }
 
   /**
@@ -35,7 +35,7 @@ export abstract class Match {
    * @param pattern the pattern to match
    */
   public static exact(pattern: any): IMatcher {
-    return new LiteralMatch(pattern, { partialObjects: false });
+    return new LiteralMatch('exact', pattern, { partialObjects: false });
   }
 
   /**
@@ -44,7 +44,7 @@ export abstract class Match {
    * @param pattern the pattern to match
    */
   public static objectLike(pattern: {[key: string]: any}): IMatcher {
-    return new ObjectMatch(pattern);
+    return new ObjectMatch('objectLike', pattern);
   }
 
   /**
@@ -53,7 +53,7 @@ export abstract class Match {
    * @param pattern the pattern to match
    */
   public static objectEquals(pattern: {[key: string]: any}): IMatcher {
-    return new ObjectMatch(pattern, { partial: false });
+    return new ObjectMatch('objectEquals', pattern, { partial: false });
   }
 }
 
@@ -74,9 +74,12 @@ interface LiteralMatchOptions {
  */
 class LiteralMatch extends IMatcher {
   private readonly partialObjects: boolean;
-  public readonly name: string;
 
-  constructor(private readonly pattern: any, options: LiteralMatchOptions = {}) {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: any,
+    options: LiteralMatchOptions = {}) {
+
     super();
     this.partialObjects = options.partialObjects ?? false;
     this.name = 'exact';
@@ -89,11 +92,11 @@ class LiteralMatch extends IMatcher {
 
   public test(actual: any): MatchResult {
     if (Array.isArray(this.pattern)) {
-      return new ArrayMatch(this.pattern, { subsequence: false }).test(actual);
+      return new ArrayMatch(this.name, this.pattern, { subsequence: false }).test(actual);
     }
 
     if (typeof this.pattern === 'object') {
-      return new ObjectMatch(this.pattern, { partial: this.partialObjects }).test(actual);
+      return new ObjectMatch(this.name, this.pattern, { partial: this.partialObjects }).test(actual);
     }
 
     const result = new MatchResult();
@@ -132,9 +135,12 @@ interface ArrayMatchOptions {
  */
 class ArrayMatch extends IMatcher {
   private readonly partial: boolean;
-  public readonly name: string;
 
-  constructor(private readonly pattern: any[], options: ArrayMatchOptions = {}) {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: any[],
+    options: ArrayMatchOptions = {}) {
+
     super();
     this.partial = options.subsequence ?? true;
     if (this.partial) {
@@ -158,7 +164,7 @@ class ArrayMatch extends IMatcher {
     const result = new MatchResult();
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
-      const matcher = IMatcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(patternElement);
+      const matcher = IMatcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
       const innerResult = matcher.test(actual[actualIdx]);
 
       if (!this.partial || !innerResult.hasFailed()) {
@@ -197,11 +203,12 @@ interface ObjectMatchOptions {
  */
 class ObjectMatch extends IMatcher {
   private readonly partial: boolean;
-  public readonly name: string;
 
   constructor(
+    public readonly name: string,
     private readonly pattern: {[key: string]: any},
     options: ObjectMatchOptions = {}) {
+
     super();
     this.partial = options.partial ?? true;
     if (this.partial) {
@@ -236,7 +243,9 @@ class ObjectMatch extends IMatcher {
         result.push(this, [`/${patternKey}`], 'Missing key');
         continue;
       }
-      const matcher = IMatcher.isMatcher(patternVal) ? patternVal : new LiteralMatch(patternVal, { partialObjects: this.partial });
+      const matcher = IMatcher.isMatcher(patternVal) ?
+        patternVal :
+        new LiteralMatch(this.name, patternVal, { partialObjects: this.partial });
       const inner = matcher.test(actual[patternKey]);
       result.compose(`/${patternKey}`, inner);
     }

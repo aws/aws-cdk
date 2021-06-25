@@ -62,7 +62,7 @@ export class TemplateAssertions {
    */
   public hasResourceProperties(type: string, props: any): void {
     this.hasResource(type, Match.objectLike({
-      Properties: props instanceof IMatcher ? props : Match.objectLike(props),
+      Properties: IMatcher.isMatcher(props) ? props : Match.objectLike(props),
     }));
   }
 
