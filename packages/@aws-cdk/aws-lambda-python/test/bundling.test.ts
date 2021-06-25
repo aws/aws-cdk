@@ -151,7 +151,7 @@ test('Bundling Docker with build args', () => {
     },
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/python-bundling$/),
     expect.objectContaining({
       buildArgs: expect.objectContaining({
         HELLO: 'WORLD',
