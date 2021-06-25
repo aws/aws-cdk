@@ -96,6 +96,7 @@ export class NodejsFunction extends lambda.Function {
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
     const depsLockFilePath = findLockFile(props.depsLockFilePath);
+    const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
 
     super(scope, id, {
       ...props,
@@ -105,6 +106,7 @@ export class NodejsFunction extends lambda.Function {
         entry,
         runtime,
         depsLockFilePath,
+        projectRoot,
       }),
       handler: `index.${handler}`,
     });

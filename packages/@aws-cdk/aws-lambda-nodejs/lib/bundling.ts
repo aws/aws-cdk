@@ -31,7 +31,7 @@ export interface BundlingProps extends BundlingOptions {
   /**
    * Path to project root
    */
-  readonly projectRoot?: string;
+  readonly projectRoot: string;
 }
 
 /**
@@ -72,7 +72,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? EsbuildInstallation.detect();
 
-    this.projectRoot = props.projectRoot ?? path.dirname(props.depsLockFilePath);
+    this.projectRoot = props.projectRoot;
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
 
     if (props.tsconfig) {
