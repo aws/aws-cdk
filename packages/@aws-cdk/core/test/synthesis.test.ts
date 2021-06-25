@@ -124,7 +124,7 @@ nodeunitShim({
       constructor(scope: cdk.Construct, id: string) {
         super(scope, id);
 
-        cdk.App.addCustomSynthesis(this, {
+        cdk.attachCustomSynthesis(this, {
           onSynthesize(s: cdk.ISynthesisSession) {
             writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
             s.assembly.addArtifact('my-random-construct', {

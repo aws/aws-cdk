@@ -6,7 +6,7 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Lazy, ISynthesisSession, Stack, App } from '@aws-cdk/core';
+import { Lazy, ISynthesisSession, Stack, App, attachCustomSynthesis } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { toPosixPath } from '../private/fs';
 
@@ -158,7 +158,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
       } : undefined,
     });
 
-    App.addCustomSynthesis(this, {
+    attachCustomSynthesis(this, {
       onSynthesize: this.synthesize.bind(this),
     });
   }
