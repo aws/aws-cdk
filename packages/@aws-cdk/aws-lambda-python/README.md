@@ -28,10 +28,10 @@ Define a `PythonFunction`:
 import * as lambda from "@aws-cdk/aws-lambda";
 import { PythonFunction } from "@aws-cdk/aws-lambda-python";
 
-new PythonFunction(this, "MyFunction", {
-  entry: "/path/to/my/function", // required
-  index: "my_index.py", // optional, defaults to 'index.py'
-  handler: "my_exported_func", // optional, defaults to 'handler'
+new PythonFunction(this, 'MyFunction', {
+  entry: '/path/to/my/function', // required
+  index: 'my_index.py', // optional, defaults to 'index.py'
+  handler: 'my_exported_func', // optional, defaults to 'handler'
   runtime: lambda.Runtime.PYTHON_3_6, // optional, defaults to lambda.Runtime.PYTHON_3_7
 });
 ```
@@ -39,9 +39,9 @@ new PythonFunction(this, "MyFunction", {
 Additional `buildArgs` to use when bundling the Docker building image can be provided as:
 
 ```ts
-new PythonFunction(this, "my-handler", {
+new PythonFunction(this, 'my-handler', {
   buildArgs: {
-    HTTPS_PROXY: "https://127.0.0.1:3001",
+    HTTPS_PROXY: 'https://127.0.0.1:3001',
   },
 });
 ```
@@ -97,11 +97,11 @@ or `Pipfile` or `poetry.lock` with the associated `pyproject.toml` at the entry 
 layer.
 
 ```ts
-new lambda.PythonFunction(this, "MyFunction", {
-  entry: "/path/to/my/function",
+new lambda.PythonFunction(this, 'MyFunction', {
+  entry: '/path/to/my/function',
   layers: [
-    new lambda.PythonLayerVersion(this, "MyLayer", {
-      entry: "/path/to/my/layer", // point this to your library's directory
+    new lambda.PythonLayerVersion(this, 'MyLayer', {
+      entry: '/path/to/my/layer', // point this to your library's directory
     }),
   ],
 });
