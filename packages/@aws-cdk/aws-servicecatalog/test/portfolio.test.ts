@@ -1,13 +1,13 @@
 import '@aws-cdk/assert-internal/jest';
-import { Stack, Tags } from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
 describe('Portfolio', () => {
-  let stack: Stack;
+  let stack: cdk.Stack;
 
   beforeEach(() => {
-    stack = new Stack();
+    stack = new cdk.Stack();
   });
 
   describe('portfolio creation and importing', () => {
@@ -68,11 +68,10 @@ describe('Portfolio', () => {
     test('fails portfolio creation with long name', () => {
       expect(() => {
         new servicecatalog.Portfolio(stack, 'MyPortfolio', {
-          displayName: 'DisplayName',
+          displayName: 'DisplayName'.repeat(1000),
           providerName: 'testProvider',
-          description: 'A portfolio for some products'.repeat(1000),
         });
-      }).toThrowError(/Invalid portfolio description for resource Default\/MyPortfolio/);
+      }).toThrowError(/Invalid portfolio display name for resource Default\/MyPortfolio/);
     }),
 
     test('fails portfolio creation with invalid provider name', () => {
@@ -94,8 +93,54 @@ describe('Portfolio', () => {
           description: description,
         });
       }).toThrowError(/Invalid portfolio description for resource Default\/MyPortfolio/);
+    }),
+
+    test('portfolio creation with token description does not throw validation error and creates', () => {
+      const tokenDescription = new cdk.CfnParameter(stack, 'Description');
+
+      new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+        displayName: 'testPortfolio',
+        providerName: 'testProvider',
+        description: tokenDescription.valueAsString,
+      });
+
+      expect(stack).toHaveResourceLike('AWS::ServiceCatalog::Portfolio', {
+        Description: {
+          Ref: 'Description',
+        },
+      });
+    }),
+
+    test('portfolio creation with token display name does not throw validation error and creates', () => {
+      const tokenDisplayName = new cdk.CfnParameter(stack, 'DisplayName');
+
+      new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+        displayName: tokenDisplayName.valueAsString,
+        providerName: 'testProvider',
+      });
+
+      expect(stack).toHaveResourceLike('AWS::ServiceCatalog::Portfolio', {
+        DisplayName: {
+          Ref: 'DisplayName',
+        },
+      });
+    }),
+
+    test('portfolio creation with token provider name does not throw validation error and creates', () => {
+      const tokenProviderName = new cdk.CfnParameter(stack, 'ProviderName');
+
+      new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+        displayName: 'testPortfolio',
+        providerName: tokenProviderName.valueAsString,
+      });
+
+      expect(stack).toHaveResourceLike('AWS::ServiceCatalog::Portfolio', {
+        ProviderName: {
+          Ref: 'ProviderName',
+        },
+      });
     });
-  }),
+  });
 
   describe('portfolio methods and associations', () => {
     let portfolio: servicecatalog.Portfolio;
@@ -108,8 +153,8 @@ describe('Portfolio', () => {
     });
 
     test('portfolio with tags', () => {
-      Tags.of(portfolio).add('myTestKey1', 'myTestKeyValue1');
-      Tags.of(portfolio).add('myTestKey2', 'myTestKeyValue2');
+      cdk.Tags.of(portfolio).add('myTestKey1', 'myTestKeyValue1');
+      cdk.Tags.of(portfolio).add('myTestKey2', 'myTestKeyValue2');
 
       expect(stack).toHaveResourceLike('AWS::ServiceCatalog::Portfolio', {
         Tags: [
