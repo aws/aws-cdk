@@ -1,9 +1,9 @@
 import { Match } from './match';
-import { IMatcher, MatchResult } from './matcher';
+import { Matcher, MatchResult } from './matcher';
 import { StackInspector } from './vendored/assert';
 
 export function hasResource(inspector: StackInspector, type: string, props: any): string | void {
-  const matcher = IMatcher.isMatcher(props) ? props : Match.objectLike(props);
+  const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
   let closestResult: MatchResult | undefined = undefined;
   let closestResource: { [key: string]: any } | undefined = undefined;
   let count: number = 0;

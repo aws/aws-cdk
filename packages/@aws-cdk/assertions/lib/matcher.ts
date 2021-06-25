@@ -2,12 +2,12 @@
  * Represents a matcher that can perform special data matching
  * capabilities between a given pattern and a target.
  */
-export abstract class IMatcher {
+export abstract class Matcher {
   /**
    * Check whether the provided object is a subtype of the `IMatcher`.
    */
-  public static isMatcher(x: any): x is IMatcher {
-    return x && x instanceof IMatcher;
+  public static isMatcher(x: any): x is Matcher {
+    return x && x instanceof Matcher;
   }
 
   /**
@@ -37,7 +37,7 @@ export class MatchResult {
    * @param path the path at which the failure occurred.
    * @param message the failure
    */
-  public push(matcher: IMatcher, path: string[], message: string): this {
+  public push(matcher: Matcher, path: string[], message: string): this {
     this.failures.push({ matcher, path, message });
     return this;
   }
@@ -76,7 +76,7 @@ export class MatchResult {
 }
 
 type MatchFailure = {
-  matcher: IMatcher;
+  matcher: Matcher;
   path: string[];
   message: string;
 }

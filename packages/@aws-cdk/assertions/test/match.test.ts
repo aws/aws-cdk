@@ -1,8 +1,8 @@
-import { IMatcher, Match } from '../lib';
+import { Matcher, Match } from '../lib';
 
 describe('Matchers', () => {
   describe('exactly()', () => {
-    let matcher: IMatcher;
+    let matcher: Matcher;
 
     test('simple literals', () => {
       matcher = Match.exact('foo');
@@ -82,7 +82,7 @@ describe('Matchers', () => {
   });
 
   describe('arrayWith()', () => {
-    let matcher: IMatcher;
+    let matcher: Matcher;
 
     test('subset match', () => {
       matcher = Match.arrayWith([]);
@@ -131,7 +131,7 @@ describe('Matchers', () => {
   });
 
   describe('arrayEquals', () => {
-    let matcher: IMatcher;
+    let matcher: Matcher;
 
     test('exact match', () => {
       matcher = Match.arrayEquals([5, false]);
@@ -142,7 +142,7 @@ describe('Matchers', () => {
   });
 
   describe('objectLike()', () => {
-    let matcher: IMatcher;
+    let matcher: Matcher;
 
     test('basic', () => {
       matcher = Match.objectLike({ foo: 'bar' });
@@ -186,7 +186,7 @@ describe('Matchers', () => {
   });
 
   describe('objectEquals()', () => {
-    let matcher: IMatcher;
+    let matcher: Matcher;
 
     test('exact match', () => {
       matcher = Match.objectEquals({ foo: 'bar' });
@@ -196,11 +196,11 @@ describe('Matchers', () => {
   });
 });
 
-function expectPass(matcher: IMatcher, target: any): void {
+function expectPass(matcher: Matcher, target: any): void {
   expect(matcher.test(target).hasFailed()).toEqual(false);
 }
 
-function expectFailure(matcher: IMatcher, target: any, expected: (string | RegExp)[]): void {
+function expectFailure(matcher: Matcher, target: any, expected: (string | RegExp)[]): void {
   const actual = matcher.test(target).toHumanStrings();
   for (let i = 0; i < expected.length; i++) {
     const e = expected[i];

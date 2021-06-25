@@ -1,7 +1,7 @@
 import { Stack, Stage } from '@aws-cdk/core';
 import { hasResource } from './has-resource';
 import { Match } from './match';
-import { IMatcher } from './matcher';
+import { Matcher } from './matcher';
 import * as assert from './vendored/assert';
 
 /**
@@ -63,7 +63,7 @@ export class TemplateAssertions {
    */
   public hasResourceProperties(type: string, props: any): void {
     this.hasResource(type, Match.objectLike({
-      Properties: IMatcher.isMatcher(props) ? props : Match.objectLike(props),
+      Properties: Matcher.isMatcher(props) ? props : Match.objectLike(props),
     }));
   }
 

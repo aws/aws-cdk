@@ -1,4 +1,4 @@
-import { IMatcher, MatchResult } from './matcher';
+import { Matcher, MatchResult } from './matcher';
 import { ABSENT } from './vendored/assert';
 
 /**
@@ -17,7 +17,7 @@ export abstract class Match {
    * The set of elements (or matchers) must be in the same order as would be found.
    * @param pattern the pattern to match
    */
-  public static arrayWith(pattern: any[]): IMatcher {
+  public static arrayWith(pattern: any[]): Matcher {
     return new ArrayMatch('arrayWith', pattern);
   }
 
@@ -26,7 +26,7 @@ export abstract class Match {
    * The set of elements (or matchers) must match exactly and in order.
    * @param pattern the pattern to match
    */
-  public static arrayEquals(pattern: any[]): IMatcher {
+  public static arrayEquals(pattern: any[]): Matcher {
     return new ArrayMatch('arrayEquals', pattern, { subsequence: false });
   }
 
@@ -34,7 +34,7 @@ export abstract class Match {
    * Deep exact matching of the specified pattern to the target.
    * @param pattern the pattern to match
    */
-  public static exact(pattern: any): IMatcher {
+  public static exact(pattern: any): Matcher {
     return new LiteralMatch('exact', pattern, { partialObjects: false });
   }
 
@@ -43,7 +43,7 @@ export abstract class Match {
    * The keys and their values (or matchers) must be present in the target but the target can be a superset.
    * @param pattern the pattern to match
    */
-  public static objectLike(pattern: {[key: string]: any}): IMatcher {
+  public static objectLike(pattern: {[key: string]: any}): Matcher {
     return new ObjectMatch('objectLike', pattern);
   }
 
@@ -52,7 +52,7 @@ export abstract class Match {
    * The keys and their values (or matchers) must match exactly with the target.
    * @param pattern the pattern to match
    */
-  public static objectEquals(pattern: {[key: string]: any}): IMatcher {
+  public static objectEquals(pattern: {[key: string]: any}): Matcher {
     return new ObjectMatch('objectEquals', pattern, { partial: false });
   }
 }
@@ -72,7 +72,7 @@ interface LiteralMatchOptions {
  * A Match class that expects the target to match with the pattern exactly.
  * The pattern may be nested with other matchers that are then deletegated to.
  */
-class LiteralMatch extends IMatcher {
+class LiteralMatch extends Matcher {
   private readonly partialObjects: boolean;
 
   constructor(
@@ -84,7 +84,7 @@ class LiteralMatch extends IMatcher {
     this.partialObjects = options.partialObjects ?? false;
     this.name = 'exact';
 
-    if (IMatcher.isMatcher(this.pattern)) {
+    if (Matcher.isMatcher(this.pattern)) {
       throw new Error('LiteralMatch cannot directly contain another matcher. ' +
         'Remove the top-level matcher or nest it more deeply.');
     }
@@ -133,7 +133,7 @@ interface ArrayMatchOptions {
 /**
  * Match class that matches arrays.
  */
-class ArrayMatch extends IMatcher {
+class ArrayMatch extends Matcher {
   private readonly partial: boolean;
 
   constructor(
@@ -164,7 +164,7 @@ class ArrayMatch extends IMatcher {
     const result = new MatchResult();
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
-      const matcher = IMatcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
+      const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
       const innerResult = matcher.test(actual[actualIdx]);
 
       if (!this.partial || !innerResult.hasFailed()) {
@@ -178,7 +178,7 @@ class ArrayMatch extends IMatcher {
 
     for (; patternIdx < this.pattern.length; patternIdx++) {
       const pattern = this.pattern[patternIdx];
-      const element = (IMatcher.isMatcher(pattern) || typeof pattern === 'object') ? ' ' : ` [${pattern}] `;
+      const element = (Matcher.isMatcher(pattern) || typeof pattern === 'object') ? ' ' : ` [${pattern}] `;
       result.push(this, [], `Missing element${element}at pattern index ${patternIdx}`);
     }
 
@@ -201,7 +201,7 @@ interface ObjectMatchOptions {
 /**
  * Match class that matches objects.
  */
-class ObjectMatch extends IMatcher {
+class ObjectMatch extends Matcher {
   private readonly partial: boolean;
 
   constructor(
@@ -243,7 +243,7 @@ class ObjectMatch extends IMatcher {
         result.push(this, [`/${patternKey}`], 'Missing key');
         continue;
       }
-      const matcher = IMatcher.isMatcher(patternVal) ?
+      const matcher = Matcher.isMatcher(patternVal) ?
         patternVal :
         new LiteralMatch(this.name, patternVal, { partialObjects: this.partial });
       const inner = matcher.test(actual[patternKey]);
