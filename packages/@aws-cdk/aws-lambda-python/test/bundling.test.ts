@@ -5,7 +5,6 @@ import { DockerImage, FileSystem } from '@aws-cdk/core';
 import { stageDependencies, bundle } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
-
 jest.mock('child_process', () => ({
   spawnSync: jest.fn(() => {
     return {
@@ -19,8 +18,17 @@ jest.mock('child_process', () => ({
   }),
 }));
 
+// Mock DockerImage.fromAsset() to avoid building the image
+let fromBuildMock: jest.SpyInstance<DockerImage>;
 beforeEach(() => {
   jest.clearAllMocks();
+
+  fromBuildMock = jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
+    image: 'built-image',
+    cp: () => 'dest-path',
+    run: () => {},
+    toJSON: () => 'built-image',
+  });
 });
 
 test('Bundling a function without dependencies', () => {
@@ -151,7 +159,7 @@ test('Bundling Docker with build args', () => {
     },
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/python-bundling$/),
+  expect(fromBuildMock).toHaveBeenCalledWith(expect.stringMatching(/python-bundling$/),
     expect.objectContaining({
       buildArgs: expect.objectContaining({
         HELLO: 'WORLD',
