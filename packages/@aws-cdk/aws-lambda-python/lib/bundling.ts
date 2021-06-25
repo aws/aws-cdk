@@ -71,13 +71,20 @@ export interface BundlingOptions {
    * @default - based on `assetHashType`
    */
   readonly assetHash?: string;
+
+  /**
+   * Build arguments to pass when building the bundling image.
+   *
+   * @default - no build arguments are passed
+   */
+  readonly buildArgs?: { [key: string]: string };
 }
 
 /**
  * Produce bundled Lambda asset code
  */
 export function bundle(options: BundlingOptions): lambda.Code {
-  const { entry, runtime, outputPathSuffix } = options;
+  const { entry, runtime, outputPathSuffix, buildArgs } = options;
 
   const stagedir = cdk.FileSystem.mkdtemp('python-bundling-');
   const hasDeps = stageDependencies(entry, stagedir);
@@ -100,6 +107,7 @@ export function bundle(options: BundlingOptions): lambda.Code {
 
   const image = cdk.DockerImage.fromBuild(stagedir, {
     buildArgs: {
+      ...buildArgs,
       IMAGE: runtime.bundlingDockerImage.image,
     },
     file: dockerfile,

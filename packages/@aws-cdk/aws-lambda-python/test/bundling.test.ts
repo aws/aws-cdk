@@ -42,6 +42,26 @@ test('Bundling a function without dependencies', () => {
   }));
 });
 
+test('Bundling Docker with build args', () => {
+  const entry = path.join(__dirname, 'lambda-handler-nodeps');
+  bundle({
+    entry,
+    runtime: Runtime.PYTHON_3_7,
+    outputPathSuffix: '.',
+    buildArgs: {
+      HELLO: 'WORLD',
+    },
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry,
+    expect.objectContaining({
+      buildArgs: expect.objectContaining({
+        HELLO: 'WORLD',
+      }),
+    }));
+});
+
+
 test('Bundling a function with requirements.txt installed', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   bundle({
