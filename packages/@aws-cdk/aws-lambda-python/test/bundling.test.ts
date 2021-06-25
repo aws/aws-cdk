@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { FileSystem } from '@aws-cdk/core';
+import { DockerImage, FileSystem } from '@aws-cdk/core';
 import { stageDependencies, bundle } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
@@ -41,26 +41,6 @@ test('Bundling a function without dependencies', () => {
     }),
   }));
 });
-
-test('Bundling Docker with build args', () => {
-  const entry = path.join(__dirname, 'lambda-handler-nodeps');
-  bundle({
-    entry,
-    runtime: Runtime.PYTHON_3_7,
-    outputPathSuffix: '.',
-    buildArgs: {
-      HELLO: 'WORLD',
-    },
-  });
-
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry,
-    expect.objectContaining({
-      buildArgs: expect.objectContaining({
-        HELLO: 'WORLD',
-      }),
-    }));
-});
-
 
 test('Bundling a function with requirements.txt installed', () => {
   const entry = path.join(__dirname, 'lambda-handler');
@@ -158,4 +138,23 @@ describe('Dependency detection', () => {
     const sourcedir = FileSystem.mkdtemp('source-');
     expect(stageDependencies(sourcedir, '/dummy')).toEqual(false);
   });
+});
+
+test('Bundling Docker with build args', () => {
+  const entry = path.join(__dirname, 'lambda-handler-nodeps');
+  bundle({
+    entry,
+    runtime: Runtime.PYTHON_3_7,
+    outputPathSuffix: '.',
+    buildArgs: {
+      HELLO: 'WORLD',
+    },
+  });
+
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(
+    expect.objectContaining({
+      buildArgs: expect.objectContaining({
+        HELLO: 'WORLD',
+      }),
+    }));
 });
