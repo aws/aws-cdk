@@ -1,6 +1,7 @@
 import { Stack, Stage } from '@aws-cdk/core';
+import { hasResource } from './has-resource';
 import { Match } from './match';
-import { IMatcher, MatchResult } from './matcher';
+import { IMatcher } from './matcher';
 import * as assert from './vendored/assert';
 
 /**
@@ -75,30 +76,10 @@ export class TemplateAssertions {
    * @param props the entire defintion of the resource as should be expected in the template.
    */
   public hasResource(type: string, props: any): void {
-    const matcher = IMatcher.isMatcher(props) ? props : Match.objectLike(props);
-    let closestResult: MatchResult | undefined = undefined;
-    let count: number = 0;
-    for (const logicalId of Object.keys(this.inspector.value.Resources ?? {})) {
-      const resource = this.inspector.value.Resources[logicalId];
-      if (resource.Type === type) {
-        count++;
-        const result = matcher.test(resource);
-        if (!result.hasFailed()) {
-          return;
-        }
-        if (closestResult === undefined || closestResult.failCount > result.failCount) {
-          closestResult = result;
-        }
-      }
+    const matchError = hasResource(this.inspector, type, props);
+    if (matchError) {
+      throw new Error(matchError);
     }
-    if (closestResult === undefined) {
-      throw new Error(`No resource with type ${type} found`);
-    }
-    throw new Error([
-      `${count} resources with type ${type} found, but none match as expected.`,
-      'The closest result had the following mismatches:',
-      ...closestResult.toHumanStrings().map(s => `\t${s}`),
-    ].join('\n'));
   }
 
   /**

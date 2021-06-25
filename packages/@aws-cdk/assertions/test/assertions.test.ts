@@ -128,6 +128,28 @@ describe('TemplateAssertions', () => {
       })).toThrow(/Missing element \[waldo\] at pattern index 0 at \/Properties\/baz/);
     });
 
+    test('arrayWith - multiple resources', done => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo1', {
+        type: 'Foo::Bar',
+        properties: { foo: ['flob', 'qux'] },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { flob: ['qux'] },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+
+      expectToThrow(() => {
+        inspect.hasResource('Foo::Bar', {
+          Properties: Match.arrayWith(['flob']),
+        });
+      }, [/The closest result/, /flob/, /qux/], done);
+
+      done();
+    });
+
     test('objectLike', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
@@ -146,6 +168,28 @@ describe('TemplateAssertions', () => {
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ baz: 'waldo' }),
       })).toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+    });
+
+    test('objectLike - multiple resources', done => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo1', {
+        type: 'Foo::Bar',
+        properties: { foo: { flob: 'qux' } },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { flob: 'waldo' },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+
+      expectToThrow(() => {
+        inspect.hasResource('Foo::Bar', {
+          Properties: Match.objectLike({ foo: { flob: 'foo' } }),
+        });
+      }, [/The closest result/, /"flob": "qux"/], done);
+
+      done();
     });
 
     test('absent', () => {
@@ -178,3 +222,37 @@ describe('TemplateAssertions', () => {
     });
   });
 });
+
+function expectToThrow(fn: () => void, msgs: (RegExp | string)[], done: jest.DoneCallback): void {
+  try {
+    fn();
+    done.fail('Function expected to throw, did not throw');
+  } catch (error) {
+    const message = (error as Error).message;
+    const splits = message.split('\n');
+    let splitIdx = 0;
+    let msgsIdx = 0;
+    while (splitIdx < splits.length && msgsIdx < msgs.length) {
+      const msg = msgs[msgsIdx];
+      const split = splits[splitIdx];
+      let match = false;
+      if (msg instanceof RegExp) {
+        match = msg.test(split);
+      } else {
+        match = (msg === split);
+      }
+
+      if (match) {
+        msgsIdx++;
+      }
+      splitIdx++;
+    }
+
+    if (msgsIdx < msgs.length) {
+      done.fail([
+        `Error thrown did not contain expected messages: ${msgs.slice(msgsIdx, msgs.length)}`,
+        `Received error: ${message}`,
+      ].join('\n'));
+    }
+  }
+}
