@@ -28,11 +28,21 @@ Define a `PythonFunction`:
 import * as lambda from "@aws-cdk/aws-lambda";
 import { PythonFunction } from "@aws-cdk/aws-lambda-python";
 
-new PythonFunction(this, 'MyFunction', {
-  entry: '/path/to/my/function', // required
-  index: 'my_index.py', // optional, defaults to 'index.py'
-  handler: 'my_exported_func', // optional, defaults to 'handler'
+new PythonFunction(this, "MyFunction", {
+  entry: "/path/to/my/function", // required
+  index: "my_index.py", // optional, defaults to 'index.py'
+  handler: "my_exported_func", // optional, defaults to 'handler'
   runtime: lambda.Runtime.PYTHON_3_6, // optional, defaults to lambda.Runtime.PYTHON_3_7
+});
+```
+
+Additional `buildArgs` to use when bundling the Docker building image can be provided as:
+
+```ts
+new PythonFunction(this, "my-handler", {
+  buildArgs: {
+    HTTPS_PROXY: "https://127.0.0.1:3001",
+  },
 });
 ```
 
@@ -44,9 +54,9 @@ If `requirements.txt` or `Pipfile` exists at the entry path, the construct will 
 all required modules in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-python3.7)
 according to the `runtime`.
 
-Python bundles are only recreated and published when a file in a source directory has changed. 
+Python bundles are only recreated and published when a file in a source directory has changed.
 Therefore (and as a general best-practice), it is highly recommended to commit a lockfile with a
-list of all transitive dependencies and their exact versions. 
+list of all transitive dependencies and their exact versions.
 This will ensure that when any dependency version is updated, the bundle asset is recreated and uploaded.
 
 To that end, we recommend using [`pipenv`] or [`poetry`] which has lockfile support.
@@ -87,11 +97,11 @@ or `Pipfile` or `poetry.lock` with the associated `pyproject.toml` at the entry 
 layer.
 
 ```ts
-new lambda.PythonFunction(this, 'MyFunction', {
-  entry: '/path/to/my/function',
+new lambda.PythonFunction(this, "MyFunction", {
+  entry: "/path/to/my/function",
   layers: [
-    new lambda.PythonLayerVersion(this, 'MyLayer', {
-      entry: '/path/to/my/layer', // point this to your library's directory
+    new lambda.PythonLayerVersion(this, "MyLayer", {
+      entry: "/path/to/my/layer", // point this to your library's directory
     }),
   ],
 });
