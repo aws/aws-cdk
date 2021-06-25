@@ -542,6 +542,36 @@ describe('User Pool Client', () => {
     })).toThrow(/disableOAuth is set/);
   });
 
+  test('EnableTokenRevocation is absent by default', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: ABSENT,
+    });
+  });
+
+  test('enableTokenRevocation', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      enableTokenRevocation: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: true,
+    });
+  });
+
   describe('token validity', () => {
     test('default', () => {
       // GIVEN
