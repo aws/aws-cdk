@@ -6,7 +6,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
-describe('CodeBuild event target', () => {
+describe('Batch job event target', () => {
   let stack: Stack;
   let jobQueue: batch.JobQueue;
   let jobDefinition: batch.JobDefinition;
@@ -31,7 +31,7 @@ describe('CodeBuild event target', () => {
     });
   });
 
-  test('use aws batch job as an eventrule target', () => {
+  test('use aws batch job as an event rule target', () => {
     // GIVEN
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.expression('rate(1 min)'),
