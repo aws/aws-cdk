@@ -159,7 +159,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
     });
 
     attachCustomSynthesis(this, {
-      onSynthesize: this.onSynthesize.bind(this),
+      onSynthesize: this._onSynth.bind(this),
     });
   }
 
@@ -167,7 +167,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
     return `buildspec-assets-${this.props.actionName}.yaml`;
   }
 
-  protected onSynthesize(session: ISynthesisSession): void {
+  private _onSynth(session: ISynthesisSession): void {
     if (this.props.createBuildspecFile) {
       const specFile = path.join(session.outdir, this.getBuildSpecFileName());
       fs.writeFileSync(specFile, Stack.of(this).resolve(this.buildSpec.toBuildSpec()), { encoding: 'utf-8' });
