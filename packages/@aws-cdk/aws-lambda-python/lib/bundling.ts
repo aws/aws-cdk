@@ -71,13 +71,20 @@ export interface BundlingOptions {
    * @default - based on `assetHashType`
    */
   readonly assetHash?: string;
+
+  /**
+   * Bundling Docker image to use.
+   *
+   * @default - uses default bundling.
+   */
+  readonly buildImage?: cdk.DockerImage;
 }
 
 /**
  * Produce bundled Lambda asset code
  */
 export function bundle(options: BundlingOptions): lambda.Code {
-  const { entry, runtime, outputPathSuffix } = options;
+  const { entry, runtime, outputPathSuffix, buildImage } = options;
 
   const stagedir = cdk.FileSystem.mkdtemp('python-bundling-');
   const hasDeps = stageDependencies(entry, stagedir);
@@ -98,19 +105,21 @@ export function bundle(options: BundlingOptions): lambda.Code {
   // copy Dockerfile to workdir
   fs.copyFileSync(path.join(__dirname, dockerfile), path.join(stagedir, dockerfile));
 
-  const image = cdk.DockerImage.fromBuild(stagedir, {
+  const defaultBuildImage = cdk.DockerImage.fromBuild(stagedir, {
     buildArgs: {
-      IMAGE: runtime.bundlingDockerImage.image,
+      IMAGE: runtime.bundlingImage.image,
     },
     file: dockerfile,
   });
+
+  const image = buildImage?? defaultBuildImage;
 
   return lambda.Code.fromAsset(entry, {
     assetHashType: options.assetHashType,
     assetHash: options.assetHash,
     exclude: DEPENDENCY_EXCLUDES,
     bundling: {
-      image,
+      image: image,
       command: ['bash', '-c', depsCommand],
     },
   });
