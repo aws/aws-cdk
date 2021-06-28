@@ -95,14 +95,14 @@
     "vpcPublicSubnet1NATGateway9C16659E": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "vpcPublicSubnet1Subnet2E65531E"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "vpcPublicSubnet1EIPDA49DCBE",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "vpcPublicSubnet1Subnet2E65531E"
         },
         "Tags": [
           {
@@ -485,6 +485,9 @@
             }
           ]
         },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        },
         "VirtualRouterName": "meshstackmeshrouter2FE6E358"
       }
     },
@@ -532,6 +535,9 @@
             "meshrouter81B8087E",
             "VirtualRouterName"
           ]
+        },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
         },
         "RouteName": "route-1"
       }
@@ -581,6 +587,9 @@
             "VirtualRouterName"
           ]
         },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        },
         "RouteName": "route-2"
       }
     },
@@ -621,6 +630,9 @@
             "meshrouter81B8087E",
             "VirtualRouterName"
           ]
+        },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
         },
         "RouteName": "route-3"
       }
@@ -665,6 +677,9 @@
             "meshrouter81B8087E",
             "VirtualRouterName"
           ]
+        },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
         },
         "RouteName": "route-4"
       }
@@ -784,6 +799,9 @@
             "VirtualRouterName"
           ]
         },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        },
         "RouteName": "route-matching"
       }
     },
@@ -835,6 +853,9 @@
             "VirtualRouterName"
           ]
         },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        },
         "RouteName": "route-http2-retry"
       }
     },
@@ -873,6 +894,9 @@
             "meshrouter81B8087E",
             "VirtualRouterName"
           ]
+        },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
         },
         "RouteName": "route-5"
       }
@@ -927,6 +951,9 @@
             "meshrouter81B8087E",
             "VirtualRouterName"
           ]
+        },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
         },
         "RouteName": "route-grpc-retry"
       }
@@ -985,6 +1012,9 @@
               "Hostname": "node1.domain.local"
             }
           }
+        },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
         },
         "VirtualNodeName": "meshstackmeshnode61AD3D23"
       }
@@ -1047,6 +1077,9 @@
             }
           }
         },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        },
         "VirtualNodeName": "meshstackmeshnode2F1F28441"
       }
     },
@@ -1102,6 +1135,9 @@
               "Hostname": "node3.domain.local"
             }
           }
+        },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
         },
         "VirtualNodeName": "meshstackmeshnode3C5835BCB"
       }
@@ -1206,6 +1242,9 @@
             }
           }
         },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        },
         "VirtualNodeName": "meshstackmeshnode404B014E7"
       }
     },
@@ -1234,6 +1273,9 @@
               }
             }
           }
+        },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
         },
         "VirtualGatewayName": "gateway1"
       }
@@ -1272,7 +1314,10 @@
             "VirtualGatewayName"
           ]
         },
-        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttpBA921D42"
+        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttpBA921D42",
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        }
       }
     },
     "meshgateway1gateway1routehttp2FD69C306": {
@@ -1309,7 +1354,10 @@
             "VirtualGatewayName"
           ]
         },
-        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttp255781963"
+        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttp255781963",
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        }
       }
     },
     "meshgateway1gateway1routegrpc76486062": {
@@ -1351,7 +1399,10 @@
             "VirtualGatewayName"
           ]
         },
-        "GatewayRouteName": "meshstackmeshgateway1gateway1routegrpcCD4D891D"
+        "GatewayRouteName": "meshstackmeshgateway1gateway1routegrpcCD4D891D",
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        }
       }
     },
     "service6D174F83": {
@@ -1375,7 +1426,10 @@
             }
           }
         },
-        "VirtualServiceName": "service1.domain.local"
+        "VirtualServiceName": "service1.domain.local",
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        }
       }
     },
     "service27C65CF7D": {
@@ -1388,7 +1442,10 @@
           ]
         },
         "Spec": {},
-        "VirtualServiceName": "service2.domain.local"
+        "VirtualServiceName": "service2.domain.local",
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        }
       }
     },
     "service3859EB104": {
@@ -1401,7 +1458,10 @@
           ]
         },
         "Spec": {},
-        "VirtualServiceName": "service3.domain.local"
+        "VirtualServiceName": "service3.domain.local",
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        }
       }
     },
     "service4983B61EE": {
@@ -1414,7 +1474,10 @@
           ]
         },
         "Spec": {},
-        "VirtualServiceName": "service4.domain.local"
+        "VirtualServiceName": "service4.domain.local",
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
+        }
       }
     },
     "gateway2BCE5C5E0": {
@@ -1453,6 +1516,9 @@
               }
             }
           ]
+        },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
         },
         "VirtualGatewayName": "meshstackgateway2BEC62D7C"
       }
@@ -1517,6 +1583,9 @@
               }
             }
           ]
+        },
+        "MeshOwner": {
+          "Ref": "AWS::AccountId"
         },
         "VirtualGatewayName": "meshstackgateway34EC5ED00"
       }

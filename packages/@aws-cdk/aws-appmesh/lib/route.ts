@@ -120,6 +120,7 @@ export class Route extends cdk.Resource implements IRoute {
     const route = new CfnRoute(this, 'Resource', {
       routeName: this.physicalName,
       meshName: this.virtualRouter.mesh.meshName,
+      meshOwner: this.virtualRouter.mesh.meshOwner,
       virtualRouterName: this.virtualRouter.virtualRouterName,
       spec: {
         tcpRoute: spec.tcpRouteSpec,

@@ -113,6 +113,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
     const gatewayRoute = new CfnGatewayRoute(this, 'Resource', {
       gatewayRouteName: this.physicalName,
       meshName: props.virtualGateway.mesh.meshName,
+      meshOwner: props.virtualGateway.mesh.meshOwner,
       spec: {
         httpRoute: routeSpecConfig.httpSpecConfig,
         http2Route: routeSpecConfig.http2SpecConfig,
