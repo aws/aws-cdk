@@ -96,18 +96,15 @@ class YamlBuildSpec extends BuildSpec {
 }
 
 /**
- * Merge two buildspecs into a new BuildSpec
+ * Merge two buildspecs into a new BuildSpec by doing a deep merge
  *
- * NOTE: will currently only merge commands, not artifact
- * declarations, environment variables, secrets, or any
- * other configuration elements.
+ * We decided to disallow merging of artifact specs, which is
+ * actually impossible since we can't merge two buildspecs with a
+ * single primary output into a buildspec with multiple outputs.
+ * In case of multiple outputs they must have identifiers but we won't have that information.
  *
- * Internal for now because it's not complete/good enough
- * to expose on the objects directly, but we need to it to
- * keep feature-parity for Project.
- *
- * @internal
- */
+ * In case of test reports we replace the whole object with the RHS (instead of recursively merging)
+*/
 export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
   if (!(lhs instanceof ObjectBuildSpec) || !(rhs instanceof ObjectBuildSpec)) {
     throw new Error('Can only merge buildspecs created using BuildSpec.fromObject()');
@@ -120,7 +117,7 @@ export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
     // We decided to disallow merging of artifact specs, which is
     // actually impossible since we can't merge two buildspecs with a
     // single primary output into a buildspec with multiple outputs.
-    // In case of multiple outputs they must have identifiers but we won't have that information)
+    // In case of multiple outputs they must have identifiers but we won't have that information.
     throw new Error('Only one build spec is allowed to specify artifacts.');
   }
 
