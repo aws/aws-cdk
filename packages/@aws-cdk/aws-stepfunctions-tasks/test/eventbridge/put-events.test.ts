@@ -55,6 +55,8 @@ describe('Put Events', () => {
         detail: sfn.TaskInput.fromObject({
           Message: 'MyDetailMessage',
         }),
+        detailType: 'MyDetailType',
+        source: 'my.source',
       }],
     });
 
@@ -79,6 +81,8 @@ describe('Put Events', () => {
           Detail: {
             Message: 'MyDetailMessage',
           },
+          DetailType: 'MyDetailType',
+          Source: 'my.source',
         }],
       },
     });
@@ -93,6 +97,8 @@ describe('Put Events', () => {
           Message: 'MyDetailMessage',
           Token: sfn.JsonPath.taskToken,
         }),
+        detailType: 'MyDetailType',
+        source: 'my.source',
       }],
     });
 
@@ -118,6 +124,8 @@ describe('Put Events', () => {
             'Message': 'MyDetailMessage',
             'Token.$': '$$.Task.Token',
           },
+          DetailType: 'MyDetailType',
+          Source: 'my.source',
         }],
       },
     });
@@ -130,6 +138,8 @@ describe('Put Events', () => {
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
         entries: [{
           detail: sfn.TaskInput.fromText('MyDetail'),
+          detailType: 'MyDetailType',
+          source: 'my.source',
         }],
       });
     // THEN
@@ -141,7 +151,11 @@ describe('Put Events', () => {
       // WHEN
       new EventBridgePutEvents(stack, 'PutEvents', {
         integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-        entries: [{}],
+        entries: [{
+          detail: sfn.TaskInput.fromText('MyDetail'),
+          detailType: 'MyDetailType',
+          source: 'my.source',
+        }],
       });
     // THEN
     }).toThrowError('Unsupported service integration pattern');
@@ -155,6 +169,9 @@ describe('Put Events', () => {
     const task = new EventBridgePutEvents(stack, 'PutEvents', {
       entries: [{
         eventBus,
+        detail: sfn.TaskInput.fromText('MyDetail'),
+        detailType: 'MyDetailType',
+        source: 'my.source',
       }],
     });
 
@@ -182,6 +199,9 @@ describe('Put Events', () => {
               'Arn',
             ],
           },
+          Detail: 'MyDetail',
+          DetailType: 'MyDetailType',
+          Source: 'my.source',
         }],
       },
     });
@@ -196,5 +216,45 @@ describe('Put Events', () => {
     })
       // THEN
       .toThrowError('Value for property `entries` must be a non-empty array.');
+  });
+
+  test('Validate task policy', () => {
+    // GIVEN
+    const bus = new events.EventBus(stack, 'EventBus');
+
+    // WHEN
+    const task = new EventBridgePutEvents(stack, 'PutEvents', {
+      entries: [{
+        detail: sfn.TaskInput.fromText('MyDetail'),
+        detailType: 'MyDetailType',
+        source: 'my.source',
+        eventBus: bus,
+      }],
+    });
+    new sfn.StateMachine(stack, 'State Machine', { definition: task });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'events:PutEvents',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'EventBus7B8748AA',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: 'StateMachineRole543B9670',
+        },
+      ],
+    });
   });
 });

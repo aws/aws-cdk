@@ -12,23 +12,23 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  */
 export interface EventBridgePutEventsEntry {
   /**
-   * JSON object that contains information about the event
+   * The event body
    *
-   * The service generating the event determines the content of this field
-   * Consists of a valid JSON string which can contain nested subobjects
-   * i.e. "{ \"instance-id\": \" i-1234567890abcdef0\", \"state\": \"terminated\" }"
-   * @default - nothing
+   * Can either be provided as an object or as a JSON-serialized string
+   * @example
+   * sfn.TaskInput.fromText('{"instance-id": "i-1234567890abcdef0", "state": "terminated"}')
+   * sfn.TaskInput.fromObject({ Message: 'Hello from Step Functions' })
+   * sfn.TaskInput.fromJsonPathAt('$.EventDetail')
    */
-  readonly detail?: sfn.TaskInput;
+  readonly detail: sfn.TaskInput;
 
   /**
-   * Along with the source field help identify fields and values of detail field
+   * Used along with the source field to help identify the fields and values expected in the detail field
    *
    * For example, events by CloudTrail have detail type "AWS API Call via CloudTrail"
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html
-   * @default - nothing
    */
-  readonly detailType?: string;
+  readonly detailType: string;
 
   /**
    * The event bus the entry will be sent to.
@@ -42,9 +42,8 @@ export interface EventBridgePutEventsEntry {
    *
    * @example 'com.example.service'
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html
-   * @default - nothing
    */
-  readonly source?: string;
+  readonly source: string;
 }
 
 /**
