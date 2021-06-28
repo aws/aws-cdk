@@ -5,7 +5,7 @@ import * as yaml_cfn from './private/yaml-cfn';
  * BuildSpec for CodeBuild projects
  */
 export abstract class BuildSpec {
-  public static fromObject(value: {[key: string]: any}): BuildSpec {
+  public static fromObject(value: { [key: string]: any }): BuildSpec {
     return new ObjectBuildSpec(value);
   }
 
@@ -14,7 +14,7 @@ export abstract class BuildSpec {
    *
    * @param value the object containing the buildspec that will be rendered as YAML
    */
-  public static fromObjectToYaml(value: {[key: string]: any}): BuildSpec {
+  public static fromObjectToYaml(value: { [key: string]: any }): BuildSpec {
     return new YamlBuildSpec(value);
   }
 
@@ -66,7 +66,7 @@ class FilenameBuildSpec extends BuildSpec {
 class ObjectBuildSpec extends BuildSpec {
   public readonly isImmediate: boolean = true;
 
-  constructor(public readonly spec: {[key: string]: any}) {
+  constructor(public readonly spec: { [key: string]: any }) {
     super();
   }
 
@@ -86,7 +86,7 @@ class ObjectBuildSpec extends BuildSpec {
 class YamlBuildSpec extends BuildSpec {
   public readonly isImmediate: boolean = true;
 
-  constructor(public readonly spec: {[key: string]: any}) {
+  constructor(public readonly spec: { [key: string]: any }) {
     super();
   }
 
@@ -113,24 +113,48 @@ export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
     throw new Error('Can only merge buildspecs created using BuildSpec.fromObject()');
   }
 
-  return new ObjectBuildSpec(copyCommands(lhs.spec, rhs.spec));
-}
-
-/**
- * Extend buildSpec phases with the contents of another one
- */
-function copyCommands(buildSpec: any, extend: any): any {
-  if (buildSpec.version === '0.1') {
+  if (lhs.spec.version === '0.1') {
     throw new Error('Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.');
   }
-
-  const ret = Object.assign({}, buildSpec); // Return a copy
-  ret.phases = Object.assign({}, ret.phases);
-
-  for (const phaseName of Object.keys(extend.phases)) {
-    const phase = ret.phases[phaseName] = Object.assign({}, ret.phases[phaseName]);
-    phase.commands = [...phase.commands || [], ...extend.phases[phaseName].commands];
+  if (lhs.spec.artifacts && rhs.spec.artifacts) {
+    // We decided to disallow merging of artifact specs, which is
+    // actually impossible since we can't merge two buildspecs with a
+    // single primary output into a buildspec with multiple outputs.
+    // In case of multiple outputs they must have identifiers but we won't have that information)
+    throw new Error('Only one build spec is allowed to specify artifacts.');
   }
 
-  return ret;
+  const merged = mergeDeep(lhs.spec, rhs.spec);
+
+  // In case of test reports we replace the whole object with the RHS (instead of recursively merging)
+  if (lhs.spec.reports && rhs.spec.reports) {
+    merged.reports = { ...lhs.spec.reports, ...rhs.spec.reports };
+  }
+
+  return new ObjectBuildSpec(merged);
 }
+
+function mergeDeep(lhs: any, rhs: any): any {
+  lhs = JSON.parse(JSON.stringify(lhs));
+
+  const isObject = (obj: any) => obj && typeof obj === 'object';
+
+  if (!isObject(lhs) || !isObject(rhs)) {
+    return rhs;
+  }
+
+  Object.keys(rhs).forEach(key => {
+    const leftValue = lhs[key];
+    const rightValue = rhs[key];
+
+    if (Array.isArray(leftValue) && Array.isArray(rightValue)) {
+      lhs[key] = leftValue.concat(rightValue);
+    } else if (isObject(leftValue) && isObject(rightValue)) {
+      lhs[key] = mergeDeep(Object.assign({}, leftValue), rightValue);
+    } else {
+      lhs[key] = rightValue;
+    }
+  });
+
+  return lhs;
+};
