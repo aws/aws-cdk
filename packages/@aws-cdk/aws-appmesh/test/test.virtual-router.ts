@@ -85,6 +85,28 @@ export = {
 
       test.done();
     },
+
+    'with shared service mesh': {
+      'Mesh Owner is the AWS account ID of the account that shared the mesh with your account'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const accountId = '123456789012';
+        const sharedMesh = appmesh.Mesh
+          .fromMeshArn(stack, 'shared-mesh', `arn:aws:appmesh:us-west-2:${accountId}:mesh/shared-mesh`);
+
+        // WHEN
+        new appmesh.VirtualRouter(stack, 'test-node', {
+          mesh: sharedMesh,
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualRouter', {
+          MeshOwner: accountId,
+        }));
+
+        test.done();
+      },
+    },
   },
 
   'When adding route to existing VirtualRouter': {

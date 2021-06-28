@@ -192,6 +192,7 @@ export class VirtualGateway extends VirtualGatewayBase {
     const node = new CfnVirtualGateway(this, 'Resource', {
       virtualGatewayName: this.physicalName,
       meshName: this.mesh.meshName,
+      meshOwner: this.mesh.meshOwner,
       spec: {
         listeners: this.listeners.map(listener => listener.listener),
         backendDefaults: props.backendDefaults !== undefined
