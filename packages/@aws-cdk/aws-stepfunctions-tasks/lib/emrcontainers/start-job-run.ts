@@ -40,6 +40,8 @@ export interface EMRContainersStartJobRunProps extends sfn.TaskStateBaseProps {
   /**
    * The job driver for the job run.
    * 
+   * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_JobDriver.html
+   * 
    * @default - No job driver
    */
   readonly jobDriver: JobDriver;
@@ -47,6 +49,8 @@ export interface EMRContainersStartJobRunProps extends sfn.TaskStateBaseProps {
   /**
    * A configuration specification to be used to override existing configurations.
    * 
+   * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_ConfigurationOverrides.html
+   *  
    * @default - No configuration override
    */
   readonly configurationOverrides?: ConfigurationOverrides;

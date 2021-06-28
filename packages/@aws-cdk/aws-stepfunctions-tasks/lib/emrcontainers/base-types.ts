@@ -1,4 +1,3 @@
-import * as sfn from '@aws-cdk/aws-stepfunctions';
 
 /**
  * The information about job driver for Spark submit.
@@ -7,6 +6,7 @@ export interface SparkSubmitJobDriver {
 
   /**
    * The entry point of job application.
+   * Length Constraints: Minimum length of 1. Maximum length of 256.
    * 
    * @default - No entry point
    */
@@ -14,6 +14,7 @@ export interface SparkSubmitJobDriver {
 
   /**
    * The arguments for job application.
+   * Length Constraints: Minimum length of 1. Maximum length of 10280.
    * 
    * @default - No arguments defined
    */
@@ -21,6 +22,7 @@ export interface SparkSubmitJobDriver {
 
   /**
    * The Spark submit parameters that are used for job runs.
+   * Length Constraints: Minimum length of 1. Maximum length of 102400.
    * 
    * @default - No spark submit parameters
    */
@@ -34,7 +36,8 @@ export interface JobDriver {
 
   /**
    * The job driver parameters specified for spark submit.
-   * Length Constraints: Minimum length of 1. Maximum length of 102400.
+   * 
+   * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_SparkSubmitJobDriver.html
    * 
    * @default - No job driver parameters specified.
    */
@@ -52,55 +55,63 @@ export interface Configuration {
 
   /**
    * The classification within a configuration.
+   * Length Constraints: Minimum length of 1. Maximum length of 1024.
    * 
-   * @default -
+   * @default - No classifcation. Defined by application-specific configuration file
    */
   readonly classification: string;
 
   /**
    * A list of additional configurations to apply within a configuration object.
+   * Array Members: Maximum number of 100 items.
    * 
-   * @default -
+   * @default - No other configurations
    */
   readonly configurations?: Configuration[];
 
   /**
    * A set of properties specified within a configuration classification.
+   * Map Entries: Maximum number of 100 items.
    * 
-   * @default -
+   * @default - No properties
    */
   readonly properties?: { [key: string]: string };
 }
 
 /**
- * Monitoring configurations for CloudWatch.
+ * A configuration for CloudWatch monitoring. 
+ * You can configure your jobs to send log information to CloudWatch Logs.
  */
 export interface CloudWatchMonitoringConfiguration {
   
   /**
    * The name of the log group for log publishing.
+   * Length Constraints: Minimum length of 1. Maximum length of 512.
    * 
-   * @default - 
+   * @default - No default log group name
    */
   readonly logGroupName: string;
 
   /**
    * The specified name prefix for log streams.
+   * Length Constraints: Minimum length of 1. Maximum length of 256.
    * 
-   * @default -
+   * @default - No default log stream prefix name
    */
   readonly logStreamNamePrefix?: string;
 }
 
 /**
- *  Amazon S3 configuration for monitoring log publishing. You can configure your jobs to send log information to Amazon S3. 
+ *  Amazon S3 configuration for monitoring log publishing. 
+ *  You can configure your jobs to send log information to Amazon S3. 
  */
 export interface S3MonitoringConfiguration {
 
   /**
    * Amazon S3 destination URI for log publishing.
+   * Length Constraints: Minimum length of 1. Maximum length of 10280.
    * 
-   * @default - 
+   * @default - No default S3 Destination URI
    */
   readonly logUri: string;
 }
@@ -111,9 +122,10 @@ export interface S3MonitoringConfiguration {
 export interface MonitoringConfiguration {
 
   /**
-   * Monitoring configurations for CloudWatch.
+   * A configuration for CloudWatch monitoring. 
+   * You can configure your jobs to send log information to CloudWatch Logs. 
    * 
-   * @default -
+   * @default - No CloudWatch monitoring configuration
    */
   readonly cloudWatchMonitoringConfig?: CloudWatchMonitoringConfiguration;
 
@@ -121,14 +133,15 @@ export interface MonitoringConfiguration {
    * Monitoring configurations for the persistent application UI. 
    * Valid values - ENABLED | DISABLED
    * 
-   * @default - 
+   * @default - No persistent application UI configuration
    */
   readonly persistentAppUI?: string;
   
   /**
-   * Amazon S3 configuration for monitoring log publishing.
+   *  Amazon S3 configuration for monitoring log publishing. 
+   *  You can configure your jobs to send log information to Amazon S3. 
    * 
-   * @default -
+   * @default - No S3 monitoring configuration
    */
   readonly s3MonitoringConfig?: S3MonitoringConfiguration;
 }
@@ -140,15 +153,20 @@ export interface ConfigurationOverrides {
   
   /**
    * The configurations for the application running by the job run. 
+   * Maximum of 100 items
    * 
-   * @default - 
+   * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_Configuration.html
+   * 
+   * @default - No application config
    */
   readonly applicationConfig?: Configuration[];
 
   /**
    * The configurations for monitoring.
    * 
-   * @default - 
+   * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_MonitoringConfiguration.html
+   * 
+   * @default - No monitoring configurations
    */
   readonly monitoringConfig?: MonitoringConfiguration;
 }

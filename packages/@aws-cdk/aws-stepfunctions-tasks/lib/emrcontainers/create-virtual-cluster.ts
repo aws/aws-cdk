@@ -6,7 +6,7 @@ import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * The props for a EMR Containers CreateVirtualCluster Task
+ * The props for a EMR Containers CreateVirtualCluster Task.
  */
 export interface EMRContainersCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
 
@@ -15,23 +15,25 @@ export interface EMRContainersCreateVirtualClusterProps extends sfn.TaskStateBas
    * 
    * @default - No name
    */
-   readonly clusterName: string;
+   readonly clusterName: emrcontainers.CfnVirtualClusterProps['name'];
 
   /**
    * The container provider of the virtual cluster 
    * 
-   * Note: EKS Cluster is the only supported type as of 06/21
+   * Note: EKS Cluster is the only supported type as of 06/28/21
+   * 
+   * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_ContainerProvider.html
    * 
    * @default - No container provider
    */
-  readonly containerProvider: emrcontainers.CfnVirtualCluster.ContainerProviderProperty;
+  readonly containerProvider: emrcontainers.CfnVirtualClusterProps['containerProvider'];
 
   /**
    * The tags assigned to virtual clusters
    * 
    * @default - No tags
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: emrcontainers.CfnVirtualClusterProps['tags'];
 }
 
 /**
@@ -54,7 +56,6 @@ export class EMRContainersCreateVirtualCluster extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EMRContainersCreateVirtualClusterProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-
     validatePatternSupported(this.integrationPattern, EMRContainersCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = this.createPolicyStatements(); 
