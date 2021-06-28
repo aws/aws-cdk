@@ -8,13 +8,13 @@ const stack = new cdk.Stack(app, 'integ-servicecatalog-product');
 new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
   productName: 'testProduct',
   owner: 'testOwner',
-  cloudFormationProductVersions: [
+  productVersions: [
     {
+      validateTemplate: false,
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
         'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
     },
     {
-      validateTemplate: false,
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
     },
   ],

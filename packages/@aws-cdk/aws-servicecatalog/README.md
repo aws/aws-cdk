@@ -110,7 +110,7 @@ Using the CDK, a new Product can be created with the `CloudFormationProduct` con
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
   productName: "My Product",
   owner: "Product Owner",
-  cloudFormationProductVersions: [
+  productVersions: [
     {
       productVersionName: "v1",
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
@@ -128,7 +128,7 @@ Assets are files that are uploaded to an S3 Bucket before deployment.
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
   productName: "My Product",
   owner: "Product Owner",
-  cloudFormationProductVersions: [
+  productVersions: [
     {
       productVersionName: "v1",
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
@@ -136,7 +136,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
     },
     {
       productVersionName: "v2",
-      template: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
     },
   ]
 });

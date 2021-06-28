@@ -73,7 +73,7 @@ export interface CloudFormationProductProps {
   /**
    * The configuration of the product version.
    */
-  readonly cloudFormationProductVersions: CloudFormationProductVersion[];
+  readonly productVersions: CloudFormationProductVersion[];
 
   /**
    * The language code.
@@ -179,13 +179,13 @@ export class CloudFormationProduct extends Product {
 
   private renderProvisioningArtifacts(
     props: CloudFormationProductProps): CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] {
-    return props.cloudFormationProductVersions.map(cloudFormationProductVersion => {
-      const template = cloudFormationProductVersion.cloudFormationTemplate.bind(this);
+    return props.productVersions.map(productVersion => {
+      const template = productVersion.cloudFormationTemplate.bind(this);
       InputValidator.validateUrl(this.node.path, 'provisioning template url', template.httpUrl);
       return {
-        name: cloudFormationProductVersion.productVersionName,
-        description: cloudFormationProductVersion.description,
-        disableTemplateValidation: cloudFormationProductVersion.validateTemplate === false ? true : false,
+        name: productVersion.productVersionName,
+        description: productVersion.description,
+        disableTemplateValidation: productVersion.validateTemplate === false ? true : false,
         info: {
           LoadTemplateFromURL: template.httpUrl,
         },
@@ -201,12 +201,12 @@ export class CloudFormationProduct extends Product {
     InputValidator.validateEmail(this.node.path, 'support email', props.supportEmail);
     InputValidator.validateUrl(this.node.path, 'support url', props.supportUrl);
     InputValidator.validateLength(this.node.path, 'support description', 0, 8191, props.supportDescription);
-    if (props.cloudFormationProductVersions.length == 0) {
+    if (props.productVersions.length == 0) {
       throw new Error(`Invalid product versions for resource ${this.node.path}, must contain at least 1 product version`);
     }
-    props.cloudFormationProductVersions.forEach(cloudFormationProductVersion => {
-      InputValidator.validateLength(this.node.path, 'provisioning artifact name', 0, 100, cloudFormationProductVersion.productVersionName);
-      InputValidator.validateLength(this.node.path, 'provisioning artifact description', 0, 8191, cloudFormationProductVersion.description);
+    props.productVersions.forEach(productVersion => {
+      InputValidator.validateLength(this.node.path, 'provisioning artifact name', 0, 100, productVersion.productVersionName);
+      InputValidator.validateLength(this.node.path, 'provisioning artifact description', 0, 8191, productVersion.description);
     });
   }
 }

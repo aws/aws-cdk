@@ -7,13 +7,13 @@
         "Owner": "testOwner",
         "ProvisioningArtifactParameters": [
           {
-            "DisableTemplateValidation": false,
+            "DisableTemplateValidation": true,
             "Info": {
               "LoadTemplateFromURL": "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
             }
           },
           {
-            "DisableTemplateValidation": true,
+            "DisableTemplateValidation": false,
             "Info": {
               "LoadTemplateFromURL": {
                 "Fn::Join": [
