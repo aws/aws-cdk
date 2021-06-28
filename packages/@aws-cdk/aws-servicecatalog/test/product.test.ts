@@ -17,7 +17,7 @@ describe('Product', () => {
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',
       owner: 'testOwner',
-      productVersions: [
+      cloudFormationProductVersions: [
         {
           cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
         },
@@ -42,7 +42,7 @@ describe('Product', () => {
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',
       owner: 'testOwner',
-      productVersions: [
+      cloudFormationProductVersions: [
         {
           cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
           validateTemplate: false,
@@ -68,7 +68,7 @@ describe('Product', () => {
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',
       owner: 'testOwner',
-      productVersions: [
+      cloudFormationProductVersions: [
         {
           cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
         },
@@ -84,17 +84,17 @@ describe('Product', () => {
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',
       owner: 'testOwner',
-      productVersions: [
+      cloudFormationProductVersions: [
         {
-          name: 'v1',
+          productVersionName: 'v1',
           cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
         },
         {
-          name: 'v2',
+          productVersionName: 'v2',
           cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment-v2.template'),
         },
         {
-          name: 'v3',
+          productVersionName: 'v3',
           cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
         },
       ],
@@ -111,31 +111,6 @@ describe('Product', () => {
         },
       ],
     });
-  }),
-
-  test('fails if template is bound with a second stack', () => {
-    const template = servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json'));
-
-    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
-      productName: 'testProduct',
-      owner: 'testOwner',
-      productVersions: [
-        {
-          cloudFormationTemplate: template,
-        },
-      ],
-    });
-
-    const stack2 = new cdk.Stack(app, 'Stack2');
-    expect(() => new servicecatalog.CloudFormationProduct(stack2, 'MyProduct', {
-      productName: 'testProduct',
-      owner: 'testOwner',
-      productVersions: [
-        {
-          cloudFormationTemplate: template,
-        },
-      ],
-    })).toThrow(/already associated/);
   }),
 
   test('product from attributes', () => {
@@ -155,7 +130,7 @@ describe('Product', () => {
       new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
         productName: 'testProduct',
         owner: 'testOwner',
-        productVersions: [
+        cloudFormationProductVersions: [
           {
             cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
           },
@@ -170,7 +145,7 @@ describe('Product', () => {
       new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
         productName: 'testProduct',
         owner: 'testOwner',
-        productVersions: [
+        cloudFormationProductVersions: [
           {
             cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('invalid url'),
           },
@@ -184,7 +159,7 @@ describe('Product', () => {
       new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
         productName: 'testProduct',
         owner: 'testOwner',
-        productVersions: [],
+        cloudFormationProductVersions: [],
       });
     }).toThrowError(/Invalid product versions for resource Default\/MyProduct/);
   });

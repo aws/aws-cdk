@@ -1,9 +1,9 @@
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { CloudFormationTemplate } from './cloudformation-template';
 import { AcceptLanguage } from './common';
 import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
-import { CloudFormationTemplate } from './template';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
@@ -30,7 +30,7 @@ abstract class ProductBase extends Resource implements IProduct {
 /**
  * Properties of product version (also known as a provisioning artifact).
  */
-export interface ProductVersion {
+export interface CloudFormationProductVersion {
   /**
    * The description of the product version
    * @default - No description provided
@@ -38,7 +38,8 @@ export interface ProductVersion {
   readonly description?: string;
 
   /**
-   * Whether the specified product template will be validated by CloudFormation. If turned off, an invalid template configuration can be stored.
+   * Whether the specified product template will be validated by CloudFormation.
+   * If turned off, an invalid template configuration can be stored.
    * @default true
    */
   readonly validateTemplate?: boolean;
@@ -52,7 +53,7 @@ export interface ProductVersion {
    * The name of the product version.
    * @default - No product version name provided
    */
-  readonly name?: string;
+  readonly productVersionName?: string;
 }
 
 /**
@@ -72,7 +73,7 @@ export interface CloudFormationProductProps {
   /**
    * The configuration of the product version.
    */
-  readonly productVersions: ProductVersion[];
+  readonly cloudFormationProductVersions: CloudFormationProductVersion[];
 
   /**
    * The language code.
@@ -96,7 +97,7 @@ export interface CloudFormationProductProps {
    * Whether to give provisioning artifacts a new unique identifier when the product attributes or provisioning artifacts is updated
    * @default false
    */
-  readonly replaceProvisioningArtifacts?: boolean;
+  readonly replaceProductVersionIds?: boolean;
 
   /**
    * The support information about the product
@@ -128,18 +129,17 @@ export abstract class Product extends ProductBase {
    * @param productArn Product Arn
    */
   public static fromProductArn(scope: Construct, id: string, productArn: string): IProduct {
-    const arn = Stack.of(scope).parseArn(productArn);
+    const arn = Stack.of(scope).splitArn(productArn, ArnFormat.SLASH_RESOURCE_NAME);
     const productId = arn.resourceName;
 
     if (!productId) {
       throw new Error('Missing required Portfolio ID from Portfolio ARN: ' + productArn);
     }
 
-    class Import extends ProductBase {
+    return new class extends ProductBase {
       public readonly productId = productId!;
       public readonly productArn = productArn;
-    }
-    return new Import(scope, id);
+    }(scope, id);
   }
 }
 
@@ -162,7 +162,7 @@ export class CloudFormationProduct extends Product {
       name: props.productName,
       owner: props.owner,
       provisioningArtifactParameters: this.renderProvisioningArtifacts(props),
-      replaceProvisioningArtifacts: props.replaceProvisioningArtifacts,
+      replaceProvisioningArtifacts: props.replaceProductVersionIds,
       supportDescription: props.supportDescription,
       supportEmail: props.supportEmail,
       supportUrl: props.supportUrl,
@@ -179,13 +179,13 @@ export class CloudFormationProduct extends Product {
 
   private renderProvisioningArtifacts(
     props: CloudFormationProductProps): CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] {
-    return props.productVersions.map(productVersion => {
-      const template = productVersion.cloudFormationTemplate.bind(this);
+    return props.cloudFormationProductVersions.map(cloudFormationProductVersion => {
+      const template = cloudFormationProductVersion.cloudFormationTemplate.bind(this);
       InputValidator.validateUrl(this.node.path, 'provisioning template url', template.httpUrl);
       return {
-        name: productVersion.name,
-        description: productVersion.description,
-        disableTemplateValidation: productVersion.validateTemplate === false ? true : false,
+        name: cloudFormationProductVersion.productVersionName,
+        description: cloudFormationProductVersion.description,
+        disableTemplateValidation: cloudFormationProductVersion.validateTemplate === false ? true : false,
         info: {
           LoadTemplateFromURL: template.httpUrl,
         },
@@ -201,12 +201,12 @@ export class CloudFormationProduct extends Product {
     InputValidator.validateEmail(this.node.path, 'support email', props.supportEmail);
     InputValidator.validateUrl(this.node.path, 'support url', props.supportUrl);
     InputValidator.validateLength(this.node.path, 'support description', 0, 8191, props.supportDescription);
-    if (props.productVersions.length == 0) {
-      throw new Error(`Invalid product versions for resource ${this.node.path}, must contain at least 1 product version, got ${props.productVersions.length}`);
+    if (props.cloudFormationProductVersions.length == 0) {
+      throw new Error(`Invalid product versions for resource ${this.node.path}, must contain at least 1 product version`);
     }
-    props.productVersions.map(productVersion => {
-      InputValidator.validateLength(this.node.path, 'provisioning artifact name', 0, 100, productVersion.name);
-      InputValidator.validateLength(this.node.path, 'provisioning artifact description', 0, 8191, productVersion.description);
+    props.cloudFormationProductVersions.forEach(cloudFormationProductVersion => {
+      InputValidator.validateLength(this.node.path, 'provisioning artifact name', 0, 100, cloudFormationProductVersion.productVersionName);
+      InputValidator.validateLength(this.node.path, 'provisioning artifact description', 0, 8191, cloudFormationProductVersion.description);
     });
   }
 }

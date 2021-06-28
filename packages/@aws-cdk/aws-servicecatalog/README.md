@@ -110,10 +110,11 @@ Using the CDK, a new Product can be created with the `CloudFormationProduct` con
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
   productName: "My Product",
   owner: "Product Owner",
-  productVersions: [
+  cloudFormationProductVersions: [
     {
-      name: "v1",
-      template: servicecatalog.CloudFormationTemplate.fromUrl('https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ServiceCatalog/Product.yaml')
+      productVersionName: "v1",
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
+        'https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ServiceCatalog/Product.yaml'),
     },
   ]
 });
@@ -127,14 +128,15 @@ Assets are files that are uploaded to an S3 Bucket before deployment.
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
   productName: "My Product",
   owner: "Product Owner",
-  productVersions: [
+  cloudFormationProductVersions: [
     {
-      name: "v1",
-      template: servicecatalog.CloudFormationTemplate.fromUrl('https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ServiceCatalog/Product.yaml')
+      productVersionName: "v1",
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
+        'https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ServiceCatalog/Product.yaml'),
     },
     {
-      name: "v2",
-      template: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template'))
+      productVersionName: "v2",
+      template: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
     },
   ]
 });

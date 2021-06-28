@@ -1,5 +1,4 @@
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import * as cdk from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -14,7 +13,7 @@ export abstract class CloudFormationTemplate {
    * @param url The url that points to the provisioning artifacts template
    */
   public static fromUrl(url: string): CloudFormationTemplate {
-    return new UrlTemplate(url);
+    return new CloudFormationUrlTemplate(url);
   }
 
   /**
@@ -23,7 +22,7 @@ export abstract class CloudFormationTemplate {
    * @param path A file containing the provisioning artifacts
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): CloudFormationTemplate {
-    return new AssetTemplate(path, options);
+    return new CloudFormationAssetTemplate(path, options);
   }
 
   /**
@@ -33,13 +32,13 @@ export abstract class CloudFormationTemplate {
    * @param scope The binding scope. Don't be smart about trying to down-cast or
    * assume it's initialized. You may just use it as a construct scope.
    */
-  public abstract bind(scope: Construct): TemplateConfig;
+  public abstract bind(scope: Construct): CloudFormationTemplateConfig;
 }
 
 /**
  * Result of binding `Template` into a `Product`.
  */
-export interface TemplateConfig {
+export interface CloudFormationTemplateConfig {
   /**
     * The http url of the template in S3.
     */
@@ -49,12 +48,12 @@ export interface TemplateConfig {
 /**
  * Template code from a Url.
  */
-class UrlTemplate extends CloudFormationTemplate {
-  constructor(private url: string) {
+class CloudFormationUrlTemplate extends CloudFormationTemplate {
+  constructor(private readonly url: string) {
     super();
   }
 
-  public bind(_scope: Construct): TemplateConfig {
+  public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
       httpUrl: this.url,
     };
@@ -64,7 +63,7 @@ class UrlTemplate extends CloudFormationTemplate {
 /**
  * Template from a local file.
  */
-class AssetTemplate extends CloudFormationTemplate {
+class CloudFormationAssetTemplate extends CloudFormationTemplate {
   private asset?: s3_assets.Asset;
 
   /**
@@ -74,16 +73,13 @@ class AssetTemplate extends CloudFormationTemplate {
     super();
   }
 
-  public bind(scope: Construct): TemplateConfig {
+  public bind(scope: Construct): CloudFormationTemplateConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Template', {
         path: this.path,
         ...this.options,
       });
-    } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Template is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Template instance for every stack.');
     }
 
     return {

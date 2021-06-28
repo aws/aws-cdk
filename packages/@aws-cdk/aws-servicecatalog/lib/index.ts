@@ -1,5 +1,5 @@
 export * from './common';
-export * from './template';
+export * from './cloudformation-template';
 export * from './portfolio';
 export * from './product';
 
