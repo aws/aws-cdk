@@ -229,6 +229,10 @@ describe('Put Events', () => {
         detailType: 'MyDetailType',
         source: 'my.source',
         eventBus: bus,
+      }, {
+        detail: sfn.TaskInput.fromText('MyDetail2'),
+        detailType: 'MyDetailType',
+        source: 'my.source',
       }],
     });
     new sfn.StateMachine(stack, 'State Machine', { definition: task });
@@ -240,12 +244,28 @@ describe('Put Events', () => {
           {
             Action: 'events:PutEvents',
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'EventBus7B8748AA',
-                'Arn',
-              ],
-            },
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'EventBus7B8748AA',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':events:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':event-bus/default',
+                  ],
+                ],
+              },
+            ],
           },
         ],
         Version: '2012-10-17',
