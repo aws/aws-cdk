@@ -62,20 +62,19 @@ export abstract class ClientVpnRouteTarget {
  * Properties for a ClientVpnRoute
  */
 export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
+
   /**
    * The client VPN endpoint to which to add the route.
+   * @default clientVpnEndpoint is required
    */
-  readonly clientVpnEndpoint: IClientVpnEndpoint;
-
-}
-
-
-export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
+  readonly clientVpnEndpoint?: IClientVpnEndpoint;
   /**
+   * The client VPN endpoint to which to add the route.
    * @deprecated by typo. moved to clientVpnEndpoint
-   */
-  readonly clientVpnEndpoint: IClientVpnEndpoint;
+   * @default clientVpnEndpoint is required.
 
+   */
+  readonly clientVpnEndoint?: IClientVpnEndpoint;
 }
 
 /**
@@ -84,15 +83,14 @@ export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
 export class ClientVpnRoute extends Resource {
   constructor(scope: Construct, id: string, props: ClientVpnRouteProps) {
     super(scope, id);
-
     const route = new CfnClientVpnRoute(this, 'Resource', {
-      clientVpnEndpointId: props.clientVpnEndpoint.endpointId,
+      clientVpnEndpointId: props.clientVpnEndpoint!.endpointId,
       description: props.description,
       destinationCidrBlock: props.cidr,
       targetVpcSubnetId: props.target.subnetId,
     });
 
     // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-clientvpnroute.html
-    route.node.addDependency(props.clientVpnEndpoint.targetNetworksAssociated);
+    route.node.addDependency(props.clientVpnEndpoint!.targetNetworksAssociated);
   }
 }
