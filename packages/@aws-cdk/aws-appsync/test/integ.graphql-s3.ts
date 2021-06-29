@@ -1,13 +1,14 @@
 import * as path from 'path';
 import * as db from '@aws-cdk/aws-dynamodb';
-import * as assets from '@aws-cdk/aws-s3-assets';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as s3deploy from '@aws-cdk/aws-s3-deployment';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
 /*
  * Creates an Appsync GraphQL API with schema definition through
  * s3 location.
- *
+ * 
  * Stack verification steps:
  * Deploy app and check if schema is defined.
  *
@@ -19,16 +20,24 @@ import * as appsync from '../lib';
  */
 
 const app = new cdk.App();
+
 const stack = new cdk.Stack(app, 'aws-appsync-integ');
 
-const asset = new assets.Asset(stack, 'SampleAsset', {
-  path: path.join(__dirname, 'appsync.test.graphql'),
+const bucket = new s3.Bucket(stack, 'Bucket');
+
+const deploy = new s3deploy.BucketDeployment(stack, 'Deployment', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'schemas'))],
+  destinationBucket: bucket,
 });
 
 const api = new appsync.GraphqlApi(stack, 'Api', {
   name: 'integ-test-s3',
-  schema: appsync.Schema.fromS3Location(asset.s3ObjectUrl),
+  schema: appsync.Schema.fromS3Location({
+    bucket,
+    key: 'appsync.test.graphql',
+  }),
 });
+api.node.addDependency(deploy);
 
 const testTable = new db.Table(stack, 'TestTable', {
   billingMode: db.BillingMode.PAY_PER_REQUEST,
