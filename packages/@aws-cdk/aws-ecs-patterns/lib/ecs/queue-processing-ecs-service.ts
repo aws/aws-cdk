@@ -57,7 +57,7 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
   /**
    * Gpu count for container in task definition. Set this if you want to use gpu based instances.
    *
-   * @default - 0
+   * @default - No GPUs assigned.
    */
   readonly gpuCount?: number;
 
