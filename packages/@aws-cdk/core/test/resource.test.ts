@@ -420,6 +420,37 @@ nodeunitShim({
       test.done();
     },
 
+    'addPropertyOverride() allows assigning an attribute of a different resource'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const r1 = new CfnResource(stack, 'MyResource1', { type: 'AWS::Resource::Type' });
+      const r2 = new CfnResource(stack, 'MyResource2', { type: 'AWS::Resource::Type' });
+
+      // WHEN
+      r2.addPropertyOverride('A', {
+        B: r1.getAtt('Arn'),
+      });
+
+      // THEN
+      test.deepEqual(toCloudFormation(stack), {
+        Resources: {
+          MyResource1: {
+            Type: 'AWS::Resource::Type',
+          },
+          MyResource2: {
+            Type: 'AWS::Resource::Type',
+            Properties: {
+              A: {
+                B: { 'Fn::GetAtt': ['MyResource1', 'Arn'] },
+              },
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
+
     'addOverride(p, null) will assign an "null" value'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -513,7 +544,7 @@ nodeunitShim({
       test.done();
     },
 
-    'addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar `undefined`'(test: Test) {
+    'addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar for `undefined`'(test: Test) {
       // GIVEN
       const stack = new Stack();
 

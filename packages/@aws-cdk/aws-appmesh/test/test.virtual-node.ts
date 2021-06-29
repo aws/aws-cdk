@@ -1,6 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
@@ -260,7 +261,7 @@ export = {
     },
 
     'when a listener is added with outlier detection with user defined props': {
-      'should add a listener  outlier detection to the resource'(test: Test) {
+      'should add a listener outlier detection to the resource'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -330,10 +331,12 @@ export = {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           backendDefaults: {
-            clientPolicy: appmesh.ClientPolicy.acmTrust({
-              certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+            tlsClientPolicy: {
               ports: [8080, 8081],
-            }),
+              validation: {
+                trust: appmesh.TlsValidationTrust.acm([acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
+              },
+            },
           },
         });
 
@@ -348,6 +351,64 @@ export = {
                     Trust: {
                       ACM: {
                         CertificateAuthorityArns: [`${certificateAuthorityArn}`],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    "with client's TLS certificate from SDS": {
+      'should add a backend default to the resource with TLS certificate'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        // WHEN
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+          backendDefaults: {
+            tlsClientPolicy: {
+              mutualTlsCertificate: appmesh.TlsCertificate.sds('secret_certificate'),
+              ports: [8080, 8081],
+              validation: {
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
+                trust: appmesh.TlsValidationTrust.sds('secret_validation'),
+              },
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            BackendDefaults: {
+              ClientPolicy: {
+                TLS: {
+                  Certificate: {
+                    SDS: {
+                      SecretName: 'secret_certificate',
+                    },
+                  },
+                  Ports: [8080, 8081],
+                  Validation: {
+                    SubjectAlternativeNames: {
+                      Match: {
+                        Exact: ['mesh-endpoint.apps.local'],
+                      },
+                    },
+                    Trust: {
+                      SDS: {
+                        SecretName: 'secret_validation',
                       },
                     },
                   },
@@ -382,10 +443,12 @@ export = {
         });
 
         node.addBackend(appmesh.Backend.virtualService(service1, {
-          clientPolicy: appmesh.ClientPolicy.fileTrust({
-            certificateChain: 'path-to-certificate',
+          tlsClientPolicy: {
             ports: [8080, 8081],
-          }),
+            validation: {
+              trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
+            },
+          },
         }));
 
         // THEN
@@ -437,16 +500,15 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.grpc({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.acm({
-              certificate: cert,
-              tlsMode: appmesh.TlsMode.STRICT,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.acm(cert),
+            },
           },
           )],
         });
 
         // THEN
-
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
@@ -484,11 +546,10 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.http({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-              tlsMode: appmesh.TlsMode.STRICT,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+            },
           })],
         });
 
@@ -515,6 +576,48 @@ export = {
       },
     },
 
+    'when an http2 listener is added with a TLS certificate from SDS': {
+      'the listener should include the TLS configuration'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        // WHEN
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          listeners: [appmesh.VirtualNodeListener.http2({
+            port: 80,
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.sds('secret_certificate'),
+            },
+          })],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                TLS: {
+                  Mode: appmesh.TlsMode.STRICT,
+                  Certificate: {
+                    SDS: {
+                      SecretName: 'secret_certificate',
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
     'when an http listener is added with the TLS mode permissive': {
       'the listener should include the TLS configuration'(test: Test) {
         // GIVEN
@@ -529,11 +632,10 @@ export = {
           mesh,
           listeners: [appmesh.VirtualNodeListener.http({
             port: 80,
-            tlsCertificate: appmesh.TlsCertificate.file({
-              certificateChainPath: 'path/to/certChain',
-              privateKeyPath: 'path/to/privateKey',
-              tlsMode: appmesh.TlsMode.PERMISSIVE,
-            }),
+            tls: {
+              mode: appmesh.TlsMode.PERMISSIVE,
+              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+            },
           })],
         });
 
@@ -736,6 +838,7 @@ export = {
 
     test.done();
   },
+
   'Can import Virtual Nodes using attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -749,6 +852,45 @@ export = {
     // THEN
     test.equal(virtualNode.mesh.meshName, meshName);
     test.equal(virtualNode.virtualNodeName, virtualNodeName);
+
+    test.done();
+  },
+
+  'Can grant an identity StreamAggregatedResources for a given VirtualNode'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const node = new appmesh.VirtualNode(stack, 'test-node', {
+      mesh,
+      listeners: [appmesh.VirtualNodeListener.http({
+        port: 80,
+        tls: {
+          mode: appmesh.TlsMode.PERMISSIVE,
+          certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+        },
+      })],
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    node.grantStreamAggregatedResources(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:StreamAggregatedResources',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'testnode3EE2776E',
+            },
+          },
+        ],
+      },
+    }));
 
     test.done();
   },

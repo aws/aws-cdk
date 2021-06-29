@@ -174,7 +174,7 @@ export class Bundling implements cdk.BundlingOptions {
       osPlatform,
     });
     const environment = this.props.environment ?? {};
-    const cwd = path.dirname(this.props.entry);
+    const cwd = path.dirname(this.props.depsLockFilePath);
 
     return {
       tryBundle(outputDir: string) {

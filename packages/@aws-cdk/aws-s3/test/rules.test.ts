@@ -128,4 +128,28 @@ nodeunitShim({
 
     test.done();
   },
+
+  'Bucket with expiredObjectDeleteMarker'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        expiredObjectDeleteMarker: true,
+      }],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          ExpiredObjectDeleteMarker: true,
+          Status: 'Enabled',
+        }],
+      },
+    }));
+
+    test.done();
+  },
 });

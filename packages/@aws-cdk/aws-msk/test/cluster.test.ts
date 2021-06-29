@@ -1,6 +1,7 @@
 import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 
+import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
@@ -64,20 +65,26 @@ describe('MSK Cluster', () => {
   describe('created with authentication enabled', () => {
     describe('with tls auth', () => {
       test('fails if client broker encryption is set to plaintext', () => {
-
-        expect(() => new msk.Cluster(stack, 'Cluster', {
-          clusterName: 'cluster',
-          kafkaVersion: msk.KafkaVersion.V2_6_1,
-          vpc,
-          encryptionInTransit: {
-            clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
-          },
-          clientAuthentication: msk.ClientAuthentication.tls({
-            certificateAuthorityArns: [
-              'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
-            ],
-          }),
-        })).toThrow(
+        expect(
+          () =>
+            new msk.Cluster(stack, 'Cluster', {
+              clusterName: 'cluster',
+              kafkaVersion: msk.KafkaVersion.V2_6_1,
+              vpc,
+              encryptionInTransit: {
+                clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
+              },
+              clientAuthentication: msk.ClientAuthentication.tls({
+                certificateAuthorities: [
+                  acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+                    stack,
+                    'CertificateAuthority',
+                    'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+                  ),
+                ],
+              }),
+            }),
+        ).toThrow(
           'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
         );
       });
@@ -102,18 +109,79 @@ describe('MSK Cluster', () => {
       });
 
       test('fails if tls encryption is set to tls and plaintext', () => {
-        expect(() => new msk.Cluster(stack, 'Cluster', {
+        expect(
+          () =>
+            new msk.Cluster(stack, 'Cluster', {
+              clusterName: 'cluster',
+              kafkaVersion: msk.KafkaVersion.V2_6_1,
+              vpc,
+              encryptionInTransit: {
+                clientBroker: msk.ClientBrokerEncryption.TLS_PLAINTEXT,
+              },
+              clientAuthentication: msk.ClientAuthentication.sasl({
+                scram: true,
+              }),
+            }),
+        ).toThrow(
+          'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
+        );
+      });
+    });
+
+    describe('with sasl/iam auth', () => {
+      test('iam enabled is true', () => {
+        new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
           kafkaVersion: msk.KafkaVersion.V2_6_1,
           vpc,
           encryptionInTransit: {
-            clientBroker: msk.ClientBrokerEncryption.TLS_PLAINTEXT,
+            clientBroker: msk.ClientBrokerEncryption.TLS,
           },
           clientAuthentication: msk.ClientAuthentication.sasl({
-            scram: true,
+            iam: true,
           }),
-        })).toThrow(
-          'To enable SASL/SCRAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
+        });
+        expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+          ClientAuthentication: {
+            Sasl: { Iam: { Enabled: true } },
+          },
+        });
+      });
+      test('fails if tls encryption is set to plaintext', () => {
+        expect(
+          () =>
+            new msk.Cluster(stack, 'Cluster', {
+              clusterName: 'cluster',
+              kafkaVersion: msk.KafkaVersion.V2_6_1,
+              vpc,
+              encryptionInTransit: {
+                clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
+              },
+              clientAuthentication: msk.ClientAuthentication.sasl({
+                iam: true,
+              }),
+            }),
+        ).toThrow(
+          'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
+        );
+      });
+
+      test('fails if tls encryption is set to tls and plaintext', () => {
+        expect(
+          () =>
+            new msk.Cluster(stack, 'Cluster', {
+              clusterName: 'cluster',
+              kafkaVersion: msk.KafkaVersion.V2_6_1,
+              vpc,
+              encryptionInTransit: {
+                clientBroker: msk.ClientBrokerEncryption.TLS_PLAINTEXT,
+              },
+              clientAuthentication: msk.ClientAuthentication.sasl({
+                iam: true,
+              }),
+            }),
+        ).toThrow(
+          'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
         );
       });
     });
@@ -218,6 +286,24 @@ describe('MSK Cluster', () => {
           },
         });
       });
+    });
+
+    test('fails if more than one authentication method is enabled', () => {
+      expect(
+        () =>
+          new msk.Cluster(stack, 'Cluster', {
+            clusterName: 'cluster',
+            kafkaVersion: msk.KafkaVersion.V2_6_1,
+            vpc,
+            encryptionInTransit: {
+              clientBroker: msk.ClientBrokerEncryption.TLS,
+            },
+            clientAuthentication: msk.ClientAuthentication.sasl({
+              iam: true,
+              scram: true,
+            }),
+          }),
+      ).toThrow('Only one client authentication method can be enabled.');
     });
   });
 
@@ -408,8 +494,12 @@ describe('MSK Cluster', () => {
         clientBroker: msk.ClientBrokerEncryption.TLS,
       },
       clientAuthentication: msk.ClientAuthentication.tls({
-        certificateAuthorityArns: [
-          'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+        certificateAuthorities: [
+          acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+            stack,
+            'CertificateAuthority',
+            'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+          ),
         ],
       }),
       monitoring: {
