@@ -8,7 +8,7 @@ import * as appsync from '../lib';
 /*
  * Creates an Appsync GraphQL API with schema definition through
  * s3 location.
- * 
+ *
  * Stack verification steps:
  * Deploy app and check if schema is defined.
  *
