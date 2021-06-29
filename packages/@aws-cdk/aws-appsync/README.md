@@ -335,10 +335,22 @@ You can define your GraphQL Schema from an s3 location. For convenience, use
 the `appsync.Schema.fromS3Location` to specify the s3 location representing your schema.
 
 ```ts
-const api = appsync.GraphqlApi(stack, 'api', {
-  name: 'myApi',
-  schema: appsync.Schema.fromS3Location('s3://example-url'),
+const bucket = new s3.Bucket(stack, 'Bucket');
+
+const deploy = new s3deploy.BucketDeployment(stack, 'Deployment', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'schemas'))],
+  destinationBucket: bucket,
 });
+
+const api = new appsync.GraphqlApi(stack, 'Api', {
+  name: 'integ-test-s3',
+  schema: appsync.Schema.fromS3Location({
+    bucket,
+    key: 'appsync.test.graphql',
+  }),
+});
+
+api.node.addDependency(deploy);
 ```
 
 ## Imports

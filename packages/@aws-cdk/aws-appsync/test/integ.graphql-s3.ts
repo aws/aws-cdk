@@ -37,6 +37,7 @@ const api = new appsync.GraphqlApi(stack, 'Api', {
     key: 'appsync.test.graphql',
   }),
 });
+
 api.node.addDependency(deploy);
 
 const testTable = new db.Table(stack, 'TestTable', {
