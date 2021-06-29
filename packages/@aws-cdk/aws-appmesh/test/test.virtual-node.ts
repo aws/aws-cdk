@@ -261,7 +261,7 @@ export = {
     },
 
     'when a listener is added with outlier detection with user defined props': {
-      'should add a listener  outlier detection to the resource'(test: Test) {
+      'should add a listener outlier detection to the resource'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -334,9 +334,7 @@ export = {
             tlsClientPolicy: {
               ports: [8080, 8081],
               validation: {
-                trust: appmesh.TlsValidationTrust.acm({
-                  certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-                }),
+                trust: appmesh.TlsValidationTrust.acm([acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
               },
             },
           },
@@ -353,6 +351,64 @@ export = {
                     Trust: {
                       ACM: {
                         CertificateAuthorityArns: [`${certificateAuthorityArn}`],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    "with client's TLS certificate from SDS": {
+      'should add a backend default to the resource with TLS certificate'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        // WHEN
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+          backendDefaults: {
+            tlsClientPolicy: {
+              mutualTlsCertificate: appmesh.TlsCertificate.sds('secret_certificate'),
+              ports: [8080, 8081],
+              validation: {
+                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
+                trust: appmesh.TlsValidationTrust.sds('secret_validation'),
+              },
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            BackendDefaults: {
+              ClientPolicy: {
+                TLS: {
+                  Certificate: {
+                    SDS: {
+                      SecretName: 'secret_certificate',
+                    },
+                  },
+                  Ports: [8080, 8081],
+                  Validation: {
+                    SubjectAlternativeNames: {
+                      Match: {
+                        Exact: ['mesh-endpoint.apps.local'],
+                      },
+                    },
+                    Trust: {
+                      SDS: {
+                        SecretName: 'secret_validation',
                       },
                     },
                   },
@@ -390,9 +446,7 @@ export = {
           tlsClientPolicy: {
             ports: [8080, 8081],
             validation: {
-              trust: appmesh.TlsValidationTrust.file({
-                certificateChain: 'path-to-certificate',
-              }),
+              trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
             },
           },
         }));
@@ -448,9 +502,7 @@ export = {
             port: 80,
             tls: {
               mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.acm({
-                certificate: cert,
-              }),
+              certificate: appmesh.TlsCertificate.acm(cert),
             },
           },
           )],
@@ -496,10 +548,7 @@ export = {
             port: 80,
             tls: {
               mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.file({
-                certificateChainPath: 'path/to/certChain',
-                privateKeyPath: 'path/to/privateKey',
-              }),
+              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
             },
           })],
         });
@@ -515,6 +564,48 @@ export = {
                     File: {
                       CertificateChain: 'path/to/certChain',
                       PrivateKey: 'path/to/privateKey',
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'when an http2 listener is added with a TLS certificate from SDS': {
+      'the listener should include the TLS configuration'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        // WHEN
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          listeners: [appmesh.VirtualNodeListener.http2({
+            port: 80,
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.sds('secret_certificate'),
+            },
+          })],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                TLS: {
+                  Mode: appmesh.TlsMode.STRICT,
+                  Certificate: {
+                    SDS: {
+                      SecretName: 'secret_certificate',
                     },
                   },
                 },
@@ -543,10 +634,7 @@ export = {
             port: 80,
             tls: {
               mode: appmesh.TlsMode.PERMISSIVE,
-              certificate: appmesh.TlsCertificate.file({
-                certificateChainPath: 'path/to/certChain',
-                privateKeyPath: 'path/to/privateKey',
-              }),
+              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
             },
           })],
         });
@@ -780,10 +868,7 @@ export = {
         port: 80,
         tls: {
           mode: appmesh.TlsMode.PERMISSIVE,
-          certificate: appmesh.TlsCertificate.file({
-            certificateChainPath: 'path/to/certChain',
-            privateKeyPath: 'path/to/privateKey',
-          }),
+          certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
         },
       })],
     });
