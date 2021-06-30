@@ -528,11 +528,11 @@ describe('pipeline with single asset publisher', () => {
     });
   });
 
-  behavior('multiple pipelines write to separate assets build spec files in singlePublisherMode', (suite) => {
+  behavior('other pipeline writes to separate assets build spec file', (suite) => {
     suite.legacy(() => {
       // WHEN
       pipeline.addApplicationStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
-      otherPipeline.addApplicationStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+      otherPipeline.addApplicationStage(new TwoFileAssetsApp(app, 'OtherFileAssetApp'));
 
       // THEN
       expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
