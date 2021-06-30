@@ -525,6 +525,9 @@ class AwsStarStatement extends PolicyStatement {
   }
 }
 
+/**
+ * Options for the `withoutPolicyUpdates()` modifier of a Role
+ */
 export interface WithoutPolicyUpdatesOptions {
   /**
    * Add grants to resources instead of dropping them
