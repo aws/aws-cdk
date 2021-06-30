@@ -218,11 +218,15 @@ const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'SourceBucket', {
 });
 ```
 
-If an imported bucket has been encrypted, grant decrypt permission to
-the source action by specifying the `encryptionKey` property:
+If an imported bucket has been encrypted with a custom key, import the
+bucket in your stack with the key as follows:
 
-```
+```ts
 const key = kms.Key.fromKeyArn(stack, 'MyKey', 'arn:aws:kms:...');
+const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'Bucket', {
+  BucketName: 'MyBucket',
+  encryptionKey: key,
+});
 const sourceAction = new codepipeline_actions.S3SourceAction({
   actionName: 'S3Source',
   bucket: sourceBucket,

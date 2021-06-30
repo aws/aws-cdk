@@ -1,7 +1,6 @@
-import { arrayWith, countResources, expect, haveResourceLike, objectLike, not } from '@aws-cdk/assert-internal';
+import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Lazy, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
@@ -265,72 +264,6 @@ nodeunitShim({
             ],
           },
         ],
-      }));
-
-      test.done();
-    },
-
-    'grants decryption to S3 KMS key for a bucket created in this stack'(test: Test) {
-      const stack = new Stack();
-
-      const key = new kms.Key(stack, 'MyKey');
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryptionKey: key });
-      minimalPipeline(stack, { bucket });
-
-      expect(stack, /* skipValidation = */ true).to(haveResourceLike('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': arrayWith(objectLike({
-            'Action': arrayWith('kms:Decrypt', 'kms:DescribeKey'),
-            'Effect': 'Allow',
-            'Resource': objectLike({
-              'Fn::GetAtt': arrayWith('MyKey6AB29FA6', 'Arn'),
-            }),
-          })),
-        },
-      }));
-
-      test.done();
-    },
-
-    'grants decryption to S3 KMS key for a bucket imported in this stack and with key passed to pipeline'(test: Test) {
-      const stack = new Stack();
-
-      const keyArn = 'arn:aws:kms:us-east-1:12345:key/9242922e-e18c-4173-bb49-b8f472b282cd';
-      const key = kms.Key.fromKeyArn(stack, 'MyKey', keyArn);
-      const bucket = s3.Bucket.fromBucketName(stack, 'MyBucket', 'bucket.example.com');
-      const sourceOutput = new codepipeline.Artifact();
-      const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [
-          new cpactions.S3SourceAction({
-            actionName: 'Source',
-            bucket: bucket,
-            bucketKey: 'some/path/to',
-            encryptionKey: key,
-            output: sourceOutput,
-          }),
-        ],
-      });
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [
-          new cpactions.CodeBuildAction({
-            actionName: 'Build',
-            project: new codebuild.PipelineProject(stack, 'MyProject'),
-            input: sourceOutput,
-          }),
-        ],
-      });
-
-      expect(stack, /* skipValidation = */ true).to(haveResourceLike('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': arrayWith(objectLike({
-            'Action': 'kms:Decrypt',
-            'Effect': 'Allow',
-            'Resource': keyArn,
-          })),
-        },
       }));
 
       test.done();

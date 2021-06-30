@@ -1,6 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
-import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Names, Token } from '@aws-cdk/core';
 import { Action } from '../action';
@@ -63,19 +62,6 @@ export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
   readonly bucketKey: string;
 
   /**
-   * Optional encryption key used for the S3 bucket that stores the
-   * source code.
-   *
-   * The encryption key is not available when the bucket is imported
-   * in a stack, so pass the correct key this way in order to grant
-   * the source role the
-   * permission to decrypt the bucket.
-   *
-   * @default if not set, use only `bucket.encryptionKey`
-   */
-  readonly encryptionKey?: kms.IKey;
-
-  /**
    * How should CodePipeline detect source changes for this Action.
    * Note that if this is S3Trigger.EVENTS, you need to make sure to include the source Bucket in a CloudTrail Trail,
    * as otherwise the CloudWatch Events will not be emitted.
@@ -86,7 +72,17 @@ export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
   readonly trigger?: S3Trigger;
 
   /**
-   * The Amazon S3 bucket that stores the source code
+   * The Amazon S3 bucket that stores the source code.
+   *
+   * If you import an encrypted bucket in your stack, please specify
+   * the encryption key at import time, for example:
+   *
+   * ```
+   * const bucket = s3.Bucket.fromBucketAttributes(this, 'Bucket', {
+   *   BucketName: 'MyBucket',
+   *    encryptionKey: kms.Key.fromKeyArn(stack, 'MyKey', 'arn:aws:kms:...'),
+   * });
+   * ```
    */
   readonly bucket: s3.IBucket;
 }
@@ -137,9 +133,6 @@ export class S3SourceAction extends Action {
 
     // we need to read from the source bucket...
     this.props.bucket.grantRead(options.role);
-    if (this.props.encryptionKey) {
-      this.props.encryptionKey.grantDecrypt(options.role);
-    }
 
     // ...and write to the Pipeline bucket
     options.bucket.grantWrite(options.role);
