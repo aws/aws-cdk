@@ -9,6 +9,5 @@ export * from './schema';
 export * from './schema-intermediate';
 export * from './schema-field';
 export * from './schema-base';
-export * from './schema-utils';
 export * from './graphqlapi';
 export * from './graphqlapi-base';

@@ -3,11 +3,11 @@ import { IBucket } from '@aws-cdk/aws-s3';
 import { Lazy } from '@aws-cdk/core';
 import { CfnGraphQLSchema } from '../appsync.generated';
 import { GraphqlApi } from '../graphqlapi';
-import { shapeAddition } from '../private';
+import { shapeAddition } from '../private/schema-shape-addition';
+import { Schema } from '../schema';
 import { IIntermediateType } from '../schema-base';
 import { ResolvableField } from '../schema-field';
 import { ObjectType } from '../schema-intermediate';
-import { S3Location } from '../schema-utils';
 
 /**
  * Utility enum for Schema class
@@ -18,32 +18,28 @@ enum SchemaMode {
   S3 = 'S3',
 };
 
-/**
- * The implmentation for the abstract Schema class.
- *
- * @internal
- */
-export class SchemaImpl {
+export class SchemaImpl implements Schema {
+
   /**
    * The definition for this schema
    */
   public readonly definition: string;
 
   /**
-   * The underlying CFN GraphQL Schema Resource. This
-   * resource is created on `bind` which allows the Schema
-   * to be created outside the CDK (a feature that works well
-   * with the code-first approach).
-   *
-   * @internal
-   */
+    * The underlying CFN GraphQL Schema Resource. This
+    * resource is created on `bind` which allows the Schema
+    * to be created outside the CDK (a feature that works well
+    * with the code-first approach).
+    *
+    * @internal
+    */
   protected _schema!: CfnGraphQLSchema;
 
   /**
-   * The SchemaMode utilized by the Schema Implementation
-   *
-   * @internal
-   */
+    * The SchemaMode utilized by the Schema Implementation
+    *
+    * @internal
+    */
   protected _mode: SchemaMode;
 
   public constructor() {
@@ -52,9 +48,9 @@ export class SchemaImpl {
   }
 
   /**
-   * Called when the GraphQL Api is initialized to allow this object to bind
-   * to the stack.
-   */
+    * Called when the GraphQL Api is initialized to allow this object to bind
+    * to the stack.
+    */
   public bind(api: GraphqlApi): CfnGraphQLSchema {
     if (!this._schema) {
       this._schema = new CfnGraphQLSchema(api, 'Schema', {
@@ -66,52 +62,52 @@ export class SchemaImpl {
   }
 
   /**
-   * Escape hatch to add to Schema as desired. Will always result
-   * in a newline.
-   */
+    * Escape hatch to add to Schema as desired. Will always result
+    * in a newline.
+    */
   public addToSchema(_addition: string, _delimiter?: string): void {
     throw new Error('API cannot append to schema because schema definition mode is not configured as CODE.');
   }
 
   /**
-   * Add a query field to the schema's Query. CDK will create an
-   * Object Type called 'Query'. For example,
-   *
-   * type Query {
-   *   fieldName: Field.returnType
-   * }
-   */
+    * Add a query field to the schema's Query. CDK will create an
+    * Object Type called 'Query'. For example,
+    *
+    * type Query {
+    *   fieldName: Field.returnType
+    * }
+    */
   public addQuery(_fieldName: string, _field: ResolvableField): ObjectType {
     throw new Error(`Unable to add query. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this._mode}`);
   }
 
   /**
-   * Add a mutation field to the schema's Mutation. CDK will create an
-   * Object Type called 'Mutation'. For example,
-   *
-   * type Mutation {
-   *   fieldName: Field.returnType
-   * }
-   */
+    * Add a mutation field to the schema's Mutation. CDK will create an
+    * Object Type called 'Mutation'. For example,
+    *
+    * type Mutation {
+    *   fieldName: Field.returnType
+    * }
+    */
   public addMutation(_fieldName: string, _field: ResolvableField): ObjectType {
     throw new Error(`Unable to add mutation. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this._mode}`);
   }
 
   /**
-   * Add a subscription field to the schema's Subscription. CDK will create an
-   * Object Type called 'Subscription'. For example,
-   *
-   * type Subscription {
-   *   fieldName: Field.returnType
-   * }
-   */
+    * Add a subscription field to the schema's Subscription. CDK will create an
+    * Object Type called 'Subscription'. For example,
+    *
+    * type Subscription {
+    *   fieldName: Field.returnType
+    * }
+    */
   public addSubscription(_fieldName: string, _field: ResolvableField): ObjectType {
     throw new Error(`Unable to add subscription. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this._mode}`);
   }
 
   /**
-   * Add type to the schema
-   */
+    * Add type to the schema
+    */
   public addType(_type: IIntermediateType): IIntermediateType {
     throw new Error('API cannot add type because schema definition mode is not configured as CODE.');
   }
@@ -120,7 +116,7 @@ export class SchemaImpl {
 /**
  * Schema Implementation for a Schema generated through an Asset
  */
-export class AssetSchemaImpl extends SchemaImpl {
+export class AssetSchema extends SchemaImpl {
   /**
    * The definition for this schema
    */
@@ -130,12 +126,22 @@ export class AssetSchemaImpl extends SchemaImpl {
     super();
     this.definition = readFileSync(filePath).toString('utf-8');
   }
+
+  public bind(api: GraphqlApi): CfnGraphQLSchema {
+    if (!this._schema) {
+      this._schema = new CfnGraphQLSchema(api, 'Schema', {
+        apiId: api.apiId,
+        definition: this.definition,
+      });
+    }
+    return this._schema;
+  }
 }
 
 /**
  * Schema Implementation for a Schema generated through S3
  */
-export class S3SchemaImpl extends SchemaImpl {
+export class S3Schema extends SchemaImpl {
   /**
    * The Bucket that holds the GraphQL Schema
    */
@@ -146,20 +152,24 @@ export class S3SchemaImpl extends SchemaImpl {
    */
   private key: string;
 
-  public constructor(s3Location: S3Location) {
+  public constructor(bucket: IBucket, key: string) {
     super();
-    this.bucket = s3Location.bucket;
-    this.key = s3Location.key;
+    this.bucket = bucket;
+    this.key = key;
     this._mode = SchemaMode.S3;
   }
 
   public bind(api: GraphqlApi): CfnGraphQLSchema {
     if (!this._schema) {
+      // this._schema = new CfnGraphQLSchema(api, 'Schema', {
+      //   apiId: api.apiId,
+      //   definitionS3Location: Lazy.string({
+      //     produce: () => this.bucket.s3UrlForObject(this.key),
+      //   }),
+      // });
       this._schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
-        definitionS3Location: Lazy.string({
-          produce: () => this.bucket.s3UrlForObject(this.key),
-        }),
+        definitionS3Location: this.bucket.s3UrlForObject(this.key),
       });
     }
     return this._schema;
@@ -169,7 +179,7 @@ export class S3SchemaImpl extends SchemaImpl {
 /**
  * Schema Implementation for a Schema generated through Code-First
  */
-export class CodeSchemaImpl extends SchemaImpl {
+export class CodeSchema extends SchemaImpl {
   /**
    * The definition for this schema
    */

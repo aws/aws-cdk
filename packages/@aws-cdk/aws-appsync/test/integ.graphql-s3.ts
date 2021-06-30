@@ -32,10 +32,7 @@ const deploy = new s3deploy.BucketDeployment(stack, 'Deployment', {
 
 const api = new appsync.GraphqlApi(stack, 'Api', {
   name: 'integ-test-s3',
-  schema: appsync.Schema.fromS3Location({
-    bucket,
-    key: 'appsync.test.graphql',
-  }),
+  schema: appsync.Schema.fromS3Location(bucket, 'appsync.test.graphql'),
 });
 
 api.node.addDependency(deploy);
