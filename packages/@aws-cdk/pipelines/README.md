@@ -209,6 +209,8 @@ If you use assets for files or Docker images, every asset will get its own uploa
 By setting the value `singlePublisherPerType` to `true`, only one action for files and one action for 
 Docker images is created that handles all assets of the respective type.
 
+If you need to run commands to setup proxies, mirrors, etc you can supply them using the `assetPreInstallCommands`.
+
 ## Initial pipeline deployment
 
 You provision this pipeline by making sure the target environment has been
@@ -814,6 +816,26 @@ Make sure you set the `privileged` environment variable to `true` in the synth d
 After turning on `privilegedMode: true`, you will need to do a one-time manual cdk deploy of your 
 pipeline to get it going again (as with a broken 'synth' the pipeline will not be able to self 
 update to the right state). 
+
+### S3 error: Access Denied
+
+Some constructs, such as EKS clusters, generate nested stacks. When CloudFormation tries 
+to deploy those stacks, it may fail with this error:
+
+```console
+S3 error: Access Denied For more information check http://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html
+```
+
+This happens because the pipeline is not self-mutating and, as a consequence, the `FileAssetX` 
+build projects get out-of-sync with the generated templates. To fix this, make sure the 
+`selfMutating` property is set to `true`:
+
+```typescript
+const pipeline = new CdkPipeline(this, 'MyPipeline', {
+  selfMutating: true,
+  ...
+});
+```
 
 ## Current Limitations
 
