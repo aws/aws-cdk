@@ -84,7 +84,6 @@ export class CdkToolkit {
     const stream = options.stream || process.stderr;
 
     let diffs = 0;
-
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
       if (stacks.stackCount !== 1) {
@@ -512,7 +511,7 @@ export interface DiffOptions {
   fail?: boolean;
 
   /**
-   * Only run diff on security changes
+   * Only run diff on broadened security changes
    *
    * @default false
    */
