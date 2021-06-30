@@ -4,10 +4,10 @@ import { Lazy } from '@aws-cdk/core';
 import { CfnGraphQLSchema } from '../appsync.generated';
 import { GraphqlApi } from '../graphqlapi';
 import { shapeAddition } from '../private';
-import { S3Location } from '../schema';
 import { IIntermediateType } from '../schema-base';
 import { ResolvableField } from '../schema-field';
 import { ObjectType } from '../schema-intermediate';
+import { S3Location } from '../schema-utils';
 
 /**
  * Utility enum for Schema class
