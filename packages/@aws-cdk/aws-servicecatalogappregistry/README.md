@@ -28,8 +28,13 @@ enables organizations to create and manage repositores of applications and assoc
 
 - [Application](#application)
 - [Attribute-Group](#attribute-group)
+- [Associations](#associations)
+  - [Associating application with attribute group](#attribute-group-association)
+  - [Associating application with Cloudformation stack](#resource-association)
 
-```ts
+The `@aws-cdk/aws-servicecatalogappregistry` package contains resources that enable users to automate governance and management of their AWS resources at scale.
+
+```ts nofixture
 import * as appreg from '@aws-cdk/aws-servicecatalogappregistry';
 ```
 
@@ -75,4 +80,30 @@ Attribute groups can be imported by their ARN via the `AttributeGroup.fromAttrib
 ```ts
 const importedAttributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(this, 'MyImportedAttrGroup',
   'arn:aws:servicecatalog:us-east-1:012345678910:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i');
+```
+
+## Associations
+
+You associate your appregistry application with attribute groups and resources.
+Resources are Cloudformation stacks that you can associate to application to group relevant
+stacks together to enable metadata rich insights into your applications and resources.
+A Cloudformation stack can only be associated with one application.  If a stack is associated
+with multiple applications in your app or is already associated with one cdk will fail at deploy time. 
+
+### Associating application with attribute group
+
+You can associate an attribute group with an application with the `associateAttributeGroup()` API:
+
+```ts basic-constructs
+application.associateAttributeGroup(attributeGroup);
+```
+
+### Associating application with Cloudformation Stack
+
+You can associate a Cloudformation stack with application with the `associateStack()` API:
+
+```ts basic-constructs
+const myStack = new cdk.Stack(this, 'MyStack');
+
+application.associateStack(myStack);
 ```

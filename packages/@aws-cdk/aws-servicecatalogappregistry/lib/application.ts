@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
+import { IAttributeGroup } from './attribute-group';
+import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
-import { CfnApplication } from './servicecatalogappregistry.generated';
+import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from './servicecatalogappregistry.generated';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -21,6 +23,18 @@ export interface IApplication extends cdk.IResource {
    * @attribute
    */
   readonly applicationId: string;
+
+  /**
+   * Associate application with an attribute group
+   * @param attributeGroup AppRegistry attribute group
+   */
+  associateAttributeGroup(attributeGroup: IAttributeGroup): void;
+
+  /**
+   * Associate application with a resource
+   * @param stack a CFN stack
+   */
+  associateStack(stack: cdk.Stack): void;
 }
 
 /**
@@ -42,6 +56,45 @@ export interface ApplicationProps {
 abstract class ApplicationBase extends cdk.Resource implements IApplication {
   public abstract readonly applicationArn: string;
   public abstract readonly applicationId: string;
+  private readonly associatedAttributeGroups: Set<string> = new Set();
+  private readonly associatedResources: Set<string> = new Set();
+
+  /**
+   * Associate an attribute group with application
+   * If the attribute group is already associated, it will ignore duplicate request.
+   */
+  public associateAttributeGroup(attributeGroup: IAttributeGroup): void {
+    if (!this.associatedAttributeGroups.has(attributeGroup.node.addr)) {
+      const hashId = this.generateUniqueHash(attributeGroup.node.addr);
+      new CfnAttributeGroupAssociation(this, `AttributeGroupAssociation${hashId}`, {
+        application: this.applicationId,
+        attributeGroup: attributeGroup.attributeGroupId,
+      });
+      this.associatedAttributeGroups.add(attributeGroup.node.addr);
+    }
+  }
+
+  /**
+   * Associate a stack with the application
+   * If the resource is already associated, it will ignore duplicate request.
+   * A stack can only be associated with one application.
+   */
+  public associateStack(stack: cdk.Stack): void {
+    if (!this.associatedResources.has(stack.node.addr)) {
+      const hashId = this.generateUniqueHash(stack.node.addr);
+      new CfnResourceAssociation(this, `ResourceAssociation${hashId}`, {
+        application: this.applicationId,
+        resource: stack.stackId,
+        resourceType: 'CFN_STACK',
+      });
+      this.associatedResources.add(stack.node.addr);
+    }
+  }
+
+  /**
+   * Create a unique id
+   */
+  protected abstract generateUniqueHash(value: string): string;
 }
 
 /**
@@ -66,6 +119,10 @@ export class Application extends ApplicationBase {
     class Import extends ApplicationBase {
       public readonly applicationArn = applicationArn;
       public readonly applicationId = applicationId!;
+
+      protected generateUniqueHash(value: string): string {
+        return hashValues(this.applicationArn, value);
+      }
     }
 
     return new Import(scope, id, {
@@ -75,19 +132,24 @@ export class Application extends ApplicationBase {
 
   public readonly applicationArn: string;
   public readonly applicationId: string;
+  private readonly application: CfnApplication
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
     super(scope, id);
 
     this.validateApplicationProps(props);
 
-    const application = new CfnApplication(this, 'Resource', {
+    this.application = new CfnApplication(this, 'Resource', {
       name: props.applicationName,
       description: props.description,
     });
 
-    this.applicationArn = application.attrArn;
-    this.applicationId = application.attrId;
+    this.applicationArn = this.application.attrArn;
+    this.applicationId = this.application.attrId;
+  }
+
+  protected generateUniqueHash(value: string): string {
+    return hashValues(cdk.Names.nodeUniqueId(this.application.node), value);
   }
 
   private validateApplicationProps(props: ApplicationProps) {
