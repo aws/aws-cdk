@@ -85,10 +85,11 @@ const importedAttributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(this,
 ## Associations
 
 You associate your appregistry application with attribute groups and resources.
-Resources are Cloudformation stacks that you can associate to application to group relevant
+Resources are CloudFormation stacks that you can associate to application to group relevant
 stacks together to enable metadata rich insights into your applications and resources.
-A Cloudformation stack can only be associated with one application.  If a stack is associated
-with multiple applications in your app or is already associated with one cdk will fail at deploy time. 
+A Cloudformation stack can only be associated with one application.  
+If a stack is associated with multiple applications in your app or is already associated with one,
+CDK will fail at deploy time. 
 
 ### Associating application with an attribute group
 
@@ -103,7 +104,7 @@ application.associateAttributeGroup(attributeGroup);
 You can associate a stack with an application with the `associateStack()` API:
 
 ```ts basic-constructs
-const myStack = new cdk.Stack(this, 'MyStack');
+const myStack = new cdk.Stack(app, 'MyStack');
 
 application.associateStack(myStack);
 ```

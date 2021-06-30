@@ -162,6 +162,8 @@ describe('Application', () => {
       // If these were not idempotent, the second call would produce an error for duplicate construct ID.
       application.associateAttributeGroup(attributeGroup);
       application.associateAttributeGroup(attributeGroup);
+
+      expect(stack).toCountResources('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 1);
     }),
 
     test('multiple applications and attribute groups can associate', () => {
@@ -169,7 +171,7 @@ describe('Application', () => {
         applicationName: 'MyApplication2',
       });
 
-      const attributeGroup = new appreg.AttributeGroup(stack, 'AttributeGroup', {
+      const attributeGroup1 = new appreg.AttributeGroup(stack, 'AttributeGroup', {
         attributeGroupName: 'attributeGroupName',
         attributes: { key: 'value' },
       });
@@ -179,10 +181,10 @@ describe('Application', () => {
         attributes: { key: 'value' },
       });
 
-      application.associateAttributeGroup(attributeGroup);
+      application.associateAttributeGroup(attributeGroup1);
       application.associateAttributeGroup(attributeGroup2);
 
-      application2.associateAttributeGroup(attributeGroup);
+      application2.associateAttributeGroup(attributeGroup1);
       application2.associateAttributeGroup(attributeGroup2);
 
       expect(stack).toCountResources('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 4);
@@ -205,6 +207,8 @@ describe('Application', () => {
       // If these were not idempotent, the second call would produce an error for duplicate construct ID.
       application.associateStack(resource);
       application.associateStack(resource);
+
+      expect(stack).toCountResources('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     });
   });
 });

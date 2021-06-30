@@ -1,6 +1,6 @@
+import * as crypto from 'crypto';
 import * as cdk from '@aws-cdk/core';
 import { IAttributeGroup } from './attribute-group';
-import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from './servicecatalogappregistry.generated';
 
@@ -94,7 +94,16 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Create a unique id
    */
-  protected abstract generateUniqueHash(value: string): string;
+  protected abstract generateUniqueHash(resourceAddress: string): string;
+}
+
+/**
+ * Generates a unique hash identfifer using SHA256 encryption algorithm
+ */
+export function hashValues(...values: string[]): string {
+  const sha256 = crypto.createHash('sha256');
+  values.forEach(val => sha256.update(val));
+  return sha256.digest('hex').slice(0, 12);
 }
 
 /**
@@ -132,7 +141,8 @@ export class Application extends ApplicationBase {
 
   public readonly applicationArn: string;
   public readonly applicationId: string;
-  private readonly application: CfnApplication
+  private readonly application: CfnApplication;
+  private readonly nodeAddress: string;
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
     super(scope, id);
@@ -146,10 +156,11 @@ export class Application extends ApplicationBase {
 
     this.applicationArn = this.application.attrArn;
     this.applicationId = this.application.attrId;
+    this.nodeAddress = cdk.Names.nodeUniqueId(this.application.node);
   }
 
   protected generateUniqueHash(value: string): string {
-    return hashValues(cdk.Names.nodeUniqueId(this.application.node), value);
+    return hashValues(this.nodeAddress, value);
   }
 
   private validateApplicationProps(props: ApplicationProps) {
