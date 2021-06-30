@@ -29,8 +29,8 @@ enables organizations to create and manage repositores of applications and assoc
 - [Application](#application)
 - [Attribute-Group](#attribute-group)
 - [Associations](#associations)
-  - [Associating application with attribute group](#attribute-group-association)
-  - [Associating application with Cloudformation stack](#resource-association)
+  - [Associating application with an attribute group](#attribute-group-association)
+  - [Associating application with a stack](#resource-association)
 
 The `@aws-cdk/aws-servicecatalogappregistry` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
@@ -90,7 +90,7 @@ stacks together to enable metadata rich insights into your applications and reso
 A Cloudformation stack can only be associated with one application.  If a stack is associated
 with multiple applications in your app or is already associated with one cdk will fail at deploy time. 
 
-### Associating application with attribute group
+### Associating application with an attribute group
 
 You can associate an attribute group with an application with the `associateAttributeGroup()` API:
 
@@ -98,9 +98,9 @@ You can associate an attribute group with an application with the `associateAttr
 application.associateAttributeGroup(attributeGroup);
 ```
 
-### Associating application with Cloudformation Stack
+### Associating application with a Stack
 
-You can associate a Cloudformation stack with application with the `associateStack()` API:
+You can associate a stack with an application with the `associateStack()` API:
 
 ```ts basic-constructs
 const myStack = new cdk.Stack(this, 'MyStack');
