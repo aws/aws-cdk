@@ -584,6 +584,45 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
 });
 ```
 
+## Docker Registry Credentials
+
+You can specify credentials to use for authenticating to Docker registries as part of the
+pipeline definition. This can be useful if any Docker image assets — in the pipeline or
+any of the application stages — require authentication, either due to being in a
+different environment (e.g., ECR repo) or to avoid throttling (e.g., DockerHub).
+
+```ts
+const dockerHubSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'DHSecret', 'arn:aws:...');
+const customRegSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'CRSecret', 'arn:aws:...');
+const repo1 = ecr.Repository.fromRepositoryArn(stack, 'Repo', 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo1');
+const repo2 = ecr.Repository.fromRepositoryArn(stack, 'Repo', 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo2');
+
+const pipeline = new CdkPipeline(this, 'Pipeline', {
+  dockerCredentials: [
+    DockerCredential.dockerHub(dockerHubSecret),
+    DockerCredential.customRegistry('dockerregistry.example.com', customRegSecret),
+    DockerCredential.ecr([repo1, repo2]);
+  ],
+  ...
+});
+```
+
+You can authenticate to DockerHub, or any other Docker registry, by specifying a secret
+with the username and secret/password to pass to `docker login`. The names of the fields
+within the secret to use for the username and password can be customized. Authentication
+to ECR repostories is done using the execution role of the relevant CodeBuild job. Both
+types of credentials can be provided with an optional role to assume before requesting
+the credentials.
+
+By default, the Docker credentials provided to the pipeline will be available to the
+Synth/Build, Self-Update, and Asset Publishing actions within the pipeline. The scope of
+the credentials can be limited via the `DockerCredentialUsage` option.
+
+```ts
+const dockerHubSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'DHSecret', 'arn:aws:...');
+// Only the image asset publishing actions will be granted read access to the secret.
+const creds = DockerCredential.dockerHub(dockerHubSecret, { usages: [DockerCredentialUsage.ASSET_PUBLISHING] });
+```
 
 ## CDK Environment Bootstrapping
 
