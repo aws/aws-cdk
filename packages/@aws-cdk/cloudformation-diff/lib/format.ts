@@ -28,7 +28,8 @@ export type LogicalPathMap = {
  *
  * @param stream           The IO stream where to output the rendered diff.
  * @param templateDiff     TemplateDiff to be rendered to the console.
- * @param logicalToPathMap A map from logical ID to construct path.
+ * @param logicalToPathMap A map from logical ID to construct path. Useful in
+ *                         case there is no aws:cdk:path metadata in the template.
  * @param context          the number of context lines to use in arbitrary JSON diff (defaults to 3).
  */
 export function formatDifferences(
@@ -51,8 +52,8 @@ export function formatDifferences(
 export function formatSecurityChanges(
   stream: FormatStream,
   templateDiff: TemplateDiff,
-  logicalToPathMap: LogicalPathMap = {},
-  context: number = 3): void {
+  logicalToPathMap?: LogicalPathMap,
+  context?: number): void {
   const differ = new BasicDifferenceFormatter(stream, templateDiff, logicalToPathMap, context);
   differ.formatSecurityChanges();
 }
