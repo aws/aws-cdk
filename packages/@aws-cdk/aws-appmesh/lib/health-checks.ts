@@ -112,7 +112,7 @@ export abstract class HealthCheck {
   }
 
   /**
-   * Construct a GRPC health check
+   * Construct a GRPC health checkz
    */
   public static grpc(options: GrpcHealthCheckOptions = {}): HealthCheck {
     return new HealthCheckImpl(Protocol.GRPC, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout);

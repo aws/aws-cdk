@@ -127,7 +127,7 @@ export interface TcpVirtualNodeListenerOptions extends VirtualNodeListenerCommon
 }
 
 /**
- *  Defines listener for a VirtualNode
+ * Defines listener for a VirtualNode
  */
 export abstract class VirtualNodeListener {
   /**

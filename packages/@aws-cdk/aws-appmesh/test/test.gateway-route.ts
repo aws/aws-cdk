@@ -43,9 +43,7 @@ export = {
       virtualGateway.addGatewayRoute('gateway-grpc-route', {
         routeSpec: appmesh.GatewayRouteSpec.grpc({
           routeTarget: virtualService,
-          match: {
-            serviceName: virtualService.virtualServiceName,
-          },
+          match: appmesh.GrpcGatewayRouteMatch.serviceName(virtualService.virtualServiceName),
         }),
         gatewayRouteName: 'gateway-grpc-route',
       });
@@ -127,9 +125,7 @@ export = {
       });
       test.throws(() => appmesh.GatewayRouteSpec.http({
         routeTarget: virtualService,
-        match: {
-          prefixPath: 'wrong',
-        },
+        match: appmesh.HttpGatewayRouteMatch.prefix('wrong'),
       }).bind(stack),
       /Prefix Path must start with \'\/\', got: wrong/);
       test.done();

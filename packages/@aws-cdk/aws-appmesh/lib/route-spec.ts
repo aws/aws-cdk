@@ -57,6 +57,8 @@ export interface HttpRouteMatch {
    * @default - do not match on HTTP2 request protocol
    */
   readonly protocol?: HttpRouteProtocol;
+
+  
 }
 
 /**
