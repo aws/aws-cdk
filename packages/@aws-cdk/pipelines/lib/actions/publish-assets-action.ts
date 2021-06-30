@@ -116,7 +116,6 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
   private readonly commands = new Array<string>();
 
   private readonly buildSpec: codebuild.BuildSpec;
-  private readonly project: codebuild.PipelineProject;
 
   constructor(scope: Construct, id: string, private readonly props: PublishAssetsActionProps) {
     super(scope, id);
@@ -136,7 +135,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
       },
     });
 
-    this.project = new codebuild.PipelineProject(this, 'Default', {
+    const project = new codebuild.PipelineProject(this, 'Default', {
       projectName: this.props.projectName,
       environment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
@@ -150,7 +149,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
 
     this.action = new codepipeline_actions.CodeBuildAction({
       actionName: props.actionName,
-      project: this.project,
+      project,
       input: this.props.cloudAssemblyInput,
       role: props.role,
       // Add this purely so that the pipeline will selfupdate if the CLI version changes
