@@ -155,13 +155,13 @@ this capability, please see the
 ## More Resources
 * [CDK Workshop](https://cdkworkshop.com/)
 * **CDK Construction Zone** - A Twitch live coding series hosted by the CDK team, season one episodes:
-  * [S1E1](https://www.twitch.tv/videos/917691798):cdk triggers part 1
-  * [S1E2](https://www.twitch.tv/videos/925801382): cdk triggers part 2
-  * [S1E3](https://www.twitch.tv/videos/944565768): cdk triggers part 3 (final) 
-  * [S1E4](https://www.twitch.tv/aws/video/960287598): cdk tokens
-  * [S1E5](https://www.twitch.tv/aws/video/977551207): cdk assets
-  * [S1E6](https://www.twitch.tv/aws/video/1005334364): cdk best practices
-  * [S1E7](https://www.twitch.tv/videos/1019059654): cdk tips and tricks delivered to you by the CDK team
+  * [S1E1](https://www.twitch.tv/videos/917691798): Triggers (part 1); **Participants:** @NetaNir, @eladb, @richardhboyd
+  * [S1E2](https://www.twitch.tv/videos/925801382): Triggers (part 2); **Participants:** @NetaNir, @eladb, @iliapolo 
+  * [S1E3](https://www.twitch.tv/videos/944565768): Triggers (part 3); **Participants:** @NetaNir, @eladb, @iliapolo, @RomainMuller
+  * [S1E4](https://www.twitch.tv/aws/video/960287598): Tokens Deep Dive; **Participants:** @NetaNir,@rix0rrr, @iliapolo, @RomainMuller
+  * [S1E5](https://www.twitch.tv/aws/video/977551207): Assets Deep Dive; **Participants:** @NetaNir, @eladb, @jogold
+  * [S1E6](https://www.twitch.tv/aws/video/1005334364): Best Practices; **Participants:** @skinny85, @eladb, @rix0rrr, @alexpulver
+  * [S1E7](https://www.twitch.tv/videos/1019059654): Tips and Tricks From The CDK Team; **Participants:** All the CDK team! 
 * [Examples](https://github.com/aws-samples/aws-cdk-examples)
 * [Changelog](./CHANGELOG.md)
 * [NOTICE](./NOTICE)
