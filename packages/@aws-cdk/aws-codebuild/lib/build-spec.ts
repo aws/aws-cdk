@@ -121,37 +121,36 @@ export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
     throw new Error('Only one build spec is allowed to specify artifacts.');
   }
 
-  const merged = mergeDeep(lhs.spec, rhs.spec);
+  const lhsSpec = JSON.parse(JSON.stringify(lhs.spec));
+  const rhsSpec = JSON.parse(JSON.stringify(rhs.spec));
+
+  const merged = mergeDeep(lhsSpec, rhsSpec);
 
   // In case of test reports we replace the whole object with the RHS (instead of recursively merging)
-  if (lhs.spec.reports && rhs.spec.reports) {
-    merged.reports = { ...lhs.spec.reports, ...rhs.spec.reports };
+  if (lhsSpec.reports && rhsSpec.reports) {
+    merged.reports = { ...lhsSpec.reports, ...rhsSpec.reports };
   }
 
   return new ObjectBuildSpec(merged);
 }
 
 function mergeDeep(lhs: any, rhs: any): any {
-  lhs = JSON.parse(JSON.stringify(lhs));
-
-  const isObject = (obj: any) => obj && typeof obj === 'object';
-
-  if (!isObject(lhs) || !isObject(rhs)) {
+  if (Array.isArray(lhs) && Array.isArray(rhs)) {
+    return [...lhs, ...rhs];
+  }
+  if (Array.isArray(lhs) || Array.isArray(rhs)) {
     return rhs;
   }
 
-  Object.keys(rhs).forEach(key => {
-    const leftValue = lhs[key];
-    const rightValue = rhs[key];
+  const isObject = (obj: any) => obj && typeof obj === 'object';
 
-    if (Array.isArray(leftValue) && Array.isArray(rightValue)) {
-      lhs[key] = leftValue.concat(rightValue);
-    } else if (isObject(leftValue) && isObject(rightValue)) {
-      lhs[key] = mergeDeep(Object.assign({}, leftValue), rightValue);
-    } else {
-      lhs[key] = rightValue;
+  if (isObject(lhs) && isObject(rhs)) {
+    const ret: any = { ...lhs };
+    for (const k of Object.keys(rhs)) {
+      ret[k] = k in lhs ? mergeDeep(lhs[k], rhs[k]) : rhs[k];
     }
-  });
+    return ret;
+  }
 
-  return lhs;
+  return rhs;
 };
