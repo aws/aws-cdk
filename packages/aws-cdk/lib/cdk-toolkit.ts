@@ -109,7 +109,7 @@ export class CdkToolkit {
       }
     }
 
-    return diffs && options.fail ? 1 : 0;
+    return diffs && (options.fail || options.securityCheckOnly) ? 1 : 0;
   }
 
   public async deploy(options: DeployOptions) {

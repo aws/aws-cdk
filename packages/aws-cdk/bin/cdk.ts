@@ -261,6 +261,7 @@ async function initCommandLine() {
           templatePath: args.template,
           strict: args.strict,
           contextLines: args.contextLines,
+          securityCheckOnly: args.securityCheckOnly,
           fail: args.fail || !enableDiffNoFail,
         });
 
