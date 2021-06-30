@@ -1,3 +1,27 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function CodeUri.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Serverless::Function Handler.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Serverless::Function Runtime.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+
 # CloudFormation Resource Specification v39.3.0
 
 ## New Resource Types
