@@ -154,7 +154,7 @@ this capability, please see the
 
 ## More Resources
 * [CDK Workshop](https://cdkworkshop.com/)
-* **CDK Construction Zone** - A Twitch live coding series hosted by the CDK team, season one episodes:
+* **[CDK Construction Zone](https://www.twitch.tv/collections/9kCOGphNZBYVdA)** - A Twitch live coding series hosted by the CDK team, season one episodes:
   * Triggers: See how we have implemented [Triggers](https://github.com/aws/aws-cdk-rfcs/issues/71), which allows triggering deploy time actions. Episodes 1-3:
     * [S1E1](https://www.twitch.tv/videos/917691798): Triggers (part 1); **Participants:** @NetaNir, @eladb, @richardhboyd
     * [S1E2](https://www.twitch.tv/videos/925801382): Triggers (part 2); **Participants:** @NetaNir, @eladb, @iliapolo 
