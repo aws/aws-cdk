@@ -11,7 +11,7 @@ import { instanceMockFrom, MockCloudExecutable } from './util';
 
 class TestDifferenceFormatter extends DifferenceFormatter {
   formatDifferences(): void {
-    this.formatSecurityChanges()
+    this.formatSecurityChanges();
     this.stream.write('This is TestDifferenceFormatter.formatDifferences');
     this.stream.write(JSON.stringify(this.templateDiff));
     this.stream.write(JSON.stringify(this.logicalToPathMap));
