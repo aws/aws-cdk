@@ -161,12 +161,6 @@ export class S3Schema extends SchemaImpl {
 
   public bind(api: GraphqlApi): CfnGraphQLSchema {
     if (!this._schema) {
-      // this._schema = new CfnGraphQLSchema(api, 'Schema', {
-      //   apiId: api.apiId,
-      //   definitionS3Location: Lazy.string({
-      //     produce: () => this.bucket.s3UrlForObject(this.key),
-      //   }),
-      // });
       this._schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
         definitionS3Location: this.bucket.s3UrlForObject(this.key),
