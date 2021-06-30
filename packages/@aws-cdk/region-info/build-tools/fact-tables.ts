@@ -158,3 +158,53 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'us-west-1': '840364872350',
   'us-west-2': '840364872350',
 };
+
+// https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#using-iam-rs-vpc
+export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
+  'us-east-1': '52.70.63.192',
+  'us-east-2': '13.58.135.96',
+  'us-west-1': '13.57.135.192',
+  'us-west-2': '52.89.255.224',
+  // TODO: the rest of the regions
+  /*'': '18.253.138.96', //for AWS GovCloud (US-East)
+'': '52.61.204.160', //for AWS GovCloud (US-West)
+
+'': '35.183.92.128', //for Canada (Central)
+
+'': '18.162.221.32', //for Asia Pacific (Hong Kong)
+
+'': '13.232.67.32', //for Asia Pacific (Mumbai)
+
+'': '13.209.1.64', //for Asia Pacific (Seoul)
+
+'': '13.228.64.192', //for Asia Pacific (Singapore)
+
+'': '13.210.67.224', //for Asia Pacific (Sydney)
+
+'': '13.113.196.224', //for Asia Pacific (Tokyo)
+
+'': '52.81.151.32', //for China (Beijing)
+
+'': '161.189.23.64', //for China (Ningxia)
+
+'': '35.158.127.160', //for Europe (Frankfurt)
+
+'': '52.19.239.192', //for Europe (Ireland)
+
+'': '18.130.1.96', //for Europe (London)
+
+'': '35.180.1.96', //for Europe (Paris)
+
+'': '13.53.63.224', //for Europe (Stockholm)
+
+'': '15.185.91.0', //for Middle East (Bahrain)
+
+'': '18.228.1.128', //for South America (São Paulo)
+
+'': '15.161.135.128', //for Europe (Milan)
+
+'': '13.244.121.224', //for Africa (Cape Town)
+
+'': '13.208.177.192', //for Asia Pacific (Osaka)
+*/
+};
