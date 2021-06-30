@@ -540,7 +540,7 @@ describe('pipeline with single asset publisher', () => {
           BuildSpec: 'buildspec-assets-PipelineStack-Cdk-Assets-FileAsset.yaml',
         },
       });
-      expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      expect(otherPipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
         Source: {
           BuildSpec: 'buildspec-assets-OtherPipelineStack-Cdk-Assets-FileAsset.yaml',
         },
