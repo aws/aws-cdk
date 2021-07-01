@@ -12,7 +12,9 @@ let stack: cdk.Stack;
 
 beforeEach(() => {
   app = new cdk.App();
-  stack = new cdk.Stack(app);
+  stack = new cdk.Stack(app, 'Stack', {
+    env: { account: '0123456789012', region: 'eu-west-1' },
+  });
 });
 
 describe('ExternalDockerCredential', () => {
