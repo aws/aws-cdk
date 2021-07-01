@@ -116,11 +116,12 @@ test('esbuild with Windows paths', () => {
   // Mock path.basename() because it cannot extract the basename of a Windows
   // path when running on Linux
   jest.spyOn(path, 'basename').mockReturnValueOnce('package-lock.json');
+  jest.spyOn(path, 'relative').mockReturnValueOnce('lib\\entry.ts').mockReturnValueOnce('package-lock.json');
 
   Bundling.bundle({
     entry: 'C:\\my-project\\lib\\entry.ts',
     runtime: Runtime.NODEJS_12_X,
-    projectRoot,
+    projectRoot: 'C:\\my-project',
     depsLockFilePath: 'C:\\my-project\\package-lock.json',
     forceDockerBundling: true,
   });
@@ -394,19 +395,19 @@ test('with command hooks', () => {
 test('esbuild bundling with projectRoot', () => {
   Bundling.bundle({
     entry: '/project/lib/index.ts',
-    projectRoot: '/project/lib',
+    projectRoot: '/project',
     depsLockFilePath,
     tsconfig,
     runtime: Runtime.NODEJS_12_X,
   });
 
   // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project/lib', {
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/index.ts" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --tsconfig=/asset-input/custom-tsconfig.ts',
+        'esbuild --bundle "/asset-input/lib/index.ts" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
       ],
     }),
   });

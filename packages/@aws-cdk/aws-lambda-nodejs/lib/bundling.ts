@@ -64,7 +64,7 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
   private readonly relativeTsconfigPath?: string;
-  private readonly relativeDepsLockFilePath?: string;
+  private readonly relativeDepsLockFilePath: string;
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
 
@@ -75,13 +75,14 @@ export class Bundling implements cdk.BundlingOptions {
 
     this.projectRoot = props.projectRoot;
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
+    this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
+
+    if (this.relativeDepsLockFilePath.includes('..')) {
+      throw new Error(`Expected depsLockFilePath: ${props.depsLockFilePath} to be under projectRoot: ${this.projectRoot} (${this.relativeDepsLockFilePath})`);
+    }
 
     if (props.tsconfig) {
       this.relativeTsconfigPath = path.relative(this.projectRoot, path.resolve(props.tsconfig));
-    }
-
-    if (props.depsLockFilePath) {
-      this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
     }
 
     this.externals = [
