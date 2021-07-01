@@ -107,7 +107,7 @@ def handler(event, context):
 
         cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id, responseData={
             # Passing through the ARN sequences dependencees on the deployment
-            'DestinationBucketArn': props['PassThroughBucketArn']
+            'DestinationBucketArn': props.get('PassThroughBucketArn')
         })
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
