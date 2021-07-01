@@ -186,6 +186,8 @@ export interface BucketDeploymentProps {
  * other S3 buckets or from local disk
  */
 export class BucketDeployment extends CoreConstruct {
+  public readonly deployedBucket: s3.IBucket;
+
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
@@ -221,7 +223,7 @@ export class BucketDeployment extends CoreConstruct {
       }));
     }
 
-    new cdk.CustomResource(this, 'CustomResource', {
+    const deployment = cdk.CustomResource(this, 'CustomResource', {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
@@ -235,9 +237,12 @@ export class BucketDeployment extends CoreConstruct {
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
+        // Passing through the ARN sequences dependencees on the deployment
+        PassThroughBucketArn: props.destinationBucket.bucketArn,
       },
     });
 
+    this.deployedBucket = s3.Bucket.fromBucketArn(this, 'DestinationBucket', deployment.getAtt('DestinationBucketArn'));
   }
 
   private renderSingletonUuid(memoryLimit?: number) {
