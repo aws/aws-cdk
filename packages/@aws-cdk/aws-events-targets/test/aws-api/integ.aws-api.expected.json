@@ -29,7 +29,26 @@
         ]
       }
     },
-    "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRule51140722763E20C1": {
+    "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898874A4805": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ScheduleRuleDA5BD877",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C0179F894": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -115,7 +134,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters4e52413f31cff0a335f5083fa6197a6cb61928644842d89026c42c2d2a98342eS3Bucket38E36746"
+            "Ref": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3BucketEBC7D1F4"
           },
           "S3Key": {
             "Fn::Join": [
@@ -128,7 +147,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters4e52413f31cff0a335f5083fa6197a6cb61928644842d89026c42c2d2a98342eS3VersionKeyFB07730C"
+                          "Ref": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3VersionKeyDC9DCE00"
                         }
                       ]
                     }
@@ -141,7 +160,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters4e52413f31cff0a335f5083fa6197a6cb61928644842d89026c42c2d2a98342eS3VersionKeyFB07730C"
+                          "Ref": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3VersionKeyDC9DCE00"
                         }
                       ]
                     }
@@ -151,13 +170,13 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x"
       },
       "DependsOn": [
@@ -198,7 +217,7 @@
         ]
       }
     },
-    "PatternRuleAllowEventRuleawscdkawsapitargetintegPatternRule3D388581AA4F776B": {
+    "PatternRuleAllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464BB49C5D3": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -219,17 +238,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters4e52413f31cff0a335f5083fa6197a6cb61928644842d89026c42c2d2a98342eS3Bucket38E36746": {
+    "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3BucketEBC7D1F4": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"4e52413f31cff0a335f5083fa6197a6cb61928644842d89026c42c2d2a98342e\""
+      "Description": "S3 bucket for asset \"6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94\""
     },
-    "AssetParameters4e52413f31cff0a335f5083fa6197a6cb61928644842d89026c42c2d2a98342eS3VersionKeyFB07730C": {
+    "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3VersionKeyDC9DCE00": {
       "Type": "String",
-      "Description": "S3 key for asset version \"4e52413f31cff0a335f5083fa6197a6cb61928644842d89026c42c2d2a98342e\""
+      "Description": "S3 key for asset version \"6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94\""
     },
-    "AssetParameters4e52413f31cff0a335f5083fa6197a6cb61928644842d89026c42c2d2a98342eArtifactHash3C551617": {
+    "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94ArtifactHash34B6F705": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"4e52413f31cff0a335f5083fa6197a6cb61928644842d89026c42c2d2a98342e\""
+      "Description": "Artifact hash for asset \"6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94\""
     }
   }
 }

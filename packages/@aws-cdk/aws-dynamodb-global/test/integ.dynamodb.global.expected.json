@@ -196,15 +196,16 @@
               ]
             }
           },
-          "Handler": "index.handler",
           "Role": {
             "Fn::GetAtt": [
               "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleD9686810",
               "Arn"
             ]
           },
-          "Runtime": "nodejs10.x",
+          "Runtime": "nodejs14.x",
           "Description": "Lambda to make DynamoDB a global table",
+          "Handler": "index.handler",
+          "Runtime": "nodejs14.x",
           "Timeout": 300
         },
         "DependsOn": [

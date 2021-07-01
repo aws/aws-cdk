@@ -53,6 +53,8 @@ behavior:
 * __receiveMessageWaitTime__: Will determine [long
   poll](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html)
   duration. The default value is 20 seconds.
+* __batchSize__: Determines how many records are buffered before invoking your lambda function.
+* __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
 * __enabled__: If the SQS event source mapping should be enabled. The default is true.
 
 ```ts
@@ -67,6 +69,7 @@ const queue = new sqs.Queue(this, 'MyQueue', {
 
 lambda.addEventSource(new SqsEventSource(queue, {
   batchSize: 10, // default
+  maxBatchingWindow: Duration.minutes(5),
 }));
 ```
 
@@ -142,12 +145,14 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 
 * __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
 * __bisectBatchOnError__: If a batch encounters an error, this will cause the batch to be split in two and have each new smaller batch retried, allowing the records in error to be isolated.
+* __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
 * __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
 * __onFailure__: In the event a record fails after all retries or if the record age has exceeded the configured value, the record will be sent to SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
+* __tumblingWindow__: The duration in seconds of a processing window when using streams.
 * __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
 
 ```ts
@@ -186,12 +191,14 @@ behavior:
 
 * __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
 * __bisectBatchOnError__: If a batch encounters an error, this will cause the batch to be split in two and have each new smaller batch retried, allowing the records in error to be isolated.
+* __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
 * __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
 * __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
+* __tumblingWindow__: The duration in seconds of a processing window when using streams.
 * __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
 
 ```ts
@@ -206,6 +213,66 @@ myFunction.addEventSource(new KinesisEventSource(stream, {
   startingPosition: lambda.StartingPosition.TRIM_HORIZON
 }));
 ```
+
+## Kafka
+
+You can write Lambda functions to process data either from [Amazon MSK](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html) or a [self managed Kafka](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html) cluster.
+
+The following code sets up Amazon MSK as an event source for a lambda function. Credentials will need to be configured to access the
+MSK cluster, as described in [Username/Password authentication](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html).
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as msk from '@aws-cdk/aws-lambda';
+import { Secret } from '@aws-cdk/aws-secretmanager';
+import { ManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
+
+// Your MSK cluster arn
+const cluster = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic'
+
+// The secret that allows access to your MSK cluster
+// You still have to make sure that it is associated with your cluster as described in the documentation
+const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic: topic,
+  secret: secret,
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+}));
+```
+
+The following code sets up a self managed Kafka cluster as an event source. Username and password based authentication
+will need to be set up as described in [Managing access and permissions](https://docs.aws.amazon.com/lambda/latest/dg/smaa-permissions.html#smaa-permissions-add-secret).
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import { Secret } from '@aws-cdk/aws-secretmanager';
+import { SelfManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
+
+// The list of Kafka brokers
+const bootstrapServers = ['kafka-broker:9092']
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic'
+
+// The secret that allows access to your self hosted Kafka cluster
+const secret = new Secret(this, 'Secret', { ... });
+
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers: bootstrapServers,
+  topic: topic,
+  secret: secret,
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+}));
+```
+
+If your self managed Kafka cluster is only reachable via VPC also configure `vpc` `vpcSubnets` and `securityGroup`.
 
 ## Roadmap
 

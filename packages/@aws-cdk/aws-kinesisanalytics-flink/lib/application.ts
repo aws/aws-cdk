@@ -210,7 +210,6 @@ class Import extends ApplicationBase {
  *
  * @resource AWS::KinesisAnalyticsV2::Application
  *
- * @experimental
  */
 export class Application extends ApplicationBase {
   /**
@@ -263,6 +262,7 @@ export class Application extends ApplicationBase {
     code.bucket.grantRead(this);
 
     const resource = new ka.CfnApplicationV2(this, 'Resource', {
+      applicationName: props.applicationName,
       runtimeEnvironment: props.runtime.value,
       serviceExecutionRole: this.role.roleArn,
       applicationConfiguration: {

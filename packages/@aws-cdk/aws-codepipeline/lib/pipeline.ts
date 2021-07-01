@@ -1,3 +1,4 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -7,7 +8,7 @@ import {
   IStackSynthesizer, Lazy, Names, PhysicalName, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ActionCategory, IAction, IPipeline, IStage } from './action';
+import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
 import { FullActionDescriptor } from './private/full-action-descriptor';
@@ -97,7 +98,6 @@ export interface PipelineProps {
    * the construct will automatically create a Stack containing an S3 Bucket in that region.
    *
    * @default - None.
-   * @experimental
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
 
@@ -163,6 +163,89 @@ abstract class PipelineBase extends Resource implements IPipeline {
     return rule;
   }
 
+  public bindAsNotificationRuleSource(_scope: Construct): notifications.NotificationRuleSourceConfig {
+    return {
+      sourceArn: this.pipelineArn,
+    };
+  }
+
+  public notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: PipelineNotifyOnOptions,
+  ): notifications.INotificationRule {
+    return new notifications.NotificationRule(this, id, {
+      ...options,
+      source: this,
+      targets: [target],
+    });
+  }
+
+  public notifyOnExecutionStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [
+        PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_CANCELED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_STARTED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_RESUMED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_SUCCEEDED,
+        PipelineNotificationEvents.PIPELINE_EXECUTION_SUPERSEDED,
+      ],
+    });
+  }
+
+  public notifyOnAnyStageStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [
+        PipelineNotificationEvents.STAGE_EXECUTION_CANCELED,
+        PipelineNotificationEvents.STAGE_EXECUTION_FAILED,
+        PipelineNotificationEvents.STAGE_EXECUTION_RESUMED,
+        PipelineNotificationEvents.STAGE_EXECUTION_STARTED,
+        PipelineNotificationEvents.STAGE_EXECUTION_SUCCEEDED,
+      ],
+    });
+  }
+
+  public notifyOnAnyActionStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [
+        PipelineNotificationEvents.ACTION_EXECUTION_CANCELED,
+        PipelineNotificationEvents.ACTION_EXECUTION_FAILED,
+        PipelineNotificationEvents.ACTION_EXECUTION_STARTED,
+        PipelineNotificationEvents.ACTION_EXECUTION_SUCCEEDED,
+      ],
+    });
+  }
+
+  public notifyOnAnyManualApprovalStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [
+        PipelineNotificationEvents.MANUAL_APPROVAL_FAILED,
+        PipelineNotificationEvents.MANUAL_APPROVAL_NEEDED,
+        PipelineNotificationEvents.MANUAL_APPROVAL_SUCCEEDED,
+      ],
+    });
+  }
 }
 
 /**
@@ -348,7 +431,7 @@ export class Pipeline extends PipelineBase {
    * Adds a statement to the pipeline role.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -386,7 +469,6 @@ export class Pipeline extends PipelineBase {
    * Returns all of the {@link CrossRegionSupportStack}s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
    *
-   * @experimental
    */
   public get crossRegionSupport(): { [region: string]: CrossRegionSupport } {
     const ret: { [region: string]: CrossRegionSupport } = {};
@@ -584,7 +666,7 @@ export class Pipeline extends PipelineBase {
 
     // the pipeline role needs assumeRole permissions to the action role
     if (actionRole) {
-      this.role.addToPolicy(new iam.PolicyStatement({
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['sts:AssumeRole'],
         resources: [actionRole.roleArn],
       }));
@@ -662,35 +744,51 @@ export class Pipeline extends PipelineBase {
    * @param action the Action to return the Stack for
    */
   private getOtherStackIfActionIsCrossAccount(action: IAction): Stack | undefined {
-    const pipelineStack = Stack.of(this);
+    const targetAccount = action.actionProperties.resource
+      ? action.actionProperties.resource.env.account
+      : action.actionProperties.account;
 
-    if (action.actionProperties.resource) {
-      const resourceStack = Stack.of(action.actionProperties.resource);
-      // check if resource is from a different account
-      if (pipelineStack.account === resourceStack.account) {
+    if (targetAccount === undefined) {
+      // if the account of the Action is not specified,
+      // then it defaults to the same account the pipeline itself is in
+      return undefined;
+    }
+
+    // check whether the action's account is a static string
+    if (Token.isUnresolved(targetAccount)) {
+      if (Token.isUnresolved(this.env.account)) {
+        // the pipeline is also env-agnostic, so that's fine
         return undefined;
       } else {
-        this._crossAccountSupport[resourceStack.account] = resourceStack;
-        return resourceStack;
+        throw new Error(`The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`);
       }
     }
 
-    if (!action.actionProperties.account) {
-      return undefined;
-    }
-
-    const targetAccount = action.actionProperties.account;
-    // check whether the account is a static string
-    if (Token.isUnresolved(targetAccount)) {
-      throw new Error(`The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`);
-    }
-    // check whether the pipeline account is a static string
-    if (Token.isUnresolved(pipelineStack.account)) {
+    // At this point, we know that the action's account is a static string.
+    // In this case, the pipeline's account must also be a static string.
+    if (Token.isUnresolved(this.env.account)) {
       throw new Error('Pipeline stack which uses cross-environment actions must have an explicitly set account');
     }
 
-    if (pipelineStack.account === targetAccount) {
+    // at this point, we know that both the Pipeline's account,
+    // and the action-backing resource's account are static strings
+
+    // if they are identical - nothing to do (the action is not cross-account)
+    if (this.env.account === targetAccount) {
       return undefined;
+    }
+
+    // at this point, we know that the action is certainly cross-account,
+    // so we need to return a Stack in its account to create the helper Role in
+
+    const candidateActionResourceStack = action.actionProperties.resource
+      ? Stack.of(action.actionProperties.resource)
+      : undefined;
+    if (candidateActionResourceStack?.account === targetAccount) {
+      // we always use the "latest" action-backing resource's Stack for this account,
+      // even if a different one was used earlier
+      this._crossAccountSupport[targetAccount] = candidateActionResourceStack;
+      return candidateActionResourceStack;
     }
 
     let targetAccountStack: Stack | undefined = this._crossAccountSupport[targetAccount];
@@ -699,11 +797,15 @@ export class Pipeline extends PipelineBase {
       const app = this.requireApp();
       targetAccountStack = app.node.tryFindChild(stackId) as Stack;
       if (!targetAccountStack) {
+        const actionRegion = action.actionProperties.resource
+          ? action.actionProperties.resource.env.region
+          : action.actionProperties.region;
+        const pipelineStack = Stack.of(this);
         targetAccountStack = new Stack(app, stackId, {
           stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
           env: {
             account: targetAccount,
-            region: action.actionProperties.region ? action.actionProperties.region : pipelineStack.region,
+            region: actionRegion ?? pipelineStack.region,
           },
         });
       }
@@ -916,7 +1018,6 @@ export class Pipeline extends PipelineBase {
  * the cross-region capabilities of CodePipeline.
  * You get instances of this interface from the {@link Pipeline#crossRegionSupport} property.
  *
- * @experimental
  */
 export interface CrossRegionSupport {
   /**

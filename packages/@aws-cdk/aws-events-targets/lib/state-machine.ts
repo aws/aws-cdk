@@ -1,12 +1,12 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { singletonEventRole } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Customize the Step Functions State Machine target
  */
-export interface SfnStateMachineProps {
+export interface SfnStateMachineProps extends TargetBaseProps {
   /**
    * The input to the state machine execution
    *
@@ -43,8 +43,12 @@ export class SfnStateMachine implements events.IRuleTarget {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sns-permissions
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+    if (this.props.deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
+    }
+
     return {
-      id: '',
+      ...bindBaseTargetConfig(this.props),
       arn: this.machine.stateMachineArn,
       role: this.role,
       input: this.props.input,

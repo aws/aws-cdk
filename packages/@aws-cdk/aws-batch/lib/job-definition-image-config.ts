@@ -37,7 +37,7 @@ class TaskDefinition {
   }
 
   /**
-   * Internal function to allow the Batch Job task defintion
+   * Internal function to allow the Batch Job task definition
    * to match the CDK requirements of an EC2 task definition.
    *
    * @internal

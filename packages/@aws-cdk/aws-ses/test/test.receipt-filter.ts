@@ -1,7 +1,7 @@
-import { expect } from '@aws-cdk/assert';
+import { expect } from '@aws-cdk/assert-internal';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ReceiptFilter, ReceiptFilterPolicy, WhiteListReceiptFilter } from '../lib';
+import { AllowListReceiptFilter, ReceiptFilter, ReceiptFilterPolicy } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -38,12 +38,12 @@ export = {
     test.done();
   },
 
-  'can create a white list filter'(test: Test) {
+  'can create an allow list filter'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    new WhiteListReceiptFilter(stack, 'WhiteList', {
+    new AllowListReceiptFilter(stack, 'AllowList', {
       ips: [
         '10.0.0.0/16',
         '1.2.3.4',
@@ -53,7 +53,7 @@ export = {
     // THEN
     expect(stack).toMatch({
       'Resources': {
-        'WhiteListBlockAllAE2CDDFF': {
+        'AllowListBlockAll094C9B97': {
           'Type': 'AWS::SES::ReceiptFilter',
           'Properties': {
             'Filter': {
@@ -64,7 +64,7 @@ export = {
             },
           },
         },
-        'WhiteListAllow1000016F396A7F2': {
+        'AllowListAllow10000164654C092': {
           'Type': 'AWS::SES::ReceiptFilter',
           'Properties': {
             'Filter': {
@@ -75,7 +75,7 @@ export = {
             },
           },
         },
-        'WhiteListAllow1234A4DDAD4E': {
+        'AllowListAllow12345BCAE5C3': {
           'Type': 'AWS::SES::ReceiptFilter',
           'Properties': {
             'Filter': {

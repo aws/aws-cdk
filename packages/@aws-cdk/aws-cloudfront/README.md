@@ -282,7 +282,7 @@ The following shows a Lambda@Edge function added to the default behavior and tri
 
 ```ts
 const myFunc = new cloudfront.experimental.EdgeFunction(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -310,7 +310,7 @@ If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead
 
 ```ts
 const myFunc = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -321,14 +321,14 @@ you can also set a specific stack ID for each Lambda@Edge.
 
 ```ts
 const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler1')),
   stackId: 'edge-lambda-stack-id-1'
 });
 
 const myFunc2 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction2', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler2')),
   stackId: 'edge-lambda-stack-id-2'
@@ -385,6 +385,30 @@ new cloudfront.Distribution(this, 'distro', {
   },
 });
 ```
+
+### CloudFront Function
+
+You can also deploy CloudFront functions and add them to a CloudFront distribution.
+
+```ts
+const cfFunction = new cloudfront.Function(stack, 'Function', {
+  code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
+});
+
+new cloudfront.Distribution(stack, 'distro', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(s3Bucket),
+    functionAssociations: [{
+      function: cfFunction,
+      eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+    }],
+  },
+});
+```
+
+It will auto-generate the name of the function and deploy it to the `live` stage.
+
+Additionally, you can load the function's code from a file using the `FunctionCode.fromFile()` method.
 
 ### Logging
 

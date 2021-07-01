@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import * as apigw from '../lib';
@@ -1067,6 +1067,20 @@ describe('restapi', () => {
       // THEN
       expect(countMetric.metricName).toEqual('Latency');
       expect(countMetric.color).toEqual(color);
+    });
+  });
+
+  test('"disableExecuteApiEndpoint" can disable the default execute-api endpoint', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'my-api', { disableExecuteApiEndpoint: true });
+    api.root.addMethod('GET');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
+      DisableExecuteApiEndpoint: true,
     });
   });
 });

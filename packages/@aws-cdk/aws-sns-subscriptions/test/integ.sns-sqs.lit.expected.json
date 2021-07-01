@@ -4,7 +4,9 @@
       "Type": "AWS::SNS::Topic"
     },
     "MyQueueE6CA6235": {
-      "Type": "AWS::SQS::Queue"
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyQueuePolicy6BBEDDAC": {
       "Type": "AWS::SQS::QueuePolicy",
@@ -66,8 +68,8 @@
     },
     "DeadLetterQueue9F481546": {
       "Type": "AWS::SQS::Queue",
-      "Properties": {
-      }
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DeadLetterQueuePolicyB1FB890C": {
       "Type": "AWS::SQS::QueuePolicy",

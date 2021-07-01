@@ -76,11 +76,13 @@ import * as s3 from '@aws-cdk/aws-s3';
 const bucket = new s3.Bucket(this, 'MyBucket');
 new codebuild.Project(this, 'MyProject', {
   source: codebuild.Source.s3({
-    bucket,
+    bucket: bucket,
     path: 'path/to/file.zip',
   }),
 });
 ```
+
+The CodeBuild role will be granted to read just the given path from the given `bucket`.
 
 ### `GitHubSource` and `GitHubEnterpriseSource`
 
@@ -151,6 +153,9 @@ const project = codebuild.Project(stack, 'MyProject', {
     }),
 });
 ```
+
+If you'd prefer your buildspec to be rendered as YAML in the template,
+use the `fromObjectToYaml()` method instead of `fromObject()`.
 
 Because we've not set the `name` property, this example will set the
 `overrideArtifactName` parameter, and produce an artifact named as defined in
@@ -463,6 +468,21 @@ const rule = project.onStateChange('BuildStateChange', {
 });
 ```
 
+## CodeStar Notifications
+
+To define CodeStar Notification rules for Projects, use one of the `notifyOnXxx()` methods.
+They are very similar to `onXxx()` methods for CloudWatch events:
+
+```ts
+const target = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+});
+
+const rule = project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', target);
+```
+
 ## Secondary sources and artifacts
 
 CodeBuild Projects can get their sources from multiple places, and produce
@@ -616,4 +636,46 @@ const project = new codebuild.Project(this, 'MyProject', { ... });
 if (project.enableBatchBuilds()) {
   console.log('Batch builds were enabled');
 }
+```
+
+## Timeouts
+
+There are two types of timeouts that can be set when creating your Project.
+The `timeout` property can be used to set an upper limit on how long your Project is able to run without being marked as completed.
+The default is 60 minutes.
+An example of overriding the default follows.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+new codebuild.Project(stack, 'MyProject', {
+  timeout: Duration.minutes(90)
+});
+```
+
+The `queuedTimeout` property can be used to set an upper limit on how your Project remains queued to run.
+There is no default value for this property.
+As an example, to allow your Project to queue for up to thirty (30) minutes before the build fails,
+use the following code.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+new codebuild.Project(stack, 'MyProject', {
+  queuedTimeout: Duration.minutes(30)
+});
+```
+
+## Limiting concurrency
+
+By default if a new build is triggered it will be run even if there is a previous build already in progress.
+It is possible to limit the maximum concurrent builds to value between 1 and the account specific maximum limit.
+By default there is no explicit limit.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+new codebuild.Project(stack, 'MyProject', {
+  concurrentBuildLimit: 1
+});
 ```

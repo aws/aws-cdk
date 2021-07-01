@@ -1,4 +1,4 @@
-import { Token } from './token';
+import { Token, Tokenization } from './token';
 
 /**
  * Represents a length of time.
@@ -252,6 +252,28 @@ export class Duration {
     }
     return ret;
   }
+
+  /**
+   * Checks if duration is a token or a resolvable object
+   */
+  public isUnresolved() {
+    return Token.isUnresolved(this.amount);
+  }
+
+  /**
+   * Returns unit of the duration
+   */
+  public unitLabel() {
+    return this.unit.label;
+  }
+
+  /**
+   * Returns stringified number of duration
+   */
+  public formatTokenToNumber(): string {
+    const number = Tokenization.stringifyNumber(this.amount);
+    return `${number} ${this.unit.label}`;
+  }
 }
 
 /**
@@ -287,12 +309,11 @@ class TimeUnit {
 
 function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integral = true }: TimeConversionOptions) {
   if (fromUnit.inMillis === toUnit.inMillis) { return amount; }
-  const multiplier = fromUnit.inMillis / toUnit.inMillis;
 
   if (Token.isUnresolved(amount)) {
     throw new Error(`Unable to perform time unit conversion on un-resolved token ${amount}.`);
   }
-  const value = amount * multiplier;
+  const value = (amount * fromUnit.inMillis) / toUnit.inMillis;
   if (!Number.isInteger(value) && integral) {
     throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
   }

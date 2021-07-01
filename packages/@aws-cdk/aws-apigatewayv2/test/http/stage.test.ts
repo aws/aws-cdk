@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { HttpApi, HttpStage } from '../../lib';
@@ -16,7 +16,7 @@ describe('HttpStage', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
-      ApiId: stack.resolve(api.httpApiId),
+      ApiId: stack.resolve(api.apiId),
       StageName: '$default',
     });
   });
@@ -31,7 +31,10 @@ describe('HttpStage', () => {
       httpApi: api,
     });
 
-    const imported = HttpStage.fromStageName(stack, 'Import', stage.stageName );
+    const imported = HttpStage.fromHttpStageAttributes(stack, 'Import', {
+      stageName: stage.stageName,
+      api,
+    });
 
     expect(imported.stageName).toEqual(stage.stageName);
   });
@@ -64,9 +67,9 @@ describe('HttpStage', () => {
     const stage = new HttpStage(stack, 'Stage', {
       httpApi: api,
     });
-    const metricName = '4xxError';
+    const metricName = '4xx';
     const statistic = 'Sum';
-    const apiId = api.httpApiId;
+    const apiId = api.apiId;
 
     // WHEN
     const countMetric = stage.metric(metricName, { statistic });
@@ -91,7 +94,7 @@ describe('HttpStage', () => {
       httpApi: api,
     });
     const color = '#00ff00';
-    const apiId = api.httpApiId;
+    const apiId = api.apiId;
 
     // WHEN
     const metrics = new Array<Metric>();
@@ -110,5 +113,7 @@ describe('HttpStage', () => {
       });
       expect(metric.color).toEqual(color);
     }
+    const metricNames = metrics.map(m => m.metricName);
+    expect(metricNames).toEqual(['4xx', '5xx', 'DataProcessed', 'Latency', 'IntegrationLatency', 'Count']);
   });
 });

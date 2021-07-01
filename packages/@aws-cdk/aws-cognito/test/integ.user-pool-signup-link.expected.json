@@ -85,7 +85,9 @@
           "EmailSubjectByLink": "integ-test: Verify your account",
           "SmsMessage": "integ-test: Account verification code is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "myuserpoolmyuserpooldomainEE1E11AF": {
       "Type": "AWS::Cognito::UserPoolDomain",

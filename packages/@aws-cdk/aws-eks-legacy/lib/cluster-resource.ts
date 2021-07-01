@@ -1,8 +1,7 @@
 import * as path from 'path';
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Token } from '@aws-cdk/core';
+import { CustomResource, Duration, Token } from '@aws-cdk/core';
 import { CfnClusterProps } from './eks.generated';
 import { KubectlLayer } from './kubectl-layer';
 
@@ -69,9 +68,9 @@ export class ClusterResource extends Construct {
       resources: [props.roleArn],
     }));
 
-    const resource = new cfn.CustomResource(this, 'Resource', {
+    const resource = new CustomResource(this, 'Resource', {
       resourceType: ClusterResource.RESOURCE_TYPE,
-      provider: cfn.CustomResourceProvider.lambda(handler),
+      serviceToken: handler.functionArn,
       properties: {
         Config: props,
       },

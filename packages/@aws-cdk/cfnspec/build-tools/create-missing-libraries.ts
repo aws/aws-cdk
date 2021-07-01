@@ -154,6 +154,8 @@ async function main() {
         compat: 'cdk-compat',
         gen: 'cfn2ts',
         'rosetta:extract': 'yarn --silent jsii-rosetta extract',
+        'build+extract': 'yarn build && yarn rosetta:extract',
+        'build+test+extract': 'yarn build+test && yarn rosetta:extract',
       },
       'cdk-build': {
         cloudformation: namespace,
@@ -176,7 +178,8 @@ async function main() {
       },
       license: 'Apache-2.0',
       devDependencies: {
-        '@aws-cdk/assert': version,
+        '@types/jest': '^26.0.22',
+        '@aws-cdk/assert-internal': version,
         'cdk-build-tools': version,
         'cfn2ts': version,
         'pkglint': version,
@@ -259,7 +262,7 @@ async function main() {
     ]);
 
     await write(`test/${lowcaseModuleName}.test.ts`, [
-      "import '@aws-cdk/assert/jest';",
+      "import '@aws-cdk/assert-internal/jest';",
       "import {} from '../lib';",
       '',
       "test('No tests are specified for this package', () => {",

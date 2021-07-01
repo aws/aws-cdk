@@ -10,7 +10,6 @@ import { IContainerDefinition } from './base-types';
  * Properties for creating an Amazon SageMaker model
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
- * @experimental
  */
 export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
   /**
@@ -69,7 +68,6 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
  * A Step Functions Task to create a SageMaker model
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
- * @experimental
  */
 export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [

@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveOutput, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect as expectCDK, haveOutput, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -17,7 +17,7 @@ describe('DatabaseInstance', () => {
     // WHEN
     new DatabaseInstance(stack, 'Instance', {
       cluster: stack.cluster,
-      instanceClass: SINGLE_INSTANCE_TYPE,
+      instanceType: SINGLE_INSTANCE_TYPE,
     });
 
     // THEN
@@ -43,7 +43,7 @@ describe('DatabaseInstance', () => {
     // WHEN
     new DatabaseInstance(stack, 'Instance', {
       cluster: stack.cluster,
-      instanceClass: SINGLE_INSTANCE_TYPE,
+      instanceType: SINGLE_INSTANCE_TYPE,
       autoMinorVersionUpgrade: given,
     });
 
@@ -64,7 +64,7 @@ describe('DatabaseInstance', () => {
     const stack = testStack();
     const instance = new DatabaseInstance(stack, 'Instance', {
       cluster: stack.cluster,
-      instanceClass: SINGLE_INSTANCE_TYPE,
+      instanceType: SINGLE_INSTANCE_TYPE,
     });
     const exportName = 'DbInstanceEndpoint';
 
@@ -95,7 +95,7 @@ describe('DatabaseInstance', () => {
     const stack = testStack();
     const instance = new DatabaseInstance(stack, 'Instance', {
       cluster: stack.cluster,
-      instanceClass: SINGLE_INSTANCE_TYPE,
+      instanceType: SINGLE_INSTANCE_TYPE,
     });
     const exportName = 'DbInstanceArn';
 
@@ -182,10 +182,8 @@ class TestStack extends cdk.Stack {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
-      instanceProps: {
-        instanceType: CLUSTER_INSTANCE_TYPE,
-        vpc: this.vpc,
-      },
+      instanceType: CLUSTER_INSTANCE_TYPE,
+      vpc: this.vpc,
     });
   }
 }

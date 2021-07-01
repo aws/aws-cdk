@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
-import { ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
+import { Group, ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
 describe('IAM user', () => {
   test('default user', () => {
@@ -175,6 +175,37 @@ describe('IAM user', () => {
         ],
         Version: '2012-10-17',
       },
+    });
+  });
+
+  test('addToGroup for imported user', () => {
+    // GIVEN
+    const stack = new Stack();
+    const user = User.fromUserName(stack, 'ImportedUser', 'john');
+    const group = new Group(stack, 'Group');
+    const otherGroup = new Group(stack, 'OtherGroup');
+
+    // WHEN
+    user.addToGroup(group);
+    otherGroup.addUser(user);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::UserToGroupAddition', {
+      GroupName: {
+        Ref: 'GroupC77FDACD',
+      },
+      Users: [
+        'john',
+      ],
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::UserToGroupAddition', {
+      GroupName: {
+        Ref: 'OtherGroup85E5C653',
+      },
+      Users: [
+        'john',
+      ],
     });
   });
 });

@@ -37,13 +37,13 @@
         "Code": {
           "ZipFile": "exports.handler = async () => {\n        return {\n          statusCode: '200',\n          body: 'hello, world!'\n        };\n      };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "submitJobLambdaServiceRole4D897ABD",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -87,13 +87,13 @@
         "Code": {
           "ZipFile": "exports.handler = async function(event, context) {\n        return {\n          status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED'\n        };\n  };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "checkJobStateLambdaServiceRoleB8B57B65",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [

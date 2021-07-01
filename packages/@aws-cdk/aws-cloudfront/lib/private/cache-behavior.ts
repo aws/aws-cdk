@@ -50,6 +50,10 @@ export class CacheBehavior {
       originRequestPolicyId: this.props.originRequestPolicy?.originRequestPolicyId,
       smoothStreaming: this.props.smoothStreaming,
       viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
+      functionAssociations: this.props.functionAssociations?.map(association => ({
+        functionArn: association.function.functionArn,
+        eventType: association.eventType.toString(),
+      })),
       lambdaFunctionAssociations: this.props.edgeLambdas?.map(edgeLambda => ({
         lambdaFunctionArn: edgeLambda.functionVersion.edgeArn,
         eventType: edgeLambda.eventType.toString(),

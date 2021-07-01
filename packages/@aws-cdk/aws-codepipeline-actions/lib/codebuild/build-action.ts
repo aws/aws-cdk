@@ -2,7 +2,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { BitBucketSourceAction } from '..';
+import { CodeStarConnectionsSourceAction } from '..';
 import { Action } from '../action';
 import { CodeCommitSourceAction } from '../codecommit/source-action';
 
@@ -180,10 +180,10 @@ export class CodeBuildAction extends Action {
     }
 
     for (const inputArtifact of this.actionProperties.inputs || []) {
-      // if any of the inputs come from the BitBucketSourceAction
+      // if any of the inputs come from the CodeStarConnectionsSourceAction
       // with codeBuildCloneOutput=true,
       // grant the Project's Role to use the connection
-      const connectionArn = inputArtifact.getMetadata(BitBucketSourceAction._CONNECTION_ARN_PROPERTY);
+      const connectionArn = inputArtifact.getMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY);
       if (connectionArn) {
         this.props.project.addToRolePolicy(new iam.PolicyStatement({
           actions: ['codestar-connections:UseConnection'],

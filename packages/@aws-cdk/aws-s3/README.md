@@ -43,7 +43,7 @@ new Bucket(this, 'MyFirstBucket');
 Define a KMS-encrypted bucket:
 
 ```ts
-const bucket = new Bucket(this, 'MyUnencryptedBucket', {
+const bucket = new Bucket(this, 'MyEncryptedBucket', {
     encryption: BucketEncryption.KMS
 });
 
@@ -120,6 +120,18 @@ bucket.grantReadWrite(lambda);
 Will give the Lambda's execution role permissions to read and write
 from the bucket.
 
+## AWS Foundational Security Best Practices
+
+### Enforcing SSL
+
+To require all requests use Secure Socket Layer (SSL):
+
+```ts
+const bucket = new Bucket(this, 'Bucket', {
+    enforceSSL: true
+});
+```
+
 ## Sharing buckets between stacks
 
 To use a bucket in a different stack in the same CDK application, pass the object to the other stack:
@@ -193,6 +205,15 @@ have the `.jpg` suffix are removed from the bucket.
 bucket.addEventNotification(s3.EventType.OBJECT_REMOVED,
   new s3n.SqsDestination(myQueue),
   { prefix: 'foo/', suffix: '.jpg' });
+```
+
+Adding notifications on existing buckets:
+
+```ts
+const bucket = Bucket.fromBucketAttributes(this, 'ImportedBucket', {
+    bucketArn: 'arn:aws:s3:::my-bucket'
+});
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
 
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html

@@ -12,7 +12,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  *
  * @default CONTINUE
  *
- * @experimental
  */
 export enum ActionOnFailure {
   /**
@@ -34,7 +33,6 @@ export enum ActionOnFailure {
 /**
  * Properties for EmrAddStep
  *
- * @experimental
  */
 export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
   /**
@@ -100,7 +98,6 @@ export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
  *
  * OUTPUT: the StepId
  *
- * @experimental
  */
 export class EmrAddStep extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [

@@ -1,8 +1,9 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
 
@@ -80,6 +81,31 @@ export = {
     test.done();
   },
 
+  'test ECS queue worker service construct - with remove default desiredCount feature flag'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+    });
+
+    // THEN - QueueWorker is of EC2 launch type, and desiredCount is not defined on the Ec2Service.
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
+      LaunchType: 'EC2',
+    }));
+
+    test.done();
+  },
+
   'test ECS queue worker service construct - with optional props for queues'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -94,6 +120,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       maxReceiveCount: 42,
       retentionPeriod: cdk.Duration.days(7),
+      visibilityTimeout: cdk.Duration.minutes(5),
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
@@ -112,6 +139,7 @@ export = {
         },
         maxReceiveCount: 42,
       },
+      VisibilityTimeout: 300,
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {
@@ -183,9 +211,8 @@ export = {
       maxHealthyPercent: 150,
       serviceName: 'ecs-test-service',
       family: 'ecs-task-family',
-      deploymentController: {
-        type: ecs.DeploymentControllerType.CODE_DEPLOY,
-      },
+      circuitBreaker: { rollback: true },
+      gpuCount: 256,
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
@@ -194,11 +221,15 @@ export = {
       DeploymentConfiguration: {
         MinimumHealthyPercent: 60,
         MaximumPercent: 150,
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
       },
       LaunchType: 'EC2',
       ServiceName: 'ecs-test-service',
       DeploymentController: {
-        Type: 'CODE_DEPLOY',
+        Type: 'ECS',
       },
     }));
 
@@ -235,6 +266,12 @@ export = {
           ],
           Image: 'test',
           Memory: 1024,
+          ResourceRequirements: [
+            {
+              Type: 'GPU',
+              Value: '256',
+            },
+          ],
         },
       ],
       Family: 'ecs-task-family',

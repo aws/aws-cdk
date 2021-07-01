@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as core from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as rds from '../../lib';

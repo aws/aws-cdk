@@ -1,4 +1,4 @@
-import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
+import { expect, haveResource, matchTemplate } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { CfnParameter, RemovalPolicy, Stack } from '@aws-cdk/core';
@@ -331,6 +331,24 @@ export = {
         ],
         Version: '2012-10-17',
       },
+    }));
+
+    test.done();
+  },
+
+  'correctly returns physical name of the log group'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const logGroup = new LogGroup(stack, 'LogGroup', {
+      logGroupName: 'my-log-group',
+    });
+
+    // THEN
+    test.equal(logGroup.logGroupPhysicalName(), 'my-log-group');
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      LogGroupName: 'my-log-group',
     }));
 
     test.done();

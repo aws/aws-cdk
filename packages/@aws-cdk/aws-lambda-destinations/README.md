@@ -21,7 +21,7 @@ The following destinations are supported
 * SNS topic
 * EventBridge event bus
 
-Example with a SNS topic for sucessful invocations:
+Example with a SNS topic for successful invocations:
 
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';

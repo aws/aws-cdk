@@ -71,6 +71,15 @@ then `Secret.grantRead` and `Secret.grantWrite` will also grant the role the
 relevant encrypt and decrypt permissions to the KMS key through the
 SecretsManager service principal.
 
+The principal is automatically added to Secret resource policy and KMS Key policy for cross account access:
+
+```ts
+const otherAccount = new iam.AccountPrincipal('1234');
+const key = new kms.Key(stack, 'KMS');
+const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
+secret.grantRead(otherAccount);
+```
+
 ## Rotating a Secret
 
 ### Using a Custom Lambda Function
@@ -86,6 +95,8 @@ secret.addRotationSchedule('RotationSchedule', {
   automaticallyAfter: Duration.days(15)
 });
 ```
+
+Note: The required permissions for Lambda to call SecretsManager and the other way round are automatically granted based on [AWS Documentation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-required-permissions.html) as long as the Lambda is not imported.
 
 See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
 
@@ -179,4 +190,29 @@ const mySecretFromAttrs = secretsmanager.Secret.fromSecretAttributes(stack, 'Sec
   secretCompleteArn,
   encryptionKey,
 });
+```
+
+## Replicating secrets
+
+Secrets can be replicated to multiple regions by specifying `replicaRegions`:
+
+```ts
+new secretsmanager.Secret(this, 'Secret', {
+  replicaRegions: [
+    {
+      region: 'eu-west-1',
+    },
+    {
+      region: 'eu-central-1',
+      encryptionKey: myKey,
+    }
+  ]
+});
+```
+
+Alternatively, use `addReplicaRegion()`:
+
+```ts
+const secret = new secretsmanager.Secret(this, 'Secret');
+secret.addReplicaRegion('eu-west-1');
 ```

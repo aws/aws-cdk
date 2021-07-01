@@ -1,14 +1,14 @@
 /* eslint-disable jest/expect-expect */
-import '@aws-cdk/assert/jest';
-import * as assert from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import * as assert from '@aws-cdk/assert-internal';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
-import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
+import { Vpc, EbsDeviceVolumeType, SecurityGroup } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as route53 from '@aws-cdk/aws-route53';
-import { App, Stack, Duration, SecretValue } from '@aws-cdk/core';
+import { App, Stack, Duration, SecretValue, CfnParameter } from '@aws-cdk/core';
 import { Domain, ElasticsearchVersion } from '../lib';
 
 let app: App;
@@ -29,6 +29,94 @@ const readWriteActions = [
   ...readActions,
   ...writeActions,
 ];
+
+test('connections throws if domain is placed inside a vpc', () => {
+
+  expect(() => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+    }).connections;
+  }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+});
+
+test('subnets and security groups can be provided when vpc is used', () => {
+
+  const vpc = new Vpc(stack, 'Vpc');
+  const securityGroup = new SecurityGroup(stack, 'CustomSecurityGroup', {
+    vpc,
+  });
+  const domain = new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_10,
+    vpc,
+    vpcSubnets: [{ subnets: [vpc.privateSubnets[0]] }],
+    securityGroups: [securityGroup],
+  });
+
+  expect(domain.connections.securityGroups[0].securityGroupId).toEqual(securityGroup.securityGroupId);
+  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+    VPCOptions: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CustomSecurityGroupE5E500E5',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'VpcPrivateSubnet1Subnet536B997A',
+        },
+      ],
+    },
+  });
+
+});
+
+test('default subnets and security group when vpc is used', () => {
+
+  const vpc = new Vpc(stack, 'Vpc');
+  const domain = new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_10,
+    vpc,
+  });
+
+  expect(stack.resolve(domain.connections.securityGroups[0].securityGroupId)).toEqual({ 'Fn::GetAtt': ['DomainSecurityGroup48AA5FD6', 'GroupId'] });
+  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+    VPCOptions: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'DomainSecurityGroup48AA5FD6',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'VpcPrivateSubnet1Subnet536B997A',
+        },
+        {
+          Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+        },
+        {
+          Ref: 'VpcPrivateSubnet3SubnetF258B56E',
+        },
+      ],
+    },
+  });
+
+});
+
+test('default removalpolicy is retain', () => {
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_1,
+  });
+
+  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+    DeletionPolicy: 'Retain',
+  }, assert.ResourcePart.CompleteDefinition);
+});
 
 test('grants kms permissions if needed', () => {
 
@@ -372,17 +460,37 @@ describe('log groups', () => {
     // Domain1
     expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
       Create: {
-        parameters: {
-          policyName: 'ESLogPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391',
-        },
+        'Fn::Join': [
+          '',
+          [
+            '{"service":"CloudWatchLogs","action":"putResourcePolicy","parameters":{"policyName":"ESLogPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391","policyDocument":"{\\"Statement\\":[{\\"Action\\":[\\"logs:PutLogEvents\\",\\"logs:CreateLogStream\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\"},\\"Resource\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'Domain1AppLogs6E8D1D67',
+                'Arn',
+              ],
+            },
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"}}',
+          ],
+        ],
       },
     });
     // Domain2
     expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
       Create: {
-        parameters: {
-          policyName: 'ESLogPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2',
-        },
+        'Fn::Join': [
+          '',
+          [
+            '{"service":"CloudWatchLogs","action":"putResourcePolicy","parameters":{"policyName":"ESLogPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2","policyDocument":"{\\"Statement\\":[{\\"Action\\":[\\"logs:PutLogEvents\\",\\"logs:CreateLogStream\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\"},\\"Resource\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'Domain2AppLogs810876E2',
+                'Arn',
+              ],
+            },
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"}}',
+          ],
+        ],
       },
     });
   });
@@ -679,8 +787,8 @@ describe('metrics', () => {
 
   test('Can use metricClusterIndexWriteBlocked on an Elasticsearch Domain', () => {
     testMetric(
-      (domain) => domain.metricClusterIndexWriteBlocked(),
-      'ClusterIndexWriteBlocked',
+      (domain) => domain.metricClusterIndexWritesBlocked(),
+      'ClusterIndexWritesBlocked',
       Statistic.MAXIMUM,
       Duration.minutes(1),
     );
@@ -792,7 +900,7 @@ describe('import', () => {
 
   test('static fromDomainAttributes(attributes) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
-    const domainArn = `es:testregion:1234:domain/${domainName}`;
+    const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
     const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
     const imported = Domain.fromDomainAttributes(stack, 'Domain', {
       domainArn,
@@ -805,6 +913,43 @@ describe('import', () => {
     expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
   });
 
+  test('static fromDomainAttributes(attributes) allows importing with token arn and endpoint', () => {
+    const domainArn = new CfnParameter(stack, 'domainArn', { type: 'String' }).valueAsString;
+    const domainEndpoint = new CfnParameter(stack, 'domainEndpoint', { type: 'String' }).valueAsString;
+    const imported = Domain.fromDomainAttributes(stack, 'Domain', {
+      domainArn,
+      domainEndpoint,
+    });
+    const expectedDomainName = {
+      'Fn::Select': [
+        1,
+        {
+          'Fn::Split': [
+            '/',
+            {
+              'Fn::Select': [
+                5,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      Ref: 'domainArn',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(stack.resolve(imported.domainName)).toEqual(expectedDomainName);
+    expect(imported.domainArn).toEqual(domainArn);
+    expect(imported.domainEndpoint).toEqual(domainEndpoint);
+
+    expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
+  });
 });
 
 describe('advanced security options', () => {
@@ -1120,7 +1265,9 @@ describe('custom endpoints', () => {
 describe('custom error responses', () => {
 
   test('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
-    const vpc = new Vpc(stack, 'Vpc');
+    const vpc = new Vpc(stack, 'Vpc', {
+      maxAzs: 1,
+    });
 
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
@@ -1128,16 +1275,7 @@ describe('custom error responses', () => {
         enabled: true,
         availabilityZoneCount: 2,
       },
-      vpcOptions: {
-        subnets: [
-          new Subnet(stack, 'Subnet', {
-            availabilityZone: 'testaz',
-            cidrBlock: vpc.vpcCidrBlock,
-            vpcId: vpc.vpcId,
-          }),
-        ],
-        securityGroups: [],
-      },
+      vpc,
     })).toThrow(/you need to provide a subnet for each AZ you are using/);
   });
 
@@ -1267,7 +1405,7 @@ describe('custom error responses', () => {
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3 instance types do not support EBS storage volumes/);
+    })).toThrow(/I3 and R6GD instance types do not support EBS storage volumes/);
   });
 
   test('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {
@@ -1310,7 +1448,7 @@ describe('custom error responses', () => {
     })).toThrow(/t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3/);
   });
 
-  test('error when any instance type other than R3 and I3 are specified without EBS enabled', () => {
+  test('error when any instance type other than R3, I3 and R6GD are specified without EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       ebs: {
@@ -1319,7 +1457,7 @@ describe('custom error responses', () => {
       capacity: {
         masterNodeInstanceType: 'm5.large.elasticsearch',
       },
-    })).toThrow(/EBS volumes are required when using instance types other than r3 or i3/);
+    })).toThrow(/EBS volumes are required when using instance types other than r3, i3 or r6gd/);
   });
 
   test('error when availabilityZoneCount is not 2 or 3', () => {
@@ -1327,31 +1465,7 @@ describe('custom error responses', () => {
 
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
-      vpcOptions: {
-        subnets: [
-          new Subnet(stack, 'Subnet1', {
-            availabilityZone: 'testaz1',
-            cidrBlock: vpc.vpcCidrBlock,
-            vpcId: vpc.vpcId,
-          }),
-          new Subnet(stack, 'Subnet2', {
-            availabilityZone: 'testaz2',
-            cidrBlock: vpc.vpcCidrBlock,
-            vpcId: vpc.vpcId,
-          }),
-          new Subnet(stack, 'Subnet3', {
-            availabilityZone: 'testaz3',
-            cidrBlock: vpc.vpcCidrBlock,
-            vpcId: vpc.vpcId,
-          }),
-          new Subnet(stack, 'Subnet4', {
-            availabilityZone: 'testaz4',
-            cidrBlock: vpc.vpcCidrBlock,
-            vpcId: vpc.vpcId,
-          }),
-        ],
-        securityGroups: [],
-      },
+      vpc,
       zoneAwareness: {
         availabilityZoneCount: 4,
       },

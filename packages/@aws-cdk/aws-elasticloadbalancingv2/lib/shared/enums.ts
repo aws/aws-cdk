@@ -64,6 +64,26 @@ export enum ApplicationProtocol {
 }
 
 /**
+ * Load balancing protocol version for application load balancers
+ */
+export enum ApplicationProtocolVersion {
+  /**
+   * GRPC
+   */
+  GRPC = 'GRPC',
+
+  /**
+   * HTTP1
+   */
+  HTTP1 = 'HTTP1',
+
+  /**
+   * HTTP2
+   */
+  HTTP2 = 'HTTP2',
+}
+
+/**
  * Elastic Load Balancing provides the following security policies for Application Load Balancers
  *
  * We recommend the Recommended policy for general use. You can

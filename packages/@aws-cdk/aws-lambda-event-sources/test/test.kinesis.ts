@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
@@ -71,6 +71,38 @@ export = {
       },
       'BatchSize': 100,
       'StartingPosition': 'TRIM_HORIZON',
+    }));
+
+    test.done();
+  },
+
+  'specific tumblingWindowInSeconds'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+
+    // WHEN
+    fn.addEventSource(new sources.KinesisEventSource(stream, {
+      batchSize: 50,
+      startingPosition: lambda.StartingPosition.LATEST,
+      tumblingWindow: cdk.Duration.seconds(60),
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'S509448A1',
+          'Arn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'BatchSize': 50,
+      'StartingPosition': 'LATEST',
+      'TumblingWindowInSeconds': 60,
     }));
 
     test.done();

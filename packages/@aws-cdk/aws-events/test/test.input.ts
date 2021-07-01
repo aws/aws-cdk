@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import { User } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -54,6 +54,162 @@ export = {
                   '',
                   [
                     '{"data":<f1>,"stackName":"',
+                    { Ref: 'AWS::StackName' },
+                    '"}',
+                  ],
+                ],
+              },
+            },
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'can use joined JSON containing refs in JSON object with tricky inputs'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
+        data: `they said \"hello\"${EventField.fromPath('$')}`,
+        stackName: cdk.Aws.STACK_NAME,
+      })));
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            InputTransformer: {
+              InputPathsMap: {
+                f1: '$',
+              },
+              InputTemplate: {
+                'Fn::Join': [
+                  '',
+                  [
+                    '{"data":"they said \\\"hello\\\"<f1>","stackName":"',
+                    { Ref: 'AWS::StackName' },
+                    '"}',
+                  ],
+                ],
+              },
+            },
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'can use joined JSON containing refs in JSON object and concat'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
+        data: `more text ${EventField.fromPath('$')}`,
+        stackName: cdk.Aws.STACK_NAME,
+      })));
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            InputTransformer: {
+              InputPathsMap: {
+                f1: '$',
+              },
+              InputTemplate: {
+                'Fn::Join': [
+                  '',
+                  [
+                    '{"data":"more text <f1>","stackName":"',
+                    { Ref: 'AWS::StackName' },
+                    '"}',
+                  ],
+                ],
+              },
+            },
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'can use joined JSON containing refs in JSON object and quotes'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
+        data: `more text "${EventField.fromPath('$')}"`,
+        stackName: cdk.Aws.STACK_NAME,
+      })));
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            InputTransformer: {
+              InputPathsMap: {
+                f1: '$',
+              },
+              InputTemplate: {
+                'Fn::Join': [
+                  '',
+                  [
+                    '{"data":"more text \\\"<f1>\\\"","stackName":"',
+                    { Ref: 'AWS::StackName' },
+                    '"}',
+                  ],
+                ],
+              },
+            },
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'can use joined JSON containing refs in JSON object and multiple keys'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
+        data: `${EventField.fromPath('$')}${EventField.fromPath('$.other')}`,
+        stackName: cdk.Aws.STACK_NAME,
+      })));
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            InputTransformer: {
+              InputPathsMap: {
+                f1: '$',
+              },
+              InputTemplate: {
+                'Fn::Join': [
+                  '',
+                  [
+                    '{"data":"<f1><other>","stackName":"',
                     { Ref: 'AWS::StackName' },
                     '"}',
                   ],

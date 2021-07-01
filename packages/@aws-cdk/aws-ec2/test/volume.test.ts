@@ -4,13 +4,14 @@ import {
   haveResource,
   haveResourceLike,
   ResourcePart,
-} from '@aws-cdk/assert';
+} from '@aws-cdk/assert-internal';
 import {
   AccountRootPrincipal,
   Role,
 } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   AmazonLinuxGeneration,
@@ -41,7 +42,9 @@ describe('volume', () => {
       VolumeType: 'gp2',
     }, ResourcePart.Properties));
 
-
+    cdkExpect(stack).to(haveResource('AWS::EC2::Volume', {
+      DeletionPolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
   });
 
   test('fromVolumeAttributes', () => {
@@ -573,7 +576,7 @@ describe('volume', () => {
 
     });
 
-    testFutureBehavior('with future flag aws-kms:defaultKeyPolicies', { '@aws-cdk/aws-kms:defaultKeyPolicies': true }, cdk.App, (app) => {
+    testFutureBehavior('with future flag aws-kms:defaultKeyPolicies', { [cxapi.KMS_DEFAULT_KEY_POLICIES]: true }, cdk.App, (app) => {
       // GIVEN
       const stack = new cdk.Stack(app);
       const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });

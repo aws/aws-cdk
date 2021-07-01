@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { CfnParameter, Duration, Stack, App } from '@aws-cdk/core';
@@ -18,9 +18,15 @@ export = {
       'Resources': {
         'Queue4A7E3555': {
           'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
+
+    expect(stack).to(haveResource('AWS::SQS::Queue', {
+      DeletionPolicy: 'Delete',
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
@@ -33,6 +39,8 @@ export = {
       'Resources': {
         'DLQ581697C4': {
           'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
         'Queue4A7E3555': {
           'Type': 'AWS::SQS::Queue',
@@ -47,6 +55,8 @@ export = {
               'maxReceiveCount': 3,
             },
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
@@ -65,7 +75,7 @@ export = {
 
     test.throws(() => new sqs.Queue(stack, 'AnotherQueue', {
       retentionPeriod: Duration.days(15),
-    }), /message retention period must be 1209600 seconds of less/);
+    }), /message retention period must be 1209600 seconds or less/);
 
     test.done();
   },
@@ -99,6 +109,8 @@ export = {
               'Ref': 'myretentionperiod',
             },
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
@@ -119,6 +131,8 @@ export = {
       'Resources': {
         'MyQueueE6CA6235': {
           'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
         'MyQueuePolicy6BBEDDAC': {
           'Type': 'AWS::SQS::QueuePolicy',
@@ -311,6 +325,8 @@ export = {
             'Properties': {
               'KmsMasterKeyId': 'alias/aws/sqs',
             },
+            'UpdateReplacePolicy': 'Delete',
+            'DeletionPolicy': 'Delete',
           },
         },
       });
@@ -378,6 +394,8 @@ export = {
             'QueueName': 'MyQueue.fifo',
             'FifoQueue': true,
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
@@ -400,10 +418,61 @@ export = {
           'Properties': {
             'FifoQueue': true,
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
 
+    test.done();
+  },
+
+  'test a fifo queue is observed when high throughput properties are specified'(test: Test) {
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'Queue', {
+      fifo: true,
+      fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID,
+      deduplicationScope: sqs.DeduplicationScope.MESSAGE_GROUP,
+    });
+
+    test.deepEqual(queue.fifo, true);
+    expect(stack).toMatch({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'DeduplicationScope': 'messageGroup',
+            'FifoQueue': true,
+            'FifoThroughputLimit': 'perMessageGroupId',
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'test a queue throws when fifoThroughputLimit specified on non fifo queue'(test: Test) {
+    const stack = new Stack();
+    test.throws(() => {
+      new sqs.Queue(stack, 'Queue', {
+        fifo: false,
+        fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID,
+      });
+    });
+    test.done();
+  },
+
+  'test a queue throws when deduplicationScope specified on non fifo queue'(test: Test) {
+    const stack = new Stack();
+    test.throws(() => {
+      new sqs.Queue(stack, 'Queue', {
+        fifo: false,
+        deduplicationScope: sqs.DeduplicationScope.MESSAGE_GROUP,
+      });
+    });
     test.done();
   },
 

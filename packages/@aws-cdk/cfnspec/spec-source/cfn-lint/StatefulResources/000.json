@@ -1,0 +1,29 @@
+{
+  "ResourceTypes": {
+    "AWS::CloudFormation::Stack" : {},
+    "AWS::Backup::BackupVault" : {},
+    "AWS::Cognito::UserPool" : {},
+    "AWS::DocDB::DBCluster" : {},
+    "AWS::DocDB::DBInstance" : {},
+    "AWS::DynamoDB::Table" : {},
+    "AWS::EC2::Volume" : {},
+    "AWS::EFS::FileSystem" : {},
+    "AWS::EMR::Cluster" : {},
+    "AWS::ElastiCache::CacheCluster" : {},
+    "AWS::ElastiCache::ReplicationGroup" : {},
+    "AWS::Elasticsearch::Domain" : {},
+    "AWS::FSx::FileSystem" : {},
+    "AWS::Logs::LogGroup" : {},
+    "AWS::Neptune::DBCluster" : {},
+    "AWS::Neptune::DBInstance" : {},
+    "AWS::QLDB::Ledger" : {},
+    "AWS::RDS::DBCluster" : {},
+    "AWS::RDS::DBInstance" : {},
+    "AWS::Redshift::Cluster" : {},
+    "AWS::SDB::Domain" : {},
+    "AWS::SQS::Queue" : {},
+    "AWS::S3::Bucket" : {
+      "DeleteRequiresEmptyResource": true
+    }
+  }
+}

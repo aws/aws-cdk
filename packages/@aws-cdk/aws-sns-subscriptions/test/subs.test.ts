@@ -1,8 +1,9 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnParameter, Duration, Stack, Token } from '@aws-cdk/core';
+import { CfnParameter, Duration, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
 import * as subs from '../lib';
 
 /* eslint-disable quote-props */
@@ -82,6 +83,8 @@ test('url subscription with user provided dlq', () => {
       },
       'DeadLetterQueue9F481546': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
         'Properties': {
           'MessageRetentionPeriod': 1209600,
           'QueueName': 'MySubscription_DLQ',
@@ -248,6 +251,8 @@ test('queue subscription', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -325,6 +330,8 @@ test('queue subscription with user provided dlq', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -386,6 +393,8 @@ test('queue subscription with user provided dlq', () => {
       },
       'DeadLetterQueue9F481546': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
         'Properties': {
           'MessageRetentionPeriod': 1209600,
           'QueueName': 'MySubscription_DLQ',
@@ -447,6 +456,156 @@ test('queue subscription (with raw delivery)', () => {
       'Ref': 'MyTopic86869434',
     },
     'RawMessageDelivery': true,
+  });
+});
+
+test('encrypted queue subscription', () => {
+  const key = new kms.Key(stack, 'MyKey', {
+    removalPolicy: RemovalPolicy.DESTROY,
+  });
+
+  const queue = new sqs.Queue(stack, 'MyQueue', {
+    encryption: sqs.QueueEncryption.KMS,
+    encryptionMasterKey: key,
+  });
+
+  topic.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyKey6AB29FA6': {
+        'Type': 'AWS::KMS::Key',
+        'Properties': {
+          'KeyPolicy': {
+            'Statement': [
+              {
+                'Action': [
+                  'kms:Create*',
+                  'kms:Describe*',
+                  'kms:Enable*',
+                  'kms:List*',
+                  'kms:Put*',
+                  'kms:Update*',
+                  'kms:Revoke*',
+                  'kms:Disable*',
+                  'kms:Get*',
+                  'kms:Delete*',
+                  'kms:ScheduleKeyDeletion',
+                  'kms:CancelKeyDeletion',
+                  'kms:GenerateDataKey',
+                  'kms:TagResource',
+                  'kms:UntagResource',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          'Ref': 'AWS::Partition',
+                        },
+                        ':iam::',
+                        {
+                          'Ref': 'AWS::AccountId',
+                        },
+                        ':root',
+                      ],
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+              {
+                'Action': [
+                  'kms:Decrypt',
+                  'kms:GenerateDataKey',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': '*',
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+        },
+        'UpdateReplacePolicy': 'Delete',
+        'DeletionPolicy': 'Delete',
+      },
+      'MyQueueE6CA6235': {
+        'Type': 'AWS::SQS::Queue',
+        'Properties': {
+          'KmsMasterKeyId': {
+            'Fn::GetAtt': [
+              'MyKey6AB29FA6',
+              'Arn',
+            ],
+          },
+        },
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
+      },
+      'MyQueuePolicy6BBEDDAC': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Ref': 'MyTopic86869434',
+                    },
+                  },
+                },
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'MyQueueE6CA6235',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Queues': [
+            {
+              'Ref': 'MyQueueE6CA6235',
+            },
+          ],
+        },
+      },
+      'MyQueueMyTopic9B00631B': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sqs',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
+      },
+    },
   });
 });
 
@@ -745,6 +904,8 @@ test('multiple subscriptions', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -900,11 +1061,11 @@ test('with filter policy', () => {
   topic.addSubscription(new subs.LambdaSubscription(fction, {
     filterPolicy: {
       color: sns.SubscriptionFilter.stringFilter({
-        whitelist: ['red'],
+        allowlist: ['red'],
         matchPrefixes: ['bl', 'ye'],
       }),
       size: sns.SubscriptionFilter.stringFilter({
-        blacklist: ['small', 'medium'],
+        denylist: ['small', 'medium'],
       }),
       price: sns.SubscriptionFilter.numericFilter({
         between: { start: 100, stop: 200 },

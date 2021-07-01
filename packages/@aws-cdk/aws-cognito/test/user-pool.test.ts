@@ -1,5 +1,4 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
+import { Match, TemplateAssertions } from '@aws-cdk/assertions';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
@@ -15,10 +14,10 @@ describe('User Pool', () => {
     new UserPool(stack, 'Pool');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       AdminCreateUserConfig: {
         AllowAdminCreateUserOnly: true,
-        InviteMessageTemplate: ABSENT,
+        InviteMessageTemplate: Match.absentProperty(),
       },
       EmailVerificationMessage: 'The verification code to your new account is {####}',
       EmailVerificationSubject: 'Verify your new account',
@@ -29,8 +28,13 @@ describe('User Pool', () => {
         EmailSubject: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },
-      SmsConfiguration: ABSENT,
-      lambdaTriggers: ABSENT,
+      SmsAuthenticationMessage: Match.absentProperty(),
+      SmsConfiguration: Match.absentProperty(),
+      lambdaTriggers: Match.absentProperty(),
+    });
+
+    TemplateAssertions.fromStack(stack).hasResource('AWS::Cognito::UserPool', {
+      DeletionPolicy: 'Retain',
     });
   });
 
@@ -44,7 +48,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       AdminCreateUserConfig: {
         AllowAdminCreateUserOnly: false,
       },
@@ -63,9 +67,9 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      EmailVerificationMessage: ABSENT,
-      EmailVerificationSubject: ABSENT,
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailVerificationMessage: Match.absentProperty(),
+      EmailVerificationSubject: Match.absentProperty(),
       SmsVerificationMessage: 'The verification code to your new account is {####}',
       VerificationMessageTemplate: {
         DefaultEmailOption: 'CONFIRM_WITH_LINK',
@@ -75,6 +79,49 @@ describe('User Pool', () => {
       },
     });
   }),
+
+  test('mfa authentication message is configured correctly', () => {
+    // GIVEN
+    const stack = new Stack();
+    const message = 'The authentication code to your account is {####}';
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      mfaMessage: message,
+    });
+
+    // THEN
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      SmsAuthenticationMessage: message,
+    });
+  }),
+
+  test('mfa authentication message is validated', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      mfaMessage: '{####',
+    })).toThrow(/MFA message must contain the template string/);
+
+    expect(() => new UserPool(stack, 'Pool2', {
+      mfaMessage: '{####}',
+    })).not.toThrow();
+
+    expect(() => new UserPool(stack, 'Pool3', {
+      mfaMessage: `{####}${'x'.repeat(135)}`,
+    })).toThrow(/MFA message must be between 6 and 140 characters/);
+
+    expect(() => new UserPool(stack, 'Pool4', {
+      mfaMessage: `{####}${'x'.repeat(134)}`,
+    })).not.toThrow();
+
+    // Validation is skipped for tokens.
+    const parameter = new CfnParameter(stack, 'Parameter');
+
+    expect(() => new UserPool(stack, 'Pool5', {
+      mfaMessage: parameter.valueAsString,
+    })).not.toThrow();
+  });
 
   test('email and sms verification messages are validated', () => {
     const stack = new Stack();
@@ -155,7 +202,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       AdminCreateUserConfig: {
         InviteMessageTemplate: {
           EmailMessage: 'invitation email body',
@@ -178,7 +225,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       SmsConfiguration: {
         ExternalId: 'test-external-id',
         SnsCallerArn: role.roleArn,
@@ -207,17 +254,36 @@ describe('User Pool', () => {
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
-    expect(stack.resolve(pool.userPoolArn)).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':cognito-idp:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':userpool/test-user-pool',
-      ]],
+    expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+  });
+
+  test('import using arn without resourceName fails', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:*';
+
+    // WHEN
+    expect(() => {
+      UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    }).toThrowError(/invalid user pool ARN/);
+  });
+
+  test('import from different account region using arn', () => {
+    // GIVEN
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
+
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '111111111111',
+        region: 'us-east-2',
+      },
     });
+
+    // WHEN
+    const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    expect(pool.env.account).toEqual('0123456789012');
+    expect(pool.env.region).toEqual('us-east-1');
+    expect(pool.userPoolArn).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
   });
 
   test('support tags', () => {
@@ -231,7 +297,7 @@ describe('User Pool', () => {
     Tags.of(pool).add('PoolTag', 'PoolParty');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'myPool',
       UserPoolTags: {
         PoolTag: 'PoolParty',
@@ -252,12 +318,12 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       LambdaConfig: {
         PreSignUp: stack.resolve(fn.functionArn),
       },
     });
-    expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: stack.resolve(fn.functionArn),
       Principal: 'cognito-idp.amazonaws.com',
@@ -293,7 +359,7 @@ describe('User Pool', () => {
     pool.addTrigger(UserPoolOperation.VERIFY_AUTH_CHALLENGE_RESPONSE, verifyAuthChallengeResponse);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       LambdaConfig: {
         CreateAuthChallenge: stack.resolve(createAuthChallenge.functionArn),
         CustomMessage: stack.resolve(customMessage.functionArn),
@@ -311,7 +377,7 @@ describe('User Pool', () => {
     [createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
       postConfirmation, preAuthentication, preSignUp, preTokenGeneration, userMigration,
       verifyAuthChallengeResponse].forEach((fn) => {
-      expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: stack.resolve(fn.functionArn),
         Principal: 'cognito-idp.amazonaws.com',
@@ -348,9 +414,9 @@ describe('User Pool', () => {
     new UserPool(stack, 'Pool');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UsernameAttributes: ABSENT,
-      AliasAttributes: ABSENT,
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      UsernameAttributes: Match.absentProperty(),
+      AliasAttributes: Match.absentProperty(),
     });
   });
 
@@ -371,8 +437,8 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UsernameAttributes: ABSENT,
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      UsernameAttributes: Match.absentProperty(),
       AliasAttributes: ['email'],
     });
   });
@@ -387,9 +453,9 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UsernameAttributes: ['email', 'phone_number'],
-      AliasAttributes: ABSENT,
+      AliasAttributes: Match.absentProperty(),
     });
   });
 
@@ -408,11 +474,11 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
       AutoVerifiedAttributes: ['email'],
     });
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
       AutoVerifiedAttributes: ['email', 'phone_number'],
     });
@@ -429,7 +495,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       AutoVerifiedAttributes: ['email', 'phone_number'],
     });
   });
@@ -444,7 +510,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UsernameConfiguration: {
         CaseSensitive: false,
       },
@@ -459,8 +525,8 @@ describe('User Pool', () => {
     new UserPool(stack, 'Pool', {});
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UsernameConfiguration: ABSENT,
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      UsernameConfiguration: Match.absentProperty(),
     });
   });
 
@@ -481,7 +547,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       Schema: [
         {
           Name: 'name',
@@ -529,7 +595,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool',
       Schema: [
         {
@@ -545,7 +611,7 @@ describe('User Pool', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
       Schema: [
         {
@@ -570,9 +636,9 @@ describe('User Pool', () => {
     new UserPool(stack, 'Pool', { userPoolName: 'Pool' });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool',
-      Schema: ABSENT,
+      Schema: Match.absentProperty(),
     });
   });
 
@@ -591,7 +657,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool',
       Schema: [
         {
@@ -616,19 +682,19 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       Schema: [
         {
           Name: 'custom-string-attr',
           AttributeDataType: 'String',
-          StringAttributeConstraints: ABSENT,
-          NumberAttributeConstraints: ABSENT,
+          StringAttributeConstraints: Match.absentProperty(),
+          NumberAttributeConstraints: Match.absentProperty(),
         },
         {
           Name: 'custom-number-attr',
           AttributeDataType: 'Number',
-          StringAttributeConstraints: ABSENT,
-          NumberAttributeConstraints: ABSENT,
+          StringAttributeConstraints: Match.absentProperty(),
+          NumberAttributeConstraints: Match.absentProperty(),
         },
       ],
     });
@@ -647,7 +713,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       Schema: [
         {
           AttributeDataType: 'String',
@@ -691,15 +757,15 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
-      MfaConfiguration: ABSENT,
-      EnabledMfas: ABSENT,
+      MfaConfiguration: Match.absentProperty(),
+      EnabledMfas: Match.absentProperty(),
     });
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
       MfaConfiguration: 'OFF',
-      EnabledMfas: ABSENT,
+      EnabledMfas: Match.absentProperty(),
     });
   });
 
@@ -718,12 +784,12 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
       MfaConfiguration: 'OPTIONAL',
       EnabledMfas: ['SMS_MFA'],
     });
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
       MfaConfiguration: 'ON',
       EnabledMfas: ['SMS_MFA'],
@@ -744,7 +810,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       EnabledMfas: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA'],
     });
   });
@@ -766,7 +832,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       Policies: {
         PasswordPolicy: {
           TemporaryPasswordValidityDays: 2,
@@ -792,7 +858,7 @@ describe('User Pool', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       Policies: {
         PasswordPolicy: {
           MinimumLength: 8,
@@ -850,7 +916,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       EmailConfiguration: {
         From: 'from@myawesomeapp.com',
         ReplyToEmailAddress: 'replyTo@myawesomeapp.com',
@@ -873,11 +939,11 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'userpoolclient',
       UserPoolId: stack.resolve(userpool.userPoolId),
     });
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'userpoolimportedclient',
       UserPoolId: stack.resolve(imported.userPoolId),
     });
@@ -900,7 +966,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolResourceServer', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolResourceServer', {
       Identifier: 'users',
       Name: 'users',
       UserPoolId: stack.resolve(userpool.userPoolId),
@@ -932,11 +998,11 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
       Domain: 'userpooldomain',
       UserPoolId: stack.resolve(userpool.userPoolId),
     });
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
       Domain: 'userpoolimporteddomain',
       UserPoolId: stack.resolve(imported.userPoolId),
     });
@@ -966,7 +1032,7 @@ describe('User Pool', () => {
       new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         AccountRecoverySetting: {
           RecoveryMechanisms: [
             { Name: 'verified_email', Priority: 1 },
@@ -984,7 +1050,7 @@ describe('User Pool', () => {
       new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         AccountRecoverySetting: {
           RecoveryMechanisms: [
             { Name: 'verified_phone_number', Priority: 1 },
@@ -1002,7 +1068,7 @@ describe('User Pool', () => {
       new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_ONLY });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         AccountRecoverySetting: {
           RecoveryMechanisms: [
             { Name: 'verified_email', Priority: 1 },
@@ -1019,7 +1085,7 @@ describe('User Pool', () => {
       new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_ONLY_WITHOUT_MFA });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         AccountRecoverySetting: {
           RecoveryMechanisms: [
             { Name: 'verified_phone_number', Priority: 1 },
@@ -1036,7 +1102,7 @@ describe('User Pool', () => {
       new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.NONE });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         AccountRecoverySetting: {
           RecoveryMechanisms: [
             { Name: 'admin_only', Priority: 1 },
@@ -1053,8 +1119,8 @@ describe('User Pool', () => {
       new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_AND_EMAIL });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-        AccountRecoverySetting: ABSENT,
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: Match.absentProperty(),
       });
     });
 
@@ -1066,7 +1132,7 @@ describe('User Pool', () => {
       new UserPool(stack, 'pool');
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         AccountRecoverySetting: {
           RecoveryMechanisms: [
             { Name: 'verified_phone_number', Priority: 1 },
@@ -1086,8 +1152,8 @@ describe('User Pool', () => {
       new UserPool(stack, 'pool');
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-        SmsConfiguration: ABSENT,
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+        SmsConfiguration: Match.absentProperty(),
       });
     });
 
@@ -1105,7 +1171,7 @@ describe('User Pool', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         SmsConfiguration: {
           ExternalId: 'role-external-id',
           SnsCallerArn: { 'Fn::GetAtt': ['smsRoleA4587CE8', 'Arn'] },
@@ -1123,13 +1189,13 @@ describe('User Pool', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         SmsConfiguration: {
           ExternalId: 'pool',
           SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
         },
       });
-      expect(stack).toHaveResource('AWS::IAM::Role', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -1178,8 +1244,8 @@ describe('User Pool', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-        SmsConfiguration: ABSENT,
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+        SmsConfiguration: Match.absentProperty(),
       });
     });
 
@@ -1200,8 +1266,8 @@ describe('User Pool', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-        SmsConfiguration: ABSENT,
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+        SmsConfiguration: Match.absentProperty(),
       });
     });
 
@@ -1216,7 +1282,7 @@ describe('User Pool', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         SmsConfiguration: {
           ExternalId: 'pool',
           SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
@@ -1236,7 +1302,7 @@ describe('User Pool', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         SmsConfiguration: {
           ExternalId: 'pool',
           SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
@@ -1261,7 +1327,7 @@ describe('User Pool', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         SmsConfiguration: {
           ExternalId: 'pool',
           SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
@@ -1284,8 +1350,8 @@ describe('User Pool', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-        SmsConfiguration: ABSENT,
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+        SmsConfiguration: Match.absentProperty(),
       });
     });
 
@@ -1315,7 +1381,7 @@ describe('User Pool', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       EmailConfiguration: {
         From: 'от@xn--d1acufc.xn--p1ai',
         ReplyToEmailAddress: 'ответить@xn--d1acufc.xn--p1ai',
@@ -1328,7 +1394,7 @@ describe('User Pool', () => {
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
     functionName: name,
-    code: lambda.Code.inline('foo'),
+    code: lambda.Code.fromInline('foo'),
     runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
   });

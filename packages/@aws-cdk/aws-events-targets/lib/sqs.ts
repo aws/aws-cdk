@@ -52,17 +52,17 @@ export class SqsQueue implements events.IRuleTarget {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+    // Only add the rule as a condition if the queue is not encrypted, to avoid circular dependency. See issue #11158.
+    const principalOpts = this.queue.encryptionMasterKey ? {} : {
+      conditions: {
+        ArnEquals: { 'aws:SourceArn': rule.ruleArn },
+      },
+    };
+
     // deduplicated automatically
-    this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com',
-      {
-        conditions: {
-          ArnEquals: { 'aws:SourceArn': rule.ruleArn },
-        },
-      }),
-    );
+    this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com', principalOpts));
 
     return {
-      id: '',
       arn: this.queue.queueArn,
       input: this.props.message,
       targetResource: this.queue,

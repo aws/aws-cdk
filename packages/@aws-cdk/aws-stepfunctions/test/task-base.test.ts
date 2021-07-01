@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -39,6 +39,33 @@ describe('Task base', () => {
           HeartbeatSeconds: 10,
           Resource: 'my-resource',
           Parameters: { MyParameter: 'myParameter' },
+        },
+      },
+    });
+  });
+
+  test('instantiate a concrete implementation with resultSelector', () => {
+    // WHEN
+    task = new FakeTask(stack, 'my-exciting-task', {
+      resultSelector: {
+        buz: 'buz',
+        baz: sfn.JsonPath.stringAt('$.baz'),
+      },
+    });
+
+    // THEN
+    expect(render(task)).toEqual({
+      StartAt: 'my-exciting-task',
+      States: {
+        'my-exciting-task': {
+          End: true,
+          Type: 'Task',
+          Resource: 'my-resource',
+          Parameters: { MyParameter: 'myParameter' },
+          ResultSelector: {
+            'buz': 'buz',
+            'baz.$': '$.baz',
+          },
         },
       },
     });

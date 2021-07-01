@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { FieldUtils, JsonPath } from '../lib';
 
 describe('Fields', () => {
@@ -151,5 +151,27 @@ describe('Fields', () => {
     deepObject.recursiveField = paths;
     expect(FieldUtils.findReferencedPaths(paths))
       .toStrictEqual(['$.listField', '$.numField', '$.stringField']);
+  });
+
+  test('repeated object references at different tree paths should not be considered as recursions', () => {
+    const repeatedObject = {
+      field: JsonPath.stringAt('$.stringField'),
+      numField: JsonPath.numberAt('$.numField'),
+    };
+    expect(FieldUtils.renderObject(
+      {
+        reference1: repeatedObject,
+        reference2: repeatedObject,
+      },
+    )).toStrictEqual({
+      reference1: {
+        'field.$': '$.stringField',
+        'numField.$': '$.numField',
+      },
+      reference2: {
+        'field.$': '$.stringField',
+        'numField.$': '$.numField',
+      },
+    });
   });
 });

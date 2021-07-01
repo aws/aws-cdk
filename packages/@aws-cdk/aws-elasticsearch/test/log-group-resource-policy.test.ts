@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
 import { LogGroupResourcePolicy } from '../lib/log-group-resource-policy';
@@ -31,7 +31,7 @@ test('minimal example renders correctly', () => {
         'Arn',
       ],
     },
-    Create: {
+    Create: JSON.stringify({
       service: 'CloudWatchLogs',
       action: 'putResourcePolicy',
       parameters: {
@@ -41,8 +41,8 @@ test('minimal example renders correctly', () => {
       physicalResourceId: {
         id: 'LogGroupResourcePolicy',
       },
-    },
-    Update: {
+    }),
+    Update: JSON.stringify({
       service: 'CloudWatchLogs',
       action: 'putResourcePolicy',
       parameters: {
@@ -52,14 +52,14 @@ test('minimal example renders correctly', () => {
       physicalResourceId: {
         id: 'LogGroupResourcePolicy',
       },
-    },
-    Delete: {
+    }),
+    Delete: JSON.stringify({
       service: 'CloudWatchLogs',
       action: 'deleteResourcePolicy',
       parameters: {
         policyName: 'TestPolicy',
       },
       ignoreErrorCodesMatching: '400',
-    },
+    }),
   });
 });

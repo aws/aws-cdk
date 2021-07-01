@@ -5,7 +5,6 @@ import { cached } from '../../util/functions';
 import { AccountAccessKeyCache } from './account-cache';
 import { Account } from './sdk-provider';
 
-/** @experimental */
 export interface ISDK {
   /**
    * The region this SDK has been instantiated for
@@ -30,6 +29,7 @@ export interface ISDK {
   route53(): AWS.Route53;
   ecr(): AWS.ECR;
   elbv2(): AWS.ELBv2;
+  secretsManager(): AWS.SecretsManager;
 }
 
 /**
@@ -114,6 +114,10 @@ export class SDK implements ISDK {
     return this.wrapServiceErrorHandling(new AWS.ELBv2(this.config));
   }
 
+  public secretsManager(): AWS.SecretsManager {
+    return this.wrapServiceErrorHandling(new AWS.SecretsManager(this.config));
+  }
+
   public async currentAccount(): Promise<Account> {
     // Get/refresh if necessary before we can access `accessKeyId`
     await this.forceCredentialRetrieval();
@@ -159,8 +163,9 @@ export class SDK implements ISDK {
         ...this.sdkOptions.assumeRoleCredentialsSourceDescription
           ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
           : [],
-        '(did you bootstrap the environment with the right \'--trust\'s?):',
         e.message,
+        '. Please make sure that this role exists in the account. If it doesn\'t exist, (re)-bootstrap the environment ' +
+        'with the right \'--trust\', using the latest version of the CDK CLI.',
       ].join(' '));
     }
   }

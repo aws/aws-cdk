@@ -10,7 +10,6 @@ import { ProductionVariant } from './base-types';
  * Properties for creating an Amazon SageMaker endpoint configuration
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
- * @experimental
  */
 export interface SageMakerCreateEndpointConfigProps extends sfn.TaskStateBaseProps {
   /**
@@ -44,7 +43,6 @@ export interface SageMakerCreateEndpointConfigProps extends sfn.TaskStateBasePro
  * A Step Functions Task to create a SageMaker endpoint configuration
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
- * @experimental
  */
 export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [

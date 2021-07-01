@@ -1,4 +1,5 @@
-using Amazon.CDK.Lib;
+using Amazon.CDK;
+using Constructs;
 
 namespace %name.PascalCased%
 {

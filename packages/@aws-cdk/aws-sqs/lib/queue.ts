@@ -1,5 +1,5 @@
 import * as kms from '@aws-cdk/aws-kms';
-import { Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
@@ -137,6 +137,38 @@ export interface QueueProps {
    * @default false
    */
   readonly contentBasedDeduplication?: boolean;
+
+  /**
+   * For high throughput for FIFO queues, specifies whether message deduplication
+   * occurs at the message group or queue level.
+   *
+   * (Only applies to FIFO queues.)
+   *
+   * @default DeduplicationScope.QUEUE
+   */
+  readonly deduplicationScope?: DeduplicationScope;
+
+  /**
+   * For high throughput for FIFO queues, specifies whether the FIFO queue
+   * throughput quota applies to the entire queue or per message group.
+   *
+   * (Only applies to FIFO queues.)
+   *
+   * @default FifoThroughputLimit.PER_QUEUE
+   */
+  readonly fifoThroughputLimit?: FifoThroughputLimit;
+
+  /**
+   * Policy to apply when the user pool is removed from the stack
+   *
+   * Even though queues are technically stateful, their contents are transient and it
+   * is common to add and remove Queues while rearchitecting your application. The
+   * default is therefore `DESTROY`. Change it to `RETAIN` if the messages are so
+   * valuable that accidentally losing them would be unacceptable.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -174,6 +206,34 @@ export enum QueueEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+}
+
+/**
+ * What kind of deduplication scope to apply
+ */
+export enum DeduplicationScope {
+  /**
+   * Deduplication occurs at the message group level
+   */
+  MESSAGE_GROUP = 'messageGroup',
+  /**
+   * Deduplication occurs at the message queue level
+   */
+  QUEUE = 'queue',
+}
+
+/**
+ * Whether the FIFO queue throughput quota applies to the entire queue or per message group
+ */
+export enum FifoThroughputLimit {
+  /**
+   * Throughput quota applies per queue
+   */
+  PER_QUEUE = 'perQueue',
+  /**
+   * Throughput quota applies per message group id
+   */
+  PER_MESSAGE_GROUP_ID = 'perMessageGroupId',
 }
 
 /**
@@ -273,6 +333,7 @@ export class Queue extends QueueBase {
       receiveMessageWaitTimeSeconds: props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
+    queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
       service: 'sqs',
@@ -329,6 +390,8 @@ export class Queue extends QueueBase {
     const queueName = props.queueName;
     if (typeof fifoQueue === 'undefined' && queueName && !Token.isUnresolved(queueName) && queueName.endsWith('.fifo')) { fifoQueue = true; }
     if (typeof fifoQueue === 'undefined' && props.contentBasedDeduplication) { fifoQueue = true; }
+    if (typeof fifoQueue === 'undefined' && props.deduplicationScope) { fifoQueue = true; }
+    if (typeof fifoQueue === 'undefined' && props.fifoThroughputLimit) { fifoQueue = true; }
 
     // If we have a name, see that it agrees with the FIFO setting
     if (typeof queueName === 'string') {
@@ -344,8 +407,18 @@ export class Queue extends QueueBase {
       throw new Error('Content-based deduplication can only be defined for FIFO queues');
     }
 
+    if (props.deduplicationScope && !fifoQueue) {
+      throw new Error('Deduplication scope can only be defined for FIFO queues');
+    }
+
+    if (props.fifoThroughputLimit && !fifoQueue) {
+      throw new Error('FIFO throughput limit can only be defined for FIFO queues');
+    }
+
     return {
       contentBasedDeduplication: props.contentBasedDeduplication,
+      deduplicationScope: props.deduplicationScope,
+      fifoThroughputLimit: props.fifoThroughputLimit,
       fifoQueue,
     };
   }
@@ -354,6 +427,8 @@ export class Queue extends QueueBase {
 interface FifoProps {
   readonly fifoQueue?: boolean;
   readonly contentBasedDeduplication?: boolean;
+  readonly deduplicationScope?: DeduplicationScope;
+  readonly fifoThroughputLimit?: FifoThroughputLimit;
 }
 
 interface EncryptionProps {

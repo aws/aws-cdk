@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
@@ -28,6 +28,29 @@ describe('tests', () => {
     });
   });
 
+  test('Enable preserve_client_ip attribute for target group', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      preserveClientIp: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'preserve_client_ip.enabled',
+          Value: 'true',
+        },
+      ],
+    });
+  });
+
   test('Disable proxy protocol v2 for attribute target group', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -45,6 +68,29 @@ describe('tests', () => {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
+          Value: 'false',
+        },
+      ],
+    });
+  });
+
+  test('Disable preserve_client_ip attribute for target group', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      preserveClientIp: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'preserve_client_ip.enabled',
           Value: 'false',
         },
       ],

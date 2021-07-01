@@ -7,7 +7,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 /**
  * Properties for EmrTerminateCluster
  *
- * @experimental
  */
 export interface EmrTerminateClusterProps extends sfn.TaskStateBaseProps {
   /**
@@ -19,7 +18,6 @@ export interface EmrTerminateClusterProps extends sfn.TaskStateBaseProps {
 /**
  * A Step Functions Task to terminate an EMR Cluster.
  *
- * @experimental
  */
 export class EmrTerminateCluster extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [

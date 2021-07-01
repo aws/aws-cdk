@@ -1,3 +1,4 @@
+import { CfnResource } from '@aws-cdk/core';
 import { Node, IConstruct } from 'constructs';
 import { CfnRole, CfnUser } from './iam.generated';
 import { IManagedPolicy } from './managed-policy';
@@ -22,7 +23,8 @@ export class PermissionsBoundary {
   }
 
   /**
-   * Apply the given policy as Permissions Boundary to all Roles in the scope
+   * Apply the given policy as Permissions Boundary to all Roles and Users in
+   * the scope.
    *
    * Will override any Permissions Boundaries configured previously; in case
    * a Permission Boundary is applied in multiple scopes, the Boundary applied
@@ -33,6 +35,11 @@ export class PermissionsBoundary {
       visit(node: IConstruct) {
         if (node instanceof CfnRole || node instanceof CfnUser) {
           node.permissionsBoundary = boundaryPolicy.managedPolicyArn;
+        } else if (
+          node instanceof CfnResource &&
+            (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME || node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
+        ) {
+          node.addPropertyOverride('PermissionsBoundary', boundaryPolicy.managedPolicyArn);
         }
       },
     });
@@ -46,6 +53,11 @@ export class PermissionsBoundary {
       visit(node: IConstruct) {
         if (node instanceof CfnRole || node instanceof CfnUser) {
           node.permissionsBoundary = undefined;
+        } else if (
+          node instanceof CfnResource &&
+            (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME || node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
+        ) {
+          node.addPropertyDeletionOverride('PermissionsBoundary');
         }
       },
     });

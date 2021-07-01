@@ -189,6 +189,63 @@ export async function cloneDirectory(source: string, target: string, output?: No
   await shell(['cp', '-R', source + '/*', target], { output });
 }
 
+interface CommonCdkBootstrapCommandOptions {
+  readonly toolkitStackName: string;
+
+  /**
+   * @default false
+   */
+  readonly verbose?: boolean;
+
+  /**
+   * @default - auto-generated CloudFormation name
+   */
+  readonly bootstrapBucketName?: string;
+
+  readonly cliOptions?: CdkCliOptions;
+
+  /**
+   * @default - none
+   */
+  readonly tags?: string;
+}
+
+export interface CdkLegacyBootstrapCommandOptions extends CommonCdkBootstrapCommandOptions {
+  /**
+   * @default false
+   */
+  readonly noExecute?: boolean;
+
+  /**
+   * @default true
+   */
+  readonly publicAccessBlockConfiguration?: boolean;
+}
+
+export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapCommandOptions {
+  /**
+   * @default false
+   */
+  readonly force?: boolean;
+
+  /**
+   * @default - none
+   */
+  readonly cfnExecutionPolicy?: string;
+
+  /**
+   * @default false
+   */
+  readonly showTemplate?: boolean;
+
+  readonly template?: string;
+
+  /**
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
+}
+
 export class TestFixture {
   public readonly qualifier = randomString().substr(0, 10);
   private readonly bucketsToDelete = new Array<string>();
@@ -239,6 +296,78 @@ export class TestFixture {
       ...this.fullStackName(stackNames)], options);
   }
 
+  public async cdkBootstrapLegacy(options: CdkLegacyBootstrapCommandOptions): Promise<string> {
+    const args = ['bootstrap'];
+
+    if (options.verbose) {
+      args.push('-v');
+    }
+    args.push('--toolkit-stack-name', options.toolkitStackName);
+    if (options.bootstrapBucketName) {
+      args.push('--bootstrap-bucket-name', options.bootstrapBucketName);
+    }
+    if (options.noExecute) {
+      args.push('--no-execute');
+    }
+    if (options.publicAccessBlockConfiguration !== undefined) {
+      args.push('--public-access-block-configuration', options.publicAccessBlockConfiguration.toString());
+    }
+    if (options.tags) {
+      args.push('--tags', options.tags);
+    }
+
+    return this.cdk(args, {
+      ...options.cliOptions,
+      modEnv: {
+        ...options.cliOptions?.modEnv,
+        // so that this works for V2,
+        // where the "new" bootstrap is the default
+        CDK_LEGACY_BOOTSTRAP: '1',
+      },
+    });
+  }
+
+  public async cdkBootstrapModern(options: CdkModernBootstrapCommandOptions): Promise<string> {
+    const args = ['bootstrap'];
+
+    if (options.verbose) {
+      args.push('-v');
+    }
+    if (options.showTemplate) {
+      args.push('--show-template');
+    }
+    if (options.template) {
+      args.push('--template', options.template);
+    }
+    args.push('--toolkit-stack-name', options.toolkitStackName);
+    if (options.bootstrapBucketName) {
+      args.push('--bootstrap-bucket-name', options.bootstrapBucketName);
+    }
+    args.push('--qualifier', this.qualifier);
+    if (options.cfnExecutionPolicy) {
+      args.push('--cloudformation-execution-policies', options.cfnExecutionPolicy);
+    }
+    if (options.terminationProtection !== undefined) {
+      args.push('--termination-protection', options.terminationProtection.toString());
+    }
+    if (options.force) {
+      args.push('--force');
+    }
+    if (options.tags) {
+      args.push('--tags', options.tags);
+    }
+
+    return this.cdk(args, {
+      ...options.cliOptions,
+      modEnv: {
+        ...options.cliOptions?.modEnv,
+        // so that this works for V1,
+        // where the "old" bootstrap is the default
+        CDK_NEW_BOOTSTRAP: '1',
+      },
+    });
+  }
+
   public async cdk(args: string[], options: CdkCliOptions = {}) {
     const verbose = options.verbose ?? true;
 
@@ -251,6 +380,10 @@ export class TestFixture {
         ...options.modEnv,
       },
     });
+  }
+
+  public get bootstrapStackName() {
+    return this.fullStackName('bootstrap-stack');
   }
 
   public fullStackName(stackName: string): string;
@@ -278,6 +411,8 @@ export class TestFixture {
    */
   public async dispose(success: boolean) {
     const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
+
+    this.sortBootstrapStacksToTheEnd(stacksToDelete);
 
     // Bootstrap stacks have buckets that need to be cleaned
     const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
@@ -329,6 +464,18 @@ export class TestFixture {
       .filter(s => statusFilter.includes(s.StackStatus))
       .filter(s => s.RootId === undefined); // Only delete parent stacks. Nested stacks are deleted in the process
   }
+
+  private sortBootstrapStacksToTheEnd(stacks: AWS.CloudFormation.Stack[]) {
+    stacks.sort((a, b) => {
+      const aBs = a.StackName.startsWith(this.bootstrapStackName);
+      const bBs = b.StackName.startsWith(this.bootstrapStackName);
+
+      return aBs != bBs
+        // '+' converts a boolean to 0 or 1
+        ? (+aBs) - (+bBs)
+        : a.StackName.localeCompare(b.StackName);
+    });
+  }
 }
 
 /**
@@ -365,8 +512,9 @@ let sanityChecked: boolean | undefined;
  * by hand so let's just mass-automate it.
  */
 async function ensureBootstrapped(fixture: TestFixture) {
-  // Old-style bootstrap stack with default name
+  // Use the default name for the bootstrap stack
   if (await fixture.aws.stackStatus('CDKToolkit') === undefined) {
+    // use whatever version of bootstrap is the default for this particular version of the CLI
     await fixture.cdk(['bootstrap', `aws://${await fixture.aws.account()}/${fixture.aws.region}`]);
   }
 }

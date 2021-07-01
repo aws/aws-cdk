@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, Stack, Duration } from '@aws-cdk/core';
 import { TestOrigin } from './test-origin';
 

@@ -450,22 +450,28 @@
         "LoadBalancerArn": {
           "Ref": "LB8A12904C"
         },
-        "Port": 443,
-        "Protocol": "HTTPS",
         "Certificates": [
           {
             "CertificateArn": ""
           }
-        ]
+        ],
+        "Port": 443,
+        "Protocol": "HTTPS"
       }
     },
     "UserPool6BA7E5F2": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
-        "AccountRecoverySetting": { 
+        "AccountRecoverySetting": {
           "RecoveryMechanisms": [
-            { "Name": "verified_phone_number", "Priority": 1 },
-            { "Name": "verified_email", "Priority": 2 }
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2
+            }
           ]
         },
         "AdminCreateUserConfig": {
@@ -480,7 +486,9 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "Client4A7F64DF": {
       "Type": "AWS::Cognito::UserPoolClient",

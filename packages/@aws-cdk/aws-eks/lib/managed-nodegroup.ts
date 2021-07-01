@@ -88,6 +88,48 @@ export interface LaunchTemplateSpec {
 }
 
 /**
+ * Effect types of kubernetes node taint.
+ */
+export enum TaintEffect {
+  /**
+   * NoSchedule
+   */
+  NO_SCHEDULE = 'NO_SCHEDULE',
+  /**
+   * PreferNoSchedule
+   */
+  PREFER_NO_SCHEDULE = 'PREFER_NO_SCHEDULE',
+  /**
+   * NoExecute
+   */
+  NO_EXECUTE = 'NO_EXECUTE',
+}
+
+/**
+ * Taint interface
+ */
+export interface TaintSpec {
+  /**
+   * Effect type
+   *
+   * @default - None
+   */
+  readonly effect?: TaintEffect;
+  /**
+   * Taint key
+   *
+   * @default - None
+   */
+  readonly key?: string;
+  /**
+   * Taint value
+   *
+   * @default - None
+   */
+  readonly value?: string;
+}
+
+/**
  * The Nodegroup Options for addNodeGroup() method
  */
 export interface NodegroupOptions {
@@ -132,7 +174,7 @@ export interface NodegroupOptions {
    */
   readonly maxSize?: number;
   /**
-   * The minimum number of worker nodes that the managed node group can scale in to. This number must be greater than zero.
+   * The minimum number of worker nodes that the managed node group can scale in to. This number must be greater than or equal to zero.
    *
    * @default 1
    */
@@ -167,6 +209,12 @@ export interface NodegroupOptions {
    * @default - None
    */
   readonly labels?: { [name: string]: string };
+  /**
+   * The Kubernetes taints to be applied to the nodes in the node group when they are created.
+   *
+   * @default - None
+   */
+  readonly taints?: TaintSpec[];
   /**
    * The IAM role to associate with your node group. The Amazon EKS worker node kubelet daemon
    * makes calls to AWS APIs on your behalf. Worker nodes receive permissions for these API calls through
@@ -280,6 +328,12 @@ export class Nodegroup extends Resource implements INodegroup {
       throw new Error(`Minimum capacity ${this.minSize} can't be greater than desired size ${this.desiredSize}`);
     }
 
+    if (props.launchTemplateSpec && props.diskSize) {
+      // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+      // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
+      throw new Error('diskSize must be specified within the launch template');
+    }
+
     if (props.instanceType && props.instanceTypes) {
       throw new Error('"instanceType is deprecated, please use "instanceTypes" only.');
     }
@@ -331,6 +385,8 @@ export class Nodegroup extends Resource implements INodegroup {
       // because this doesn't have a default value, meaning the user had to explicitly configure this.
       instanceTypes: instanceTypes?.map(t => t.toString()),
       labels: props.labels,
+      taints: props.taints,
+      launchTemplate: props.launchTemplateSpec,
       releaseVersion: props.releaseVersion,
       remoteAccess: props.remoteAccess ? {
         ec2SshKey: props.remoteAccess.sshKeyName,
@@ -344,25 +400,6 @@ export class Nodegroup extends Resource implements INodegroup {
       },
       tags: props.tags,
     });
-
-    if (props.launchTemplateSpec) {
-      if (props.diskSize) {
-        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
-        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
-        throw new Error('diskSize must be specified within the launch template');
-      }
-      /**
-       * Instance types can be specified either in `instanceType` or launch template but not both. AS we can not check the content of
-       * the provided launch template and the `instanceType` property is preferrable. We allow users to define `instanceType` property here.
-       * see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
-       */
-      // TODO: update this when the L1 resource spec is updated.
-      resource.addPropertyOverride('LaunchTemplate', {
-        Id: props.launchTemplateSpec.id,
-        Version: props.launchTemplateSpec.version,
-      });
-    }
-
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
     // its state for consistency.

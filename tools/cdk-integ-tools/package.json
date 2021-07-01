@@ -20,7 +20,9 @@
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "build+test+package": "yarn build+test",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -37,7 +39,7 @@
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/assert": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0",
     "aws-cdk": "0.0.0",
     "fs-extra": "^9.1.0",
     "yargs": "^16.2.0"
@@ -51,7 +53,7 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "peerDependencies": {
-    "@aws-cdk/assert": "0.0.0"
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "ubergen": {
     "exclude": true

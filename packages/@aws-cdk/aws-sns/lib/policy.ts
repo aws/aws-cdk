@@ -12,6 +12,12 @@ export interface TopicPolicyProps {
    * The set of topics this policy applies to.
    */
   readonly topics: ITopic[];
+  /**
+   * IAM policy document to apply to topic(s).
+   * @default empty policy document
+   */
+  readonly policyDocument?: PolicyDocument;
+
 }
 
 /**
@@ -31,6 +37,8 @@ export class TopicPolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: TopicPolicyProps) {
     super(scope, id);
+
+    this.document = props.policyDocument ?? this.document;
 
     new CfnTopicPolicy(this, 'Resource', {
       policyDocument: this.document,

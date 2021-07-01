@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -46,6 +46,39 @@ export = {
       RuleName: { Ref: 'MyRuleA44AB831' },
     }));
 
+    test.done();
+  },
+
+  'get rate as token'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyScheduledStack');
+    const lazyDuration = cdk.Duration.minutes(cdk.Lazy.number({ produce: () => 5 }));
+
+    new Rule(stack, 'MyScheduledRule', {
+      ruleName: 'rateInMinutes',
+      schedule: Schedule.rate(lazyDuration),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      'Name': 'rateInMinutes',
+      'ScheduleExpression': 'rate(5 minutes)',
+    }));
+
+    test.done();
+  },
+
+  'Seconds is not an allowed value for Schedule rate'(test: Test) {
+    const lazyDuration = cdk.Duration.seconds(cdk.Lazy.number({ produce: () => 5 }));
+    test.throws(() => Schedule.rate(lazyDuration), /Allowed units for scheduling/i);
+    test.done();
+  },
+
+  'Millis is not an allowed value for Schedule rate'(test: Test) {
+    const lazyDuration = cdk.Duration.millis(cdk.Lazy.number({ produce: () => 5 }));
+
+    // THEN
+    test.throws(() => Schedule.rate(lazyDuration), /Allowed units for scheduling/i);
     test.done();
   },
 

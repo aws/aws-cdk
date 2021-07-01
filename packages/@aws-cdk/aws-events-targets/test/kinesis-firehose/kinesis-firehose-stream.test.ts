@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as events from '@aws-cdk/aws-events';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import { Stack } from '@aws-cdk/core';

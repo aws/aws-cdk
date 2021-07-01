@@ -1,6 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
+import { Account, ISDK, SDK, SdkProvider } from '../../lib/api/aws-auth';
+import { Mode } from '../../lib/api/aws-auth/credentials';
+import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 
 const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN ' });
@@ -40,6 +42,10 @@ export class MockSdkProvider extends SdkProvider {
     } else {
       this.sdk = new MockSdk();
     }
+  }
+
+  async baseCredentialsPartition(_environment: cxapi.Environment, _mode: Mode): Promise<string | undefined> {
+    return undefined;
   }
 
   public defaultAccount(): Promise<Account | undefined> {
@@ -102,6 +108,7 @@ export class MockSdk implements ISDK {
   public readonly route53 = jest.fn();
   public readonly ecr = jest.fn();
   public readonly elbv2 = jest.fn();
+  public readonly secretsManager = jest.fn();
 
   public currentAccount(): Promise<Account> {
     return Promise.resolve({ accountId: '123456789012', partition: 'aws' });

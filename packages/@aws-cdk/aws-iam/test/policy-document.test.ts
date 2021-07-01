@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import {
   AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
@@ -100,6 +100,19 @@ describe('IAM policy document', () => {
         notActions: ['service:action', '*', 'service:acti*', 'in:val:id'],
       });
     }).toThrow(/Action 'in:val:id' is invalid/);
+  });
+
+  // https://github.com/aws/aws-cdk/issues/13479
+  test('Does not validate unresolved tokens', () => {
+    const stack = new Stack();
+    const perm = new PolicyStatement({
+      actions: [`${Lazy.string({ produce: () => 'sqs:sendMessage' })}`],
+    });
+
+    expect(stack.resolve(perm.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      Action: 'sqs:sendMessage',
+    });
   });
 
   test('Cannot combine Resources and NotResources', () => {
@@ -318,6 +331,40 @@ describe('IAM policy document', () => {
       Effect: 'Allow',
       Action: ['a', 'b', 'c'],
       Resource: ['x', 'y', 'z'],
+    });
+  });
+
+  test('addResources()/addActions() will not add duplicates', () => {
+    const stack = new Stack();
+
+    const statement = new PolicyStatement();
+    statement.addActions('a');
+    statement.addActions('a');
+
+    statement.addResources('x');
+    statement.addResources('x');
+
+    expect(stack.resolve(statement.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      Action: ['a'],
+      Resource: ['x'],
+    });
+  });
+
+  test('addNotResources()/addNotActions() will not add duplicates', () => {
+    const stack = new Stack();
+
+    const statement = new PolicyStatement();
+    statement.addNotActions('a');
+    statement.addNotActions('a');
+
+    statement.addNotResources('x');
+    statement.addNotResources('x');
+
+    expect(stack.resolve(statement.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      NotAction: ['a'],
+      NotResource: ['x'],
     });
   });
 
