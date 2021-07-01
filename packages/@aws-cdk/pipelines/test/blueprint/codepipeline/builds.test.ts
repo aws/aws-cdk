@@ -26,7 +26,7 @@ afterEach(() => {
 
 test('SimpleSynthAction takes arrays of commands', () => {
   // WHEN
-  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new testutil.ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     installCommands: ['install1', 'install2'],
     commands: ['build1', 'build2'],
   });
@@ -59,7 +59,7 @@ test('SimpleSynthAction takes arrays of commands', () => {
 
 test('synth automatically determines artifact base-directory', () => {
   // WHEN
-  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new testutil.ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
   });
 
   // THEN
@@ -79,7 +79,7 @@ test('synth automatically determines artifact base-directory', () => {
 
 test('synth build respects subdirectory', () => {
   // WHEN
-  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new testutil.ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     subdirectory: 'subdir',
   });
 
@@ -105,7 +105,7 @@ test('synth build respects subdirectory', () => {
 
 test('synth assumes no build step by default', () => {
   // WHEN
-  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new testutil.ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
   });
 
   // THEN
@@ -127,7 +127,7 @@ test('synth assumes no build step by default', () => {
 
 test('complex setup with environment variables still renders correct project', () => {
   // WHEN
-  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new testutil.ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     env: {
       SOME_ENV_VAR: 'SomeValue',
     },
@@ -180,7 +180,7 @@ test('complex setup with environment variables still renders correct project', (
 
 test('npm can have its install command overridden', () => {
   // WHEN
-  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new testutil.ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     installCommands: ['/bin/true'],
   });
 
@@ -210,7 +210,7 @@ test('Standard (NPM) synth can output additional artifacts', () => {
       IntegTest: 'test',
     },
   });
-  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new testutil.ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     synthStep,
   });
 
@@ -240,7 +240,7 @@ test('Standard (NPM) synth can output additional artifacts', () => {
 
 test('Standard (NPM) synth can run in a VPC', () => {
   // WHEN
-  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new testutil.ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     engine: new cdkp.CodePipelineEngine({
       vpc: new ec2.Vpc(pipelineStack, 'NpmSynthTestVpc'),
     }),
@@ -308,11 +308,11 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
   expect(hash2).not.toEqual(hash4);
   expect(hash3).not.toEqual(hash4);
 
-  function synthWithAction(cb: () => testutil.TestGitHubNpmPipelineProps) {
+  function synthWithAction(cb: () => testutil.ModernTestGitHubNpmPipelineProps) {
     const _app = new testutil.TestApp({ outdir: OUTDIR });
     const _pipelineStack = new Stack(_app, 'PipelineStack', { env: testutil.PIPELINE_ENV });
 
-    new testutil.TestGitHubNpmPipeline(_pipelineStack, 'Cdk', cb());
+    new testutil.ModernTestGitHubNpmPipeline(_pipelineStack, 'Cdk', cb());
 
     const theHash = Capture.aString();
     expect(_pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -342,7 +342,7 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
 test('SimpleSynthAction is IGrantable', () => {
   // GIVEN
   const engine = new cdkp.CodePipelineEngine();
-  const pipe = new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  const pipe = new testutil.ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     engine,
   });
   const bucket = new s3.Bucket(pipelineStack, 'Bucket');
@@ -366,7 +366,7 @@ test('SimpleSynthAction can reference an imported ECR repo', () => {
   // Repro from https://github.com/aws/aws-cdk/issues/10535
 
   // WHEN
-  new testutil.TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new testutil.ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     engine: new cdkp.CodePipelineEngine({
       buildEnvironment: {
         buildImage: cbuild.LinuxBuildImage.fromEcrRepository(

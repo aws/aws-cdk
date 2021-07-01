@@ -32,7 +32,7 @@ export class TestApp extends App {
   }
 }
 
-export class TestGitHubNpmPipeline extends cdkp.CdkPipeline {
+export class LegacyTestGitHubNpmPipeline extends cdkp.CdkPipeline {
   public readonly sourceArtifact: codepipeline.Artifact;
   public readonly cloudAssemblyArtifact: codepipeline.Artifact;
 

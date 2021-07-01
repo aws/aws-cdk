@@ -30,9 +30,9 @@ export class TestApp extends App {
   }
 }
 
-export type TestGitHubNpmPipelineProps = Partial<cdkp.SynthStepProps> & { synthStep?: cdkp.Step, engine?: cdkp.IDeploymentEngine };
-export class TestGitHubNpmPipeline extends cdkp.Pipeline {
-  constructor(scope: Construct, id: string, props?: TestGitHubNpmPipelineProps) {
+export type ModernTestGitHubNpmPipelineProps = Partial<cdkp.SynthStepProps> & { synthStep?: cdkp.Step, engine?: cdkp.IDeploymentEngine };
+export class ModernTestGitHubNpmPipeline extends cdkp.Pipeline {
+  constructor(scope: Construct, id: string, props?: ModernTestGitHubNpmPipelineProps) {
     super(scope, id, {
       synthStep: props?.synthStep ?? new cdkp.SynthStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),

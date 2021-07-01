@@ -5,7 +5,7 @@ import { App, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../../lib';
 import { AppWithOutput, ThreeStackApp, TwoStackApp } from '../test-app';
 import { sortedByRunOrder } from '../testmatchers';
-import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from '../testutil';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline } from '../testutil';
 
 let app: App;
 let pipelineStack: Stack;
@@ -14,7 +14,7 @@ let pipeline: cdkp.Pipeline;
 beforeEach(() => {
   app = new TestApp();
   pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk');
+  pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 });
 
 test('interdependent stacks are in the right order', () => {

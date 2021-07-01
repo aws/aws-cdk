@@ -33,6 +33,11 @@ export interface SimpleSynthOptions {
   /**
    * Environment variables to send into build
    *
+   * NOTE: You may run into the 1000-character limit for the Action configuration if you have a large
+   * number of variables or if their names or values are very long.
+   * If you do, pass them to the underlying CodeBuild project directly in `environment` instead.
+   * However, you will not be able to use CodePipeline Variables in this case.
+   *
    * @default - No additional environment variables
    */
   readonly environmentVariables?: Record<string, codebuild.BuildEnvironmentVariable>;
@@ -474,6 +479,16 @@ export interface StandardNpmSynthOptions extends SimpleSynthOptions {
    * @default 'npx cdk synth'
    */
   readonly synthCommand?: string;
+
+  /**
+   * Test commands
+   *
+   * These commands are run after the build commands but before the
+   * synth command.
+   *
+   * @default - No test commands
+   */
+  readonly testCommands?: string[];
 }
 
 /**
@@ -505,6 +520,16 @@ export interface StandardYarnSynthOptions extends SimpleSynthOptions {
    * @default 'npx cdk synth'
    */
   readonly synthCommand?: string;
+
+  /**
+   * Test commands
+   *
+   * These commands are run after the build commands but before the
+   * synth command.
+   *
+   * @default - No test commands
+   */
+  readonly testCommands?: string[];
 }
 
 function hash<A>(obj: A) {

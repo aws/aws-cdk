@@ -303,7 +303,9 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
   private selfMutateAction(options: MakeActionOptions): cp.IAction {
     const installSuffix = this.props.cdkCliVersion ? `@${this.props.cdkCliVersion}` : '';
-    const pipelineStackName = Stack.of(this.pipeline).stackName;
+
+    const pipelineStack = Stack.of(this.pipeline);
+    const pipelineStackIdentifier = pipelineStack.node.path ?? pipelineStack.stackName;
 
     return new CodeBuildStep('SelfMutate', {
       vpc: this.props.vpc,
@@ -323,7 +325,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
         `npm install -g aws-cdk${installSuffix}`,
       ],
       commands: [
-        `cdk -a ${toPosixPath(embeddedAsmPath(this.pipeline))} deploy ${pipelineStackName} --require-approval=never --verbose`,
+        `cdk -a ${toPosixPath(embeddedAsmPath(this.pipeline))} deploy ${pipelineStackIdentifier} --require-approval=never --verbose`,
       ],
       rolePolicyStatements: [
         // allow the self-mutating project permissions to assume the bootstrap Action role
