@@ -123,6 +123,49 @@ export = {
     test.done();
   },
 
+  'VirtualService can use CloudMap service with instanceAttributes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const vpc = new ec2.Vpc(stack, 'vpc');
+    const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+      vpc,
+      name: 'domain.local',
+    });
+    const service = namespace.createService('Svc');
+
+    const instanceAttribute : { [key: string]: string} = {};
+    instanceAttribute.testKey = 'testValue';
+
+    // WHEN
+    new appmesh.VirtualNode(stack, 'test-node', {
+      mesh,
+      serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service, instanceAttribute),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+      Spec: {
+        ServiceDiscovery: {
+          AWSCloudMap: {
+            NamespaceName: 'domain.local',
+            ServiceName: { 'Fn::GetAtt': ['testnamespaceSvcB55702EC', 'Name'] },
+            Attributes: [
+              {
+                Key: 'testKey',
+                Value: 'testValue',
+              },
+            ],
+          },
+        },
+      },
+    }));
+
+    test.done();
+  },
+
   'When adding a VirtualNode to a mesh': {
     'with empty default listeners and backends': {
       'should create default resource'(test: Test) {
