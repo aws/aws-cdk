@@ -76,7 +76,6 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
    */
   public abstract readonly meshArn: string;
 
-
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
    */
@@ -176,7 +175,6 @@ export class Mesh extends MeshBase {
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
   public readonly meshArn: string;
-
 
   constructor(scope: Construct, id: string, props: MeshProps = {}) {
     super(scope, id, {
