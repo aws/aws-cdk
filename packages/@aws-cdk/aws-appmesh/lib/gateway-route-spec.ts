@@ -440,7 +440,7 @@ export interface GrpcGatewayRouteMatchConfig {
 }
 
 /**
- * Other optional properties for gRPC gateway route match other than the host name.
+ * Optional properties for gRPC gateway route match other than the host name.
  */
 export interface GrpcGatewayRouteHostnameMatchOptions {
   /**
@@ -459,7 +459,7 @@ export interface GrpcGatewayRouteHostnameMatchOptions {
 }
 
 /**
- * Other optional properties for gRPC gateway route match other than the metadata.
+ * Optional properties for gRPC gateway route match other than the metadata.
  */
 export interface GrpcGatewayRouteMetadataMatchOptions {
   /**
@@ -478,7 +478,7 @@ export interface GrpcGatewayRouteMetadataMatchOptions {
 }
 
 /**
- * Other optional properties for gRPC gateway route match other than the service name.
+ * Optional properties for gRPC gateway route match other than the service name.
  */
 export interface GrpcGatewayRouteServiceNameMatchOptions {
   /**
@@ -504,7 +504,7 @@ export abstract class GrpcGatewayRouteMatch {
    * Create host name based gRPC gateway route match.
    *
    * @param hostname The gateway route host name to be matched on
-   * @param options Other optional properties to define gRPC gateway route match
+   * @param options Optional properties to define gRPC gateway route match
    */
   public static hostname(hostname: GatewayRouteHostname, options?: GrpcGatewayRouteHostnameMatchOptions): GrpcGatewayRouteMatch {
     return new GrpcGatewayRouteHostnameMatchImpl(hostname, options);
@@ -514,7 +514,7 @@ export abstract class GrpcGatewayRouteMatch {
    * Create metadata based gRPC gateway route match.
    *
    * @param metadata An object that represents the data to match from the request.
-   * @param options Other optional properties to define gRPC gateway route match
+   * @param options Optional properties to define gRPC gateway route match
    */
   public static metadata(metadata: GrpcMetadataMatch[], options?: GrpcGatewayRouteMetadataMatchOptions): GrpcGatewayRouteMatch {
     return new GrpcGatewayRouteMetadataMatchImpl(metadata, options);
@@ -524,7 +524,7 @@ export abstract class GrpcGatewayRouteMatch {
    * Create service name based gRPC gateway route match.
    *
    * @param serviceName The fully qualified domain name for the service to match from the request
-   * @param options Other optional properties to define gRPC gateway route match
+   * @param options Optional properties to define gRPC gateway route match
    */
   public static serviceName(serviceName: string, options?: GrpcGatewayRouteServiceNameMatchOptions): GrpcGatewayRouteMatch {
     return new GrpcGatewayRouteServicenameMatchImpl(serviceName, options);
@@ -868,8 +868,15 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
-    // Todo - Add a logic to set prefix to '/' when {} is passed to match.
-    const prefix = this.match ? this.match.pathOrPrefix?.bind(scope).requestMatch.prefix :'/';
+    let isEmpty = true;
+    for (const property in this.match) {
+      if (property) {
+        isEmpty = false;
+        break;
+      }
+    }
+    // If match is undefined or empty, assign prefix with '/'
+    const prefix = !isEmpty ? this.match?.pathOrPrefix?.bind(scope).requestMatch.prefix :'/';
 
     if (prefix && prefix[0] != '/') {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefix}`);

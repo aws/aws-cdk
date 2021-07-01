@@ -308,21 +308,17 @@ export interface GrpcRouteMatchConfig {
 }
 
 /**
- * Other optional properties for gRPC route match other than the metadata.
- */
-export interface GrpcRouteMetadataMatchOptions {
-  /**
-   * The fully qualified domain name for the service to match from the request.
-   *
-   * @default - no match on service name
-   */
-  readonly serviceName?: string;
-}
-
-/**
  * Other optional properties for gRPC route match other than the service name.
  */
 export interface GrpcRouteServiceNameMatchOptions {
+  /**
+   * The route metadata to be matched on.
+   *
+   * @default - no match on metadata
+   *
+   */
+  readonly methodName?: string;
+
   /**
    * The route metadata to be matched on.
    *
@@ -333,6 +329,26 @@ export interface GrpcRouteServiceNameMatchOptions {
 }
 
 /**
+ * Optional properties for gRPC route match other than the metadata.
+ */
+export interface GrpcRouteMetadataMatchOptions {
+  /**
+   * The fully qualified domain name for the service to match from the request.
+   *
+   * @default - no match on service name
+   */
+  readonly serviceName: string;
+
+  /**
+   * The route metadata to be matched on.
+   *
+   * @default - no match on metadata
+   *
+   */
+  readonly methodName?: string;
+}
+
+/**
  * The criterion for determining a request match for this Route.
  */
 export abstract class GrpcRouteMatch {
@@ -340,7 +356,7 @@ export abstract class GrpcRouteMatch {
    * Create service name based gRPC route match.
    *
    * @param serviceName The fully qualified domain name for the service to match from the request
-   * @param options Other optional properties to define gRPC route match
+   * @param options Optional properties to define gRPC route match
    */
   public static serviceName(serviceName: string, options?: GrpcRouteServiceNameMatchOptions): GrpcRouteMatch {
     return new GrpcRouteServicenameMatchImpl(serviceName, options);
@@ -350,11 +366,12 @@ export abstract class GrpcRouteMatch {
    * Create metadata based gRPC route match.
    *
    * @param metadata An object that represents the data to match from the request.
-   * @param options Other optional properties to define gRPC route match
+   * @param options Optional properties to define gRPC route match
    */
   public static metadata(metadata: GrpcMetadataMatch[], options?: GrpcRouteMetadataMatchOptions): GrpcRouteMatch {
     return new GrpcRouteMetadataMatchImpl(metadata, options);
   }
+
   /**
    * Return the gRPC route match configuration.
    */
@@ -373,6 +390,7 @@ class GrpcRouteMetadataMatchImpl extends GrpcRouteMatch {
       requestMatch: {
         metadata: this.metadata.map(metadata => metadata.bind(scope).metadataMatch),
         serviceName: this.options?.serviceName,
+        methodName: this.options?.methodName,
       },
     };
   }
@@ -390,6 +408,7 @@ class GrpcRouteServicenameMatchImpl extends GrpcRouteMatch {
       requestMatch: {
         serviceName: this.serviceName,
         metadata: this.options?.metadata?.map(metadata => metadata.bind(scope).metadataMatch),
+        methodName: this.options?.methodName,
       },
     };
   }
@@ -723,8 +742,15 @@ class HttpRouteSpec extends RouteSpec {
   }
 
   public bind(scope: Construct): RouteSpecConfig {
-    // Todo - Add a logic to set prefix to '/' when {} is passed to match.
-    const prefix = this.match ? this.match.pathOrPrefix?.bind(scope).requestMatch.prefix :'/';
+    let isEmpty = true;
+    for (const property in this.match) {
+      if (property) {
+        isEmpty = false;
+        break;
+      }
+    }
+    // If match is undefined or empty, assign prefix with '/'
+    const prefix = !isEmpty ? this.match?.pathOrPrefix?.bind(scope).requestMatch.prefix :'/';
 
     if (prefix && prefix[0] != '/') {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefix}`);
