@@ -125,7 +125,9 @@ export = {
       });
       test.throws(() => appmesh.GatewayRouteSpec.http({
         routeTarget: virtualService,
-        match: appmesh.HttpGatewayRouteMatch.prefix('wrong'),
+        match: {
+          pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.prefix('wrong'),
+        },
       }).bind(stack),
       /Prefix Path must start with \'\/\', got: wrong/);
       test.done();
@@ -162,7 +164,800 @@ export = {
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
-          MeshOwner: meshEnv.account,
+            MeshOwner: meshEnv.account,
+        }));
+
+        test.done();
+      },
+    },
+
+    'with host name rewrite': {
+      'should set default target host name'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // Add an HTTP Route
+        virtualGateway.addGatewayRoute('gateway-http-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http({
+            routeTarget: virtualService,
+            rewrite: {
+              defaultHostname: appmesh.Default.ENABLED,
+            },
+          }),
+          gatewayRouteName: 'gateway-http-route',
+        });
+
+        virtualGateway.addGatewayRoute('gateway-grpc-route', {
+          routeSpec: appmesh.GatewayRouteSpec.grpc({
+            routeTarget: virtualService,
+            match: appmesh.GrpcRouteMatch.serviceName(virtualService.virtualServiceName),
+            rewrite: {
+              defaultHostname: appmesh.Default.ENABLED,
+            },
+          }),
+          gatewayRouteName: 'gateway-grpc-route',
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http-route',
+          Spec: {
+            HttpRoute: {
+              Action: {
+                Rewrite: {
+                  Hostname: {
+                    DefaultTargetHostname: 'enabled',
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-grpc-route',
+          Spec: {
+            GrpcRoute: {
+              Action: {
+                Rewrite: {
+                  Hostname: {
+                    DefaultTargetHostname: 'enabled',
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'with path rewrite': {
+      'should set exact path'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // Add an HTTP2 Route
+        virtualGateway.addGatewayRoute('gateway-http2-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http2({
+            routeTarget: virtualService,
+            rewrite: {
+              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.path('/rewrittenPath'),
+            },
+            match: {
+              method: appmesh.HttpRouteMatchMethod.GET,
+            },
+          }),
+          gatewayRouteName: 'gateway-http2-route',
+        });
+
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http2-route',
+          Spec: {
+            Http2Route: {
+              Action: {
+                Rewrite: {
+                  Path: {
+                    Exact: '/rewrittenPath',
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+
+      'should throw an error if match on prefix'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // WHEN + THEN
+
+        test.throws(() => {
+          virtualGateway.addGatewayRoute('gateway-http2-route', {
+            routeSpec: appmesh.GatewayRouteSpec.http2({
+              routeTarget: virtualService,
+              rewrite: {
+                pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.path('/rewrittenPath'),
+              },
+              match: {
+                pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.prefix('/'),
+              },
+            }),
+            gatewayRouteName: 'gateway-http2-route',
+          }), /HTTP Gateway Route Prefix Match and Path Rewrite both cannot be set/;
+        });
+
+        test.done();
+      },
+    },
+
+    'with prefix rewrite': {
+      'should set default prefix or value'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // Add an HTTP Route
+        virtualGateway.addGatewayRoute('gateway-http-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http({
+            routeTarget: virtualService,
+            rewrite: {
+              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(appmesh.Default.ENABLED),
+            },
+          }),
+          gatewayRouteName: 'gateway-http-route',
+        });
+
+        // Add an HTTP2 Route
+        virtualGateway.addGatewayRoute('gateway-http2-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http2({
+            routeTarget: virtualService,
+            rewrite: {
+              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(appmesh.Default.DISABLED),
+            },
+          }),
+          gatewayRouteName: 'gateway-http2-route',
+        });
+
+        // Add an HTTP2 Route
+        virtualGateway.addGatewayRoute('gateway-http2-route-2', {
+          routeSpec: appmesh.GatewayRouteSpec.http2({
+            routeTarget: virtualService,
+            rewrite: {
+              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.customPrefix('/rewrittenUri/'),
+            },
+          }),
+          gatewayRouteName: 'gateway-http2-route-2',
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http-route',
+          Spec: {
+            HttpRoute: {
+              Action: {
+                Rewrite: {
+                  Prefix: {
+                    DefaultPrefix: 'enabled',
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http2-route',
+          Spec: {
+            Http2Route: {
+              Action: {
+                Rewrite: {
+                  Prefix: {
+                    DefaultPrefix: 'disabled',
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http2-route-2',
+          Spec: {
+            Http2Route: {
+              Action: {
+                Rewrite: {
+                  Prefix: {
+                    Value: '/rewrittenUri/',
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+
+      'should throw an error if match is not on prefix'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // WHEN + THEN
+
+        test.throws(() => {
+          virtualGateway.addGatewayRoute('gateway-http2-route', {
+            routeSpec: appmesh.GatewayRouteSpec.http2({
+              routeTarget: virtualService,
+              rewrite: {
+                pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.customPrefix('/rewrittenUrl'),
+              },
+              match: {
+                pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.path(appmesh.HttpPathMatch.matchingExactly('/'),
+                ),
+              },
+            }),
+            gatewayRouteName: 'gateway-http2-route',
+          }), /HTTP Gateway Route Prefix Match must be set./;
+        });
+
+        test.done();
+      },
+    },
+
+    'with host name match': {
+      'should match based on host name'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // Add an HTTP Route
+        virtualGateway.addGatewayRoute('gateway-http-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http({
+            routeTarget: virtualService,
+            match: {
+              hostname: appmesh.GatewayRouteHostname.matchingExactly('example.com'),
+            },
+          }),
+          gatewayRouteName: 'gateway-http-route',
+        });
+
+        virtualGateway.addGatewayRoute('gateway-grpc-route', {
+          routeSpec: appmesh.GatewayRouteSpec.grpc({
+            routeTarget: virtualService,
+            match: appmesh.GrpcGatewayRouteMatch.hostname(appmesh.GatewayRouteHostname.matchingSuffix('.example.com')),
+          }),
+          gatewayRouteName: 'gateway-grpc-route',
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http-route',
+          Spec: {
+            HttpRoute: {
+              Match: {
+                Hostname: {
+                  Exact: 'example.com',
+                },
+              },
+            },
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-grpc-route',
+          Spec: {
+            GrpcRoute: {
+              Match: {
+                Hostname: {
+                  Suffix: '.example.com',
+                },
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'with metadata match': {
+      'should match based on metadata'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        virtualGateway.addGatewayRoute('gateway-grpc-route', {
+          routeSpec: appmesh.GatewayRouteSpec.grpc({
+            routeTarget: virtualService,
+            match: appmesh.GrpcGatewayRouteMatch.metadata([
+              appmesh.GrpcMetadataMatch.valueIs('Content-Type', 'application/json'),
+              appmesh.GrpcMetadataMatch.valueIsNot('Content-Type', 'text/html'),
+              appmesh.GrpcMetadataMatch.valueStartsWith('Content-Type', 'application/'),
+              appmesh.GrpcMetadataMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+              appmesh.GrpcMetadataMatch.valueEndsWith('Content-Type', '/json'),
+              appmesh.GrpcMetadataMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+              appmesh.GrpcMetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+              appmesh.GrpcMetadataMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+              appmesh.GrpcMetadataMatch.valuesIsInRange('Max-Forward', 1, 5),
+              appmesh.GrpcMetadataMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+            ]),
+          }),
+          gatewayRouteName: 'gateway-grpc-route',
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-grpc-route',
+          Spec: {
+            GrpcRoute: {
+              Match: {
+                Metadata: [
+                  {
+                    Invert: false,
+                    Match: { Exact: 'application/json' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: true,
+                    Match: { Exact: 'text/html' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: false,
+                    Match: { Prefix: 'application/' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: true,
+                    Match: { Prefix: 'text/' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: false,
+                    Match: { Suffix: '/json' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: true,
+                    Match: { Suffix: '/json+foobar' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: false,
+                    Match: { Regex: 'application/.*' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: true,
+                    Match: { Regex: 'text/.*' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: false,
+                    Match: {
+                      Range: {
+                        End: 5,
+                        Start: 1,
+                      },
+                    },
+                    Name: 'Max-Forward',
+                  },
+                  {
+                    Invert: true,
+                    Match: {
+                      Range: {
+                        End: 5,
+                        Start: 1,
+                      },
+                    },
+                    Name: 'Max-Forward',
+                  },
+                ],
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'with header match': {
+      'should match based on header'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // Add an HTTP Route
+        virtualGateway.addGatewayRoute('gateway-http-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http({
+            routeTarget: virtualService,
+            match: {
+              header: [
+                appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
+                appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'text/html'),
+                appmesh.HttpHeaderMatch.valueStartsWith('Content-Type', 'application/'),
+                appmesh.HttpHeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+                appmesh.HttpHeaderMatch.valueEndsWith('Content-Type', '/json'),
+                appmesh.HttpHeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+                appmesh.HttpHeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+                appmesh.HttpHeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+                appmesh.HttpHeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
+                appmesh.HttpHeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+              ],
+            },
+          }),
+          gatewayRouteName: 'gateway-http-route',
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http-route',
+          Spec: {
+            HttpRoute: {
+              Match: {
+                Headers: [
+                  {
+                    Invert: false,
+                    Match: { Exact: 'application/json' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: true,
+                    Match: { Exact: 'text/html' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: false,
+                    Match: { Prefix: 'application/' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: true,
+                    Match: { Prefix: 'text/' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: false,
+                    Match: { Suffix: '/json' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: true,
+                    Match: { Suffix: '/json+foobar' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: false,
+                    Match: { Regex: 'application/.*' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: true,
+                    Match: { Regex: 'text/.*' },
+                    Name: 'Content-Type',
+                  },
+                  {
+                    Invert: false,
+                    Match: {
+                      Range: {
+                        End: 5,
+                        Start: 1,
+                      },
+                    },
+                    Name: 'Max-Forward',
+                  },
+                  {
+                    Invert: true,
+                    Match: {
+                      Range: {
+                        End: 5,
+                        Start: 1,
+                      },
+                    },
+                    Name: 'Max-Forward',
+                  },
+                ],
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'with method match': {
+      'should match based on method'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // Add an HTTP Route
+        virtualGateway.addGatewayRoute('gateway-http-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http({
+            routeTarget: virtualService,
+            match: {
+              method: appmesh.HttpRouteMatchMethod.DELETE,
+            },
+          }),
+          gatewayRouteName: 'gateway-http-route',
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http-route',
+          Spec: {
+            HttpRoute: {
+              Match: {
+                Method: 'DELETE',
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'with path match': {
+      'should match based on path'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // Add an HTTP Route
+        virtualGateway.addGatewayRoute('gateway-http-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http({
+            routeTarget: virtualService,
+            match: {
+              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.path(appmesh.HttpPathMatch.matchingExactly('exact')),
+            },
+          }),
+          gatewayRouteName: 'gateway-http-route',
+        });
+
+        // Add an HTTP2 Route
+        virtualGateway.addGatewayRoute('gateway-http2-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http2({
+            routeTarget: virtualService,
+            match: {
+              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.path(appmesh.HttpPathMatch.matchingRegex('regex')),
+            },
+          }),
+          gatewayRouteName: 'gateway-http2-route',
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http-route',
+          Spec: {
+            HttpRoute: {
+              Match: {
+                Path: {
+                  Exact: 'exact',
+                },
+              },
+            },
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http2-route',
+          Spec: {
+            Http2Route: {
+              Match: {
+                Path: {
+                  Regex: 'regex',
+                },
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'with query paramater match': {
+      'should match based on query parameter'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // Add an HTTP Route
+        virtualGateway.addGatewayRoute('gateway-http-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http({
+            routeTarget: virtualService,
+            match: {
+              queryParameters: [
+                appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              ],
+            },
+          }),
+          gatewayRouteName: 'gateway-http-route',
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http-route',
+          Spec: {
+            HttpRoute: {
+              Match: {
+                QueryParameters: [
+                  {
+                    Name: 'query-field',
+                    Match: {
+                      Exact: 'value',
+                    },
+                  },
+                ],
+              },
+            },
+          },
         }));
 
         test.done();

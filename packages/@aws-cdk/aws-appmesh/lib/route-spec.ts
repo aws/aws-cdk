@@ -1,5 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnRoute } from './appmesh.generated';
+import {
+  GrpcMetadataMatch,
+  HttpGatewayRoutePathOrPrefixMatch,
+  QueryParameterMatch,
+} from './gateway-route-spec';
 import { HttpTimeout, GrpcTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
 
@@ -25,16 +30,15 @@ export interface WeightedTarget {
 }
 
 /**
- * The criterion for determining a request match for this GatewayRoute
+ * The criterion for determining a request match for this Route
  */
 export interface HttpRouteMatch {
   /**
-   * Specifies the path to match requests with.
-   * This parameter must always start with /, which by itself matches all requests to the virtual service name.
-   * You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
-   * and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
+   * Either path or prefix can be selected
+   *
+   * @default - prefix match on '/'
    */
-  readonly prefixPath: string;
+  readonly pathOrPrefix?: HttpGatewayRoutePathOrPrefixMatch,
 
   /**
    * Specifies the client request headers to match on. All specified headers
@@ -58,7 +62,12 @@ export interface HttpRouteMatch {
    */
   readonly protocol?: HttpRouteProtocol;
 
-  
+  /**
+   * The query parameter to match on.
+   *
+   * @default - no match on query parameter
+   */
+  readonly queryParameters?: QueryParameterMatch[]
 }
 
 /**
@@ -289,13 +298,101 @@ class HeaderMatchImpl extends HttpHeaderMatch {
 }
 
 /**
- * The criterion for determining a request match for this GatewayRoute
+ * Configuration for gRPC route match.
  */
-export interface GrpcRouteMatch {
+export interface GrpcRouteMatchConfig {
   /**
-   * The fully qualified domain name for the service to match from the request
+   * Route CFN configuration for gRPC route match.
    */
-  readonly serviceName: string;
+  readonly requestMatch: CfnRoute.GrpcRouteMatchProperty;
+}
+
+/**
+ * Other optional properties for gRPC route match other than the metadata.
+ */
+export interface GrpcRouteMetadataMatchOptions {
+  /**
+   * The fully qualified domain name for the service to match from the request.
+   *
+   * @default - no match on service name
+   */
+  readonly serviceName?: string;
+}
+
+/**
+ * Other optional properties for gRPC route match other than the service name.
+ */
+export interface GrpcRouteServiceNameMatchOptions {
+  /**
+   * The route metadata to be matched on.
+   *
+   * @default - no match on metadata
+   *
+   */
+  readonly metadata?: GrpcMetadataMatch[];
+}
+
+/**
+ * The criterion for determining a request match for this Route.
+ */
+export abstract class GrpcRouteMatch {
+  /**
+   * Create service name based gRPC route match.
+   *
+   * @param serviceName The fully qualified domain name for the service to match from the request
+   * @param options Other optional properties to define gRPC route match
+   */
+  public static serviceName(serviceName: string, options?: GrpcRouteServiceNameMatchOptions): GrpcRouteMatch {
+    return new GrpcRouteServicenameMatchImpl(serviceName, options);
+  }
+
+  /**
+   * Create metadata based gRPC route match.
+   *
+   * @param metadata An object that represents the data to match from the request.
+   * @param options Other optional properties to define gRPC route match
+   */
+  public static metadata(metadata: GrpcMetadataMatch[], options?: GrpcRouteMetadataMatchOptions): GrpcRouteMatch {
+    return new GrpcRouteMetadataMatchImpl(metadata, options);
+  }
+  /**
+   * Return the gRPC route match configuration.
+   */
+  abstract bind(scope: Construct): GrpcRouteMatchConfig;
+}
+
+class GrpcRouteMetadataMatchImpl extends GrpcRouteMatch {
+  constructor(
+    private readonly metadata: GrpcMetadataMatch[],
+    private readonly options?: GrpcRouteMetadataMatchOptions,
+
+  ) { super(); }
+
+  bind(scope: Construct): GrpcRouteMatchConfig {
+    return {
+      requestMatch: {
+        metadata: this.metadata.map(metadata => metadata.bind(scope).metadataMatch),
+        serviceName: this.options?.serviceName,
+      },
+    };
+  }
+}
+
+class GrpcRouteServicenameMatchImpl extends GrpcRouteMatch {
+  constructor(
+    private readonly serviceName: string,
+    private readonly options?: GrpcRouteServiceNameMatchOptions,
+
+  ) { super(); }
+
+  bind(scope: Construct): GrpcRouteMatchConfig {
+    return {
+      requestMatch: {
+        serviceName: this.serviceName,
+        metadata: this.options?.metadata?.map(metadata => metadata.bind(scope).metadataMatch),
+      },
+    };
+  }
 }
 
 /**
@@ -582,7 +679,7 @@ export abstract class RouteSpec {
   }
 
   /**
-   * Called when the GatewayRouteSpec type is initialized. Can be used to enforce
+   * Called when the RouteSpec type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
   public abstract bind(scope: Construct): RouteSpecConfig;
@@ -626,9 +723,11 @@ class HttpRouteSpec extends RouteSpec {
   }
 
   public bind(scope: Construct): RouteSpecConfig {
-    const prefixPath = this.match ? this.match.prefixPath : '/';
-    if (prefixPath[0] != '/') {
-      throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
+    // Todo - Add a logic to set prefix to '/' when {} is passed to match.
+    const prefix = this.match ? this.match.pathOrPrefix?.bind(scope).requestMatch.prefix :'/';
+
+    if (prefix && prefix[0] != '/') {
+      throw new Error(`Prefix Path must start with \'/\', got: ${prefix}`);
     }
 
     const httpConfig: CfnRoute.HttpRouteProperty = {
@@ -636,10 +735,12 @@ class HttpRouteSpec extends RouteSpec {
         weightedTargets: renderWeightedTargets(this.weightedTargets),
       },
       match: {
-        prefix: prefixPath,
+        prefix: prefix,
         headers: this.match?.headers?.map(header => header.bind(scope).httpRouteHeader),
         method: this.match?.method,
         scheme: this.match?.protocol,
+        path: this.match?.pathOrPrefix?.bind(scope).requestMatch.path,
+        queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
       },
       timeout: renderTimeout(this.timeout),
       retryPolicy: this.retryPolicy ? renderHttpRetryPolicy(this.retryPolicy) : undefined,
@@ -728,16 +829,14 @@ class GrpcRouteSpec extends RouteSpec {
     }
   }
 
-  public bind(_scope: Construct): RouteSpecConfig {
+  public bind(scope: Construct): RouteSpecConfig {
     return {
       priority: this.priority,
       grpcRouteSpec: {
         action: {
           weightedTargets: renderWeightedTargets(this.weightedTargets),
         },
-        match: {
-          serviceName: this.match.serviceName,
-        },
+        match: this.match.bind(scope).requestMatch,
         timeout: renderTimeout(this.timeout),
         retryPolicy: this.retryPolicy ? renderGrpcRetryPolicy(this.retryPolicy) : undefined,
       },

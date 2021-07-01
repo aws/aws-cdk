@@ -1,5 +1,5 @@
 import { CfnGatewayRoute } from './appmesh.generated';
-import { HttpHeaderMatch } from './route-spec';
+import { HttpHeaderMatch, HttpRouteMatchMethod } from './route-spec';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
@@ -235,9 +235,8 @@ export interface HttpGatewayRouteMatchConfig {
 }
 
 /**
- * The criterion for determining path or prefix request match for this GatewayRoute.
+ * Defines HTTP gateway route path or prefix request match.
  */
-// Todo - Come up with better name
 export abstract class HttpGatewayRoutePathOrPrefixMatch {
   /**
    * Specifies the path to match requests with.
@@ -245,14 +244,14 @@ export abstract class HttpGatewayRoutePathOrPrefixMatch {
    * You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
    * and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
    */
-  public static prefix(path: string): HttpGatewayRouteMatch {
+  public static prefix(path: string): HttpGatewayRoutePathOrPrefixMatch {
     return new HttpGatewayRoutePrefixMatchImpl(path);
   }
 
   /**
    * The path to match on.
    */
-  public static path(pathMatch: HttpPathMatch): HttpGatewayRouteMatch {
+  public static path(pathMatch: HttpPathMatch): HttpGatewayRoutePathOrPrefixMatch {
     return new HttpGatewayRoutePathMatchImpl(pathMatch);
   }
 
@@ -262,7 +261,6 @@ export abstract class HttpGatewayRoutePathOrPrefixMatch {
   abstract bind(scope: Construct): HttpGatewayRouteMatchConfig;
 }
 
-// Todo - come up with better name
 class HttpGatewayRoutePrefixMatchImpl extends HttpGatewayRoutePathOrPrefixMatch {
   constructor(
     private readonly prefix: string,
@@ -291,208 +289,6 @@ class HttpGatewayRoutePathMatchImpl extends HttpGatewayRoutePathOrPrefixMatch {
   }
 }
 
-/**
- * Other optional properties for HTTP gateway route match other than the prefix and path.
- */
-export interface HttpGatewayRoutePrefixMatchOptions {
-  /**
-   * Specifies the client request headers to match on. All specified headers
-   * must match for the gateway route to match.
-   *
-   * @default - no match on header
-   */
-  readonly headers?: HttpHeaderMatch[],
-
-  /**
-   * The gateway route host name to be matched on.
-   *
-   * @default - no match on host name
-   */
-  readonly hostname?: GatewayRouteHostname,
-
-  /**
-   * The method to match on.
-   *
-   * @default - no match on method
-   */
-  readonly method?: Method,
-
-  /**
-   * The query parameter to match on.
-   *
-   * @default - no match on query parameter
-   */
-  readonly queryParameters?: QueryParameterMatch[],
-}
-
-/**
- * Other optional properties for HTTP gateway route match other than the headers.
- */
-export interface HttpGatewayRouteHeaderMatchOptions {
-  /**
-   * The gateway route host name to be matched on.
-   *
-   * @default - no match on host name
-   */
-  readonly hostname?: GatewayRouteHostname,
-
-  /**
-   * The method to match on.
-   *
-   * @default - no match on method
-   */
-  readonly method?: Method,
-
-  /**
-   * The query parameter to match on.
-   *
-   * @default - no match on query parameter
-   */
-  readonly queryParameters?: QueryParameterMatch[],
-
-  /**
-   * The prefix or path to match on
-   *
-   * @default - match on '/'
-   */
-  readonly prefixOrPath?: HttpGatewayRoutePathOrPrefixMatch,
-}
-
-/**
- * Other optional properties for HTTP gateway route match other than the host name.
- */
-export interface HttpGatewayRouteHostnameMatchOptions {
-  /**
-   * Specifies the client request headers to match on. All specified headers
-   * must match for the gateway route to match.
-   *
-   * @default - no match on header
-   */
-  readonly headers?: HttpHeaderMatch[],
-
-  /**
-   * The method to match on.
-   *
-   * @default - no match on method
-   */
-  readonly method?: Method,
-
-  /**
-   * The query parameter to match on.
-   *
-   * @default - no match on query parameter
-   */
-  readonly queryParameters?: QueryParameterMatch[],
-
-  /**
-   * The prefix or path to match on
-   *
-   * @default - match on '/'
-   */
-  readonly prefixOrPath?: HttpGatewayRoutePathOrPrefixMatch,
-}
-
-/**
- * Other optional properties for HTTP gateway route match other than the method.
- */
-export interface HttpGatewayRouteMethodMatchOptions {
-  /**
-   * Specifies the client request headers to match on. All specified headers
-   * must match for the gateway route to match.
-   *
-   * @default - no match on header
-   */
-  readonly headers?: HttpHeaderMatch[],
-
-  /**
-   * The gateway route host name to be matched on.
-   *
-   * @default - no match on host name
-   */
-  readonly hostname?: GatewayRouteHostname,
-
-  /**
-   * The query parameter to match on.
-   *
-   * @default - no match on query parameter
-   */
-  readonly queryParameters?: QueryParameterMatch[],
-
-  /**
-   * The prefix or path to match on
-   *
-   * @default - match on '/'
-   */
-  readonly prefixOrPath?: HttpGatewayRoutePathOrPrefixMatch,
-}
-
-/**
- * Other optional properties for HTTP gateway route match other than the path.
- */
-export interface HttpGatewayRoutePathMatchOptions {
-  /**
-   * Specifies the client request headers to match on. All specified headers
-   * must match for the gateway route to match.
-   *
-   * @default - no match on header
-   */
-  readonly headers?: HttpHeaderMatch[],
-
-  /**
-   * The method to match on.
-   *
-   * @default - no match on method
-   */
-  readonly method?: Method,
-
-  /**
-   * The gateway route host name to be matched on.
-   *
-   * @default - no match on host name
-   */
-  readonly hostname?: GatewayRouteHostname,
-
-  /**
-   * The query parameter to match on.
-   *
-   * @default - no match on query parameter
-   */
-  readonly queryParameters?: QueryParameterMatch[],
-}
-
-/**
- * Other optional properties for HTTP gateway route match other than the query parameter.
- */
-export interface HttpGatewayRouteQueryParameterMatchOptions {
-  /**
-   * Specifies the client request headers to match on. All specified headers
-   * must match for the gateway route to match.
-   *
-   * @default - no match on header
-   */
-  readonly headers?: HttpHeaderMatch[],
-
-  /**
-   * The gateway route host name to be matched on.
-   *
-   * @default - no match on host name
-   */
-  readonly hostname?: GatewayRouteHostname,
-
-  /**
-   * The method to match on.
-   *
-   * @default - no match on method
-   */
-  readonly method?: Method,
-
-  /**
-   * The prefix or path to match on
-   *
-   * @default - match on '/'
-   */
-  readonly prefixOrPath?: HttpGatewayRoutePathOrPrefixMatch,
-}
 
 /**
  * Configuration for HTTP gateway route path match
@@ -593,43 +389,15 @@ class QueryParameterMatchImpl extends QueryParameterMatch {
 }
 
 /**
- * Enum of method
- */
-export enum Method {
-  /**
-   * HTTP method for GET
-   */
-  GET = 'GET',
-
-  /**
-   * HTTP method for PUT
-   */
-  PUT = 'PUT',
-
-  /**
-   * HTTP method for POST
-   */
-  POST = 'POST',
-
-  /**
-   * HTTP method for DELETE
-   */
-  DELETE = 'DELETE',
-}
-
-/**
  * The criterion for determining a request match for this GatewayRoute.
  */
-export abstract class HttpGatewayRouteMatch {
+export interface HttpGatewayRouteMatch {
   /**
-   * Specifies the path to match requests with.
-   * This parameter must always start with /, which by itself matches all requests to the virtual service name.
-   * You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
-   * and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
+   * Either path or prefix can be selected
+   *
+   * @default - prefix match on '/'
    */
-  public static prefix(path: string, options?: HttpGatewayRoutePrefixMatchOptions): HttpGatewayRouteMatch {
-    return new HttpGatewayRoutePrefixMatch(path, options);
-  }
+  readonly pathOrPrefix?: HttpGatewayRoutePathOrPrefixMatch,
 
   /**
    * Specifies the client request headers to match on. All specified headers
@@ -637,162 +405,28 @@ export abstract class HttpGatewayRouteMatch {
    *
    * @default - do not match on headers
    */
-  public static header(headers: HttpHeaderMatch[], options?: HttpGatewayRouteHeaderMatchOptions): HttpGatewayRouteMatch {
-    return new HttpGatewayRouteHeaderMatch(headers, options);
-  }
+  readonly header?: HttpHeaderMatch[]
 
   /**
    * The gateway route host name to be matched on.
    *
-   * @default - none
+   * @default - no match on host name
    */
-  public static hostname(hostname: GatewayRouteHostname, options: HttpGatewayRouteHostnameMatchOptions): HttpGatewayRouteMatch {
-    return new HttpGatewayRouteHostnameMatch(hostname, options);
-  };
+  readonly hostname?: GatewayRouteHostname
 
   /**
    * The method to match on.
+   *
+   * @default - no match on method
    */
-  public static method(method: Method, options: HttpGatewayRouteMethodMatchOptions): HttpGatewayRouteMatch {
-    return new HttpGatewayRouteMethodMatch(method, options);
-  }
-
-  /**
-   * The path to match on.
-   */
-  public static path(pathMatch: HttpPathMatch, options: HttpGatewayRoutePathMatchOptions): HttpGatewayRouteMatch {
-    return new HttpGatewayRoutePathMatch(pathMatch, options);
-  }
+  readonly method?: HttpRouteMatchMethod
 
   /**
    * The query parameter to match on.
+   *
+   * @default - no match on query parameter
    */
-  public static queryParameters(queryParameters: QueryParameterMatch[], options: HttpGatewayRouteQueryParameterMatchOptions): HttpGatewayRouteMatch {
-    return new HttpGatewayRouteQueryParameterMatch(queryParameters, options);
-  }
-
-  /**
-   * Return HTTP gateway route match configuration.
-   */
-  abstract bind(scope: Construct): HttpGatewayRouteMatchConfig;
-}
-
-class HttpGatewayRoutePrefixMatch extends HttpGatewayRouteMatch {
-  constructor(
-    private readonly prefix: string,
-    private readonly options?: HttpGatewayRoutePrefixMatchOptions,
-  ) { super(); }
-
-  bind(scope: Construct): HttpGatewayRouteMatchConfig {
-    return {
-      requestMatch: {
-        prefix: this.prefix,
-        headers: this.options?.headers?.map(header => header.bind(scope).httpRouteHeader),
-        hostname: this.options?.hostname?.bind(scope).hostnameMatch,
-        method: this.options?.method,
-        queryParameters: this.options?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
-      },
-    };
-  }
-}
-
-class HttpGatewayRouteHeaderMatch extends HttpGatewayRouteMatch {
-  constructor(
-    private readonly header: HttpHeaderMatch[],
-    private readonly options?: HttpGatewayRouteHeaderMatchOptions,
-  ) { super(); }
-
-  bind(scope: Construct): HttpGatewayRouteMatchConfig {
-    return {
-      requestMatch: {
-        headers: this.header.map(header => header.bind(scope).httpRouteHeader),
-        hostname: this.options?.hostname?.bind(scope).hostnameMatch,
-        method: this.options?.method,
-        queryParameters: this.options?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
-        path: this.options?.prefixOrPath?.bind(scope).requestMatch.path,
-        prefix: this.options?.prefixOrPath?.bind(scope).requestMatch.prefix,
-      },
-    };
-  }
-}
-
-class HttpGatewayRouteHostnameMatch extends HttpGatewayRouteMatch {
-  constructor(
-    private readonly hostname: GatewayRouteHostname,
-    private readonly options: HttpGatewayRouteHostnameMatchOptions,
-  ) { super(); }
-
-  bind(scope: Construct): HttpGatewayRouteMatchConfig {
-    return {
-      requestMatch: {
-        hostname: this.hostname.bind(scope).hostnameMatch,
-        headers: this.options?.headers?.map(header => header.bind(scope).httpRouteHeader),
-        method: this.options?.method,
-        queryParameters: this.options?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
-        path: this.options?.prefixOrPath?.bind(scope).requestMatch.path,
-        prefix: this.options?.prefixOrPath?.bind(scope).requestMatch.prefix,
-      },
-    };
-  }
-}
-
-class HttpGatewayRouteMethodMatch extends HttpGatewayRouteMatch {
-  constructor(
-    private readonly method: Method,
-    private readonly options: HttpGatewayRouteMethodMatchOptions,
-  ) { super(); }
-
-  bind(scope: Construct): HttpGatewayRouteMatchConfig {
-    return {
-      requestMatch: {
-        method: this.method,
-        hostname: this.options?.hostname?.bind(scope).hostnameMatch,
-        headers: this.options?.headers?.map(header => header.bind(scope).httpRouteHeader),
-        queryParameters: this.options?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
-        path: this.options?.prefixOrPath?.bind(scope).requestMatch.path,
-        prefix: this.options?.prefixOrPath?.bind(scope).requestMatch.prefix,
-      },
-    };
-  }
-}
-
-class HttpGatewayRoutePathMatch extends HttpGatewayRouteMatch {
-  constructor(
-    private readonly pathMatch: HttpPathMatch,
-    private readonly options: HttpGatewayRoutePathMatchOptions,
-  ) { super(); }
-
-  bind(scope: Construct): HttpGatewayRouteMatchConfig {
-    return {
-      requestMatch: {
-        path: this.pathMatch.bind(scope).pathMatch,
-        hostname: this.options?.hostname?.bind(scope).hostnameMatch,
-        headers: this.options?.headers?.map(header => header.bind(scope).httpRouteHeader),
-        method: this.options?.method,
-        queryParameters: this.options?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
-      },
-    };
-  }
-}
-
-class HttpGatewayRouteQueryParameterMatch extends HttpGatewayRouteMatch {
-  constructor(
-    private readonly queryParameter: QueryParameterMatch[],
-    private readonly options: HttpGatewayRouteQueryParameterMatchOptions,
-  ) { super(); }
-
-  bind(scope: Construct): HttpGatewayRouteMatchConfig {
-    return {
-      requestMatch: {
-        queryParameters: this.queryParameter.map(queryParameter => queryParameter.bind(scope).queryParameter),
-        hostname: this.options?.hostname?.bind(scope).hostnameMatch,
-        headers: this.options?.headers?.map(header => header.bind(scope).httpRouteHeader),
-        method: this.options?.method,
-        path: this.options?.prefixOrPath?.bind(scope).requestMatch.path,
-        prefix: this.options?.prefixOrPath?.bind(scope).requestMatch.prefix,
-      },
-    };
-  }
+  readonly queryParameters?: QueryParameterMatch[]
 }
 
 /**
@@ -812,14 +446,14 @@ export interface GrpcGatewayRouteHostnameMatchOptions {
   /**
    * The gateway route metadata to be matched on
    *
-   * @default - none
+   * @default - no match on metadata
    */
   readonly metadata?: GrpcMetadataMatch[];
 
   /**
    * The fully qualified domain name for the service to match from the request.
    *
-   * @default - none
+   * @default - no match on service name
    */
   readonly serviceName?: string;
 }
@@ -831,14 +465,14 @@ export interface GrpcGatewayRouteMetadataMatchOptions {
   /**
    * The gateway route host name to be matched on.
    *
-   * @default - none
+   * @default - no match on host name
    */
   readonly hostname?: GatewayRouteHostname;
 
   /**
    * The fully qualified domain name for the service to match from the request.
    *
-   * @default - none
+   * @default - no match on service name
    */
   readonly serviceName?: string;
 }
@@ -850,14 +484,14 @@ export interface GrpcGatewayRouteServiceNameMatchOptions {
   /**
    * The gateway route host name to be matched on.
    *
-   * @default - none
+   * @default - no match on host name
    */
   readonly hostname?: GatewayRouteHostname;
 
   /**
    * The gateway route metadata to be matched on.
    *
-   * @default - none
+   * @default - no match on metadata
    */
   readonly metadata?: GrpcMetadataMatch[];
 }
@@ -879,7 +513,7 @@ export abstract class GrpcGatewayRouteMatch {
   /**
    * Create metadata based gRPC gateway route match.
    *
-   * @param metadata
+   * @param metadata An object that represents the data to match from the request.
    * @param options Other optional properties to define gRPC gateway route match
    */
   public static metadata(metadata: GrpcMetadataMatch[], options?: GrpcGatewayRouteMetadataMatchOptions): GrpcGatewayRouteMatch {
@@ -997,41 +631,15 @@ export interface HttpGatewayRouteRewriteConfig {
 }
 
 /**
- * Other optional properties for HTTP gateway route host name rewrite.
- */
-export interface HttpGatewayRouteHostnameRewriteOptions {
-  /**
-   * HTTP gateway route path or prefix rewrite property
-   *
-   * @default - rewritten to the target Virtual Service's hostname and the matched prefix or path is rewritten to '/'.
-   */
-  // Todo - this property needs better name.
-  readonly other?: HttpGatewayRouteHostnameOtherRewrite;
-}
-
-/**
- * Other optional properties for HTTP gateway route path or prefix rewrite.
- */
-export interface HttpGatewayRoutePrefixRewriteOptions {
-  /**
-   * Enable or disable the default target host name
-   *
-   * @default - rewrite hostname to the destination Virtual Service name.
-   */
-  readonly defaultTargetHostname?: string;
-}
-
-/**
  * Defines gRPC gateway route rewrite that can be defined in addition to host name.
  */
-// Todo - this class needs better name.
-export abstract class HttpGatewayRouteHostnameOtherRewrite {
+export abstract class HttpGatewayRoutePathOrPrefixRewrite {
   /**
    * The path to rewrite.
    *
    * @param exact The exact path to rewrite.
    */
-  public static path(exact: string): HttpGatewayRouteHostnameOtherRewrite {
+  public static path(exact: string): HttpGatewayRoutePathOrPrefixRewrite {
     return new HttpGatewayRoutePathRewriteImpl(exact);
   }
 
@@ -1040,7 +648,7 @@ export abstract class HttpGatewayRouteHostnameOtherRewrite {
    *
    * @param isDefault Enable or disable the default prefix
    */
-  public static defaultPrefix(isDefault: Default): HttpGatewayRouteHostnameOtherRewrite {
+  public static defaultPrefix(isDefault: Default): HttpGatewayRoutePathOrPrefixRewrite {
     return new HttpGatewayRoutePrefixRewriteImpl({ defaultPrefix: isDefault } );
   }
 
@@ -1049,7 +657,7 @@ export abstract class HttpGatewayRouteHostnameOtherRewrite {
    *
    * @param value The value used to replace the incoming route prefix when rewritten.
    */
-  public static customPrefix(value: Default): HttpGatewayRouteHostnameOtherRewrite {
+  public static customPrefix(value: string): HttpGatewayRoutePathOrPrefixRewrite {
     return new HttpGatewayRoutePrefixRewriteImpl({ value: value } );
   }
 
@@ -1059,8 +667,7 @@ export abstract class HttpGatewayRouteHostnameOtherRewrite {
   abstract bind(scope: Construct): HttpGatewayRouteRewriteConfig;
 }
 
-// Todo - this class needs better name.
-class HttpGatewayRoutePathRewriteImpl extends HttpGatewayRouteHostnameOtherRewrite {
+class HttpGatewayRoutePathRewriteImpl extends HttpGatewayRoutePathOrPrefixRewrite {
   constructor(
     private readonly exact: string,
   ) { super(); }
@@ -1074,8 +681,7 @@ class HttpGatewayRoutePathRewriteImpl extends HttpGatewayRouteHostnameOtherRewri
   }
 }
 
-// Todo - this class needs better name.
-class HttpGatewayRoutePrefixRewriteImpl extends HttpGatewayRouteHostnameOtherRewrite {
+class HttpGatewayRoutePrefixRewriteImpl extends HttpGatewayRoutePathOrPrefixRewrite {
   constructor(
     private readonly prefixRewrite: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty,
   ) { super(); }
@@ -1088,150 +694,34 @@ class HttpGatewayRoutePrefixRewriteImpl extends HttpGatewayRouteHostnameOtherRew
 }
 
 /**
- * Defines gRPC gateway route rewrite
+ * The criterion for determining a rewrite for this HTTP GatewayRoute.
  */
-export abstract class HttpGatewayRouteRewrite {
+export interface HttpGatewayRouteRewrite {
   /**
    * The default target host name to write to.
    *
-   * @param isDefault Enable or disable the default target host name
+   * @default - rewrite hostname to the destination Virtual Service name.
    */
-  public static defaultHostname(isDefault: Default, options?: HttpGatewayRouteHostnameRewriteOptions): HttpGatewayRouteRewrite {
-    return new HttpGatewayRouteHostnameRewrite(isDefault, options);
-  }
+  readonly defaultHostname?: Default;
 
   /**
    * The path to rewrite.
    *
-   * @param exact The exact path to rewrite.
+   * @default - rewritten to the target Virtual Service's hostname and the matched prefix or path is rewritten to '/'.
    */
-  public static path(exact: string, options?: HttpGatewayRoutePrefixRewriteOptions): HttpGatewayRouteRewrite {
-    return new HttpGatewayRoutePathRewrite(exact, options);
-  }
-
-  /**
-   * The default prefix used to replace the incoming route prefix when rewritten.
-   *
-   * @param isDefault Enable or disable the default prefix
-   */
-  public static defaultPrefix(isDefault: Default, options?: HttpGatewayRoutePrefixRewriteOptions): HttpGatewayRouteRewrite {
-    return new HttpGatewayRoutePrefixRewrite({ defaultPrefix: isDefault }, options);
-  }
-
-  /**
-   * Replace the incoming route prefix when rewritten.
-   *
-   * @param value The value used to replace the incoming route prefix when rewritten.
-   */
-  public static customPrefix(value: Default, options?: HttpGatewayRoutePrefixRewriteOptions): HttpGatewayRouteRewrite {
-    return new HttpGatewayRoutePrefixRewrite({ value: value }, options);
-  }
-
-  /**
-   * Return HTTP gateway route rewrite configuration.
-   */
-  abstract bind(scope: Construct): HttpGatewayRouteRewriteConfig;
-}
-
-class HttpGatewayRouteHostnameRewrite extends HttpGatewayRouteRewrite {
-  constructor(
-    private readonly defaultTarget: Default,
-    private readonly options?: HttpGatewayRouteHostnameRewriteOptions,
-  ) { super(); }
-
-  bind(scope: Construct): HttpGatewayRouteRewriteConfig {
-    const rewrite = this.options?.other;
-    return {
-      hostname: {
-        defaultTargetHostname: this.defaultTarget,
-      },
-      prefix: rewrite
-        ? rewrite.bind(scope).prefix
-        : undefined,
-      path: rewrite
-        ? rewrite.bind(scope).path
-        : undefined,
-    };
-  }
-}
-
-class HttpGatewayRoutePathRewrite extends HttpGatewayRouteRewrite {
-  constructor(
-    private readonly exact: string,
-    private readonly options?: HttpGatewayRoutePrefixRewriteOptions,
-  ) { super(); }
-
-  bind(_scope: Construct): HttpGatewayRouteRewriteConfig {
-    return {
-      path: {
-        exact: this.exact,
-      },
-      hostname: {
-        defaultTargetHostname: this.options?.defaultTargetHostname,
-      },
-    };
-  }
-}
-
-class HttpGatewayRoutePrefixRewrite extends HttpGatewayRouteRewrite {
-  constructor(
-    private readonly prefixRewrite: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty,
-    private readonly options?: HttpGatewayRoutePrefixRewriteOptions,
-  ) { super(); }
-
-  bind(_scope: Construct): HttpGatewayRouteRewriteConfig {
-    return {
-      prefix: this.prefixRewrite,
-      hostname: {
-        defaultTargetHostname: this.options?.defaultTargetHostname,
-      },
-    };
-  }
-}
-
-/**
- * All properties for gRPC gateway route rewrite.
- */
-export interface GrpcGatewayRouteRewriteConfig {
-  /**
-   * GatewayRoute CFN configuration for gRPC gateway route host name rewrite.
-   *
-   * @default - rewrite hostname to the destination Virtual Service name.
-   */
-  readonly hostname?: CfnGatewayRoute.GatewayRouteHostnameRewriteProperty;
+  readonly pathOrPrefix?: HttpGatewayRoutePathOrPrefixRewrite,
 }
 
 /**
  * Defines gRPC gateway route rewrite
  */
-export abstract class GrpcGatewayRouteRewrite {
+export interface GrpcGatewayRouteRewrite {
   /**
    * The host name to rewrite
    *
-   * @param isDefault The default target host name to write to.
+   * @default - rewrite hostname to the destination Virtual Service name.
    */
-  public static defaultHostname(isDefault: Default): GrpcGatewayRouteRewrite {
-    return new GrpcGatewayRouteRewriteImpl(isDefault);
-  }
-
-  /**
-   * Return gRPC gateway route rewrite configuration.
-   */
-  abstract bind(scope: Construct): GrpcGatewayRouteRewriteConfig;
-}
-
-class GrpcGatewayRouteRewriteImpl extends GrpcGatewayRouteRewrite {
-  constructor(
-    private readonly defaultTarget: Default,
-  ) { super(); }
-
-  bind(_scope: Construct): GrpcGatewayRouteRewriteConfig {
-    return {
-      hostname: {
-        defaultTargetHostname: this.defaultTarget,
-      },
-    };
-  }
+  readonly defaultHostname?: Default
 }
 
 /**
@@ -1348,7 +838,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   /**
    * The criterion for determining a request match for this GatewayRoute.
    *
-   * @default - matches on '/'
+   * @default - matches on prefix with '/'
    */
   readonly match?: HttpGatewayRouteMatch;
 
@@ -1378,26 +868,27 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
-    const prefixPath = this.match ? this.match.bind(scope).requestMatch.prefix : '/';
+    // Todo - Add a logic to set prefix to '/' when {} is passed to match.
+    const prefix = this.match ? this.match.pathOrPrefix?.bind(scope).requestMatch.prefix :'/';
 
-    if (prefixPath && prefixPath[0] != '/') {
-      throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
+    if (prefix && prefix[0] != '/') {
+      throw new Error(`Prefix Path must start with \'/\', got: ${prefix}`);
     }
-    if (this.rewrite?.bind(scope).prefix && !this.match?.bind(scope).requestMatch.prefix) {
+    if (this.rewrite?.pathOrPrefix?.bind(scope).prefix && !prefix) {
       throw new Error('HTTP Gateway Route Prefix Match must be set.');
     }
-    if (this.rewrite?.bind(scope).path && this.match?.bind(scope).requestMatch.prefix) {
+    if (this.rewrite?.pathOrPrefix?.bind(scope).path && prefix) {
       throw new Error('HTTP Gateway Route Prefix Match and Path Rewrite both cannot be set.');
     }
 
     const httpConfig: CfnGatewayRoute.HttpGatewayRouteProperty = {
       match: {
-        prefix: prefixPath,
-        headers: this.match?.bind(scope).requestMatch.headers,
-        hostname: this.match?.bind(scope).requestMatch.hostname,
-        method: this.match?.bind(scope).requestMatch.method,
-        path: this.match?.bind(scope).requestMatch.path,
-        queryParameters: this.match?.bind(scope).requestMatch.queryParameters,
+        prefix: prefix,
+        path: this.match?.pathOrPrefix?.bind(scope).requestMatch.path,
+        hostname: this.match?.hostname?.bind(scope).hostnameMatch,
+        method: this.match?.method,
+        headers: this.match?.header?.map(header => header.bind(scope).httpRouteHeader),
+        queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
       },
       action: {
         target: {
@@ -1405,13 +896,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
             virtualServiceName: this.routeTarget.virtualServiceName,
           },
         },
-        rewrite: this.rewrite
-          ? {
-            hostname: this.rewrite.bind(scope).hostname,
-            path: this.rewrite.bind(scope).path,
-            prefix: this.rewrite.bind(scope).prefix,
-          }
-          : undefined,
+        rewrite: renderHttpGatewayRouteRewrite(scope, this.rewrite),
       },
     };
     return {
@@ -1445,6 +930,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
     super();
     this.match = options.match;
     this.routeTarget = options.routeTarget;
+    this.rewrite = options.rewrite;
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
@@ -1456,14 +942,46 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
               virtualServiceName: this.routeTarget.virtualServiceName,
             },
           },
-          rewrite: this.rewrite
-            ? {
-              hostname: this.rewrite.bind(scope).hostname,
-            }
-            : undefined,
+          rewrite: renderGrpcGatewayRouteRewrite(this.rewrite),
         },
         match: this.match.bind(scope).requestMatch,
       },
     };
   }
+}
+
+function renderHttpGatewayRouteRewrite(scope: Construct, rewrite?: HttpGatewayRouteRewrite)
+  : CfnGatewayRoute.HttpGatewayRouteRewriteProperty | undefined {
+  return rewrite
+    ? {
+      hostname: rewrite.defaultHostname
+        ? {
+          defaultTargetHostname: rewrite.defaultHostname,
+        }
+        : undefined,
+      prefix: rewrite.pathOrPrefix?.bind(scope).prefix
+        ? {
+          defaultPrefix: rewrite.pathOrPrefix.bind(scope).prefix?.defaultPrefix,
+          value: rewrite.pathOrPrefix.bind(scope).prefix?.value,
+        }
+        : undefined,
+      path: rewrite.pathOrPrefix?.bind(scope).path
+        ? {
+          exact: rewrite.pathOrPrefix?.bind(scope).path?.exact,
+        }
+        : undefined,
+    }
+    : undefined;
+}
+
+function renderGrpcGatewayRouteRewrite(rewrite?: GrpcGatewayRouteRewrite): CfnGatewayRoute.GrpcGatewayRouteRewriteProperty | undefined {
+  return rewrite
+    ? {
+      hostname: rewrite.defaultHostname
+        ? {
+          defaultTargetHostname: rewrite.defaultHostname,
+        }
+        : undefined,
+    }
+    : undefined;
 }

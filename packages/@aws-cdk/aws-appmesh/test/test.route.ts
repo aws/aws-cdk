@@ -70,9 +70,7 @@ export = {
               virtualNode: node,
             },
           ],
-          match: {
-            serviceName: 'test.svc.local',
-          },
+          match: appmesh.GrpcRouteMatch.serviceName('test.svc.local'),
           timeout: {
             idle: cdk.Duration.seconds(15),
             perRequest: cdk.Duration.seconds(16),
@@ -238,7 +236,7 @@ export = {
             },
           ],
           match: {
-            prefixPath: '/node',
+            pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.prefix('/node'),
           },
           timeout: {
             idle: cdk.Duration.seconds(10),
@@ -443,7 +441,7 @@ export = {
       router.addRoute('test-grpc-route', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: { serviceName: 'servicename' },
+          match: appmesh.GrpcRouteMatch.serviceName('servicename'),
           retryPolicy: {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
             httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
@@ -493,7 +491,7 @@ export = {
       router.addRoute('test-grpc-route', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: { serviceName: 'example' },
+          match: appmesh.GrpcRouteMatch.serviceName('example'),
           retryPolicy: {
             grpcRetryEvents: [],
             httpRetryEvents: [],
@@ -507,7 +505,7 @@ export = {
       router.addRoute('test-grpc-route2', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: { serviceName: 'example' },
+          match: appmesh.GrpcRouteMatch.serviceName('example'),
           retryPolicy: {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.CANCELLED],
             httpRetryEvents: [],
@@ -564,7 +562,7 @@ export = {
         router.addRoute('test-grpc-route', {
           routeSpec: appmesh.RouteSpec.grpc({
             weightedTargets: [{ virtualNode }],
-            match: { serviceName: 'servicename' },
+            match: appmesh.GrpcRouteMatch.serviceName('servicename'),
             retryPolicy: {
               retryAttempts: 5,
               retryTimeout: cdk.Duration.seconds(10),
@@ -636,7 +634,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          prefixPath: '/',
+          pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.prefix('/'),
           headers: [
             appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
             appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'text/html'),
@@ -750,7 +748,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          prefixPath: '/',
+          pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.prefix('/'),
           method: appmesh.HttpRouteMatchMethod.GET,
         },
       }),
@@ -792,7 +790,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          prefixPath: '/',
+          pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.prefix('/'),
           protocol: appmesh.HttpRouteProtocol.HTTP,
         },
       }),
@@ -846,9 +844,7 @@ export = {
       routeSpec: appmesh.RouteSpec.grpc({
         priority: 20,
         weightedTargets: [{ virtualNode }],
-        match: {
-          serviceName: 'test',
-        },
+        match: appmesh.GrpcRouteMatch.serviceName('test'),
       }),
     });
     router.addRoute('tcp', {

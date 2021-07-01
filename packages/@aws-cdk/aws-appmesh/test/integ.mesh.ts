@@ -55,7 +55,7 @@ router.addRoute('route-1', {
       },
     ],
     match: {
-      prefixPath: '/',
+      pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.prefix('/'),
     },
     timeout: {
       idle: cdk.Duration.seconds(10),
@@ -158,7 +158,7 @@ router.addRoute('route-2', {
       },
     ],
     match: {
-      prefixPath: '/path2',
+      pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.prefix('/path2'),
     },
     timeout: {
       idle: cdk.Duration.seconds(11),
@@ -192,9 +192,7 @@ router.addRoute('route-4', {
     timeout: {
       idle: cdk.Duration.seconds(12),
     },
-    match: {
-      serviceName: 'test',
-    },
+    match: appmesh.GrpcRouteMatch.serviceName('test'),
   }),
 });
 
@@ -202,7 +200,7 @@ router.addRoute('route-matching', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [{ virtualNode: node3 }],
     match: {
-      prefixPath: '/',
+      pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixMatch.prefix('/'),
       method: appmesh.HttpRouteMatchMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
@@ -243,7 +241,7 @@ router.addRoute('route-5', {
 router.addRoute('route-grpc-retry', {
   routeSpec: appmesh.RouteSpec.grpc({
     weightedTargets: [{ virtualNode: node3 }],
-    match: { serviceName: 'servicename' },
+    match: appmesh.GrpcRouteMatch.serviceName('servicename'),
     retryPolicy: {
       grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
       httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
@@ -313,6 +311,6 @@ gateway.addGatewayRoute('gateway1-route-http2', {
 gateway.addGatewayRoute('gateway1-route-grpc', {
   routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
-    match: appmesh.GrpcGatewayRouteMatch.serviceName(virtualService.virtualServiceName),
+    match: appmesh.GrpcRouteMatch.serviceName(virtualService.virtualServiceName),
   }),
 });
