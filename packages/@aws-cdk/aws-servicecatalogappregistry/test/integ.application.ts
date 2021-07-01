@@ -19,6 +19,14 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
       'markII',
       'markIII',
     ],
+    public: false,
+    publishYear: 2021,
+    plannedRoadMap: {
+      alpha: 'some time',
+      beta: 'another time',
+      gamma: 'penultimate time',
+      release: 'go time',
+    },
   },
 });
 

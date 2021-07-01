@@ -69,7 +69,13 @@ const attributeGroup = new appreg.AttributeGroup(this, 'MyFirstAttributeGroup', 
   description: 'description for my attribute group', // the description is optional,
   attributes: {
     project: 'foo',
-    team: ['member1', 'member2', 'member3']
+    team: ['member1', 'member2', 'member3'],
+    public: false,
+    stages: {
+      alpha: 'complete',
+      beta: 'incomplete',
+      release: 'not started'
+    }
   }
 });
 ```
@@ -84,10 +90,10 @@ const importedAttributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(this,
 
 ## Associations
 
-You associate your appregistry application with attribute groups and resources.
-Resources are CloudFormation stacks that you can associate to application to group relevant
+You can associate your appregistry application with attribute groups and resources.
+Resources are CloudFormation stacks that you can associate with an application to group relevant
 stacks together to enable metadata rich insights into your applications and resources.
-A Cloudformation stack can only be associated with one application.  
+A Cloudformation stack can only be associated with one appregistry application.
 If a stack is associated with multiple applications in your app or is already associated with one,
 CDK will fail at deploy time. 
 

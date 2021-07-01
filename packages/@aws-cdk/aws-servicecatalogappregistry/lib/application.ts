@@ -25,13 +25,13 @@ export interface IApplication extends cdk.IResource {
   readonly applicationId: string;
 
   /**
-   * Associate application with an attribute group
+   * Associate thisapplication with an attribute group.
    * @param attributeGroup AppRegistry attribute group
    */
   associateAttributeGroup(attributeGroup: IAttributeGroup): void;
 
   /**
-   * Associate application with a resource
+   * Associate this application with a CloudFormation stack.
    * @param stack a CFN stack
    */
   associateStack(stack: cdk.Stack): void;
@@ -98,15 +98,6 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
 }
 
 /**
- * Generates a unique hash identfifer using SHA256 encryption algorithm
- */
-export function hashValues(...values: string[]): string {
-  const sha256 = crypto.createHash('sha256');
-  values.forEach(val => sha256.update(val));
-  return sha256.digest('hex').slice(0, 12);
-}
-
-/**
  * A Service Catalog AppRegistry Application.
  */
 export class Application extends ApplicationBase {
@@ -129,8 +120,8 @@ export class Application extends ApplicationBase {
       public readonly applicationArn = applicationArn;
       public readonly applicationId = applicationId!;
 
-      protected generateUniqueHash(value: string): string {
-        return hashValues(this.applicationArn, value);
+      protected generateUniqueHash(resourceAddress: string): string {
+        return hashValues(this.applicationArn, resourceAddress);
       }
     }
 
@@ -141,7 +132,6 @@ export class Application extends ApplicationBase {
 
   public readonly applicationArn: string;
   public readonly applicationId: string;
-  private readonly application: CfnApplication;
   private readonly nodeAddress: string;
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
@@ -149,18 +139,18 @@ export class Application extends ApplicationBase {
 
     this.validateApplicationProps(props);
 
-    this.application = new CfnApplication(this, 'Resource', {
+    const application = new CfnApplication(this, 'Resource', {
       name: props.applicationName,
       description: props.description,
     });
 
-    this.applicationArn = this.application.attrArn;
-    this.applicationId = this.application.attrId;
-    this.nodeAddress = cdk.Names.nodeUniqueId(this.application.node);
+    this.applicationArn = application.attrArn;
+    this.applicationId = application.attrId;
+    this.nodeAddress = cdk.Names.nodeUniqueId(application.node);
   }
 
-  protected generateUniqueHash(value: string): string {
-    return hashValues(this.nodeAddress, value);
+  protected generateUniqueHash(resourceAddress: string): string {
+    return hashValues(this.nodeAddress, resourceAddress);
   }
 
   private validateApplicationProps(props: ApplicationProps) {
@@ -168,4 +158,13 @@ export class Application extends ApplicationBase {
     InputValidator.validateRegex(this.node.path, 'application name', /^[a-zA-Z0-9-_]+$/, props.applicationName);
     InputValidator.validateLength(this.node.path, 'application description', 0, 1024, props.description);
   }
+}
+
+/**
+ * Generates a unique hash identfifer using SHA256 encryption algorithm
+ */
+function hashValues(...values: string[]): string {
+  const sha256 = crypto.createHash('sha256');
+  values.forEach(val => sha256.update(val));
+  return sha256.digest('hex').slice(0, 12);
 }
