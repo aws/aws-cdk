@@ -484,9 +484,9 @@ integTest('cdk diff --fail with multiple stack exits with if any of the stacks c
   await expect(fixture.cdk(['diff', '--fail', fixture.fullStackName('test-1'), fixture.fullStackName('test-2')])).rejects.toThrow('exited with error');
 }));
 
-integTest('cdk diff --security-check-only exits when security changes are present', withDefaultFixture(async (fixture) => {
+integTest('cdk diff --security-only --fail exits when security changes are present', withDefaultFixture(async (fixture) => {
   const stackName = 'iam-test';
-  await expect(fixture.cdk(['diff', '--security-check-only', fixture.fullStackName(stackName)])).rejects.toThrow('exited with error');
+  await expect(fixture.cdk(['diff', '--security-only', fixture.fullStackName(stackName)])).rejects.toThrow('exited with error');
 }));
 
 integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) => {

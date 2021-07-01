@@ -94,7 +94,7 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
-      diffs = options.securityCheckOnly
+      diffs = options.securityOnly
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening))
         : printStackDiff(template, stacks.firstStack, strict, contextLines, stream);
     } else {
@@ -102,7 +102,7 @@ export class CdkToolkit {
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
-        diffs += options.securityCheckOnly
+        diffs += options.securityOnly
           ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
           : printStackDiff(currentTemplate, stack, strict, contextLines, stream);
       }
@@ -515,7 +515,7 @@ export interface DiffOptions {
    *
    * @default false
    */
-  securityCheckOnly?: boolean;
+  securityOnly?: boolean;
 }
 
 export interface DeployOptions {
