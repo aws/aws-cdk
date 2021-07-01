@@ -1,5 +1,31 @@
 Description: This stack includes resources needed to deploy AWS CDK apps into this
   environment
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: Main
+        Parameters:
+          - TrustedAccounts
+          - TrustedAccountsForLookup
+          - CloudFormationExecutionPolicies
+          - FileAssetsBucketName
+          - FileAssetsBucketKmsKeyId
+          - ContainerAssetsRepositoryName
+          - Qualifier
+          - PublicAccessBlockConfiguration
+      -
+        Label:
+          default: Cleanup
+        Parameters:
+          - S3CleanupEnable
+          - S3LifecycleExpDays
+    ParameterLabels:
+      S3CleanupEnable:
+        default: "Enable S3 Cleanup lifecycle?"
+      S3LifecycleExpDays:
+        default: "If enabling S3 Cleanup lifecycle, set number of days for expiration"
 Parameters:
   TrustedAccounts:
     Description: List of AWS accounts that are trusted to publish assets and deploy
@@ -42,6 +68,19 @@ Parameters:
     Default: 'true'
     Type: 'String'
     AllowedValues: ['true', 'false']
+  S3CleanupEnable:
+    Type: String
+    AllowedValues:
+      - Enable
+      - NO
+    Default: NO
+    Description: 'Select wether to enable S3 cleanup lifecycle rule'
+  S3LifecycleExpDays:
+    Type: Number
+    Description: Indicates the number of days after creation when objects are deleted from Amazon S3 and Amazon S3 Glacier.
+    MinValue: 30
+    Default: 60
+    MaxValue: 360
 Conditions:
   HasTrustedAccounts:
     Fn::Not:
@@ -86,6 +125,7 @@ Conditions:
     Fn::Equals:
       - 'true'
       - Ref: PublicAccessBlockConfiguration
+  UseS3DefaultCleanupLifecycle: !Equals [ !Ref S3CleanupEnable, "Enable" ]
 Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
@@ -180,6 +220,11 @@ Resources:
           - Ref: AWS::NoValue
       VersioningConfiguration:
         Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: Cleanup
+            Status: !If [ UseS3DefaultCleanupLifecycle, Enabled, Disabled ]
+            ExpirationInDays: !Ref S3LifecycleExpDays
     UpdateReplacePolicy: Retain
     DeletionPolicy: Retain
   StagingBucketPolicy:
@@ -498,7 +543,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '7'
+      Value: '8'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack
