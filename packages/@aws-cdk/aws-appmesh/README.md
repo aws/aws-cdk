@@ -149,9 +149,7 @@ const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace
 const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
-    service: service,
-  }),
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8081,
     healthCheck: appmesh.HealthCheck.http({
@@ -171,9 +169,7 @@ Create a `VirtualNode` with the constructor and add tags.
 ```ts
 const node = new VirtualNode(this, 'node', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
-    service: service,
-  }),
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
   listeners: [appmesh.VirtualNodeListener.http({
     port: 8080,
     healthCheck: appmesh.HealthCheck.http({
@@ -205,9 +201,7 @@ Create a `VirtualNode` with the constructor and add backend virtual service.
 ```ts
 const node = new VirtualNode(this, 'node', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
-    service: service,
-  }),
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8080,
     healthCheck: appmesh.HealthCheck.http({
@@ -360,9 +354,7 @@ const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace
 const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
-    service: service,
-  }),
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
   outlierDetection: {
     baseEjectionDuration: cdk.Duration.seconds(10),
     interval: cdk.Duration.seconds(30),
@@ -381,7 +373,7 @@ connection pool properties per listener protocol types.
 // A Virtual Node with a gRPC listener with a connection pool set
 const node = new appmesh.VirtualNode(stack, 'node', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.dns('node'),
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('node', appmesh.ResponseType.LOADBALANCER),
   listeners: [appmesh.VirtualNodeListener.http({
     port: 80,
     connectionPool: {
