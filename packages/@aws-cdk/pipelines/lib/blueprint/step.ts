@@ -21,6 +21,20 @@ export abstract class Step implements IFileSet {
     return `${this.constructor.name}(${this.id})`;
   }
 
+  /**
+   * Return an additional (named) output from this step
+   */
+  public additionalOutput(name: string): FileSet {
+    // Default implementation, should be overriden by children
+    Array.isArray(name);
+    throw new Error(`${this}: step does not produce any outputs`);
+  }
+
+  /**
+   * Add an additional FileSet to the set of file sets required by this step
+   *
+   * This will lead to a dependency on the producer of that file set.
+   */
   protected requireFileSet(fs: FileSet) {
     this.requiredFileSets.push(fs);
   }

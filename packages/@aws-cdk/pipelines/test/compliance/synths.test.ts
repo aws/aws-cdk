@@ -4,6 +4,7 @@ import * as cbuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
+import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
@@ -17,6 +18,10 @@ let cloudAssemblyArtifact: codepipeline.Artifact;
 // Must be unique across all test files, but preferably also consistent
 const OUTDIR = 'testcdk0.out';
 
+// What phase install commands get rendered to
+const LEGACY_INSTALLS = 'pre_build';
+const MODERN_INSTALLS = 'install';
+
 beforeEach(() => {
   app = new TestApp({ outdir: OUTDIR });
   pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
@@ -28,7 +33,7 @@ afterEach(() => {
   app.cleanup();
 });
 
-behavior('SimpleSynthAction takes arrays of commands', (suite) => {
+behavior('synth takes arrays of commands', (suite) => {
   suite.legacy(() => {
     // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -44,6 +49,19 @@ behavior('SimpleSynthAction takes arrays of commands', (suite) => {
       }),
     });
 
+    THEN_codePipelineExpectation(LEGACY_INSTALLS);
+  });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      installCommands: ['install1', 'install2'],
+      commands: ['build1', 'build2', 'test1', 'test2', 'cdk synth'],
+    });
+
+    THEN_codePipelineExpectation(MODERN_INSTALLS);
+  });
+
+  function THEN_codePipelineExpectation(installPhase: string) {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
@@ -52,7 +70,7 @@ behavior('SimpleSynthAction takes arrays of commands', (suite) => {
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
           phases: {
-            pre_build: {
+            [installPhase]: {
               commands: [
                 'install1',
                 'install2',
@@ -71,18 +89,27 @@ behavior('SimpleSynthAction takes arrays of commands', (suite) => {
         })),
       },
     });
-  });
+  }
 });
 
-behavior('%s build automatically determines artifact base-directory', (suite) => {
-  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+behavior('synth sets artifact base-directory to cdk.out', (suite) => {
+  suite.legacy(() => {
     // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       sourceArtifact,
       cloudAssemblyArtifact,
-      synthAction: npmYarnBuild(npmYarn)({ sourceArtifact, cloudAssemblyArtifact }),
+      synthAction: cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact }),
     });
+    THEN_codePipelineExpectation();
+  });
 
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
@@ -96,22 +123,33 @@ behavior('%s build automatically determines artifact base-directory', (suite) =>
         })),
       },
     });
-  });
+  }
 });
 
-behavior('%s build respects subdirectory', (suite) => {
-  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+behavior('synth supports setting subdirectory', (suite) => {
+  suite.legacy(() => {
     // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       sourceArtifact,
       cloudAssemblyArtifact,
-      synthAction: npmYarnBuild(npmYarn)({
+      synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
         subdirectory: 'subdir',
       }),
     });
 
+    THEN_codePipelineExpectation(LEGACY_INSTALLS);
+  });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      subdirectory: 'subdir',
+    });
+    THEN_codePipelineExpectation(MODERN_INSTALLS);
+  });
+
+  function THEN_codePipelineExpectation(installPhase: string) {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
@@ -120,7 +158,7 @@ behavior('%s build respects subdirectory', (suite) => {
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
           phases: {
-            pre_build: {
+            [installPhase]: {
               commands: arrayWith('cd subdir'),
             },
           },
@@ -130,21 +168,33 @@ behavior('%s build respects subdirectory', (suite) => {
         })),
       },
     });
-  });
+  }
 });
 
-behavior('%s build sets UNSAFE_PERM=true', (suite) => {
-  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+behavior('npm synth sets, or allows setting, UNSAFE_PERM=true', (suite) => {
+  suite.legacy(() => {
     // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       sourceArtifact,
       cloudAssemblyArtifact,
-      synthAction: npmYarnBuild(npmYarn)({
+      synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
       }),
     });
 
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      env: {
+        NPM_CONFIG_UNSAFE_PERM: 'true',
+      },
+    });
+  });
+
+  function THEN_codePipelineExpectation() {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
@@ -157,16 +207,16 @@ behavior('%s build sets UNSAFE_PERM=true', (suite) => {
         ],
       },
     });
-  });
+  }
 });
 
-behavior('%s assumes no build step by default', (suite) => {
-  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+behavior('synth assumes a JavaScript project by default (no build, yes synth)', (suite) => {
+  suite.legacy(() => {
     // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       sourceArtifact,
       cloudAssemblyArtifact,
-      synthAction: npmYarnBuild(npmYarn)({ sourceArtifact, cloudAssemblyArtifact }),
+      synthAction: cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact }),
     });
 
     // THEN
@@ -177,6 +227,9 @@ behavior('%s assumes no build step by default', (suite) => {
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
           phases: {
+            pre_build: {
+              commands: ['npm ci'],
+            },
             build: {
               commands: ['npx cdk synth'],
             },
@@ -185,9 +238,12 @@ behavior('%s assumes no build step by default', (suite) => {
       },
     });
   });
+
+  // Modern pipeline does not assume anything anymore
+  suite.doesNotApply.modern();
 });
 
-behavior('environmentVariables must be rendered in the action', (suite) => {
+behavior('Magic CodePipeline variables passed to synth envvars must be rendered in the action', (suite) => {
   suite.legacy(() => {
     // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -202,9 +258,21 @@ behavior('environmentVariables must be rendered in the action', (suite) => {
         synthCommand: 'synth',
       }),
     });
+    THEN_codePipelineExpectation();
+  });
 
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      env: {
+        VERSION: codepipeline.GlobalVariables.executionId,
+      },
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     // THEN
-    const theHash = Capture.aString();
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       Stages: arrayWith({
         Name: 'Build',
@@ -212,68 +280,93 @@ behavior('environmentVariables must be rendered in the action', (suite) => {
           objectLike({
             Name: 'Synth',
             Configuration: objectLike({
-              EnvironmentVariables: encodedJson([
+              EnvironmentVariables: encodedJson(arrayWith(
                 {
                   name: 'VERSION',
                   type: 'PLAINTEXT',
                   value: '#{codepipeline.PipelineExecutionId}',
                 },
-                {
-                  name: '_PROJECT_CONFIG_HASH',
-                  type: 'PLAINTEXT',
-                  value: theHash.capture(),
-                },
-              ]),
+              )),
             }),
           }),
         ],
       }),
     });
-  });
+  }
 });
 
-behavior('complex setup with environment variables still renders correct project', (suite) => {
-  suite.legacy(() => {
-    // WHEN
-    new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      sourceArtifact,
-      cloudAssemblyArtifact,
-      synthAction: new cdkp.SimpleSynthAction({
-        sourceArtifact,
-        cloudAssemblyArtifact,
-        environmentVariables: {
-          SOME_ENV_VAR: { value: 'SomeValue' },
-        },
-        environment: {
+behavior('CodeBuild: environment variables specified in multiple places are correctly merged', (suite) => {
+  // We don't support merging environment variables in this way in the legacy API
+  suite.doesNotApply.legacy();
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      env: {
+        SOME_ENV_VAR: 'SomeValue',
+      },
+      installCommands: [
+        'install1',
+        'install2',
+      ],
+      commands: ['synth'],
+      engine: new cdkp.CodePipelineEngine({
+        synthEnvironment: {
           environmentVariables: {
             INNER_VAR: { value: 'InnerValue' },
           },
           privileged: true,
         },
+      }),
+    });
+    THEN_codePipelineExpectation(MODERN_INSTALLS);
+  });
+
+  suite.additional('modern2, using the specific CodeBuild action', () => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synthStep: new cdkp.CodeBuildStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        primaryOutputDirectory: '.',
+        env: {
+          SOME_ENV_VAR: 'SomeValue',
+        },
         installCommands: [
           'install1',
           'install2',
         ],
-        synthCommand: 'synth',
+        commands: ['synth'],
+        buildEnvironment: {
+          environmentVariables: {
+            INNER_VAR: { value: 'InnerValue' },
+          },
+          privileged: true,
+        },
       }),
     });
+    THEN_codePipelineExpectation(MODERN_INSTALLS);
+  });
 
+  function THEN_codePipelineExpectation(installPhase: string) {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: objectLike({
         PrivilegedMode: true,
-        EnvironmentVariables: [
+        EnvironmentVariables: arrayWith(
+          {
+            Name: 'SOME_ENV_VAR',
+            Type: 'PLAINTEXT',
+            Value: 'SomeValue',
+          },
           {
             Name: 'INNER_VAR',
             Type: 'PLAINTEXT',
             Value: 'InnerValue',
           },
-        ],
+        ),
       }),
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
           phases: {
-            pre_build: {
+            [installPhase]: {
               commands: ['install1', 'install2'],
             },
             build: {
@@ -283,22 +376,35 @@ behavior('complex setup with environment variables still renders correct project
         })),
       },
     });
-  });
+  }
 });
 
-behavior('%s can have its install command overridden', (suite) => {
-  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+behavior('install command can be overridden/specified', (suite) => {
+  suite.legacy(() => {
     // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       sourceArtifact,
       cloudAssemblyArtifact,
-      synthAction: npmYarnBuild(npmYarn)({
+      synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
         installCommand: '/bin/true',
       }),
     });
 
+    THEN_codePipelineExpectation(LEGACY_INSTALLS);
+  });
+
+  suite.modern(() => {
+    // WHEN
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      installCommands: ['/bin/true'],
+    });
+
+    THEN_codePipelineExpectation(MODERN_INSTALLS);
+  });
+
+  function THEN_codePipelineExpectation(installPhase: string) {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
@@ -307,23 +413,23 @@ behavior('%s can have its install command overridden', (suite) => {
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
           phases: {
-            pre_build: {
+            [installPhase]: {
               commands: ['/bin/true'],
             },
           },
         })),
       },
     });
-  });
+  }
 });
 
-behavior('%s can have its test commands set', (suite) => {
-  suite.each(['npm', 'yarn']).legacy((npmYarn) => {
+behavior('synth can have its test commands set', (suite) => {
+  suite.legacy(() => {
     // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       sourceArtifact,
       cloudAssemblyArtifact,
-      synthAction: npmYarnBuild(npmYarn)({
+      synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
         installCommand: '/bin/true',
@@ -350,9 +456,12 @@ behavior('%s can have its test commands set', (suite) => {
       },
     });
   });
+
+  // There are no implicit commands in modern synth
+  suite.doesNotApply.modern();
 });
 
-behavior('Standard (NPM) synth can output additional artifacts', (suite) => {
+behavior('Synth can output additional artifacts', (suite) => {
   suite.legacy(() => {
     // WHEN
     const addlArtifact = new codepipeline.Artifact('IntegTest');
@@ -371,6 +480,26 @@ behavior('Standard (NPM) synth can output additional artifacts', (suite) => {
       }),
     });
 
+    THEN_codePipelineExpectation('CloudAsm', 'IntegTest');
+  });
+
+  suite.modern(() => {
+    // WHEN
+    const synthStep = new cdkp.SynthStep('Synth', {
+      input: cdkp.CodePipelineSource.gitHub('test/test'),
+      commands: ['cdk synth'],
+      additionalOutputDirectories: {
+        IntegTest: 'test',
+      },
+    });
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synthStep,
+    });
+
+    THEN_codePipelineExpectation('Synth_Output', 'Synth_test');
+  });
+
+  function THEN_codePipelineExpectation(asmArtifact: string, testArtifact: string) {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
@@ -380,11 +509,11 @@ behavior('Standard (NPM) synth can output additional artifacts', (suite) => {
         BuildSpec: encodedJson(deepObjectLike({
           artifacts: {
             'secondary-artifacts': {
-              CloudAsm: {
+              [asmArtifact]: {
                 'base-directory': 'cdk.out',
                 'files': '**/*',
               },
-              IntegTest: {
+              [testArtifact]: {
                 'base-directory': 'test',
                 'files': '**/*',
               },
@@ -393,22 +522,39 @@ behavior('Standard (NPM) synth can output additional artifacts', (suite) => {
         })),
       },
     });
-  });
+  }
 });
 
-behavior('Standard (NPM) synth can run in a VPC', (suite) => {
+behavior('Synth can be made to run in a VPC', (suite) => {
+  let vpc: ec2.Vpc;
+  beforeEach(() => {
+    vpc = new ec2.Vpc(pipelineStack, 'NpmSynthTestVpc');
+  });
+
   suite.legacy(() => {
     // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       sourceArtifact,
       cloudAssemblyArtifact,
       synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
-        vpc: new ec2.Vpc(pipelineStack, 'NpmSynthTestVpc'),
+        vpc,
         sourceArtifact,
         cloudAssemblyArtifact,
       }),
     });
 
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      engine: new cdkp.CodePipelineEngine({
+        vpc,
+      }),
+    });
+  });
+
+  function THEN_codePipelineExpectation() {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       VpcConfig: {
@@ -436,50 +582,7 @@ behavior('Standard (NPM) synth can run in a VPC', (suite) => {
         }),
       },
     });
-  });
-});
-
-behavior('Standard (Yarn) synth can run in a VPC', (suite) => {
-  suite.legacy(() => {
-    // WHEN
-    new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      sourceArtifact,
-      cloudAssemblyArtifact,
-      synthAction: cdkp.SimpleSynthAction.standardYarnSynth({
-        vpc: new ec2.Vpc(pipelineStack, 'YarnSynthTestVpc'),
-        sourceArtifact,
-        cloudAssemblyArtifact,
-      }),
-    });
-
-    // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      VpcConfig: {
-        SecurityGroupIds: [
-          {
-            'Fn::GetAtt': [
-              'CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2',
-              'GroupId',
-            ],
-          },
-        ],
-        Subnets: [
-          {
-            Ref: 'YarnSynthTestVpcPrivateSubnet1Subnet2805334B',
-          },
-          {
-            Ref: 'YarnSynthTestVpcPrivateSubnet2SubnetDCFBF596',
-          },
-          {
-            Ref: 'YarnSynthTestVpcPrivateSubnet3SubnetE11E0C86',
-          },
-        ],
-        VpcId: {
-          Ref: 'YarnSynthTestVpc5F654735',
-        },
-      },
-    });
-  });
+  }
 });
 
 behavior('Pipeline action contains a hash that changes as the buildspec changes', (suite) => {
@@ -539,7 +642,7 @@ behavior('Pipeline action contains a hash that changes as the buildspec changes'
     const hash3 = modernSynthWithAction(() => ({
       commands: ['asdf'],
       engine: new cdkp.CodePipelineEngine({
-        buildEnvironment: {
+        synthEnvironment: {
           computeType: cbuild.ComputeType.LARGE,
         },
       }),
@@ -610,10 +713,15 @@ behavior('Pipeline action contains a hash that changes as the buildspec changes'
 
     return theHash.capturedValue;
   }
-
 });
 
-behavior('SimpleSynthAction is IGrantable', (suite) => {
+behavior('Synth CodeBuild project role can be granted permissions', (suite) => {
+  let bucket: s3.IBucket;
+  beforeEach(() => {
+    bucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::ThisParticularBucket');
+  });
+
+
   suite.legacy(() => {
     // GIVEN
     const synthAction = cdkp.SimpleSynthAction.standardNpmSynth({
@@ -625,26 +733,44 @@ behavior('SimpleSynthAction is IGrantable', (suite) => {
       cloudAssemblyArtifact,
       synthAction,
     });
-    const bucket = new s3.Bucket(pipelineStack, 'Bucket');
 
     // WHEN
     bucket.grantRead(synthAction);
 
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    // GIVEN
+    const engine = new cdkp.CodePipelineEngine();
+    const pipe = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      engine,
+    });
+    pipe.buildPipeline();
+
+    // WHEN
+    bucket.grantRead(engine.buildProject);
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: arrayWith(deepObjectLike({
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+          Resource: ['arn:aws:s3:::ThisParticularBucket', 'arn:aws:s3:::ThisParticularBucket/*'],
         })),
       },
     });
-  });
+  }
 });
 
-behavior('SimpleSynthAction can reference an imported ECR repo', (suite) => {
-  suite.legacy(() => {
-    // Repro from https://github.com/aws/aws-cdk/issues/10535
+behavior('Synth can reference an imported ECR repo', (suite) => {
+  // Repro from https://github.com/aws/aws-cdk/issues/10535
 
+  suite.legacy(() => {
     // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       sourceArtifact,
@@ -663,10 +789,74 @@ behavior('SimpleSynthAction can reference an imported ECR repo', (suite) => {
     // THEN -- no exception (necessary for linter)
     expect(true).toBeTruthy();
   });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      engine: new cdkp.CodePipelineEngine({
+        synthEnvironment: {
+          buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
+            ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),
+          ),
+        },
+      }),
+    });
+
+    // THEN -- no exception (necessary for linter)
+    expect(true).toBeTruthy();
+  });
 });
 
-function npmYarnBuild(npmYarn: string) {
-  if (npmYarn === 'npm') { return cdkp.SimpleSynthAction.standardNpmSynth; }
-  if (npmYarn === 'yarn') { return cdkp.SimpleSynthAction.standardYarnSynth; }
-  throw new Error(`Expecting npm|yarn: ${npmYarn}`);
-}
+behavior('CodeBuild: Can specify additional policy statements', (suite) => {
+  suite.legacy(() => {
+    // WHEN
+    new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
+        sourceArtifact,
+        cloudAssemblyArtifact,
+        rolePolicyStatements: [
+          new iam.PolicyStatement({
+            actions: ['codeartifact:*', 'sts:GetServiceBearerToken'],
+            resources: ['arn:my:arn'],
+          }),
+        ],
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    // WHEN
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synthStep: new cdkp.CodeBuildStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        primaryOutputDirectory: '.',
+        commands: ['synth'],
+        rolePolicyStatements: [
+          new iam.PolicyStatement({
+            actions: ['codeartifact:*', 'sts:GetServiceBearerToken'],
+            resources: ['arn:my:arn'],
+          }),
+        ],
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
+    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: arrayWith(deepObjectLike({
+          Action: [
+            'codeartifact:*',
+            'sts:GetServiceBearerToken',
+          ],
+          Resource: 'arn:my:arn',
+        })),
+      },
+    });
+  }
+});

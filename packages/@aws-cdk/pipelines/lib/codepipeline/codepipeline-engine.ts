@@ -39,18 +39,20 @@ export interface CodePipelineEngineProps {
   readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
-   * CodeBuild environment for the build job
+   * Default image for all CodeBuild projects
    *
-   * @default - non-privileged build, SMALL instance
+   * @default - non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
    */
-  readonly buildEnvironment?: cb.BuildEnvironment;
+  readonly defaultCodeBuildEnvironment?: cb.BuildEnvironment;
 
   /**
-   * Default image for CodeBuild projects
+   * CodeBuild environment for the synth job
    *
-   * @default LinuxBuildImage.STANDARD_5_0
+   * Will be combined with settings from `defaultCodeBuildEnvironment`.
+   *
+   * @default - No additional settings, use everything from `defaultCodeBuildEnvironment`.
    */
-  readonly defaultCodeBuildImage?: cb.IBuildImage;
+  readonly synthEnvironment?: cb.BuildEnvironment;
 }
 
 export class CodePipelineEngine implements IDeploymentEngine {
@@ -69,10 +71,10 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
   constructor(private readonly props: CodePipelineEngineProps={}) {
     this.selfMutation = this.props.selfMutation ?? true;
-    this.defaultCodeBuildEnv = {
-      buildImage: props.defaultCodeBuildImage ?? cb.LinuxBuildImage.STANDARD_5_0,
+    this.defaultCodeBuildEnv = mergeBuildEnvironments({
+      buildImage: cb.LinuxBuildImage.STANDARD_5_0,
       computeType: cb.ComputeType.SMALL,
-    };
+    }, props.defaultCodeBuildEnvironment);
   }
 
   public buildDeployment(options: BuildDeploymentOptions): void {
@@ -331,7 +333,12 @@ export class CodePipelineEngine implements IDeploymentEngine {
         // allow the self-mutating project permissions to assume the bootstrap Action role
         new iam.PolicyStatement({
           actions: ['sts:AssumeRole'],
-          resources: ['arn:*:iam::*:role/*-deploy-role-*', 'arn:*:iam::*:role/*-publishing-role-*'],
+          resources: [`arn:*:iam::${Stack.of(this.pipeline).account}:role/*`],
+          conditions: {
+            'ForAnyValue:StringEquals': {
+              'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
+            },
+          },
         }),
         new iam.PolicyStatement({
           actions: ['cloudformation:DescribeStacks'],
@@ -400,7 +407,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
   private codeBuildEnvironmentFromNode(node: AGraphNode): cb.BuildEnvironment | undefined {
     const isBuildStep = node.data?.type === 'step' && !!node.data?.isBuildStep;
     if (isBuildStep) {
-      return mergeBuildEnvironments(this.defaultCodeBuildEnv, this.props.buildEnvironment ?? {});
+      return mergeBuildEnvironments(this.defaultCodeBuildEnv, this.props.synthEnvironment ?? {});
     }
 
     return this.defaultCodeBuildEnv;
@@ -430,7 +437,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       accountId: account ?? Aws.ACCOUNT_ID,
       partition: Aws.PARTITION,
     });
-    return iam.Role.fromRoleArn(scope, id, arnToImport, { mutable: false });
+    return iam.Role.fromRoleArn(scope, id, arnToImport, { mutable: false, addGrantsToResources: true });
   }
 
   /**

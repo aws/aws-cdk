@@ -533,7 +533,7 @@ class FileAssetApp extends Stage {
     super(scope, id, props);
     const stack = new Stack(this, 'Stack');
     new s3_assets.Asset(stack, 'Asset', {
-      path: path.join(__dirname, 'test-file-asset.txt'),
+      path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
     });
   }
 }
@@ -543,10 +543,10 @@ class TwoFileAssetsApp extends Stage {
     super(scope, id, props);
     const stack = new Stack(this, 'Stack');
     new s3_assets.Asset(stack, 'Asset1', {
-      path: path.join(__dirname, 'test-file-asset.txt'),
+      path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
     });
     new s3_assets.Asset(stack, 'Asset2', {
-      path: path.join(__dirname, 'test-file-asset-two.txt'),
+      path: path.join(__dirname, 'assets', 'test-file-asset-two.txt'),
     });
   }
 }
@@ -556,7 +556,7 @@ class DockerAssetApp extends Stage {
     super(scope, id, props);
     const stack = new Stack(this, 'Stack');
     new ecr_assets.DockerImageAsset(stack, 'Asset', {
-      directory: path.join(__dirname, 'test-docker-asset'),
+      directory: path.join(__dirname, 'assets', 'test-docker-asset'),
     });
   }
 }
@@ -574,13 +574,13 @@ class MegaAssetsApp extends Stage {
     let assetCount = 0;
     for (; assetCount < props.numAssets / 2; assetCount++) {
       new s3_assets.Asset(stack, `Asset${assetCount}`, {
-        path: path.join(__dirname, 'test-file-asset.txt'),
+        path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
         assetHash: `FileAsset${assetCount}`,
       });
     }
     for (; assetCount < props.numAssets; assetCount++) {
       new ecr_assets.DockerImageAsset(stack, `Asset${assetCount}`, {
-        directory: path.join(__dirname, 'test-docker-asset'),
+        directory: path.join(__dirname, 'assets', 'test-docker-asset'),
         extraHash: `FileAsset${assetCount}`,
       });
     }

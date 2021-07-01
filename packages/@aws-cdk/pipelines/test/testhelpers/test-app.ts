@@ -25,6 +25,17 @@ export class TestApp extends App {
     });
   }
 
+  public stackArtifact(stackName: string | Stack) {
+    if (typeof stackName !== 'string') {
+      stackName = stackName.stackName;
+    }
+
+    this.synth();
+    const supportStack = this.node.findAll().filter(Stack.isStack).find(s => s.stackName === stackName);
+    expect(supportStack).not.toBeUndefined();
+    return supportStack;
+  }
+
   public cleanup() {
     rimraf(assemblyBuilderOf(this).outdir);
   }
@@ -117,4 +128,17 @@ export function stackTemplate(stack: Stack) {
   const stage = Stage.of(stack);
   if (!stage) { throw new Error('stack not in a Stage'); }
   return stage.synth().getStackArtifact(stack.artifactId);
+}
+
+export class StageWithStackOutput extends Stage {
+  public readonly output: CfnOutput;
+
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    const stack = new BucketStack(this, 'Stack');
+
+    this.output = new CfnOutput(stack, 'BucketName', {
+      value: stack.bucket.bucketName,
+    });
+  }
 }

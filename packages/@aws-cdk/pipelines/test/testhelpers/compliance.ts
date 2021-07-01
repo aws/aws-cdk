@@ -4,20 +4,14 @@ interface SkippedSuite {
   modern(reason?: string): void;
 }
 
-interface ParameterizedSuite {
-  legacy(fn: (arg: any) => void): void;
-
-  modern(fn: (arg: any) => void): void;
-}
-
 interface Suite {
   readonly doesNotApply: SkippedSuite;
-
-  each(cases: any[]): ParameterizedSuite;
 
   legacy(fn: () => void): void;
 
   modern(fn: () => void): void;
+
+  additional(description: string, fn: () => void): void;
 }
 
 // eslint-disable-next-line jest/no-export
@@ -27,20 +21,6 @@ export function behavior(name: string, cb: (suite: Suite) => void) {
 
     const unwritten = new Set(['modern', 'legacy']);
     cb({
-      each: (cases: any[]) => {
-        return {
-          legacy: (testFn) => {
-            unwritten.delete('legacy');
-            describe('legacy', () => {
-              test.each(cases)(name, testFn);
-            });
-          },
-          modern: (testFn) => {
-            unwritten.delete('modern');
-            test.each(cases)('modern', testFn);
-          },
-        };
-      },
       legacy: (testFn) => {
         unwritten.delete('legacy');
         test('legacy', testFn);
@@ -49,6 +29,7 @@ export function behavior(name: string, cb: (suite: Suite) => void) {
         unwritten.delete('modern');
         test('modern', testFn);
       },
+      additional: test,
       doesNotApply: {
         modern: (reason?: string) => {
           unwritten.delete('modern');

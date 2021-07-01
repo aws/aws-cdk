@@ -68,3 +68,15 @@ export function maybeSuffix(x: string | undefined, suffix: string): string | und
   if (x === undefined) { return undefined; }
   return `${x}${suffix}`;
 }
+
+/**
+ * Partition a collection by dividing it into two collections, one that matches the predicate and one that don't
+ */
+export function partition<T>(xs: T[], pred: (x: T) => boolean): [T[], T[]] {
+  const yes: T[] = [];
+  const no: T[] = [];
+  for (const x of xs) {
+    (pred(x) ? yes : no).push(x);
+  }
+  return [yes, no];
+}

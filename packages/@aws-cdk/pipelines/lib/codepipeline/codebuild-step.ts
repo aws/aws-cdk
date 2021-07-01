@@ -50,6 +50,16 @@ export interface CodeBuildStepProps extends ScriptStepProps {
    * Build environment
    */
   readonly buildEnvironment?: codebuild.BuildEnvironment;
+
+  /**
+   * Which security group to associate with the script's project network interfaces.
+   * If no security group is identified, one will be created automatically.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - Security group will be automatically created.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
@@ -91,5 +101,9 @@ export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
    */
   public get grantPrincipal(): iam.IPrincipal {
     return this.project.grantPrincipal;
+  }
+
+  public additionalOutput(name: string) {
+    return this.runScript.additionalOutput(name);
   }
 }

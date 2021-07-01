@@ -1,25 +1,32 @@
 import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
-import { App, Stack, Stage, StageProps } from '@aws-cdk/core';
-import { Construct } from 'constructs';
-import * as cdkp from '../../lib';
-import { behavior, BucketStack, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, sortedByRunOrder, TestApp } from '../testhelpers';
+import { App, Stack } from '@aws-cdk/core';
+import { behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortedByRunOrder, TestApp, ThreeStackApp, TwoStackApp } from '../testhelpers';
 
 let app: App;
 let pipelineStack: Stack;
-let pipeline: cdkp.CdkPipeline;
 
 beforeEach(() => {
   app = new TestApp();
   pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 });
 
 behavior('interdependent stacks are in the right order', (suite) => {
   suite.legacy(() => {
-    // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'));
 
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    pipeline.addStage(new TwoStackApp(app, 'MyApp'));
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       Stages: arrayWith({
@@ -32,15 +39,26 @@ behavior('interdependent stacks are in the right order', (suite) => {
         ]),
       }),
     });
-  });
+  }
 });
 
 behavior('multiple independent stacks go in parallel', (suite) => {
   suite.legacy(() => {
     // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addApplicationStage(new ThreeStackApp(app, 'MyApp'));
 
-    // THEN
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    pipeline.addStage(new ThreeStackApp(app, 'MyApp'));
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       Stages: arrayWith({
         Name: 'MyApp',
@@ -56,12 +74,13 @@ behavior('multiple independent stacks go in parallel', (suite) => {
         ]),
       }),
     });
-  });
+  }
 });
 
-behavior('manual approval is inserted in correct location', (suite) => {
+behavior('user can request manual change set approvals', (suite) => {
   suite.legacy(() => {
     // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'), {
       manualApprovals: true,
     });
@@ -83,9 +102,10 @@ behavior('manual approval is inserted in correct location', (suite) => {
   });
 });
 
-behavior('extra space for sequential intermediary actions is reserved', (suite) => {
+behavior('user can request extra runorder space between prepare and deploy', (suite) => {
   suite.legacy(() => {
     // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'), {
       extraRunOrderSpace: 1,
     });
@@ -117,9 +137,10 @@ behavior('extra space for sequential intermediary actions is reserved', (suite) 
   });
 });
 
-behavior('combination of manual approval and extraRunOrderSpace', (suite) => {
+behavior('user can request both manual change set approval and extraRunOrderSpace', (suite) => {
   suite.legacy(() => {
     // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addApplicationStage(new OneStackApp(app, 'MyApp'), {
       extraRunOrderSpace: 1,
       manualApprovals: true,
@@ -131,7 +152,7 @@ behavior('combination of manual approval and extraRunOrderSpace', (suite) => {
         Name: 'MyApp',
         Actions: sortedByRunOrder([
           objectLike({
-            Name: 'Stack1.Prepare',
+            Name: 'Stack.Prepare',
             RunOrder: 1,
           }),
           objectLike({
@@ -139,7 +160,7 @@ behavior('combination of manual approval and extraRunOrderSpace', (suite) => {
             RunOrder: 2,
           }),
           objectLike({
-            Name: 'Stack1.Deploy',
+            Name: 'Stack.Deploy',
             RunOrder: 4,
           }),
         ]),
@@ -147,38 +168,3 @@ behavior('combination of manual approval and extraRunOrderSpace', (suite) => {
     });
   });
 });
-
-class OneStackApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
-    super(scope, id, props);
-
-    new BucketStack(this, 'Stack1');
-  }
-}
-
-class TwoStackApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
-    super(scope, id, props);
-
-    const stack2 = new BucketStack(this, 'Stack2');
-    const stack1 = new BucketStack(this, 'Stack1');
-
-    stack2.addDependency(stack1);
-  }
-}
-
-/**
- * Three stacks where the last one depends on the earlier 2
- */
-class ThreeStackApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
-    super(scope, id, props);
-
-    const stack1 = new BucketStack(this, 'Stack1');
-    const stack2 = new BucketStack(this, 'Stack2');
-    const stack3 = new BucketStack(this, 'Stack3');
-
-    stack3.addDependency(stack1);
-    stack3.addDependency(stack2);
-  }
-}

@@ -5,7 +5,7 @@ import { CodePipelineActionFactoryResult, CodePipelineActionOptions, ICodePipeli
 
 
 export abstract class CodePipelineSource extends Step implements ICodePipelineActionFactory {
-  public static fromString(repoString: string): Step {
+  public static fromString(repoString: string): CodePipelineSource {
     if (Token.isUnresolved(repoString)) {
       throw new Error('Argument to CodePipelineSource.fromString() cannot be unresolved');
     }
@@ -18,7 +18,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
     throw new Error(`CodePipelineSource.fromString(): unrecognized string format: '${repoString}'`);
   }
 
-  public static gitHub(repoString: string, props: GitHubSourceOptions = {}): Step {
+  public static gitHub(repoString: string, props: GitHubSourceOptions = {}): CodePipelineSource {
     return new GitHubSource(repoString, props);
   }
 

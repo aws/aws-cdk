@@ -19,8 +19,11 @@ export class Pipeline extends CoreConstruct {
   constructor(scope: Construct, id: string, props: PipelineProps) {
     super(scope, id);
 
-    this.engine = props.engine;
+    if (!props.synthStep.primaryOutput) {
+      throw new Error(`synthStep ${props.synthStep} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`);
+    }
 
+    this.engine = props.engine;
     this.blueprint = new Blueprint({
       synthStep: props.synthStep,
     });

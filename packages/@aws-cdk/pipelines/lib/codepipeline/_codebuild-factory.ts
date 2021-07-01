@@ -6,7 +6,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { FileSetLocation, ScriptStep, StackDeployment } from '../blueprint';
-import { mapValues, noEmptyObject } from '../private/javascript';
+import { mapValues, mkdict, noEmptyObject, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { ICodePipelineActionFactory, CodePipelineActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
 
@@ -52,6 +52,16 @@ export interface CodeBuildFactoryProps {
    * Build environment
    */
   readonly buildEnvironment?: codebuild.BuildEnvironment;
+
+  /**
+   * Which security group to associate with the script's project network interfaces.
+   * If no security group is identified, one will be created automatically.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - Security group will be automatically created.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
@@ -89,7 +99,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     if (!inputArtifact) {
       // This should actually never happen because CodeBuild projects shouldn't be added before the
       // Source, which always produces at least an artifact.
-      throw new Error(`CodeBuild action '${this.runScript.id}' requires an input (and the pipeline doesn't have one either, did you add a CodePipelineSource yet?)`);
+      throw new Error(`CodeBuild action '${this.runScript.id}' requires an input (and the pipeline doesn't have a Source to fall back to). Add an input or a pipeline source.`);
     }
 
     const installCommands = [
@@ -106,10 +116,15 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       artifacts: renderArtifactsBuildSpec(options.artifacts, this.runScript.outputs ?? []),
     });
 
+    // Partition environment variables into environment variables that can go on the project
+    // and environment variables that MUST go in the pipeline (those that reference CodePipeline variables)
+
+    const [actionEnvs, projectEnvs] = partition(Object.entries(this.runScript.env ?? {}), ([, v]) => containsPipelineVariable(v));
+
     const environment = mergeBuildEnvironments(
       this.props.buildEnvironment ?? {},
       {
-        environmentVariables: noEmptyObject(mapValues(this.runScript.env ?? {}, value => ({ value }))),
+        environmentVariables: noEmptyObject(mapValues(mkdict(projectEnvs), value => ({ value }))),
       });
 
     // A hash over the values that make the CodeBuild Project unique (and necessary
@@ -126,6 +141,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       environment,
       vpc: this.props.vpc,
       subnetSelection: this.props.subnetSelection,
+      securityGroups: this.props.securityGroups,
       buildSpec,
     });
 
@@ -135,12 +151,12 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       });
     }
 
-    const stackOutputEnv: Record<string, codebuild.BuildEnvironmentVariable> = mapValues(this.runScript.envFromOutputs, (outputRef) => (
-      { value: `#{${stackVariableNamespace(options.queries.producingStack(outputRef))}.${outputRef.outputName}}` }
-    ));
+    const stackOutputEnv = mapValues(this.runScript.envFromOutputs, outputRef =>
+      `#{${stackVariableNamespace(options.queries.producingStack(outputRef))}.${outputRef.outputName}}`,
+    );
 
-    const configHashEnv: Record<string, codebuild.BuildEnvironmentVariable> = this.props.includeBuildHashInPipeline
-      ? { _PROJECT_CONFIG_HASH: { value: projectConfigHash } }
+    const configHashEnv = this.props.includeBuildHashInPipeline
+      ? { _PROJECT_CONFIG_HASH: projectConfigHash }
       : {};
 
     const action = new codepipeline_actions.CodeBuildAction({
@@ -155,10 +171,11 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       // made the config of the underlying CodeBuild Project.
       // Hence, the pipeline will be restarted. This is necessary if the users
       // adds (for example) build or test commands to the buildspec.
-      environmentVariables: noEmptyObject({
+      environmentVariables: noEmptyObject(cbEnv({
+        ...mkdict(actionEnvs),
         ...configHashEnv,
         ...stackOutputEnv,
-      }),
+      })),
     });
 
     this._project = project;
@@ -215,13 +232,15 @@ function renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLoca
   return { 'secondary-artifacts': secondary };
 }
 
-export function mergeBuildEnvironments(env: codebuild.BuildEnvironment, ...envs: codebuild.BuildEnvironment[]) {
-  envs.unshift(env);
-  while (envs.length > 1) {
-    const [a, b] = envs.splice(envs.length - 2, 2);
-    envs.push(merge2(a, b));
+export function mergeBuildEnvironments(env: codebuild.BuildEnvironment, ...envs: Array<codebuild.BuildEnvironment | undefined>) {
+  const xs = envs.filter(isDefined);
+
+  xs.unshift(env);
+  while (xs.length > 1) {
+    const [a, b] = xs.splice(xs.length - 2, 2);
+    xs.push(merge2(a, b));
   }
-  return envs[0];
+  return xs[0];
 
   function merge2(a: codebuild.BuildEnvironment, b: codebuild.BuildEnvironment): codebuild.BuildEnvironment {
     return {
@@ -234,6 +253,10 @@ export function mergeBuildEnvironments(env: codebuild.BuildEnvironment, ...envs:
       privileged: b.privileged ?? a.privileged,
     };
   }
+}
+
+function isDefined<A>(x: A | undefined): x is NonNullable<A> {
+  return x !== undefined;
 }
 
 function hash<A>(obj: A) {
@@ -259,4 +282,20 @@ function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
 
 export function stackVariableNamespace(stack: StackDeployment) {
   return stack.stackArtifactId;
+}
+
+/**
+ * Whether the given string contains a reference to a CodePipeline variable
+ */
+function containsPipelineVariable(s: string) {
+  return !!s.match(/#\{[^}]+\}/);
+}
+
+/**
+ * Turn a collection into a collection of CodePipeline environment variables
+ */
+function cbEnv(xs: Record<string, string | undefined>): Record<string, codebuild.BuildEnvironmentVariable> {
+  return mkdict(Object.entries(xs)
+    .filter(([, v]) => v !== undefined)
+    .map(([k, v]) => [k, { value: v }] as const));
 }
