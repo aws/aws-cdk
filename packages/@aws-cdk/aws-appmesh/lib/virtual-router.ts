@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
+import { renderMeshOwner } from './private/utils';
 import { Route, RouteBaseProps } from './route';
 import { VirtualRouterListener } from './virtual-router-listener';
 
@@ -154,7 +155,7 @@ export class VirtualRouter extends VirtualRouterBase {
     const router = new CfnVirtualRouter(this, 'Resource', {
       virtualRouterName: this.physicalName,
       meshName: this.mesh.meshName,
-      meshOwner: this.mesh.env.account,
+      meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       spec: {
         listeners: this.listeners,
       },

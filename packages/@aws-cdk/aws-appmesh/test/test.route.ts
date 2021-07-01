@@ -112,6 +112,7 @@ export = {
             },
           },
         },
+        MeshOwner: ABSENT,
         RouteName: 'test-http-route',
       }));
 
@@ -579,13 +580,13 @@ export = {
       'Mesh Owner is the AWS account ID of the account that shared the mesh with your account'(test: Test) {
         // GIVEN
         const app = new cdk.App();
-        const accountA = { account: '1234567899', region: 'us-west-2' };
-        const accountB = { account: '9987654321', region: 'us-west-2' };
-        // Creating stack in Account B
-        const stack = new cdk.Stack(app, 'mySharedStack', { env: accountB });
-        // Mesh is in Account A
+        const meshEnv = { account: '1234567899', region: 'us-west-2' };
+        const routeEnv = { account: '9987654321', region: 'us-west-2' };
+        // Creating stack in Account 9987654321
+        const stack = new cdk.Stack(app, 'mySharedStack', { env: routeEnv });
+        // Mesh is in Account 1234567899
         const sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'shared-mesh',
-          `arn:aws:appmesh:${accountA.region}:${accountA.account}:mesh/shared-mesh`);
+          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`);
         const router = new appmesh.VirtualRouter(stack, 'router', {
           mesh: sharedMesh,
         });
@@ -599,13 +600,6 @@ export = {
           routeSpec: appmesh.RouteSpec.grpc({
             weightedTargets: [{ virtualNode }],
             match: { serviceName: 'example' },
-            retryPolicy: {
-              grpcRetryEvents: [],
-              httpRetryEvents: [],
-              tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-              retryAttempts: 5,
-              retryTimeout: cdk.Duration.seconds(10),
-            },
           }),
           virtualRouter: router,
 
@@ -613,7 +607,7 @@ export = {
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
-          MeshOwner: accountA.account,
+          MeshOwner: meshEnv.account,
         }));
 
         test.done();

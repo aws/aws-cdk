@@ -1,6 +1,7 @@
 import { CfnVirtualNode } from '../appmesh.generated';
 import { ListenerTlsOptions } from '../listener-tls-options';
 import { TlsClientPolicy } from '../tls-client-policy';
+import { Token, TokenComparison } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -80,4 +81,18 @@ export function renderListenerTlsOptions(scope: Construct, listenerTls: Listener
         : undefined,
     }
     : undefined;
+}
+
+/**
+ * This is the helper method to check if mesh sharing is enabled (mesh owner field needs to be present)
+ */
+export function renderMeshOwner(resourceAccount: string, meshAccount: string) : string | undefined {
+  if ( !Token.isUnresolved(resourceAccount) && !Token.isUnresolved(meshAccount)) {
+    if (Token.compareStrings(resourceAccount, meshAccount) === TokenComparison.DIFFERENT) {
+      // Mesh sharing is enabled, populate mesh owner
+      return meshAccount;
+    }
+  }
+  // Don't populate mesh owner
+  return undefined;
 }
