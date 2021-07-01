@@ -257,7 +257,7 @@ describe('schema definition mode `s3`', () => {
     // WHEN
     new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
-      schema: appsync.Schema.fromS3Location(bucket, 'appsync.test.graphql'),
+      schema: appsync.Schema.fromBucket(bucket, 'appsync.test.graphql'),
     });
 
     // THEN
@@ -281,7 +281,7 @@ describe('schema definition mode `s3`', () => {
       const bucket = new s3.Bucket(stack, 'Bucket');
       api = new appsync.GraphqlApi(stack, 'API', {
         name: 'demo',
-        schema: appsync.Schema.fromS3Location(bucket, 'garbage'),
+        schema: appsync.Schema.fromBucket(bucket, 'garbage'),
       });
     });
 

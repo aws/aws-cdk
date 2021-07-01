@@ -30,7 +30,7 @@ export abstract class Schema {
    * @param bucket the s3 bucket that holds the GraphQL Schema
    * @param key the object key for the schema
    */
-  public static fromS3Location(bucket: IBucket, key: string): Schema {
+  public static fromBucket(bucket: IBucket, key: string): Schema {
     return new S3Schema(bucket, key);
   }
 
