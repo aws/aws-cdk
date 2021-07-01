@@ -186,6 +186,15 @@ export interface BucketDeploymentProps {
  * other S3 buckets or from local disk
  */
 export class BucketDeployment extends CoreConstruct {
+  /**
+   * The bucket after the deployment
+   *
+   * If you want to reference the destination bucket in another construct and make sure the 
+   * bucket deployment has happened before the next operation is started, pass the other construct
+   * a reference to `deployment.deployedBucket`.
+   *
+   * Doing this replaces calling `otherResource.node.addDependency(deployment)`.
+   */
   public readonly deployedBucket: s3.IBucket;
 
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
@@ -223,7 +232,7 @@ export class BucketDeployment extends CoreConstruct {
       }));
     }
 
-    const deployment = cdk.CustomResource(this, 'CustomResource', {
+    const deployment = new cdk.CustomResource(this, 'CustomResource', {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
