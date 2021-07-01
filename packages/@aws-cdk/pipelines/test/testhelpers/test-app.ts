@@ -1,10 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import '@aws-cdk/assert-internal/jest';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, AppProps, Environment, Stack, StackProps, Stage } from '@aws-cdk/core';
+import { App, AppProps, Environment, CfnOutput, Stage, StageProps, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as cdkp from '../../lib';
 import { assemblyBuilderOf } from '../../lib/private/construct-internals';
 
 export const PIPELINE_ENV: Environment = {
@@ -30,18 +30,50 @@ export class TestApp extends App {
   }
 }
 
-export type ModernTestGitHubNpmPipelineProps = Partial<cdkp.SynthStepProps> & { synthStep?: cdkp.Step, engine?: cdkp.IDeploymentEngine };
-export class ModernTestGitHubNpmPipeline extends cdkp.Pipeline {
-  constructor(scope: Construct, id: string, props?: ModernTestGitHubNpmPipelineProps) {
-    super(scope, id, {
-      synthStep: props?.synthStep ?? new cdkp.SynthStep('Synth', {
-        input: cdkp.CodePipelineSource.gitHub('test/test'),
-        installCommands: ['npm ci'],
-        commands: ['npx cdk synth'],
-        ...props,
-      }),
-      engine: props?.engine ?? new cdkp.CodePipelineEngine(),
-    });
+
+export class OneStackApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+    new BucketStack(this, 'Stack');
+  }
+}
+
+export class AppWithOutput extends Stage {
+  public readonly theOutput: CfnOutput;
+
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+    const stack = new BucketStack(this, 'Stack');
+    this.theOutput = new CfnOutput(stack, 'MyOutput', { value: stack.bucket.bucketName });
+  }
+}
+
+export class TwoStackApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+    const stack2 = new BucketStack(this, 'Stack2');
+    const stack1 = new BucketStack(this, 'Stack1');
+
+    stack2.addDependency(stack1);
+  }
+}
+
+/**
+ * Three stacks where the last one depends on the earlier 2
+ */
+export class ThreeStackApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+    const stack1 = new BucketStack(this, 'Stack1');
+    const stack2 = new BucketStack(this, 'Stack2');
+    const stack3 = new BucketStack(this, 'Stack3');
+
+    stack3.addDependency(stack1);
+    stack3.addDependency(stack2);
   }
 }
 
@@ -58,6 +90,7 @@ export class BucketStack extends Stack {
     this.bucket = new s3.Bucket(this, 'Bucket');
   }
 }
+
 
 /**
  * rm -rf reimplementation, don't want to depend on an NPM package for this
@@ -80,9 +113,6 @@ export function rimraf(fsPath: string) {
   }
 }
 
-/**
- * Because 'expect(stack)' doesn't work correctly for stacks in nested assemblies
- */
 export function stackTemplate(stack: Stack) {
   const stage = Stage.of(stack);
   if (!stage) { throw new Error('stack not in a Stage'); }

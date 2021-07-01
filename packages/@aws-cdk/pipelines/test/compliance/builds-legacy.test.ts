@@ -7,9 +7,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
-import { ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps } from '../blueprint/testutil';
-import { behavior } from '../helpers/compliance';
-import { PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline } from './testutil';
+import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;

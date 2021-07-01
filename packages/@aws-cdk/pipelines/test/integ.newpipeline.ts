@@ -3,7 +3,7 @@
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as pipelines from '../../lib';
+import * as pipelines from '../lib';
 
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

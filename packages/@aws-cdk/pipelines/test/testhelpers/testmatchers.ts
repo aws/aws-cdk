@@ -1,4 +1,5 @@
-import { annotateMatcher, InspectionFailure, match, matcherFrom, PropertyMatcher } from '@aws-cdk/assert-internal';
+/* eslint-disable import/no-extraneous-dependencies */
+import { annotateMatcher, InspectionFailure, matcherFrom, PropertyMatcher } from '@aws-cdk/assert-internal';
 
 /**
  * Sort an array (of Actions) by their RunOrder field before applying a matcher.
@@ -24,24 +25,18 @@ export function sortedByRunOrder(matcher: any): PropertyMatcher {
   });
 }
 
-/**
- * Matches any of the matchers given
- */
-export function anyOf(...patterns: any[]): PropertyMatcher {
-  return annotateMatcher({ $anyOf: patterns }, (value: any, failure: InspectionFailure) => {
-    let bestError: InspectionFailure | undefined;
-
-    for (const pattern of patterns) {
-      const innerInspection = { ...failure, failureReason: '' };
-      if (match(value, pattern, innerInspection)) {
-        return true;
-      }
-      if (!bestError || bestError.failureReason.length > innerInspection.failureReason.length) {
-        bestError = innerInspection;
-      }
+export function stringNoLongerThan(length: number): PropertyMatcher {
+  return annotateMatcher({ $stringIsNoLongerThan: length }, (value: any, failure: InspectionFailure) => {
+    if (typeof value !== 'string') {
+      failure.failureReason = `Expected a string, but got '${typeof value}'`;
+      return false;
     }
 
-    failure.failureReason = `Expected one of ${patterns.length} values, got: ${bestError?.failureReason}`;
-    return false;
+    if (value.length > length) {
+      failure.failureReason = `String is ${value.length} characters long. Expected at most ${length} characters`;
+      return false;
+    }
+
+    return true;
   });
 }

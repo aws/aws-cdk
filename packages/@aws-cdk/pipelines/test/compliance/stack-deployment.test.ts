@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as assets from '@aws-cdk/aws-s3-assets';
 import { Stack, Stage } from '@aws-cdk/core';
 import { StageDeployment } from '../../lib';
-import { TestApp } from './testutil';
+import { TestApp } from '../testhelpers/test-app';
 
 test('"templateAsset"  represents the CFN template of the stack', () => {
   // GIVEN

@@ -3,8 +3,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as cdkp from '../../../lib';
 import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
-import { AppWithOutput, OneStackApp } from '../test-app';
-import { TestApp } from '../testutil';
+import { AppWithOutput, OneStackApp, TestApp } from '../../testhelpers/test-app';
 
 let app: TestApp;
 

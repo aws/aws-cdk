@@ -9,8 +9,7 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
-import { behavior } from '../helpers/compliance';
-import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubAction, LegacyTestGitHubNpmPipeline } from './testutil';
+import { behavior, BucketStack, PIPELINE_ENV, TestApp, TestGitHubAction, LegacyTestGitHubNpmPipeline } from '../testhelpers';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
 const FILE_ASSET_SOURCE_HASH2 = 'ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e';

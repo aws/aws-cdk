@@ -4,8 +4,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
-import { behavior } from '../helpers/compliance';
-import { PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline } from './testutil';
+import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;

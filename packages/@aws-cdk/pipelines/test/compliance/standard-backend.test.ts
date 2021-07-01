@@ -16,11 +16,8 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import { SecretValue, Stack, Stage, StageProps, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as cdkp from '../../../lib';
-import { behavior } from '../../helpers/compliance';
-import { LegacyTestGitHubNpmPipeline } from '../../legacy/testutil';
-import { OneStackApp } from '../test-app';
-import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, ModernTestGitHubNpmPipeline } from '../testutil';
+import * as cdkp from '../../lib';
+import { behavior, LegacyTestGitHubNpmPipeline, OneStackApp, BucketStack, PIPELINE_ENV, stackTemplate, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;

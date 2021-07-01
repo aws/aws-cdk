@@ -3,9 +3,7 @@ import '@aws-cdk/assert-internal/jest';
 import { App, Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
-import { behavior } from '../helpers/compliance';
-import { sortedByRunOrder } from './testmatchers';
-import { BucketStack, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline } from './testutil';
+import { behavior, BucketStack, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, sortedByRunOrder, TestApp } from '../testhelpers';
 
 let app: App;
 let pipelineStack: Stack;

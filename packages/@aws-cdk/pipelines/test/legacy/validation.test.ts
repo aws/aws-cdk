@@ -8,9 +8,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { CfnOutput, Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
-import { } from './testmatchers';
-import { behavior } from '../helpers/compliance';
-import { BucketStack, PIPELINE_ENV, stringNoLongerThan, TestApp, LegacyTestGitHubNpmPipeline } from './testutil';
+import { BucketStack, PIPELINE_ENV, stringNoLongerThan, TestApp, LegacyTestGitHubNpmPipeline, behavior } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;

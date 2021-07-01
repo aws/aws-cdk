@@ -2,10 +2,8 @@
 import { arrayWith, encodedJson, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { App, Stack } from '@aws-cdk/core';
-import * as cdkp from '../../../lib';
-import { AppWithOutput, ThreeStackApp, TwoStackApp } from '../test-app';
-import { sortedByRunOrder } from '../testmatchers';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline } from '../testutil';
+import * as cdkp from '../../lib';
+import { AppWithOutput, ModernTestGitHubNpmPipeline, PIPELINE_ENV, sortedByRunOrder, TestApp, ThreeStackApp, TwoStackApp } from '../testhelpers';
 
 let app: App;
 let pipelineStack: Stack;

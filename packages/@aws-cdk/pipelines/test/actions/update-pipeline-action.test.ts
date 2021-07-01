@@ -5,8 +5,8 @@ import '@aws-cdk/assert-internal/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
-import { behavior } from '../helpers/compliance';
-import { TestApp } from '../legacy/testutil';
+import { behavior } from '../testhelpers/compliance';
+import { TestApp } from '../testhelpers/test-app';
 
 let app: TestApp;
 let pipelineStack: Stack;
