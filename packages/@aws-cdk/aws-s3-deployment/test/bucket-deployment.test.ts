@@ -704,3 +704,32 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
     },
   });
 });
+
+test('s3 deployment bucket is identical to destination bucket', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deployment', {
+    destinationBucket: bucket,
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  });
+
+  expect(deployment.deployedBucket.bucketArn).toBe(bucket.bucketArn);
+});
+
+// test('s3 deployment bucket adds dependency consuming resource', () => {
+//     // GIVEN
+//     const stack = new cdk.Stack();
+//     const bucket = new s3.Bucket(stack, 'Dest');
+//     const deployment = new s3deploy.BucketDeployment(stack, 'Deployment', {
+//       destinationBucket: bucket,
+//       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+//     });
+
+//     // WHEN
+
+
+//     // THEN
+// });

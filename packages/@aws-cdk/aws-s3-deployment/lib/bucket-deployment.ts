@@ -11,6 +11,10 @@ import { ISource, SourceConfig } from './source';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
+import { Token } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
@@ -189,7 +193,7 @@ export class BucketDeployment extends CoreConstruct {
   /**
    * The bucket after the deployment
    *
-   * If you want to reference the destination bucket in another construct and make sure the 
+   * If you want to reference the destination bucket in another construct and make sure the
    * bucket deployment has happened before the next operation is started, pass the other construct
    * a reference to `deployment.deployedBucket`.
    *
@@ -251,7 +255,7 @@ export class BucketDeployment extends CoreConstruct {
       },
     });
 
-    this.deployedBucket = s3.Bucket.fromBucketArn(this, 'DestinationBucket', deployment.getAtt('DestinationBucketArn'));
+    this.deployedBucket = s3.Bucket.fromBucketArn(this, 'DestinationBucket', Token.asString(deployment.getAtt('DestinationBucketArn')));
   }
 
   private renderSingletonUuid(memoryLimit?: number) {
