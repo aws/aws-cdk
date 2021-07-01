@@ -42,7 +42,7 @@ export class Bundling implements cdk.BundlingOptions {
    * esbuild bundled Lambda asset code
    */
   public static bundle(options: BundlingProps): AssetCode {
-    return Code.fromAsset(options.projectRoot ?? path.dirname(options.depsLockFilePath), {
+    return Code.fromAsset(options.projectRoot, {
       assetHashType: cdk.AssetHashType.OUTPUT,
       bundling: new Bundling(options),
     });
