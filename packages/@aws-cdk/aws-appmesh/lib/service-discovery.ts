@@ -5,27 +5,6 @@ import { CfnVirtualNode } from './appmesh.generated';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-
-/**
- * Represents the properties needed to define CloudMap Service Discovery
- */
-export interface CloudMapServiceDiscoveryOptions {
-  /**
-   * The AWS Cloud Map Service to use for service discovery
-   */
-  readonly service: cloudmap.IService;
-
-  /**
-   * A string map that contains attributes with values that you can use to
-   * filter instances by any custom attribute that you specified when you
-   * registered the instance. Only instances that match all of the specified
-   * key/value pairs will be returned.
-   *
-   * @default - no instance attributes
-   */
-  readonly instanceAttributes?: {[key: string]: string};
-}
-
 /**
  * Properties for VirtualNode Service Discovery
  */
@@ -46,21 +25,42 @@ export interface ServiceDiscoveryConfig {
 }
 
 /**
+ * Enum of DNS service discovery response type
+ */
+export enum ResponseType {
+  /**
+   * DNS resolver returns a loadbalanced set of endpoints.
+   */
+  LOADBALANCER = 'LOADBALANCER',
+
+  /**
+   * DNS resolver is returning all the endpoints.
+   */
+  ENDPOINTS = 'ENDPOINTS',
+}
+
+/**
  * Provides the Service Discovery method a VirtualNode uses
  */
 export abstract class ServiceDiscovery {
   /**
    * Returns DNS based service discovery
    */
-  public static dns(hostname: string): ServiceDiscovery {
-    return new DnsServiceDiscovery(hostname);
+  public static dns(hostname: string, responseType?: ResponseType): ServiceDiscovery {
+    return new DnsServiceDiscovery(hostname, responseType);
   }
 
   /**
    * Returns Cloud Map based service discovery
+   *
+   * @param service The AWS Cloud Map Service to use for service discovery
+   * @param instanceAttributes A string map that contains attributes with values that you can use to
+   *                           filter instances by any custom attribute that you specified when you
+   *                           registered the instance. Only instances that match all of the specified
+   *                           key/value pairs will be returned.
    */
-  public static cloudMap(options: CloudMapServiceDiscoveryOptions): ServiceDiscovery {
-    return new CloudMapServiceDiscovery(options);
+  public static cloudMap(service: cloudmap.IService, instanceAttributes?: {[key: string]: string}): ServiceDiscovery {
+    return new CloudMapServiceDiscovery(service, instanceAttributes);
   }
 
   /**
@@ -71,16 +71,19 @@ export abstract class ServiceDiscovery {
 
 class DnsServiceDiscovery extends ServiceDiscovery {
   private readonly hostname: string;
+  private readonly responseType?: ResponseType;
 
-  constructor(hostname: string) {
+  constructor(hostname: string, responseType?: ResponseType) {
     super();
     this.hostname = hostname;
+    this.responseType = responseType;
   }
 
   public bind(_scope: Construct): ServiceDiscoveryConfig {
     return {
       dns: {
         hostname: this.hostname,
+        responseType: this.responseType,
       },
     };
   }
@@ -90,10 +93,10 @@ class CloudMapServiceDiscovery extends ServiceDiscovery {
   private readonly service: cloudmap.IService;
   private readonly instanceAttributes?: {[key: string]: string};
 
-  constructor(options: CloudMapServiceDiscoveryOptions) {
+  constructor(service: cloudmap.IService, instanceAttributes?: {[key: string]: string}) {
     super();
-    this.service = options.service;
-    this.instanceAttributes = options.instanceAttributes;
+    this.service = service,
+    this.instanceAttributes = instanceAttributes;
   }
 
   public bind(_scope: Construct): ServiceDiscoveryConfig {

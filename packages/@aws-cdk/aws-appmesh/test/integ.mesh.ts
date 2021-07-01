@@ -112,7 +112,7 @@ const node3 = mesh.addVirtualNode('node3', {
 });
 
 const node4 = mesh.addVirtualNode('node4', {
-  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node4.${namespace.namespaceName}`),
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node4.${namespace.namespaceName}`, appmesh.ResponseType.ENDPOINTS),
   listeners: [appmesh.VirtualNodeListener.http({
     tls: {
       mode: appmesh.TlsMode.STRICT,

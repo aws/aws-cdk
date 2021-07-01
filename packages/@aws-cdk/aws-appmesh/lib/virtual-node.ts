@@ -191,6 +191,10 @@ export class VirtualNode extends VirtualNodeBase {
     const accessLogging = props.accessLog?.bind(this);
     const serviceDiscovery = props.serviceDiscovery?.bind(this);
 
+    if ((props.listeners && props.listeners.length > 0) && !serviceDiscovery) {
+      throw new Error('If you specify a listener, then you must specify service discovery information.');
+    };
+
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
