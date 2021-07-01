@@ -64,6 +64,7 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
   private readonly relativeTsconfigPath?: string;
+  private readonly relativeDepsLockFilePath?: string;
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
 
@@ -77,6 +78,10 @@ export class Bundling implements cdk.BundlingOptions {
 
     if (props.tsconfig) {
       this.relativeTsconfigPath = path.relative(this.projectRoot, path.resolve(props.tsconfig));
+    }
+
+    if (props.depsLockFilePath) {
+      this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
     }
 
     this.externals = [
@@ -152,10 +157,12 @@ export class Bundling implements cdk.BundlingOptions {
       const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
       const osCommand = new OsCommand(options.osPlatform);
 
+      const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
+
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
         osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies }),
-        osCommand.copy(pathJoin(options.inputDir, this.packageManager.lockFile), pathJoin(options.outputDir, this.packageManager.lockFile)),
+        osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
       ]);

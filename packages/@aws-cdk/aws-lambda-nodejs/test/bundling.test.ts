@@ -411,3 +411,34 @@ test('esbuild bundling with projectRoot', () => {
     }),
   });
 });
+
+test('esbuild bundling with projectRoot and externals and dependencies', () => {
+  const repoRoot = path.join(__dirname, '../../../..');
+  const packageLock = path.join(repoRoot, 'common', 'package-lock.json');
+  Bundling.bundle({
+    entry: __filename,
+    projectRoot: repoRoot,
+    depsLockFilePath: packageLock,
+    runtime: Runtime.NODEJS_12_X,
+    externalModules: ['abc'],
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(repoRoot, {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          'esbuild --bundle "/asset-input/packages/@aws-cdk/aws-lambda-nodejs/test/bundling.test.js" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
+          'cp /asset-input/common/package-lock.json /asset-output/package-lock.json',
+          'cd /asset-output',
+          'npm ci',
+        ].join(' && '),
+      ],
+    }),
+  });
+});
