@@ -41,15 +41,6 @@ export interface IMesh extends cdk.IResource {
   readonly meshArn: string;
 
   /**
-   * The AWS IAM account ID of the AppMesh mesh
-   *
-   * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/sharing.html
-   *
-   * @attribute
-   */
-  readonly meshOwner: string;
-
-  /**
    * Creates a new VirtualRouter in this Mesh.
    * Note that the Router is created in the same Stack that this Mesh belongs to,
    * which might be different than the current stack.
@@ -85,10 +76,6 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
    */
   public abstract readonly meshArn: string;
 
-  /**
-   * The AWS IAM account ID of the AppMesh mesh
-   */
-  public abstract readonly meshOwner: string;
 
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
@@ -155,10 +142,11 @@ export class Mesh extends MeshBase {
     class Import extends MeshBase {
       public meshName = parts.resourceName || '';
       public meshArn = meshArn;
-      public meshOwner = parts.account || '';
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: meshArn,
+    });
   }
 
   /**
@@ -174,7 +162,6 @@ export class Mesh extends MeshBase {
     class Import extends MeshBase {
       public meshName = meshName;
       public meshArn = arn;
-      public meshOwner = this.env.account;
     }
 
     return new Import(scope, id);
@@ -190,10 +177,6 @@ export class Mesh extends MeshBase {
    */
   public readonly meshArn: string;
 
-  /**
-   * The AWS IAM account ID of the AppMesh mesh
-   */
-  public readonly meshOwner: string;
 
   constructor(scope: Construct, id: string, props: MeshProps = {}) {
     super(scope, id, {
@@ -215,6 +198,5 @@ export class Mesh extends MeshBase {
       resource: 'mesh',
       resourceName: this.physicalName,
     });
-    this.meshOwner = this.env.account;
   }
 }

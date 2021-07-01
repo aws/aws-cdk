@@ -438,10 +438,15 @@ export = {
     'with shared service mesh': {
       'Mesh Owner is the AWS account ID of the account that shared the mesh with your account'(test:Test) {
         // GIVEN
-        const stack = new cdk.Stack();
-        const accountId = '123456789012';
-        const sharedMesh = appmesh.Mesh
-          .fromMeshArn(stack, 'shared-mesh', `arn:aws:appmesh:us-west-2:${accountId}:mesh/shared-mesh`);
+        const app = new cdk.App();
+        const accountA = { account: '1234567899', region: 'us-west-2' };
+        const accountB = { account: '9987654321', region: 'us-west-2' };
+
+        // Creating stack in Account B
+        const stack = new cdk.Stack(app, 'mySharedStack', { env: accountB });
+        // Mesh is in Account A
+        const sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'shared-mesh',
+          `arn:aws:appmesh:${accountA.region}:${accountA.account}:mesh/shared-mesh`);
 
         // WHEN
         new appmesh.VirtualGateway(stack, 'test-node', {
@@ -450,7 +455,7 @@ export = {
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
-          MeshOwner: accountId,
+          MeshOwner: accountA.account,
         }));
 
         test.done();

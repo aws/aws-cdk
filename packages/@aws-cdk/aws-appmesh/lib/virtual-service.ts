@@ -110,7 +110,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
     const svc = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
-      meshOwner: this.mesh.meshOwner,
+      meshOwner: this.mesh.env.account,
       virtualServiceName: this.physicalName,
       spec: {
         provider: providerConfig.virtualNodeProvider || providerConfig.virtualRouterProvider

@@ -678,17 +678,28 @@ gateway.grantStreamAggregatedResources(envoyUser)
 ## Adding Resources to shared meshes
 
 A shared mesh allows resources created by different accounts to communicate with each other in the same mesh.
-For more information about mesh sharing, see [Working with shared meshes](https://docs.aws.amazon.com/app-mesh/latest/userguide/sharing.html).
+
+For more information about mesh sharing, see
+[Working with shared meshes](https://docs.aws.amazon.com/app-mesh/latest/userguide/sharing.html).
+
+
+In account A:
 
 ```ts
-// This is the ARN for the mesh from different AWS IAM account ID.
-// Ensure mesh is properly shared with your account
-const arn = 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh';
-appmesh.Mesh.fromMeshArn(stack, 'imported-mesh', arn);
+const mesh = new Mesh(stack, 'AppMesh', {
+  meshName: 'mySharedMesh',
+});
+```
 
-// This VirtualNode resource can communicate with the resources in the mesh from different AWS IAM account ID.
+In account B:
+
+```ts
+// This is the ARN for the mesh from Account A
+const arn = 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh';
+sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'mySharedMesh', arn);
+
+// This VirtualNode resource can communicate with the resources in the shared mesh
 new appmesh.VirtualNode(stack, 'test-node', {
   mesh: sharedMesh,
 });
 ```
-

@@ -194,7 +194,7 @@ export class VirtualNode extends VirtualNodeBase {
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
-      meshOwner: props.mesh.meshOwner,
+      meshOwner: this.mesh.env.account,
       spec: {
         backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
