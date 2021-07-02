@@ -517,7 +517,7 @@ export abstract class GatewayRouteSpec {
 
 class HttpGatewayRouteSpec extends GatewayRouteSpec {
   /**
-   * The criterion for determining a request match for this GatewayRoute.
+   * The criterion for determining a request match for this GatewayRoute
    *
    * @default - matches on prefix with '/'
    */

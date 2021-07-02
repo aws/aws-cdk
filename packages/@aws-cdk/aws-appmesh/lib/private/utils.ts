@@ -110,7 +110,7 @@ export function isMatchPropertiesUndefined(match: HttpRouteMatch | undefined): b
 }
 
 /**
- * This is the helper method to validate if the length of Metadata array when it is specified.
+ * This is the helper method to validate the length of Metadata array when it is specified.
  */
 export function validateMetadata(metadata?: GrpcMetadataMatch[]) {
   if (metadata && (metadata.length < 1 || metadata.length > 10)) {
