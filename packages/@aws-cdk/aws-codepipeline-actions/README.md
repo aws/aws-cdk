@@ -218,24 +218,6 @@ const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'SourceBucket', {
 });
 ```
 
-If an imported bucket has been encrypted with a custom key, import the
-bucket in your stack with the key as follows:
-
-```ts
-const key = kms.Key.fromKeyArn(stack, 'MyKey', 'arn:aws:kms:...');
-const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'Bucket', {
-  BucketName: 'MyBucket',
-  encryptionKey: key,
-});
-const sourceAction = new codepipeline_actions.S3SourceAction({
-  actionName: 'S3Source',
-  bucket: sourceBucket,
-  bucketKey: 'path/to/file.zip',
-  encryptionKey: encryptionKey,
-  output: sourceOutput,
-});
-```
-
 By default, the Pipeline will poll the Bucket to detect changes.
 You can change that behavior to use CloudWatch Events by setting the `trigger`
 property to `S3Trigger.EVENTS` (it's `S3Trigger.POLL` by default).
