@@ -6,6 +6,17 @@ import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
+ * Enum for supported types of Container Providers
+ */
+export enum ContainerProviderTypes {
+
+  /**
+   * Supported container provider type is an EKS Cluster
+   */
+  EKS = 'EKS',
+}
+
+/**
  * The information about the EKS cluster.
  */
 export interface EksInfo {
@@ -59,6 +70,8 @@ export interface ContainerProvider {
 }
 
 /**
+=======
+>>>>>>> 6da8b9637694e0659bcdd628e0718082774b256d
  * The props for a EMR Containers CreateVirtualCluster Task.
  */
 export interface EMRContainersCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
@@ -139,14 +152,17 @@ export class EMRContainersCreateVirtualCluster extends sfn.TaskStateBase {
   private createPolicyStatements(): iam.PolicyStatement[] {
     return [
       new iam.PolicyStatement({
-        resources: [
-          Stack.of(this).formatArn({
-            service: 'emr-containers',
-            resource: 'virtual-cluster',
-            resourceName: this.props.name,
-          }),
-        ],
+        resources: ['*'],
         actions: ['emr-containers:CreateVirtualCluster'],
+      }),
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['iam:CreateServiceLinkedRole'],
+        conditions: {
+          stringLike: {
+            'iam:AWSServiceName': 'emr-containers.amazonaws.com',
+          },
+        },
       }),
     ];
   }

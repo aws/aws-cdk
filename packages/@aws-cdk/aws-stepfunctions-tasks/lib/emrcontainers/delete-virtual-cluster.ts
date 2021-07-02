@@ -35,7 +35,7 @@ export class EMRContainersDeleteVirtualCluster extends sfn.TaskStateBase {
 
   constructor(scope: Construct, id: string, private readonly props: EMRContainersDeleteVirtualClusterProps) {
     super(scope, id, props);
-    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
+    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
 
     validatePatternSupported(this.integrationPattern, EMRContainersDeleteVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
@@ -68,13 +68,7 @@ export class EMRContainersDeleteVirtualCluster extends sfn.TaskStateBase {
     }
 
     return [new iam.PolicyStatement({
-      resources: [
-        Stack.of(this).formatArn({
-          service: 'emr-containers',
-          resource: 'virtual-cluster-id',
-          resourceName: 'StepFunctionsDeleteVirtualClusterEMRContainers',
-        }),
-      ],
+      resources: ['*'],
       actions: iamActions,
     })];
   }

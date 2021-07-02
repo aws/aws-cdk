@@ -1,11 +1,14 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { EMRContainersCreateVirtualCluster } from '../../lib/emrcontainers/create-virtual-cluster';
+import { ContainerProviderTypes, EMRContainersCreateVirtualCluster } from '../../lib/emrcontainers/create-virtual-cluster';
 
-/*
+/**
  * Stack verification steps:
- * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
- * * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED
+ * Everything in the link below besides the last step must be setup before running the state machine.
+ * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html
+ *
+ * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
+ * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED
  */
 
 const app = new cdk.App();
@@ -20,8 +23,9 @@ const createVirtualClusterJob = new EMRContainersCreateVirtualCluster(stack, 'Cr
         namespace: 'kube-system',
       },
     },
-    type: 'EKS',
+    type: ContainerProviderTypes.EKS,
   },
+  integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
 });
 
 const chain = sfn.Chain.start(createVirtualClusterJob);
@@ -29,7 +33,6 @@ const chain = sfn.Chain.start(createVirtualClusterJob);
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,
   timeout: cdk.Duration.seconds(30),
-  // todo: add a role prop here
 });
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {

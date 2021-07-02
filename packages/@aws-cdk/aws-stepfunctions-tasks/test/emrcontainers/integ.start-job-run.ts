@@ -2,11 +2,18 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { EMRContainersStartJobRun } from '../../lib';
 
-/*
+/**
  * Stack verification steps:
- * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
- * * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED
+ * Everything in the link below must be setup before running the state machine.
+ * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html
+ * 
+ * DataSet for testing: TODO
+ * https://registry.opendata.aws/nyc-tlc-trip-records-pds/
+ * 
+ * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
+ * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED
  */
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-start-job-run-integ');
 
