@@ -1,8 +1,8 @@
+import { Token, TokenComparison } from '@aws-cdk/core';
 import { CfnVirtualNode } from '../appmesh.generated';
 import { ListenerTlsOptions } from '../listener-tls-options';
 import { GrpcMetadataMatch, HttpRouteMatch } from '../route-spec';
 import { TlsClientPolicy } from '../tls-client-policy';
-import { Token, TokenComparison } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order

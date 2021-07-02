@@ -164,7 +164,7 @@ export = {
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
-            MeshOwner: meshEnv.account,
+          MeshOwner: meshEnv.account,
         }));
 
         test.done();

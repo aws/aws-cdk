@@ -597,7 +597,7 @@ export = {
           mesh: sharedMesh,
           routeSpec: appmesh.RouteSpec.grpc({
             weightedTargets: [{ virtualNode }],
-            match: { serviceName: 'example' },
+            match: appmesh.GrpcRouteMatch.serviceName('example'),
           }),
           virtualRouter: router,
 
