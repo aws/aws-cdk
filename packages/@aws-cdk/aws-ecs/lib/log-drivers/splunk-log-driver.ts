@@ -1,8 +1,8 @@
 import { SecretValue } from '@aws-cdk/core';
-import { ContainerDefinition } from '../container-definition';
+import { ContainerDefinition, Secret } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
-import { ensureInRange, renderCommonLogDriverOptions, stringifyOptions } from './utils';
+import { ensureInRange, renderCommonLogDriverOptions, renderLogDriverSecretOptions, stringifyOptions } from './utils';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -25,8 +25,15 @@ export enum SplunkLogFormat {
 export interface SplunkLogDriverProps extends BaseLogDriverProps {
   /**
    * Splunk HTTP Event Collector token.
+   * @deprecated Use `secretToken` instead.
    */
   readonly token: SecretValue;
+
+  /**
+   * Splunk HTTP Event Collector token (Secret).
+   * @default - Secret token not provided.
+   */
+  readonly secretToken?: Secret;
 
   /**
    * Path to your Splunk Enterprise, self-service Splunk Cloud instance, or Splunk
@@ -130,23 +137,30 @@ export class SplunkLogDriver extends LogDriver {
    * Called when the log driver is configured on a container
    */
   public bind(_scope: CoreConstruct, _containerDefinition: ContainerDefinition): LogDriverConfig {
+    const options = stringifyOptions({
+      'splunk-token': this.props.token,
+      'splunk-url': this.props.url,
+      'splunk-source': this.props.source,
+      'splunk-sourcetype': this.props.sourceType,
+      'splunk-index': this.props.index,
+      'splunk-capath': this.props.caPath,
+      'splunk-caname': this.props.caName,
+      'splunk-insecureskipverify': this.props.insecureSkipVerify,
+      'splunk-format': this.props.format,
+      'splunk-verify-connection': this.props.verifyConnection,
+      'splunk-gzip': this.props.gzip,
+      'splunk-gzip-level': this.props.gzipLevel,
+      ...renderCommonLogDriverOptions(this.props),
+    });
+
+    if (this.props.secretToken) {
+      delete options['splunk-token'];
+    }
+
     return {
       logDriver: 'splunk',
-      options: stringifyOptions({
-        'splunk-token': this.props.token,
-        'splunk-url': this.props.url,
-        'splunk-source': this.props.source,
-        'splunk-sourcetype': this.props.sourceType,
-        'splunk-index': this.props.index,
-        'splunk-capath': this.props.caPath,
-        'splunk-caname': this.props.caName,
-        'splunk-insecureskipverify': this.props.insecureSkipVerify,
-        'splunk-format': this.props.format,
-        'splunk-verify-connection': this.props.verifyConnection,
-        'splunk-gzip': this.props.gzip,
-        'splunk-gzip-level': this.props.gzipLevel,
-        ...renderCommonLogDriverOptions(this.props),
-      }),
+      options,
+      secretOptions: this.props.secretToken && renderLogDriverSecretOptions({ 'splunk-token': this.props.secretToken }, _containerDefinition.taskDefinition),
     };
   }
 }
