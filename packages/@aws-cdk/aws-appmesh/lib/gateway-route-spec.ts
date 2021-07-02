@@ -271,21 +271,6 @@ class GrpcGatewayRouteServicenameMatchImpl extends GrpcGatewayRouteMatch {
 }
 
 /**
- * Enum of rewrite default target
- */
-export enum Default {
-  /**
-   * Enable default rewrite.
-   */
-  ENABLED = 'ENABLED',
-
-  /**
-   * Disable default rewrite.
-   */
-  DISABLED = 'DISABLED',
-}
-
-/**
  * All properties for gRPC gateway route rewrite.
  */
 export interface HttpGatewayRouteRewriteConfig {
@@ -327,10 +312,10 @@ export abstract class HttpGatewayRoutePathOrPrefixRewrite {
   /**
    * The default prefix used to replace the incoming route prefix when rewritten.
    *
-   * @param isDefault Enable or disable the default prefix
+   * @param isDefault Boolean to select to enable or disable the default prefix. Default value is enabled.
    */
-  public static defaultPrefix(isDefault: Default): HttpGatewayRoutePathOrPrefixRewrite {
-    return new HttpGatewayRoutePrefixRewriteImpl({ defaultPrefix: isDefault } );
+  public static defaultPrefix(isDefault?: boolean): HttpGatewayRoutePathOrPrefixRewrite {
+    return new HttpGatewayRoutePrefixRewriteImpl({ defaultPrefix: isDefault == false ? 'DISABLED' : 'ENABLED' });
   }
 
   /**
@@ -380,10 +365,11 @@ class HttpGatewayRoutePrefixRewriteImpl extends HttpGatewayRoutePathOrPrefixRewr
 export interface HttpGatewayRouteRewrite {
   /**
    * The default target host name to write to.
+   * Boolean is used to select either enable or disable.
    *
-   * @default - rewrite hostname to the destination Virtual Service name.
+   * @default true
    */
-  readonly defaultHostname?: Default;
+  readonly defaultHostname?: boolean;
 
   /**
    * The path to rewrite.
@@ -398,11 +384,12 @@ export interface HttpGatewayRouteRewrite {
  */
 export interface GrpcGatewayRouteRewrite {
   /**
-   * The host name to rewrite
+   * The default target host name to write to.
+   * Boolean is used to select either enable or disable.
    *
-   * @default - rewrite hostname to the destination Virtual Service name.
+   * @default true
    */
-  readonly defaultHostname?: Default
+  readonly defaultHostname?: boolean;
 }
 
 /**
@@ -636,7 +623,7 @@ function renderHttpGatewayRouteRewrite(scope: Construct, rewrite?: HttpGatewayRo
     ? {
       hostname: rewrite.defaultHostname
         ? {
-          defaultTargetHostname: rewrite.defaultHostname,
+          defaultTargetHostname: rewrite.defaultHostname ? 'ENABLED' : 'DISABLED',
         }
         : undefined,
       prefix: rewrite.pathOrPrefix?.bind(scope).prefix
@@ -659,7 +646,7 @@ function renderGrpcGatewayRouteRewrite(rewrite?: GrpcGatewayRouteRewrite): CfnGa
     ? {
       hostname: rewrite.defaultHostname
         ? {
-          defaultTargetHostname: rewrite.defaultHostname,
+          defaultTargetHostname: rewrite.defaultHostname ? 'ENABLED' : 'DISABLED',
         }
         : undefined,
     }

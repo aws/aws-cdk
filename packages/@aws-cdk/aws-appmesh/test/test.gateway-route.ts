@@ -196,7 +196,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             rewrite: {
-              defaultHostname: appmesh.Default.ENABLED,
+              defaultHostname: true,
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -207,7 +207,7 @@ export = {
             routeTarget: virtualService,
             match: appmesh.GrpcRouteMatch.serviceName(virtualService.virtualServiceName),
             rewrite: {
-              defaultHostname: appmesh.Default.ENABLED,
+              defaultHostname: true,
             },
           }),
           gatewayRouteName: 'gateway-grpc-route',
@@ -366,7 +366,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             rewrite: {
-              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(appmesh.Default.ENABLED),
+              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(),
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -377,7 +377,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
             rewrite: {
-              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(appmesh.Default.DISABLED),
+              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(false),
             },
           }),
           gatewayRouteName: 'gateway-http2-route',

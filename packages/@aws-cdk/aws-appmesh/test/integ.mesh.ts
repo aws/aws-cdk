@@ -360,8 +360,8 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
       ],
     },
     rewrite: {
-      defaultHostname: appmesh.Default.ENABLED,
-      pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(appmesh.Default.DISABLED),
+      defaultHostname: true,
+      pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(false),
     },
   }),
 });
