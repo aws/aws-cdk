@@ -711,25 +711,15 @@ test('s3 deployment bucket is identical to destination bucket', () => {
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
-  const deployment = new s3deploy.BucketDeployment(stack, 'Deployment', {
+  new s3deploy.BucketDeployment(stack, 'Deployment', {
     destinationBucket: bucket,
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   });
 
-  expect(deployment.deployedBucket.bucketArn).toBe(bucket.bucketArn);
+  // THEN
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    // Since this utilizes GetAtt, we know CFN will deploy the bucket first
+    // before deploying other resources that rely call the destination bucket.
+    PassThroughBucketArn: { 'Fn::GetAtt': ['DestC383B82A', 'Arn'] },
+  });
 });
-
-// test('s3 deployment bucket adds dependency consuming resource', () => {
-//     // GIVEN
-//     const stack = new cdk.Stack();
-//     const bucket = new s3.Bucket(stack, 'Dest');
-//     const deployment = new s3deploy.BucketDeployment(stack, 'Deployment', {
-//       destinationBucket: bucket,
-//       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-//     });
-
-//     // WHEN
-
-
-//     // THEN
-// });
