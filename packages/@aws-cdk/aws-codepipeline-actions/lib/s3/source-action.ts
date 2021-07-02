@@ -75,14 +75,7 @@ export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
    * The Amazon S3 bucket that stores the source code.
    *
    * If you import an encrypted bucket in your stack, please specify
-   * the encryption key at import time, for example:
-   *
-   * ```
-   * const bucket = s3.Bucket.fromBucketAttributes(this, 'Bucket', {
-   *   BucketName: 'MyBucket',
-   *    encryptionKey: kms.Key.fromKeyArn(stack, 'MyKey', 'arn:aws:kms:...'),
-   * });
-   * ```
+   * the encryption key at import time by using `Bucket.fromBucketAttributes()` method.
    */
   readonly bucket: s3.IBucket;
 }
