@@ -972,21 +972,18 @@ export = {
         const mesh = new appmesh.Mesh(stack, 'mesh', {
           meshName: 'test-mesh',
         });
-        const node = new appmesh.VirtualNode(stack, 'test-node-2', {
-          mesh,
-        });
 
         const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
         });
 
         // WHEN + THEN
-        // test.throws(() => {
-        //   new appmesh.VirtualNode(stack, 'test-node-2', {
-        //     mesh,
-        //     listeners: [appmesh.VirtualNodeListener.http()],
-        //   });
-        // }, /If you specify a listener, then you must specify service discovery information/);
+        test.throws(() => {
+          new appmesh.VirtualNode(stack, 'test-node-2', {
+            mesh,
+            listeners: [appmesh.VirtualNodeListener.http()],
+          });
+        }, /If you specify a listener, then you must specify service discovery information/);
 
         test.throws(() => {
           mesh.addVirtualNode('test-node-3', {
