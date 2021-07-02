@@ -84,15 +84,11 @@ export function renderListenerTlsOptions(scope: Construct, listenerTls: Listener
 }
 
 /**
- * This is the helper method to check if mesh sharing is enabled (mesh owner field needs to be present)
+ * This is the helper method to populate mesh owner when it is a shared mesh scenario
  */
 export function renderMeshOwner(resourceAccount: string, meshAccount: string) : string | undefined {
-  if ( !Token.isUnresolved(resourceAccount) && !Token.isUnresolved(meshAccount)) {
-    if (Token.compareStrings(resourceAccount, meshAccount) === TokenComparison.DIFFERENT) {
-      // Mesh sharing is enabled, populate mesh owner
-      return meshAccount;
-    }
-  }
-  // Don't populate mesh owner
-  return undefined;
+  const comparison = Token.compareStrings(resourceAccount, meshAccount);
+  return comparison === TokenComparison.DIFFERENT || comparison === TokenComparison.ONE_UNRESOLVED
+    ? meshAccount
+    : undefined;
 }
