@@ -1,5 +1,12 @@
 import { CfnGatewayRoute } from './appmesh.generated';
-import { HttpHeaderMatch, HttpRouteMatchMethod } from './route-spec';
+import { isMatchPropertiesUndefined } from './private/utils';
+import {
+  GrpcMetadataMatch,
+  HttpHeaderMatch,
+  HttpRouteMatchMethod,
+  HttpRoutePathOrPrefixMatch,
+  QueryParameterMatch,
+} from './route-spec';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
@@ -63,332 +70,6 @@ class GatewayRouteHostnameImpl extends GatewayRouteHostname {
 }
 
 /**
- * Configuration for `MetadataMatch`
- */
-export interface GrpcGatewayRouteMetadataMatchConfig {
-  /**
-   * The gRPC gateway route metadata.
-   */
-  readonly metadataMatch: CfnGatewayRoute.GrpcGatewayRouteMetadataProperty;
-}
-
-/**
- * Used to generate metadata matching methods.
- */
-export abstract class GrpcMetadataMatch {
-  /**
-   * The value of the metadata with the given name in the request must match the
-   * specified value exactly.
-   *
-   * @param metadataName the name of the gRPC metadata to match against
-   * @param metadataValue The exact value to test against
-   */
-  static valueIs(metadataName: string, metadataValue: string): GrpcMetadataMatch {
-    return new MetadataMatchImpl(metadataName, false, { exact: metadataValue });
-  }
-
-  /**
-   * The value of the metadata with the given name in the request must not match
-   * the specified value exactly.
-   *
-   * @param metadataName the name of the gRPC metadata to match against
-   * @param metadataValue The exact value to test against
-   */
-  static valueIsNot(metadataName: string, metadataValue: string): GrpcMetadataMatch {
-    return new MetadataMatchImpl(metadataName, true, { exact: metadataValue });
-  }
-
-  /**
-   * The value of the metadata with the given name in the request must start with
-   * the specified characters.
-   *
-   * @param metadataName the name of the gRPC metadata to match against
-   * @param prefix The prefix to test against
-   */
-  static valueStartsWith(metadataName: string, prefix: string): GrpcMetadataMatch {
-    return new MetadataMatchImpl(metadataName, false, { prefix });
-  }
-
-  /**
-   * The value of the metadata with the given name in the request must not start
-   * with the specified characters.
-   *
-   * @param metadataName the name of the gRPC metadata to match against
-   * @param prefix The prefix to test against
-   */
-  static valueDoesNotStartWith(metadataName: string, prefix: string): GrpcMetadataMatch {
-    return new MetadataMatchImpl(metadataName, true, { prefix });
-  }
-
-  /**
-   * The value of the metadata with the given name in the request must end with
-   * the specified characters.
-   *
-   * @param metadataName the name of the gRPC metadata to match against
-   * @param suffix The suffix to test against
-   */
-  static valueEndsWith(metadataName: string, suffix: string): GrpcMetadataMatch {
-    return new MetadataMatchImpl(metadataName, false, { suffix });
-  }
-
-  /**
-   * The value of the metadata with the given name in the request must not end
-   * with the specified characters.
-   *
-   * @param metadataName the name of the gRPC metadata to match against
-   * @param suffix The suffix to test against
-   */
-  static valueDoesNotEndWith(metadataName: string, suffix: string): GrpcMetadataMatch {
-    return new MetadataMatchImpl(metadataName, true, { suffix });
-  }
-
-  /**
-   * The value of the metadata with the given name in the request must include
-   * the specified characters.
-   *
-   * @param metadataName the name of the gRPC metadata to match against
-   * @param regex The regex to test against
-   */
-  static valueMatchesRegex(metadataName: string, regex: string): GrpcMetadataMatch {
-    return new MetadataMatchImpl(metadataName, false, { regex });
-  }
-
-  /**
-   * The value of the metadata with the given name in the request must not
-   * include the specified characters.
-   *
-   * @param metadataName the name of the gRPC metadata to match against
-   * @param regex The regex to test against
-   */
-  static valueDoesNotMatchRegex(metadataName: string, regex: string): GrpcMetadataMatch {
-    return new MetadataMatchImpl(metadataName, true, { regex });
-  }
-
-  /**
-   * The value of the metadata with the given name in the request must be in a
-   * range of values.
-   *
-   * @param metadataName the name of the gRPC metadata to match against
-   * @param start Match on values starting at and including this value
-   * @param end Match on values up to but not including this value
-   */
-  static valuesIsInRange(metadataName: string, start: number, end: number): GrpcMetadataMatch {
-    return new MetadataMatchImpl(metadataName, false, {
-      range: {
-        start,
-        end,
-      },
-    });
-  }
-
-  /**
-   * The value of the metadata with the given name in the request must not be in
-   * a range of values.
-   *
-   * @param metadataName the name of the gRPC metadata to match against
-   * @param start Match on values starting at and including this value
-   * @param end Match on values up to but not including this value
-   */
-  static valuesIsNotInRange(metadataName: string, start: number, end: number): GrpcMetadataMatch {
-    return new MetadataMatchImpl(metadataName, true, {
-      range: {
-        start,
-        end,
-      },
-    });
-  }
-
-  /**
-   * Returns the metadata match configuration.
-   */
-  abstract bind(scope: Construct): GrpcGatewayRouteMetadataMatchConfig;
-}
-
-class MetadataMatchImpl extends GrpcMetadataMatch {
-  constructor(
-    private readonly metadataName: string,
-    private readonly invert: boolean,
-    private readonly matchProperty: CfnGatewayRoute.GatewayRouteMetadataMatchProperty,
-  ) {
-    super();
-  }
-
-  bind(_scope: Construct): GrpcGatewayRouteMetadataMatchConfig {
-    return {
-      metadataMatch: {
-        name: this.metadataName,
-        invert: this.invert,
-        match: this.matchProperty,
-      },
-    };
-  }
-}
-
-/**
- * Configuration for HTTP gateway route match
- */
-export interface HttpGatewayRouteMatchConfig {
-  /**
-   * GatewayRoute CFN configuration for HTTP gateway route match.
-   */
-  readonly requestMatch: CfnGatewayRoute.HttpGatewayRouteMatchProperty;
-}
-
-/**
- * Defines HTTP gateway route path or prefix request match.
- */
-export abstract class HttpGatewayRoutePathOrPrefixMatch {
-  /**
-   * Specifies the path to match requests with.
-   * This parameter must always start with /, which by itself matches all requests to the virtual service name.
-   * You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
-   * and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
-   */
-  public static prefix(path: string): HttpGatewayRoutePathOrPrefixMatch {
-    return new HttpGatewayRoutePrefixMatchImpl(path);
-  }
-
-  /**
-   * The path to match on.
-   */
-  public static path(pathMatch: HttpPathMatch): HttpGatewayRoutePathOrPrefixMatch {
-    return new HttpGatewayRoutePathMatchImpl(pathMatch);
-  }
-
-  /**
-   * Return HTTP gateway route match configuration.
-   */
-  abstract bind(scope: Construct): HttpGatewayRouteMatchConfig;
-}
-
-class HttpGatewayRoutePrefixMatchImpl extends HttpGatewayRoutePathOrPrefixMatch {
-  constructor(
-    private readonly prefix: string,
-  ) { super(); }
-
-  bind(_scope: Construct): HttpGatewayRouteMatchConfig {
-    return {
-      requestMatch: {
-        prefix: this.prefix,
-      },
-    };
-  }
-}
-
-class HttpGatewayRoutePathMatchImpl extends HttpGatewayRoutePathOrPrefixMatch {
-  constructor(
-    private readonly pathMatch: HttpPathMatch,
-  ) { super(); }
-
-  bind(scope: Construct): HttpGatewayRouteMatchConfig {
-    return {
-      requestMatch: {
-        path: this.pathMatch.bind(scope).pathMatch,
-      },
-    };
-  }
-}
-
-
-/**
- * Configuration for HTTP gateway route path match
- */
-export interface HttpPathMatchConfig {
-  /**
-   * GatewayRoute CFN configuration for HTTP gateway route path match.
-   */
-  readonly pathMatch: CfnGatewayRoute.HttpPathMatchProperty;
-}
-
-/**
- * Used to generate HTTP path matching methods.
- */
-export abstract class HttpPathMatch {
-  /**
-   * The value of the path must match the specified value exactly.
-   *
-   * @param path The exact path to match on
-   */
-  public static matchingExactly(path: string): HttpPathMatch {
-    return new HttpPathMatchImpl({ exact: path });
-  }
-
-  /**
-   * The value of the path must match the specified regex.
-   * @param regex The regex used to match the path.
-   */
-  public static matchingRegex(regex: string): HttpPathMatch {
-    return new HttpPathMatchImpl({ regex: regex });
-  }
-
-  /**
-   * Returns the gateway route path match configuration.
-   */
-  abstract bind(scope: Construct): HttpPathMatchConfig;
-}
-
-class HttpPathMatchImpl extends HttpPathMatch {
-  constructor(
-    private readonly pathMatch: CfnGatewayRoute.HttpPathMatchProperty,
-  ) { super(); }
-
-  bind(_scope: Construct): HttpPathMatchConfig {
-    return {
-      pathMatch: this.pathMatch,
-    };
-  }
-}
-
-/**
- * Configuration for `QueryParameterMatch`
- */
-export interface QueryParameterConfig {
-  /**
-   * The HTTP route header.
-   */
-  readonly queryParameter: CfnGatewayRoute.QueryParameterProperty;
-}
-
-/**
- * Used to generate query parameter matching methods.
- */
-export abstract class QueryParameterMatch {
-  /**
-   * The value of the query parameter with the given name in the request must match the
-   * specified value exactly.
-   *
-   * @param queryParameterName the name of the query parameter to match against
-   * @param queryParameterValue The exact value to test against
-   */
-  static valueIs(queryParameterName: string, queryParameterValue: string): QueryParameterMatch {
-    return new QueryParameterMatchImpl(queryParameterName, { exact: queryParameterValue });
-  }
-
-  /**
-   * Returns the query parameter match configuration.
-   */
-  abstract bind(scope: Construct): QueryParameterConfig;
-}
-
-class QueryParameterMatchImpl extends QueryParameterMatch {
-  constructor(
-    private readonly queryParameterName: string,
-    private readonly matchProperty: CfnGatewayRoute.HttpQueryParameterMatchProperty,
-  ) {
-    super();
-  }
-
-  bind(_scope: Construct): QueryParameterConfig {
-    return {
-      queryParameter: {
-        match: this.matchProperty,
-        name: this.queryParameterName,
-      },
-    };
-  }
-}
-
-/**
  * The criterion for determining a request match for this GatewayRoute.
  */
 export interface HttpGatewayRouteMatch {
@@ -397,7 +78,7 @@ export interface HttpGatewayRouteMatch {
    *
    * @default - prefix match on '/'
    */
-  readonly pathOrPrefix?: HttpGatewayRoutePathOrPrefixMatch,
+  readonly pathOrPrefix?: HttpRoutePathOrPrefixMatch,
 
   /**
    * Specifies the client request headers to match on. All specified headers
@@ -405,7 +86,7 @@ export interface HttpGatewayRouteMatch {
    *
    * @default - do not match on headers
    */
-  readonly header?: HttpHeaderMatch[]
+  readonly headers?: HttpHeaderMatch[]
 
   /**
    * The gateway route host name to be matched on.
@@ -596,12 +277,12 @@ export enum Default {
   /**
    * Enable default rewrite.
    */
-  ENABLED = 'enabled',
+  ENABLED = 'ENABLED',
 
   /**
    * Disable default rewrite.
    */
-  DISABLED = 'disabled',
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -868,15 +549,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
-    let isEmpty = true;
-    for (const property in this.match) {
-      if (property) {
-        isEmpty = false;
-        break;
-      }
-    }
-    // If match is undefined or empty, assign prefix with '/'
-    const prefix = !isEmpty ? this.match?.pathOrPrefix?.bind(scope).requestMatch.prefix :'/';
+    const prefix = !isMatchPropertiesUndefined(this.match) ? this.match?.pathOrPrefix?.bind(scope).requestMatch.prefix :'/';
 
     if (prefix && prefix[0] != '/') {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefix}`);
@@ -894,7 +567,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
         path: this.match?.pathOrPrefix?.bind(scope).requestMatch.path,
         hostname: this.match?.hostname?.bind(scope).hostnameMatch,
         method: this.match?.method,
-        headers: this.match?.header?.map(header => header.bind(scope).httpRouteHeader),
+        headers: this.match?.headers?.map(header => header.bind(scope).httpRouteHeader),
         queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
       },
       action: {

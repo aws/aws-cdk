@@ -419,7 +419,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      prefixPath: '/path-to-app',
+      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/path-to-app'),
     },
   }),
 });
@@ -436,7 +436,7 @@ router.addRoute('route-http2', {
       },
     ],
     match: {
-      prefixPath: '/',
+      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
       method: appmesh.HttpRouteMatchMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
@@ -465,7 +465,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      prefixPath: '/path-to-app',
+      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/path-to-app'),
     },
   }),
 });
@@ -497,7 +497,7 @@ Add a gRPC route with retries:
 router.addRoute('route-grpc-retry', {
   routeSpec: appmesh.RouteSpec.grpc({
     weightedTargets: [{ virtualNode: node }],
-    match: { serviceName: 'servicename' },
+    match: appmesh.GrpcRouteMatch.serviceName('servicename'),
     retryPolicy: {
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
       httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
@@ -530,9 +530,7 @@ router.addRoute('route-http', {
         virtualNode: node,
       },
     ],
-    match: {
-      serviceName: 'my-service.default.svc.cluster.local',
-    },
+    match: appmesh.GrpcRouteMatch.serviceName('my-service.default.svc.cluster.local'),
     timeout:  {
       idle : Duration.seconds(2),
       perRequest: Duration.seconds(1),
@@ -611,7 +609,7 @@ gateway.addGatewayRoute('gateway-route-http', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      prefixMatch: '/',
+      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
     },
   }),
 });
@@ -624,9 +622,7 @@ You cannot omit the field, and must specify a match for these routes.
 gateway.addGatewayRoute('gateway-route-grpc', {
   routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
-    match: {
-      serviceName: 'my-service.default.svc.cluster.local',
-    },
+    match: appmesh.GrpcGatewayRouteMatch.serviceName('my-service.default.svc.cluster.local'),
   }),
 });
 ```

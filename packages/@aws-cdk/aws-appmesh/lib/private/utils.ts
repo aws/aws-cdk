@@ -1,5 +1,6 @@
 import { CfnVirtualNode } from '../appmesh.generated';
 import { ListenerTlsOptions } from '../listener-tls-options';
+import { GrpcMetadataMatch, HttpRouteMatch } from '../route-spec';
 import { TlsClientPolicy } from '../tls-client-policy';
 import { Token, TokenComparison } from '@aws-cdk/core';
 
@@ -91,4 +92,28 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string) : 
   return comparison === TokenComparison.DIFFERENT || comparison === TokenComparison.ONE_UNRESOLVED
     ? meshAccount
     : undefined;
+}
+
+/**
+ * This is the helper method to check if properties for passed match are undefined.
+ */
+export function isMatchPropertiesUndefined(match: HttpRouteMatch | undefined): boolean {
+  let isEmpty = true;
+  for (const property in match) {
+    if (property) {
+      isEmpty = false;
+      break;
+    }
+  }
+
+  return isEmpty;
+}
+
+/**
+ * This is the helper method to validate if the length of Metadata array when it is specified.
+ */
+export function validateMetadata(metadata?: GrpcMetadataMatch[]) {
+  if (metadata && (metadata.length < 1 || metadata.length > 10)) {
+    throw new Error('Metadata must be between 1 and 10');
+  }
 }
