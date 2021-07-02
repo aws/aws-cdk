@@ -27,14 +27,16 @@ export interface ServiceDiscoveryConfig {
 /**
  * Enum of DNS service discovery response type
  */
-export enum ResponseType {
+export enum DnsResponseType {
   /**
-   * DNS resolver returns a loadbalanced set of endpoints.
+   * DNS resolver returns a loadbalanced set of endpoints and the traffic would be sent to the given endpoints.
+   * It would not drain existing connections to other endpoints that are not part of this list.
    */
   LOADBALANCER = 'LOADBALANCER',
 
   /**
    * DNS resolver is returning all the endpoints.
+   * This also means that if an endpoint is missing, it would drain the current connections to the missing endpoint.
    */
   ENDPOINTS = 'ENDPOINTS',
 }
@@ -45,8 +47,13 @@ export enum ResponseType {
 export abstract class ServiceDiscovery {
   /**
    * Returns DNS based service discovery
+   *
+   * @param hostname
+   * @param responseType Specifies the DNS response type for the virtual node.
+   * Options are ENDPOINTS and LOADBALANCER
+   * By default, it is set to LOADBALANCER
    */
-  public static dns(hostname: string, responseType?: ResponseType): ServiceDiscovery {
+  public static dns(hostname: string, responseType?: DnsResponseType): ServiceDiscovery {
     return new DnsServiceDiscovery(hostname, responseType);
   }
 
@@ -55,9 +62,9 @@ export abstract class ServiceDiscovery {
    *
    * @param service The AWS Cloud Map Service to use for service discovery
    * @param instanceAttributes A string map that contains attributes with values that you can use to
-   *                           filter instances by any custom attribute that you specified when you
-   *                           registered the instance. Only instances that match all of the specified
-   *                           key/value pairs will be returned.
+   * filter instances by any custom attribute that you specified when you
+   * registered the instance. Only instances that match all of the specified
+   * key/value pairs will be returned.
    */
   public static cloudMap(service: cloudmap.IService, instanceAttributes?: {[key: string]: string}): ServiceDiscovery {
     return new CloudMapServiceDiscovery(service, instanceAttributes);
@@ -71,9 +78,9 @@ export abstract class ServiceDiscovery {
 
 class DnsServiceDiscovery extends ServiceDiscovery {
   private readonly hostname: string;
-  private readonly responseType?: ResponseType;
+  private readonly responseType?: DnsResponseType;
 
-  constructor(hostname: string, responseType?: ResponseType) {
+  constructor(hostname: string, responseType?: DnsResponseType) {
     super();
     this.hostname = hostname;
     this.responseType = responseType;
@@ -95,7 +102,7 @@ class CloudMapServiceDiscovery extends ServiceDiscovery {
 
   constructor(service: cloudmap.IService, instanceAttributes?: {[key: string]: string}) {
     super();
-    this.service = service,
+    this.service = service;
     this.instanceAttributes = instanceAttributes;
   }
 

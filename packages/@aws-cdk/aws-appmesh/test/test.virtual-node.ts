@@ -945,7 +945,7 @@ export = {
         // WHEN
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          serviceDiscovery: appmesh.ServiceDiscovery.dns('test', appmesh.ResponseType.LOADBALANCER),
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test', appmesh.DnsResponseType.LOADBALANCER),
         });
 
         // THEN

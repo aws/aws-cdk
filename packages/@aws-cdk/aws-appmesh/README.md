@@ -373,7 +373,11 @@ connection pool properties per listener protocol types.
 // A Virtual Node with a gRPC listener with a connection pool set
 const node = new appmesh.VirtualNode(stack, 'node', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.dns('node', appmesh.ResponseType.LOADBALANCER),
+  // DNS service discovery can optionally specify the DNS response type either LOADBALANCER or ENDPOINTS.
+  // LOADBALANCER means that the DNS resolver returns a loadbalanced set of endpoints, 
+  // whereas ENDPOINTS means that the DNS resolver is returning all the endpoints.
+  // By default, the response type is assumed to be LOADBALANCER.
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('node', appmesh.ResponseType.ENDPOINTS),
   listeners: [appmesh.VirtualNodeListener.http({
     port: 80,
     connectionPool: {
