@@ -1,6 +1,7 @@
 import { CfnVirtualNode } from '../appmesh.generated';
 import { ListenerTlsOptions } from '../listener-tls-options';
 import { TlsClientPolicy } from '../tls-client-policy';
+import { Token, TokenComparison } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -79,5 +80,15 @@ export function renderListenerTlsOptions(scope: Construct, listenerTls: Listener
         }
         : undefined,
     }
+    : undefined;
+}
+
+/**
+ * This is the helper method to populate mesh owner when it is a shared mesh scenario
+ */
+export function renderMeshOwner(resourceAccount: string, meshAccount: string) : string | undefined {
+  const comparison = Token.compareStrings(resourceAccount, meshAccount);
+  return comparison === TokenComparison.DIFFERENT || comparison === TokenComparison.ONE_UNRESOLVED
+    ? meshAccount
     : undefined;
 }

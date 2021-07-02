@@ -674,3 +674,20 @@ const envoyUser = new iam.User(stack, 'envoyUser');
  */
 gateway.grantStreamAggregatedResources(envoyUser)
 ``` 
+
+## Adding Resources to shared meshes
+
+A shared mesh allows resources created by different accounts to communicate with each other in the same mesh:
+
+```ts
+// This is the ARN for the mesh from different AWS IAM account ID.
+// Ensure mesh is properly shared with your account. For more details, see: https://github.com/aws/aws-cdk/issues/15404
+const arn = 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh';
+sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'imported-mesh', arn);
+
+// This VirtualNode resource can communicate with the resources in the mesh from different AWS IAM account ID.
+new appmesh.VirtualNode(stack, 'test-node', {
+  mesh: sharedMesh,
+});
+```
+
