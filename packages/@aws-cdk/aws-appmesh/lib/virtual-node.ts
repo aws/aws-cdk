@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
 import { renderMeshOwner, renderTlsClientPolicy } from './private/utils';
-import { ServiceDiscovery } from './service-discovery';
+import { ServiceDiscovery, ServiceDiscoveryConfig } from './service-discovery';
 import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 
@@ -176,6 +176,8 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
+  private readonly serviceDiscoveryConfig?: ServiceDiscoveryConfig;
+
   private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   private readonly listeners = new Array<VirtualNodeListenerConfig>();
 
@@ -185,15 +187,11 @@ export class VirtualNode extends VirtualNodeBase {
     });
 
     this.mesh = props.mesh;
+    this.serviceDiscoveryConfig = props.serviceDiscovery?.bind(this);
 
     props.backends?.forEach(backend => this.addBackend(backend));
     props.listeners?.forEach(listener => this.addListener(listener));
     const accessLogging = props.accessLog?.bind(this);
-    const serviceDiscovery = props.serviceDiscovery?.bind(this);
-
-    if ((props.listeners && props.listeners.length > 0) && !serviceDiscovery) {
-      throw new Error('If you specify a listener, then you must specify service discovery information.');
-    };
 
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
@@ -210,8 +208,8 @@ export class VirtualNode extends VirtualNodeBase {
           }
           : undefined,
         serviceDiscovery: {
-          dns: serviceDiscovery?.dns,
-          awsCloudMap: serviceDiscovery?.cloudmap,
+          dns: this.serviceDiscoveryConfig?.dns,
+          awsCloudMap: this.serviceDiscoveryConfig?.cloudmap,
         },
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualNodeAccessLog,
@@ -238,6 +236,9 @@ export class VirtualNode extends VirtualNodeBase {
    * @see https://github.com/aws/aws-app-mesh-roadmap/issues/120
    */
   public addListener(listener: VirtualNodeListener) {
+    if (!this.serviceDiscoveryConfig) {
+      throw new Error('If you specify a listener, then you must specify service discovery information.');
+    }
     this.listeners.push(listener.bind(this));
   }
 

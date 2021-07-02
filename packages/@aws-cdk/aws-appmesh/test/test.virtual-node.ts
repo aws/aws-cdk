@@ -972,6 +972,9 @@ export = {
         const mesh = new appmesh.Mesh(stack, 'mesh', {
           meshName: 'test-mesh',
         });
+        const node = new appmesh.VirtualNode(stack, 'test-node-2', {
+          mesh,
+        });
 
         const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
