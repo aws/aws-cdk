@@ -99,7 +99,7 @@ new ecrdeploy.ECRDeployment(this, 'DeployDockerImage', {
 You are welcome to +1 [this GitHub issue](https://github.com/aws/aws-cdk/issues/12597) if you would like to see
 native support for this use-case in the AWS CDK.
 
-[wchaws/cdk-ecr-deployment]: https://github.com/wchaws/cdk-ecr-deployment
+[cdklabs/cdk-ecr-deployment]: https://github.com/cdklabs/cdk-ecr-deployment
 
 ## Pull Permissions
 
