@@ -617,6 +617,22 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
+When providing the Splunk token in the `token` field it gets resolved to the secret value on deploying. Hence it is encouraged to use the `secretToken` field for specifying the Splunk token as a `Secret` which will be populated in the Log Driver `SecretOptions`. Below is an example task definition with both fields specified:
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: ecs.LogDrivers.splunk({
+    token: cdk.SecretValue.secretsManager('my-splunk-token'),
+    secretToken: ecs.Secret.fromSecretsManager(secret),
+    url: 'my-splunk-url'
+  })
+});
+```
+
 ### syslog Log Driver
 
 ```ts

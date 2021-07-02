@@ -25,7 +25,7 @@ export enum SplunkLogFormat {
 export interface SplunkLogDriverProps extends BaseLogDriverProps {
   /**
    * Splunk HTTP Event Collector token.
-   * @deprecated Use `secretToken` instead.
+   * @deprecated Use {@link SplunkLogDriverProps.secretToken} instead.
    */
   readonly token: SecretValue;
 
