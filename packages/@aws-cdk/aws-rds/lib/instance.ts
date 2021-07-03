@@ -897,38 +897,38 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    *                if you want to override the defaults
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
-    if (options.secret) {
-      //TODO: check given secret is not master secret of this!
-      //TODO: check given secret is not added already!
-      //TODO: how to generate proper ID?
-      const id = 'AdditionalSecretRotation';
-      return this.newSecretRotation(id, options);
-    } else {
-      return this.addRotationSingleUserMasterSecret(options);
+    if (!options.secret || options.secret === this.secret) {
+      return this.addSingleUserRotationForMasterSecret(options);
     }
+
+    const id = 'RotationSingleUser';
+    return this.addSingleUserRotationForSecret(options.secret as unknown as Construct, id, options.secret, options);
   }
 
-  private addRotationSingleUserMasterSecret(options: RotationSingleUserOptions): secretsmanager.SecretRotation {
+  private addSingleUserRotationForMasterSecret(options: RotationSingleUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for an instance without master secret.');
     }
 
     const id = 'RotationSingleUser';
-    if (this.node.tryFindChild(id)) {
-      throw new Error('A single user rotation for master secret is already added to this instance.');
-    }
-
-    return this.newSecretRotation(id, { ...options, secret: this.secret });
+    return this.addSingleUserRotationForSecret(this, id, this.secret, options);
   }
 
-  private newSecretRotation(id: string, options: RotationSingleUserOptions): secretsmanager.SecretRotation {
-    return new secretsmanager.SecretRotation(this, id, {
+  private addSingleUserRotationForSecret(scope: Construct, id: string, secret: secretsmanager.ISecret, options: RotationSingleUserOptions)
+    : secretsmanager.SecretRotation {
+    // TODO: this is a hack! what's the right way to do it?
+    if ((scope as any).node.tryFindChild(id)) {
+      const secretId = this === scope ? 'master' : 'additional'; // Is there a better way to do this?
+      throw new Error(`A single user rotation for ${secretId} secret is already added to this instance.`);
+    }
+
+    return new secretsmanager.SecretRotation(scope, id, {
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
       target: this,
       ...options,
-      secret: options.secret!!,
+      secret: secret,
       excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
