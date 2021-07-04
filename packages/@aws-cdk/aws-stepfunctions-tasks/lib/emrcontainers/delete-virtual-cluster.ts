@@ -10,8 +10,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 export interface EMRContainersDeleteVirtualClusterProps extends sfn.TaskStateBaseProps {
   /**
    * The ID of the virtual cluster that will be deleted.
-   *
-   * @default - No cluster id
    */
   readonly id: string;
 }
