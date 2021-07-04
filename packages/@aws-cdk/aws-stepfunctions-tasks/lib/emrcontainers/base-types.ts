@@ -55,8 +55,6 @@ export interface Configuration {
   /**
    * The classification within a configuration.
    * Length Constraints: Minimum length of 1. Maximum length of 1024.
-   *
-   * @default - No classifcation. Defined by application-specific configuration file
    */
   readonly classification: string;
 
