@@ -84,8 +84,6 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
   /**
    * The container provider of the virtual cluster
    *
-   * Note: EKS Cluster is the only supported type as of 06/28/21
-   *
    * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_ContainerProvider.html
    *
    * @default - No container provider
