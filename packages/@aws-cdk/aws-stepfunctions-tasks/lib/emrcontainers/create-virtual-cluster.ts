@@ -70,8 +70,6 @@ export interface ContainerProvider {
 }
 
 /**
-=======
->>>>>>> 6da8b9637694e0659bcdd628e0718082774b256d
  * The props for a EMR Containers CreateVirtualCluster Task.
  */
 export interface EMRContainersCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
