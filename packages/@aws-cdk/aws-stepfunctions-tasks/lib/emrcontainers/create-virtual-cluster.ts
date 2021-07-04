@@ -91,7 +91,7 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
   readonly containerProvider: ContainerProvider;
 
   /**
-   * The tags assigned to virtual clusters
+   * The tags assigned to the virtual cluster
    *
    * @default - No tags
    */
