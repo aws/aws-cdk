@@ -92,7 +92,7 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
   /**
    * The tags assigned to the virtual cluster
    *
-   * @default - No tags
+   * @default {}
    */
   readonly tags?: { [key: string]: string };
 }
