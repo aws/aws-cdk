@@ -104,7 +104,7 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
  * Output: the output of this task is a Virtual Cluster structure
  * @see https://docs.amazonaws.cn/en_us/step-functions/latest/dg/connect-emr-eks.html
  */
-export class EMRContainersCreateVirtualCluster extends sfn.TaskStateBase {
+export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
