@@ -166,3 +166,42 @@ test('SAML principal', () => {
     },
   });
 });
+
+test('PrincipalWithConditions.addCondition should work', () => {
+  // GIVEN
+  const stack = new Stack();
+  const basePrincipal = new iam.ServicePrincipal('service.amazonaws.com');
+  const principalWithConditions = new iam.PrincipalWithConditions(basePrincipal, {
+    StringEquals: {
+      'aws:PrincipalOrgID': ['o-xxxxxxxxxxx'],
+    },
+  });
+
+  // WHEN
+  principalWithConditions.addCondition('StringEquals', { 'aws:PrincipalTag/critical': 'true' });
+  new iam.Role(stack, 'Role', {
+    assumedBy: principalWithConditions,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Condition: {
+            StringEquals: {
+              'aws:PrincipalOrgID': ['o-xxxxxxxxxxx'],
+              'aws:PrincipalTag/critical': 'true',
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Service: 'service.amazonaws.com',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
