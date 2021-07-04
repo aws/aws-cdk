@@ -101,7 +101,6 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
 /**
  * Creates a Virtual Cluster from a EKS cluster in a Task State
  *
- * Output: the output of this task is a Virtual Cluster structure
  * @see https://docs.amazonaws.cn/en_us/step-functions/latest/dg/connect-emr-eks.html
  */
 export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
