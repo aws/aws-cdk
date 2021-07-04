@@ -11,8 +11,6 @@ export interface EMRContainersStartJobRunProps extends sfn.TaskStateBaseProps {
 
   /**
    * The virtual cluster ID for which the job run request is submitted.
-   *
-   * @default - No virtual cluster id
    */
   readonly clusterId: string;
 
