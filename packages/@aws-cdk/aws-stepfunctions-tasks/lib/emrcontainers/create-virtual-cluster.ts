@@ -77,7 +77,6 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
   /**
    * Name of the specified virtual cluster.
    *
-   * @default - No name
    */
   readonly name: string;
 
