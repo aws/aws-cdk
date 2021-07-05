@@ -20,6 +20,10 @@
   },
   "jsii": {
     "outdir": "dist",
+    "diagnostics": {
+      "language-compatibility/member-name-conflicts-with-type-name": "error",
+      "language-compatibility/reserved-word": "error"
+    },
     "targets": {
       "java": {
         "package": "software.amazon.awscdk.assertions",
@@ -59,6 +63,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "cdk-build-tools": "0.0.0",
+    "@aws-cdk/cfnspec": "0.0.0",
     "constructs": "^3.3.69",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
@@ -101,6 +106,15 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "nozem": {
+    "ostools": ["dirname", "cd", "bash", "rm", "xargs", "sed", "mkdir", "rsync", "cat", "find"],
+    "additionalDirs": [
+      "../cfnspec/lib",
+      "ARTIFACTS:../cfnspec/spec",
+      "../cloudformation-diff",
+      "../assert-internal"
+    ]
   },
   "stability": "experimental",
   "maturity": "experimental",
