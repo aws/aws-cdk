@@ -32,7 +32,7 @@ export enum DnsResponseType {
    * DNS resolver returns a loadbalanced set of endpoints and the traffic would be sent to the given endpoints.
    * It would not drain existing connections to other endpoints that are not part of this list.
    */
-  LOADBALANCER = 'LOADBALANCER',
+  LOAD_BALANCER = 'LOADBALANCER',
 
   /**
    * DNS resolver is returning all the endpoints.
@@ -50,8 +50,7 @@ export abstract class ServiceDiscovery {
    *
    * @param hostname
    * @param responseType Specifies the DNS response type for the virtual node.
-   * Options are ENDPOINTS and LOADBALANCER
-   * By default, it is set to LOADBALANCER
+   *  The default is `DnsResponseType.LOAD_BALANCER`.
    */
   public static dns(hostname: string, responseType?: DnsResponseType): ServiceDiscovery {
     return new DnsServiceDiscovery(hostname, responseType);
@@ -62,9 +61,9 @@ export abstract class ServiceDiscovery {
    *
    * @param service The AWS Cloud Map Service to use for service discovery
    * @param instanceAttributes A string map that contains attributes with values that you can use to
-   * filter instances by any custom attribute that you specified when you
-   * registered the instance. Only instances that match all of the specified
-   * key/value pairs will be returned.
+   *  filter instances by any custom attribute that you specified when you
+   *  registered the instance. Only instances that match all of the specified
+   *  key/value pairs will be returned.
    */
   public static cloudMap(service: cloudmap.IService, instanceAttributes?: {[key: string]: string}): ServiceDiscovery {
     return new CloudMapServiceDiscovery(service, instanceAttributes);

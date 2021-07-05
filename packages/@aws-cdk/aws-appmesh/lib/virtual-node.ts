@@ -207,10 +207,11 @@ export class VirtualNode extends VirtualNodeBase {
             },
           }
           : undefined,
-        serviceDiscovery: {
-          dns: this.serviceDiscoveryConfig?.dns,
-          awsCloudMap: this.serviceDiscoveryConfig?.cloudmap,
-        },
+        serviceDiscovery: this.serviceDiscoveryConfig
+          ? {
+            dns: this.serviceDiscoveryConfig?.dns,
+            awsCloudMap: this.serviceDiscoveryConfig?.cloudmap,
+          } : undefined,
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualNodeAccessLog,
         } : undefined,
@@ -237,7 +238,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public addListener(listener: VirtualNodeListener) {
     if (!this.serviceDiscoveryConfig) {
-      throw new Error('If you specify a listener, then you must specify service discovery information.');
+      throw new Error('Service discovery information is required for a VirtualNode with a listener.');
     }
     this.listeners.push(listener.bind(this));
   }

@@ -922,7 +922,7 @@ export = {
         // WHEN
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh: sharedMesh,
-        }),
+        });
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
@@ -945,7 +945,7 @@ export = {
         // WHEN
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          serviceDiscovery: appmesh.ServiceDiscovery.dns('test', appmesh.DnsResponseType.LOADBALANCER),
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test', appmesh.DnsResponseType.LOAD_BALANCER),
         });
 
         // THEN
@@ -983,17 +983,17 @@ export = {
             mesh,
             listeners: [appmesh.VirtualNodeListener.http()],
           });
-        }, /If you specify a listener, then you must specify service discovery information/);
+        }, /Service discovery information is required for a VirtualNode with a listener/);
 
         test.throws(() => {
           mesh.addVirtualNode('test-node-3', {
             listeners: [appmesh.VirtualNodeListener.http()],
           });
-        }, /If you specify a listener, then you must specify service discovery information/);
+        }, /Service discovery information is required for a VirtualNode with a listener/);
 
         test.throws(() => {
           node.addListener(appmesh.VirtualNodeListener.http());
-        }, /If you specify a listener, then you must specify service discovery information/);
+        }, /Service discovery information is required for a VirtualNode with a listener/);
 
         test.done();
       },
