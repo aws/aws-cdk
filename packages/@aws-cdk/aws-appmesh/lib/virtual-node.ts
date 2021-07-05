@@ -207,11 +207,7 @@ export class VirtualNode extends VirtualNodeBase {
             },
           }
           : undefined,
-        serviceDiscovery: this.serviceDiscoveryConfig
-          ? {
-            dns: this.serviceDiscoveryConfig?.dns,
-            awsCloudMap: this.serviceDiscoveryConfig?.cloudmap,
-          } : undefined,
+        serviceDiscovery: renderServiceDiscovery(this.serviceDiscoveryConfig),
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualNodeAccessLog,
         } : undefined,
@@ -264,4 +260,12 @@ export interface VirtualNodeAttributes {
    * The Mesh that the VirtualNode belongs to
    */
   readonly mesh: IMesh;
+}
+
+function renderServiceDiscovery(config?: ServiceDiscoveryConfig): CfnVirtualNode.ServiceDiscoveryProperty | undefined {
+  return config
+    ? {
+      dns: config?.dns,
+      awsCloudMap: config?.cloudmap,
+    } : undefined;
 }
