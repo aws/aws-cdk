@@ -18,7 +18,7 @@ import { ICertificate } from './certificate';
     */
    protected readonly region?: string;
 
-  public metricDaysToExpiry(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+   public metricDaysToExpiry(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       period: Duration.days(1),
       ...props,
