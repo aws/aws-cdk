@@ -1,4 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Duration, Resource } from '@aws-cdk/core';
 import { ICertificate } from './certificate';
 
@@ -25,6 +26,7 @@ import { ICertificate } from './certificate';
       metricName: 'DaysToExpiry',
       namespace: 'AWS/CertificateManager',
       region: this.region,
+      statistic: Statistic.MINIMUM,
     });
   }
 }
