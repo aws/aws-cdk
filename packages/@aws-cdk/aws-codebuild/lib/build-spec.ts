@@ -137,7 +137,8 @@ export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
   return new ObjectBuildSpec(merged);
 }
 
-/* Normalizes the build spec
+/*
+ * Normalizes the build spec
  * The CodeBuild runtime allows fields that are defined as string[] to be strings
  * and interprets them as singleton lists.
  * When merging we need to normalize this to have the correct concat semantics
