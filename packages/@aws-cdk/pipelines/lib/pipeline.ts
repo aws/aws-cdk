@@ -428,6 +428,7 @@ class AssetPublishing extends CoreConstruct {
 
   private readonly publishers: Record<string, PublishAssetsAction> = {};
   private readonly assetRoles: Record<string, iam.IRole> = {};
+  private readonly assetAttachedPolicies: Record<string, iam.Policy> = {};
   private readonly assetPublishingRoles: Record<string, Set<string>> = {};
   private readonly myCxAsmRoot: string;
 
@@ -518,6 +519,7 @@ class AssetPublishing extends CoreConstruct {
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
         role: this.assetRoles[command.assetType],
+        dependable: this.assetAttachedPolicies[command.assetType],
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
         createBuildspecFile: this.props.singlePublisherPerType,
@@ -603,7 +605,7 @@ class AssetPublishing extends CoreConstruct {
     // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
     // we need to do this.
     if (this.props.vpc) {
-      assetRole.attachInlinePolicy(new iam.Policy(assetRole, 'VpcPolicy', {
+      const vpcPolicy = new iam.Policy(assetRole, 'VpcPolicy', {
         statements: [
           new iam.PolicyStatement({
             resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
@@ -630,7 +632,9 @@ class AssetPublishing extends CoreConstruct {
             ],
           }),
         ],
-      }));
+      });
+      assetRole.attachInlinePolicy(vpcPolicy);
+      this.assetAttachedPolicies[assetType] = vpcPolicy;
     }
 
     this.assetRoles[assetType] = assetRole.withoutPolicyUpdates();
