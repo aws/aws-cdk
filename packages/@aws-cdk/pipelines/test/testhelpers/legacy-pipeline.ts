@@ -4,11 +4,16 @@ import { SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 
+export interface LegacyTestGitHubNpmPipelineExtraProps {
+  readonly sourceArtifact?: codepipeline.Artifact;
+  readonly npmSynthOptions?: Partial<cdkp.StandardNpmSynthOptions>;
+}
+
 export class LegacyTestGitHubNpmPipeline extends cdkp.CdkPipeline {
   public readonly sourceArtifact: codepipeline.Artifact;
   public readonly cloudAssemblyArtifact: codepipeline.Artifact;
 
-  constructor(scope: Construct, id: string, props?: Partial<cdkp.CdkPipelineProps> & { readonly sourceArtifact?: codepipeline.Artifact } ) {
+  constructor(scope: Construct, id: string, props?: Partial<cdkp.CdkPipelineProps> & LegacyTestGitHubNpmPipelineExtraProps) {
     const sourceArtifact = props?.sourceArtifact ?? new codepipeline.Artifact();
     const cloudAssemblyArtifact = props?.cloudAssemblyArtifact ?? new codepipeline.Artifact();
 
@@ -17,6 +22,7 @@ export class LegacyTestGitHubNpmPipeline extends cdkp.CdkPipeline {
       synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
+        ...props?.npmSynthOptions,
       }),
       cloudAssemblyArtifact,
       ...props,

@@ -6,7 +6,7 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Lazy, ISynthesisSession, Stack, attachCustomSynthesis } from '@aws-cdk/core';
+import { IDependable, ISynthesisSession, Lazy, Stack, attachCustomSynthesis } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType } from '../../blueprint/asset-type';
 import { toPosixPath } from '../../private/fs';
@@ -54,6 +54,13 @@ export interface PublishAssetsActionProps {
    * @default - Automatically generated
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Any Dependable construct that the CodeBuild project needs to take a dependency on.
+   *
+   * @default - none
+   */
+  readonly dependable?: IDependable;
 
   /**
    * The VPC where to execute the PublishAssetsAction.
@@ -132,6 +139,10 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
       buildSpec: props.createBuildspecFile ? codebuild.BuildSpec.fromSourceFilename(this.getBuildSpecFileName()) : this.buildSpec,
       role: props.role,
     });
+
+    if (props.dependable) {
+      project.node.addDependency(props.dependable);
+    }
 
     this.action = new codepipeline_actions.CodeBuildAction({
       actionName: props.actionName,
