@@ -631,9 +631,7 @@ gateway.addGatewayRoute('gateway-route-grpc', {
   routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
     match: {
-      serviceName: {
-        name: 'my-service.default.svc.cluster.local',
-      },
+      serviceName: 'my-service.default.svc.cluster.local',
     },
   }),
 });

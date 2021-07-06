@@ -360,7 +360,11 @@ export class AppMeshExtension extends ServiceExtension {
       });
       case appmesh.Protocol.GRPC: return appmesh.RouteSpec.grpc({
         weightedTargets: weightedTargets,
-        match: appmesh.GrpcRouteMatch.serviceName(serviceName),
+        match: {
+          serviceName: {
+            name: serviceName,
+          },
+        },
       });
       case appmesh.Protocol.TCP: return appmesh.RouteSpec.tcp({
         weightedTargets: weightedTargets,
