@@ -7,7 +7,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Configuration for HTTP route match
  */
-export interface HttpRouteMatchConfig {
+export interface HttpRoutePathMatchConfig {
   /**
    * Route CFN configuration for HTTP route match.
    */
@@ -23,16 +23,16 @@ export abstract class HttpRoutePathMatch {
    *
    * @param path The exact path to match on
    */
-  public static matchingExactly(path: string): HttpRoutePathMatch {
-    return new HttpPathMatchImpl({ exact: path });
+  public static exact(path: string): HttpRoutePathMatch {
+    return new HttpRoutePathSpecificMatch({ exact: path });
   }
 
   /**
    * The value of the path must match the specified regex.
    * @param regex The regex used to match the path.
    */
-  public static matchingRegex(regex: string): HttpRoutePathMatch {
-    return new HttpPathMatchImpl({ regex: regex });
+  public static regex(regex: string): HttpRoutePathMatch {
+    return new HttpRoutePathSpecificMatch({ regex: regex });
   }
 
   /**
@@ -42,24 +42,24 @@ export abstract class HttpRoutePathMatch {
    *  You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
    *  and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
    */
-  public static matchingPrefix(prefix: string): HttpRoutePathMatch {
-    return new HttpPrefixMatchImpl(prefix);
+  public static prefix(prefix: string): HttpRoutePathMatch {
+    return new HttpRoutePrefixMatchImpl(prefix);
   }
 
   /**
    * Returns the route path match configuration.
    */
-  public abstract bind(scope: Construct): HttpRouteMatchConfig;
+  public abstract bind(scope: Construct): HttpRoutePathMatchConfig;
 }
 
-class HttpPrefixMatchImpl extends HttpRoutePathMatch {
+class HttpRoutePrefixMatchImpl extends HttpRoutePathMatch {
   constructor(
     private readonly prefix: string,
   ) {
     super();
   }
 
-  bind(_scope: Construct): HttpRouteMatchConfig {
+  bind(_scope: Construct): HttpRoutePathMatchConfig {
     return {
       requestMatch: {
         prefix: this.prefix,
@@ -68,14 +68,14 @@ class HttpPrefixMatchImpl extends HttpRoutePathMatch {
   }
 }
 
-class HttpPathMatchImpl extends HttpRoutePathMatch {
+class HttpRoutePathSpecificMatch extends HttpRoutePathMatch {
   constructor(
     private readonly match: CfnRoute.HttpPathMatchProperty,
   ) {
     super();
   }
 
-  bind(_scope: Construct): HttpRouteMatchConfig {
+  bind(_scope: Construct): HttpRoutePathMatchConfig {
     return {
       requestMatch: {
         path: this.match,

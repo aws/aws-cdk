@@ -1,7 +1,7 @@
 /**
  * Supported values for matching routes based on the HTTP request method
  */
-export enum HttpRouteMatchMethod {
+export enum HttpRouteMethod {
   /**
    * GET request
    */

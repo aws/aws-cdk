@@ -1,7 +1,7 @@
 import { CfnGatewayRoute } from './appmesh.generated';
-import { HttpRouteMatchMethod } from './http-route-match-method';
-import { HttpRoutePathMatch } from './http-route-path-match';
 import { HeaderMatch } from './header-match';
+import { HttpRouteMethod } from './http-route-method';
+import { HttpRoutePathMatch } from './http-route-path-match';
 import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { Protocol } from './shared-interfaces';
@@ -11,9 +11,8 @@ import { IVirtualService } from './virtual-service';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-
 /**
- * Configuration for gRPC gateway route match with the host name.
+ * Configuration for gRPC gateway route host name match.
  */
 export interface GatewayRouteHostnameMatchConfig {
   /**
@@ -25,14 +24,14 @@ export interface GatewayRouteHostnameMatchConfig {
 /**
  * Used to generate host name matching methods.
  */
-export abstract class GatewayRouteHostname {
+export abstract class GatewayRouteHostnameMatch {
   /**
    * The value of the host name must match the specified value exactly.
    *
    * @param name The exact host name to match on
    */
-  public static matchingExactly(name: string): GatewayRouteHostname {
-    return new GatewayRouteHostnameImpl({
+  public static exact(name: string): GatewayRouteHostnameMatch {
+    return new GatewayRouteHostnameMatchImpl({
       exact: name,
     });
   }
@@ -42,8 +41,8 @@ export abstract class GatewayRouteHostname {
    *
    * @param suffix The specified ending characters of the host name to match on
    */
-  public static matchingSuffix(suffix: string): GatewayRouteHostname {
-    return new GatewayRouteHostnameImpl({
+  public static suffix(suffix: string): GatewayRouteHostnameMatch {
+    return new GatewayRouteHostnameMatchImpl({
       suffix: suffix,
     });
   }
@@ -54,7 +53,7 @@ export abstract class GatewayRouteHostname {
   public abstract bind(scope: Construct): GatewayRouteHostnameMatchConfig;
 }
 
-class GatewayRouteHostnameImpl extends GatewayRouteHostname {
+class GatewayRouteHostnameMatchImpl extends GatewayRouteHostnameMatch {
   constructor(
     private readonly matchProperty: CfnGatewayRoute.GatewayRouteHostnameMatchProperty,
   ) { super(); }
@@ -90,20 +89,20 @@ export interface HttpGatewayRouteMatch {
    *
    * @default - no match on host name
    */
-  readonly hostname?: GatewayRouteHostname;
+  readonly hostname?: GatewayRouteHostnameMatch;
 
   /**
    * The method to match on.
    *
    * @default - no match on method
    */
-  readonly method?: HttpRouteMatchMethod;
+  readonly method?: HttpRouteMethod;
 
   /**
-   * The query parameter to match on.
-   * All specified query parameter must match for the route to match.
+   * The query parameters to match on.
+   * All specified query parameters must match for the route to match.
    *
-   * @default - no match on query parameter
+   * @default - no match on query parameters
    */
   readonly queryParameters?: QueryParameterMatch[];
 }
@@ -124,10 +123,11 @@ export interface GrpcGatewayRouteMatch {
    *
    * @default - No matching on host name.
    */
-  readonly hostname?: GatewayRouteHostname;
+  readonly hostname?: GatewayRouteHostnameMatch;
 
   /**
    * Create metadata based gRPC gateway route match.
+   * All specified metadata must match for the route to match.
    *
    * @default - not matching on metadata.
    */
@@ -135,18 +135,18 @@ export interface GrpcGatewayRouteMatch {
 }
 
 /**
- * Path and prefix properties for gRPC gateway route rewrite.
+ * Path and prefix properties for HTTP gateway route rewrite.
  */
-export interface HttpGatewayRouteRewriteConfig {
+export interface HttpGatewayRoutePathRewriteConfig {
   /**
-   * GatewayRoute CFN configuration for gRPC gateway route path rewrite.
+   * GatewayRoute CFN configuration for HTTP gateway route path rewrite.
    *
    * @default - rewrite path to '/'.
    */
   readonly path?: CfnGatewayRoute.HttpGatewayRoutePathRewriteProperty;
 
   /**
-   * GatewayRoute CFN configuration for gRPC gateway route prefix rewrite.
+   * GatewayRoute CFN configuration for HTTP gateway route prefix rewrite.
    *
    * @default - rewrite prefix to '/'.
    */
@@ -154,15 +154,15 @@ export interface HttpGatewayRouteRewriteConfig {
 }
 
 /**
- * Defines gRPC gateway route rewrite that can be defined in addition to host name.
+ * Used to generate HTTP gateway route rewrite other than the host name.
  */
-export abstract class HttpGatewayRouteRewrite {
+export abstract class HttpGatewayRoutePathRewrite {
   /**
    * The path to rewrite.
    *
    * @param exact The exact path to rewrite.
    */
-  public static exactPath(exact: string): HttpGatewayRouteRewrite {
+  public static exact(exact: string): HttpGatewayRoutePathRewrite {
     return new HttpGatewayRoutePathRewriteImpl(exact);
   }
 
@@ -172,9 +172,9 @@ export abstract class HttpGatewayRouteRewrite {
    * When disabled, does not rewrite to '/'.
    *
    * @param isDefault Boolean to select to enable or disable the default prefix.
-   *  Default value is enabled.
+   *  Default value is true = enabled.
    */
-  public static defaultPrefix(isDefault?: boolean): HttpGatewayRouteRewrite {
+  public static defaultPrefix(isDefault?: boolean): HttpGatewayRoutePathRewrite {
     return new HttpGatewayRoutePrefixRewriteImpl({ defaultPrefix: isDefault == false ? 'DISABLED' : 'ENABLED' });
   }
 
@@ -183,22 +183,22 @@ export abstract class HttpGatewayRouteRewrite {
    *
    * @param value The value used to replace the incoming route prefix when rewritten.
    */
-  public static customPrefix(value: string): HttpGatewayRouteRewrite {
+  public static customPrefix(value: string): HttpGatewayRoutePathRewrite {
     return new HttpGatewayRoutePrefixRewriteImpl({ value: value } );
   }
 
   /**
    * Return HTTP gateway route rewrite configuration.
    */
-  abstract bind(scope: Construct): HttpGatewayRouteRewriteConfig;
+  abstract bind(scope: Construct): HttpGatewayRoutePathRewriteConfig;
 }
 
-class HttpGatewayRoutePathRewriteImpl extends HttpGatewayRouteRewrite {
+class HttpGatewayRoutePathRewriteImpl extends HttpGatewayRoutePathRewrite {
   constructor(
     private readonly exact: string,
   ) { super(); }
 
-  bind(_scope: Construct): HttpGatewayRouteRewriteConfig {
+  bind(_scope: Construct): HttpGatewayRoutePathRewriteConfig {
     return {
       path: {
         exact: this.exact,
@@ -207,12 +207,12 @@ class HttpGatewayRoutePathRewriteImpl extends HttpGatewayRouteRewrite {
   }
 }
 
-class HttpGatewayRoutePrefixRewriteImpl extends HttpGatewayRouteRewrite {
+class HttpGatewayRoutePrefixRewriteImpl extends HttpGatewayRoutePathRewrite {
   constructor(
     private readonly prefixRewrite: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty,
   ) { super(); }
 
-  bind(_scope: Construct): HttpGatewayRouteRewriteConfig {
+  bind(_scope: Construct): HttpGatewayRoutePathRewriteConfig {
     return {
       prefix: this.prefixRewrite,
     };
@@ -237,20 +237,20 @@ export interface HttpGatewayRouteSpecOptions {
 
   /**
    * The default target host name to write to.
-   * Boolean is used to select either enable or disable.
+   * Boolean is used to select either true = enable or false = disable.
    * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service hostname.
    * When disabled, does not rewrite to destination Virtual Service hostname.
    *
    * @default true
    */
-  readonly defaultHostnameRewrite?: boolean;
+  readonly rewriteRequestHostname?: boolean;
 
   /**
    * The path to rewrite.
    *
    * @default - rewritten to the target Virtual Service's hostname and the matched prefix is rewritten to '/'.
    */
-  readonly pathRewrite?: HttpGatewayRouteRewrite;
+  readonly pathRewrite?: HttpGatewayRoutePathRewrite;
 }
 
 /**
@@ -269,13 +269,13 @@ export interface GrpcGatewayRouteSpecOptions {
 
   /**
    * The default target host name to write to.
-   * Boolean is used to select either enable or disable.
+   * Boolean is used to select either true = enable or false = disable.
    * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service hostname.
    * When disabled, does not rewrite to destination Virtual Service hostname.
    *
    * @default true
    */
-  readonly defaultHostnameRewrite?: boolean;
+  readonly rewriteRequestHostname?: boolean;
 }
 
 /**
@@ -362,38 +362,46 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
 
   /**
    * The default target host name to write to.
-   * Boolean is used to select either enable or disable.
+   * Boolean is used to select either true = enable or  false = disable.
    * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service hostname.
    * When disabled, does not rewrite to destination Virtual Service hostname.
    *
    * @default true
    */
-  readonly defaultHostnameRewrite?: boolean;
+  readonly rewriteRequestHostname?: boolean;
 
   /**
    * The path to rewrite.
    *
    * @default - rewritten to the target Virtual Service's hostname and the matched prefix is rewritten to '/'.
    */
-  readonly pathRewrite?: HttpGatewayRouteRewrite;
+  readonly pathRewrite?: HttpGatewayRoutePathRewrite;
 
   constructor(options: HttpGatewayRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
     super();
     this.routeTarget = options.routeTarget;
     this.routeType = protocol;
     this.match = options.match;
-    this.defaultHostnameRewrite = options.defaultHostnameRewrite;
+    this.rewriteRequestHostname = options.rewriteRequestHostname;
     this.pathRewrite = options.pathRewrite;
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
+    const pathRewriteConfig = this.pathRewrite?.bind(scope);
+    const pathMatchConfig = this.match?.path?.bind(scope).requestMatch;
+
     // Set prefix Match to '/' if none on match properties are defined.
-    const prefixMatch = !areMatchPropertiesUndefined(this.match) ? this.match?.path?.bind(scope).requestMatch.prefix :'/';
-    const prefixPathRewrite = this.pathRewrite?.bind(scope).prefix;
-    const pathRewrite = this.pathRewrite?.bind(scope).path;
+    const prefixMatch = areMatchPropertiesUndefined(this.match)
+      ? '/'
+      : pathMatchConfig?.prefix;
+    const prefixPathRewrite = pathRewriteConfig?.prefix;
+    const pathRewrite = pathRewriteConfig?.path;
 
     if (prefixMatch && prefixMatch[0] != '/') {
-      throw new Error(`Prefix Path must start with \'/\', got: ${prefixMatch}`);
+      throw new Error(`Prefix Path for the match must start with \'/\', got: ${prefixMatch}`);
+    }
+    if (prefixPathRewrite?.value && prefixPathRewrite.value[0] != '/') {
+      throw new Error(`Prefix Path for the rewrite must start with \'/\', got: ${prefixPathRewrite.value}`);
     }
     if (prefixPathRewrite && !prefixMatch) {
       throw new Error('HTTP Gateway Route Prefix Match must be set.');
@@ -405,7 +413,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
     const httpConfig: CfnGatewayRoute.HttpGatewayRouteProperty = {
       match: {
         prefix: prefixMatch,
-        path: this.match?.path?.bind(scope).requestMatch.path,
+        path: pathMatchConfig?.path,
         hostname: this.match?.hostname?.bind(scope).hostnameMatch,
         method: this.match?.method,
         headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
@@ -417,7 +425,26 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
             virtualServiceName: this.routeTarget.virtualServiceName,
           },
         },
-        rewrite: renderHttpGatewayRouteRewrite(scope, this.defaultHostnameRewrite, this.pathRewrite),
+        rewrite: this.rewriteRequestHostname || pathRewriteConfig
+          ? {
+            hostname: this.rewriteRequestHostname
+              ? {
+                defaultTargetHostname: this.rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
+              }
+              : undefined,
+            prefix: pathRewriteConfig?.prefix
+              ? {
+                defaultPrefix: pathRewriteConfig.prefix?.defaultPrefix,
+                value: pathRewriteConfig.prefix?.value,
+              }
+              : undefined,
+            path: pathRewriteConfig?.path
+              ? {
+                exact: pathRewriteConfig?.path?.exact,
+              }
+              : undefined,
+          }
+          : undefined,
       },
     };
     return {
@@ -448,13 +475,13 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    *
    * @default true
    */
-  readonly defaultHostname?: boolean;
+  readonly rewriteRequestHostname?: boolean;
 
   constructor(options: GrpcGatewayRouteSpecOptions) {
     super();
     this.match = options.match;
     this.routeTarget = options.routeTarget;
-    this.defaultHostname = options.defaultHostnameRewrite;
+    this.rewriteRequestHostname = options.rewriteRequestHostname;
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
@@ -469,10 +496,10 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
               virtualServiceName: this.routeTarget.virtualServiceName,
             },
           },
-          rewrite: this.defaultHostname
+          rewrite: this.rewriteRequestHostname
             ? {
               hostname: {
-                defaultTargetHostname: this.defaultHostname ? 'ENABLED' : 'DISABLED',
+                defaultTargetHostname: this.rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
               },
             }: undefined,
         },
@@ -484,28 +511,4 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
       },
     };
   }
-}
-
-function renderHttpGatewayRouteRewrite(scope: Construct, defaultTargetHostname?: boolean, pathRewrite?: HttpGatewayRouteRewrite)
-  : CfnGatewayRoute.HttpGatewayRouteRewriteProperty | undefined {
-  return defaultTargetHostname || pathRewrite
-    ? {
-      hostname: defaultTargetHostname
-        ? {
-          defaultTargetHostname: defaultTargetHostname ? 'ENABLED' : 'DISABLED',
-        }
-        : undefined,
-      prefix: pathRewrite?.bind(scope).prefix
-        ? {
-          defaultPrefix: pathRewrite.bind(scope).prefix?.defaultPrefix,
-          value: pathRewrite.bind(scope).prefix?.value,
-        }
-        : undefined,
-      path: pathRewrite?.bind(scope).path
-        ? {
-          exact: pathRewrite.bind(scope).path?.exact,
-        }
-        : undefined,
-    }
-    : undefined;
 }

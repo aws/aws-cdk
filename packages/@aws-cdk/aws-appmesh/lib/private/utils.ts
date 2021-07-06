@@ -1,8 +1,8 @@
 import { Token, TokenComparison } from '@aws-cdk/core';
 import { CfnVirtualNode } from '../appmesh.generated';
 import { GrpcGatewayRouteMatch } from '../gateway-route-spec';
-import { ListenerTlsOptions } from '../listener-tls-options';
 import { HeaderMatch } from '../header-match';
+import { ListenerTlsOptions } from '../listener-tls-options';
 import { GrpcRouteMatch, HttpRouteMatch } from '../route-spec';
 import { TlsClientPolicy } from '../tls-client-policy';
 
@@ -120,7 +120,7 @@ export function validateMetadata(metadata?: HeaderMatch[]) {
   const MAX_LENGTH = 10;
 
   if (metadata && (metadata.length < MIN_LENGTH || metadata.length > MAX_LENGTH)) {
-    throw new Error(`Metadata must be between ${MIN_LENGTH} and ${MAX_LENGTH}`);
+    throw new Error(`Metadata must be between ${MIN_LENGTH} and ${MAX_LENGTH}. got: ${metadata.length}`);
   }
 }
 
@@ -129,6 +129,6 @@ export function validateMetadata(metadata?: HeaderMatch[]) {
  */
 export function validateGprcMatch(match: GrpcRouteMatch | GrpcGatewayRouteMatch) {
   if (areMatchPropertiesUndefined(match)) {
-    throw new Error('At least one gRPC match type must be defined.');
+    throw new Error('At least one gRPC match property must be provided.');
   }
 }

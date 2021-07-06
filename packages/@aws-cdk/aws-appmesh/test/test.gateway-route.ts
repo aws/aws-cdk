@@ -127,10 +127,10 @@ export = {
       test.throws(() => appmesh.GatewayRouteSpec.http({
         routeTarget: virtualService,
         match: {
-          path: appmesh.HttpRoutePathMatch.matchingPrefix('wrong'),
+          path: appmesh.HttpRoutePathMatch.prefix('wrong'),
         },
       }).bind(stack),
-      /Prefix Path must start with \'\/\', got: wrong/);
+      /Prefix Path for the match must start with \'\/\', got: wrong/);
       test.done();
     },
 
@@ -196,7 +196,7 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http-route', {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
-            defaultHostnameRewrite: true,
+            rewriteRequestHostname: true,
           }),
           gatewayRouteName: 'gateway-http-route',
         });
@@ -207,7 +207,7 @@ export = {
             match: {
               serviceName: virtualService.virtualServiceName,
             },
-            defaultHostnameRewrite: true,
+            rewriteRequestHostname: true,
           }),
           gatewayRouteName: 'gateway-grpc-route',
         });
@@ -271,9 +271,9 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http2-route', {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
-            pathRewrite: appmesh.HttpGatewayRouteRewrite.exactPath('/rewrittenPath'),
+            pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/rewrittenPath'),
             match: {
-              method: appmesh.HttpRouteMatchMethod.GET,
+              method: appmesh.HttpRouteMethod.GET,
             },
           }),
           gatewayRouteName: 'gateway-http2-route',
@@ -322,9 +322,9 @@ export = {
           virtualGateway.addGatewayRoute('gateway-http2-route', {
             routeSpec: appmesh.GatewayRouteSpec.http2({
               routeTarget: virtualService,
-              pathRewrite: appmesh.HttpGatewayRouteRewrite.exactPath('/rewrittenPath'),
+              pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/rewrittenPath'),
               match: {
-                path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
+                path: appmesh.HttpRoutePathMatch.prefix('/'),
               },
             }),
             gatewayRouteName: 'gateway-http2-route',
@@ -359,7 +359,7 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http-route', {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
-            pathRewrite: appmesh.HttpGatewayRouteRewrite.defaultPrefix(),
+            pathRewrite: appmesh.HttpGatewayRoutePathRewrite.defaultPrefix(),
           }),
           gatewayRouteName: 'gateway-http-route',
         });
@@ -368,7 +368,7 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http2-route', {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
-            pathRewrite: appmesh.HttpGatewayRouteRewrite.defaultPrefix(false),
+            pathRewrite: appmesh.HttpGatewayRoutePathRewrite.defaultPrefix(false),
           }),
           gatewayRouteName: 'gateway-http2-route',
         });
@@ -377,7 +377,7 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http2-route-2', {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
-            pathRewrite: appmesh.HttpGatewayRouteRewrite.customPrefix('/rewrittenUri/'),
+            pathRewrite: appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUri/'),
           }),
           gatewayRouteName: 'gateway-http2-route-2',
         });
@@ -455,9 +455,9 @@ export = {
           virtualGateway.addGatewayRoute('gateway-http2-route', {
             routeSpec: appmesh.GatewayRouteSpec.http2({
               routeTarget: virtualService,
-              pathRewrite: appmesh.HttpGatewayRouteRewrite.customPrefix('/rewrittenUrl'),
+              pathRewrite: appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUrl'),
               match: {
-                path: appmesh.HttpRoutePathMatch.matchingExactly('/'),
+                path: appmesh.HttpRoutePathMatch.exact('/'),
               },
             }),
             gatewayRouteName: 'gateway-http2-route',
@@ -493,7 +493,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              hostname: appmesh.GatewayRouteHostname.matchingExactly('example.com'),
+              hostname: appmesh.GatewayRouteHostnameMatch.exact('example.com'),
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -503,7 +503,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.grpc({
             routeTarget: virtualService,
             match: {
-              hostname: appmesh.GatewayRouteHostname.matchingSuffix('.example.com'),
+              hostname: appmesh.GatewayRouteHostnameMatch.suffix('.example.com'),
             },
           }),
           gatewayRouteName: 'gateway-grpc-route',
@@ -863,7 +863,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              method: appmesh.HttpRouteMatchMethod.DELETE,
+              method: appmesh.HttpRouteMethod.DELETE,
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -910,7 +910,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              path: appmesh.HttpRoutePathMatch.matchingExactly('exact'),
+              path: appmesh.HttpRoutePathMatch.exact('exact'),
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -921,7 +921,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
             match: {
-              path: appmesh.HttpRoutePathMatch.matchingRegex('regex'),
+              path: appmesh.HttpRoutePathMatch.regex('regex'),
             },
           }),
           gatewayRouteName: 'gateway-http2-route',

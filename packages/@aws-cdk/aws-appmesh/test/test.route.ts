@@ -70,9 +70,7 @@ export = {
             },
           ],
           match: {
-            serviceName: {
-              name: 'test.svc.local',
-            },
+            serviceName: 'test.svc.local',
           },
           timeout: {
             idle: cdk.Duration.seconds(15),
@@ -239,7 +237,7 @@ export = {
             },
           ],
           match: {
-            path: appmesh.HttpRoutePathMatch.matchingPrefix('/node'),
+            path: appmesh.HttpRoutePathMatch.prefix('/node'),
           },
           timeout: {
             idle: cdk.Duration.seconds(10),
@@ -445,9 +443,7 @@ export = {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
           match: {
-            serviceName: {
-              name: 'servicename',
-            },
+            serviceName: 'servicename',
           },
           retryPolicy: {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
@@ -499,9 +495,7 @@ export = {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
           match: {
-            serviceName: {
-              name: 'example',
-            },
+            serviceName: 'example',
           },
           retryPolicy: {
             grpcRetryEvents: [],
@@ -517,9 +511,7 @@ export = {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
           match: {
-            serviceName: {
-              name: 'example',
-            },
+            serviceName: 'example',
           },
           retryPolicy: {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.CANCELLED],
@@ -578,9 +570,7 @@ export = {
           routeSpec: appmesh.RouteSpec.grpc({
             weightedTargets: [{ virtualNode }],
             match: {
-              serviceName: {
-                name: 'servicename',
-              },
+              serviceName: 'servicename',
             },
             retryPolicy: {
               retryAttempts: 5,
@@ -617,9 +607,7 @@ export = {
           routeSpec: appmesh.RouteSpec.grpc({
             weightedTargets: [{ virtualNode }],
             match: {
-              serviceName: {
-                name: 'example',
-              },
+              serviceName: 'example',
             },
           }),
           virtualRouter: router,
@@ -657,7 +645,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
+          path: appmesh.HttpRoutePathMatch.prefix('/'),
           headers: [
             appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
             appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
@@ -771,8 +759,8 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
-          method: appmesh.HttpRouteMatchMethod.GET,
+          path: appmesh.HttpRoutePathMatch.prefix('/'),
+          method: appmesh.HttpRouteMethod.GET,
         },
       }),
     });
@@ -813,7 +801,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
+          path: appmesh.HttpRoutePathMatch.prefix('/'),
           protocol: appmesh.HttpRouteProtocol.HTTP,
         },
       }),
@@ -971,7 +959,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.matchingExactly('exact'),
+          path: appmesh.HttpRoutePathMatch.exact('exact'),
         },
       }),
     });
@@ -982,7 +970,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.matchingRegex('regex'),
+          path: appmesh.HttpRoutePathMatch.regex('regex'),
         },
       }),
     });
@@ -1090,10 +1078,8 @@ export = {
         priority: 20,
         weightedTargets: [{ virtualNode }],
         match: {
-          serviceName: {
-            name: 'test',
-            methodName: 'testMethod',
-          },
+          serviceName: 'test',
+          methodName: 'testMethod',
         },
       }),
     });
@@ -1140,7 +1126,41 @@ export = {
           match: {},
         }),
       });
-    }, /At least one gRPC match type must be defined/);
+    }, /At least one gRPC match property must be provided/);
+
+    test.done();
+  },
+
+  'should throw an error if method name is specified without service name'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN + THEN
+    test.throws(() => {
+      new appmesh.Route(stack, 'test-http-route', {
+        mesh: mesh,
+        virtualRouter: router,
+        routeSpec: appmesh.RouteSpec.grpc({
+          priority: 20,
+          weightedTargets: [{ virtualNode }],
+          match: {
+            methodName: 'test_method',
+          },
+        }),
+      });
+    }, /If you specify a method name, you must also specify a serviceName/);
 
     test.done();
   },
@@ -1179,9 +1199,7 @@ export = {
         priority: 20,
         weightedTargets: [{ virtualNode }],
         match: {
-          serviceName: {
-            name: 'test',
-          },
+          serviceName: 'test',
         },
       }),
     });

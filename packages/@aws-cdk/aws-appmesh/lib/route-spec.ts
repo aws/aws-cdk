@@ -1,8 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnRoute } from './appmesh.generated';
-import { HttpRouteMatchMethod } from './http-route-match-method';
-import { HttpRoutePathMatch } from './http-route-path-match';
 import { HeaderMatch } from './header-match';
+import { HttpRouteMethod } from './http-route-method';
+import { HttpRoutePathMatch } from './http-route-path-match';
 import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
@@ -53,7 +53,7 @@ export interface HttpRouteMatch {
    *
    * @default - do not match on request method
    */
-  readonly method?: HttpRouteMatchMethod;
+  readonly method?: HttpRouteMethod;
 
   /**
    * The client request protocol to match on. Applicable only for HTTP2 routes.
@@ -63,10 +63,10 @@ export interface HttpRouteMatch {
   readonly protocol?: HttpRouteProtocol;
 
   /**
-   * The query parameter to match on.
-   * All specified query parameter must match for the route to match.
+   * The query parameters to match on.
+   * All specified query parameters must match for the route to match.
    *
-   * @default - no match on query parameter
+   * @default - no match on query parameters
    */
   readonly queryParameters?: QueryParameterMatch[];
 }
@@ -87,23 +87,6 @@ export enum HttpRouteProtocol {
 }
 
 /**
- * Service name and method name properties in gRPC route match.
- */
-export interface ServiceName {
-  /**
-   * The fully qualified domain name for the service to match from the request.
-   */
-  readonly name: string,
-
-  /**
-   * The method name to match from the request.
-   *
-   * @default - No match on method name.
-   */
-  readonly methodName?: string,
-}
-
-/**
  * The criterion for determining a request match for this Route.
  * At least one match type must be selected.
  */
@@ -113,14 +96,23 @@ export interface GrpcRouteMatch {
    *
    * @default - No match on service name.
    */
-  readonly serviceName?: ServiceName
+  readonly serviceName?: string,
 
   /**
    * Create metadata based gRPC route match.
+   * All specified metadata must match for the route to match.
    *
    * @default - No match on metadata.
    */
   readonly metadata?: HeaderMatch[];
+
+  /**
+   * The method name to match from the request.
+   * if the method name is specified, serviceName must be also provided
+   *
+   * @default - No match on method name.
+   */
+  readonly methodName?: string,
 }
 
 /**
@@ -451,8 +443,12 @@ class HttpRouteSpec extends RouteSpec {
   }
 
   public bind(scope: Construct): RouteSpecConfig {
+    const pathMatchConfig = this.match?.path?.bind(scope).requestMatch;
+
     // Set prefix to '/' if none on match properties are defined.
-    const prefix = !areMatchPropertiesUndefined(this.match) ? this.match?.path?.bind(scope).requestMatch.prefix :'/';
+    const prefix = areMatchPropertiesUndefined(this.match)
+      ? '/'
+      : pathMatchConfig?.prefix;
 
     if (prefix && prefix[0] != '/') {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefix}`);
@@ -467,7 +463,7 @@ class HttpRouteSpec extends RouteSpec {
         headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
         method: this.match?.method,
         scheme: this.match?.protocol,
-        path: this.match?.path?.bind(scope).requestMatch.path,
+        path: pathMatchConfig?.path,
         queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
       },
       timeout: renderTimeout(this.timeout),
@@ -558,8 +554,17 @@ class GrpcRouteSpec extends RouteSpec {
   }
 
   public bind(scope: Construct): RouteSpecConfig {
+    const serviceName = this.match.serviceName;
+    const methodName = this.match.methodName;
+    const metadata = this.match.metadata;
+
     validateGprcMatch(this.match);
-    validateMetadata(this.match.metadata);
+    validateMetadata(metadata);
+
+    if (methodName && !serviceName) {
+      throw new Error('If you specify a method name, you must also specify a serviceName.');
+    }
+
 
     return {
       priority: this.priority,
@@ -568,9 +573,9 @@ class GrpcRouteSpec extends RouteSpec {
           weightedTargets: renderWeightedTargets(this.weightedTargets),
         },
         match: {
-          serviceName: this.match.serviceName?.name,
-          methodName: this.match.serviceName?.methodName,
-          metadata: this.match.metadata?.map(metadata => metadata.bind(scope).headerMatch),
+          serviceName: serviceName,
+          methodName: methodName,
+          metadata: metadata?.map(singleMetadata => singleMetadata.bind(scope).headerMatch),
         },
         timeout: renderTimeout(this.timeout),
         retryPolicy: this.retryPolicy ? renderGrpcRetryPolicy(this.retryPolicy) : undefined,

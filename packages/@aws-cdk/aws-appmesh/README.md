@@ -419,7 +419,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.matchingPrefix('/path-to-app'),
+      path: appmesh.HttpRoutePathMatch.prefix('/path-to-app'),
     },
   }),
 });
@@ -436,8 +436,8 @@ router.addRoute('route-http2', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
-      method: appmesh.HttpRouteMatchMethod.POST,
+      path: appmesh.HttpRoutePathMatch.prefix('/'),
+      method: appmesh.HttpRouteMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
         // All specified headers must match for the route to match.
@@ -465,7 +465,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.matchingPrefix('/path-to-app'),
+      path: appmesh.HttpRoutePathMatch.prefix('/path-to-app'),
     },
   }),
 });
@@ -498,9 +498,7 @@ router.addRoute('route-grpc-retry', {
   routeSpec: appmesh.RouteSpec.grpc({
     weightedTargets: [{ virtualNode: node }],
     match: { 
-      serviceName: {
-        name: 'servicename',
-      },
+      serviceName: 'servicename',
     },
     retryPolicy: {
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
@@ -535,9 +533,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      serviceName: {
-        name: 'my-service.default.svc.cluster.local',
-      },
+      serviceName: 'my-service.default.svc.cluster.local',
     },
     timeout:  {
       idle : Duration.seconds(2),
@@ -617,7 +613,7 @@ gateway.addGatewayRoute('gateway-route-http', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
+      path: appmesh.HttpRoutePathMatch.prefix('/'),
     },
   }),
 });
