@@ -497,7 +497,11 @@ Add a gRPC route with retries:
 router.addRoute('route-grpc-retry', {
   routeSpec: appmesh.RouteSpec.grpc({
     weightedTargets: [{ virtualNode: node }],
-    match: { serviceName: 'servicename' },
+    match: { 
+      serviceName: {
+        name: 'servicename',
+      },
+    },
     retryPolicy: {
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
       httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
@@ -531,7 +535,9 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      serviceName: 'my-service.default.svc.cluster.local',
+      serviceName: {
+        name: 'my-service.default.svc.cluster.local',
+      },
     },
     timeout:  {
       idle : Duration.seconds(2),
@@ -625,7 +631,9 @@ gateway.addGatewayRoute('gateway-route-grpc', {
   routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
     match: {
-      serviceName: 'my-service.default.svc.cluster.local',
+      serviceName: {
+        name: 'my-service.default.svc.cluster.local',
+      },
     },
   }),
 });
