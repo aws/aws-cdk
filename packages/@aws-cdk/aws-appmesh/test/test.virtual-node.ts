@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as iam from '@aws-cdk/aws-iam';
@@ -55,6 +55,7 @@ export = {
               },
             ],
           },
+          MeshOwner: ABSENT,
         }));
 
         test.done();
@@ -894,4 +895,35 @@ export = {
 
     test.done();
   },
+
+  'When creating a VirtualNode': {
+    'with shared service mesh': {
+      'Mesh Owner is the AWS account ID of the account that shared the mesh with your account'(test:Test) {
+        // GIVEN
+        const app = new cdk.App();
+        const meshEnv = { account: '1234567899', region: 'us-west-2' };
+        const virtualNodeEnv = { account: '9987654321', region: 'us-west-2' };
+
+        // Creating stack in Account 9987654321
+        const stack = new cdk.Stack(app, 'mySharedStack', { env: virtualNodeEnv });
+        // Mesh is in Account 1234567899
+        const sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'shared-mesh',
+          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`);
+
+        // WHEN
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh: sharedMesh,
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          MeshOwner: meshEnv.account,
+        }));
+
+        test.done();
+      },
+    },
+  },
 };
+
+
