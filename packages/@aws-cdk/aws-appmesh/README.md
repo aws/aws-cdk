@@ -497,7 +497,7 @@ Add a gRPC route with retries:
 router.addRoute('route-grpc-retry', {
   routeSpec: appmesh.RouteSpec.grpc({
     weightedTargets: [{ virtualNode: node }],
-    match: { serviceName: 'servicename' },    
+    match: { serviceName: 'servicename' },
     retryPolicy: {
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
       httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
