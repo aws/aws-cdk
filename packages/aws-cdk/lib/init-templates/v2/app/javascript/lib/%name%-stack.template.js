@@ -1,11 +1,11 @@
-const cdk = require('aws-cdk-lib');
+const { Stack } = require('aws-cdk-lib');
 
-class %name.PascalCased%Stack extends cdk.Stack {
+class %name.PascalCased%Stack extends Stack {
   /**
    *
-   * @param {cdk.Construct} scope
+   * @param {Construct} scope
    * @param {string} id
-   * @param {cdk.StackProps=} props
+   * @param {StackProps=} props
    */
   constructor(scope, id, props) {
     super(scope, id, props);

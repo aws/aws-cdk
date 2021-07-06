@@ -1,4 +1,4 @@
-import { IConstruct } from './construct-compat';
+import { IConstruct } from 'constructs';
 import { TokenString } from './private/encoding';
 import { TokenMap } from './private/token-map';
 import { TokenizedStringFragments } from './string-fragments';
