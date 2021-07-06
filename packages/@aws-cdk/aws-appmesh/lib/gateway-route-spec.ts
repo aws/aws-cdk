@@ -168,8 +168,8 @@ export abstract class HttpGatewayRoutePathRewrite {
 
   /**
    * The default prefix used to replace the incoming route prefix when rewritten.
-   * When enabled, rewrites the matched path in Gateway Route to '/'.
-   * When disabled, does not rewrite to '/'.
+   * When enabled, rewrites the matched prefix in Gateway Route to '/'.
+   * When disabled, retains the original prefix from the request.
    *
    * @param isDefault Boolean to select to enable or disable the default prefix.
    *  Default value is true = enabled.
@@ -238,8 +238,8 @@ export interface HttpGatewayRouteSpecOptions {
   /**
    * The default target host name to write to.
    * Boolean is used to select either true = enable or false = disable.
-   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service hostname.
-   * When disabled, does not rewrite to destination Virtual Service hostname.
+   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
+   * When disabled, retains the original hostname/prefix from the request.
    *
    * @default true
    */
@@ -270,8 +270,8 @@ export interface GrpcGatewayRouteSpecOptions {
   /**
    * The default target host name to write to.
    * Boolean is used to select either true = enable or false = disable.
-   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service hostname.
-   * When disabled, does not rewrite to destination Virtual Service hostname.
+   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
+   * When disabled, retains the original hostname/prefix from the request.
    *
    * @default true
    */
@@ -363,8 +363,8 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   /**
    * The default target host name to write to.
    * Boolean is used to select either true = enable or  false = disable.
-   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service hostname.
-   * When disabled, does not rewrite to destination Virtual Service hostname.
+   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
+   * When disabled, retains the original hostname/prefix from the request.
    *
    * @default true
    */
@@ -470,8 +470,8 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
   /**
    * The default target host name to write to.
    * Boolean is used to select either enable or disable.
-   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service hostname.
-   * When disabled, does not rewrite to destination Virtual Service hostname.
+   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
+   * When disabled, retains the original hostname/prefix from the request.
    *
    * @default true
    */
