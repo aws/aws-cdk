@@ -451,6 +451,7 @@ class HttpRouteSpec extends RouteSpec {
   }
 
   public bind(scope: Construct): RouteSpecConfig {
+    // Set prefix to '/' if none on match properties are defined.
     const prefix = !areMatchPropertiesUndefined(this.match) ? this.match?.path?.bind(scope).requestMatch.prefix :'/';
 
     if (prefix && prefix[0] != '/') {

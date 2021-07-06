@@ -10,7 +10,7 @@ import { TlsClientPolicy } from '../tls-client-policy';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-/**yarn
+/**
  * Generated Connection pool config
  */
 export interface ConnectionPoolConfig {

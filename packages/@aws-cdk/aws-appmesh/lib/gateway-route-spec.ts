@@ -101,6 +101,7 @@ export interface HttpGatewayRouteMatch {
 
   /**
    * The query parameter to match on.
+   * All specified query parameter must match for the route to match.
    *
    * @default - no match on query parameter
    */
@@ -108,7 +109,7 @@ export interface HttpGatewayRouteMatch {
 }
 
 /**
- * The criterion for determining a request match for this GatewayRoute.
+ * The criterion for determining a request match for this GatewayRoute
  */
 export interface GrpcGatewayRouteMatch {
   /**
@@ -386,6 +387,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
+    // Set prefix Match to '/' if none on match properties are defined.
     const prefixMatch = !areMatchPropertiesUndefined(this.match) ? this.match?.path?.bind(scope).requestMatch.prefix :'/';
     const prefixPathRewrite = this.pathRewrite?.bind(scope).prefix;
     const pathRewrite = this.pathRewrite?.bind(scope).path;
