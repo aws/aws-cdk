@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
+import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
@@ -480,6 +480,27 @@ describe('pipeline with VPC', () => {
           }),
         },
       });
+    });
+  });
+
+  behavior('Asset publishing CodeBuild Projects have a dependency on attached policies to the role', (suite) => {
+    suite.legacy(() => {
+      pipeline.addApplicationStage(new DockerAssetApp(app, 'DockerAssetApp'));
+
+      // Assets Project
+      expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+        Properties: {
+          ServiceRole: {
+            'Fn::GetAtt': [
+              'CdkAssetsDockerRole484B6DD3',
+              'Arn',
+            ],
+          },
+        },
+        DependsOn: [
+          'CdkAssetsDockerRoleVpcPolicy86CA024B',
+        ],
+      }, ResourcePart.CompleteDefinition);
     });
   });
 });
