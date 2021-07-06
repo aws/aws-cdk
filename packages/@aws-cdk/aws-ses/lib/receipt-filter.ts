@@ -2,10 +2,6 @@ import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnReceiptFilter } from './ses.generated';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core'
-
 /**
  * The policy for the receipt filter.
  */
@@ -82,7 +78,7 @@ export interface AllowListReceiptFilterProps {
 /**
  * An allow list receipt filter.
  */
-export class AllowListReceiptFilter extends CoreConstruct {
+export class AllowListReceiptFilter extends Construct {
   constructor(scope: Construct, id: string, props: AllowListReceiptFilterProps) {
     super(scope, id);
 
