@@ -1,7 +1,6 @@
 import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-
 import * as appmesh from '../lib';
 
 export = {
@@ -70,7 +69,11 @@ export = {
               virtualNode: node,
             },
           ],
-          match: appmesh.GrpcRouteMatch.serviceName('test.svc.local'),
+          match: {
+            serviceName: {
+              name: 'test.svc.local',
+            },
+          },
           timeout: {
             idle: cdk.Duration.seconds(15),
             perRequest: cdk.Duration.seconds(16),
@@ -236,7 +239,7 @@ export = {
             },
           ],
           match: {
-            pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/node'),
+            path: appmesh.HttpRoutePathMatch.matchingPrefix('/node'),
           },
           timeout: {
             idle: cdk.Duration.seconds(10),
@@ -441,7 +444,11 @@ export = {
       router.addRoute('test-grpc-route', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: appmesh.GrpcRouteMatch.serviceName('servicename'),
+          match: {
+            serviceName: {
+              name: 'servicename',
+            },
+          },
           retryPolicy: {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
             httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
@@ -491,7 +498,11 @@ export = {
       router.addRoute('test-grpc-route', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: appmesh.GrpcRouteMatch.serviceName('example'),
+          match: {
+            serviceName: {
+              name: 'example',
+            },
+          },
           retryPolicy: {
             grpcRetryEvents: [],
             httpRetryEvents: [],
@@ -505,7 +516,11 @@ export = {
       router.addRoute('test-grpc-route2', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: appmesh.GrpcRouteMatch.serviceName('example'),
+          match: {
+            serviceName: {
+              name: 'example',
+            },
+          },
           retryPolicy: {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.CANCELLED],
             httpRetryEvents: [],
@@ -562,7 +577,11 @@ export = {
         router.addRoute('test-grpc-route', {
           routeSpec: appmesh.RouteSpec.grpc({
             weightedTargets: [{ virtualNode }],
-            match: appmesh.GrpcRouteMatch.serviceName('servicename'),
+            match: {
+              serviceName: {
+                name: 'servicename',
+              },
+            },
             retryPolicy: {
               retryAttempts: 5,
               retryTimeout: cdk.Duration.seconds(10),
@@ -597,7 +616,11 @@ export = {
           mesh: sharedMesh,
           routeSpec: appmesh.RouteSpec.grpc({
             weightedTargets: [{ virtualNode }],
-            match: appmesh.GrpcRouteMatch.serviceName('example'),
+            match: {
+              serviceName: {
+                name: 'example',
+              },
+            },
           }),
           virtualRouter: router,
 
@@ -634,18 +657,18 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
+          path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
           headers: [
-            appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
-            appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'text/html'),
-            appmesh.HttpHeaderMatch.valueStartsWith('Content-Type', 'application/'),
-            appmesh.HttpHeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
-            appmesh.HttpHeaderMatch.valueEndsWith('Content-Type', '/json'),
-            appmesh.HttpHeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
-            appmesh.HttpHeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
-            appmesh.HttpHeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
-            appmesh.HttpHeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
-            appmesh.HttpHeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+            appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+            appmesh.MetadataMatch.valueIsNot('Content-Type', 'text/html'),
+            appmesh.MetadataMatch.valueStartsWith('Content-Type', 'application/'),
+            appmesh.MetadataMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+            appmesh.MetadataMatch.valueEndsWith('Content-Type', '/json'),
+            appmesh.MetadataMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+            appmesh.MetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+            appmesh.MetadataMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+            appmesh.MetadataMatch.valuesIsInRange('Max-Forward', 1, 5),
+            appmesh.MetadataMatch.valuesIsNotInRange('Max-Forward', 1, 5),
           ],
         },
       }),
@@ -748,7 +771,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
+          path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
           method: appmesh.HttpRouteMatchMethod.GET,
         },
       }),
@@ -790,7 +813,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
+          path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
           protocol: appmesh.HttpRouteProtocol.HTTP,
         },
       }),
@@ -811,7 +834,7 @@ export = {
     test.done();
   },
 
-  'should match on metadata'(test: Test) {
+  'should match routes based on metadata'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -833,18 +856,20 @@ export = {
       virtualRouter: router,
       routeSpec: appmesh.RouteSpec.grpc({
         weightedTargets: [{ virtualNode }],
-        match: appmesh.GrpcRouteMatch.metadata([
-          appmesh.GrpcMetadataMatch.valueIs('Content-Type', 'application/json'),
-          appmesh.GrpcMetadataMatch.valueIsNot('Content-Type', 'text/html'),
-          appmesh.GrpcMetadataMatch.valueStartsWith('Content-Type', 'application/'),
-          appmesh.GrpcMetadataMatch.valueDoesNotStartWith('Content-Type', 'text/'),
-          appmesh.GrpcMetadataMatch.valueEndsWith('Content-Type', '/json'),
-          appmesh.GrpcMetadataMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
-          appmesh.GrpcMetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
-          appmesh.GrpcMetadataMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
-          appmesh.GrpcMetadataMatch.valuesIsInRange('Max-Forward', 1, 5),
-          appmesh.GrpcMetadataMatch.valuesIsNotInRange('Max-Forward', 1, 5),
-        ]),
+        match: {
+          metadata: [
+            appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+            appmesh.MetadataMatch.valueIsNot('Content-Type', 'text/html'),
+            appmesh.MetadataMatch.valueStartsWith('Content-Type', 'application/'),
+            appmesh.MetadataMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+            appmesh.MetadataMatch.valueEndsWith('Content-Type', '/json'),
+            appmesh.MetadataMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+            appmesh.MetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+            appmesh.MetadataMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+            appmesh.MetadataMatch.valuesIsInRange('Max-Forward', 1, 5),
+            appmesh.MetadataMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+          ],
+        },
       }),
     });
 
@@ -923,7 +948,7 @@ export = {
     test.done();
   },
 
-  'should match on path'(test: Test) {
+  'should match routes based on path'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -946,7 +971,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http({
         weightedTargets: [{ virtualNode }],
         match: {
-          pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.path(appmesh.HttpPathMatch.matchingExactly('exact')),
+          path: appmesh.HttpRoutePathMatch.matchingExactly('exact'),
         },
       }),
     });
@@ -957,7 +982,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.path(appmesh.HttpPathMatch.matchingRegex('regex')),
+          path: appmesh.HttpRoutePathMatch.matchingRegex('regex'),
         },
       }),
     });
@@ -990,7 +1015,7 @@ export = {
     test.done();
   },
 
-  'should match on query parameter'(test: Test) {
+  'should match on routes based query parameter'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -1041,7 +1066,7 @@ export = {
     test.done();
   },
 
-  'should match on method name'(test: Test) {
+  'should match on routes based method name'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -1064,7 +1089,12 @@ export = {
       routeSpec: appmesh.RouteSpec.grpc({
         priority: 20,
         weightedTargets: [{ virtualNode }],
-        match: appmesh.GrpcRouteMatch.serviceName('test', { methodName: 'testMethod' }),
+        match: {
+          serviceName: {
+            name: 'test',
+            methodName: 'testMethod',
+          },
+        },
       }),
     });
 
@@ -1079,6 +1109,38 @@ export = {
         },
       },
     }));
+
+    test.done();
+  },
+
+  'should throw an error if no gRPC match type is defined'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN + THEN
+    test.throws(() => {
+      new appmesh.Route(stack, 'test-http-route', {
+        mesh: mesh,
+        virtualRouter: router,
+        routeSpec: appmesh.RouteSpec.grpc({
+          priority: 20,
+          weightedTargets: [{ virtualNode }],
+          match: {},
+        }),
+      });
+    }, /At least one gRPC match type must be defined/);
 
     test.done();
   },
@@ -1116,7 +1178,11 @@ export = {
       routeSpec: appmesh.RouteSpec.grpc({
         priority: 20,
         weightedTargets: [{ virtualNode }],
-        match: appmesh.GrpcRouteMatch.serviceName('test'),
+        match: {
+          serviceName: {
+            name: 'test',
+          },
+        },
       }),
     });
     router.addRoute('tcp', {

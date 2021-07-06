@@ -1,14 +1,16 @@
 import { Token, TokenComparison } from '@aws-cdk/core';
 import { CfnVirtualNode } from '../appmesh.generated';
+import { GrpcGatewayRouteMatch } from '../gateway-route-spec';
 import { ListenerTlsOptions } from '../listener-tls-options';
-import { GrpcMetadataMatch, HttpRouteMatch } from '../route-spec';
+import { MetadataMatch } from '../metadata-match';
+import { GrpcRouteMatch, HttpRouteMatch } from '../route-spec';
 import { TlsClientPolicy } from '../tls-client-policy';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-/**
+/**yarn
  * Generated Connection pool config
  */
 export interface ConnectionPoolConfig {
@@ -96,8 +98,9 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string) : 
 
 /**
  * This is the helper method to check if properties for passed match are undefined.
+ * This returns true if all properties for an object are undefined.
  */
-export function isMatchPropertiesUndefined(match: HttpRouteMatch | undefined): boolean {
+export function areMatchPropertiesUndefined(match: HttpRouteMatch | GrpcRouteMatch | GrpcGatewayRouteMatch | undefined): boolean {
   let isEmpty = true;
   for (const property in match) {
     if (property) {
@@ -112,8 +115,20 @@ export function isMatchPropertiesUndefined(match: HttpRouteMatch | undefined): b
 /**
  * This is the helper method to validate the length of Metadata array when it is specified.
  */
-export function validateMetadata(metadata?: GrpcMetadataMatch[]) {
-  if (metadata && (metadata.length < 1 || metadata.length > 10)) {
-    throw new Error('Metadata must be between 1 and 10');
+export function validateMetadata(metadata?: MetadataMatch[]) {
+  const MIN_LENGTH = 1;
+  const MAX_LENGTH = 10;
+
+  if (metadata && (metadata.length < MIN_LENGTH || metadata.length > MAX_LENGTH)) {
+    throw new Error(`Metadata must be between ${MIN_LENGTH} and ${MAX_LENGTH}`);
+  }
+}
+
+/**
+ * This is the helper method to validate at least one of gRPC match type is defined.
+ */
+export function validateGprcMatch(match: GrpcRouteMatch | GrpcGatewayRouteMatch) {
+  if (areMatchPropertiesUndefined(match)) {
+    throw new Error('At least one gRPC match type must be defined.');
   }
 }

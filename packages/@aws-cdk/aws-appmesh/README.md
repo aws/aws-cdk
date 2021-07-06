@@ -419,7 +419,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/path-to-app'),
+      path: appmesh.HttpRoutePathMatch.matchingPrefix('/path-to-app'),
     },
   }),
 });
@@ -436,13 +436,13 @@ router.addRoute('route-http2', {
       },
     ],
     match: {
-      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
+      path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
       method: appmesh.HttpRouteMatchMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
         // All specified headers must match for the route to match.
-        appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueIsNot('Content-Type', 'application/json'),
       ]
     },
   }),
@@ -465,7 +465,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/path-to-app'),
+      path: appmesh.HttpRoutePathMatch.matchingPrefix('/path-to-app'),
     },
   }),
 });
@@ -497,7 +497,9 @@ Add a gRPC route with retries:
 router.addRoute('route-grpc-retry', {
   routeSpec: appmesh.RouteSpec.grpc({
     weightedTargets: [{ virtualNode: node }],
-    match: appmesh.GrpcRouteMatch.serviceName('servicename'),
+    match: {
+      serviceName: 'servicename',
+    },    
     retryPolicy: {
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
       httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
@@ -530,7 +532,9 @@ router.addRoute('route-http', {
         virtualNode: node,
       },
     ],
-    match: appmesh.GrpcRouteMatch.serviceName('my-service.default.svc.cluster.local'),
+    match: {
+      serviceName: 'my-service.default.svc.cluster.local',
+    },
     timeout:  {
       idle : Duration.seconds(2),
       perRequest: Duration.seconds(1),
@@ -609,7 +613,7 @@ gateway.addGatewayRoute('gateway-route-http', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
+      path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
     },
   }),
 });
@@ -622,7 +626,9 @@ You cannot omit the field, and must specify a match for these routes.
 gateway.addGatewayRoute('gateway-route-grpc', {
   routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
-    match: appmesh.GrpcGatewayRouteMatch.serviceName('my-service.default.svc.cluster.local'),
+    match: {
+      serviceName: 'my-service.default.svc.cluster.local',
+    },
   }),
 });
 ```

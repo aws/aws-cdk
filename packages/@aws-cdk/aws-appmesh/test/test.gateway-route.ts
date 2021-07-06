@@ -1,7 +1,6 @@
 import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-
 import * as appmesh from '../lib';
 
 export = {
@@ -43,7 +42,9 @@ export = {
       virtualGateway.addGatewayRoute('gateway-grpc-route', {
         routeSpec: appmesh.GatewayRouteSpec.grpc({
           routeTarget: virtualService,
-          match: appmesh.GrpcGatewayRouteMatch.serviceName(virtualService.virtualServiceName),
+          match: {
+            serviceName: virtualService.virtualServiceName,
+          },
         }),
         gatewayRouteName: 'gateway-grpc-route',
       });
@@ -126,7 +127,7 @@ export = {
       test.throws(() => appmesh.GatewayRouteSpec.http({
         routeTarget: virtualService,
         match: {
-          pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('wrong'),
+          path: appmesh.HttpRoutePathMatch.matchingPrefix('wrong'),
         },
       }).bind(stack),
       /Prefix Path must start with \'\/\', got: wrong/);
@@ -195,9 +196,7 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http-route', {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
-            rewrite: {
-              defaultHostname: true,
-            },
+            defaultHostnameRewrite: true,
           }),
           gatewayRouteName: 'gateway-http-route',
         });
@@ -205,10 +204,10 @@ export = {
         virtualGateway.addGatewayRoute('gateway-grpc-route', {
           routeSpec: appmesh.GatewayRouteSpec.grpc({
             routeTarget: virtualService,
-            match: appmesh.GrpcRouteMatch.serviceName(virtualService.virtualServiceName),
-            rewrite: {
-              defaultHostname: true,
+            match: {
+              serviceName: virtualService.virtualServiceName,
             },
+            defaultHostnameRewrite: true,
           }),
           gatewayRouteName: 'gateway-grpc-route',
         });
@@ -272,9 +271,7 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http2-route', {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
-            rewrite: {
-              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.path('/rewrittenPath'),
-            },
+            pathRewrite: appmesh.HttpGatewayRouteRewrite.exactPath('/rewrittenPath'),
             match: {
               method: appmesh.HttpRouteMatchMethod.GET,
             },
@@ -321,16 +318,13 @@ export = {
         });
 
         // WHEN + THEN
-
         test.throws(() => {
           virtualGateway.addGatewayRoute('gateway-http2-route', {
             routeSpec: appmesh.GatewayRouteSpec.http2({
               routeTarget: virtualService,
-              rewrite: {
-                pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.path('/rewrittenPath'),
-              },
+              pathRewrite: appmesh.HttpGatewayRouteRewrite.exactPath('/rewrittenPath'),
               match: {
-                pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
+                path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
               },
             }),
             gatewayRouteName: 'gateway-http2-route',
@@ -365,9 +359,7 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http-route', {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
-            rewrite: {
-              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(),
-            },
+            pathRewrite: appmesh.HttpGatewayRouteRewrite.defaultPrefix(),
           }),
           gatewayRouteName: 'gateway-http-route',
         });
@@ -376,9 +368,7 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http2-route', {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
-            rewrite: {
-              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(false),
-            },
+            pathRewrite: appmesh.HttpGatewayRouteRewrite.defaultPrefix(false),
           }),
           gatewayRouteName: 'gateway-http2-route',
         });
@@ -387,9 +377,7 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http2-route-2', {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
-            rewrite: {
-              pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.customPrefix('/rewrittenUri/'),
-            },
+            pathRewrite: appmesh.HttpGatewayRouteRewrite.customPrefix('/rewrittenUri/'),
           }),
           gatewayRouteName: 'gateway-http2-route-2',
         });
@@ -467,12 +455,9 @@ export = {
           virtualGateway.addGatewayRoute('gateway-http2-route', {
             routeSpec: appmesh.GatewayRouteSpec.http2({
               routeTarget: virtualService,
-              rewrite: {
-                pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.customPrefix('/rewrittenUrl'),
-              },
+              pathRewrite: appmesh.HttpGatewayRouteRewrite.customPrefix('/rewrittenUrl'),
               match: {
-                pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.path(appmesh.HttpPathMatch.matchingExactly('/'),
-                ),
+                path: appmesh.HttpRoutePathMatch.matchingExactly('/'),
               },
             }),
             gatewayRouteName: 'gateway-http2-route',
@@ -517,7 +502,9 @@ export = {
         virtualGateway.addGatewayRoute('gateway-grpc-route', {
           routeSpec: appmesh.GatewayRouteSpec.grpc({
             routeTarget: virtualService,
-            match: appmesh.GrpcGatewayRouteMatch.hostname(appmesh.GatewayRouteHostname.matchingSuffix('.example.com')),
+            match: {
+              hostname: appmesh.GatewayRouteHostname.matchingSuffix('.example.com'),
+            },
           }),
           gatewayRouteName: 'gateway-grpc-route',
         });
@@ -576,18 +563,20 @@ export = {
         virtualGateway.addGatewayRoute('gateway-grpc-route', {
           routeSpec: appmesh.GatewayRouteSpec.grpc({
             routeTarget: virtualService,
-            match: appmesh.GrpcGatewayRouteMatch.metadata([
-              appmesh.GrpcMetadataMatch.valueIs('Content-Type', 'application/json'),
-              appmesh.GrpcMetadataMatch.valueIsNot('Content-Type', 'text/html'),
-              appmesh.GrpcMetadataMatch.valueStartsWith('Content-Type', 'application/'),
-              appmesh.GrpcMetadataMatch.valueDoesNotStartWith('Content-Type', 'text/'),
-              appmesh.GrpcMetadataMatch.valueEndsWith('Content-Type', '/json'),
-              appmesh.GrpcMetadataMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
-              appmesh.GrpcMetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
-              appmesh.GrpcMetadataMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
-              appmesh.GrpcMetadataMatch.valuesIsInRange('Max-Forward', 1, 5),
-              appmesh.GrpcMetadataMatch.valuesIsNotInRange('Max-Forward', 1, 5),
-            ]),
+            match: {
+              metadata: [
+                appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+                appmesh.MetadataMatch.valueIsNot('Content-Type', 'text/html'),
+                appmesh.MetadataMatch.valueStartsWith('Content-Type', 'application/'),
+                appmesh.MetadataMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+                appmesh.MetadataMatch.valueEndsWith('Content-Type', '/json'),
+                appmesh.MetadataMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+                appmesh.MetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+                appmesh.MetadataMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+                appmesh.MetadataMatch.valuesIsInRange('Max-Forward', 1, 5),
+                appmesh.MetadataMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+              ],
+            },
           }),
           gatewayRouteName: 'gateway-grpc-route',
         });
@@ -667,6 +656,67 @@ export = {
 
         test.done();
       },
+
+      'should throw an error if the array length is invalid'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        test.throws(() => {
+          virtualGateway.addGatewayRoute('gateway-grpc-route', {
+            routeSpec: appmesh.GatewayRouteSpec.grpc({
+              routeTarget: virtualService,
+              match: {
+                // size 0 array
+                metadata: [
+                ],
+              },
+            }),
+            gatewayRouteName: 'gateway-grpc-route',
+          });
+        }, /Metadata must be between 1 and 10/);
+
+        test.throws(() => {
+          virtualGateway.addGatewayRoute('gateway-grpc-route-1', {
+            routeSpec: appmesh.GatewayRouteSpec.grpc({
+              routeTarget: virtualService,
+              match: {
+                // size 11 array
+                metadata: [
+                  appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+                  appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+                  appmesh.MetadataMatch.valueIsNot('Content-Type', 'text/html'),
+                  appmesh.MetadataMatch.valueStartsWith('Content-Type', 'application/'),
+                  appmesh.MetadataMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+                  appmesh.MetadataMatch.valueEndsWith('Content-Type', '/json'),
+                  appmesh.MetadataMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+                  appmesh.MetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+                  appmesh.MetadataMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+                  appmesh.MetadataMatch.valuesIsInRange('Max-Forward', 1, 5),
+                  appmesh.MetadataMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+                ],
+              },
+            }),
+            gatewayRouteName: 'gateway-grpc-route',
+          });
+        }, /Metadata must be between 1 and 10/);
+
+        test.done();
+      },
     },
 
     'with header match': {
@@ -695,16 +745,16 @@ export = {
             routeTarget: virtualService,
             match: {
               headers: [
-                appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
-                appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'text/html'),
-                appmesh.HttpHeaderMatch.valueStartsWith('Content-Type', 'application/'),
-                appmesh.HttpHeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
-                appmesh.HttpHeaderMatch.valueEndsWith('Content-Type', '/json'),
-                appmesh.HttpHeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
-                appmesh.HttpHeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
-                appmesh.HttpHeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
-                appmesh.HttpHeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
-                appmesh.HttpHeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+                appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+                appmesh.MetadataMatch.valueIsNot('Content-Type', 'text/html'),
+                appmesh.MetadataMatch.valueStartsWith('Content-Type', 'application/'),
+                appmesh.MetadataMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+                appmesh.MetadataMatch.valueEndsWith('Content-Type', '/json'),
+                appmesh.MetadataMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+                appmesh.MetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+                appmesh.MetadataMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+                appmesh.MetadataMatch.valuesIsInRange('Max-Forward', 1, 5),
+                appmesh.MetadataMatch.valuesIsNotInRange('Max-Forward', 1, 5),
               ],
             },
           }),
@@ -860,7 +910,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.path(appmesh.HttpPathMatch.matchingExactly('exact')),
+              path: appmesh.HttpRoutePathMatch.matchingExactly('exact'),
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -871,7 +921,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
             match: {
-              pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.path(appmesh.HttpPathMatch.matchingRegex('regex')),
+              path: appmesh.HttpRoutePathMatch.matchingRegex('regex'),
             },
           }),
           gatewayRouteName: 'gateway-http2-route',

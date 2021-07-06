@@ -19,3 +19,7 @@ export * from './health-checks';
 export * from './listener-tls-options';
 export * from './tls-validation';
 export * from './tls-client-policy';
+export * from './metadata-match';
+export * from './http-route-match-method';
+export * from './http-route-path-match';
+export * from './query-parameter-match';

@@ -55,7 +55,7 @@ router.addRoute('route-1', {
       },
     ],
     match: {
-      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
+      path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
     },
     timeout: {
       idle: cdk.Duration.seconds(10),
@@ -158,7 +158,7 @@ router.addRoute('route-2', {
       },
     ],
     match: {
-      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/path2'),
+      path: appmesh.HttpRoutePathMatch.matchingPrefix('/path2'),
     },
     timeout: {
       idle: cdk.Duration.seconds(11),
@@ -192,7 +192,11 @@ router.addRoute('route-4', {
     timeout: {
       idle: cdk.Duration.seconds(12),
     },
-    match: appmesh.GrpcRouteMatch.serviceName('test'),
+    match: {
+      serviceName: {
+        name: 'test',
+      },
+    },
   }),
 });
 
@@ -200,20 +204,20 @@ router.addRoute('route-matching', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [{ virtualNode: node3 }],
     match: {
-      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
+      path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
       method: appmesh.HttpRouteMatchMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
-        appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueStartsWith('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueEndsWith('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
-        appmesh.HttpHeaderMatch.valuesIsInRange('Content-Type', 1, 5),
-        appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueDoesNotStartWith('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueDoesNotEndWith('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueDoesNotMatchRegex('Content-Type', 'application/.*'),
-        appmesh.HttpHeaderMatch.valuesIsNotInRange('Content-Type', 1, 5),
+        appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueStartsWith('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueEndsWith('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+        appmesh.MetadataMatch.valuesIsInRange('Content-Type', 1, 5),
+        appmesh.MetadataMatch.valueIsNot('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueDoesNotStartWith('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueDoesNotEndWith('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueDoesNotMatchRegex('Content-Type', 'application/.*'),
+        appmesh.MetadataMatch.valuesIsNotInRange('Content-Type', 1, 5),
       ],
     },
   }),
@@ -241,7 +245,11 @@ router.addRoute('route-5', {
 router.addRoute('route-grpc-retry', {
   routeSpec: appmesh.RouteSpec.grpc({
     weightedTargets: [{ virtualNode: node3 }],
-    match: appmesh.GrpcRouteMatch.serviceName('servicename'),
+    match: {
+      serviceName: {
+        name: 'servicename',
+      },
+    },
     retryPolicy: {
       grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
       httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
@@ -261,7 +269,7 @@ router.addRoute('route-6', {
       },
     ],
     match: {
-      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.path(appmesh.HttpPathMatch.matchingRegex('regex')),
+      path: appmesh.HttpRoutePathMatch.matchingRegex('regex'),
       queryParameters: [
         appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
       ],
@@ -277,12 +285,15 @@ router.addRoute('route-7', {
         weight: 20,
       },
     ],
-    match: appmesh.GrpcRouteMatch.metadata([
-      appmesh.GrpcMetadataMatch.valueIs('Content-Type', 'application/json'),
-    ], {
-      methodName: 'test-method',
-      serviceName: 'test-service',
-    }),
+    match: {
+      serviceName: {
+        name: 'test-service',
+        methodName: 'test-method',
+      },
+      metadata: [
+        appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+      ],
+    },
   }),
 });
 
@@ -340,29 +351,27 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.prefix('/'),
+      path: appmesh.HttpRoutePathMatch.matchingPrefix('/'),
       hostname: appmesh.GatewayRouteHostname.matchingExactly('example.com'),
       method: appmesh.HttpRouteMatchMethod.POST,
       headers: [
-        appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueStartsWith('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueEndsWith('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
-        appmesh.HttpHeaderMatch.valuesIsInRange('Content-Type', 1, 5),
-        appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueDoesNotStartWith('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueDoesNotEndWith('Content-Type', 'application/json'),
-        appmesh.HttpHeaderMatch.valueDoesNotMatchRegex('Content-Type', 'application/.*'),
-        appmesh.HttpHeaderMatch.valuesIsNotInRange('Content-Type', 1, 5),
+        appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueStartsWith('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueEndsWith('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+        appmesh.MetadataMatch.valuesIsInRange('Content-Type', 1, 5),
+        appmesh.MetadataMatch.valueIsNot('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueDoesNotStartWith('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueDoesNotEndWith('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueDoesNotMatchRegex('Content-Type', 'application/.*'),
+        appmesh.MetadataMatch.valuesIsNotInRange('Content-Type', 1, 5),
       ],
       queryParameters: [
         appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
       ],
     },
-    rewrite: {
-      defaultHostname: true,
-      pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.defaultPrefix(false),
-    },
+    defaultHostnameRewrite: true,
+    pathRewrite: appmesh.HttpGatewayRouteRewrite.defaultPrefix(false),
   }),
 });
 
@@ -376,38 +385,38 @@ gateway.addGatewayRoute('gateway1-route-http2-2', {
   routeSpec: appmesh.GatewayRouteSpec.http2({
     routeTarget: virtualService,
     match: {
-      pathOrPrefix: appmesh.HttpRoutePathOrPrefixMatch.path(appmesh.HttpPathMatch.matchingExactly('/')),
+      path: appmesh.HttpRoutePathMatch.matchingExactly('/'),
     },
-    rewrite: {
-      pathOrPrefix: appmesh.HttpGatewayRoutePathOrPrefixRewrite.path('/'),
-    },
-
+    pathRewrite: appmesh.HttpGatewayRouteRewrite.exactPath('/'),
   }),
 });
 
 gateway.addGatewayRoute('gateway1-route-grpc', {
   routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
-    match: appmesh.GrpcGatewayRouteMatch.serviceName(virtualService.virtualServiceName),
+    match: {
+      serviceName: virtualService.virtualServiceName,
+    },
   }),
 });
 
 gateway.addGatewayRoute('gateway1-route-grpc-2', {
   routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
-    match: appmesh.GrpcGatewayRouteMatch.hostname(appmesh.GatewayRouteHostname.matchingExactly('example.com'), {
+    match: {
+      hostname: appmesh.GatewayRouteHostname.matchingExactly('example.com'),
       metadata: [
-        appmesh.GrpcMetadataMatch.valueIs('Content-Type', 'application/json'),
-        appmesh.GrpcMetadataMatch.valueIsNot('Content-Type', 'text/html'),
-        appmesh.GrpcMetadataMatch.valueStartsWith('Content-Type', 'application/'),
-        appmesh.GrpcMetadataMatch.valueDoesNotStartWith('Content-Type', 'text/'),
-        appmesh.GrpcMetadataMatch.valueEndsWith('Content-Type', '/json'),
-        appmesh.GrpcMetadataMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
-        appmesh.GrpcMetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
-        appmesh.GrpcMetadataMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
-        appmesh.GrpcMetadataMatch.valuesIsInRange('Max-Forward', 1, 5),
-        appmesh.GrpcMetadataMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+        appmesh.MetadataMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.MetadataMatch.valueIsNot('Content-Type', 'text/html'),
+        appmesh.MetadataMatch.valueStartsWith('Content-Type', 'application/'),
+        appmesh.MetadataMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+        appmesh.MetadataMatch.valueEndsWith('Content-Type', '/json'),
+        appmesh.MetadataMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+        appmesh.MetadataMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+        appmesh.MetadataMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+        appmesh.MetadataMatch.valuesIsInRange('Max-Forward', 1, 5),
+        appmesh.MetadataMatch.valuesIsNotInRange('Max-Forward', 1, 5),
       ],
-    }),
+    },
   }),
 });
