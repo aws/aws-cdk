@@ -99,7 +99,7 @@ nodeunitShim({
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
       version: cxschema.Manifest.version(),
-      artifacts: {
+      artifacts: expect.objectContaining({
         'Tree': {
           type: 'cdk:tree',
           properties: { file: 'tree.json' },
@@ -109,16 +109,16 @@ nodeunitShim({
           environment: 'aws://12345/bar',
           properties: { templateFile: 'foo.json' },
         },
-        'one-stack': {
+        'one-stack': expect.objectContaining({
           type: 'aws:cloudformation:stack',
           environment: 'aws://unknown-account/unknown-region',
-          properties: {
+          properties: expect.objectContaining({
             templateFile: 'one-stack.template.json',
             validateOnSynth: false,
-          },
+          }),
           displayName: 'one-stack',
-        },
-      },
+        }),
+      }),
     });
     test.done();
   },
