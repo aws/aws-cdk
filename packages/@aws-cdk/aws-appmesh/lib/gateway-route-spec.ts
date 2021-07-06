@@ -1,7 +1,7 @@
 import { CfnGatewayRoute } from './appmesh.generated';
 import { HttpRouteMatchMethod } from './http-route-match-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
-import { MetadataMatch } from './metadata-match';
+import { HeaderMatch } from './header-match';
 import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { Protocol } from './shared-interfaces';
@@ -83,7 +83,7 @@ export interface HttpGatewayRouteMatch {
    *
    * @default - do not match on headers
    */
-  readonly headers?: MetadataMatch[];
+  readonly headers?: HeaderMatch[];
 
   /**
    * The gateway route host name to be matched on.
@@ -131,7 +131,7 @@ export interface GrpcGatewayRouteMatch {
    *
    * @default - not matching on metadata.
    */
-  readonly metadata?: MetadataMatch[];
+  readonly metadata?: HeaderMatch[];
 }
 
 /**
@@ -408,7 +408,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
         path: this.match?.path?.bind(scope).requestMatch.path,
         hostname: this.match?.hostname?.bind(scope).hostnameMatch,
         method: this.match?.method,
-        headers: this.match?.headers?.map(header => header.bind(scope).metadataMatch),
+        headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
         queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
       },
       action: {
@@ -479,7 +479,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
         match: {
           serviceName: this.match.serviceName,
           hostname: this.match.hostname?.bind(scope).hostnameMatch,
-          metadata: this.match.metadata?.map(metadata => metadata.bind(scope).metadataMatch),
+          metadata: this.match.metadata?.map(metadata => metadata.bind(scope).headerMatch),
         },
       },
     };

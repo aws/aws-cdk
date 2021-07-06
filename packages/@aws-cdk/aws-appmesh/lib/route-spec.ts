@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { CfnRoute } from './appmesh.generated';
 import { HttpRouteMatchMethod } from './http-route-match-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
-import { MetadataMatch } from './metadata-match';
+import { HeaderMatch } from './header-match';
 import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
@@ -46,7 +46,7 @@ export interface HttpRouteMatch {
    *
    * @default - do not match on headers
    */
-  readonly headers?: MetadataMatch[];
+  readonly headers?: HeaderMatch[];
 
   /**
    * The HTTP client request method to match on.
@@ -120,7 +120,7 @@ export interface GrpcRouteMatch {
    *
    * @default - No match on metadata.
    */
-  readonly metadata?: MetadataMatch[];
+  readonly metadata?: HeaderMatch[];
 }
 
 /**
@@ -464,7 +464,7 @@ class HttpRouteSpec extends RouteSpec {
       },
       match: {
         prefix: prefix,
-        headers: this.match?.headers?.map(header => header.bind(scope).metadataMatch),
+        headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
         method: this.match?.method,
         scheme: this.match?.protocol,
         path: this.match?.path?.bind(scope).requestMatch.path,
@@ -570,7 +570,7 @@ class GrpcRouteSpec extends RouteSpec {
         match: {
           serviceName: this.match.serviceName?.name,
           methodName: this.match.serviceName?.methodName,
-          metadata: this.match.metadata?.map(metadata => metadata.bind(scope).metadataMatch),
+          metadata: this.match.metadata?.map(metadata => metadata.bind(scope).headerMatch),
         },
         timeout: renderTimeout(this.timeout),
         retryPolicy: this.retryPolicy ? renderGrpcRetryPolicy(this.retryPolicy) : undefined,

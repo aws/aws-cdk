@@ -2,7 +2,7 @@ import { Token, TokenComparison } from '@aws-cdk/core';
 import { CfnVirtualNode } from '../appmesh.generated';
 import { GrpcGatewayRouteMatch } from '../gateway-route-spec';
 import { ListenerTlsOptions } from '../listener-tls-options';
-import { MetadataMatch } from '../metadata-match';
+import { HeaderMatch } from '../header-match';
 import { GrpcRouteMatch, HttpRouteMatch } from '../route-spec';
 import { TlsClientPolicy } from '../tls-client-policy';
 
@@ -115,7 +115,7 @@ export function areMatchPropertiesUndefined(match: HttpRouteMatch | GrpcRouteMat
 /**
  * This is the helper method to validate the length of Metadata array when it is specified.
  */
-export function validateMetadata(metadata?: MetadataMatch[]) {
+export function validateMetadata(metadata?: HeaderMatch[]) {
   const MIN_LENGTH = 1;
   const MAX_LENGTH = 10;
 
