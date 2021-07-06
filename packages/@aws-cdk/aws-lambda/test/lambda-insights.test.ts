@@ -11,7 +11,7 @@ describe('lambda-insights', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      insightsVersion: lambda.LambdaInsightsVersion.fromInsightVersionArn(layerArn),
+      insightsVersion: lambda.LambdaInsightsLayerVersion.fromInsightVersionArn(layerArn),
     });
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
@@ -33,5 +33,29 @@ describe('lambda-insights', () => {
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
     }, ResourcePart.CompleteDefinition);
+  });
+
+  test('unsupported version/region throws error', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new lambda.Function(stack, 'BadVersion', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion({
+        insightsVersion: 'UNSUPPORTED_VERSION' as lambda.LambdaInsightsVersion,
+        region: 'us-west-2',
+      }),
+    })).toThrow();
+
+    expect(() => new lambda.Function(stack, 'BadRegion', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion({
+        insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
+        region: 'UNSUPPORTED_REGION',
+      }),
+    })).toThrow();
   });
 });

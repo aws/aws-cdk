@@ -15,7 +15,7 @@ import { FileSystem } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Handler } from './handler';
-import { LambdaInsightsVersion } from './lambda-insights';
+import { LambdaInsightsLayerVersion } from './lambda-insights';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
@@ -221,7 +221,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No Lambda Insights
    */
-  readonly insightsVersion?: LambdaInsightsVersion;
+  readonly insightsVersion?: LambdaInsightsLayerVersion;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -883,7 +883,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    *
    * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
    */
-  private configureLambdaInsights(insightsVersion: LambdaInsightsVersion): void {
+  private configureLambdaInsights(insightsVersion: LambdaInsightsLayerVersion): void {
     this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', insightsVersion.layerVersionArn));
     this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
   }
