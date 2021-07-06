@@ -11,7 +11,7 @@ export interface EMRContainersDeleteVirtualClusterProps extends sfn.TaskStateBas
   /**
    * The ID of the virtual cluster that will be deleted.
    */
-  readonly id: string;
+  readonly virtualClusterId: sfn.TaskInput;
 }
 
 /**
