@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { FileSet, ScriptStep, ScriptStepProps, Step } from '../blueprint';
 import { CodeBuildFactory } from './_codebuild-factory';
-import { ICodePipelineActionFactory, CodePipelineActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
+import { CodePipelineActionOptions, CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
 /**
  * Construction props for SimpleSynthAction
@@ -90,7 +90,14 @@ export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
   }
 
   public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
-    const factory = new CodeBuildFactory(this.id, this.runScript, this.props);
+    const factory = new CodeBuildFactory(this.id, this.runScript, {
+      ...this.props,
+      projectOptions: {
+        buildEnvironment: this.props.buildEnvironment,
+        rolePolicyStatements: this.props.rolePolicyStatements,
+        securityGroups: this.props.securityGroups,
+      },
+    });
     const ret = factory.produce(options);
     this._project = factory.project;
     return ret;

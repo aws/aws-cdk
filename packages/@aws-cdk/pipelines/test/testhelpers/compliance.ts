@@ -18,21 +18,29 @@ interface Suite {
 export function behavior(name: string, cb: (suite: Suite) => void) {
   // 'describe()' adds a nice grouping in Jest
   describe(name, () => {
-
     const unwritten = new Set(['modern', 'legacy']);
+
+    function scratchOff(flavor: string) {
+      if (!unwritten.has(flavor)) {
+        throw new Error(`Already had test for ${flavor}. Use .additional() to add more tests.`);
+      }
+      unwritten.delete(flavor);
+    }
+
+
     cb({
       legacy: (testFn) => {
-        unwritten.delete('legacy');
+        scratchOff('legacy');
         test('legacy', testFn);
       },
       modern: (testFn) => {
-        unwritten.delete('modern');
+        scratchOff('modern');
         test('modern', testFn);
       },
       additional: test,
       doesNotApply: {
         modern: (reason?: string) => {
-          unwritten.delete('modern');
+          scratchOff('modern');
 
           if (reason != null) {
             // eslint-disable-next-line jest/no-disabled-tests
@@ -41,7 +49,7 @@ export function behavior(name: string, cb: (suite: Suite) => void) {
         },
 
         legacy: (reason?: string) => {
-          unwritten.delete('legacy');
+          scratchOff('legacy');
 
           if (reason != null) {
             // eslint-disable-next-line jest/no-disabled-tests

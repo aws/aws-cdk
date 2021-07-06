@@ -3,12 +3,12 @@ import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { FileSetLocation, ScriptStep, StackDeployment } from '../blueprint';
 import { mapValues, mkdict, noEmptyObject, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { ICodePipelineActionFactory, CodePipelineActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
+import { CodeBuildProjectOptions } from './codepipeline-engine';
 
 export interface CodeBuildFactoryProps {
   /**
@@ -35,33 +35,19 @@ export interface CodeBuildFactoryProps {
   readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
-   * Policy statements to add to role used during the synth
-   *
-   * Can be used to add acces to a CodeArtifact repository etc.
-   *
-   * @default - No policy statements added to CodeBuild Project Role
-   */
-  readonly rolePolicyStatements?: iam.PolicyStatement[];
-
-  /**
    * Include a hash of the build config into the invocation
    */
   readonly includeBuildHashInPipeline?: boolean;
 
   /**
-   * Build environment
-   */
-  readonly buildEnvironment?: codebuild.BuildEnvironment;
-
-  /**
-   * Which security group to associate with the script's project network interfaces.
-   * If no security group is identified, one will be created automatically.
+   * Customization options for the project
    *
-   * Only used if 'vpc' is supplied.
+   * Will at CodeBuild production time be combined with the option
+   * defaults configured on the pipeline.
    *
-   * @default - Security group will be automatically created.
+   * @default - No special values
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly projectOptions?: CodeBuildProjectOptions;
 }
 
 /**
@@ -87,6 +73,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
   }
 
   public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
+    const projectOptions = mergeCodeBuildOptions(options.codeBuildProjectOptions, this.props.projectOptions);
+
     const mainInput = this.runScript.inputs.find(x => x.directory === '.');
     const extraInputs = this.runScript.inputs.filter(x => x.directory !== '.');
 
@@ -122,7 +110,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const [actionEnvs, projectEnvs] = partition(Object.entries(this.runScript.env ?? {}), ([, v]) => containsPipelineVariable(v));
 
     const environment = mergeBuildEnvironments(
-      this.props.buildEnvironment ?? {},
+      projectOptions?.buildEnvironment ?? {},
       {
         environmentVariables: noEmptyObject(mapValues(mkdict(projectEnvs), value => ({ value }))),
       });
@@ -141,12 +129,12 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       environment,
       vpc: this.props.vpc,
       subnetSelection: this.props.subnetSelection,
-      securityGroups: this.props.securityGroups,
+      securityGroups: projectOptions?.securityGroups,
       buildSpec,
     });
 
-    if (this.props.rolePolicyStatements !== undefined) {
-      this.props.rolePolicyStatements.forEach(policyStatement => {
+    if (projectOptions?.rolePolicyStatements !== undefined) {
+      projectOptions?.rolePolicyStatements.forEach(policyStatement => {
         project.addToRolePolicy(policyStatement);
       });
     }
@@ -232,10 +220,26 @@ function renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLoca
   return { 'secondary-artifacts': secondary };
 }
 
-export function mergeBuildEnvironments(env: codebuild.BuildEnvironment, ...envs: Array<codebuild.BuildEnvironment | undefined>) {
-  const xs = envs.filter(isDefined);
+export function mergeCodeBuildOptions(...opts: Array<CodeBuildProjectOptions | undefined>) {
+  const xs = [{}, ...opts.filter(isDefined)];
+  while (xs.length > 1) {
+    const [a, b] = xs.splice(xs.length - 2, 2);
+    xs.push(merge2(a, b));
+  }
+  return xs[0];
 
-  xs.unshift(env);
+  function merge2(a: CodeBuildProjectOptions, b: CodeBuildProjectOptions): CodeBuildProjectOptions {
+    return {
+      buildEnvironment: mergeBuildEnvironments(a.buildEnvironment, b.buildEnvironment),
+      rolePolicyStatements: definedArray([...a.rolePolicyStatements ?? [], ...b.rolePolicyStatements ?? []]),
+      securityGroups: definedArray([...a.securityGroups ?? [], ...b.securityGroups ?? []]),
+    };
+  }
+}
+
+export function mergeBuildEnvironments(...envs: Array<codebuild.BuildEnvironment | undefined>) {
+  const xs = [{}, ...envs.filter(isDefined)];
+
   while (xs.length > 1) {
     const [a, b] = xs.splice(xs.length - 2, 2);
     xs.push(merge2(a, b));
@@ -298,4 +302,8 @@ function cbEnv(xs: Record<string, string | undefined>): Record<string, codebuild
   return mkdict(Object.entries(xs)
     .filter(([, v]) => v !== undefined)
     .map(([k, v]) => [k, { value: v }] as const));
+}
+
+function definedArray<A>(xs: A[]): A[] | undefined {
+  return xs.length > 0 ? xs : undefined;
 }

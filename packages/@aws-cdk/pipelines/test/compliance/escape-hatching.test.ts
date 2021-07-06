@@ -1,9 +1,10 @@
-import { objectLike } from '@aws-cdk/assert-internal';
+import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
-import { Stack } from '@aws-cdk/core';
+import * as cpa from '@aws-cdk/aws-codepipeline-actions';
+import { SecretValue, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
-import { behavior, PIPELINE_ENV, TestApp, TestGitHubAction } from '../testhelpers';
+import { behavior, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, TestApp, TestGitHubAction } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -123,6 +124,31 @@ describe('with Source and Build stages in existing Pipeline', () => {
           objectLike({ Name: 'UpdatePipeline' }),
         ],
       });
+    });
+  });
+});
+
+behavior('can add another action to an existing stage', (suite) => {
+  suite.legacy(() => {
+    // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    pipeline.stage('Source').addAction(new cpa.GitHubSourceAction({
+      actionName: 'GitHub2',
+      oauthToken: SecretValue.plainText('oops'),
+      output: new cp.Artifact(),
+      owner: 'OWNER',
+      repo: 'REPO',
+    }));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: arrayWith({
+        Name: 'Source',
+        Actions: [
+          objectLike({ Name: 'GitHub' }),
+          objectLike({ Name: 'GitHub2' }),
+        ],
+      }),
     });
   });
 });

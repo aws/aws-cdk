@@ -100,6 +100,9 @@ behavior('user can request manual change set approvals', (suite) => {
       }),
     });
   });
+
+  // No change set approvals in Modern API for now.
+  suite.doesNotApply.modern();
 });
 
 behavior('user can request extra runorder space between prepare and deploy', (suite) => {
@@ -135,6 +138,9 @@ behavior('user can request extra runorder space between prepare and deploy', (su
       }),
     });
   });
+
+  // No change set approvals in Modern API for now.
+  suite.doesNotApply.modern();
 });
 
 behavior('user can request both manual change set approval and extraRunOrderSpace', (suite) => {
@@ -167,4 +173,7 @@ behavior('user can request both manual change set approval and extraRunOrderSpac
       }),
     });
   });
+
+  // No change set approvals in Modern API for now.
+  suite.doesNotApply.modern();
 });

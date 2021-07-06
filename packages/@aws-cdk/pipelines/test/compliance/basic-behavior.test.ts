@@ -3,9 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { arrayWith, Capture, objectLike, stringLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
-import * as cp from '@aws-cdk/aws-codepipeline';
-import * as cpa from '@aws-cdk/aws-codepipeline-actions';
-import { SecretValue, Stack, Stage, StageProps, Tags } from '@aws-cdk/core';
+import { Stack, Stage, StageProps, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { behavior, LegacyTestGitHubNpmPipeline, OneStackApp, BucketStack, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';
@@ -173,31 +171,6 @@ behavior('changing CLI version leads to a different pipeline structure (restarti
 
     expect(JSON.stringify(structure2.capturedValue)).not.toEqual(JSON.stringify(structure3.capturedValue));
   }
-});
-
-behavior('escape hatching: can add another action to an existing stage', (suite) => {
-  suite.legacy(() => {
-    // WHEN
-    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-    pipeline.stage('Source').addAction(new cpa.GitHubSourceAction({
-      actionName: 'GitHub2',
-      oauthToken: SecretValue.plainText('oops'),
-      output: new cp.Artifact(),
-      owner: 'OWNER',
-      repo: 'REPO',
-    }));
-
-    // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
-        Name: 'Source',
-        Actions: [
-          objectLike({ Name: 'GitHub' }),
-          objectLike({ Name: 'GitHub2' }),
-        ],
-      }),
-    });
-  });
 });
 
 behavior('tags get reflected in pipeline', (suite) => {

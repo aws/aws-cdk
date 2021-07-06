@@ -310,11 +310,15 @@ behavior('CodeBuild: environment variables specified in multiple places are corr
       ],
       commands: ['synth'],
       engine: new cdkp.CodePipelineEngine({
-        synthEnvironment: {
-          environmentVariables: {
-            INNER_VAR: { value: 'InnerValue' },
+        codeBuild: {
+          synth: {
+            buildEnvironment: {
+              environmentVariables: {
+                INNER_VAR: { value: 'InnerValue' },
+              },
+              privileged: true,
+            },
           },
-          privileged: true,
         },
       }),
     });
@@ -642,8 +646,12 @@ behavior('Pipeline action contains a hash that changes as the buildspec changes'
     const hash3 = modernSynthWithAction(() => ({
       commands: ['asdf'],
       engine: new cdkp.CodePipelineEngine({
-        synthEnvironment: {
-          computeType: cbuild.ComputeType.LARGE,
+        codeBuild: {
+          synth: {
+            buildEnvironment: {
+              computeType: cbuild.ComputeType.LARGE,
+            },
+          },
         },
       }),
     }));
@@ -793,10 +801,14 @@ behavior('Synth can reference an imported ECR repo', (suite) => {
   suite.modern(() => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       engine: new cdkp.CodePipelineEngine({
-        synthEnvironment: {
-          buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
-            ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),
-          ),
+        codeBuild: {
+          synth: {
+            buildEnvironment: {
+              buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
+                ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),
+              ),
+            },
+          },
         },
       }),
     });

@@ -14,7 +14,7 @@ import { appOf, assemblyBuilderOf, embeddedAsmPath } from '../private/construct-
 import { toPosixPath } from '../private/fs';
 import { enumerate, flatten, maybeSuffix } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { CodeBuildFactory, mergeBuildEnvironments, stackVariableNamespace } from './_codebuild-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions, stackVariableNamespace } from './_codebuild-factory';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
@@ -39,26 +39,77 @@ export interface CodePipelineEngineProps {
   readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
-   * Default image for all CodeBuild projects
+   * Customize the CodeBuild projects created for this pipeline
    *
-   * @default - non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
+   * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
    */
-  readonly defaultCodeBuildEnvironment?: cb.BuildEnvironment;
+  readonly codeBuild?: CodeBuildOptions;
+}
+
+/**
+ * Options for customizing CodeBuild projects created by this engine
+ */
+export interface CodeBuildOptions {
+  /**
+   * Settings to apply to all CodeBuild projects
+   *
+   * @default - Default settings
+   */
+  readonly defaults?: CodeBuildProjectOptions;
 
   /**
-   * CodeBuild environment for the synth job
+   * Settings to apply to the Synth project
    *
-   * Will be combined with settings from `defaultCodeBuildEnvironment`.
-   *
-   * @default - No additional settings, use everything from `defaultCodeBuildEnvironment`.
+   * @default - Default settings
    */
-  readonly synthEnvironment?: cb.BuildEnvironment;
+  readonly synth?: CodeBuildProjectOptions;
+
+  /**
+   * Settings to apply to the asset publishing projects
+   *
+   * @default - Default settings
+   */
+  readonly assetPublishing?: CodeBuildProjectOptions;
+
+  /**
+   * Settings to apply to the selfmutation project
+   *
+   * @default - Default settings
+   */
+  readonly selfMutation?: CodeBuildProjectOptions;
+}
+
+/**
+ * Options for customizing a single CodeBuild project
+ */
+export interface CodeBuildProjectOptions {
+  /**
+   * The build environment
+   *
+   * @default - Non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
+   */
+  readonly buildEnvironment?: cb.BuildEnvironment;
+
+  /**
+   * Policy statements to add to role
+   *
+   * @default - No policy statements added to CodeBuild Project Role
+   */
+  readonly rolePolicyStatements?: iam.PolicyStatement[];
+
+  /**
+   * Which security group(s) to associate with the project network interfaces.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - Security group will be automatically created.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 export class CodePipelineEngine implements IDeploymentEngine {
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
-  private readonly defaultCodeBuildEnv: cb.BuildEnvironment;
   private _buildProject?: cb.IProject;
   private readonly selfMutation: boolean;
   private _myCxAsmRoot?: string;
@@ -71,10 +122,6 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
   constructor(private readonly props: CodePipelineEngineProps={}) {
     this.selfMutation = this.props.selfMutation ?? true;
-    this.defaultCodeBuildEnv = mergeBuildEnvironments({
-      buildImage: cb.LinuxBuildImage.STANDARD_5_0,
-      computeType: cb.ComputeType.SMALL,
-    }, props.defaultCodeBuildEnvironment);
   }
 
   public buildDeployment(options: BuildDeploymentOptions): void {
@@ -225,6 +272,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
         artifacts: this.artifacts,
         fallbackArtifact: this._fallbackArtifact,
         queries: options.queries,
+        codeBuildProjectOptions: this.codeBuildOptionsFor(this.nodeTypeFromNode(options.node)),
       });
     }
 
@@ -237,7 +285,6 @@ export class CodePipelineEngine implements IDeploymentEngine {
         // If this CodeBuild job is before the self-update stage, we need to include a hash of
         // its definition in the pipeline (to force the pipeline to restart if the definition changes)
         includeBuildHashInPipeline: options.beforeSelfUpdate,
-        buildEnvironment: this.codeBuildEnvironmentFromNode(options.node),
       }).produce({
         actionName: actionName(options.node, options.sharedParent),
         runOrder: options.runOrder,
@@ -245,6 +292,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
         scope: this.scope,
         fallbackArtifact: this._fallbackArtifact,
         queries: options.queries,
+        codeBuildProjectOptions: this.codeBuildOptionsFor(this.nodeTypeFromNode(options.node)),
       });
     }
 
@@ -314,10 +362,9 @@ export class CodePipelineEngine implements IDeploymentEngine {
       subnetSelection: this.props.subnetSelection,
       projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
 
-      buildEnvironment: mergeBuildEnvironments(
-        this.defaultCodeBuildEnv,
-        this.props.pipelineUsesAssets ? { privileged: true } : {},
-      ),
+      buildEnvironment: {
+        privileged: this.props.pipelineUsesAssets ? true : undefined,
+      },
 
       // In case the CLI version changes
       includeBuildHashInPipeline: true,
@@ -357,6 +404,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       scope: this.scope,
       fallbackArtifact: this._fallbackArtifact,
       queries: options.queries,
+      codeBuildProjectOptions: this.codeBuildOptionsFor(CodeBuildProjectType.SELF_MUTATE),
     }).action;
   }
 
@@ -371,12 +419,10 @@ export class CodePipelineEngine implements IDeploymentEngine {
     return new CodeBuildStep(options.node.id, {
       vpc: this.props.vpc,
       subnetSelection: this.props.subnetSelection,
-      projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
 
-      buildEnvironment: mergeBuildEnvironments(
-        this.defaultCodeBuildEnv,
-        { privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE) },
-      ),
+      buildEnvironment: {
+        privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
+      },
 
       // In case the CLI version changes
       includeBuildHashInPipeline: true,
@@ -400,17 +446,35 @@ export class CodePipelineEngine implements IDeploymentEngine {
       scope: this.scope,
       fallbackArtifact: this._fallbackArtifact,
       queries: options.queries,
+      codeBuildProjectOptions: this.codeBuildOptionsFor(CodeBuildProjectType.SELF_MUTATE),
     }).action;
   }
 
+  private nodeTypeFromNode(node: AGraphNode) {
+    const isSynthStep = node.data?.type === 'step' && !!node.data?.isBuildStep;
+    return isSynthStep ? CodeBuildProjectType.SYNTH : CodeBuildProjectType.STEP;
+  }
 
-  private codeBuildEnvironmentFromNode(node: AGraphNode): cb.BuildEnvironment | undefined {
-    const isBuildStep = node.data?.type === 'step' && !!node.data?.isBuildStep;
-    if (isBuildStep) {
-      return mergeBuildEnvironments(this.defaultCodeBuildEnv, this.props.synthEnvironment ?? {});
-    }
+  private codeBuildOptionsFor(nodeType: CodeBuildProjectType): CodeBuildProjectOptions | undefined {
+    const defaultOptions: CodeBuildProjectOptions = {
+      buildEnvironment: {
+        buildImage: cb.LinuxBuildImage.STANDARD_5_0,
+        computeType: cb.ComputeType.SMALL,
+      },
+    };
 
-    return this.defaultCodeBuildEnv;
+    const optionsForType = {
+      [CodeBuildProjectType.SYNTH]: this.props.codeBuild?.synth,
+      [CodeBuildProjectType.ASSETS]: this.props.codeBuild?.assetPublishing,
+      [CodeBuildProjectType.SELF_MUTATE]: this.props.codeBuild?.selfMutation,
+      [CodeBuildProjectType.STEP]: {},
+    };
+
+    return mergeCodeBuildOptions(
+      defaultOptions,
+      this.props.codeBuild?.defaults,
+      optionsForType[nodeType],
+    );
   }
 
   private roleFromPlaceholderArn(scope: Construct, region: string | undefined,
@@ -461,6 +525,13 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
     return relativeConfigPath;
   }
+}
+
+enum CodeBuildProjectType {
+  SYNTH,
+  ASSETS,
+  SELF_MUTATE,
+  STEP,
 }
 
 interface MakeActionOptions {

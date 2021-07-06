@@ -137,14 +137,28 @@ behavior('selfmutation feature can be turned off', (suite) => {
 behavior('can control fix/CLI version used in pipeline selfupdate', (suite) => {
   suite.legacy(() => {
     // WHEN
-    const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
-    new LegacyTestGitHubNpmPipeline(stack2, 'Cdk2', {
+    new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       pipelineName: 'vpipe',
       cdkCliVersion: '1.2.3',
     });
 
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      engine: new CodePipelineEngine({
+        pipelineName: 'vpipe',
+        cdkCliVersion: '1.2.3',
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     // THEN
-    expect(stack2).toHaveResourceLike('AWS::CodeBuild::Project', {
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Name: 'vpipe-selfupdate',
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
@@ -156,7 +170,7 @@ behavior('can control fix/CLI version used in pipeline selfupdate', (suite) => {
         })),
       },
     });
-  });
+  }
 });
 
 behavior('Pipeline stack itself can use assets (has implications for selfupdate)', (suite) => {
@@ -174,7 +188,7 @@ behavior('Pipeline stack itself can use assets (has implications for selfupdate)
     });
   });
 
-  suite.legacy(() => {
+  suite.modern(() => {
     // WHEN
     new ModernTestGitHubNpmPipeline(pipelineStack, 'PrivilegedPipeline', {
       engine: new CodePipelineEngine({

@@ -23,6 +23,9 @@ afterEach(() => {
 });
 
 behavior('can add manual approval after app', (suite) => {
+  // No need to be backwards compatible
+  suite.doesNotApply.legacy();
+
   suite.modern(() => {
     // WHEN
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
@@ -487,9 +490,6 @@ behavior('can run shell script actions in a VPC', (suite) => {
       post: [new cdkp.CodeBuildStep('VpcAction', {
         commands: ['set -eu', 'true'],
         vpc,
-
-        // FIXME: This could/should be inherited from the pipeline, but it isn't
-        buildEnvironment: { buildImage: codebuild.LinuxBuildImage.STANDARD_5_0 },
       })],
     });
 
@@ -618,8 +618,12 @@ behavior('can run scripts with specified BuildEnvironment', (suite) => {
     // Run all Build jobs with the given image
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       engine: new cdkp.CodePipelineEngine({
-        defaultCodeBuildEnvironment: {
-          buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
+        codeBuild: {
+          defaults: {
+            buildEnvironment: {
+              buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
+            },
+          },
         },
       }),
     });
