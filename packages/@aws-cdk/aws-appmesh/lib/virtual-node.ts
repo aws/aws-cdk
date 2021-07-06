@@ -267,5 +267,6 @@ function renderServiceDiscovery(config?: ServiceDiscoveryConfig): CfnVirtualNode
     ? {
       dns: config?.dns,
       awsCloudMap: config?.cloudmap,
-    } : undefined;
+    }
+    : undefined;
 }
