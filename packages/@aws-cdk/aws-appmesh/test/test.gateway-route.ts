@@ -127,7 +127,7 @@ export = {
       test.throws(() => appmesh.GatewayRouteSpec.http({
         routeTarget: virtualService,
         match: {
-          path: appmesh.HttpRoutePathMatch.prefix('wrong'),
+          path: appmesh.HttpRoutePathMatch.startingWith('wrong'),
         },
       }).bind(stack),
       /Prefix Path for the match must start with \'\/\', got: wrong/);
@@ -321,7 +321,7 @@ export = {
             routeSpec: appmesh.GatewayRouteSpec.http2({
               routeTarget: virtualService,
               match: {
-                path: appmesh.HttpRoutePathMatch.prefix('/'),
+                path: appmesh.HttpRoutePathMatch.startingWith('/'),
                 pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/rewrittenPath'),
               },
             }),
@@ -481,7 +481,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.grpc({
             routeTarget: virtualService,
             match: {
-              hostname: appmesh.GatewayRouteHostnameMatch.suffix('.example.com'),
+              hostname: appmesh.GatewayRouteHostnameMatch.endingWith('.example.com'),
             },
           }),
           gatewayRouteName: 'gateway-grpc-route',
@@ -888,7 +888,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              path: appmesh.HttpRoutePathMatch.exact('exact'),
+              path: appmesh.HttpRoutePathMatch.exact('/exact'),
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -912,7 +912,7 @@ export = {
             HttpRoute: {
               Match: {
                 Path: {
-                  Exact: 'exact',
+                  Exact: '/exact',
                 },
               },
             },

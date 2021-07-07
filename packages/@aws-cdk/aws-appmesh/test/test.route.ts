@@ -237,7 +237,7 @@ export = {
             },
           ],
           match: {
-            path: appmesh.HttpRoutePathMatch.prefix('/node'),
+            path: appmesh.HttpRoutePathMatch.startingWith('/node'),
           },
           timeout: {
             idle: cdk.Duration.seconds(10),
@@ -645,7 +645,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.prefix('/'),
+          path: appmesh.HttpRoutePathMatch.startingWith('/'),
           headers: [
             appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
             appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
@@ -759,7 +759,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.prefix('/'),
+          path: appmesh.HttpRoutePathMatch.startingWith('/'),
           method: appmesh.HttpRouteMethod.GET,
         },
       }),
@@ -801,7 +801,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.prefix('/'),
+          path: appmesh.HttpRoutePathMatch.startingWith('/'),
           protocol: appmesh.HttpRouteProtocol.HTTP,
         },
       }),
@@ -959,7 +959,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.exact('exact'),
+          path: appmesh.HttpRoutePathMatch.exact('/exact'),
         },
       }),
     });
@@ -981,7 +981,7 @@ export = {
         HttpRoute: {
           Match: {
             Path: {
-              Exact: 'exact',
+              Exact: '/exact',
             },
           },
         },
@@ -1160,7 +1160,7 @@ export = {
           },
         }),
       });
-    }, /If you specify a method name, you must also specify a serviceName/);
+    }, /If you specify a method name, you must also specify a service Name/);
 
     test.done();
   },

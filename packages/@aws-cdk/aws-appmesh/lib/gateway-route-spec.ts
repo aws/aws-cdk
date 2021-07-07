@@ -2,7 +2,7 @@ import { CfnGatewayRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
-import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata } from './private/utils';
+import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata, validateStartWith } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
@@ -41,7 +41,7 @@ export abstract class GatewayRouteHostnameMatch {
    *
    * @param suffix The specified ending characters of the host name to match on
    */
-  public static suffix(suffix: string): GatewayRouteHostnameMatch {
+  public static endingWith(suffix: string): GatewayRouteHostnameMatch {
     return new GatewayRouteHostnameMatchImpl({
       suffix: suffix,
     });
@@ -70,9 +70,9 @@ class GatewayRouteHostnameMatchImpl extends GatewayRouteHostnameMatch {
  */
 export interface HttpGatewayRouteMatch {
   /**
-   * Either path or prefix can be selected
+   * Specify how to match requests based on the 'path' part of their URL.
    *
-   * @default - prefix match on '/'
+   * @default - matches requests with any path
    */
   readonly path?: HttpRoutePathMatch;
 
@@ -117,7 +117,7 @@ export interface HttpGatewayRouteMatch {
   /**
    * The in-coming request's path to be rewritten when the request is matched.
    *
-   * @default - matched prefix is rewritten to '/'.
+   * @default - the matched part of the path (which is all of it by default) is rewritten to '/'
    */
   readonly pathRewrite?: HttpGatewayRoutePathRewrite;
 }
@@ -173,7 +173,7 @@ export interface HttpGatewayRoutePathRewriteConfig {
    *
    * @default - rewrite prefix to '/'.
    */
-  readonly prefix?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
+  readonly prefixPath?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
 }
 
 /**
@@ -181,9 +181,10 @@ export interface HttpGatewayRoutePathRewriteConfig {
  */
 export abstract class HttpGatewayRoutePathRewrite {
   /**
-   * The path to rewrite.
+   * Re-write the matched part of the path to exactly the provided value.
+   * The value must start with "/".
    *
-   * @param exact The exact path to rewrite.
+   * @param exact the value to substitute for the matched part of the path of the gateway request URL
    */
   public static exact(exact: string): HttpGatewayRoutePathRewrite {
     return new HttpGatewayRoutePathRewriteImpl(exact);
@@ -234,7 +235,7 @@ class HttpGatewayRoutePrefixRewriteImpl extends HttpGatewayRoutePathRewrite {
 
   bind(_scope: Construct): HttpGatewayRoutePathRewriteConfig {
     return {
-      prefix: this.prefixRewrite,
+      prefixPath: this.prefixRewrite,
     };
   }
 }
@@ -357,33 +358,31 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
     const pathRewriteConfig = this.match?.pathRewrite?.bind(scope);
-    const pathMatchConfig = this.match?.path?.bind(scope).requestMatch;
+    const pathMatchConfig = this.match?.path?.bind(scope);
     const defaultTargetHostname = this.match?.rewriteRequestHostname;
 
     // Set prefix Match to '/' if none on match properties are defined.
-    const prefixMatch = areMatchPropertiesUndefined(this.match)
+    const prefixPathMatch = areMatchPropertiesUndefined(this.match)
       ? '/'
-      : pathMatchConfig?.prefix;
-    const prefixPathRewrite = pathRewriteConfig?.prefix;
+      : pathMatchConfig?.prefixMatch;
+    const pathMatch = pathMatchConfig?.pathMatch;
+    const prefixPathRewrite = pathRewriteConfig?.prefixPath;
     const pathRewrite = pathRewriteConfig?.path;
 
-    if (prefixMatch && prefixMatch[0] !== '/') {
-      throw new Error(`Prefix Path for the match must start with \'/\', got: ${prefixMatch}`);
-    }
-    if (prefixPathRewrite?.value && prefixPathRewrite.value[0] !== '/') {
-      throw new Error(`Prefix Path for the rewrite must start with \'/\', got: ${prefixPathRewrite.value}`);
-    }
-    if (prefixPathRewrite && !prefixMatch) {
+    // Checks if the specified values are starting with '/'.
+    validateStartWith(prefixPathMatch, pathMatch?.exact, prefixPathRewrite?.value, pathRewrite?.exact);
+
+    if (prefixPathRewrite && !prefixPathMatch) {
       throw new Error('HTTP Gateway Route prefix match must be provided if a prefix rewrite was provided.');
     }
-    if (pathRewrite && prefixMatch) {
+    if (pathRewrite && prefixPathMatch) {
       throw new Error('HTTP Gateway Route prefix match and path rewrite cannot both be provided.');
     }
 
     const httpConfig: CfnGatewayRoute.HttpGatewayRouteProperty = {
       match: {
-        prefix: prefixMatch,
-        path: pathMatchConfig?.path,
+        prefix: prefixPathMatch,
+        path: pathMatch,
         hostname: this.match?.hostname?.bind(scope).hostnameMatch,
         method: this.match?.method,
         headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),

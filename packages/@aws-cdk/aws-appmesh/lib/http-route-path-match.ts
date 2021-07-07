@@ -5,13 +5,22 @@ import { CfnRoute } from './appmesh.generated';
 import { Construct } from '@aws-cdk/core';
 
 /**
- * Configuration for HTTP route match
+ * Path and Prefix properties for HTTP route match.
  */
 export interface HttpRoutePathMatchConfig {
   /**
-   * Route CFN configuration for HTTP route match.
+   * Route CFN configuration for path match.
+   *
+   * @default - no path match.
    */
-  readonly requestMatch: CfnRoute.HttpRouteMatchProperty;
+  readonly pathMatch?: CfnRoute.HttpPathMatchProperty;
+
+  /**
+   * String defining the prefix match.
+   *
+   * @default - no prefix match
+   */
+  readonly prefixMatch?: string;
 }
 
 /**
@@ -42,7 +51,7 @@ export abstract class HttpRoutePathMatch {
    *  You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
    *  and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
    */
-  public static prefix(prefix: string): HttpRoutePathMatch {
+  public static startingWith(prefix: string): HttpRoutePathMatch {
     return new HttpRoutePrefixMatchImpl(prefix);
   }
 
@@ -61,9 +70,7 @@ class HttpRoutePrefixMatchImpl extends HttpRoutePathMatch {
 
   bind(_scope: Construct): HttpRoutePathMatchConfig {
     return {
-      requestMatch: {
-        prefix: this.prefix,
-      },
+      prefixMatch: this.prefix,
     };
   }
 }
@@ -77,9 +84,7 @@ class HttpRoutePathSpecificMatch extends HttpRoutePathMatch {
 
   bind(_scope: Construct): HttpRoutePathMatchConfig {
     return {
-      requestMatch: {
-        path: this.match,
-      },
+      pathMatch: this.match,
     };
   }
 }

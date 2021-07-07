@@ -55,7 +55,7 @@ router.addRoute('route-1', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.prefix('/'),
+      path: appmesh.HttpRoutePathMatch.startingWith('/'),
     },
     timeout: {
       idle: cdk.Duration.seconds(10),
@@ -158,7 +158,7 @@ router.addRoute('route-2', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.prefix('/path2'),
+      path: appmesh.HttpRoutePathMatch.startingWith('/path2'),
     },
     timeout: {
       idle: cdk.Duration.seconds(11),
@@ -202,7 +202,7 @@ router.addRoute('route-matching', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [{ virtualNode: node3 }],
     match: {
-      path: appmesh.HttpRoutePathMatch.prefix('/'),
+      path: appmesh.HttpRoutePathMatch.startingWith('/'),
       method: appmesh.HttpRouteMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
@@ -345,7 +345,7 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      path: appmesh.HttpRoutePathMatch.prefix('/'),
+      path: appmesh.HttpRoutePathMatch.startingWith('/'),
       hostname: appmesh.GatewayRouteHostnameMatch.exact('example.com'),
       method: appmesh.HttpRouteMethod.POST,
       headers: [

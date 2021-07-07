@@ -132,3 +132,36 @@ export function validateGprcMatch(match: GrpcRouteMatch | GrpcGatewayRouteMatch)
     throw new Error('At least one gRPC match property must be provided.');
   }
 }
+
+/**
+ * This is the helper method to validate if the path starts with '/'.
+ */
+export function validateStartWith(prefixPathMatch?: string, exactPathMatch?: string,
+  customPrefixRewrite?: string, exactPathRewrite?: string) {
+
+  const pathMatchList = new Map([
+    ['Prefix', prefixPathMatch],
+    ['Exact', exactPathMatch],
+  ]);
+
+  const pathRewriteList = new Map([
+    ['Prefix', customPrefixRewrite],
+    ['Exact', exactPathRewrite],
+  ]);
+
+  for (const key of pathMatchList.keys()) {
+    let value = pathMatchList.get(key);
+
+    if (value && value[0] !== '/') {
+      throw new Error(`${key} Path for the match must start with \'/\', got: ${value}`);
+    }
+  }
+
+  for (const key of pathRewriteList.keys()) {
+    let value = pathRewriteList.get(key);
+
+    if (value && value[0] !== '/') {
+      throw new Error(`${key} Path for the rewrite must start with \'/\', got: ${value}`);
+    }
+  }
+}

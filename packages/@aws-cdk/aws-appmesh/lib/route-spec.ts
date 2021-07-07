@@ -3,7 +3,7 @@ import { CfnRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
-import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata } from './private/utils';
+import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata, validateStartWith } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
@@ -34,9 +34,9 @@ export interface WeightedTarget {
  */
 export interface HttpRouteMatch {
   /**
-   * Either path or prefix can be selected
+   * Specifies how is the request matched based on the path part of its URL.
    *
-   * @default - prefix match on '/'
+   * @default - matches requests with all paths
    */
   readonly path?: HttpRoutePathMatch;
 
@@ -443,27 +443,27 @@ class HttpRouteSpec extends RouteSpec {
   }
 
   public bind(scope: Construct): RouteSpecConfig {
-    const pathMatchConfig = this.match?.path?.bind(scope).requestMatch;
+    const pathMatchConfig = this.match?.path?.bind(scope);
 
     // Set prefix to '/' if none on match properties are defined.
-    const prefix = areMatchPropertiesUndefined(this.match)
+    const prefixPathMatch = areMatchPropertiesUndefined(this.match)
       ? '/'
-      : pathMatchConfig?.prefix;
+      : pathMatchConfig?.prefixMatch;
+    const pathMatch = pathMatchConfig?.pathMatch;
 
-    if (prefix && prefix[0] != '/') {
-      throw new Error(`Prefix Path must start with \'/\', got: ${prefix}`);
-    }
+    // Checks if the specified values are starting with '/'.
+    validateStartWith(prefixPathMatch, pathMatch?.exact);
 
     const httpConfig: CfnRoute.HttpRouteProperty = {
       action: {
         weightedTargets: renderWeightedTargets(this.weightedTargets),
       },
       match: {
-        prefix: prefix,
+        prefix: prefixPathMatch,
         headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
         method: this.match?.method,
         scheme: this.match?.protocol,
-        path: pathMatchConfig?.path,
+        path: pathMatch,
         queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
       },
       timeout: renderTimeout(this.timeout),
@@ -562,7 +562,7 @@ class GrpcRouteSpec extends RouteSpec {
     validateMetadata(metadata);
 
     if (methodName && !serviceName) {
-      throw new Error('If you specify a method name, you must also specify a serviceName.');
+      throw new Error('If you specify a method name, you must also specify a service Name.');
     }
 
 
