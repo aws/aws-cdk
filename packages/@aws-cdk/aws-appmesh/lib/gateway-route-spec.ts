@@ -12,7 +12,7 @@ import { IVirtualService } from './virtual-service';
 import { Construct } from '@aws-cdk/core';
 
 /**
- * Configuration for gRPC gateway route host name match.
+ * Configuration for gateway route host name match.
  */
 export interface GatewayRouteHostnameMatchConfig {
   /**
