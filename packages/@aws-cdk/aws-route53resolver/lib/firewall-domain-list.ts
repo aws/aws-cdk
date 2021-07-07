@@ -45,8 +45,8 @@ export abstract class FirewallDomains {
    */
   public static fromList(list: string[]): FirewallDomains {
     for (const domain of list) {
-      if (!/^[\w-.]{1,128}$/.test(domain)) {
-        throw new Error(`Invalid domain: ${domain}. The name must have 1-128 characters. Valid characters: A-Z, a-z, 0-9, _, -, .`);
+      if (!/^[\w-.]+$/.test(domain)) {
+        throw new Error(`Invalid domain: ${domain}. Valid characters: A-Z, a-z, 0-9, _, -, .`);
       }
     }
 
@@ -209,6 +209,10 @@ export class FirewallDomainList extends Resource implements IFirewallDomainList 
 
   constructor(scope: Construct, id: string, props: FirewallDomainListProps) {
     super(scope, id);
+
+    if (props.name && !Token.isUnresolved(props.name) && !/^[\w-.]{1,128}$/.test(props.name)) {
+      throw new Error(`Invalid domain list name: ${props.name}. The name must have 1-128 characters. Valid characters: A-Z, a-z, 0-9, _, -, .`);
+    }
 
     const domainsConfig = props.domains.bind(this);
     const domainList = new CfnFirewallDomainList(this, 'Resource', {
