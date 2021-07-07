@@ -13,14 +13,14 @@ export interface HttpRoutePathMatchConfig {
    *
    * @default - no path match.
    */
-  readonly pathMatch?: CfnRoute.HttpPathMatchProperty;
+  readonly wholePathMatch?: CfnRoute.HttpPathMatchProperty;
 
   /**
    * String defining the prefix match.
    *
    * @default - no prefix match
    */
-  readonly prefixMatch?: string;
+  readonly prefixPathMatch?: string;
 }
 
 /**
@@ -70,7 +70,7 @@ class HttpRoutePrefixMatchImpl extends HttpRoutePathMatch {
 
   bind(_scope: Construct): HttpRoutePathMatchConfig {
     return {
-      prefixMatch: this.prefix,
+      prefixPathMatch: this.prefix,
     };
   }
 }
@@ -84,7 +84,7 @@ class HttpRoutePathSpecificMatch extends HttpRoutePathMatch {
 
   bind(_scope: Construct): HttpRoutePathMatchConfig {
     return {
-      pathMatch: this.match,
+      wholePathMatch: this.match,
     };
   }
 }
@@ -98,28 +98,28 @@ export interface HttpGatewayRoutePathMatchConfig {
    *
    * @default - no path match.
    */
-  readonly pathMatch?: CfnGatewayRoute.HttpPathMatchProperty;
+  readonly wholePathMatch?: CfnGatewayRoute.HttpPathMatchProperty;
 
   /**
    * String defining the HTTP prefix match.
    *
    * @default - matches requests with any path
    */
-  readonly prefixMatch?: string;
+  readonly prefixPathMatch?: string;
 
   /**
    * Gateway route CFN configuration for HTTP path rewrite.
    *
    * @default - no path rewrite
    */
-  readonly pathRewrite?: CfnGatewayRoute.HttpGatewayRoutePathRewriteProperty;
+  readonly wholePathRewrite?: CfnGatewayRoute.HttpGatewayRoutePathRewriteProperty;
 
   /**
    * Gateway route CFN configuration for HTTP prefix rewrite.
    *
    * @default - rewrite prefix to '/'.
    */
-  readonly prefixRewrite?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
+  readonly prefixPathRewrite?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
 }
 
 /**
@@ -170,8 +170,8 @@ class HttpGatewayRoutePrefixMatchImpl extends HttpGatewayRoutePathMatch {
 
   bind(scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
-      prefixMatch: this.prefixPathMatch,
-      prefixRewrite: this.prefixPathRewrite?.bind(scope).prefixPath,
+      prefixPathMatch: this.prefixPathMatch,
+      prefixPathRewrite: this.prefixPathRewrite?.bind(scope).prefixPathPath,
     };
   }
 }
@@ -186,8 +186,8 @@ class HttpGatewayRoutePathSpecificMatch extends HttpGatewayRoutePathMatch {
 
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
-      pathMatch: this.match,
-      pathRewrite: {
+      wholePathMatch: this.match,
+      wholePathRewrite: {
         exact: this.exactPathRewrite,
       },
     };
@@ -203,7 +203,7 @@ export interface HttpGatewayRoutePrefixPathRewriteConfig {
    *
    * @default - rewrite prefix to '/'.
    */
-  readonly prefixPath?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
+  readonly prefixPathPath?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
 }
 
 /**
@@ -241,7 +241,7 @@ class HttpGatewayRoutePrefixPathRewriteImpl extends HttpGatewayRoutePrefixPathRe
 
   bind(_scope: Construct): HttpGatewayRoutePrefixPathRewriteConfig {
     return {
-      prefixPath: this.prefixRewrite,
+      prefixPathPath: this.prefixRewrite,
     };
   }
 }

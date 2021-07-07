@@ -155,9 +155,10 @@ export interface GrpcGatewayRouteMatch {
  */
 export interface HttpGatewayRouteSpecOptions {
   /**
-   * The criterion for determining a request match for this GatewayRoute
+   * The criterion for determining a request match for this GatewayRoute.
+   * When path match is defined, this may optionally determine the path rewrite configuration
    *
-   * @default - matches on '/'
+   * @default - matches on '/' and auto-rewrites to '/'
    */
   readonly match?: HttpGatewayRouteMatch;
 
@@ -267,24 +268,34 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
-    const pathMatchConfig = this.match?.path?.bind(scope);
+    const matchConfig = this.match?.path?.bind(scope);
     const defaultTargetHostname = this.match?.rewriteRequestHostname;
 
     // Set prefix Match to '/' if none on match properties are defined.
     const prefixPathMatch = areMatchPropertiesUndefined(this.match)
       ? '/'
-      : pathMatchConfig?.prefixMatch;
-    const pathMatch = pathMatchConfig?.pathMatch;
-    const prefixPathRewrite = pathMatchConfig?.prefixRewrite;
-    const pathRewrite = pathMatchConfig?.pathRewrite;
+      : matchConfig?.prefixPathMatch;
+    const wholePathMatch = matchConfig?.wholePathMatch;
+    const prefixPathRewrite = matchConfig?.prefixPathRewrite;
+    const wholePathRewrite = matchConfig?.wholePathRewrite;
 
-    // Checks if the specified values are starting with '/'.
-    validateStartWith(prefixPathMatch, pathMatch?.exact, prefixPathRewrite?.value, pathRewrite?.exact);
+    if (prefixPathMatch && prefixPathMatch[0] !== '/') {
+      throw new Error(`Prefix Path for the match must start with \'/\', got: ${prefixPathMatch}`);
+    }
+    if (wholePathMatch?.exact && wholePathMatch.exact[0] !== '/') {
+      throw new Error(`Exact Path for the match must start with \'/\', got: ${wholePathMatch.exact}`);
+    }
+    if (prefixPathRewrite?.value && prefixPathRewrite.value[0] !== '/') {
+      throw new Error(`Prefix Path for the rewrite must start with \'/\', got: ${prefixPathRewrite.value}`);
+    }
+    if (wholePathRewrite?.exact && wholePathRewrite.exact[0] !== '/') {
+      throw new Error(`Exact Path for the rewrite must start with \'/\', got: ${wholePathRewrite.exact}`);
+    }
 
     const httpConfig: CfnGatewayRoute.HttpGatewayRouteProperty = {
       match: {
         prefix: prefixPathMatch,
-        path: pathMatch,
+        path: wholePathMatch,
         hostname: this.match?.hostname?.bind(scope).hostnameMatch,
         method: this.match?.method,
         headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
@@ -296,24 +307,15 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
             virtualServiceName: this.routeTarget.virtualServiceName,
           },
         },
-        rewrite: defaultTargetHostname === false || (prefixPathRewrite || pathRewrite)
+        rewrite: defaultTargetHostname === false || (prefixPathRewrite || wholePathRewrite)
           ? {
             hostname: defaultTargetHostname === false
               ? {
                 defaultTargetHostname: 'DISABLED',
               }
               : undefined,
-            prefix: prefixPathRewrite
-              ? {
-                defaultPrefix: prefixPathRewrite.defaultPrefix,
-                value: prefixPathRewrite.value,
-              }
-              : undefined,
-            path: pathRewrite
-              ? {
-                exact: pathRewrite.exact,
-              }
-              : undefined,
+            prefix: prefixPathRewrite,
+            path: wholePathRewrite,
           }
           : undefined,
       },
@@ -326,17 +328,13 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
 }
 
 class GrpcGatewayRouteSpec extends GatewayRouteSpec {
-  /**
-   * The criterion for determining a request match for this GatewayRoute.
-   *
-   * @default - no default
-   */
   readonly match: GrpcGatewayRouteMatch;
 
   /**
    * The VirtualService this GatewayRoute directs traffic to
    */
   readonly routeTarget: IVirtualService;
+
   constructor(options: GrpcGatewayRouteSpecOptions) {
     super();
     this.match = options.match;

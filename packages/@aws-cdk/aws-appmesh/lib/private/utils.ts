@@ -103,7 +103,7 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string) : 
 export function areMatchPropertiesUndefined(match: HttpRouteMatch | GrpcRouteMatch | GrpcGatewayRouteMatch | undefined): boolean {
   let isEmpty = true;
   for (const property in match) {
-    if (property) {
+    if (match.hasOwnProperty(property)) {
       isEmpty = false;
       break;
     }
@@ -129,39 +129,6 @@ export function validateMetadata(metadata?: HeaderMatch[]) {
  */
 export function validateGprcMatch(match: GrpcRouteMatch | GrpcGatewayRouteMatch) {
   if (areMatchPropertiesUndefined(match)) {
-    throw new Error('At least one gRPC match property must be provided.');
-  }
-}
-
-/**
- * This is the helper method to validate if the path starts with '/'.
- */
-export function validateStartWith(prefixPathMatch?: string, exactPathMatch?: string,
-  customPrefixRewrite?: string, exactPathRewrite?: string) {
-
-  const pathMatchList = new Map([
-    ['Prefix', prefixPathMatch],
-    ['Exact', exactPathMatch],
-  ]);
-
-  const pathRewriteList = new Map([
-    ['Prefix', customPrefixRewrite],
-    ['Exact', exactPathRewrite],
-  ]);
-
-  for (const key of pathMatchList.keys()) {
-    let value = pathMatchList.get(key);
-
-    if (value && value[0] !== '/') {
-      throw new Error(`${key} Path for the match must start with \'/\', got: ${value}`);
-    }
-  }
-
-  for (const key of pathRewriteList.keys()) {
-    let value = pathRewriteList.get(key);
-
-    if (value && value[0] !== '/') {
-      throw new Error(`${key} Path for the rewrite must start with \'/\', got: ${value}`);
-    }
+    throw new Error('At least one gRPC match property must be provided');
   }
 }
