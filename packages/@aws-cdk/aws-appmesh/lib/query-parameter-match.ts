@@ -9,7 +9,7 @@ import { Construct } from '@aws-cdk/core';
  */
 export interface QueryParameterMatchConfig {
   /**
-   * The HTTP route header.
+   * Route CFN configuration for route query parameter match.
    */
   readonly queryParameter: CfnRoute.QueryParameterProperty;
 }

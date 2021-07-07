@@ -87,14 +87,14 @@ export interface HttpGatewayRouteMatch {
   /**
    * The gateway route host name to be matched on.
    *
-   * @default - no match on host name
+   * @default - do not match on host name
    */
   readonly hostname?: GatewayRouteHostnameMatch;
 
   /**
    * The method to match on.
    *
-   * @default - no match on method
+   * @default - do not match on method
    */
   readonly method?: HttpRouteMethod;
 
@@ -102,13 +102,13 @@ export interface HttpGatewayRouteMatch {
    * The query parameters to match on.
    * All specified query parameters must match for the route to match.
    *
-   * @default - no match on query parameters
+   * @default - do not match on query parameters
    */
   readonly queryParameters?: QueryParameterMatch[];
 
   /**
    * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
-   * When `false`, retains the original hostname/prefix from the request.
+   * When `false`, retains the original hostname from the request.
    *
    * @default true
    */
@@ -136,7 +136,7 @@ export interface GrpcGatewayRouteMatch {
   /**
    * Create host name based gRPC gateway route match.
    *
-   * @default - No matching on host name.
+   * @default - no matching on host name.
    */
   readonly hostname?: GatewayRouteHostnameMatch;
 
@@ -144,13 +144,13 @@ export interface GrpcGatewayRouteMatch {
    * Create metadata based gRPC gateway route match.
    * All specified metadata must match for the route to match.
    *
-   * @default - not matching on metadata.
+   * @default - no matching on metadata.
    */
   readonly metadata?: HeaderMatch[];
 
   /**
    * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
-   * When `false`, retains the original hostname/prefix from the request.
+   * When `false`, retains the original hostname from the request.
    *
    * @default true
    */

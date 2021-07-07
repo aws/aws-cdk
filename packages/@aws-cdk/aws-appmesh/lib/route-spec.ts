@@ -66,7 +66,7 @@ export interface HttpRouteMatch {
    * The query parameters to match on.
    * All specified query parameters must match for the route to match.
    *
-   * @default - no match on query parameters
+   * @default - do not match on query parameters
    */
   readonly queryParameters?: QueryParameterMatch[];
 }
@@ -94,7 +94,7 @@ export interface GrpcRouteMatch {
   /**
    * Create service name based gRPC route match.
    *
-   * @default - No match on service name.
+   * @default - do not match on service name.
    */
   readonly serviceName?: string;
 
@@ -102,7 +102,7 @@ export interface GrpcRouteMatch {
    * Create metadata based gRPC route match.
    * All specified metadata must match for the route to match.
    *
-   * @default - No match on metadata.
+   * @default - do not match on metadata.
    */
   readonly metadata?: HeaderMatch[];
 
@@ -110,7 +110,7 @@ export interface GrpcRouteMatch {
    * The method name to match from the request.
    * if the method name is specified, serviceName must be also provided
    *
-   * @default - No match on method name.
+   * @default - do not match on method name.
    */
   readonly methodName?: string;
 }
