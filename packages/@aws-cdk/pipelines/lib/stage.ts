@@ -1,5 +1,10 @@
+import { resolve } from 'path';
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
+import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -76,12 +81,77 @@ export class CdkStage extends CoreConstruct {
    */
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
     const asm = appStage.synth({ validateOnSynthesis: true });
-    const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
+    const extraRunOrderSpace = options.extraRunOrderSpace ?? 0 + (options.securityCheck ? 2 : 0);
 
     if (asm.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
       // error will be thrown come deployment time.
       throw new Error(`The given Stage construct ('${appStage.node.path}') should contain at least one Stack`);
+    }
+
+    if (options.securityCheck) {
+      const preApproveLambda = new lambda.Function(this, `${this.stageName}AutoApprove`, {
+        functionName: 'AutoApproveLambda',
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_8,
+        code: lambda.Code.fromAsset(resolve(__dirname, 'lambda')),
+      });
+
+      const invokeLambda =
+        'aws lambda invoke' +
+        ' --function-name AutoApproveLambda' +
+        ' --invocation-type Event' +
+        ' --payload "$payload"' +
+        ' lambda.out';
+
+      const build = new codebuild.Project(this, 'CDKSecurityCheck', {
+        buildSpec: codebuild.BuildSpec.fromObject({
+          version: 0.2,
+          phases: {
+            build: {
+              commands: [
+                'npm install -g aws-cdk',
+                // $CODEBUILD_INITIATOR will always be Code Pipeline and in the form of:
+                // "codepipeline/example-pipeline-name-Xxx"
+                // cut splits the string based on the delimiter "/" and returns the 2nd field
+                'payload="$(jq -n --arg pipelineName "$(echo $CODEBUILD_INITIATOR | cut -d "/" -f 2 )" --arg stageName "$STAGE_NAME" \'{ PipelineName: $pipelineName, StageName: $stageName }\' )"',
+                'cdk diff -a . --security-only --fail',
+                `$? || ${invokeLambda}`,
+              ],
+            },
+          },
+        }),
+      });
+
+      preApproveLambda.grantInvoke(build);
+
+      build.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['cloudformation:DescribeStacks', 'cloudformation:GetTemplate'],
+        resources: ['*'], // this is needed to check the status the stacks when doing `cdk diff`
+      }));
+
+      const diff_action = new CodeBuildAction({
+        runOrder: this.nextSequentialRunOrder(),
+        actionName: `${this.stageName}SecurityCheck`,
+        input: this.cloudAssemblyArtifact,
+        project: build,
+        variablesNamespace: 'SecurityCheck',
+        environmentVariables: {
+          STAGE_NAME: {
+            value: this.stageName,
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          },
+        },
+      });
+
+      const approve = new cpactions.ManualApprovalAction({
+        actionName: `${this.stageName}ManualApproval`,
+        runOrder: this.nextSequentialRunOrder(),
+      });
+
+      this.addActions(diff_action, approve);
+
+      approve.grantManualApproval(preApproveLambda);
     }
 
     const sortedTranches = topologicalSort(asm.stacks,
@@ -391,6 +461,15 @@ export interface AddStageOptions {
    * @default 0
    */
   readonly extraRunOrderSpace?: number;
+  /**
+   * Runs a `cdk diff --security-only --fail` to pause the pipeline if there
+   * are any security changes.
+   *
+   * Adds 1 to the run order space.
+   *
+   * @default false
+   */
+  readonly securityCheck?: boolean;
 }
 
 /**
