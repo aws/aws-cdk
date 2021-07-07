@@ -47,7 +47,7 @@ const blockList = new route53resolver.FirewallDomainList(this, 'BlockList', {
 });
 
 const s3List = new route53resolver.FirewallDomainList(this, 'S3List', {
-  domains: route53resolver.FirewallDomains.fromS3Uri('s3://bucket/prefix/object'),
+  domains: route53resolver.FirewallDomains.fromS3Url('s3://bucket/prefix/object'),
 });
 
 const assetList = new route53resolver.FirewallDomainList(this, 'AssetList', {
@@ -87,14 +87,14 @@ ruleGroup.addRule({
   priority: 10,
   firewallDomainList: blockList,
   // block and reply with NXDOMAIN
-  action: route53resolver.FirewallRuleAction.block(route53resolver.DnsBlockResponse.nxDomain()),  
+  action: route53resolver.FirewallRuleAction.block(route53resolver.DnsBlockResponse.nxDomain()),
 });
 
 ruleGroup.addRule({
   priority: 20,
   firewallDomainList: blockList,
   // block and override DNS response with a custom domain
-  action: route53resolver.FirewallRuleAction.block(route53resolver.DnsBlockResponse.override('amazon.com')),  
+  action: route53resolver.FirewallRuleAction.block(route53resolver.DnsBlockResponse.override('amazon.com')),
 });
 ```
 

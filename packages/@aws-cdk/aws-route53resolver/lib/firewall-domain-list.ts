@@ -66,7 +66,7 @@ export abstract class FirewallDomains {
    */
   public static fromS3Url(url: string): FirewallDomains {
     if (!Token.isUnresolved(url) && !url.startsWith('s3://')) {
-      throw new Error(`The S3 URI must start with s3://, got ${url}`);
+      throw new Error(`The S3 URL must start with s3://, got ${url}`);
     }
 
     return {

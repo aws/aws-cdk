@@ -24,7 +24,7 @@ test('domain list from strings', () => {
   });
 });
 
-test('domain list from S3 URI', () => {
+test('domain list from S3 URL', () => {
   // WHEN
   new FirewallDomainList(stack, 'List', {
     domains: FirewallDomains.fromS3Url('s3://bucket/prefix/object'),
@@ -109,8 +109,8 @@ test('throws with fromAsset and not .txt', () => {
   })).toThrow(/expects a file with the .txt extension/);
 });
 
-test('throws with invalid S3 URI', () => {
+test('throws with invalid S3 URL', () => {
   expect(() => new FirewallDomainList(stack, 'List', {
-    domains: FirewallDomains.fromS3Url('https://invalid/bucket/uri'),
-  })).toThrow(/The S3 URI must start with s3:\/\//);
+    domains: FirewallDomains.fromS3Url('https://invalid/bucket/url'),
+  })).toThrow(/The S3 URL must start with s3:\/\//);
 });
