@@ -103,7 +103,7 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string) : 
 export function areMatchPropertiesUndefined(match: HttpRouteMatch | GrpcRouteMatch | GrpcGatewayRouteMatch | undefined): boolean {
   let isEmpty = true;
   for (const property in match) {
-    if (property) {
+    if (property && (property !== 'rewriteRequestHostname' && property !== 'pathRewrite')) {
       isEmpty = false;
       break;
     }

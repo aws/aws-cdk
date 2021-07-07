@@ -105,6 +105,21 @@ export interface HttpGatewayRouteMatch {
    * @default - no match on query parameters
    */
   readonly queryParameters?: QueryParameterMatch[];
+
+  /**
+   * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
+   * When `false`, retains the original hostname/prefix from the request.
+   *
+   * @default true
+   */
+  readonly rewriteRequestHostname?: boolean;
+
+  /**
+   * The in-coming request's path to be rewritten when the request is matched.
+   *
+   * @default - matched prefix is rewritten to '/'.
+   */
+  readonly pathRewrite?: HttpGatewayRoutePathRewrite;
 }
 
 /**
@@ -132,6 +147,14 @@ export interface GrpcGatewayRouteMatch {
    * @default - not matching on metadata.
    */
   readonly metadata?: HeaderMatch[];
+
+  /**
+   * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
+   * When `false`, retains the original hostname/prefix from the request.
+   *
+   * @default true
+   */
+  readonly rewriteRequestHostname?: boolean;
 }
 
 /**
@@ -231,21 +254,6 @@ export interface HttpGatewayRouteSpecOptions {
    * The VirtualService this GatewayRoute directs traffic to
    */
   readonly routeTarget: IVirtualService;
-
-  /**
-   * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
-   * When `false`, retains the original hostname/prefix from the request.
-   *
-   * @default true
-   */
-  readonly rewriteRequestHostname?: boolean;
-
-  /**
-   * The in-coming request's path to be rewritten when the request is matched.
-   *
-   * @default - matched prefix is rewritten to '/'.
-   */
-  readonly pathRewrite?: HttpGatewayRoutePathRewrite;
 }
 
 /**
@@ -261,14 +269,6 @@ export interface GrpcGatewayRouteSpecOptions {
    * The VirtualService this GatewayRoute directs traffic to
    */
   readonly routeTarget: IVirtualService;
-
-  /**
-   * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
-   * When `false`, retains the original hostname/prefix from the request.
-   *
-   * @default true
-   */
-  readonly rewriteRequestHostname?: boolean;
 }
 
 /**
@@ -348,21 +348,17 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeType: Protocol;
 
-  readonly rewriteRequestHostname?: boolean;
-  readonly pathRewrite?: HttpGatewayRoutePathRewrite;
-
   constructor(options: HttpGatewayRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
     super();
     this.routeTarget = options.routeTarget;
     this.routeType = protocol;
     this.match = options.match;
-    this.rewriteRequestHostname = options.rewriteRequestHostname;
-    this.pathRewrite = options.pathRewrite;
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
-    const pathRewriteConfig = this.pathRewrite?.bind(scope);
+    const pathRewriteConfig = this.match?.pathRewrite?.bind(scope);
     const pathMatchConfig = this.match?.path?.bind(scope).requestMatch;
+    const defaultTargetHostname = this.match?.rewriteRequestHostname;
 
     // Set prefix Match to '/' if none on match properties are defined.
     const prefixMatch = areMatchPropertiesUndefined(this.match)
@@ -399,11 +395,11 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
             virtualServiceName: this.routeTarget.virtualServiceName,
           },
         },
-        rewrite: this.rewriteRequestHostname || pathRewriteConfig
+        rewrite: defaultTargetHostname || pathRewriteConfig
           ? {
-            hostname: this.rewriteRequestHostname
+            hostname: defaultTargetHostname
               ? {
-                defaultTargetHostname: this.rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
+                defaultTargetHostname: defaultTargetHostname ? 'ENABLED' : 'DISABLED',
               }
               : undefined,
             prefix: prefixPathRewrite
@@ -440,17 +436,15 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    * The VirtualService this GatewayRoute directs traffic to
    */
   readonly routeTarget: IVirtualService;
-
-  readonly rewriteRequestHostname?: boolean;
-
   constructor(options: GrpcGatewayRouteSpecOptions) {
     super();
     this.match = options.match;
     this.routeTarget = options.routeTarget;
-    this.rewriteRequestHostname = options.rewriteRequestHostname;
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
+    const defaultTargetHostname = this.match.rewriteRequestHostname;
+
     validateGprcMatch(this.match);
     validateMetadata(this.match.metadata);
 
@@ -462,10 +456,10 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
               virtualServiceName: this.routeTarget.virtualServiceName,
             },
           },
-          rewrite: this.rewriteRequestHostname
+          rewrite: defaultTargetHostname
             ? {
               hostname: {
-                defaultTargetHostname: this.rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
+                defaultTargetHostname: defaultTargetHostname ? 'ENABLED' : 'DISABLED',
               },
             }: undefined,
         },

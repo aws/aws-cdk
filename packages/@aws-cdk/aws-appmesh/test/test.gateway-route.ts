@@ -196,7 +196,9 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http-route', {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
-            rewriteRequestHostname: true,
+            match: {
+              rewriteRequestHostname: true,
+            },
           }),
           gatewayRouteName: 'gateway-http-route',
         });
@@ -206,8 +208,8 @@ export = {
             routeTarget: virtualService,
             match: {
               serviceName: virtualService.virtualServiceName,
+              rewriteRequestHostname: true,
             },
-            rewriteRequestHostname: true,
           }),
           gatewayRouteName: 'gateway-grpc-route',
         });
@@ -271,9 +273,9 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http2-route', {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
-            pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/rewrittenPath'),
             match: {
               method: appmesh.HttpRouteMethod.GET,
+              pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/rewrittenPath'),
             },
           }),
           gatewayRouteName: 'gateway-http2-route',
@@ -322,9 +324,9 @@ export = {
           virtualGateway.addGatewayRoute('gateway-http2-route', {
             routeSpec: appmesh.GatewayRouteSpec.http2({
               routeTarget: virtualService,
-              pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/rewrittenPath'),
               match: {
                 path: appmesh.HttpRoutePathMatch.prefix('/'),
+                pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/rewrittenPath'),
               },
             }),
             gatewayRouteName: 'gateway-http2-route',
@@ -359,7 +361,9 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http-route', {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
-            pathRewrite: appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix(),
+            match: {
+              pathRewrite: appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix(),
+            },
           }),
           gatewayRouteName: 'gateway-http-route',
         });
@@ -368,7 +372,9 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http2-route', {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
-            pathRewrite: appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUri/'),
+            match: {
+              pathRewrite: appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUri/'),
+            },
           }),
           gatewayRouteName: 'gateway-http2-route',
         });
@@ -431,9 +437,9 @@ export = {
           virtualGateway.addGatewayRoute('gateway-http2-route', {
             routeSpec: appmesh.GatewayRouteSpec.http2({
               routeTarget: virtualService,
-              pathRewrite: appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUrl'),
               match: {
                 path: appmesh.HttpRoutePathMatch.exact('/'),
+                pathRewrite: appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUrl'),
               },
             }),
             gatewayRouteName: 'gateway-http2-route',

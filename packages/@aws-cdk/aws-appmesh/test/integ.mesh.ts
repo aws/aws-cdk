@@ -363,9 +363,9 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
       queryParameters: [
         appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
       ],
+      rewriteRequestHostname: true,
+      pathRewrite: appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix(),
     },
-    rewriteRequestHostname: true,
-    pathRewrite: appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix(),
   }),
 });
 
@@ -380,8 +380,8 @@ gateway.addGatewayRoute('gateway1-route-http2-2', {
     routeTarget: virtualService,
     match: {
       path: appmesh.HttpRoutePathMatch.exact('/'),
+      pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/'),
     },
-    pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/'),
   }),
 });
 
