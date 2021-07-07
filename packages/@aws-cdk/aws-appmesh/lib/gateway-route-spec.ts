@@ -170,12 +170,9 @@ export abstract class HttpGatewayRoutePathRewrite {
    * The default prefix used to replace the incoming route prefix when rewritten.
    * When enabled, rewrites the matched prefix in Gateway Route to '/'.
    * When disabled, retains the original prefix from the request.
-   *
-   * @param isDefault Boolean to select to enable or disable the default prefix.
-   *  Default value is true = enabled.
    */
-  public static defaultPrefix(isDefault?: boolean): HttpGatewayRoutePathRewrite {
-    return new HttpGatewayRoutePrefixRewriteImpl({ defaultPrefix: isDefault == false ? 'DISABLED' : 'ENABLED' });
+  public static disableDefaultPrefix(): HttpGatewayRoutePathRewrite {
+    return new HttpGatewayRoutePrefixRewriteImpl({ defaultPrefix: 'DISABLED' });
   }
 
   /**
@@ -236,19 +233,17 @@ export interface HttpGatewayRouteSpecOptions {
   readonly routeTarget: IVirtualService;
 
   /**
-   * The default target host name to write to.
-   * Boolean is used to select either true = enable or false = disable.
-   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
-   * When disabled, retains the original hostname/prefix from the request.
+   * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
+   * When `false`, retains the original hostname/prefix from the request.
    *
    * @default true
    */
   readonly rewriteRequestHostname?: boolean;
 
   /**
-   * The path to rewrite.
+   * The in-coming request's path to be rewritten when the request is matched.
    *
-   * @default - rewritten to the target Virtual Service's hostname and the matched prefix is rewritten to '/'.
+   * @default - matched prefix is rewritten to '/'.
    */
   readonly pathRewrite?: HttpGatewayRoutePathRewrite;
 }
@@ -268,10 +263,8 @@ export interface GrpcGatewayRouteSpecOptions {
   readonly routeTarget: IVirtualService;
 
   /**
-   * The default target host name to write to.
-   * Boolean is used to select either true = enable or false = disable.
-   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
-   * When disabled, retains the original hostname/prefix from the request.
+   * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
+   * When `false`, retains the original hostname/prefix from the request.
    *
    * @default true
    */
@@ -343,11 +336,6 @@ export abstract class GatewayRouteSpec {
 }
 
 class HttpGatewayRouteSpec extends GatewayRouteSpec {
-  /**
-   * The criterion for determining a request match for this GatewayRoute
-   *
-   * @default - matches on prefix with '/'
-   */
   readonly match?: HttpGatewayRouteMatch;
 
   /**
@@ -360,21 +348,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeType: Protocol;
 
-  /**
-   * The default target host name to write to.
-   * Boolean is used to select either true = enable or  false = disable.
-   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
-   * When disabled, retains the original hostname/prefix from the request.
-   *
-   * @default true
-   */
   readonly rewriteRequestHostname?: boolean;
-
-  /**
-   * The path to rewrite.
-   *
-   * @default - rewritten to the target Virtual Service's hostname and the matched prefix is rewritten to '/'.
-   */
   readonly pathRewrite?: HttpGatewayRoutePathRewrite;
 
   constructor(options: HttpGatewayRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
@@ -397,17 +371,17 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
     const prefixPathRewrite = pathRewriteConfig?.prefix;
     const pathRewrite = pathRewriteConfig?.path;
 
-    if (prefixMatch && prefixMatch[0] != '/') {
+    if (prefixMatch && prefixMatch[0] !== '/') {
       throw new Error(`Prefix Path for the match must start with \'/\', got: ${prefixMatch}`);
     }
-    if (prefixPathRewrite?.value && prefixPathRewrite.value[0] != '/') {
+    if (prefixPathRewrite?.value && prefixPathRewrite.value[0] !== '/') {
       throw new Error(`Prefix Path for the rewrite must start with \'/\', got: ${prefixPathRewrite.value}`);
     }
     if (prefixPathRewrite && !prefixMatch) {
-      throw new Error('HTTP Gateway Route Prefix Match must be set.');
+      throw new Error('HTTP Gateway Route prefix match must be provided if a prefix rewrite was provided.');
     }
     if (pathRewrite && prefixMatch) {
-      throw new Error('HTTP Gateway Route Prefix Match and Path Rewrite both cannot be set.');
+      throw new Error('HTTP Gateway Route prefix match and path rewrite cannot both be provided.');
     }
 
     const httpConfig: CfnGatewayRoute.HttpGatewayRouteProperty = {
@@ -432,15 +406,15 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
                 defaultTargetHostname: this.rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
               }
               : undefined,
-            prefix: pathRewriteConfig?.prefix
+            prefix: prefixPathRewrite
               ? {
-                defaultPrefix: pathRewriteConfig.prefix?.defaultPrefix,
-                value: pathRewriteConfig.prefix?.value,
+                defaultPrefix: prefixPathRewrite.defaultPrefix,
+                value: prefixPathRewrite.value,
               }
               : undefined,
-            path: pathRewriteConfig?.path
+            path: pathRewrite
               ? {
-                exact: pathRewriteConfig?.path?.exact,
+                exact: pathRewrite.exact,
               }
               : undefined,
           }
@@ -467,14 +441,6 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeTarget: IVirtualService;
 
-  /**
-   * The default target host name to write to.
-   * Boolean is used to select either enable or disable.
-   * When enabled, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
-   * When disabled, retains the original hostname/prefix from the request.
-   *
-   * @default true
-   */
   readonly rewriteRequestHostname?: boolean;
 
   constructor(options: GrpcGatewayRouteSpecOptions) {

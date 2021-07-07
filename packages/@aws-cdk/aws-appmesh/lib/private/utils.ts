@@ -120,7 +120,7 @@ export function validateMetadata(metadata?: HeaderMatch[]) {
   const MAX_LENGTH = 10;
 
   if (metadata && (metadata.length < MIN_LENGTH || metadata.length > MAX_LENGTH)) {
-    throw new Error(`Metadata must be between ${MIN_LENGTH} and ${MAX_LENGTH}. got: ${metadata.length}`);
+    throw new Error(`Number of metadata provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}. got: ${metadata.length}`);
   }
 }
 

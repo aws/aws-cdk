@@ -96,7 +96,7 @@ export interface GrpcRouteMatch {
    *
    * @default - No match on service name.
    */
-  readonly serviceName?: string,
+  readonly serviceName?: string;
 
   /**
    * Create metadata based gRPC route match.
@@ -112,7 +112,7 @@ export interface GrpcRouteMatch {
    *
    * @default - No match on method name.
    */
-  readonly methodName?: string,
+  readonly methodName?: string;
 }
 
 /**

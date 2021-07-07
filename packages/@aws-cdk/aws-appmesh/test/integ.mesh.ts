@@ -365,7 +365,7 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
       ],
     },
     rewriteRequestHostname: true,
-    pathRewrite: appmesh.HttpGatewayRoutePathRewrite.defaultPrefix(false),
+    pathRewrite: appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix(),
   }),
 });
 

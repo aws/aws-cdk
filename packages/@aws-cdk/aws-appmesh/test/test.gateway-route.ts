@@ -359,7 +359,7 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http-route', {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
-            pathRewrite: appmesh.HttpGatewayRoutePathRewrite.defaultPrefix(),
+            pathRewrite: appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix(),
           }),
           gatewayRouteName: 'gateway-http-route',
         });
@@ -368,18 +368,9 @@ export = {
         virtualGateway.addGatewayRoute('gateway-http2-route', {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
-            pathRewrite: appmesh.HttpGatewayRoutePathRewrite.defaultPrefix(false),
-          }),
-          gatewayRouteName: 'gateway-http2-route',
-        });
-
-        // Add an HTTP2 Route
-        virtualGateway.addGatewayRoute('gateway-http2-route-2', {
-          routeSpec: appmesh.GatewayRouteSpec.http2({
-            routeTarget: virtualService,
             pathRewrite: appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUri/'),
           }),
-          gatewayRouteName: 'gateway-http2-route-2',
+          gatewayRouteName: 'gateway-http2-route',
         });
 
         // THEN
@@ -387,21 +378,6 @@ export = {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
-              Action: {
-                Rewrite: {
-                  Prefix: {
-                    DefaultPrefix: 'ENABLED',
-                  },
-                },
-              },
-            },
-          },
-        }));
-
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
-          GatewayRouteName: 'gateway-http2-route',
-          Spec: {
-            Http2Route: {
               Action: {
                 Rewrite: {
                   Prefix: {
@@ -414,7 +390,7 @@ export = {
         }));
 
         expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
-          GatewayRouteName: 'gateway-http2-route-2',
+          GatewayRouteName: 'gateway-http2-route',
           Spec: {
             Http2Route: {
               Action: {
@@ -688,7 +664,7 @@ export = {
             }),
             gatewayRouteName: 'gateway-grpc-route',
           });
-        }, /Metadata must be between 1 and 10/);
+        }, /Number of metadata provided for matching must be between 1 and 10/);
 
         test.throws(() => {
           virtualGateway.addGatewayRoute('gateway-grpc-route-1', {
@@ -713,7 +689,7 @@ export = {
             }),
             gatewayRouteName: 'gateway-grpc-route',
           });
-        }, /Metadata must be between 1 and 10/);
+        }, /Number of metadata provided for matching must be between 1 and 10/);
 
         test.done();
       },
