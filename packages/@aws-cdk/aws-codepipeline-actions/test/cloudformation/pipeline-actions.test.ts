@@ -380,7 +380,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
     throw new Error('Method not implemented.');
   }
   public bindAsNotificationRuleSource(
-    _scope: constructs.Construct,
+    _scope: Construct,
   ): notifications.NotificationRuleSourceConfig {
     throw new Error('Method not implemented.');
   }
