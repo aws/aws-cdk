@@ -10,10 +10,6 @@ import { Lazy, ISynthesisSession, Stack, attachCustomSynthesis } from '@aws-cdk/
 import { Construct } from 'constructs';
 import { toPosixPath } from '../private/fs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Type of the asset that is being published
  */
