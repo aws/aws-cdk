@@ -20,6 +20,33 @@ const portfolio = new servicecatalog.Portfolio(stack, 'TestPortfolio', {
 portfolio.giveAccessToRole(role);
 portfolio.giveAccessToGroup(group);
 
+const tagOptions = {
+  key1: [
+    { value: 'value1' },
+    { value: 'value2' },
+  ],
+  key2: [{ value: 'value1' }],
+};
+portfolio.addTagOptions(tagOptions);
+
 portfolio.shareWithAccount('123456789012');
+
+const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
+  productName: 'testProduct',
+  owner: 'testOwner',
+  productVersions: [
+    {
+      validateTemplate: false,
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
+        'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+    },
+  ],
+});
+
+portfolio.addProduct(product);
+
+portfolio.allowTagUpdates(product, {
+  tagUpdateOnProvisionedProductAllowed: false,
+});
 
 app.synth();

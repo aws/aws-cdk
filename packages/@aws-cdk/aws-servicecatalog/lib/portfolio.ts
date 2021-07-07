@@ -1,8 +1,11 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { AcceptLanguage } from './common';
+import { AcceptLanguage, TagOption } from './common';
+import { TagUpdatesOptions } from './constraints';
+import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
+import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -66,6 +69,22 @@ export interface IPortfolio extends cdk.IResource {
    * @param options Options for the initiate share
    */
   shareWithAccount(accountId: string, options?: PortfolioShareOptions): void;
+
+  /**
+   * Associate portfolio with the given product.
+   * @param product A service catalog produt.
+   */
+  addProduct(product: IProduct): void;
+
+  /**
+   * Associate Tag Options
+   */
+  addTagOptions(tagOptions: TagOption): void;
+
+  /**
+   * Add a Resource Update Constraint.
+   */
+  allowTagUpdates(product: IProduct, options?: TagUpdatesOptions): void;
 }
 
 abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
@@ -85,6 +104,10 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     this.associatePrincipal(group.groupArn, group.node.addr);
   }
 
+  public addProduct(product: IProduct) {
+    AssociationManager.associateProductWithPortfolio(this, this, product);
+  }
+
   public shareWithAccount(accountId: string, options: PortfolioShareOptions = {}): void {
     const hashId = this.generateUniqueHash(accountId);
     new CfnPortfolioShare(this, `PortfolioShare${hashId}`, {
@@ -93,6 +116,14 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
       shareTagOptions: options.shareTagOptions,
       acceptLanguage: options.acceptLanguage,
     });
+  }
+
+  public addTagOptions(tagOption: TagOption) {
+    AssociationManager.associateTagOption(this, this.portfolioId, tagOption);
+  }
+
+  public allowTagUpdates(product: IProduct, options: TagUpdatesOptions = {}) {
+    AssociationManager.addResourceUpdateConstraint(this, product, options);
   }
 
   /**
@@ -156,7 +187,7 @@ export class Portfolio extends PortfolioBase {
    * @param portfolioArn the Amazon Resource Name of the existing portfolio.
    */
   public static fromPortfolioArn(scope: Construct, id: string, portfolioArn: string): IPortfolio {
-    const arn = cdk.Stack.of(scope).parseArn(portfolioArn);
+    const arn = cdk.Stack.of(scope).splitArn(portfolioArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
     const portfolioId = arn.resourceName;
 
     if (!portfolioId) {

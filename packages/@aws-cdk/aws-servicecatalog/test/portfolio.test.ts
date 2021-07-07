@@ -256,6 +256,131 @@ describe('Portfolio', () => {
       // If this were not idempotent, the second call would produce an error for duplicate construct ID.
       portfolio.giveAccessToRole(role);
       portfolio.giveAccessToRole(role);
+    }),
+
+    test('add tag options to portfolio', () => {
+      const tagOptions = {
+        key1: [
+          { value: 'value1' },
+          { value: 'value2' },
+        ],
+        key2: [{ value: 'value1' }],
+      };
+
+      portfolio.addTagOptions(tagOptions);
+
+      expect(stack).toCountResources('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each key-value pair
+      expect(stack).toHaveResource('AWS::ServiceCatalog::TagOptionAssociation');
+    }),
+
+    test('fails to add tag options with invalid key length', () => {
+      const tagOptions = {
+        key0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: [
+          { value: 'value1' },
+          { value: 'value2' },
+        ],
+        key2: [
+          { value: 'value1' },
+        ],
+      };
+
+      expect(() => {
+        portfolio.addTagOptions(tagOptions);
+      }).toThrowError(/Invalid TagOption key for resource/);
     });
+
+    test('fails to add tag options with invalid value length', () => {
+      const tagOptions = {
+        key1: [
+          { value: 'value1'.repeat(1000) },
+          { value: 'value2' },
+        ],
+        key2: [
+          { value: 'value1' },
+        ],
+      };
+
+      expect(() => {
+        portfolio.addTagOptions(tagOptions);
+      }).toThrowError(/Invalid TagOption value for resource/);
+    });
+  });
+});
+
+describe('portfolio product constraints', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let portfolio: servicecatalog.Portfolio;
+  let product: servicecatalog.CloudFormationProduct;
+  let testStackNameCounter = 0; //We need to maintain unique stack names since we use node addresses for ids
+
+  beforeEach(() => {
+    stack = new cdk.Stack(app, `TestStack${testStackNameCounter}`);
+    testStackNameCounter += 1;
+
+    portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+      displayName: 'testPortfolio',
+      providerName: 'testProvider',
+    });
+
+    product = new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+        },
+      ],
+    });
+  }),
+
+  test('basic portfolio product association', () => {
+    portfolio.addProduct(product);
+
+    expect(stack).toHaveResource('AWS::ServiceCatalog::PortfolioProductAssociation', {});
+  });
+
+  test('portfolio product associations are idempotent', () => {
+    portfolio.addProduct(product);
+    portfolio.addProduct(product); // If not idempotent these calls should fail
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::PortfolioProductAssociation', 1); //check anyway
+  }),
+
+  test('add tag update constraint', () => {
+    portfolio.addProduct(product);
+    portfolio.allowTagUpdates(product, {
+      tagUpdateOnProvisionedProductAllowed: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::ResourceUpdateConstraint', {
+      TagUpdateOnProvisionedProduct: 'ALLOWED',
+    });
+  });
+
+  test('tag update constraint still adds without explicit association', () => {
+    portfolio.allowTagUpdates(product, {
+      acceptLanguage: servicecatalog.AcceptLanguage.EN,
+      description: 'test constraint description',
+      tagUpdateOnProvisionedProductAllowed: false,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::ResourceUpdateConstraint', {
+      AcceptLanguage: servicecatalog.AcceptLanguage.EN,
+      Description: 'test constraint description',
+      TagUpdateOnProvisionedProduct: 'NOT_ALLOWED',
+    });
+  }),
+
+  test('fails to add multiple tag update constraints', () => {
+    portfolio.allowTagUpdates(product, {
+      description: 'test constraint description',
+    });
+
+    expect(() => {
+      portfolio.allowTagUpdates(product, {
+        description: 'another test constraint description',
+      });
+    }).toThrowError(/Cannot have multiple resource update constraints for association/);
   });
 });

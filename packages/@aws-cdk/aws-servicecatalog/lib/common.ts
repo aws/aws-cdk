@@ -17,3 +17,19 @@ export enum AcceptLanguage {
    */
   ZH = 'zh'
 }
+
+/**
+ * Tag Option Value
+ */
+export type TagOptionValue = {
+  value: string,
+  active?: boolean
+}
+
+/**
+ * Defines a Tag Option, which are similar to tags
+ * but have multiple values per key.
+ */
+export interface TagOption {
+  [key: string]: TagOptionValue[]
+}
