@@ -74,7 +74,8 @@ new route53resolver.FirewallRuleGroup(this, 'RuleGroup', {
     {
       priority: 10,
       firewallDomainList: myBlockList,
-      action: route53resolver.FirewallRuleAction.block(), // defaults to NODATA
+      // block and reply with NODATA
+      action: route53resolver.FirewallRuleAction.block(),
     },
   ],
 });
