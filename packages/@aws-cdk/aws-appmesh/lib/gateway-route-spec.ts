@@ -395,11 +395,11 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
             virtualServiceName: this.routeTarget.virtualServiceName,
           },
         },
-        rewrite: defaultTargetHostname || pathRewriteConfig
+        rewrite: defaultTargetHostname === false || pathRewriteConfig
           ? {
-            hostname: defaultTargetHostname
+            hostname: defaultTargetHostname === false
               ? {
-                defaultTargetHostname: defaultTargetHostname ? 'ENABLED' : 'DISABLED',
+                defaultTargetHostname: 'DISABLED',
               }
               : undefined,
             prefix: prefixPathRewrite
@@ -443,8 +443,6 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
-    const defaultTargetHostname = this.match.rewriteRequestHostname;
-
     validateGprcMatch(this.match);
     validateMetadata(this.match.metadata);
 
@@ -456,10 +454,10 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
               virtualServiceName: this.routeTarget.virtualServiceName,
             },
           },
-          rewrite: defaultTargetHostname
+          rewrite: this.match.rewriteRequestHostname === false
             ? {
               hostname: {
-                defaultTargetHostname: defaultTargetHostname ? 'ENABLED' : 'DISABLED',
+                defaultTargetHostname: 'DISABLED',
               },
             }: undefined,
         },

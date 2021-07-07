@@ -208,7 +208,7 @@ export = {
             routeTarget: virtualService,
             match: {
               serviceName: virtualService.virtualServiceName,
-              rewriteRequestHostname: true,
+              rewriteRequestHostname: false,
             },
           }),
           gatewayRouteName: 'gateway-grpc-route',
@@ -220,11 +220,7 @@ export = {
           Spec: {
             HttpRoute: {
               Action: {
-                Rewrite: {
-                  Hostname: {
-                    DefaultTargetHostname: 'ENABLED',
-                  },
-                },
+                Rewrite: ABSENT,
               },
             },
           },
@@ -237,7 +233,7 @@ export = {
               Action: {
                 Rewrite: {
                   Hostname: {
-                    DefaultTargetHostname: 'ENABLED',
+                    DefaultTargetHostname: 'DISABLED',
                   },
                 },
               },

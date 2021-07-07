@@ -1384,9 +1384,6 @@
           "HttpRoute": {
             "Action": {
               "Rewrite": {
-                "Hostname": {
-                  "DefaultTargetHostname": "ENABLED"
-                },
                 "Prefix": {
                   "DefaultPrefix": "DISABLED"
                 }
