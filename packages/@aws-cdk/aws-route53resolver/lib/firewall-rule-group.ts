@@ -234,7 +234,7 @@ export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
     });
 
     this.firewallRuleGroupId = ruleGroup.attrId;
-    this.firewallRuleGroupArn= ruleGroup.attrArn;
+    this.firewallRuleGroupArn = ruleGroup.attrArn;
     this.firewallRuleGroupCreationTime = ruleGroup.attrCreationTime;
     this.firewallRuleGroupCreatorRequestId = ruleGroup.attrCreatorRequestId;
     this.firewallRuleGroupModificationTime = ruleGroup.attrModificationTime;
