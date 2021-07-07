@@ -620,7 +620,7 @@ class S3Source extends Source {
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
-    this.bucket.grantRead(project);
+    this.bucket.grantRead(project, this.path);
 
     const superConfig = super.bind(_scope, project);
     return {
