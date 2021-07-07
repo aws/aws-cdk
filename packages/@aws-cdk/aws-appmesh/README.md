@@ -419,7 +419,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.prefix('/path-to-app'),
+      path: appmesh.HttpRoutePathMatch.startingWith('/path-to-app'),
     },
   }),
 });
@@ -436,7 +436,7 @@ router.addRoute('route-http2', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.prefix('/'),
+      path: appmesh.HttpRoutePathMatch.startingWith('/'),
       method: appmesh.HttpRouteMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
@@ -465,7 +465,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.prefix('/path-to-app'),
+      path: appmesh.HttpRoutePathMatch.startingWith('/path-to-app'),
     },
   }),
 });
@@ -611,7 +611,7 @@ gateway.addGatewayRoute('gateway-route-http', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      path: appmesh.HttpRoutePathMatch.prefix('/'),
+      path: appmesh.HttpGatewayRoutePathMatch.startingWith('/'),
     },
   }),
 });

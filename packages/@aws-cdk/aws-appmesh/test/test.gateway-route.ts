@@ -271,7 +271,7 @@ export = {
             routeTarget: virtualService,
             match: {
               method: appmesh.HttpRouteMethod.GET,
-              pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/rewrittenPath'),
+              path: appmesh.HttpGatewayRoutePathMatch.exact('/test', '/rewrittenPath'),
             },
           }),
           gatewayRouteName: 'gateway-http2-route',
@@ -293,41 +293,6 @@ export = {
             },
           },
         }));
-
-        test.done();
-      },
-
-      'should throw an error if match on prefix'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-
-        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
-          listeners: [appmesh.VirtualGatewayListener.http()],
-          mesh: mesh,
-        });
-
-        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
-          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
-          virtualServiceName: 'target.local',
-        });
-
-        // WHEN + THEN
-        test.throws(() => {
-          virtualGateway.addGatewayRoute('gateway-http2-route', {
-            routeSpec: appmesh.GatewayRouteSpec.http2({
-              routeTarget: virtualService,
-              match: {
-                path: appmesh.HttpRoutePathMatch.startingWith('/'),
-                pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/rewrittenPath'),
-              },
-            }),
-            gatewayRouteName: 'gateway-http2-route',
-          }), /HTTP Gateway Route Prefix Match and Path Rewrite both cannot be set/;
-        });
 
         test.done();
       },
@@ -358,7 +323,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              pathRewrite: appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix(),
+              path: appmesh.HttpGatewayRoutePathMatch.startingWith('/test', appmesh.HttpGatewayRoutePrefixPathRewrite.disableDefaultPrefix()),
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -369,7 +334,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
             match: {
-              pathRewrite: appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUri/'),
+              path: appmesh.HttpGatewayRoutePathMatch.startingWith('/test', appmesh.HttpGatewayRoutePrefixPathRewrite.customPrefix('/rewrittenUri/')),
             },
           }),
           gatewayRouteName: 'gateway-http2-route',
@@ -405,42 +370,6 @@ export = {
             },
           },
         }));
-
-        test.done();
-      },
-
-      'should throw an error if match is not on prefix'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-
-        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
-          listeners: [appmesh.VirtualGatewayListener.http()],
-          mesh: mesh,
-        });
-
-        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
-          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
-          virtualServiceName: 'target.local',
-        });
-
-        // WHEN + THEN
-
-        test.throws(() => {
-          virtualGateway.addGatewayRoute('gateway-http2-route', {
-            routeSpec: appmesh.GatewayRouteSpec.http2({
-              routeTarget: virtualService,
-              match: {
-                path: appmesh.HttpRoutePathMatch.exact('/'),
-                pathRewrite: appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUrl'),
-              },
-            }),
-            gatewayRouteName: 'gateway-http2-route',
-          }), /HTTP Gateway Route Prefix Match must be set./;
-        });
 
         test.done();
       },

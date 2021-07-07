@@ -345,7 +345,7 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      path: appmesh.HttpRoutePathMatch.startingWith('/'),
+      path: appmesh.HttpGatewayRoutePathMatch.startingWith('/', appmesh.HttpGatewayRoutePrefixPathRewrite.disableDefaultPrefix()),
       hostname: appmesh.GatewayRouteHostnameMatch.exact('example.com'),
       method: appmesh.HttpRouteMethod.POST,
       headers: [
@@ -364,7 +364,6 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
         appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
       ],
       rewriteRequestHostname: true,
-      pathRewrite: appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix(),
     },
   }),
 });
@@ -379,8 +378,7 @@ gateway.addGatewayRoute('gateway1-route-http2-2', {
   routeSpec: appmesh.GatewayRouteSpec.http2({
     routeTarget: virtualService,
     match: {
-      path: appmesh.HttpRoutePathMatch.exact('/'),
-      pathRewrite: appmesh.HttpGatewayRoutePathRewrite.exact('/'),
+      path: appmesh.HttpGatewayRoutePathMatch.exact('/', '/'),
     },
   }),
 });
