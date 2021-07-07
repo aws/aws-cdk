@@ -3,10 +3,10 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
-import { Stage, Aspects } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { Stage, Aspects } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction } from './actions';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from './private/asset-manifest';
@@ -64,52 +64,6 @@ export class CdkStage extends CoreConstruct {
   private _prepared = false;
 
   private _securityCheckConstructs?: SecurityCheckConstructs;
-
-  private securityCheckProperties() {
-    if (!this._securityCheckConstructs) {
-
-      const preApproveLambda = new lambda.Function(this, `${this.pipelineStage.pipeline.pipelineName}AutoApprove`, {
-        handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_8,
-        code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
-      });
-
-      const invokeLambda =
-        'aws lambda invoke' +
-        ` --function-name ${preApproveLambda.functionName}` +
-        ' --invocation-type Event' +
-        ' --payload "$payload"' +
-        ' lambda.out';
-
-      const build = new codebuild.Project(this, 'CDKSecurityCheck', {
-        buildSpec: codebuild.BuildSpec.fromObject({
-          version: 0.2,
-          phases: {
-            build: {
-              commands: [
-                'npm install -g aws-cdk',
-                // $CODEBUILD_INITIATOR will always be Code Pipeline and in the form of:
-                // "codepipeline/example-pipeline-name-Xxx"
-                // cut splits the string based on the delimiter "/" and returns the 2nd field
-                'payload="$(jq -n --arg pipelineName "$(echo $CODEBUILD_INITIATOR | cut -d "/" -f 2 )" --arg stageName "$STAGE_NAME" \'{ PipelineName: $pipelineName, StageName: $stageName }\' )"',
-                `cdk diff -a . --security-only --fail || ${invokeLambda}`,
-              ],
-            },
-          },
-        }),
-      });
-
-      preApproveLambda.grantInvoke(build);
-
-      build.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['cloudformation:DescribeStacks', 'cloudformation:GetTemplate'],
-        resources: ['*'], // this is needed to check the status the stacks when doing `cdk diff`
-      }));
-
-      this._securityCheckConstructs = { preApproveLambda, build };
-    }
-    return this._securityCheckConstructs;
-  }
 
   constructor(scope: Construct, id: string, props: CdkStageProps) {
     super(scope, id);
@@ -289,7 +243,7 @@ export class CdkStage extends CoreConstruct {
 
   private securityCheck() {
     const { preApproveLambda, build } = this.securityCheckProperties();
-  
+
     const diff_action = new CodeBuildAction({
       runOrder: this.nextSequentialRunOrder(),
       actionName: `${this.stageName}SecurityCheck`,
@@ -312,6 +266,51 @@ export class CdkStage extends CoreConstruct {
     this.addActions(diff_action, approve);
 
     approve.grantManualApproval(preApproveLambda);
+  }
+
+  private securityCheckProperties() {
+    if (!this._securityCheckConstructs) {
+
+      const preApproveLambda = new lambda.Function(this, 'CDKPipelinesAutoApprove', {
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_8,
+        code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
+      });
+
+      const invokeLambda =
+        'aws lambda invoke' +
+        ` --function-name ${preApproveLambda.functionName}` +
+        ' --invocation-type Event' +
+        ' --payload "$payload"' +
+        ' lambda.out';
+
+      const build = new codebuild.Project(this, 'CDKSecurityCheck', {
+        buildSpec: codebuild.BuildSpec.fromObject({
+          version: 0.2,
+          phases: {
+            build: {
+              commands: [
+                'npm install -g aws-cdk',
+                // $CODEBUILD_INITIATOR will always be Code Pipeline and in the form of:
+                // "codepipeline/example-pipeline-name-Xxx"
+                `payload="$(node -pe 'JSON.stringify({ "PipelineName": process.env.CODEBUILD_INITIATOR.split("/")[1], "StageName": process.env.stageName })' )"`,
+                `cdk diff -a . --security-only --fail || ${invokeLambda}`,
+              ],
+            },
+          },
+        }),
+      });
+
+      preApproveLambda.grantInvoke(build);
+
+      build.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['cloudformation:DescribeStacks', 'cloudformation:GetTemplate'],
+        resources: ['*'], // this is needed to check the status the stacks when doing `cdk diff`
+      }));
+
+      this._securityCheckConstructs = { preApproveLambda, build };
+    }
+    return this._securityCheckConstructs;
   }
 
   /**
