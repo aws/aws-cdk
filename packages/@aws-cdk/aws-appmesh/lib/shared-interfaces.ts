@@ -170,7 +170,7 @@ class FileAccessLog extends AccessLog {
  */
 export interface BackendDefaults {
   /**
-   * Client policy for backend defaults
+   * TLS properties for Client policy for backend defaults
    *
    * @default - none
    */
@@ -183,7 +183,7 @@ export interface BackendDefaults {
 export interface VirtualServiceBackendOptions {
 
   /**
-   * Client policy for the backend
+   * TLS properties for  Client policy for the backend
    *
    * @default - none
    */
@@ -238,7 +238,7 @@ class VirtualServiceBackend extends Backend {
           virtualServiceName: this.virtualService.virtualServiceName,
           clientPolicy: this.tlsClientPolicy
             ? {
-              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy, (config) => config.virtualNodeClientTlsValidationTrust),
+              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),
             }
             : undefined,
         },

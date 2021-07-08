@@ -48,6 +48,80 @@ test('Cannot create a Fargate task without a default container', () => {
   ).toThrowError(/must have at least one essential container/);
 });
 
+test('Cannot override container definitions when container is not in task definition', () => {
+  const taskDefinitionA = new ecs.TaskDefinition(stack, 'TaskDefinitionA', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  taskDefinitionA.addContainer('TheContainerA', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  const taskDefinitionB = new ecs.TaskDefinition(stack, 'TaskDefinitionB', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinitionB = taskDefinitionB.addContainer('TheContainerB', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition: taskDefinitionA,
+      containerOverrides: [
+        {
+          containerDefinition: containerDefinitionB,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson(),
+  ).toThrowError(/no such container in task definition/);
+});
+
+test('Running a task with container override and container has explicitly set a container name', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
+    containerName: 'ExplicitContainerName',
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(stack.resolve(
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson())).toHaveProperty('Parameters.Overrides', {
+    ContainerOverrides: [
+      {
+        Environment: [
+          {
+            Name: 'SOME_KEY',
+            'Value.$': '$.SomeKey',
+          },
+        ],
+        Name: 'ExplicitContainerName',
+      },
+    ],
+  });
+});
+
 test('Running a Fargate Task', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
@@ -410,4 +484,77 @@ test('Running an EC2 Task with overridden number values', () => {
     },
     Type: 'Task',
   });
+});
+
+test('Cannot create a task with WAIT_FOR_TASK_TOKEN if no TaskToken provided', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDefinition', {
+    compatibility: ecs.Compatibility.EC2,
+  });
+
+  const containerDefinition = taskDefinition.addContainer('ContainerDefinition', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  });
+
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'RunTask', {
+      cluster,
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [
+            {
+              name: 'Foo',
+              value: 'Bar',
+            },
+          ],
+        },
+      ],
+      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      launchTarget: new tasks.EcsEc2LaunchTarget(),
+      taskDefinition,
+    }),
+  ).toThrowError(/Task Token is required in at least one `containerOverrides.environment`/);
+});
+
+test('Running a task with WAIT_FOR_TASK_TOKEN and task token in environment', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDefinition', {
+    compatibility: ecs.Compatibility.EC2,
+  });
+
+  const primaryContainerDef = taskDefinition.addContainer('PrimaryContainerDef', {
+    image: ecs.ContainerImage.fromRegistry('foo/primary'),
+    essential: true,
+  });
+
+  const sidecarContainerDef = taskDefinition.addContainer('SideCarContainerDef', {
+    image: ecs.ContainerImage.fromRegistry('foo/sidecar'),
+    essential: false,
+  });
+
+  expect(() => new tasks.EcsRunTask(stack, 'RunTask', {
+    cluster,
+    containerOverrides: [
+      {
+        containerDefinition: primaryContainerDef,
+        environment: [
+          {
+            name: 'Foo',
+            value: 'Bar',
+          },
+        ],
+      },
+      {
+        containerDefinition: sidecarContainerDef,
+        environment: [
+          {
+            name: 'TaskToken.$',
+            value: sfn.JsonPath.taskToken,
+          },
+        ],
+      },
+    ],
+    integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
+    taskDefinition,
+  })).not.toThrow();
 });

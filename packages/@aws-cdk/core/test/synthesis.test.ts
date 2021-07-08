@@ -5,6 +5,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cdk from '../lib';
 import { synthesize } from '../lib/private/synthesis';
+import { Construct } from 'constructs';
 
 function createModernApp() {
   return new cdk.App();
@@ -59,6 +60,66 @@ nodeunitShim({
 
     // THEN
     test.ok(list(session.directory).includes('one-stack.template.json'));
+    test.done();
+  },
+
+  'random construct uses addCustomSynthesis'(test: Test) {
+    // GIVEN
+    const app = createModernApp();
+    const stack = new cdk.Stack(app, 'one-stack');
+
+    class MyConstruct extends Construct {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        cdk.attachCustomSynthesis(this, {
+          onSynthesize(s: cdk.ISynthesisSession) {
+            writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
+            s.assembly.addArtifact('my-random-construct', {
+              type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
+              environment: 'aws://12345/bar',
+              properties: {
+                templateFile: 'foo.json',
+              },
+            });
+          },
+        });
+      }
+    }
+
+    new MyConstruct(stack, 'MyConstruct');
+
+    // WHEN
+    const session = app.synth();
+
+    // THEN
+    test.ok(list(session.directory).includes('one-stack.template.json'));
+    test.ok(list(session.directory).includes('foo.json'));
+
+    test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
+    test.deepEqual(session.manifest, {
+      version: cxschema.Manifest.version(),
+      artifacts: expect.objectContaining({
+        'Tree': {
+          type: 'cdk:tree',
+          properties: { file: 'tree.json' },
+        },
+        'my-random-construct': {
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://12345/bar',
+          properties: { templateFile: 'foo.json' },
+        },
+        'one-stack': expect.objectContaining({
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://unknown-account/unknown-region',
+          properties: expect.objectContaining({
+            templateFile: 'one-stack.template.json',
+            validateOnSynth: false,
+          }),
+          displayName: 'one-stack',
+        }),
+      }),
+    });
     test.done();
   },
 

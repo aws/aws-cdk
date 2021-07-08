@@ -205,7 +205,7 @@ export class SdkProvider {
     const account = env.account !== cxapi.UNKNOWN_ACCOUNT ? env.account : (await this.defaultAccount())?.accountId;
 
     if (!account) {
-      throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
+      throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK Stack, or through the environment');
     }
 
     return {
@@ -348,6 +348,9 @@ export interface Account {
   readonly partition: string;
 }
 
+const DEFAULT_CONNECTION_TIMEOUT = 10000;
+const DEFAULT_TIMEOUT = 300000;
+
 /**
  * Get HTTP options for the SDK
  *
@@ -359,6 +362,9 @@ export interface Account {
 function parseHttpOptions(options: SdkHttpOptions) {
   const config: ConfigurationOptions = {};
   config.httpOptions = {};
+
+  config.httpOptions.connectTimeout = DEFAULT_CONNECTION_TIMEOUT;
+  config.httpOptions.timeout = DEFAULT_TIMEOUT;
 
   let userAgent = options.userAgent;
   if (userAgent == null) {

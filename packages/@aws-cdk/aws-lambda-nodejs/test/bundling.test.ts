@@ -153,7 +153,7 @@ test('esbuild bundling with externals and dependencies', () => {
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
           'cp /asset-input/package-lock.json /asset-output/package-lock.json',
           'cd /asset-output',
-          'npm install',
+          'npm ci',
         ].join(' && '),
       ],
     }),

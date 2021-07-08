@@ -88,6 +88,43 @@ nodeunitShim({
     test.done();
   },
 
+  'bundling with image from asset with platform'(test: Test) {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
+    const platform = 'linux/someArch99';
+
+    const image = DockerImage.fromBuild('docker-path', { platform });
+    image.run();
+
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      platform,
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    test.ok(spawnSyncStub.firstCall.calledWith('docker', [
+      'build', '-t', tag,
+      '--platform', platform,
+      'docker-path',
+    ]));
+
+    test.ok(spawnSyncStub.secondCall.calledWith('docker', [
+      'run', '--rm',
+      tag,
+    ]));
+    test.done();
+  },
+
   'throws in case of spawnSync error'(test: Test) {
     sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
@@ -303,6 +340,43 @@ nodeunitShim({
     // THEN
     test.ok(/cdk-docker-cp-/.test(tempPath));
 
+    test.done();
+  },
+
+  'adding user provided securit-opt'(test: Test) {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const image = DockerImage.fromRegistry('alpine');
+    image.run({
+      command: ['cool', 'command'],
+      environment: {
+        VAR1: 'value1',
+        VAR2: 'value2',
+      },
+      securityOpt: 'no-new-privileges',
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    test.ok(spawnSyncStub.calledWith('docker', [
+      'run', '--rm',
+      '--security-opt', 'no-new-privileges',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
+      '--env', 'VAR1=value1',
+      '--env', 'VAR2=value2',
+      '-w', '/working-directory',
+      'alpine',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] }));
     test.done();
   },
 });
