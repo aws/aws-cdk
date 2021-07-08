@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import * as appmesh from '../lib/';
+import { HttpRouteMethod } from '../lib/http-route-method';
 
 export const app = new cdk.App();
 
@@ -203,7 +204,7 @@ router.addRoute('route-matching', {
     weightedTargets: [{ virtualNode: node3 }],
     match: {
       prefixPath: '/',
-      method: appmesh.HttpRouteMatchMethod.POST,
+      method: HttpRouteMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
         appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),

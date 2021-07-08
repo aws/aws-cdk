@@ -1,6 +1,10 @@
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
 import * as cdk from '@aws-cdk/core';
+
 import { CfnRoute } from './appmesh.generated';
-import { HttpTimeout, GrpcTimeout, Protocol, TcpTimeout } from './shared-interfaces';
+import { HttpRouteMethod } from './http-route-method';
+import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -49,7 +53,7 @@ export interface HttpRouteMatch {
    *
    * @default - do not match on request method
    */
-  readonly method?: HttpRouteMatchMethod;
+  readonly method?: HttpRouteMethod;
 
   /**
    * The client request protocol to match on. Applicable only for HTTP2 routes.
@@ -57,56 +61,6 @@ export interface HttpRouteMatch {
    * @default - do not match on HTTP2 request protocol
    */
   readonly protocol?: HttpRouteProtocol;
-}
-
-/**
- * Supported values for matching routes based on the HTTP request method
- */
-export enum HttpRouteMatchMethod {
-  /**
-   * GET request
-   */
-  GET = 'GET',
-
-  /**
-   * HEAD request
-   */
-  HEAD = 'HEAD',
-
-  /**
-   * POST request
-   */
-  POST = 'POST',
-
-  /**
-   * PUT request
-   */
-  PUT = 'PUT',
-
-  /**
-   * DELETE request
-   */
-  DELETE = 'DELETE',
-
-  /**
-   * CONNECT request
-   */
-  CONNECT = 'CONNECT',
-
-  /**
-   * OPTIONS request
-   */
-  OPTIONS = 'OPTIONS',
-
-  /**
-   * TRACE request
-   */
-  TRACE = 'TRACE',
-
-  /**
-   * PATCH request
-   */
-  PATCH = 'PATCH',
 }
 
 /**
