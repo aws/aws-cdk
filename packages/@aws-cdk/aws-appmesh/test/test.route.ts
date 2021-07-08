@@ -1,9 +1,7 @@
 import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-
 import * as appmesh from '../lib';
-import { HttpRouteMethod } from '../lib/http-route-method';
 
 export = {
   'When creating new routes': {
@@ -752,7 +750,7 @@ export = {
         weightedTargets: [{ virtualNode }],
         match: {
           prefixPath: '/',
-          method: HttpRouteMethod.GET,
+          method: appmesh.HttpRouteMethod.GET,
         },
       }),
     });
