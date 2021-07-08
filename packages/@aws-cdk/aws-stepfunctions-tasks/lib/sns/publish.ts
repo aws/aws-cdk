@@ -136,7 +136,7 @@ export class SnsPublish extends sfn.TaskStateBase {
     if (props.messageAttributes) {
       const attributes: { [key: string]: any } = {};
       for (const attrib of props.messageAttributes) {
-        const dataType = attrib.type || SnsMessageAttributeType.STRING;
+        const dataType = attrib.type ?? SnsMessageAttributeType.STRING;
         attributes[attrib.name] = {
           DataType: dataType,
           StringValue: attrib.value.value,
