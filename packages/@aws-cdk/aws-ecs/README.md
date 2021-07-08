@@ -647,6 +647,25 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
+To pass secrets to the log configuration, use the `secretOptions` property of the log configuration. The task execution role is automatically granted read permissions on the secrets/parameters.
+
+```ts
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: ecs.LogDrivers.firelens({
+    options: {
+      // ... log driver options here ...
+    },
+    secretOptions: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store
+      apikey: ecs.Secret.fromSecretsManager(secret),
+      host: ecs.Secret.fromSsmParameter(parameter),
+    },
+  })
+});
+```
+
 ### Generic Log Driver
 
 A generic log driver object exists to provide a lower level abstraction of the log driver configuration.
@@ -848,5 +867,62 @@ taskDefinition.addContainer('cont', {
   image: ecs.ContainerImage.fromRegistry('test'),
   memoryLimitMiB: 1024,
   inferenceAcceleratorResources,
+});
+```
+
+## ECS Exec command
+
+Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite for the exec command
+to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
+[Install Session Manager plugin for AWS CLI] (https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
+
+To enable the ECS Exec feature for your containers, set the boolean flag `enableExecuteCommand` to `true` in
+your `Ec2Service` or `FargateService`.
+
+```ts
+const service = new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  enableExecuteCommand: true,
+});
+```
+
+### Enabling logging
+
+You can enable sending logs of your execute session commands to a CloudWatch log group or S3 bucket by configuring
+the `executeCommandConfiguration` property for your cluster. The default configuration will send the
+logs to the CloudWatch Logs using the `awslogs` log driver that is configured in your task definition. Please note,
+when using your own `logConfiguration` the log group or S3 Bucket specified must already be created. 
+
+To encrypt data using your own KMS Customer Key (CMK), you must create a CMK and provide the key in the `kmsKey` field
+of the `executeCommandConfiguration`. To use this key for encrypting CloudWatch log data or S3 bucket, make sure to associate the key
+to these resources on creation. 
+
+```ts
+const kmsKey = new kms.Key(stack, 'KmsKey');
+
+// Pass the KMS key in the `encryptionKey` field to associate the key to the log group
+const logGroup = new logs.LogGroup(stack, 'LogGroup', {
+  encryptionKey: kmsKey,
+});
+
+// Pass the KMS key in the `encryptionKey` field to associate the key to the S3 bucket
+const execBucket = new s3.Bucket(stack, 'EcsExecBucket', {
+  encryptionKey: kmsKey,
+});
+
+const cluster = new ecs.Cluster(stack, 'Cluster', {
+  vpc,
+  executeCommandConfiguration: {
+    kmsKey,
+    logConfiguration: {
+      cloudWatchLogGroup: logGroup,
+      cloudWatchEncryptionEnabled: true,
+      s3Bucket: execBucket,
+      s3EncryptionEnabled: true,
+      s3KeyPrefix: 'exec-command-output',
+    },
+    logging: ecs.ExecuteCommandLogging.OVERRIDE,
+  },
 });
 ```

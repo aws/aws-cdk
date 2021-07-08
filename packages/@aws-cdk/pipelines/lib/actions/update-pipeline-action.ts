@@ -3,7 +3,9 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../docker-credentials';
 import { embeddedAsmPath } from '../private/construct-internals';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -21,8 +23,16 @@ export interface UpdatePipelineActionProps {
 
   /**
    * Name of the pipeline stack
+   *
+   * @deprecated - Use `pipelineStackHierarchicalId` instead.
+   * @default - none
    */
-  readonly pipelineStackName: string;
+  readonly pipelineStackName?: string;
+
+  /**
+   * Hierarchical id of the pipeline stack
+   */
+  readonly pipelineStackHierarchicalId: string;
 
   /**
    * Version of CDK CLI to 'npm install'.
@@ -44,6 +54,14 @@ export interface UpdatePipelineActionProps {
    * @default - false
    */
   readonly privileged?: boolean
+
+  /**
+   * Docker registries and associated credentials necessary during the pipeline
+   * self-update stage.
+   *
+   * @default []
+   */
+  readonly dockerCredentials?: DockerCredential[];
 }
 
 /**
@@ -63,6 +81,7 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
 
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
 
+    const stackIdentifier = props.pipelineStackHierarchicalId ?? props.pipelineStackName;
     const selfMutationProject = new codebuild.PipelineProject(this, 'SelfMutation', {
       projectName: props.projectName,
       environment: {
@@ -73,12 +92,15 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
         version: '0.2',
         phases: {
           install: {
-            commands: `npm install -g aws-cdk${installSuffix}`,
+            commands: [
+              `npm install -g aws-cdk${installSuffix}`,
+              ...dockerCredentialsInstallCommands(DockerCredentialUsage.SELF_UPDATE, props.dockerCredentials),
+            ],
           },
           build: {
             commands: [
               // Cloud Assembly is in *current* directory.
-              `cdk -a ${embeddedAsmPath(scope)} deploy ${props.pipelineStackName} --require-approval=never --verbose`,
+              `cdk -a ${embeddedAsmPath(scope)} deploy ${stackIdentifier} --require-approval=never --verbose`,
             ],
           },
         },
@@ -88,7 +110,12 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
     // allow the self-mutating project permissions to assume the bootstrap Action role
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: ['arn:*:iam::*:role/*-deploy-role-*', 'arn:*:iam::*:role/*-publishing-role-*'],
+      resources: [`arn:*:iam::${Stack.of(this).account}:role/*`],
+      conditions: {
+        'ForAnyValue:StringEquals': {
+          'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
+        },
+      },
     }));
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['cloudformation:DescribeStacks'],
@@ -99,6 +126,8 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
       actions: ['s3:ListBucket'],
       resources: ['*'],
     }));
+    (props.dockerCredentials ?? []).forEach(reg => reg.grantRead(selfMutationProject, DockerCredentialUsage.SELF_UPDATE));
+
     this.action = new cpactions.CodeBuildAction({
       actionName: 'SelfMutate',
       input: props.cloudAssemblyInput,

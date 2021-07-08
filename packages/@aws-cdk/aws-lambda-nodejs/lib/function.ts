@@ -73,6 +73,13 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    *   modules are bundled.
    */
   readonly bundling?: BundlingOptions;
+
+  /**
+   * The path to the directory containing project config files (`package.json` or `tsconfig.json`)
+   *
+   * @default - the directory containing the `depsLockFilePath`
+   */
+  readonly projectRoot?: string;
 }
 
 /**
@@ -84,28 +91,12 @@ export class NodejsFunction extends lambda.Function {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
 
-    // Find lock file
-    let depsLockFilePath: string;
-    if (props.depsLockFilePath) {
-      if (!fs.existsSync(props.depsLockFilePath)) {
-        throw new Error(`Lock file at ${props.depsLockFilePath} doesn't exist`);
-      }
-      if (!fs.statSync(props.depsLockFilePath).isFile()) {
-        throw new Error('`depsLockFilePath` should point to a file');
-      }
-      depsLockFilePath = path.resolve(props.depsLockFilePath);
-    } else {
-      const lockFile = findUp(PackageManager.YARN.lockFile) ?? findUp(PackageManager.NPM.lockFile);
-      if (!lockFile) {
-        throw new Error('Cannot find a package lock file (`yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
-      }
-      depsLockFilePath = lockFile;
-    }
-
     // Entry and defaults
     const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
+    const depsLockFilePath = findLockFile(props.depsLockFilePath);
+    const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
 
     super(scope, id, {
       ...props,
@@ -115,6 +106,7 @@ export class NodejsFunction extends lambda.Function {
         entry,
         runtime,
         depsLockFilePath,
+        projectRoot,
       }),
       handler: `index.${handler}`,
     });
@@ -124,6 +116,33 @@ export class NodejsFunction extends lambda.Function {
       this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
     }
   }
+}
+
+/**
+ * Checks given lock file or searches for a lock file
+ */
+function findLockFile(depsLockFilePath?: string): string {
+  if (depsLockFilePath) {
+    if (!fs.existsSync(depsLockFilePath)) {
+      throw new Error(`Lock file at ${depsLockFilePath} doesn't exist`);
+    }
+
+    if (!fs.statSync(depsLockFilePath).isFile()) {
+      throw new Error('`depsLockFilePath` should point to a file');
+    }
+
+    return path.resolve(depsLockFilePath);
+  }
+
+  const lockFile = findUp(PackageManager.PNPM.lockFile)
+    ?? findUp(PackageManager.YARN.lockFile)
+    ?? findUp(PackageManager.NPM.lockFile);
+
+  if (!lockFile) {
+    throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
+  }
+
+  return lockFile;
 }
 
 /**
