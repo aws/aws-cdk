@@ -1160,7 +1160,7 @@ export = {
           },
         }),
       });
-    }, /If you specify a method name, you must also specify a service Name/);
+    }, /If you specify a method name, you must also specify a service name/);
 
     test.done();
   },

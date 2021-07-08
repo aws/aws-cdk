@@ -2,7 +2,7 @@ import { CfnGatewayRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
 import { HttpGatewayRoutePathMatch } from './http-route-path-match';
-import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata, validateStartWith } from './private/utils';
+import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
