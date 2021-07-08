@@ -16,7 +16,7 @@ export class AssociationManager {
         productId: product.productId,
       });
 
-      const associationValue = new Map<Constraints, any>();
+      const associationValue = new Map<Constraints, CfnPortfolioProductAssociation | CfnResourceUpdateConstraint>();
       associationValue.set(Constraints.ASSOCIATION, association);
       this.associationMap.set(associationKey, associationValue);
     }
@@ -25,7 +25,7 @@ export class AssociationManager {
   public static addResourceUpdateConstraint(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct, options: TagUpdatesOptions) {
     const associationKey = this.associationPrecheck(scope, portfolio, product);
     InputValidator.validateLength(this.prettyPrintAssociation(scope, portfolio, product), 'description', 0, 2000, options.description);
-    if (!this.associationMap.get(associationKey).get(Constraints.RESOURCE_UPDATE)) {
+    if (!this.associationMap.get(associationKey)!.has(Constraints.RESOURCE_UPDATE)) {
       const constraint = new CfnResourceUpdateConstraint(scope, `ResourceUpdateConstraint${associationKey}`, {
         acceptLanguage: options.acceptedMessageLanguage,
         description: options.description,
@@ -34,8 +34,8 @@ export class AssociationManager {
         tagUpdateOnProvisionedProduct: options.allowUpdatingProvisionedProductTags === false ? Allowed.NOT_ALLOWED : Allowed.ALLOWED,
       });
 
-      constraint.addDependsOn(this.associationMap.get(associationKey).get(Constraints.ASSOCIATION));
-      this.associationMap.get(associationKey).set(Constraints.RESOURCE_UPDATE, constraint);
+      constraint.addDependsOn(this.associationMap.get(associationKey)!.get(Constraints.ASSOCIATION)!);
+      this.associationMap.get(associationKey)!.set(Constraints.RESOURCE_UPDATE, constraint);
     } else {
       throw new Error(`Cannot have multiple resource update constraints for association ${this.prettyPrintAssociation(scope, portfolio, product)}`);
     }
@@ -64,7 +64,8 @@ export class AssociationManager {
     });
   }
 
-  private static associationMap = new Map<string, any>();
+
+  private static associationMap = new Map<string, Map<Constraints, CfnPortfolioProductAssociation | CfnResourceUpdateConstraint>>();
   private static tagOptionMap = new Map<string, CfnTagOption>();
 
   private static associationPrecheck(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct): string {
