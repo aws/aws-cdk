@@ -35,7 +35,7 @@ describe('Portfolio', () => {
         displayName: 'testPortfolio',
         providerName: 'testProvider',
         description: 'test portfolio description',
-        acceptLanguage: servicecatalog.AcceptLanguage.ZH,
+        acceptedMessageLanguage: servicecatalog.AcceptLanguage.ZH,
       });
 
       expect(stack).toHaveResourceLike('AWS::ServiceCatalog::Portfolio', {
@@ -185,7 +185,7 @@ describe('Portfolio', () => {
 
       portfolio.shareWithAccount(shareAccountId, {
         shareTagOptions: true,
-        acceptLanguage: servicecatalog.AcceptLanguage.EN,
+        acceptedMessageLanguage: servicecatalog.AcceptLanguage.EN,
       });
 
       expect(stack).toHaveResourceLike('AWS::ServiceCatalog::PortfolioShare', {
@@ -256,58 +256,11 @@ describe('Portfolio', () => {
       // If this were not idempotent, the second call would produce an error for duplicate construct ID.
       portfolio.giveAccessToRole(role);
       portfolio.giveAccessToRole(role);
-    }),
-
-    test('add tag options to portfolio', () => {
-      const tagOptions = {
-        key1: [
-          { value: 'value1' },
-          { value: 'value2' },
-        ],
-        key2: [{ value: 'value1' }],
-      };
-
-      portfolio.addTagOptions(tagOptions);
-
-      expect(stack).toCountResources('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each key-value pair
-      expect(stack).toHaveResource('AWS::ServiceCatalog::TagOptionAssociation');
-    }),
-
-    test('fails to add tag options with invalid key length', () => {
-      const tagOptions = {
-        key0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: [
-          { value: 'value1' },
-          { value: 'value2' },
-        ],
-        key2: [
-          { value: 'value1' },
-        ],
-      };
-
-      expect(() => {
-        portfolio.addTagOptions(tagOptions);
-      }).toThrowError(/Invalid TagOption key for resource/);
-    });
-
-    test('fails to add tag options with invalid value length', () => {
-      const tagOptions = {
-        key1: [
-          { value: 'value1'.repeat(1000) },
-          { value: 'value2' },
-        ],
-        key2: [
-          { value: 'value1' },
-        ],
-      };
-
-      expect(() => {
-        portfolio.addTagOptions(tagOptions);
-      }).toThrowError(/Invalid TagOption value for resource/);
     });
   });
 });
 
-describe('portfolio product constraints', () => {
+describe('portfolio associations and product constraints', () => {
   let app: cdk.App;
   let stack: cdk.Stack;
   let portfolio: servicecatalog.Portfolio;
@@ -347,6 +300,92 @@ describe('portfolio product constraints', () => {
     expect(stack).toCountResources('AWS::ServiceCatalog::PortfolioProductAssociation', 1); //check anyway
   }),
 
+  test('add tag options to portfolio', () => {
+    const tagOptions = {
+      key1: [
+        { value: 'value1' },
+        { value: 'value2' },
+      ],
+      key2: [{ value: 'value1' }],
+    };
+
+    portfolio.addTagOptions(tagOptions);
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+    expect(stack).toHaveResource('AWS::ServiceCatalog::TagOptionAssociation');
+  }),
+
+  test('adding identical tag options to portfolio is idempotent', () => {
+    const tagOptions1 = {
+      key1: [
+        { value: 'value1' },
+        { value: 'value2' },
+      ],
+      key2: [{ value: 'value1' }],
+    };
+
+    const tagOptions2 = {
+      key1: [
+        { value: 'value1' },
+        { value: 'value2' },
+      ],
+    };
+
+    portfolio.addTagOptions(tagOptions1);
+    portfolio.addTagOptions(tagOptions2); // If not idempotent this would fail
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+    expect(stack).toHaveResource('AWS::ServiceCatalog::TagOptionAssociation');
+  }),
+
+  test('fails to add tag options with invalid minimum key length', () => {
+    const tagOptions = {
+      '': [
+        { value: 'value1' },
+        { value: 'value2' },
+      ],
+      'key2': [
+        { value: 'value1' },
+      ],
+    };
+
+    expect(() => {
+      portfolio.addTagOptions(tagOptions);
+    }).toThrowError(/Invalid TagOption key for resource/);
+  });
+
+  test('fails to add tag options with invalid maxium key length', () => {
+    const tagOptions = {
+      ['key1'.repeat(1000)]: [
+        { value: 'value1' },
+        { value: 'value2' },
+      ],
+      key2: [
+        { value: 'value1' },
+      ],
+    };
+
+    expect(() => {
+      portfolio.addTagOptions(tagOptions);
+    }).toThrowError(/Invalid TagOption key for resource/);
+  });
+
+  test('fails to add tag options with invalid value length', () => {
+    const tagOptions = {
+      key1: [
+        { value: 'value1'.repeat(1000) },
+        { value: 'value2' },
+      ],
+      key2: [
+        { value: 'value1' },
+      ],
+    };
+
+    expect(() => {
+      portfolio.addTagOptions(tagOptions);
+    }).toThrowError(/Invalid TagOption value for resource/);
+  });
+
   test('add tag update constraint', () => {
     portfolio.addProduct(product);
     portfolio.allowTagUpdates(product, {
@@ -360,7 +399,7 @@ describe('portfolio product constraints', () => {
 
   test('tag update constraint still adds without explicit association', () => {
     portfolio.allowTagUpdates(product, {
-      acceptLanguage: servicecatalog.AcceptLanguage.EN,
+      acceptedMessageLanguage: servicecatalog.AcceptLanguage.EN,
       description: 'test constraint description',
       tagUpdateOnProvisionedProductAllowed: false,
     });

@@ -1,5 +1,6 @@
 /**
  * The language code.
+ * Used for error and logging messages for end users.
  */
 export enum AcceptLanguage {
   /**
@@ -21,9 +22,18 @@ export enum AcceptLanguage {
 /**
  * Tag Option Value
  */
-export type TagOptionValue = {
-  value: string,
-  active?: boolean
+interface TagOptionValue {
+  /**
+   * The tag value of the key-value pair.
+   */
+  readonly value: string;
+
+  /**
+   * Active status of option. By default, a tagOption is
+   * active upon creation, and can only be disabled on an update.
+   * @default - true
+   */
+  readonly active?: boolean;
 }
 
 /**
@@ -31,5 +41,5 @@ export type TagOptionValue = {
  * but have multiple values per key.
  */
 export interface TagOption {
-  [key: string]: TagOptionValue[]
+  readonly [key: string]: TagOptionValue[];
 }

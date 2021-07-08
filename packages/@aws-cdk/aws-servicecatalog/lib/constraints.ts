@@ -5,10 +5,11 @@ import { AcceptLanguage } from './common';
  */
 export interface ConstraintProps {
   /**
-   * The language code.
+   * The language code. Configures the language for error messages
+   * from service catalog.
    * @default - No accept language provided
    */
-  readonly acceptLanguage?: AcceptLanguage;
+  readonly acceptedMessageLanguage?: AcceptLanguage;
 
   /**
    * The description of the constraint.

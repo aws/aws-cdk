@@ -33,7 +33,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Product](#product)
   - [Adding a product to a portfolio](#associations)
 - [Constraints](#constraints)
-  - [Tag update](#tag-update)
+  - [Tag update constraint](#tag-update)
 
 The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
@@ -61,7 +61,7 @@ new servicecatalog.Portfolio(this, 'MyFirstPortfolio', {
   displayName: 'MyFirstPortfolio',
   providerName: 'MyTeam',
   description: 'Portfolio for a project',
-  acceptLanguage: servicecatalog.AcceptLanguage.EN,
+  acceptedMessageLanguage: servicecatalog.AcceptLanguage.EN,
 });
 ```
 
@@ -101,6 +101,23 @@ A portfolio can be programatically shared with other accounts so that specified 
 
 ```ts fixture=basic-portfolio
 portfolio.shareWithAccount('012345678901');
+```
+
+### TagOptions
+
+TagOptions allow you to specify a key with a selection of values.  It enables end users to select an option for
+a certain key, for example an `ec2` instance type size. 
+
+```ts fixture=basic-portfolio
+const tagOptions = {
+  key1: [
+    { value: 'value1' },
+    { value: 'value2' },
+  ],
+  key2: [{ value: 'value1' }],
+};
+
+portfolio.addTagOptions(tagOptions);
 ```
 
 ## Product
@@ -170,7 +187,7 @@ If a misconfigured constraint is added, `synth` will fail with an error message.
 
 Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints.html).
 
-### Tag update
+### Tag update constraint
 
 Tag update constraints allow or disallow end users to update tags on resources associated with an AWS Service Catalog product upon provisioning. 
 If tag updating is allowed, then new tags associated with the product or portfolio will be applied to provisioned resources during a provisioned product update.

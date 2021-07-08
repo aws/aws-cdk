@@ -40,6 +40,7 @@
       "Properties": {
         "DisplayName": "TestPortfolio",
         "ProviderName": "TestProvider",
+        "AcceptLanguage": "en",
         "Description": "This is our Service Catalog Portfolio"
       }
     },
@@ -73,7 +74,7 @@
         "PrincipalType": "IAM"
       }
     },
-    "TestPortfolioTagOption5f31c54ba705F2E84C49": {
+    "TestPortfolioTagOptionc0d88a3c4b8b4E627F5F": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key1",
@@ -81,18 +82,18 @@
         "Active": true
       }
     },
-    "TestPortfolioTagOptionAssociation0dc7162cf16e2040A630": {
+    "TestPortfolioTagOptionAssociationf37cff59231fDE49B012": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestPortfolio4AC794EB"
         },
         "TagOptionId": {
-          "Ref": "TestPortfolioTagOption5f31c54ba705F2E84C49"
+          "Ref": "TestPortfolioTagOptionc0d88a3c4b8b4E627F5F"
         }
       }
     },
-    "TestPortfolioTagOption8d263919cebbDD6345D2": {
+    "TestPortfolioTagOption9b16df08f83dC6D8A35F": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key1",
@@ -100,18 +101,18 @@
         "Active": true
       }
     },
-    "TestPortfolioTagOptionAssociation7bee6a69204e42AD5E51": {
+    "TestPortfolioTagOptionAssociationdfe41ee7e10dFDB94C53": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestPortfolio4AC794EB"
         },
         "TagOptionId": {
-          "Ref": "TestPortfolioTagOption8d263919cebbDD6345D2"
+          "Ref": "TestPortfolioTagOption9b16df08f83dC6D8A35F"
         }
       }
     },
-    "TestPortfolioTagOptiona260cbbd99c48C54DE14": {
+    "TestPortfolioTagOptiondf34c1c83580DE42A47F": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key2",
@@ -119,14 +120,14 @@
         "Active": true
       }
     },
-    "TestPortfolioTagOptionAssociation936d6047c6d1807D4E89": {
+    "TestPortfolioTagOptionAssociation33159212b41e4DF614A4": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestPortfolio4AC794EB"
         },
         "TagOptionId": {
-          "Ref": "TestPortfolioTagOptiona260cbbd99c48C54DE14"
+          "Ref": "TestPortfolioTagOptiondf34c1c83580DE42A47F"
         }
       }
     },

@@ -15,6 +15,7 @@ const portfolio = new servicecatalog.Portfolio(stack, 'TestPortfolio', {
   displayName: 'TestPortfolio',
   providerName: 'TestProvider',
   description: 'This is our Service Catalog Portfolio',
+  acceptedMessageLanguage: servicecatalog.AcceptLanguage.EN,
 });
 
 portfolio.giveAccessToRole(role);

@@ -22,10 +22,10 @@ export class AssociationManager {
 
   public static addResourceUpdateConstraint(scope: cdk.Resource, product: IProduct, options: TagUpdatesOptions) {
     const [pair, associationKey] = this.associationPrecheck(scope, product);
-    InputValidator.validateLength(this.generateAssocationString(scope, pair), 'description', 0, 2000, options.description);
+    InputValidator.validateLength(this.prettyPrintAssociation(scope, pair), 'description', 0, 2000, options.description);
     if (!this.associationMap.get(associationKey).get(Constraints.RESOURCE_UPDATE)) {
       const constraint = new CfnResourceUpdateConstraint(scope, `ResourceUpdateConstraint${associationKey}`, {
-        acceptLanguage: options.acceptLanguage,
+        acceptLanguage: options.acceptedMessageLanguage,
         description: options.description,
         portfolioId: pair.portfolio.portfolioId,
         productId: pair.product.productId,
@@ -36,7 +36,7 @@ export class AssociationManager {
       constraint.addDependsOn(this.associationMap.get(associationKey).get(Constraints.ASSOCIATION));
       this.associationMap.get(associationKey).set(Constraints.RESOURCE_UPDATE, constraint);
     } else {
-      throw new Error(`Cannot have multiple resource update constraints for association ${this.generateAssocationString(scope, pair)}`);
+      throw new Error(`Cannot have multiple resource update constraints for association ${this.prettyPrintAssociation(scope, pair)}`);
     }
   }
 
@@ -45,20 +45,20 @@ export class AssociationManager {
       InputValidator.validateLength(resourceId, 'TagOption key', 1, 128, key);
       tagOption[key].forEach(value => {
         InputValidator.validateLength(resourceId, 'TagOption value', 1, 256, value.value);
-        const tagOptionKey = hashValues(key, value.value);
+        const tagOptionKey = hashValues(key, value.value, scope.stack.node.addr);
         if (!this.tagOptionMap.has(tagOptionKey)) {
-          const tO = new CfnTagOption(scope, `TagOption${tagOptionKey}`, {
+          const cfnTagOption = new CfnTagOption(scope, `TagOption${tagOptionKey}`, {
             key: key,
             value: value.value,
             active: value.active ?? true,
           });
-          this.tagOptionMap.set(tagOptionKey, tO);
-        }
+          this.tagOptionMap.set(tagOptionKey, cfnTagOption);
 
-        new CfnTagOptionAssociation(scope, `TagOptionAssociation${hashValues(scope.node.addr, tagOptionKey)}`, {
-          resourceId: resourceId,
-          tagOptionId: this.tagOptionMap.get(tagOptionKey)!.ref,
-        });
+          new CfnTagOptionAssociation(scope, `TagOptionAssociation${hashValues(scope.node.addr, tagOptionKey)}`, {
+            resourceId: resourceId,
+            tagOptionId: this.tagOptionMap.get(tagOptionKey)!.ref,
+          });
+        }
       });
     });
   }
@@ -82,7 +82,7 @@ export class AssociationManager {
     };
   }
 
-  private static generateAssocationString(scope: cdk.Resource, pair: AssociationPair) {
+  private static prettyPrintAssociation(scope: cdk.Resource, pair: AssociationPair) {
     return `- Portfolio: ${scope.stack.resolve(pair.portfolio.node.path)} | Product: ${scope.stack.resolve(pair.product.node.path)}`;
   }
 }

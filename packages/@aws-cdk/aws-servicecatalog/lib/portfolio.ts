@@ -23,10 +23,11 @@ export interface PortfolioShareOptions {
   readonly shareTagOptions?: boolean;
 
   /**
-   * The accept language of the share
+   * The accept language of the share.
+   * Controls status and error message language for share.
    * @default - accept language not specified
    */
-  readonly acceptLanguage?: AcceptLanguage;
+  readonly acceptedMessageLanguage?: AcceptLanguage;
 }
 
 /**
@@ -77,7 +78,9 @@ export interface IPortfolio extends cdk.IResource {
   addProduct(product: IProduct): void;
 
   /**
-   * Associate Tag Options
+   * Associate Tag Options.
+   * A TagOption is a key-value pair managed in AWS Service Catalog.
+   * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
    */
   addTagOptions(tagOptions: TagOption): void;
 
@@ -114,7 +117,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
       portfolioId: this.portfolioId,
       accountId: accountId,
       shareTagOptions: options.shareTagOptions,
-      acceptLanguage: options.acceptLanguage,
+      acceptLanguage: options.acceptedMessageLanguage,
     });
   }
 
@@ -163,10 +166,11 @@ export interface PortfolioProps {
   readonly providerName: string;
 
   /**
-   * The accept language.
+   * The accept language. Controls language for
+   * status logging and errors.
    * @default - No accept language provided
    */
-  readonly acceptLanguage?: AcceptLanguage;
+  readonly acceptedMessageLanguage?: AcceptLanguage;
 
   /**
    * Description for portfolio.
@@ -221,7 +225,7 @@ export class Portfolio extends PortfolioBase {
       displayName: props.displayName,
       providerName: props.providerName,
       description: props.description,
-      acceptLanguage: props.acceptLanguage,
+      acceptLanguage: props.acceptedMessageLanguage,
     });
     this.portfolioId = this.portfolio.ref;
     this.portfolioArn = cdk.Stack.of(this).formatArn({
