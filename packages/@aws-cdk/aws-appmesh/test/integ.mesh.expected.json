@@ -1587,6 +1587,43 @@
         "GatewayRouteName": "meshstackmeshgateway1gateway1routehttp22BD49AE9D"
       }
     },
+    "meshgateway1gateway1routehttp2376EB99D6": {
+      "Type": "AWS::AppMesh::GatewayRoute",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "Target": {
+                "VirtualService": {
+                  "VirtualServiceName": {
+                    "Fn::GetAtt": [
+                      "service6D174F83",
+                      "VirtualServiceName"
+                    ]
+                  }
+                }
+              }
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          }
+        },
+        "VirtualGatewayName": {
+          "Fn::GetAtt": [
+            "meshgateway1B02387E8",
+            "VirtualGatewayName"
+          ]
+        },
+        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttp23E44F5774"
+      }
+    },
     "meshgateway1gateway1routegrpc76486062": {
       "Type": "AWS::AppMesh::GatewayRoute",
       "Properties": {

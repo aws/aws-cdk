@@ -430,6 +430,9 @@ export = {
                   Exact: 'example.com',
                 },
               },
+              Action: {
+                Rewrite: ABSENT,
+              },
             },
           },
         }));
@@ -821,7 +824,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              path: appmesh.HttpRoutePathMatch.exactly('/exact'),
+              path: appmesh.HttpGatewayRoutePathMatch.exactly('/exact'),
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -847,6 +850,9 @@ export = {
                 Path: {
                   Exact: '/exact',
                 },
+              },
+              Action: {
+                Rewrite: ABSENT,
               },
             },
           },

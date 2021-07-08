@@ -383,6 +383,15 @@ gateway.addGatewayRoute('gateway1-route-http2-2', {
   }),
 });
 
+gateway.addGatewayRoute('gateway1-route-http2-3', {
+  routeSpec: appmesh.GatewayRouteSpec.http2({
+    routeTarget: virtualService,
+    match: {
+      path: appmesh.HttpGatewayRoutePathMatch.startingWith('/'),
+    },
+  }),
+});
+
 gateway.addGatewayRoute('gateway1-route-grpc', {
   routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,

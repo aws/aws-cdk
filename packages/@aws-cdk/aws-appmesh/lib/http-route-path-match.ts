@@ -192,9 +192,11 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
       wholePathMatch: this.match,
-      wholePathRewrite: {
-        exact: this.exactPathRewrite,
-      },
+      wholePathRewrite: this.exactPathRewrite
+        ? {
+          exact: this.exactPathRewrite,
+        }
+        : undefined,
     };
   }
 }
