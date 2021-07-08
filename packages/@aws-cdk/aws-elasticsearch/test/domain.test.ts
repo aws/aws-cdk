@@ -950,6 +950,45 @@ describe('import', () => {
 
     expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
   });
+
+  test('static fromDomainAttributes(attributes) should remove vpc- prefix from ARN', () => {
+    const domainName = 'test-domain-2w2x2u3tifly-search';
+    const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
+    const domainEndpoint = `https://vpc-${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const imported = Domain.fromDomainAttributes(stack, 'Domain', {
+      domainArn,
+      domainEndpoint,
+    });
+
+    expect(imported.domainName).toEqual(domainName);
+    expect(imported.domainArn).toEqual(domainArn);
+  });
+
+  test('static fromDomainAttributes(attributes) should remove search- prefix from ARN', () => {
+    const domainName = 'test-domain-2w2x2u3tifly-search';
+    const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
+    const domainEndpoint = `https://search-${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const imported = Domain.fromDomainAttributes(stack, 'Domain', {
+      domainArn,
+      domainEndpoint,
+    });
+
+    expect(imported.domainName).toEqual(domainName);
+    expect(imported.domainArn).toEqual(domainArn);
+  });
+
+  test('static fromDomainAttributes(attributes) should not remove search- if it appears in the domain name', () => {
+    const domainName = 'test-search-domain-2w2x2u3tifly-search';
+    const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
+    const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const imported = Domain.fromDomainAttributes(stack, 'Domain', {
+      domainArn,
+      domainEndpoint,
+    });
+
+    expect(imported.domainName).toEqual(domainName);
+    expect(imported.domainArn).toEqual(domainArn);
+  });
 });
 
 describe('advanced security options', () => {
