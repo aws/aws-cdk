@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from '../appmesh.generated';
+import { ListenerTlsOptions } from '../listener-tls-options';
 import { TlsClientPolicy } from '../tls-client-policy';
-import { TlsValidationTrustConfig } from '../tls-validation';
 
 /**
  * Generated Connection pool config
@@ -31,17 +31,50 @@ export interface ConnectionPoolConfig {
 
 /**
  * This is the helper method to render TLS property of client policy.
- *
  */
-export function renderTlsClientPolicy(scope: Construct, tlsClientPolicy: TlsClientPolicy | undefined,
-  extractor: (c: TlsValidationTrustConfig) => CfnVirtualNode.TlsValidationContextTrustProperty): CfnVirtualNode.ClientPolicyTlsProperty | undefined {
+export function renderTlsClientPolicy(scope: Construct, tlsClientPolicy: TlsClientPolicy | undefined)
+  : CfnVirtualNode.ClientPolicyTlsProperty | undefined {
+  const certificate = tlsClientPolicy?.mutualTlsCertificate?.bind(scope).tlsCertificate;
+  const sans = tlsClientPolicy?.validation.subjectAlternativeNames;
+
   return tlsClientPolicy
     ? {
+      certificate: certificate,
       ports: tlsClientPolicy.ports,
       enforce: tlsClientPolicy.enforce,
       validation: {
-        trust: extractor(tlsClientPolicy.validation.trust.bind(scope)),
+        subjectAlternativeNames: sans
+          ? {
+            match: sans.bind(scope).subjectAlternativeNamesMatch,
+          }
+          : undefined,
+        trust: tlsClientPolicy.validation.trust.bind(scope).tlsValidationTrust,
       },
+    }
+    : undefined;
+}
+
+/**
+ * This is the helper method to render the TLS config for a listener.
+ */
+export function renderListenerTlsOptions(scope: Construct, listenerTls: ListenerTlsOptions | undefined)
+  : CfnVirtualNode.ListenerTlsProperty | undefined {
+  const tlsValidation = listenerTls?.mutualTlsValidation;
+
+  return listenerTls
+    ? {
+      certificate: listenerTls.certificate.bind(scope).tlsCertificate,
+      mode: listenerTls.mode,
+      validation: tlsValidation
+        ? {
+          subjectAlternativeNames: tlsValidation.subjectAlternativeNames
+            ? {
+              match: tlsValidation.subjectAlternativeNames.bind(scope).subjectAlternativeNamesMatch,
+            }
+            : undefined,
+          trust: tlsValidation.trust.bind(scope).tlsValidationTrust,
+        }
+        : undefined,
     }
     : undefined;
 }
