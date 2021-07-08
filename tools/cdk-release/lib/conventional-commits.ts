@@ -60,7 +60,15 @@ export interface ConventionalCommit {
  * @param gitTag the string representing the Git tag,
  *   will be used to limit the returned commits to only those added after that tag
  */
-export async function getConventionalCommitsFromGitHistory(gitTag: string): Promise<ConventionalCommit[]> {
+export async function getConventionalCommitsFromGitHistory(args: ReleaseOptions, gitTag: string): Promise<ConventionalCommit[]> {
+  // Since the commits are needed mainly for the Changelog generation,
+  // skip getting them if skipChangelog is `true`.
+  // This is needed to make our build succeed in environments without a Git repository,
+  // like CodeBuild in CodePipeline
+  if (args.skip?.changelog) {
+    return [];
+  }
+
   const ret = new Array<any>();
   return new Promise((resolve, reject) => {
     const conventionalCommitsStream = gitRawCommits({
