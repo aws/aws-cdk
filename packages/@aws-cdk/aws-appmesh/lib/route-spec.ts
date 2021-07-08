@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { CfnRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
-import { validateArrayLength } from './private/utils';
+import { validateMatchArrayLength } from './private/utils';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
 
@@ -421,7 +421,7 @@ class HttpRouteSpec extends RouteSpec {
     }
 
     const headers = this.match?.headers;
-    validateArrayLength(headers);
+    validateMatchArrayLength(headers);
 
     const httpConfig: CfnRoute.HttpRouteProperty = {
       action: {

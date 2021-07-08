@@ -95,9 +95,9 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string) : 
 }
 
 /**
- * This is the helper method to validate the length of Metadata array when it is specified.
+ * This is the helper method to validate the length of match array when it is specified.
  */
-export function validateArrayLength(headers?: HeaderMatch[]) {
+export function validateMatchArrayLength(headers?: HeaderMatch[]) {
   const MIN_LENGTH = 1;
   const MAX_LENGTH = 10;
 
