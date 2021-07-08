@@ -645,11 +645,9 @@ behavior('can run scripts with specified BuildEnvironment', (suite) => {
     // Run all Build jobs with the given image
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       engine: new cdkp.CodePipelineEngine({
-        codeBuild: {
-          defaults: {
-            buildEnvironment: {
-              buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
-            },
+        codeBuildDefaults: {
+          buildEnvironment: {
+            buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
           },
         },
       }),

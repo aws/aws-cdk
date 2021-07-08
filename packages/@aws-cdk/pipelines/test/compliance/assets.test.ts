@@ -561,19 +561,17 @@ behavior('can supply pre-install scripts to asset upload', (suite) => {
   suite.modern(() => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       engine: new cdkp.CodePipelineEngine({
-        codeBuild: {
-          assetPublishing: {
-            partialBuildSpec: cb.BuildSpec.fromObject({
-              version: '0.2',
-              phases: {
-                install: {
-                  commands: [
-                    'npm config set registry https://registry.com',
-                  ],
-                },
+        assetPublishingCodeBuildDefaults: {
+          partialBuildSpec: cb.BuildSpec.fromObject({
+            version: '0.2',
+            phases: {
+              install: {
+                commands: [
+                  'npm config set registry https://registry.com',
+                ],
               },
-            }),
-          },
+            },
+          }),
         },
       }),
     });

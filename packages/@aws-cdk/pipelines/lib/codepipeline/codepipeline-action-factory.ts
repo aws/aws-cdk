@@ -48,6 +48,17 @@ export interface CodePipelineActionOptions {
    * @default - No CodeBuild project defaults
    */
   readonly codeBuildDefaults?: CodeBuildProjectOptions;
+
+  /**
+   * Whether or not this action is inserted before self mutation.
+   *
+   * If it is, the action should take care to reflect some part of
+   * its own definition in the pipeline action definition, to
+   * trigger a restart after self-mutation (if necessary).
+   *
+   * @default false
+   */
+  readonly beforeSelfMutation?: boolean;
 }
 
 /**

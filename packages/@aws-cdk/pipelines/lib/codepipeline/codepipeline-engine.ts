@@ -47,7 +47,21 @@ export interface CodePipelineEngineProps {
    *
    * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
    */
-  readonly codeBuild?: CodeBuildOptions;
+  readonly codeBuildDefaults?: CodeBuildProjectOptions;
+
+  /**
+   * Additional customizations to apply to the asset publishing CodeBuild projects
+   *
+   * @default - Only `codeBuildProjectDefaults` are applied
+   */
+  readonly assetPublishingCodeBuildDefaults?: CodeBuildProjectOptions;
+
+  /**
+   * Additional customizations to apply to the self mutation CodeBuild projects
+   *
+   * @default - Only `codeBuildProjectDefaults` are applied
+   */
+  readonly selfMutationCodeBuildDefaults?: CodeBuildProjectOptions;
 
   /**
    * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
@@ -64,39 +78,6 @@ export interface CodePipelineEngineProps {
    * @default []
    */
   readonly dockerCredentials?: DockerCredential[];
-}
-
-/**
- * Options for customizing CodeBuild projects created by this engine
- */
-export interface CodeBuildOptions {
-  /**
-   * Settings to apply to all CodeBuild projects
-   *
-   * @default - Default settings
-   */
-  readonly defaults?: CodeBuildProjectOptions;
-
-  /**
-   * Settings to apply to the Synth project
-   *
-   * @default - Default settings
-   */
-  readonly synth?: CodeBuildProjectOptions;
-
-  /**
-   * Settings to apply to the asset publishing projects
-   *
-   * @default - Default settings
-   */
-  readonly assetPublishing?: CodeBuildProjectOptions;
-
-  /**
-   * Settings to apply to the selfmutation project
-   *
-   * @default - Default settings
-   */
-  readonly selfMutation?: CodeBuildProjectOptions;
 }
 
 /**
@@ -328,23 +309,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
     const nodeType = this.nodeTypeFromNode(options.node);
 
     // If this step happens to produce a CodeBuild job, set the default options
-    let codeBuildProjectOptions = this.codeBuildOptionsFor(nodeType);
-
-    if (nodeType === CodeBuildProjectType.SYNTH) {
-      const dockerCommands = dockerCredentialsInstallCommands(DockerCredentialUsage.SYNTH, this.dockerCredentials);
-      if (dockerCommands.length > 0) {
-        codeBuildProjectOptions = mergeCodeBuildOptions(codeBuildProjectOptions, {
-          partialBuildSpec: cb.BuildSpec.fromObject({
-            version: '0.2',
-            phases: {
-              pre_build: {
-                commands: dockerCommands,
-              },
-            },
-          }),
-        });
-      }
-    }
+    const codeBuildProjectOptions = this.codeBuildOptionsFor(nodeType);
 
     // CodePipeline-specific steps first -- this includes Sources
     if (isCodePipelineActionFactory(step)) {
@@ -356,6 +321,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
         fallbackArtifact: this._fallbackArtifact,
         queries: options.queries,
         codeBuildDefaults: codeBuildProjectOptions,
+        beforeSelfMutation: options.beforeSelfUpdate,
       });
     }
 
@@ -364,10 +330,6 @@ export class CodePipelineEngine implements IDeploymentEngine {
       return new CodeBuildFactory(step.id, step, {
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
-
-        // If this CodeBuild job is before the self-update stage, we need to include a hash of
-        // its definition in the pipeline (to force the pipeline to restart if the definition changes)
-        includeBuildHashInPipeline: options.beforeSelfUpdate,
       }).produce({
         actionName: actionName(options.node, options.sharedParent),
         runOrder: options.runOrder,
@@ -376,6 +338,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
         fallbackArtifact: this._fallbackArtifact,
         queries: options.queries,
         codeBuildDefaults: codeBuildProjectOptions,
+        beforeSelfMutation: options.beforeSelfUpdate,
       });
     }
 
@@ -488,6 +451,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       fallbackArtifact: this._fallbackArtifact,
       queries: options.queries,
       codeBuildDefaults: this.codeBuildOptionsFor(CodeBuildProjectType.SELF_MUTATE),
+      beforeSelfMutation: true,
     });
 
     if (result.project) {
@@ -543,7 +507,6 @@ export class CodePipelineEngine implements IDeploymentEngine {
       },
 
       // In case the CLI version changes
-      includeBuildHashInPipeline: true,
 
       // If we use a single publisher, pass buildspec via file otherwise it'll
       // grow too big.
@@ -558,6 +521,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       fallbackArtifact: this._fallbackArtifact,
       queries: options.queries,
       codeBuildDefaults: this.codeBuildOptionsFor(CodeBuildProjectType.ASSETS),
+      beforeSelfMutation: true,
     });
 
     if (result.project && assetBuildConfig.dependable) {
@@ -581,9 +545,9 @@ export class CodePipelineEngine implements IDeploymentEngine {
     };
 
     const typeBasedCustomizations = {
-      [CodeBuildProjectType.SYNTH]: this.props.codeBuild?.synth,
-      [CodeBuildProjectType.ASSETS]: this.props.codeBuild?.assetPublishing,
-      [CodeBuildProjectType.SELF_MUTATE]: this.props.codeBuild?.selfMutation,
+      [CodeBuildProjectType.SYNTH]: {},
+      [CodeBuildProjectType.ASSETS]: this.props.assetPublishingCodeBuildDefaults,
+      [CodeBuildProjectType.SELF_MUTATE]: this.props.selfMutationCodeBuildDefaults,
       [CodeBuildProjectType.STEP]: {},
     };
 
@@ -604,7 +568,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
     return mergeCodeBuildOptions(
       defaultOptions,
-      this.props.codeBuild?.defaults,
+      this.props.codeBuildDefaults,
       typeBasedCustomizations[nodeType],
       typeBasedDockerCommands,
     );

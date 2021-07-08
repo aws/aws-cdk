@@ -39,11 +39,6 @@ export interface CodeBuildFactoryProps {
   readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
-   * Include a hash of the build config into the invocation
-   */
-  readonly includeBuildHashInPipeline?: boolean;
-
-  /**
    * Customization options for the project
    *
    * Will at CodeBuild production time be combined with the option
@@ -193,7 +188,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       `#{${stackVariableNamespace(options.queries.producingStack(outputRef))}.${outputRef.outputName}}`,
     );
 
-    const configHashEnv = this.props.includeBuildHashInPipeline
+    const configHashEnv = options.beforeSelfMutation
       ? { _PROJECT_CONFIG_HASH: projectConfigHash }
       : {};
 

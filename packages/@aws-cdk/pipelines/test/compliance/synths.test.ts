@@ -8,6 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
+import { CodeBuildStep } from '../../lib';
 import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps } from '../testhelpers';
 
 let app: TestApp;
@@ -301,24 +302,22 @@ behavior('CodeBuild: environment variables specified in multiple places are corr
 
   suite.modern(() => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      env: {
-        SOME_ENV_VAR: 'SomeValue',
-      },
-      installCommands: [
-        'install1',
-        'install2',
-      ],
-      commands: ['synth'],
-      engine: new cdkp.CodePipelineEngine({
-        codeBuild: {
-          synth: {
-            buildEnvironment: {
-              environmentVariables: {
-                INNER_VAR: { value: 'InnerValue' },
-              },
-              privileged: true,
-            },
+      synthStep: new CodeBuildStep('Synth', {
+        env: {
+          SOME_ENV_VAR: 'SomeValue',
+        },
+        installCommands: [
+          'install1',
+          'install2',
+        ],
+        commands: ['synth'],
+        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        primaryOutputDirectory: 'cdk.out',
+        buildEnvironment: {
+          environmentVariables: {
+            INNER_VAR: { value: 'InnerValue' },
           },
+          privileged: true,
         },
       }),
     });
@@ -644,14 +643,12 @@ behavior('Pipeline action contains a hash that changes as the buildspec changes'
       installCommands: ['do install'],
     }));
     const hash3 = modernSynthWithAction(() => ({
-      commands: ['asdf'],
-      engine: new cdkp.CodePipelineEngine({
-        codeBuild: {
-          synth: {
-            buildEnvironment: {
-              computeType: cbuild.ComputeType.LARGE,
-            },
-          },
+      synthStep: new CodeBuildStep('Synth', {
+        commands: ['asdf'],
+        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        primaryOutputDirectory: 'cdk.out',
+        buildEnvironment: {
+          computeType: cbuild.ComputeType.LARGE,
         },
       }),
     }));
@@ -800,15 +797,14 @@ behavior('Synth can reference an imported ECR repo', (suite) => {
 
   suite.modern(() => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({
-        codeBuild: {
-          synth: {
-            buildEnvironment: {
-              buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
-                ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),
-              ),
-            },
-          },
+      synthStep: new cdkp.CodeBuildStep('Synth', {
+        commands: ['build'],
+        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        primaryOutputDirectory: 'cdk.out',
+        buildEnvironment: {
+          buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
+            ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),
+          ),
         },
       }),
     });
