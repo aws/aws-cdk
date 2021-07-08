@@ -115,6 +115,8 @@ export class CodeBuildStep extends ScriptStep implements ICodePipelineActionFact
         rolePolicyStatements: this.props.rolePolicyStatements,
         securityGroups: this.props.securityGroups,
         partialBuildSpec: this.props.partialBuildSpec,
+        vpc: this.props.vpc,
+        subnetSelection: this.props.subnetSelection,
       },
     });
     const ret = factory.produce(options);

@@ -171,9 +171,9 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const project = new codebuild.PipelineProject(options.scope, this.constructId, {
       projectName: this.props.projectName,
       environment,
-      vpc: this.props.vpc,
-      subnetSelection: this.props.subnetSelection,
-      securityGroups: projectOptions?.securityGroups,
+      vpc: projectOptions.vpc,
+      subnetSelection: projectOptions.subnetSelection,
+      securityGroups: projectOptions.securityGroups,
       buildSpec: projectBuildSpec,
       role: this.props.role,
     });
@@ -279,6 +279,8 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildProjectOptions | u
       rolePolicyStatements: definedArray([...a.rolePolicyStatements ?? [], ...b.rolePolicyStatements ?? []]),
       securityGroups: definedArray([...a.securityGroups ?? [], ...b.securityGroups ?? []]),
       partialBuildSpec: mergeBuildSpecs(a.partialBuildSpec, b.partialBuildSpec),
+      vpc: b.vpc ?? a.vpc,
+      subnetSelection: b.subnetSelection ?? a.subnetSelection,
     };
   }
 }

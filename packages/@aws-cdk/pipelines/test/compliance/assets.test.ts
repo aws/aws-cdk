@@ -616,7 +616,9 @@ describe('pipeline with VPC', () => {
 
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({ vpc }),
+        engine: new cdkp.CodePipelineEngine({
+          codeBuildDefaults: { vpc },
+        }),
       });
       pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
 
@@ -652,7 +654,7 @@ describe('pipeline with VPC', () => {
 
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({ vpc }),
+        engine: new cdkp.CodePipelineEngine({ codeBuildDefaults: { vpc } }),
       });
       pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
       THEN_codePipelineExpectation();
@@ -687,7 +689,7 @@ describe('pipeline with VPC', () => {
 
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({ vpc }),
+        engine: new cdkp.CodePipelineEngine({ codeBuildDefaults: { vpc } }),
       });
       pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
       THEN_codePipelineExpectation();

@@ -39,9 +39,6 @@ export interface CodePipelineEngineProps {
    */
   readonly pipelineUsesAssets?: boolean;
 
-  readonly vpc?: ec2.IVpc;
-  readonly subnetSelection?: ec2.SubnetSelection;
-
   /**
    * Customize the CodeBuild projects created for this pipeline
    *
@@ -116,6 +113,22 @@ export interface CodeBuildProjectOptions {
    * @default - Security group will be automatically created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The VPC where to create the CodeBuild network interfaces in.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
 }
 
 export class CodePipelineEngine implements IDeploymentEngine {
@@ -327,10 +340,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
     // Now built-in steps
     if (step instanceof ScriptStep) {
-      return new CodeBuildFactory(step.id, step, {
-        vpc: this.props.vpc,
-        subnetSelection: this.props.subnetSelection,
-      }).produce({
+      return new CodeBuildFactory(step.id, step, {}).produce({
         actionName: actionName(options.node, options.sharedParent),
         runOrder: options.runOrder,
         artifacts: this.artifacts,
@@ -404,8 +414,6 @@ export class CodePipelineEngine implements IDeploymentEngine {
     const pipelineStackIdentifier = pipelineStack.node.path ?? pipelineStack.stackName;
 
     const result = new CodeBuildStep('SelfMutate', {
-      vpc: this.props.vpc,
-      subnetSelection: this.props.subnetSelection,
       projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
 
       buildEnvironment: {
@@ -497,9 +505,6 @@ export class CodePipelineEngine implements IDeploymentEngine {
     // With CodeBuild customization, including types of customization that are
     // not accessible to regular users.
     const result = new CodeBuildFactory(options.node.id, script, {
-      vpc: this.props.vpc,
-      subnetSelection: this.props.subnetSelection,
-
       projectOptions: {
         buildEnvironment: {
           privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
@@ -706,7 +711,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
     // VPC permissions required for CodeBuild
     // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
     // we need to do this.
-    if (this.props.vpc) {
+    const assetCodeBuildOptions = this.codeBuildOptionsFor(CodeBuildProjectType.ASSETS);
+    if (assetCodeBuildOptions?.vpc) {
       const vpcPolicy = new iam.Policy(assetRole, 'VpcPolicy', {
         statements: [
           new iam.PolicyStatement({
@@ -714,8 +720,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
             actions: ['ec2:CreateNetworkInterfacePermission'],
             conditions: {
               StringEquals: {
-                'ec2:Subnet': this.props.vpc
-                  .selectSubnets(this.props.subnetSelection).subnetIds
+                'ec2:Subnet': assetCodeBuildOptions.vpc
+                  .selectSubnets(assetCodeBuildOptions.subnetSelection).subnetIds
                   .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
                 'ec2:AuthorizedService': 'codebuild.amazonaws.com',
               },

@@ -552,7 +552,7 @@ behavior('Synth can be made to run in a VPC', (suite) => {
   suite.modern(() => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       engine: new cdkp.CodePipelineEngine({
-        vpc,
+        codeBuildDefaults: { vpc },
       }),
     });
   });

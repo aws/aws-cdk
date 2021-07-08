@@ -497,7 +497,7 @@ behavior('can run shell script actions in a VPC', (suite) => {
   suite.modern(() => {
     // All CodeBuild jobs automatically go into the VPC
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({ vpc }),
+      engine: new cdkp.CodePipelineEngine({ codeBuildDefaults: { vpc } }),
     });
 
     pipeline.addStage(new TwoStackApp(app, 'MyApp'), {
