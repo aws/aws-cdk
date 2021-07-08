@@ -204,6 +204,7 @@ test('PrincipalWithConditions.addCondition should work', () => {
       Version: '2012-10-17',
     },
   });
+});
 
 test('PrincipalWithConditions inherits principalAccount from AccountPrincipal ', () => {
   // GIVEN
