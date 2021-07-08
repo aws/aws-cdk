@@ -190,6 +190,33 @@ behavior('stackOutput generates names limited to 100 characters', (suite) => {
       }),
     });
   });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    const stage = new StageWithStackOutput(app, 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild');
+    pipeline.addStage(stage, {
+      post: [
+        new cdkp.ScriptStep('TestOutput', {
+          commands: ['echo $BUCKET_NAME'],
+          envFromOutputs: {
+            BUCKET_NAME: stage.output,
+          },
+        }),
+      ],
+    });
+
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: arrayWith({
+        Name: 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild',
+        Actions: arrayWith(
+          deepObjectLike({
+            Name: 'Stack.Deploy',
+            Namespace: stringNoLongerThan(100),
+          }),
+        ),
+      }),
+    });
+  });
 });
 
 behavior('validation step can run from scripts in source', (suite) => {

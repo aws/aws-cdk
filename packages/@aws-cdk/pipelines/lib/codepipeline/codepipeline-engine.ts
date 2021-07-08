@@ -4,7 +4,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Stack } from '@aws-cdk/core';
+import { Aws, Fn, IDependable, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { AssetType, BlueprintQueries, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
@@ -18,6 +18,9 @@ import { CodeBuildFactory, mergeCodeBuildOptions, stackVariableNamespace } from 
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+
+// eslint-disable-next-line no-duplicate-imports,import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface CodePipelineEngineProps {
   // Legacy and tweaking props
@@ -44,6 +47,13 @@ export interface CodePipelineEngineProps {
    * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
    */
   readonly codeBuild?: CodeBuildOptions;
+
+  /**
+   * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
+   *
+   * @default false
+   */
+  readonly singlePublisherPerAssetType?: boolean;
 }
 
 /**
@@ -84,7 +94,7 @@ export interface CodeBuildOptions {
  */
 export interface CodeBuildProjectOptions {
   /**
-   * The build environment
+   * Partial build environment, will be combined with other build environments that apply
    *
    * @default - Non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
    */
@@ -96,6 +106,16 @@ export interface CodeBuildProjectOptions {
    * @default - No policy statements added to CodeBuild Project Role
    */
   readonly rolePolicyStatements?: iam.PolicyStatement[];
+
+  /**
+   * Partial buildspec, will be combined with other buildspecs that apply
+   *
+   * The BuildSpec must be available inline--it cannot reference a file
+   * on disk.
+   *
+   * @default - No initial BuildSpec
+   */
+  readonly partialBuildSpec?: cb.BuildSpec;
 
   /**
    * Which security group(s) to associate with the project network interfaces.
@@ -114,6 +134,21 @@ export class CodePipelineEngine implements IDeploymentEngine {
   private readonly selfMutation: boolean;
   private _myCxAsmRoot?: string;
   private _scope?: Construct;
+
+  /**
+   * Asset roles shared for publishing
+   */
+  private readonly assetCodeBuildRoles: Record<string, iam.IRole> = {};
+
+  /**
+   * Policies created for the build projects that they have to depend on
+   */
+  private readonly assetAttachedPolicies: Record<string, iam.Policy> = {};
+
+  /**
+   * Per asset type, the target role ARNs that need to be assumed
+   */
+  private readonly assetPublishingRoles: Record<string, Set<string>> = {};
 
   /**
    * This is set to the very first artifact produced in the pipeline
@@ -140,6 +175,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
     const graphFromBp = new PipelineGraph(options.blueprint, {
       selfMutation: this.selfMutation,
+      singlePublisherPerAssetType: this.props.singlePublisherPerAssetType,
     });
 
     this.pipelineStagesAndActionsFromGraph(graphFromBp);
@@ -171,6 +207,15 @@ export class CodePipelineEngine implements IDeploymentEngine {
       throw new Error('Can\'t read \'scope\' if build deployment not called yet');
     }
     return this._scope;
+  }
+
+  /**
+   * Scope for Assets-related resources.
+   *
+   * Purely exists for construct tree backwards compatibility with legacy pipelines
+   */
+  private get assetsScope(): Construct {
+    return makeScope(this.scope, 'Assets');
   }
 
   private pipelineStagesAndActionsFromGraph(structure: PipelineGraph) {
@@ -416,7 +461,21 @@ export class CodePipelineEngine implements IDeploymentEngine {
       return `cdk-assets --path "${toPosixPath(relativeAssetManifestPath)}" --verbose publish "${asset.assetSelector}"`;
     });
 
-    return new CodeBuildStep(options.node.id, {
+    const assetType = assets[0].assetType;
+    if (assets.some(a => a.assetType !== assetType)) {
+      throw new Error('All assets in a single publishing step must be of the same type');
+    }
+
+    const publishingRoles = this.assetPublishingRoles[assetType] = (this.assetPublishingRoles[assetType] ?? new Set());
+    for (const asset of assets) {
+      if (asset.assetPublishingRoleArn) {
+        publishingRoles.add(asset.assetPublishingRoleArn);
+      }
+    }
+
+    const assetBuildConfig = this.obtainAssetCodeBuildConfig(assets[0].assetType);
+
+    const result = new CodeBuildStep(options.node.id, {
       vpc: this.props.vpc,
       subnetSelection: this.props.subnetSelection,
 
@@ -432,22 +491,22 @@ export class CodePipelineEngine implements IDeploymentEngine {
         `npm install -g cdk-assets${installSuffix}`,
       ],
       commands,
-      rolePolicyStatements: [
-        // allow the self-mutating project permissions to assume the bootstrap Action role
-        new iam.PolicyStatement({
-          actions: ['sts:AssumeRole'],
-          resources: ['arn:*:iam::*:role/*-deploy-role-*', 'arn:*:iam::*:role/*-publishing-role-*'],
-        }),
-      ],
+      role: assetBuildConfig.role,
     }).produce({
-      actionName: 'SelfMutate',
+      actionName: actionName(options.node, options.sharedParent),
       runOrder: options.runOrder,
       artifacts: this.artifacts,
-      scope: this.scope,
+      scope: this.assetsScope, // For backwards logicalID compatibility
       fallbackArtifact: this._fallbackArtifact,
       queries: options.queries,
-      codeBuildProjectOptions: this.codeBuildOptionsFor(CodeBuildProjectType.SELF_MUTATE),
-    }).action;
+      codeBuildProjectOptions: this.codeBuildOptionsFor(CodeBuildProjectType.ASSETS),
+    });
+
+    if (result.project && assetBuildConfig.dependable) {
+      result.project.node.addDependency(assetBuildConfig.dependable);
+    }
+
+    return result.action;
   }
 
   private nodeTypeFromNode(node: AGraphNode) {
@@ -525,6 +584,134 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
     return relativeConfigPath;
   }
+
+  /**
+   * This role is used by both the CodePipeline build action and related CodeBuild project. Consolidating these two
+   * roles into one, and re-using across all assets, saves significant size of the final synthesized output.
+   * Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
+   * Generates one role per asset type to separate file and Docker/image-based permissions.
+   */
+  private obtainAssetCodeBuildConfig(assetType: AssetType): AssetCodeBuildConfig {
+    if (this.assetCodeBuildRoles[assetType]) {
+      return {
+        role: this.assetCodeBuildRoles[assetType],
+        dependable: this.assetAttachedPolicies[assetType],
+      };
+    }
+
+    const stack = Stack.of(this.scope);
+
+    const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
+    const assetRole = new iam.Role(this.assetsScope, `${rolePrefix}Role`, {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: new iam.CompositePrincipal(
+        new iam.ServicePrincipal('codebuild.amazonaws.com'),
+        new iam.AccountPrincipal(stack.account),
+      ),
+    });
+
+    // Logging permissions
+    const logGroupArn = stack.formatArn({
+      service: 'logs',
+      resource: 'log-group',
+      sep: ':',
+      resourceName: '/aws/codebuild/*',
+    });
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      resources: [logGroupArn],
+      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+    }));
+
+    // CodeBuild report groups
+    const codeBuildArn = stack.formatArn({
+      service: 'codebuild',
+      resource: 'report-group',
+      resourceName: '*',
+    });
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      actions: [
+        'codebuild:CreateReportGroup',
+        'codebuild:CreateReport',
+        'codebuild:UpdateReport',
+        'codebuild:BatchPutTestCases',
+        'codebuild:BatchPutCodeCoverages',
+      ],
+      resources: [codeBuildArn],
+    }));
+
+    // CodeBuild start/stop
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        'codebuild:BatchGetBuilds',
+        'codebuild:StartBuild',
+        'codebuild:StopBuild',
+      ],
+    }));
+
+    // Publishing role access
+    // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
+    // Lazy-evaluated so all asset publishing roles are included.
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      resources: Lazy.list({ produce: () => Array.from(this.assetPublishingRoles[assetType] ?? []).map(arn => Fn.sub(arn)) }),
+    }));
+
+    // Grant pull access for any ECR registries and secrets that exist
+    if (assetType === AssetType.DOCKER_IMAGE) {
+      // this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
+    }
+
+    // Artifact access
+    this.pipeline.artifactBucket.grantRead(assetRole);
+
+    // VPC permissions required for CodeBuild
+    // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
+    // we need to do this.
+    if (this.props.vpc) {
+      const vpcPolicy = new iam.Policy(assetRole, 'VpcPolicy', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
+            actions: ['ec2:CreateNetworkInterfacePermission'],
+            conditions: {
+              StringEquals: {
+                'ec2:Subnet': this.props.vpc
+                  .selectSubnets(this.props.subnetSelection).subnetIds
+                  .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
+                'ec2:AuthorizedService': 'codebuild.amazonaws.com',
+              },
+            },
+          }),
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: [
+              'ec2:CreateNetworkInterface',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeDhcpOptions',
+              'ec2:DescribeVpcs',
+            ],
+          }),
+        ],
+      });
+      assetRole.attachInlinePolicy(vpcPolicy);
+      this.assetAttachedPolicies[assetType] = vpcPolicy;
+    }
+
+    this.assetCodeBuildRoles[assetType] = assetRole.withoutPolicyUpdates();
+    return {
+      role: this.assetCodeBuildRoles[assetType],
+      dependable: this.assetAttachedPolicies[assetType],
+    };
+  }
+}
+
+interface AssetCodeBuildConfig {
+  readonly role: iam.IRole;
+  readonly dependable?: IDependable;
 }
 
 enum CodeBuildProjectType {
@@ -586,4 +773,12 @@ function chunkTranches<A>(n: number, xss: A[][]): A[][][] {
 
 function isCodePipelineActionFactory(x: any): x is ICodePipelineActionFactory {
   return !!x.produce;
+}
+
+function makeScope(parent: Construct, id: string): Construct {
+  const existing = Node.of(parent).tryFindChild(id);
+  if (existing) {
+    return existing as Construct;
+  }
+  return new CoreConstruct(parent, id);
 }

@@ -3,15 +3,12 @@ import * as path from 'path';
 import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as cb from '@aws-cdk/aws-codebuild';
-import * as cp from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
-import { behavior, BucketStack, PIPELINE_ENV, TestApp, TestGitHubAction, LegacyTestGitHubNpmPipeline } from '../testhelpers';
+import { behavior, BucketStack, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, FileAssetApp, MegaAssetsApp, TwoFileAssetsApp, DockerAssetApp } from '../testhelpers';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
 const FILE_ASSET_SOURCE_HASH2 = 'ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e';
@@ -21,40 +18,58 @@ const IMAGE_PUBLISHING_ROLE = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role
 
 let app: TestApp;
 let pipelineStack: Stack;
-let pipeline: cdkp.CdkPipeline;
+
+beforeEach(() => {
+  app = new TestApp();
+  pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+});
 
 afterEach(() => {
   app.cleanup();
 });
 
 describe('basic pipeline', () => {
-  beforeEach(() => {
-    app = new TestApp();
-    pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-    pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  });
-
   behavior('no assets stage if the application has no assets', (suite) => {
     suite.legacy(() => {
-      // WHEN
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
       pipeline.addApplicationStage(new PlainStackApp(app, 'App'));
+      THEN_codePipelineExpectation();
+    });
 
+    suite.modern(() => {
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+      pipeline.addStage(new PlainStackApp(app, 'App'));
+
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
       // THEN
       expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         Stages: notMatching(arrayWith(objectLike({
           Name: 'Assets',
         }))),
       });
-    });
+    }
   });
 
   describe('asset stage placement', () => {
     behavior('assets stage comes before any user-defined stages', (suite) => {
       suite.legacy(() => {
-        // WHEN
+        const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
         pipeline.addApplicationStage(new FileAssetApp(app, 'App'));
 
-        // THEN
+        THEN_codePipelineExpectation();
+      });
+
+      suite.modern(() => {
+        const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+        pipeline.addStage(new FileAssetApp(app, 'App'));
+
+        THEN_codePipelineExpectation();
+      });
+
+      function THEN_codePipelineExpectation() {
         expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
           Stages: [
             objectLike({ Name: 'Source' }),
@@ -64,52 +79,26 @@ describe('basic pipeline', () => {
             objectLike({ Name: 'App' }),
           ],
         });
-      });
-    });
-
-    behavior('assets stage inserted after existing pipeline actions', (suite) => {
-      suite.legacy(() => {
-        // WHEN
-        const sourceArtifact = new cp.Artifact();
-        const cloudAssemblyArtifact = new cp.Artifact();
-        const existingCodePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
-          stages: [
-            {
-              stageName: 'CustomSource',
-              actions: [new TestGitHubAction(sourceArtifact)],
-            },
-            {
-              stageName: 'CustomBuild',
-              actions: [cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact })],
-            },
-          ],
-        });
-        pipeline = new cdkp.CdkPipeline(pipelineStack, 'CdkEmptyPipeline', {
-          cloudAssemblyArtifact: cloudAssemblyArtifact,
-          selfMutating: false,
-          codePipeline: existingCodePipeline,
-          // No source/build actions
-        });
-        pipeline.addApplicationStage(new FileAssetApp(app, 'App'));
-
-        // THEN
-        expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-          Stages: [
-            objectLike({ Name: 'CustomSource' }),
-            objectLike({ Name: 'CustomBuild' }),
-            objectLike({ Name: 'Assets' }),
-            objectLike({ Name: 'App' }),
-          ],
-        });
-      });
+      }
     });
 
     behavior('up to 50 assets fit in a single stage', (suite) => {
       suite.legacy(() => {
         // WHEN
+        const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
         pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 50 }));
 
-        // THEN
+        THEN_codePipelineExpectation();
+      });
+
+      suite.modern(() => {
+        const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+        pipeline.addStage(new MegaAssetsApp(app, 'App', { numAssets: 50 }));
+
+        THEN_codePipelineExpectation();
+      });
+
+      function THEN_codePipelineExpectation() {
         expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
           Stages: [
             objectLike({ Name: 'Source' }),
@@ -119,55 +108,87 @@ describe('basic pipeline', () => {
             objectLike({ Name: 'App' }),
           ],
         });
-      });
+      }
     });
 
     behavior('51 assets triggers a second stage', (suite) => {
       suite.legacy(() => {
         // WHEN
+        const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
         pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 51 }));
 
-        // THEN
+        THEN_codePipelineExpectation();
+      });
+
+      suite.modern(() => {
+        // WHEN
+        const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+        pipeline.addStage(new MegaAssetsApp(app, 'App', { numAssets: 51 }));
+
+        THEN_codePipelineExpectation();
+      });
+
+      function THEN_codePipelineExpectation() {
         expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
           Stages: [
             objectLike({ Name: 'Source' }),
             objectLike({ Name: 'Build' }),
             objectLike({ Name: 'UpdatePipeline' }),
-            objectLike({ Name: 'Assets' }),
-            objectLike({ Name: 'Assets2' }),
+            objectLike({ Name: stringLike('Assets*') }),
+            objectLike({ Name: stringLike('Assets*2') }),
             objectLike({ Name: 'App' }),
           ],
         });
-      });
+      }
     });
 
     behavior('101 assets triggers a third stage', (suite) => {
       suite.legacy(() => {
-        // WHEN
+        const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
         pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 101 }));
 
-        // THEN
+        THEN_codePipelineExpectation();
+      });
+
+      suite.modern(() => {
+        const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+        pipeline.addStage(new MegaAssetsApp(app, 'App', { numAssets: 101 }));
+
+        THEN_codePipelineExpectation();
+      });
+
+      function THEN_codePipelineExpectation() {
         expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
           Stages: [
             objectLike({ Name: 'Source' }),
             objectLike({ Name: 'Build' }),
             objectLike({ Name: 'UpdatePipeline' }),
-            objectLike({ Name: 'Assets' }),
-            objectLike({ Name: 'Assets2' }),
-            objectLike({ Name: 'Assets3' }),
+            objectLike({ Name: stringLike('Assets*') }), // 'Assets' vs 'Assets.1'
+            objectLike({ Name: stringLike('Assets*2') }),
+            objectLike({ Name: stringLike('Assets*3') }),
             objectLike({ Name: 'App' }),
           ],
         });
-      });
+      }
     });
   });
 
   behavior('command line properly locates assets in subassembly', (suite) => {
     suite.legacy(() => {
-      // WHEN
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
       pipeline.addApplicationStage(new FileAssetApp(app, 'FileAssetApp'));
 
-      // THEN
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+      pipeline.addStage(new FileAssetApp(app, 'FileAssetApp'));
+
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
       expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
         Environment: {
           Image: 'aws/codebuild/standard:5.0',
@@ -182,15 +203,26 @@ describe('basic pipeline', () => {
           })),
         },
       });
-    });
+    }
   });
 
   behavior('multiple assets are published in parallel', (suite) => {
     suite.legacy(() => {
       // WHEN
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
       pipeline.addApplicationStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
 
-      // THEN
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+      pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
       expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         Stages: arrayWith({
           Name: 'Assets',
@@ -200,7 +232,7 @@ describe('basic pipeline', () => {
           ],
         }),
       });
-    });
+    }
   });
 
   behavior('assets are also published when using the lower-level addStackArtifactDeployment', (suite) => {
@@ -209,6 +241,7 @@ describe('basic pipeline', () => {
       const asm = new FileAssetApp(app, 'FileAssetApp').synth();
 
       // WHEN
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
       pipeline.addStage('SomeStage').addStackArtifactDeployment(asm.getStackByName('FileAssetApp-Stack'));
 
       // THEN
@@ -224,14 +257,29 @@ describe('basic pipeline', () => {
         }),
       });
     });
+
+    // This function does not exist in the modern API
+    suite.doesNotApply.modern();
   });
 
   behavior('file image asset publishers do not use privilegedmode', (suite) => {
     suite.legacy(() => {
       // WHEN
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
       pipeline.addApplicationStage(new FileAssetApp(app, 'FileAssetApp'));
 
-      // THEN
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      // WHEN
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+      pipeline.addStage(new FileAssetApp(app, 'FileAssetApp'));
+
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
       expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
         Source: {
           BuildSpec: encodedJson(deepObjectLike({
@@ -247,15 +295,25 @@ describe('basic pipeline', () => {
           Image: 'aws/codebuild/standard:5.0',
         }),
       });
-    });
+    }
   });
 
   behavior('docker image asset publishers use privilegedmode', (suite) => {
     suite.legacy(() => {
-      // WHEN
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
       pipeline.addApplicationStage(new DockerAssetApp(app, 'DockerAssetApp'));
 
-      // THEN
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+      pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
+
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
       expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
         Source: {
           BuildSpec: encodedJson(deepObjectLike({
@@ -271,20 +329,32 @@ describe('basic pipeline', () => {
           PrivilegedMode: true,
         }),
       });
-    });
+    }
   });
 
-  behavior('can control fix/CLI version used in pipeline selfupdate', (suite) => {
+  behavior('can control fix/CLI version used in asset publishing', (suite) => {
     suite.legacy(() => {
-      // WHEN
-      const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
-      const pipeline2 = new LegacyTestGitHubNpmPipeline(stack2, 'Cdk2', {
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
         cdkCliVersion: '1.2.3',
       });
-      pipeline2.addApplicationStage(new FileAssetApp(stack2, 'FileAssetApp'));
+      pipeline.addApplicationStage(new FileAssetApp(pipelineStack, 'FileAssetApp'));
 
-      // THEN
-      expect(stack2).toHaveResourceLike('AWS::CodeBuild::Project', {
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        engine: new cdkp.CodePipelineEngine( {
+          cdkCliVersion: '1.2.3',
+        }),
+      });
+      pipeline.addStage(new FileAssetApp(pipelineStack, 'FileAssetApp'));
+
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
+      expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
         Environment: {
           Image: 'aws/codebuild/standard:5.0',
         },
@@ -298,14 +368,29 @@ describe('basic pipeline', () => {
           })),
         },
       });
-    });
+    }
   });
 
   describe('asset roles and policies', () => {
     behavior('includes file publishing assets role for apps with file assets', (suite) => {
       suite.legacy(() => {
+        const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
         pipeline.addApplicationStage(new FileAssetApp(app, 'App1'));
 
+        THEN_codePipelineExpectation();
+      });
+
+      suite.modern(() => {
+        const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+          // Expectation expects to see KMS key policy permissions
+          engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+        });
+        pipeline.addStage(new FileAssetApp(app, 'App1'));
+
+        THEN_codePipelineExpectation();
+      });
+
+      function THEN_codePipelineExpectation() {
         expect(pipelineStack).toHaveResourceLike('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
             Statement: [{
@@ -324,11 +409,12 @@ describe('basic pipeline', () => {
         });
         expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
           expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
-      });
+      }
     });
 
     behavior('publishing assets role may assume roles from multiple environments', (suite) => {
       suite.legacy(() => {
+        const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
         pipeline.addApplicationStage(new FileAssetApp(app, 'App1'));
         pipeline.addApplicationStage(new FileAssetApp(app, 'App2', {
           env: {
@@ -337,27 +423,80 @@ describe('basic pipeline', () => {
           },
         }));
 
+        THEN_codePipelineExpectation();
+      });
+
+      suite.modern(() => {
+        const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+          // Expectation expects to see KMS key policy permissions
+          engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+        });
+
+        pipeline.addStage(new FileAssetApp(app, 'App1'));
+        pipeline.addStage(new FileAssetApp(app, 'App2', {
+          env: {
+            account: '0123456789012',
+            region: 'eu-west-1',
+          },
+        }));
+
+        THEN_codePipelineExpectation();
+      });
+
+      function THEN_codePipelineExpectation() {
         expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
           expectedAssetRolePolicy([FILE_PUBLISHING_ROLE, 'arn:${AWS::Partition}:iam::0123456789012:role/cdk-hnb659fds-file-publishing-role-0123456789012-eu-west-1'],
             'CdkAssetsFileRole6BE17A07'));
-      });
+      }
     });
 
     behavior('publishing assets role de-dupes assumed roles', (suite) => {
       suite.legacy(() => {
+        const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
         pipeline.addApplicationStage(new FileAssetApp(app, 'App1'));
         pipeline.addApplicationStage(new FileAssetApp(app, 'App2'));
         pipeline.addApplicationStage(new FileAssetApp(app, 'App3'));
 
+        THEN_codePipelineExpectation();
+      });
+
+      suite.modern(() => {
+        const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+          // Expectation expects to see KMS key policy permissions
+          engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+        });
+        pipeline.addStage(new FileAssetApp(app, 'App1'));
+        pipeline.addStage(new FileAssetApp(app, 'App2'));
+        pipeline.addStage(new FileAssetApp(app, 'App3'));
+
+        THEN_codePipelineExpectation();
+      });
+
+      function THEN_codePipelineExpectation() {
         expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
           expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
-      });
+      }
     });
 
     behavior('includes image publishing assets role for apps with Docker assets', (suite) => {
       suite.legacy(() => {
+        const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
         pipeline.addApplicationStage(new DockerAssetApp(app, 'App1'));
 
+        THEN_codePipelineExpectation();
+      });
+
+      suite.modern(() => {
+        const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+          // Expectation expects to see KMS key policy permissions
+          engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+        });
+        pipeline.addStage(new DockerAssetApp(app, 'App1'));
+
+        THEN_codePipelineExpectation();
+      });
+
+      function THEN_codePipelineExpectation() {
         expect(pipelineStack).toHaveResourceLike('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
             Statement: [{
@@ -376,37 +515,76 @@ describe('basic pipeline', () => {
         });
         expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
           expectedAssetRolePolicy(IMAGE_PUBLISHING_ROLE, 'CdkAssetsDockerRole484B6DD3'));
-      });
+      }
     });
 
     behavior('includes both roles for apps with both file and Docker assets', (suite) => {
       suite.legacy(() => {
+        const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
         pipeline.addApplicationStage(new FileAssetApp(app, 'App1'));
         pipeline.addApplicationStage(new DockerAssetApp(app, 'App2'));
 
+        THEN_codePipelineExpectation();
+      });
+
+      suite.modern(() => {
+        const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+          // Expectation expects to see KMS key policy permissions
+          engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+        });
+        pipeline.addStage(new FileAssetApp(app, 'App1'));
+        pipeline.addStage(new DockerAssetApp(app, 'App2'));
+
+        THEN_codePipelineExpectation();
+      });
+
+      function THEN_codePipelineExpectation() {
         expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
           expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
         expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
           expectedAssetRolePolicy(IMAGE_PUBLISHING_ROLE, 'CdkAssetsDockerRole484B6DD3'));
-      });
+      }
     });
   });
 });
 
-
 behavior('can supply pre-install scripts to asset upload', (suite) => {
   suite.legacy(() => {
-    // WHEN
-    app = new TestApp();
-    pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-    pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       assetPreInstallCommands: [
         'npm config set registry https://registry.com',
       ],
     });
     pipeline.addApplicationStage(new FileAssetApp(app, 'FileAssetApp'));
 
-    // THEN
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      engine: new cdkp.CodePipelineEngine({
+        codeBuild: {
+          assetPublishing: {
+            partialBuildSpec: cb.BuildSpec.fromObject({
+              version: '0.2',
+              phases: {
+                install: {
+                  commands: [
+                    'npm config set registry https://registry.com',
+                  ],
+                },
+              },
+            }),
+          },
+        },
+      }),
+    });
+    pipeline.addStage(new FileAssetApp(app, 'FileAssetApp'));
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
@@ -421,27 +599,35 @@ behavior('can supply pre-install scripts to asset upload', (suite) => {
         })),
       },
     });
-
-    app.cleanup();
-  });
+  }
 });
 
 describe('pipeline with VPC', () => {
   let vpc: ec2.Vpc;
   beforeEach(() => {
-    app = new TestApp();
-    pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
     vpc = new ec2.Vpc(pipelineStack, 'Vpc');
-    pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      vpc,
-    });
   });
 
   behavior('asset CodeBuild Project uses VPC subnets', (suite) => {
     suite.legacy(() => {
-      // WHEN
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        vpc,
+      });
       pipeline.addApplicationStage(new DockerAssetApp(app, 'DockerAssetApp'));
 
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        engine: new cdkp.CodePipelineEngine({ vpc }),
+      });
+      pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
+
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
       // THEN
       expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
         VpcConfig: objectLike({
@@ -456,16 +642,27 @@ describe('pipeline with VPC', () => {
           VpcId: { Ref: 'Vpc8378EB38' },
         }),
       });
-    });
+    }
   });
 
   behavior('Pipeline-generated CodeBuild Projects have appropriate execution role permissions', (suite) => {
     suite.legacy(() => {
-      // WHEN
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        vpc,
+      });
       pipeline.addApplicationStage(new DockerAssetApp(app, 'DockerAssetApp'));
+      THEN_codePipelineExpectation();
+    });
 
-      // THEN
+    suite.modern(() => {
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        engine: new cdkp.CodePipelineEngine({ vpc }),
+      });
+      pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
+      THEN_codePipelineExpectation();
+    });
 
+    function THEN_codePipelineExpectation() {
       // Assets Project
       expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
         Roles: [
@@ -479,13 +676,28 @@ describe('pipeline with VPC', () => {
           }),
         },
       });
-    });
+    }
   });
 
   behavior('Asset publishing CodeBuild Projects have a dependency on attached policies to the role', (suite) => {
     suite.legacy(() => {
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        vpc,
+      });
       pipeline.addApplicationStage(new DockerAssetApp(app, 'DockerAssetApp'));
 
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        engine: new cdkp.CodePipelineEngine({ vpc }),
+      });
+      pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
       // Assets Project
       expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
         Properties: {
@@ -500,22 +712,16 @@ describe('pipeline with VPC', () => {
           'CdkAssetsDockerRoleVpcPolicy86CA024B',
         ],
       }, ResourcePart.CompleteDefinition);
-    });
+    }
   });
 });
 
 describe('pipeline with single asset publisher', () => {
-  beforeEach(() => {
-    app = new TestApp();
-    pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-    pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      singlePublisherPerType: true,
-    });
-  });
-
   behavior('multiple assets are using the same job in singlePublisherMode', (suite) => {
     suite.legacy(() => {
-      // WHEN
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        singlePublisherPerType: true,
+      });
       pipeline.addApplicationStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
 
       // THEN
@@ -553,29 +759,33 @@ describe('pipeline with Docker credentials', () => {
   let secretPublish: secretsmanager.ISecret;
 
   beforeEach(() => {
-    app = new TestApp();
-    pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-
     secretSynth = secretsmanager.Secret.fromSecretCompleteArn(pipelineStack, 'Secret1', secretSynthArn);
     secretUpdate = secretsmanager.Secret.fromSecretCompleteArn(pipelineStack, 'Secret2', secretUpdateArn);
     secretPublish = secretsmanager.Secret.fromSecretCompleteArn(pipelineStack, 'Secret3', secretPublishArn);
-    pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      dockerCredentials: [
-        cdkp.DockerCredential.customRegistry('synth.example.com', secretSynth, {
-          usages: [cdkp.DockerCredentialUsage.SYNTH],
-        }),
-        cdkp.DockerCredential.customRegistry('selfupdate.example.com', secretUpdate, {
-          usages: [cdkp.DockerCredentialUsage.SELF_UPDATE],
-        }),
-        cdkp.DockerCredential.customRegistry('publish.example.com', secretPublish, {
-          usages: [cdkp.DockerCredentialUsage.ASSET_PUBLISHING],
-        }),
-      ],
-    });
   });
+
+  class LegacyPipelineWithCreds extends LegacyTestGitHubNpmPipeline {
+    constructor(scope: Construct, id: string, props?: ConstructorParameters<typeof LegacyTestGitHubNpmPipeline>[2]) {
+      super(scope, id, {
+        dockerCredentials: [
+          cdkp.DockerCredential.customRegistry('synth.example.com', secretSynth, {
+            usages: [cdkp.DockerCredentialUsage.SYNTH],
+          }),
+          cdkp.DockerCredential.customRegistry('selfupdate.example.com', secretUpdate, {
+            usages: [cdkp.DockerCredentialUsage.SELF_UPDATE],
+          }),
+          cdkp.DockerCredential.customRegistry('publish.example.com', secretPublish, {
+            usages: [cdkp.DockerCredentialUsage.ASSET_PUBLISHING],
+          }),
+        ],
+        ...props,
+      });
+    }
+  }
 
   behavior('synth action receives install commands and access to relevant credentials', (suite) => {
     suite.legacy(() => {
+      const pipeline = new LegacyPipelineWithCreds(pipelineStack, 'Cdk');
       pipeline.addApplicationStage(new DockerAssetApp(app, 'App1'));
 
       const expectedCredsConfig = JSON.stringify({
@@ -617,18 +827,7 @@ describe('pipeline with Docker credentials', () => {
 
   behavior('synth action receives Windows install commands if a Windows image is detected', (suite) => {
     suite.legacy(() => {
-      pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk2', {
-        dockerCredentials: [
-          cdkp.DockerCredential.customRegistry('synth.example.com', secretSynth, {
-            usages: [cdkp.DockerCredentialUsage.SYNTH],
-          }),
-          cdkp.DockerCredential.customRegistry('selfupdate.example.com', secretUpdate, {
-            usages: [cdkp.DockerCredentialUsage.SELF_UPDATE],
-          }),
-          cdkp.DockerCredential.customRegistry('publish.example.com', secretPublish, {
-            usages: [cdkp.DockerCredentialUsage.ASSET_PUBLISHING],
-          }),
-        ],
+      const pipeline = new LegacyPipelineWithCreds(pipelineStack, 'Cdk2', {
         npmSynthOptions: {
           environment: {
             buildImage: cb.WindowsBuildImage.WINDOWS_BASE_2_0,
@@ -665,6 +864,7 @@ describe('pipeline with Docker credentials', () => {
 
   behavior('self-update receives install commands and access to relevant credentials', (suite) => {
     suite.legacy(() => {
+      const pipeline = new LegacyPipelineWithCreds(pipelineStack, 'Cdk');
       pipeline.addApplicationStage(new DockerAssetApp(app, 'App1'));
 
       const expectedCredsConfig = JSON.stringify({
@@ -706,6 +906,7 @@ describe('pipeline with Docker credentials', () => {
 
   behavior('asset publishing receives install commands and access to relevant credentials', (suite) => {
     suite.legacy(() => {
+      const pipeline = new LegacyPipelineWithCreds(pipelineStack, 'Cdk');
       pipeline.addApplicationStage(new DockerAssetApp(app, 'App1'));
 
       const expectedCredsConfig = JSON.stringify({
@@ -751,65 +952,6 @@ class PlainStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
     new BucketStack(this, 'Stack');
-  }
-}
-
-class FileAssetApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
-    super(scope, id, props);
-    const stack = new Stack(this, 'Stack');
-    new s3_assets.Asset(stack, 'Asset', {
-      path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
-    });
-  }
-}
-
-class TwoFileAssetsApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
-    super(scope, id, props);
-    const stack = new Stack(this, 'Stack');
-    new s3_assets.Asset(stack, 'Asset1', {
-      path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
-    });
-    new s3_assets.Asset(stack, 'Asset2', {
-      path: path.join(__dirname, 'assets', 'test-file-asset-two.txt'),
-    });
-  }
-}
-
-class DockerAssetApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
-    super(scope, id, props);
-    const stack = new Stack(this, 'Stack');
-    new ecr_assets.DockerImageAsset(stack, 'Asset', {
-      directory: path.join(__dirname, 'assets', 'test-docker-asset'),
-    });
-  }
-}
-
-interface MegaAssetsAppProps extends StageProps {
-  readonly numAssets: number;
-}
-
-// Creates a mix of file and image assets, up to a specified count
-class MegaAssetsApp extends Stage {
-  constructor(scope: Construct, id: string, props: MegaAssetsAppProps) {
-    super(scope, id, props);
-    const stack = new Stack(this, 'Stack');
-
-    let assetCount = 0;
-    for (; assetCount < props.numAssets / 2; assetCount++) {
-      new s3_assets.Asset(stack, `Asset${assetCount}`, {
-        path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
-        assetHash: `FileAsset${assetCount}`,
-      });
-    }
-    for (; assetCount < props.numAssets; assetCount++) {
-      new ecr_assets.DockerImageAsset(stack, `Asset${assetCount}`, {
-        directory: path.join(__dirname, 'assets', 'test-docker-asset'),
-        extraHash: `FileAsset${assetCount}`,
-      });
-    }
   }
 }
 

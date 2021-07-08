@@ -17,6 +17,13 @@ export interface PipelineGraphProps {
   readonly publishTemplate?: boolean;
 
   /**
+   * Whether to combine asset publishers for the same type into one step
+   *
+   * @default false
+   */
+  readonly singlePublisherPerAssetType?: boolean;
+
+  /**
    * Add a "prepare" step for each stack which can be used to create the change
    * set. If this is disbled, only the "execute" step will be included.
    *
@@ -37,11 +44,13 @@ export class PipelineGraph {
 
   private readonly added = new Map<Step, AGraphNode>();
   private readonly assetNodes = new Map<string, AGraphNode>();
+  private readonly assetNodesByType = new Map<AssetType, AGraphNode>();
   private readonly synthNode: AGraphNode;
   private readonly selfMutateNode?: AGraphNode;
   private readonly stackOutputDependencies = new DependencyBuilders<StackDeployment, any>();
   private readonly publishTemplate: boolean;
   private readonly prepareStep: boolean;
+  private readonly singlePublisher: boolean;
 
   private lastPreparationNode: AGraphNode;
   private _fileAssetCtr = 0;
@@ -50,6 +59,7 @@ export class PipelineGraph {
   constructor(public readonly blueprint: Blueprint, props: PipelineGraphProps = {}) {
     this.publishTemplate = props.publishTemplate ?? false;
     this.prepareStep = props.prepareStep ?? true;
+    this.singlePublisher = props.singlePublisherPerAssetType ?? false;
 
     this.queries = new BlueprintQueries(blueprint);
 
@@ -239,25 +249,36 @@ export class PipelineGraph {
   private publishAsset(stackAsset: StackAsset): AGraphNode {
     const assetsGraph = this.topLevelGraph('Assets');
 
-    const assetNode = this.assetNodes.get(stackAsset.assetId);
+    let assetNode = this.assetNodes.get(stackAsset.assetId);
     if (assetNode) {
-      const data = assetNode.data;
-      if (data?.type !== 'publish-assets') {
-        throw new Error(`${assetNode} has the wrong data.type: ${data?.type}`);
-      }
+      // If there's already a node pubishing this asset, add as a new publishing
+      // destination to the same node.
+    } else if (this.singlePublisher && this.assetNodesByType.has(stackAsset.assetType)) {
+      // If we're doing a single node per type, lookup by that
+      assetNode = this.assetNodesByType.get(stackAsset.assetType)!;
+    } else {
+      // Otherwise add a new one
+      const id = stackAsset.assetType === AssetType.FILE
+        ? (this.singlePublisher ? 'FileAsset' : `FileAsset${++this._fileAssetCtr}`)
+        : (this.singlePublisher ? 'DockerAsset' : `DockerAsset${++this._dockerAssetCtr}`);
 
-      // No duplicates
-      if (!data.assets.some(a => a.assetSelector === stackAsset.assetSelector)) {
-        data.assets.push(stackAsset);
-      }
+      assetNode = GraphNode.of(id, { type: 'publish-assets', assets: [] });
+      assetsGraph.add(assetNode);
+      assetNode.dependOn(this.lastPreparationNode);
+
+      this.assetNodesByType.set(stackAsset.assetType, assetNode);
+      this.assetNodes.set(stackAsset.assetId, assetNode);
     }
 
-    const id = stackAsset.assetType === AssetType.FILE ? `FileAsset${++this._fileAssetCtr}` : `DockerAsset${++this._dockerAssetCtr}`;
-    const newNode: AGraphNode = GraphNode.of(id, { type: 'publish-assets', assets: [stackAsset] });
-    this.assetNodes.set(stackAsset.assetId, newNode);
-    assetsGraph.add(newNode);
-    newNode.dependOn(this.lastPreparationNode);
-    return newNode;
+    const data = assetNode.data;
+    if (data?.type !== 'publish-assets') {
+      throw new Error(`${assetNode} has the wrong data.type: ${data?.type}`);
+    }
+    if (!data.assets.some(a => a.assetSelector === stackAsset.assetSelector)) {
+      data.assets.push(stackAsset);
+    }
+
+    return assetNode;
   }
 
   /**

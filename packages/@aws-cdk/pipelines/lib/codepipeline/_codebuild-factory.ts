@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { FileSetLocation, ScriptStep, StackDeployment } from '../blueprint';
 import { mapValues, mkdict, noEmptyObject, partition } from '../private/javascript';
@@ -48,6 +49,13 @@ export interface CodeBuildFactoryProps {
    * @default - No special values
    */
   readonly projectOptions?: CodeBuildProjectOptions;
+
+  /**
+   * Custom execution role to be used for the CodeBuild project
+   *
+   * @default - A role is automatically created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -95,14 +103,18 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       ...this.runScript.installCommands ?? [],
     ];
 
-    const buildSpec = codebuild.BuildSpec.fromObject({
+    const buildSpecHere = codebuild.BuildSpec.fromObject({
       version: '0.2',
       phases: {
         install: (installCommands.length ?? 0) > 0 ? { commands: installCommands } : undefined,
         build: this.runScript.commands.length > 0 ? { commands: this.runScript.commands } : undefined,
       },
-      artifacts: renderArtifactsBuildSpec(options.artifacts, this.runScript.outputs ?? []),
+      artifacts: noEmptyObject<any>(renderArtifactsBuildSpec(options.artifacts, this.runScript.outputs ?? [])),
     });
+
+    const buildSpec = options.codeBuildProjectOptions?.partialBuildSpec
+      ? codebuild.mergeBuildSpecs(options.codeBuildProjectOptions?.partialBuildSpec, buildSpecHere)
+      : buildSpecHere;
 
     // Partition environment variables into environment variables that can go on the project
     // and environment variables that MUST go in the pipeline (those that reference CodePipeline variables)
@@ -131,6 +143,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       subnetSelection: this.props.subnetSelection,
       securityGroups: projectOptions?.securityGroups,
       buildSpec,
+      role: this.props.role,
     });
 
     if (projectOptions?.rolePolicyStatements !== undefined) {
@@ -195,7 +208,7 @@ function renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLoca
   // save the generated files in the output artifact
   // This part of the buildspec has to look completely different depending on whether we're
   // using secondary artifacts or not.
-  if (outputs.length === 0) { return undefined; }
+  if (outputs.length === 0) { return {}; }
 
   if (outputs.length === 1) {
     return {
@@ -233,6 +246,9 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildProjectOptions | u
       buildEnvironment: mergeBuildEnvironments(a.buildEnvironment, b.buildEnvironment),
       rolePolicyStatements: definedArray([...a.rolePolicyStatements ?? [], ...b.rolePolicyStatements ?? []]),
       securityGroups: definedArray([...a.securityGroups ?? [], ...b.securityGroups ?? []]),
+      partialBuildSpec: a.partialBuildSpec && b.partialBuildSpec
+        ? codebuild.mergeBuildSpecs(a.partialBuildSpec, b.partialBuildSpec)
+        : (a.partialBuildSpec ?? b.partialBuildSpec),
     };
   }
 }

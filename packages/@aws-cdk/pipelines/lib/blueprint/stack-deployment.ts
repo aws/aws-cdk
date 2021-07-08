@@ -136,6 +136,11 @@ export interface StackAsset {
   readonly assetType: AssetType;
 
   /**
+   * Role ARN to assume to publish
+   */
+  readonly assetPublishingRoleArn?: string;
+
+  /**
    * Does this asset represent the template.
    */
   readonly isTemplate?: boolean;
@@ -166,6 +171,7 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
         assetId: entry.id.assetId,
         assetSelector: entry.id.toString(),
         assetType,
+        assetPublishingRoleArn: entry.destination.assumeRoleArn,
         isTemplate,
       });
     }

@@ -15,8 +15,6 @@ test('"uniqueId" renders a graph-wide unique id for each node', () => {
     G.node('n4');
   });
 
-  g.consoleLog();
-
   expect(Array.from(flatten(g.sortedLeaves())).map(n => n.uniqueId)).toStrictEqual([
     'g1-n1',
     'g1-n2',
@@ -37,8 +35,6 @@ test('"allDeps" combines node deps and parent deps', () => {
       });
     });
   });
-
-  g.consoleLog();
 
   expect((n4 as GraphNode<any>).allDeps.map(x => x.uniqueId)).toStrictEqual(['g1-g2-n3', 'g1-n2']);
 });

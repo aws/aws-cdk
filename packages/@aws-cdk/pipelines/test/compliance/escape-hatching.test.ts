@@ -4,7 +4,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import { SecretValue, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
-import { behavior, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, TestApp, TestGitHubAction } from '../testhelpers';
+import { behavior, FileAssetApp, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, TestApp, TestGitHubAction } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -149,6 +149,42 @@ behavior('can add another action to an existing stage', (suite) => {
           objectLike({ Name: 'GitHub2' }),
         ],
       }),
+    });
+  });
+});
+
+
+behavior('assets stage inserted after existing pipeline actions', (suite) => {
+  suite.legacy(() => {
+    // WHEN
+    const existingCodePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
+      stages: [
+        {
+          stageName: 'CustomSource',
+          actions: [new TestGitHubAction(sourceArtifact)],
+        },
+        {
+          stageName: 'CustomBuild',
+          actions: [cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact })],
+        },
+      ],
+    });
+    const pipeline = new cdkp.CdkPipeline(pipelineStack, 'CdkEmptyPipeline', {
+      cloudAssemblyArtifact: cloudAssemblyArtifact,
+      selfMutating: false,
+      codePipeline: existingCodePipeline,
+      // No source/build actions
+    });
+    pipeline.addApplicationStage(new FileAssetApp(app, 'App'));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'CustomSource' }),
+        objectLike({ Name: 'CustomBuild' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'App' }),
+      ],
     });
   });
 });

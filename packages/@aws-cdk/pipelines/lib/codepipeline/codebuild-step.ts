@@ -17,6 +17,23 @@ export interface CodeBuildStepProps extends ScriptStepProps {
   readonly projectName?: string;
 
   /**
+   * Additional configuration that can only be configured via BuildSpec
+   *
+   * You should not use this to specify output artifacts; those
+   * should be supplied via the other properties of this class, otherwise
+   * CDK Pipelines won't be able to inspect the artifacts.
+   *
+   * Set the `commands` to an empty array if you want to fully specify
+   * the BuildSpec using this field.
+   *
+   * The BuildSpec must be available inline--it cannot reference a file
+   * on disk.
+   *
+   * @default - BuildSpec completely derived from other properties
+   */
+  readonly partialBuildSpec?: codebuild.BuildSpec;
+
+  /**
    * The VPC where to execute the SimpleSynth.
    *
    * @default - No VPC
@@ -40,6 +57,13 @@ export interface CodeBuildStepProps extends ScriptStepProps {
    * @default - No policy statements added to CodeBuild Project Role
    */
   readonly rolePolicyStatements?: iam.PolicyStatement[];
+
+  /**
+   * Custom execution role to be used for the CodeBuild project
+   *
+   * @default - A role is automatically created
+   */
+  readonly role?: iam.IRole;
 
   /**
    * Include a hash of the build config into the invocation
@@ -96,6 +120,7 @@ export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
         buildEnvironment: this.props.buildEnvironment,
         rolePolicyStatements: this.props.rolePolicyStatements,
         securityGroups: this.props.securityGroups,
+        partialBuildSpec: this.props.partialBuildSpec,
       },
     });
     const ret = factory.produce(options);

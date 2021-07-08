@@ -2,7 +2,9 @@
 import '@aws-cdk/assert-internal/jest';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { App, AppProps, Environment, CfnOutput, Stage, StageProps, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { assemblyBuilderOf } from '../../lib/private/construct-internals';
@@ -140,5 +142,64 @@ export class StageWithStackOutput extends Stage {
     this.output = new CfnOutput(stack, 'BucketName', {
       value: stack.bucket.bucketName,
     });
+  }
+}
+
+export class FileAssetApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    const stack = new Stack(this, 'Stack');
+    new s3_assets.Asset(stack, 'Asset', {
+      path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
+    });
+  }
+}
+
+export class TwoFileAssetsApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    const stack = new Stack(this, 'Stack');
+    new s3_assets.Asset(stack, 'Asset1', {
+      path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
+    });
+    new s3_assets.Asset(stack, 'Asset2', {
+      path: path.join(__dirname, 'assets', 'test-file-asset-two.txt'),
+    });
+  }
+}
+
+export class DockerAssetApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    const stack = new Stack(this, 'Stack');
+    new ecr_assets.DockerImageAsset(stack, 'Asset', {
+      directory: path.join(__dirname, 'assets', 'test-docker-asset'),
+    });
+  }
+}
+
+export interface MegaAssetsAppProps extends StageProps {
+  readonly numAssets: number;
+}
+
+// Creates a mix of file and image assets, up to a specified count
+export class MegaAssetsApp extends Stage {
+  constructor(scope: Construct, id: string, props: MegaAssetsAppProps) {
+    super(scope, id, props);
+    const stack = new Stack(this, 'Stack');
+
+    let assetCount = 0;
+    for (; assetCount < props.numAssets / 2; assetCount++) {
+      new s3_assets.Asset(stack, `Asset${assetCount}`, {
+        path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
+        assetHash: `FileAsset${assetCount}`,
+      });
+    }
+    for (; assetCount < props.numAssets; assetCount++) {
+      new ecr_assets.DockerImageAsset(stack, `Asset${assetCount}`, {
+        directory: path.join(__dirname, 'assets', 'test-docker-asset'),
+        extraHash: `FileAsset${assetCount}`,
+      });
+    }
   }
 }
