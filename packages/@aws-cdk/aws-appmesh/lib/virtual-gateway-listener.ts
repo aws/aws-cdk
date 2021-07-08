@@ -1,13 +1,13 @@
 import { CfnVirtualGateway } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
-import { ConnectionPoolConfig } from './private/utils';
+import { ListenerTlsOptions } from './listener-tls-options';
+import { ConnectionPoolConfig, renderListenerTlsOptions } from './private/utils';
 import {
   GrpcConnectionPool,
   Http2ConnectionPool,
   HttpConnectionPool,
   Protocol,
 } from './shared-interfaces';
-import { TlsListener } from './tls-listener';
 
 import { Construct } from 'constructs';
 
@@ -34,7 +34,7 @@ interface VirtualGatewayListenerCommonOptions {
    *
    * @default - none
    */
-  readonly tls?: TlsListener;
+  readonly tls?: ListenerTlsOptions;
 }
 
 /**
@@ -123,7 +123,7 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
   constructor(private readonly protocol: Protocol,
     private readonly healthCheck: HealthCheck | undefined,
     private readonly port: number = 8080,
-    private readonly tls: TlsListener | undefined,
+    private readonly listenerTls: ListenerTlsOptions | undefined,
     private readonly connectionPool: ConnectionPoolConfig | undefined) {
     super();
   }
@@ -140,23 +140,11 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
           protocol: this.protocol,
         },
         healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualGatewayHealthCheck,
-        tls: renderTls(scope, this.tls),
+        tls: renderListenerTlsOptions(scope, this.listenerTls),
         connectionPool: this.connectionPool ? renderConnectionPool(this.connectionPool, this.protocol) : undefined,
       },
     };
   }
-}
-
-/**
- * Renders the TLS config for a listener
- */
-function renderTls(scope: Construct, tls: TlsListener | undefined): CfnVirtualGateway.VirtualGatewayListenerTlsProperty | undefined {
-  return tls
-    ? {
-      certificate: tls.certificate.bind(scope).tlsCertificate,
-      mode: tls.mode,
-    }
-    : undefined;
 }
 
 function renderConnectionPool(connectionPool: ConnectionPoolConfig, listenerProtocol: Protocol):

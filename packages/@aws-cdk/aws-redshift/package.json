@@ -50,7 +50,9 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::Redshift",
@@ -109,7 +111,8 @@
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterValue",
       "props-physical-name:@aws-cdk/aws-redshift.ClusterParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-redshift.ClusterSubnetGroupProps",
-      "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps"
+      "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps",
+      "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterId"
     ]
   },
   "stability": "experimental",

@@ -50,7 +50,9 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudFront",
@@ -158,7 +160,8 @@
       "resource-attribute:@aws-cdk/aws-cloudfront.OriginRequestPolicy.originRequestPolicyLastModifiedTime",
       "resource-attribute:@aws-cdk/aws-cloudfront.KeyGroup.keyGroupLastModifiedTime",
       "resource-attribute:@aws-cdk/aws-cloudfront.PublicKey.publicKeyCreatedTime",
-      "resource-attribute:@aws-cdk/aws-cloudfront.OriginAccessIdentity.cloudFrontOriginAccessIdentityId"
+      "resource-attribute:@aws-cdk/aws-cloudfront.OriginAccessIdentity.cloudFrontOriginAccessIdentityId",
+      "resource-attribute:@aws-cdk/aws-cloudfront.Function.functionMetadataFunctionArn"
     ]
   },
   "awscdkio": {

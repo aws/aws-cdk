@@ -52,6 +52,9 @@ export interface ISource {
 export class Source {
   /**
    * Uses a .zip file stored in an S3 bucket as the source for the destination bucket contents.
+   *
+   * Make sure you trust the producer of the archive.
+   *
    * @param bucket The S3 Bucket
    * @param zipObjectKey The S3 object key of the zip file with contents
    */
@@ -70,6 +73,10 @@ export class Source {
 
   /**
    * Uses a local asset as the deployment source.
+   *
+   * If the local asset is a .zip archive, make sure you trust the
+   * producer of the archive.
+   *
    * @param path The path to a local .zip file or a directory
    */
   public static asset(path: string, options?: s3_assets.AssetOptions): ISource {

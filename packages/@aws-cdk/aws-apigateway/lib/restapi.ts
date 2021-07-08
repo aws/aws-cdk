@@ -170,6 +170,16 @@ export interface RestApiBaseProps {
    * @default EndpointType.EDGE
    */
   readonly endpointTypes?: EndpointType[];
+
+  /**
+   * Specifies whether clients can invoke the API using the default execute-api
+   * endpoint. To require that clients use a custom domain name to invoke the
+   * API, disable the default endpoint.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-restapi.html
+   *
+   * @default false
+   */
+  readonly disableExecuteApiEndpoint?: boolean;
 }
 
 /**
@@ -719,6 +729,7 @@ export class RestApi extends RestApiBase {
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
+      disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;

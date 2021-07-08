@@ -66,7 +66,7 @@ nodeunitShim({
     app.synth();
     test.deepEqual(root.node.metadata[0].type, 'foo');
     test.deepEqual(root.node.metadata[0].data, 'bar');
-    test.deepEqual(root.node.metadata[0].type, 'foo');
+    test.deepEqual(child.node.metadata[0].type, 'foo');
     test.deepEqual(child.node.metadata[0].data, 'bar');
     // no warning is added
     test.equal(root.node.metadata.length, 1);
