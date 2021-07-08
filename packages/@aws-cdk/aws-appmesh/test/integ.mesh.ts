@@ -203,7 +203,7 @@ router.addRoute('route-matching', {
     weightedTargets: [{ virtualNode: node3 }],
     match: {
       prefixPath: '/',
-      method: appmesh.HttpRouteMatchMethod.POST,
+      method: appmesh.HttpRouteMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
         appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),

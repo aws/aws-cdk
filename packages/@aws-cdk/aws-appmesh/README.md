@@ -433,7 +433,7 @@ router.addRoute('route-http2', {
     ],
     match: {
       prefixPath: '/',
-      method: appmesh.HttpRouteMatchMethod.POST,
+      method: appmesh.HttpRouteMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
         // All specified headers must match for the route to match.
