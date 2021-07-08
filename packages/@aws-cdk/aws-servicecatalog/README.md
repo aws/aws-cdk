@@ -33,7 +33,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Product](#product)
   - [Adding a product to a portfolio](#associations)
 - [Constraints](#constraints)
-  - [Tag update constraint](#tag-update)
+  - [Resource update constraint](#tag-update)
 
 The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
@@ -187,15 +187,15 @@ If a misconfigured constraint is added, `synth` will fail with an error message.
 
 Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints.html).
 
-### Tag update constraint
+### Resource update constraint
 
-Tag update constraints allow or disallow end users to update tags on resources associated with an AWS Service Catalog product upon provisioning. 
+Resource update constraints allow or disallow end users to update tags on resources associated with an AWS Service Catalog product upon provisioning. 
 If tag updating is allowed, then new tags associated with the product or portfolio will be applied to provisioned resources during a provisioned product update.
 
 ```ts fixture=portfolio-product
 portfolio.addProduct(product);
 
-portfolio.allowTagUpdates(product, {
-  tagUpdateOnProvisionedProductAllowed: true,
+portfolio.addResourceUpdateConstraint(product, {
+  allowUpdatingProvisionedProductTags: true,
 });
 ```

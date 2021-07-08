@@ -87,7 +87,7 @@ export interface IPortfolio extends cdk.IResource {
   /**
    * Add a Resource Update Constraint.
    */
-  allowTagUpdates(product: IProduct, options?: TagUpdatesOptions): void;
+  addResourceUpdateConstraint(product: IProduct, options?: TagUpdatesOptions): void;
 }
 
 abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
@@ -125,7 +125,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     AssociationManager.associateTagOption(this, this.portfolioId, tagOption);
   }
 
-  public allowTagUpdates(product: IProduct, options: TagUpdatesOptions = {}) {
+  public addResourceUpdateConstraint(product: IProduct, options: TagUpdatesOptions = {}) {
     AssociationManager.addResourceUpdateConstraint(this, product, options);
   }
 

@@ -3,7 +3,7 @@ import { AcceptLanguage } from './common';
 /**
  * Properties for governance mechanisms and constraints.
  */
-export interface ConstraintProps {
+export interface CommonConstraintOptions {
   /**
    * The language code. Configures the language for error messages
    * from service catalog.
@@ -21,10 +21,10 @@ export interface ConstraintProps {
 /**
  * Properties for ResourceUpdateConstraint.
  */
-export interface TagUpdatesOptions extends ConstraintProps {
+export interface TagUpdatesOptions extends CommonConstraintOptions {
   /**
    * Toggle for if users should be allowed to change tags
    * @default true
    */
-  readonly tagUpdateOnProvisionedProductAllowed?: boolean;
+  readonly allowUpdatingProvisionedProductTags?: boolean;
 }

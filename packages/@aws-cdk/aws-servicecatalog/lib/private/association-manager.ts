@@ -15,8 +15,10 @@ export class AssociationManager {
         portfolioId: portfolio.portfolioId,
         productId: product.productId,
       });
-      this.associationMap.set(associationKey, new Map());
-      this.associationMap.get(associationKey).set(Constraints.ASSOCIATION, association);
+
+      const associationValue = new Map<Constraints, any>();
+      associationValue.set(Constraints.ASSOCIATION, association);
+      this.associationMap.set(associationKey, associationValue);
     }
   }
 
@@ -29,8 +31,7 @@ export class AssociationManager {
         description: options.description,
         portfolioId: pair.portfolio.portfolioId,
         productId: pair.product.productId,
-        tagUpdateOnProvisionedProduct: options.tagUpdateOnProvisionedProductAllowed || options.tagUpdateOnProvisionedProductAllowed === undefined
-          ? Allowed.ALLOWED : Allowed.NOT_ALLOWED,
+        tagUpdateOnProvisionedProduct: options.allowUpdatingProvisionedProductTags === false ? Allowed.NOT_ALLOWED : Allowed.ALLOWED,
       });
 
       constraint.addDependsOn(this.associationMap.get(associationKey).get(Constraints.ASSOCIATION));
