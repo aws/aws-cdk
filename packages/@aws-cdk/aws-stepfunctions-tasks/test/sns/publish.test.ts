@@ -1,7 +1,7 @@
 import * as sns from '@aws-cdk/aws-sns';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { SnsPublish, SnsMessageAttributeType } from '../../lib/sns/publish';
+import { SnsPublish } from '../../lib/sns/publish';
 
 describe('Publish', () => {
 
@@ -47,18 +47,12 @@ describe('Publish', () => {
     const task = new SnsPublish(stack, 'Publish', {
       topic,
       message: sfn.TaskInput.fromText('Publish this message'),
-      messageAttributes: [
-        {
-          name: 'cake',
-          type: SnsMessageAttributeType.STRING,
-          value: sfn.TaskInput.fromText('chocolate'),
-        },
-        {
-          name: 'cakePic',
-          type: SnsMessageAttributeType.STRING,
-          value: sfn.TaskInput.fromDataAt('$.cake.pic'),
-        },
-      ],
+      messageAttributes: {
+        cake: 'chocolate',
+        cakePic: new Uint8Array(16),
+        cakeCount: 2,
+        vendors: ['Great Cakes', 'Cakes R Us', 'Local Cakes'],
+      },
     });
 
     // THEN
@@ -86,8 +80,16 @@ describe('Publish', () => {
             StringValue: 'chocolate',
           },
           cakePic: {
-            'DataType': 'String',
-            'StringValue.$': '$.cake.pic',
+            DataType: 'Binary',
+            BinaryValue: '',
+          },
+          cakeCount: {
+            DataType: 'Number',
+            StringValue: '2',
+          },
+          vendors: {
+            DataType: 'String.Array',
+            StringValue: '["Great Cakes","Cakes R Us","Local Cakes"]',
           },
         },
       },
