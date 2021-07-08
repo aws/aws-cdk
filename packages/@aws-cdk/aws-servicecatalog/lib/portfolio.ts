@@ -126,7 +126,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   }
 
   public addResourceUpdateConstraint(product: IProduct, options: TagUpdatesOptions = {}) {
-    AssociationManager.addResourceUpdateConstraint(this, product, options);
+    AssociationManager.addResourceUpdateConstraint(this, this, product, options);
   }
 
   /**
