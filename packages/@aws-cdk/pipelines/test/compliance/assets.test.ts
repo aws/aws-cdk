@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
+import { arrayWith, Capture, deepObjectLike, encodedJson, notMatching, objectLike, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -724,7 +724,23 @@ describe('pipeline with single asset publisher', () => {
       });
       pipeline.addApplicationStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
 
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        engine: new cdkp.CodePipelineEngine({
+          singlePublisherPerAssetType: true,
+        }),
+      });
+      pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
       // THEN
+      const buildSpecName = Capture.aString();
       expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         Stages: arrayWith({
           Name: 'Assets',
@@ -739,14 +755,17 @@ describe('pipeline with single asset publisher', () => {
           Image: 'aws/codebuild/standard:5.0',
         },
         Source: {
-          BuildSpec: 'buildspec-assets-FileAsset.yaml',
+          BuildSpec: buildSpecName.capture(stringLike('buildspec-*.yaml')),
         },
       });
       const assembly = SynthUtils.synthesize(pipelineStack, { skipValidation: true }).assembly;
-      const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, 'buildspec-assets-FileAsset.yaml')).toString());
+
+      const actualFileName = buildSpecName.capturedValue;
+
+      const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, actualFileName), { encoding: 'utf-8' }));
       expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
       expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
-    });
+    }
   });
 });
 

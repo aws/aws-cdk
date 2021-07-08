@@ -1,11 +1,14 @@
 import * as crypto from 'crypto';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
+import { Node } from 'constructs';
 import { FileSetLocation, ScriptStep, StackDeployment } from '../blueprint';
+import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
 import { mapValues, mkdict, noEmptyObject, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { ICodePipelineActionFactory, CodePipelineActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
@@ -56,6 +59,22 @@ export interface CodeBuildFactoryProps {
    * @default - A role is automatically created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * If true, the build spec will be passed via the Cloud Assembly instead of rendered onto the Project
+   *
+   * Doing this has two advantages:
+   *
+   * - Bypass size restrictions: the buildspec on the project is restricted
+   *   in size, while buildspecs coming from an input artifact are not restricted
+   *   in such a way.
+   * - Bypass pipeline update: if the SelfUpdate step has to change the buildspec,
+   *   that just takes time. On the other hand, if the buildspec comes from the
+   *   pipeline artifact, no such update has to take place.
+   *
+   * @default false
+   */
+  readonly passBuildSpecViaCloudAssembly?: boolean;
 }
 
 /**
@@ -112,9 +131,20 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       artifacts: noEmptyObject<any>(renderArtifactsBuildSpec(options.artifacts, this.runScript.outputs ?? [])),
     });
 
-    const buildSpec = options.codeBuildProjectOptions?.partialBuildSpec
+    const actualBuildSpec = options.codeBuildProjectOptions?.partialBuildSpec
       ? codebuild.mergeBuildSpecs(options.codeBuildProjectOptions?.partialBuildSpec, buildSpecHere)
       : buildSpecHere;
+
+    let projectBuildSpec;
+    if (this.props.passBuildSpecViaCloudAssembly) {
+      // Write to disk and replace with a reference
+      const relativeSpecFile = `buildspec-${Node.of(options.scope).addr}-${this.constructId}.yaml`;
+      const absSpecFile = path.join(cloudAssemblyBuildSpecDir(options.scope), relativeSpecFile);
+      fs.writeFileSync(absSpecFile, Stack.of(options.scope).resolve(actualBuildSpec.toBuildSpec()), { encoding: 'utf-8' });
+      projectBuildSpec = codebuild.BuildSpec.fromSourceFilename(relativeSpecFile);
+    } else {
+      projectBuildSpec = actualBuildSpec;
+    }
 
     // Partition environment variables into environment variables that can go on the project
     // and environment variables that MUST go in the pipeline (those that reference CodePipeline variables)
@@ -133,7 +163,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     // (Resolve tokens)
     const projectConfigHash = hash(Stack.of(options.scope).resolve({
       environment: serializeBuildEnvironment(environment),
-      buildSpecString: buildSpec.toBuildSpec(),
+      buildSpecString: actualBuildSpec.toBuildSpec(),
     }));
 
     const project = new codebuild.PipelineProject(options.scope, this.constructId, {
@@ -142,7 +172,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       vpc: this.props.vpc,
       subnetSelection: this.props.subnetSelection,
       securityGroups: projectOptions?.securityGroups,
-      buildSpec,
+      buildSpec: projectBuildSpec,
       role: this.props.role,
     });
 

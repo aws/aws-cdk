@@ -475,22 +475,34 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
     const assetBuildConfig = this.obtainAssetCodeBuildConfig(assets[0].assetType);
 
-    const result = new CodeBuildStep(options.node.id, {
+    // The base commands that need to be run
+    const script = new ScriptStep(options.node.id, {
+      commands,
+      installCommands: [
+        `npm install -g cdk-assets${installSuffix}`,
+      ],
+      input: options.graphFromBp.cloudAssemblyFileSet,
+    });
+
+    // With CodeBuild customization, including types of customization that are
+    // not accessible to regular users.
+    const result = new CodeBuildFactory(options.node.id, script, {
       vpc: this.props.vpc,
       subnetSelection: this.props.subnetSelection,
 
-      buildEnvironment: {
-        privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
+      projectOptions: {
+        buildEnvironment: {
+          privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
+        },
       },
 
       // In case the CLI version changes
       includeBuildHashInPipeline: true,
 
-      input: options.graphFromBp.cloudAssemblyFileSet,
-      installCommands: [
-        `npm install -g cdk-assets${installSuffix}`,
-      ],
-      commands,
+      // If we use a single publisher, pass buildspec via file otherwise it'll
+      // grow too big.
+      passBuildSpecViaCloudAssembly: this.props.singlePublisherPerAssetType,
+
       role: assetBuildConfig.role,
     }).produce({
       actionName: actionName(options.node, options.sharedParent),

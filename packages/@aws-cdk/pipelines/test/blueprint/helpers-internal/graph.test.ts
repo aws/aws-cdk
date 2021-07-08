@@ -25,7 +25,7 @@ test('"uniqueId" renders a graph-wide unique id for each node', () => {
 
 test('"allDeps" combines node deps and parent deps', () => {
   let n4: any;
-  const g = mkGraph('MyGraph', G => {
+  mkGraph('MyGraph', G => {
     G.graph('g1', [], G1 => {
       G1.node('n1');
       const n2 = G1.node('n2');
