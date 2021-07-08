@@ -1,7 +1,7 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { FileSet, ScriptStep, ScriptStepProps, Step } from '../blueprint';
+import { FileSet, ScriptStep, ScriptStepProps } from '../blueprint';
 import { CodeBuildFactory } from './_codebuild-factory';
 import { CodePipelineActionOptions, CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
@@ -89,18 +89,12 @@ export interface CodeBuildStepProps extends ScriptStepProps {
 /**
  * Run a script as a CodeBuild Project
  */
-export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
+export class CodeBuildStep extends ScriptStep implements ICodePipelineActionFactory {
   public readonly primaryOutput?: FileSet | undefined;
-  private readonly runScript: ScriptStep;
   private _project?: codebuild.IProject;
 
   constructor(id: string, private readonly props: CodeBuildStepProps) {
-    super(id);
-
-    this.runScript = new ScriptStep(id, props);
-
-    this.primaryOutput = this.runScript.primaryOutput;
-    this.requiredFileSets.push(...this.runScript.requiredFileSets);
+    super(id, props);
   }
 
   /**
@@ -114,7 +108,7 @@ export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
   }
 
   public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
-    const factory = new CodeBuildFactory(this.id, this.runScript, {
+    const factory = new CodeBuildFactory(this.id, this, {
       ...this.props,
       projectOptions: {
         buildEnvironment: this.props.buildEnvironment,
@@ -133,9 +127,5 @@ export class CodeBuildStep extends Step implements ICodePipelineActionFactory {
    */
   public get grantPrincipal(): iam.IPrincipal {
     return this.project.grantPrincipal;
-  }
-
-  public additionalOutput(name: string) {
-    return this.runScript.additionalOutput(name);
   }
 }

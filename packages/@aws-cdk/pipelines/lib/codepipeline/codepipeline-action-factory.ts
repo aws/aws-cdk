@@ -47,7 +47,7 @@ export interface CodePipelineActionOptions {
    *
    * @default - No CodeBuild project defaults
    */
-  readonly codeBuildProjectOptions?: CodeBuildProjectOptions;
+  readonly codeBuildDefaults?: CodeBuildProjectOptions;
 }
 
 /**

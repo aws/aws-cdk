@@ -100,7 +100,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
   }
 
   public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
-    const projectOptions = mergeCodeBuildOptions(options.codeBuildProjectOptions, this.props.projectOptions);
+    const projectOptions = mergeCodeBuildOptions(options.codeBuildDefaults, this.props.projectOptions);
 
     const mainInput = this.runScript.inputs.find(x => x.directory === '.');
     const extraInputs = this.runScript.inputs.filter(x => x.directory !== '.');
@@ -131,9 +131,26 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       artifacts: noEmptyObject<any>(renderArtifactsBuildSpec(options.artifacts, this.runScript.outputs ?? [])),
     });
 
-    const actualBuildSpec = options.codeBuildProjectOptions?.partialBuildSpec
-      ? codebuild.mergeBuildSpecs(options.codeBuildProjectOptions?.partialBuildSpec, buildSpecHere)
+    // Partition environment variables into environment variables that can go on the project
+    // and environment variables that MUST go in the pipeline (those that reference CodePipeline variables)
+
+    const [actionEnvs, projectEnvs] = partition(Object.entries(this.runScript.env ?? {}), ([, v]) => containsPipelineVariable(v));
+
+    const environment = mergeBuildEnvironments(
+      projectOptions?.buildEnvironment ?? {},
+      {
+        environmentVariables: noEmptyObject(mapValues(mkdict(projectEnvs), value => ({ value }))),
+      });
+
+    const fullBuildSpec = options.codeBuildDefaults?.partialBuildSpec
+      ? codebuild.mergeBuildSpecs(options.codeBuildDefaults?.partialBuildSpec, buildSpecHere)
       : buildSpecHere;
+
+    const osFromEnvironment = environment.buildImage && environment.buildImage instanceof codebuild.WindowsBuildImage
+      ? ec2.OperatingSystemType.WINDOWS
+      : ec2.OperatingSystemType.LINUX;
+
+    const actualBuildSpec = filterBuildSpecCommands(fullBuildSpec, osFromEnvironment);
 
     let projectBuildSpec;
     if (this.props.passBuildSpecViaCloudAssembly) {
@@ -146,16 +163,6 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       projectBuildSpec = actualBuildSpec;
     }
 
-    // Partition environment variables into environment variables that can go on the project
-    // and environment variables that MUST go in the pipeline (those that reference CodePipeline variables)
-
-    const [actionEnvs, projectEnvs] = partition(Object.entries(this.runScript.env ?? {}), ([, v]) => containsPipelineVariable(v));
-
-    const environment = mergeBuildEnvironments(
-      projectOptions?.buildEnvironment ?? {},
-      {
-        environmentVariables: noEmptyObject(mapValues(mkdict(projectEnvs), value => ({ value }))),
-      });
 
     // A hash over the values that make the CodeBuild Project unique (and necessary
     // to restart the pipeline if one of them changes). projectName is not necessary to include
@@ -276,33 +283,34 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildProjectOptions | u
       buildEnvironment: mergeBuildEnvironments(a.buildEnvironment, b.buildEnvironment),
       rolePolicyStatements: definedArray([...a.rolePolicyStatements ?? [], ...b.rolePolicyStatements ?? []]),
       securityGroups: definedArray([...a.securityGroups ?? [], ...b.securityGroups ?? []]),
-      partialBuildSpec: a.partialBuildSpec && b.partialBuildSpec
-        ? codebuild.mergeBuildSpecs(a.partialBuildSpec, b.partialBuildSpec)
-        : (a.partialBuildSpec ?? b.partialBuildSpec),
+      partialBuildSpec: mergeBuildSpecs(a.partialBuildSpec, b.partialBuildSpec),
     };
   }
 }
 
-export function mergeBuildEnvironments(...envs: Array<codebuild.BuildEnvironment | undefined>) {
-  const xs = [{}, ...envs.filter(isDefined)];
+function mergeBuildEnvironments(a: codebuild.BuildEnvironment, b?: codebuild.BuildEnvironment): codebuild.BuildEnvironment;
+function mergeBuildEnvironments(a: codebuild.BuildEnvironment | undefined, b: codebuild.BuildEnvironment): codebuild.BuildEnvironment;
+function mergeBuildEnvironments(a?: codebuild.BuildEnvironment, b?: codebuild.BuildEnvironment): codebuild.BuildEnvironment | undefined;
+function mergeBuildEnvironments(a?: codebuild.BuildEnvironment, b?: codebuild.BuildEnvironment) {
+  if (!a || !b) { return a ?? b; }
 
-  while (xs.length > 1) {
-    const [a, b] = xs.splice(xs.length - 2, 2);
-    xs.push(merge2(a, b));
-  }
-  return xs[0];
+  return {
+    buildImage: b.buildImage ?? a.buildImage,
+    computeType: b.computeType ?? a.computeType,
+    environmentVariables: {
+      ...a.environmentVariables,
+      ...b.environmentVariables,
+    },
+    privileged: b.privileged ?? a.privileged,
+  };
+}
 
-  function merge2(a: codebuild.BuildEnvironment, b: codebuild.BuildEnvironment): codebuild.BuildEnvironment {
-    return {
-      buildImage: b.buildImage ?? a.buildImage,
-      computeType: b.computeType ?? a.computeType,
-      environmentVariables: {
-        ...a.environmentVariables,
-        ...b.environmentVariables,
-      },
-      privileged: b.privileged ?? a.privileged,
-    };
-  }
+export function mergeBuildSpecs(a: codebuild.BuildSpec, b?: codebuild.BuildSpec): codebuild.BuildSpec;
+export function mergeBuildSpecs(a: codebuild.BuildSpec | undefined, b: codebuild.BuildSpec): codebuild.BuildSpec;
+export function mergeBuildSpecs(a?: codebuild.BuildSpec, b?: codebuild.BuildSpec): codebuild.BuildSpec | undefined;
+export function mergeBuildSpecs(a?: codebuild.BuildSpec, b?: codebuild.BuildSpec) {
+  if (!a || !b) { return a ?? b; }
+  return codebuild.mergeBuildSpecs(a, b);
 }
 
 function isDefined<A>(x: A | undefined): x is NonNullable<A> {
@@ -352,4 +360,45 @@ function cbEnv(xs: Record<string, string | undefined>): Record<string, codebuild
 
 function definedArray<A>(xs: A[]): A[] | undefined {
   return xs.length > 0 ? xs : undefined;
+}
+
+/**
+ * If lines in the buildspec start with '!WINDOWS!' or '!LINUX!', only render them on that platform.
+ *
+ * Very private protocol for now, but may come in handy in other libraries as well.
+ */
+function filterBuildSpecCommands(buildSpec: codebuild.BuildSpec, osType: ec2.OperatingSystemType) {
+  if (!buildSpec.isImmediate) { return buildSpec; }
+  const spec = (buildSpec as any).spec;
+
+  const winTag = '!WINDOWS!';
+  const linuxTag = '!LINUX!';
+  const expectedTag = osType === ec2.OperatingSystemType.WINDOWS ? winTag : linuxTag;
+
+  return codebuild.BuildSpec.fromObject(recurse(spec));
+
+  function recurse(x: any): any {
+    if (Array.isArray(x)) {
+      const ret: any[] = [];
+      for (const el of x) {
+        const [tag, payload] = extractTag(el);
+        if (tag === undefined || tag === expectedTag) {
+          ret.push(payload);
+        }
+      }
+      return ret;
+    }
+    if (x && typeof x === 'object') {
+      return mapValues(x, recurse);
+    }
+    return x;
+  }
+
+  function extractTag(x: any): [string | undefined, any] {
+    if (typeof x !== 'string') { return [undefined, x]; }
+    for (const tag of [winTag, linuxTag]) {
+      if (x.startsWith(tag)) { return [tag, x.substr(tag.length)]; }
+    }
+    return [undefined, x];
+  }
 }

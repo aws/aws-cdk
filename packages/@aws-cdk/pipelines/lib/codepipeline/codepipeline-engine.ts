@@ -8,6 +8,7 @@ import { Aws, Fn, IDependable, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { AssetType, BlueprintQueries, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
+import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { BuildDeploymentOptions, IDeploymentEngine } from '../main/engine';
 import { appOf, assemblyBuilderOf, embeddedAsmPath } from '../private/construct-internals';
@@ -54,6 +55,15 @@ export interface CodePipelineEngineProps {
    * @default false
    */
   readonly singlePublisherPerAssetType?: boolean;
+
+  /**
+   * A list of credentials used to authenticate to Docker registries.
+   *
+   * Specify any credentials necessary within the pipeline to build, synth, update, or publish assets.
+   *
+   * @default []
+   */
+  readonly dockerCredentials?: DockerCredential[];
 }
 
 /**
@@ -134,6 +144,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
   private readonly selfMutation: boolean;
   private _myCxAsmRoot?: string;
   private _scope?: Construct;
+  private readonly dockerCredentials: DockerCredential[];
 
   /**
    * Asset roles shared for publishing
@@ -157,6 +168,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
   constructor(private readonly props: CodePipelineEngineProps={}) {
     this.selfMutation = this.props.selfMutation ?? true;
+    this.dockerCredentials = props.dockerCredentials ?? [];
   }
 
   public buildDeployment(options: BuildDeploymentOptions): void {
@@ -250,6 +262,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
               sharedParent,
               beforeSelfUpdate: beforeSelfMutation,
               queries: structure.queries,
+              scope: makeScope(this.scope, stageNode.id),
             }));
           }
         }
@@ -283,8 +296,12 @@ export class CodePipelineEngine implements IDeploymentEngine {
       case 'step':
         const result = this.actionFromStep(options.node.data.step, options);
 
-        if (options.graphFromBp.isSynthNode(options.node) && result.project) {
+        if (this.nodeTypeFromNode(options.node) === CodeBuildProjectType.SYNTH && result.project) {
           this._buildProject = result.project;
+
+          for (const c of this.dockerCredentials) {
+            c.grantRead(result.project, DockerCredentialUsage.SYNTH);
+          }
         }
 
         if (options.node.data.step.primaryOutput?.primaryOutput && !this._fallbackArtifact) {
@@ -308,16 +325,37 @@ export class CodePipelineEngine implements IDeploymentEngine {
    * which are handled elsewhere.
    */
   private actionFromStep(step: Step, options: MakeActionOptions): CodePipelineActionFactoryResult {
+    const nodeType = this.nodeTypeFromNode(options.node);
+
+    // If this step happens to produce a CodeBuild job, set the default options
+    let codeBuildProjectOptions = this.codeBuildOptionsFor(nodeType);
+
+    if (nodeType === CodeBuildProjectType.SYNTH) {
+      const dockerCommands = dockerCredentialsInstallCommands(DockerCredentialUsage.SYNTH, this.dockerCredentials);
+      if (dockerCommands.length > 0) {
+        codeBuildProjectOptions = mergeCodeBuildOptions(codeBuildProjectOptions, {
+          partialBuildSpec: cb.BuildSpec.fromObject({
+            version: '0.2',
+            phases: {
+              pre_build: {
+                commands: dockerCommands,
+              },
+            },
+          }),
+        });
+      }
+    }
+
     // CodePipeline-specific steps first -- this includes Sources
     if (isCodePipelineActionFactory(step)) {
       return step.produce({
-        scope: this.scope,
+        scope: options.scope,
         actionName: actionName(options.node, options.sharedParent),
         runOrder: options.runOrder,
         artifacts: this.artifacts,
         fallbackArtifact: this._fallbackArtifact,
         queries: options.queries,
-        codeBuildProjectOptions: this.codeBuildOptionsFor(this.nodeTypeFromNode(options.node)),
+        codeBuildDefaults: codeBuildProjectOptions,
       });
     }
 
@@ -334,10 +372,10 @@ export class CodePipelineEngine implements IDeploymentEngine {
         actionName: actionName(options.node, options.sharedParent),
         runOrder: options.runOrder,
         artifacts: this.artifacts,
-        scope: this.scope,
+        scope: options.scope,
         fallbackArtifact: this._fallbackArtifact,
         queries: options.queries,
-        codeBuildProjectOptions: this.codeBuildOptionsFor(this.nodeTypeFromNode(options.node)),
+        codeBuildDefaults: codeBuildProjectOptions,
       });
     }
 
@@ -402,7 +440,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
     const pipelineStack = Stack.of(this.pipeline);
     const pipelineStackIdentifier = pipelineStack.node.path ?? pipelineStack.stackName;
 
-    return new CodeBuildStep('SelfMutate', {
+    const result = new CodeBuildStep('SelfMutate', {
       vpc: this.props.vpc,
       subnetSelection: this.props.subnetSelection,
       projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
@@ -446,11 +484,19 @@ export class CodePipelineEngine implements IDeploymentEngine {
       actionName: 'SelfMutate',
       runOrder: options.runOrder,
       artifacts: this.artifacts,
-      scope: this.scope,
+      scope: options.scope,
       fallbackArtifact: this._fallbackArtifact,
       queries: options.queries,
-      codeBuildProjectOptions: this.codeBuildOptionsFor(CodeBuildProjectType.SELF_MUTATE),
-    }).action;
+      codeBuildDefaults: this.codeBuildOptionsFor(CodeBuildProjectType.SELF_MUTATE),
+    });
+
+    if (result.project) {
+      for (const c of this.dockerCredentials) {
+        c.grantRead(result.project, DockerCredentialUsage.SELF_UPDATE);
+      }
+    }
+
+    return result.action;
   }
 
   private publishAssetsAction(assets: StackAsset[], options: MakeActionOptions): cp.IAction {
@@ -508,10 +554,10 @@ export class CodePipelineEngine implements IDeploymentEngine {
       actionName: actionName(options.node, options.sharedParent),
       runOrder: options.runOrder,
       artifacts: this.artifacts,
-      scope: this.assetsScope, // For backwards logicalID compatibility
+      scope: options.scope,
       fallbackArtifact: this._fallbackArtifact,
       queries: options.queries,
-      codeBuildProjectOptions: this.codeBuildOptionsFor(CodeBuildProjectType.ASSETS),
+      codeBuildDefaults: this.codeBuildOptionsFor(CodeBuildProjectType.ASSETS),
     });
 
     if (result.project && assetBuildConfig.dependable) {
@@ -534,17 +580,33 @@ export class CodePipelineEngine implements IDeploymentEngine {
       },
     };
 
-    const optionsForType = {
+    const typeBasedCustomizations = {
       [CodeBuildProjectType.SYNTH]: this.props.codeBuild?.synth,
       [CodeBuildProjectType.ASSETS]: this.props.codeBuild?.assetPublishing,
       [CodeBuildProjectType.SELF_MUTATE]: this.props.codeBuild?.selfMutation,
       [CodeBuildProjectType.STEP]: {},
     };
 
+    const dockerUsage = dockerUsageFromCodeBuild(nodeType);
+    const dockerCommands = dockerUsage !== undefined
+      ? dockerCredentialsInstallCommands(dockerUsage, this.dockerCredentials, 'both')
+      : [];
+    const typeBasedDockerCommands = dockerCommands.length > 0 ? {
+      partialBuildSpec: cb.BuildSpec.fromObject({
+        version: '0.2',
+        phases: {
+          pre_build: {
+            commands: dockerCommands,
+          },
+        },
+      }),
+    } : {};
+
     return mergeCodeBuildOptions(
       defaultOptions,
       this.props.codeBuild?.defaults,
-      optionsForType[nodeType],
+      typeBasedCustomizations[nodeType],
+      typeBasedDockerCommands,
     );
   }
 
@@ -671,7 +733,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
     // Grant pull access for any ECR registries and secrets that exist
     if (assetType === AssetType.DOCKER_IMAGE) {
-      // this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
+      this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
     // Artifact access
@@ -721,6 +783,15 @@ export class CodePipelineEngine implements IDeploymentEngine {
   }
 }
 
+function dockerUsageFromCodeBuild(cbt: CodeBuildProjectType): DockerCredentialUsage | undefined {
+  switch (cbt) {
+    case CodeBuildProjectType.ASSETS: return DockerCredentialUsage.ASSET_PUBLISHING;
+    case CodeBuildProjectType.SELF_MUTATE: return DockerCredentialUsage.SELF_UPDATE;
+    case CodeBuildProjectType.SYNTH: return DockerCredentialUsage.SYNTH;
+    case CodeBuildProjectType.STEP: return undefined;
+  }
+}
+
 interface AssetCodeBuildConfig {
   readonly role: iam.IRole;
   readonly dependable?: IDependable;
@@ -740,6 +811,7 @@ interface MakeActionOptions {
   readonly sharedParent: AGraphNode;
   readonly beforeSelfUpdate: boolean;
   readonly queries: BlueprintQueries;
+  readonly scope: Construct;
 }
 
 function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {

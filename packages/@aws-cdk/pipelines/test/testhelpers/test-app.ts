@@ -203,3 +203,12 @@ export class MegaAssetsApp extends Stage {
     }
   }
 }
+
+export class PlainStackApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    new BucketStack(this, 'Stack');
+  }
+}
+
+
