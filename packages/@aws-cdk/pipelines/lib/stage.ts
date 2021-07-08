@@ -5,7 +5,7 @@ import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Stage, Aspects } from '@aws-cdk/core';
+import { Stage, Aspects, Duration } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction } from './actions';
@@ -242,30 +242,35 @@ export class CdkStage extends CoreConstruct {
   }
 
   private securityCheck() {
-    const { preApproveLambda, build } = this.securityCheckProperties();
-
-    const diff_action = new CodeBuildAction({
+    const { build } = this.securityCheckProperties();
+    const approveActionName = `${this.stageName}ManualApproval`;
+    const diffAction = new CodeBuildAction({
       runOrder: this.nextSequentialRunOrder(),
       actionName: `${this.stageName}SecurityCheck`,
       input: this.cloudAssemblyArtifact,
       project: build,
-      variablesNamespace: 'SecurityCheck',
+      variablesNamespace: `${this.stageName}SecurityCheck`,
       environmentVariables: {
         STAGE_NAME: {
           value: this.stageName,
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+        },
+        ACTION_NAME: {
+          value: approveActionName,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
       },
     });
 
     const approve = new cpactions.ManualApprovalAction({
-      actionName: `${this.stageName}ManualApproval`,
+      actionName: approveActionName,
       runOrder: this.nextSequentialRunOrder(),
+      externalEntityLink: `https://#{${this.stageName}SecurityCheck.ARN}`,
     });
 
-    this.addActions(diff_action, approve);
+    this.addActions(diffAction, approve);
 
-    approve.grantManualApproval(preApproveLambda);
+    // approve.grantManualApproval(preApproveLambda);
   }
 
   private securityCheckProperties() {
@@ -275,8 +280,9 @@ export class CdkStage extends CoreConstruct {
         handler: 'index.handler',
         runtime: lambda.Runtime.PYTHON_3_8,
         code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
+        timeout: Duration.seconds(30),
       });
-
+      const assemblyPath = `assembly-${this.pipelineStage.pipeline.stack.stackName}-${this.stageName}/`;
       const invokeLambda =
         'aws lambda invoke' +
         ` --function-name ${preApproveLambda.functionName}` +
@@ -293,10 +299,18 @@ export class CdkStage extends CoreConstruct {
                 'npm install -g aws-cdk',
                 // $CODEBUILD_INITIATOR will always be Code Pipeline and in the form of:
                 // "codepipeline/example-pipeline-name-Xxx"
-                `payload="$(node -pe 'JSON.stringify({ "PipelineName": process.env.CODEBUILD_INITIATOR.split("/")[1], "StageName": process.env.stageName })' )"`,
-                `cdk diff -a . --security-only --fail || ${invokeLambda}`,
+                'payload="$(node -pe \'JSON.stringify({ "PipelineName": process.env.CODEBUILD_INITIATOR.split("/")[1], "StageName": process.env.STAGE_NAME, "ActionName": process.env.ACTION_NAME })\' )"',
+                'export ARN=$CODEBUILD_BUILD_ARN',
+                // Run invoke only if cdk diff passes (returns exit code 0)
+                // 0 -> true, 1 -> false
+                `(cdk diff -a '${assemblyPath}' --security-only --fail && ${invokeLambda}) || echo 'Changes detected! Requires Manual Approval'`,
               ],
             },
+          },
+          env: {
+            'exported-variables': [
+              'ARN',
+            ],
           },
         }),
       });
@@ -306,6 +320,11 @@ export class CdkStage extends CoreConstruct {
       build.addToRolePolicy(new iam.PolicyStatement({
         actions: ['cloudformation:DescribeStacks', 'cloudformation:GetTemplate'],
         resources: ['*'], // this is needed to check the status the stacks when doing `cdk diff`
+      }));
+
+      preApproveLambda.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['codepipeline:GetPipelineState', 'codepipeline:PutApprovalResult'],
+        resources: ['*'],
       }));
 
       this._securityCheckConstructs = { preApproveLambda, build };
