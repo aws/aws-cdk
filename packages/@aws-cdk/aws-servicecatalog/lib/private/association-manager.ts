@@ -16,7 +16,7 @@ export class AssociationManager {
         productId: product.productId,
       });
 
-      const associationValue = new Map<Constraints, CfnPortfolioProductAssociation | CfnResourceUpdateConstraint>();
+      const associationValue = new Map<Constraints, CfnConstraintResource>();
       associationValue.set(Constraints.ASSOCIATION, association);
       this.associationMap.set(associationKey, associationValue);
     }
@@ -65,7 +65,7 @@ export class AssociationManager {
   }
 
 
-  private static associationMap = new Map<string, Map<Constraints, CfnPortfolioProductAssociation | CfnResourceUpdateConstraint>>();
+  private static associationMap = new Map<string, Map<Constraints, CfnConstraintResource>>();
   private static tagOptionMap = new Map<string, CfnTagOption>();
 
   private static associationPrecheck(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct): string {
@@ -80,6 +80,12 @@ export class AssociationManager {
     return `- Portfolio: ${scope.stack.resolve(portfolio.node.path)} | Product: ${scope.stack.resolve(product.node.path)}`;
   }
 }
+
+/**
+ * Simplify type for constraint map to hold the L1 constraint resources.
+ */
+type CfnConstraintResource = CfnPortfolioProductAssociation | CfnResourceUpdateConstraint;
+
 
 /**
  * Custom allow code
