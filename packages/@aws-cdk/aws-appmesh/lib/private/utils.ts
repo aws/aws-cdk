@@ -128,7 +128,11 @@ export function validateMetadata(metadata?: HeaderMatch[]) {
  * This is the helper method to validate at least one of gRPC match type is defined.
  */
 export function validateGprcMatch(match: GrpcRouteMatch | GrpcGatewayRouteMatch) {
-  if (areMatchPropertiesUndefined(match)) {
-    throw new Error('At least one gRPC match property must be provided');
+  for (const property in match) {
+    if (match.hasOwnProperty(property)) {
+      return;
+    }
   }
+
+  throw new Error('At least one gRPC match property must be provided');
 }

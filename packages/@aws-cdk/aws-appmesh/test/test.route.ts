@@ -959,7 +959,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.exact('/exact'),
+          path: appmesh.HttpRoutePathMatch.exactly('/exact'),
         },
       }),
     });
@@ -1003,7 +1003,7 @@ export = {
     test.done();
   },
 
-  'should match on routes based query parameter'(test: Test) {
+  'should match routes based query parameter'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -1054,7 +1054,7 @@ export = {
     test.done();
   },
 
-  'should match on routes based method name'(test: Test) {
+  'should match routes based method name'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {

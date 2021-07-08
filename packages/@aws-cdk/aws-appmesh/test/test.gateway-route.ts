@@ -220,7 +220,11 @@ export = {
           Spec: {
             HttpRoute: {
               Action: {
-                Rewrite: ABSENT,
+                Rewrite: {
+                  Hostname: {
+                    DefaultTargetHostname: 'ENABLED',
+                  },
+                },
               },
             },
           },
@@ -271,7 +275,7 @@ export = {
             routeTarget: virtualService,
             match: {
               method: appmesh.HttpRouteMethod.GET,
-              path: appmesh.HttpGatewayRoutePathMatch.exact('/test', '/rewrittenPath'),
+              path: appmesh.HttpGatewayRoutePathMatch.exactly('/test', '/rewrittenPath'),
             },
           }),
           gatewayRouteName: 'gateway-http2-route',
@@ -817,7 +821,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              path: appmesh.HttpRoutePathMatch.exact('/exact'),
+              path: appmesh.HttpRoutePathMatch.exactly('/exact'),
             },
           }),
           gatewayRouteName: 'gateway-http-route',

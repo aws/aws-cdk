@@ -32,16 +32,17 @@ export abstract class HttpRoutePathMatch {
    *
    * @param path The exact path to match on
    */
-  public static exact(path: string): HttpRoutePathMatch {
-    return new HttpRoutePathSpecificMatch({ exact: path });
+  public static exactly(path: string): HttpRoutePathMatch {
+    return new HttpRouteWholePathMatch({ exact: path });
   }
 
   /**
    * The value of the path must match the specified regex.
-   * @param regex The regex used to match the path.
+   *
+   * @param regex The regex used to match the path
    */
   public static regex(regex: string): HttpRoutePathMatch {
-    return new HttpRoutePathSpecificMatch({ regex: regex });
+    return new HttpRouteWholePathMatch({ regex: regex });
   }
 
   /**
@@ -52,7 +53,7 @@ export abstract class HttpRoutePathMatch {
    *  and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
    */
   public static startingWith(prefix: string): HttpRoutePathMatch {
-    return new HttpRoutePrefixMatchImpl(prefix);
+    return new HttpRoutePathPrefixMatch(prefix);
   }
 
   /**
@@ -61,7 +62,7 @@ export abstract class HttpRoutePathMatch {
   public abstract bind(scope: Construct): HttpRoutePathMatchConfig;
 }
 
-class HttpRoutePrefixMatchImpl extends HttpRoutePathMatch {
+class HttpRoutePathPrefixMatch extends HttpRoutePathMatch {
   constructor(
     private readonly prefix: string,
   ) {
@@ -75,7 +76,7 @@ class HttpRoutePrefixMatchImpl extends HttpRoutePathMatch {
   }
 }
 
-class HttpRoutePathSpecificMatch extends HttpRoutePathMatch {
+class HttpRouteWholePathMatch extends HttpRoutePathMatch {
   constructor(
     private readonly match: CfnRoute.HttpPathMatchProperty,
   ) {
@@ -129,18 +130,21 @@ export abstract class HttpGatewayRoutePathMatch {
   /**
    * The value of the path must match the specified value exactly.
    *
-   * @param pathMatch The exact path to match on
+   * @param path the exact path to match on
+   * @param exactPathRewrite the value to substitute for the matched part of the path of the gateway request URL
    */
-  public static exact(pathMatch: string, exactPathRewrite?: string): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRoutePathSpecificMatch({ exact: pathMatch }, exactPathRewrite);
+  public static exactly(path: string, exactPathRewrite?: string): HttpGatewayRoutePathMatch {
+    return new HttpGatewayRouteWholePathMatch({ exact: path }, exactPathRewrite);
   }
 
   /**
    * The value of the path must match the specified regex.
-   * @param regexMatch The regex used to match the path.
+   *
+   * @param regex the regex used to match the path
+   * @param exactPathRewrite the value to substitute for the matched part of the path of the gateway request URL
    */
-  public static regex(regexMatch: string, exactPathRewrite?: string): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRoutePathSpecificMatch({ regex: regexMatch }, exactPathRewrite);
+  public static regex(regex: string, exactPathRewrite?: string): HttpGatewayRoutePathMatch {
+    return new HttpGatewayRouteWholePathMatch({ regex: regex }, exactPathRewrite);
   }
 
   /**
@@ -149,9 +153,10 @@ export abstract class HttpGatewayRoutePathMatch {
    * @param prefixMatch This parameter must always start with /, which by itself matches all requests to the virtual service name.
    *  You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
    *  and you want the gateway route to match requests to my-service.local/metrics, your prefix should be /metrics.
+   * @param prefixRewrite Specify either disabling automatic rewrite to '/' or rewriting to specified prefix path.
    */
   public static startingWith(prefixMatch: string, prefixRewrite?: HttpGatewayRoutePrefixPathRewrite): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRoutePrefixMatchImpl(prefixMatch, prefixRewrite);
+    return new HttpGatewayRoutePathPrefixMatch(prefixMatch, prefixRewrite);
   }
 
   /**
@@ -160,7 +165,7 @@ export abstract class HttpGatewayRoutePathMatch {
   public abstract bind(scope: Construct): HttpGatewayRoutePathMatchConfig;
 }
 
-class HttpGatewayRoutePrefixMatchImpl extends HttpGatewayRoutePathMatch {
+class HttpGatewayRoutePathPrefixMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly prefixPathMatch: string,
     private readonly prefixPathRewrite?: HttpGatewayRoutePrefixPathRewrite,
@@ -176,7 +181,7 @@ class HttpGatewayRoutePrefixMatchImpl extends HttpGatewayRoutePathMatch {
   }
 }
 
-class HttpGatewayRoutePathSpecificMatch extends HttpGatewayRoutePathMatch {
+class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly match: CfnGatewayRoute.HttpPathMatchProperty,
     private readonly exactPathRewrite?: string,

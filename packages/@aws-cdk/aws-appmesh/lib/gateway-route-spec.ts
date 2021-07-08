@@ -2,7 +2,7 @@ import { CfnGatewayRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
 import { HttpGatewayRoutePathMatch } from './http-route-path-match';
-import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata } from './private/utils';
+import { validateGprcMatch, validateMetadata } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
@@ -122,14 +122,14 @@ export interface GrpcGatewayRouteMatch {
   /**
    * Create service name based gRPC gateway route match.
    *
-   * @default - no matching on service name.
+   * @default - no matching on service name
    */
   readonly serviceName?: string;
 
   /**
    * Create host name based gRPC gateway route match.
    *
-   * @default - no matching on host name.
+   * @default - no matching on host name
    */
   readonly hostname?: GatewayRouteHostnameMatch;
 
@@ -137,7 +137,7 @@ export interface GrpcGatewayRouteMatch {
    * Create metadata based gRPC gateway route match.
    * All specified metadata must match for the route to match.
    *
-   * @default - no matching on metadata.
+   * @default - no matching on metadata
    */
   readonly metadata?: HeaderMatch[];
 
@@ -156,9 +156,9 @@ export interface GrpcGatewayRouteMatch {
 export interface HttpGatewayRouteSpecOptions {
   /**
    * The criterion for determining a request match for this GatewayRoute.
-   * When path match is defined, this may optionally determine the path rewrite configuration
+   * When path match is defined, this may optionally determine the path rewrite configuration.
    *
-   * @default - matches on '/' and auto-rewrites to '/'
+   * @default - matches on any path and automatically rewrites the path to '/'
    */
   readonly match?: HttpGatewayRouteMatch;
 
@@ -268,16 +268,14 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
-    const matchConfig = this.match?.path?.bind(scope);
+    const pathMatchConfig = this.match?.path?.bind(scope);
     const defaultTargetHostname = this.match?.rewriteRequestHostname;
 
-    // Set prefix Match to '/' if none on match properties are defined.
-    const prefixPathMatch = areMatchPropertiesUndefined(this.match)
-      ? '/'
-      : matchConfig?.prefixPathMatch;
-    const wholePathMatch = matchConfig?.wholePathMatch;
-    const prefixPathRewrite = matchConfig?.prefixPathRewrite;
-    const wholePathRewrite = matchConfig?.wholePathRewrite;
+    // Set prefix path match to '/' if none of path matches are defined.
+    const prefixPathMatch = pathMatchConfig ? pathMatchConfig.prefixPathMatch : '/';
+    const wholePathMatch = pathMatchConfig?.wholePathMatch;
+    const prefixPathRewrite = pathMatchConfig?.prefixPathRewrite;
+    const wholePathRewrite = pathMatchConfig?.wholePathRewrite;
 
     if (prefixPathMatch && prefixPathMatch[0] !== '/') {
       throw new Error(`Prefix Path for the match must start with \'/\', got: ${prefixPathMatch}`);
@@ -299,7 +297,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
         hostname: this.match?.hostname?.bind(scope).hostnameMatch,
         method: this.match?.method,
         headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
-        queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
+        queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameterMatch),
       },
       action: {
         target: {
@@ -307,13 +305,13 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
             virtualServiceName: this.routeTarget.virtualServiceName,
           },
         },
-        rewrite: defaultTargetHostname === false || (prefixPathRewrite || wholePathRewrite)
+        rewrite: defaultTargetHostname !== undefined || (prefixPathRewrite || wholePathRewrite)
           ? {
-            hostname: defaultTargetHostname === false
-              ? {
-                defaultTargetHostname: 'DISABLED',
-              }
-              : undefined,
+            hostname: defaultTargetHostname === undefined
+              ? undefined
+              : {
+                defaultTargetHostname: defaultTargetHostname? 'ENABLED' : 'DISABLED',
+              },
             prefix: prefixPathRewrite,
             path: wholePathRewrite,
           }
@@ -353,12 +351,13 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
               virtualServiceName: this.routeTarget.virtualServiceName,
             },
           },
-          rewrite: this.match.rewriteRequestHostname === false
-            ? {
+          rewrite: this.match.rewriteRequestHostname === undefined
+            ? undefined
+            : {
               hostname: {
-                defaultTargetHostname: 'DISABLED',
+                defaultTargetHostname: this.match.rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
               },
-            }: undefined,
+            },
         },
         match: {
           serviceName: this.match.serviceName,

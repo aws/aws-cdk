@@ -11,7 +11,7 @@ export interface QueryParameterMatchConfig {
   /**
    * Route CFN configuration for route query parameter match.
    */
-  readonly queryParameter: CfnRoute.QueryParameterProperty;
+  readonly queryParameterMatch: CfnRoute.QueryParameterProperty;
 }
 
 /**
@@ -45,7 +45,7 @@ class QueryParameterMatchImpl extends QueryParameterMatch {
 
   bind(_scope: Construct): QueryParameterMatchConfig {
     return {
-      queryParameter: {
+      queryParameterMatch: {
         match: this.matchProperty,
         name: this.queryParameterName,
       },

@@ -3,7 +3,7 @@ import { CfnRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
-import { areMatchPropertiesUndefined, validateGprcMatch, validateMetadata } from './private/utils';
+import { validateGprcMatch, validateMetadata } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
@@ -94,7 +94,7 @@ export interface GrpcRouteMatch {
   /**
    * Create service name based gRPC route match.
    *
-   * @default - do not match on service name.
+   * @default - do not match on service name
    */
   readonly serviceName?: string;
 
@@ -102,15 +102,15 @@ export interface GrpcRouteMatch {
    * Create metadata based gRPC route match.
    * All specified metadata must match for the route to match.
    *
-   * @default - do not match on metadata.
+   * @default - do not match on metadata
    */
   readonly metadata?: HeaderMatch[];
 
   /**
    * The method name to match from the request.
-   * if the method name is specified, serviceName must be also provided
+   * If the method name is specified, service name must be also provided.
    *
-   * @default - do not match on method name.
+   * @default - do not match on method name
    */
   readonly methodName?: string;
 }
@@ -443,13 +443,11 @@ class HttpRouteSpec extends RouteSpec {
   }
 
   public bind(scope: Construct): RouteSpecConfig {
-    const matchConfig = this.match?.path?.bind(scope);
+    const pathMatchConfig = this.match?.path?.bind(scope);
 
-    // Set prefix to '/' if none on match properties are defined.
-    const prefixPathMatch = areMatchPropertiesUndefined(this.match)
-      ? '/'
-      : matchConfig?.prefixPathMatch;
-    const wholePathMatch = matchConfig?.wholePathMatch;
+    // Set prefix path match to '/' if none of path matches are defined.
+    const prefixPathMatch = pathMatchConfig ? pathMatchConfig.prefixPathMatch : '/';
+    const wholePathMatch = pathMatchConfig?.wholePathMatch;
 
     if (prefixPathMatch && prefixPathMatch[0] !== '/') {
       throw new Error(`Prefix Path for the match must start with \'/\', got: ${prefixPathMatch}`);
@@ -468,7 +466,7 @@ class HttpRouteSpec extends RouteSpec {
         headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
         method: this.match?.method,
         scheme: this.match?.protocol,
-        queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameter),
+        queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameterMatch),
       },
       timeout: renderTimeout(this.timeout),
       retryPolicy: this.retryPolicy ? renderHttpRetryPolicy(this.retryPolicy) : undefined,
