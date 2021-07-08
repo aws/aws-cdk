@@ -637,16 +637,16 @@ export = {
         match: {
           prefixPath: '/',
           headers: [
-            appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
-            appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'text/html'),
-            appmesh.HttpHeaderMatch.valueStartsWith('Content-Type', 'application/'),
-            appmesh.HttpHeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
-            appmesh.HttpHeaderMatch.valueEndsWith('Content-Type', '/json'),
-            appmesh.HttpHeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
-            appmesh.HttpHeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
-            appmesh.HttpHeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
-            appmesh.HttpHeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
-            appmesh.HttpHeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+            appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+            appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
+            appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/'),
+            appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+            appmesh.HeaderMatch.valueEndsWith('Content-Type', '/json'),
+            appmesh.HeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+            appmesh.HeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+            appmesh.HeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+            appmesh.HeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
+            appmesh.HeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
           ],
         },
       }),
@@ -808,6 +808,65 @@ export = {
         },
       },
     }));
+
+    test.done();
+  },
+
+  'should throw an error with invalid number of headers'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN + THEN
+    test.throws(() => {
+      router.addRoute('route', {
+        routeSpec: appmesh.RouteSpec.http2({
+          weightedTargets: [{ virtualNode }],
+          match: {
+            prefixPath: '/',
+            // Empty header
+            headers: [],
+          },
+        }),
+      });
+    });
+
+    test.throws(() => {
+      router.addRoute('route', {
+        routeSpec: appmesh.RouteSpec.http2({
+          weightedTargets: [{ virtualNode }],
+          match: {
+            prefixPath: '/',
+            // Empty header
+            // 11 headers
+            headers: [
+              appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+              appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+              appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
+              appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/'),
+              appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+              appmesh.HeaderMatch.valueEndsWith('Content-Type', '/json'),
+              appmesh.HeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+              appmesh.HeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+              appmesh.HeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+              appmesh.HeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
+              appmesh.HeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+            ],
+          },
+        }),
+      });
+    });
 
     test.done();
   },

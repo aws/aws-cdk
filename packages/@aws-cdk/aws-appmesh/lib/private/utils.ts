@@ -1,5 +1,6 @@
 import { Token, TokenComparison } from '@aws-cdk/core';
 import { CfnVirtualNode } from '../appmesh.generated';
+import { HeaderMatch } from '../header-match';
 import { ListenerTlsOptions } from '../listener-tls-options';
 import { TlsClientPolicy } from '../tls-client-policy';
 
@@ -91,4 +92,16 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string) : 
   return comparison === TokenComparison.DIFFERENT || comparison === TokenComparison.ONE_UNRESOLVED
     ? meshAccount
     : undefined;
+}
+
+/**
+ * This is the helper method to validate the length of Metadata array when it is specified.
+ */
+export function validateArrayLength(headers?: HeaderMatch[]) {
+  const MIN_LENGTH = 1;
+  const MAX_LENGTH = 10;
+
+  if (headers && (headers.length < MIN_LENGTH || headers.length > MAX_LENGTH)) {
+    throw new Error(`Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}. got: ${headers.length}`);
+  }
 }
