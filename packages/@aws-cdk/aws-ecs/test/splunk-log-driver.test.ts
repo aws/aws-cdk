@@ -112,7 +112,6 @@ nodeunitShim({
     td.addContainer('Container', {
       image,
       logging: ecs.LogDrivers.splunk({
-        token: cdk.SecretValue.secretsManager('my-splunk-token'),
         secretToken: ecs.Secret.fromSecretsManager(secret),
         url: 'my-splunk-url',
       }),
@@ -153,7 +152,6 @@ nodeunitShim({
     td.addContainer('Container', {
       image,
       logging: ecs.LogDrivers.splunk({
-        token: cdk.SecretValue.secretsManager('my-splunk-token'),
         secretToken: ecs.Secret.fromSsmParameter(parameter),
         url: 'my-splunk-url',
       }),
@@ -198,6 +196,20 @@ nodeunitShim({
         },
       ],
     }));
+
+    test.done();
+  },
+
+  'throws when neither token nor secret token are provided'(test: Test) {
+    test.throws(() => {
+      td.addContainer('Container', {
+        image,
+        logging: ecs.LogDrivers.splunk({
+          url: 'my-splunk-url',
+        }),
+        memoryLimitMiB: 128,
+      });
+    }, 'Please provide either token or secretToken.');
 
     test.done();
   },

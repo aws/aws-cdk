@@ -25,13 +25,24 @@ export enum SplunkLogFormat {
 export interface SplunkLogDriverProps extends BaseLogDriverProps {
   /**
    * Splunk HTTP Event Collector token.
+   *
+   * The splunk-token is added to the Options property of the Log Driver Configuration. So the secret value will be resolved and
+   * viewable in plain text in the console.
+   *
+   * Please provide at least one of `token` or `secretToken`.
    * @deprecated Use {@link SplunkLogDriverProps.secretToken} instead.
+   * @default - token not provided.
    */
-  readonly token: SecretValue;
+  readonly token?: SecretValue;
 
   /**
    * Splunk HTTP Event Collector token (Secret).
-   * @default - Secret token not provided.
+   *
+   * The splunk-token is added to the SecretOptions property of the Log Driver Configuration. So the secret value will not be
+   * resolved or viewable as plain text.
+   *
+   * Please provide at least one of `token` or `secretToken`.
+   * @default - If secret token is not provided, then the value provided in `token` will be used.
    */
   readonly secretToken?: Secret;
 
@@ -128,6 +139,9 @@ export class SplunkLogDriver extends LogDriver {
   constructor(private readonly props: SplunkLogDriverProps) {
     super();
 
+    if (!props.token && !props.secretToken) {
+      throw new Error('Please provide either token or secretToken.');
+    }
     if (props.gzipLevel) {
       ensureInRange(props.gzipLevel, -1, 9);
     }
@@ -152,10 +166,6 @@ export class SplunkLogDriver extends LogDriver {
       'splunk-gzip-level': this.props.gzipLevel,
       ...renderCommonLogDriverOptions(this.props),
     });
-
-    if (this.props.secretToken) {
-      delete options['splunk-token'];
-    }
 
     return {
       logDriver: 'splunk',
