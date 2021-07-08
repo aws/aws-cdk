@@ -265,12 +265,10 @@ export class CdkStage extends CoreConstruct {
     const approve = new cpactions.ManualApprovalAction({
       actionName: approveActionName,
       runOrder: this.nextSequentialRunOrder(),
-      externalEntityLink: `https://#{${this.stageName}SecurityCheck.ARN}`,
+      externalEntityLink: `https://#{${this.stageName}SecurityCheck.LINK}`,
     });
 
     this.addActions(diffAction, approve);
-
-    // approve.grantManualApproval(preApproveLambda);
   }
 
   private securityCheckProperties() {
@@ -300,7 +298,13 @@ export class CdkStage extends CoreConstruct {
                 // $CODEBUILD_INITIATOR will always be Code Pipeline and in the form of:
                 // "codepipeline/example-pipeline-name-Xxx"
                 'payload="$(node -pe \'JSON.stringify({ "PipelineName": process.env.CODEBUILD_INITIATOR.split("/")[1], "StageName": process.env.STAGE_NAME, "ActionName": process.env.ACTION_NAME })\' )"',
-                'export ARN=$CODEBUILD_BUILD_ARN',
+                // ARN: "arn:aws:codebuild:$region:$account_id:build/$project_name:$project_execution_id$"
+                'ARN=$CODEBUILD_BUILD_ARN',
+                'REGION="$(node -pe \'`${process.env.ARN}`.split(":")[3]\')"',
+                'ACCOUNT_ID="$(node -pe \'`${process.env.ARN}`.split(":")[4]\')"',
+                'PROJECT_NAME="$(node -pe \'`${process.env.ARN}`.split(":")[5].split("/")[1]\')"',
+                'PROJECT_ID="$(node -pe \'`${process.env.ARN}`.split(":")[6]\')"',
+                'export LINK="https://$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION"',
                 // Run invoke only if cdk diff passes (returns exit code 0)
                 // 0 -> true, 1 -> false
                 `(cdk diff -a '${assemblyPath}' --security-only --fail && ${invokeLambda}) || echo 'Changes detected! Requires Manual Approval'`,
@@ -309,7 +313,7 @@ export class CdkStage extends CoreConstruct {
           },
           env: {
             'exported-variables': [
-              'ARN',
+              'LINK',
             ],
           },
         }),

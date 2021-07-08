@@ -55,7 +55,7 @@ export class TestCdkStack extends Stack {
 
     pipeline.addApplicationStage(new MyStage(this, 'PreProduction', {
       env: { account: this.account, region: this.region },
-    }));
+    }), { securityCheck: true });
   }
 }
 
