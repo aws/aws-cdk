@@ -557,6 +557,22 @@ behavior('Synth can be made to run in a VPC', (suite) => {
     });
   });
 
+  suite.additional('Modern, using CodeBuildStep', () => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synthStep: new CodeBuildStep('Synth', {
+        commands: ['asdf'],
+        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        primaryOutputDirectory: 'cdk.out',
+        buildEnvironment: {
+          computeType: cbuild.ComputeType.LARGE,
+        },
+      }),
+      engine: new cdkp.CodePipelineEngine({
+        codeBuildDefaults: { vpc },
+      }),
+    });
+  });
+
   function THEN_codePipelineExpectation() {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
