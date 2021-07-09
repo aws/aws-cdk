@@ -64,7 +64,6 @@ export class AssociationManager {
     });
   }
 
-
   private static associationMap = new Map<string, Map<Constraints, CfnConstraintResource>>();
   private static tagOptionMap = new Map<string, CfnTagOption>();
 
@@ -85,7 +84,6 @@ export class AssociationManager {
  * Simplify type for constraint map to hold the L1 constraint resources.
  */
 type CfnConstraintResource = CfnPortfolioProductAssociation | CfnResourceUpdateConstraint;
-
 
 /**
  * Custom allow code
