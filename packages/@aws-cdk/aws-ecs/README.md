@@ -407,7 +407,7 @@ const service = new ecs.FargateService(stack, 'Service', {
 });
 ```
 
-> Note: ECS Anywhere doesn't support Deployment circuit breaker and rollback
+> Note: ECS Anywhere doesn't support deployment circuit breakers and rollback.
 
 ### Include an application/network load balancer
 
