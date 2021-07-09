@@ -20,3 +20,4 @@ export * from './listener-tls-options';
 export * from './tls-validation';
 export * from './tls-client-policy';
 export * from './http-route-method';
+export * from './header-match';
