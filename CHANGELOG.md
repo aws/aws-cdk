@@ -45,7 +45,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Reverts
 
-* **migration:** add constructs migration to rewrite script ([#15461](https://github.com/aws/aws-cdk/issues/15461)) ([adee46c](https://github.com/aws/aws-cdk/commit/adee46c0d3dd128a58b852d9a4c505682423e6b0)), closes [aws/aws-cdk#14916](https://github.com/aws/aws-cdk/issues/14916)
+* **migration:** add constructs migration to rewrite script ([#15461](https://github.com/aws/aws-cdk/issues/15461)) ([adee46c](https://github.com/aws/aws-cdk/commit/adee46c0d3dd128a58b852d9a4c505682423e6b0)), reverts [#14916](https://github.com/aws/aws-cdk/issues/14916)
 
 ## [1.111.0](https://github.com/aws/aws-cdk/compare/v1.110.1...v1.111.0) (2021-07-01)
 
