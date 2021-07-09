@@ -102,6 +102,6 @@ export function validateMatchArrayLength(headers?: HeaderMatch[]) {
   const MAX_LENGTH = 10;
 
   if (headers && (headers.length < MIN_LENGTH || headers.length > MAX_LENGTH)) {
-    throw new Error(`Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}. got: ${headers.length}`);
+    throw new Error(`Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${headers.length}`);
   }
 }

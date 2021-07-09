@@ -25,7 +25,7 @@ export abstract class HeaderMatch {
    * @param headerName the name of the header to match against
    * @param headerValue The exact value to test against
    */
-  static valueIs(headerName: string, headerValue: string): HeaderMatch {
+  public static valueIs(headerName: string, headerValue: string): HeaderMatch {
     return new HeaderMatchImpl(headerName, false, { exact: headerValue });
   }
 
@@ -36,7 +36,7 @@ export abstract class HeaderMatch {
    * @param headerName the name of the header to match against
    * @param headerValue The exact value to test against
    */
-  static valueIsNot(headerName: string, headerValue: string): HeaderMatch {
+  public static valueIsNot(headerName: string, headerValue: string): HeaderMatch {
     return new HeaderMatchImpl(headerName, true, { exact: headerValue });
   }
 
@@ -47,7 +47,7 @@ export abstract class HeaderMatch {
    * @param headerName the name of the header to match against
    * @param prefix The prefix to test against
    */
-  static valueStartsWith(headerName: string, prefix: string): HeaderMatch {
+  public static valueStartsWith(headerName: string, prefix: string): HeaderMatch {
     return new HeaderMatchImpl(headerName, false, { prefix });
   }
 
@@ -58,7 +58,7 @@ export abstract class HeaderMatch {
    * @param headerName the name of the header to match against
    * @param prefix The prefix to test against
    */
-  static valueDoesNotStartWith(headerName: string, prefix: string): HeaderMatch {
+  public static valueDoesNotStartWith(headerName: string, prefix: string): HeaderMatch {
     return new HeaderMatchImpl(headerName, true, { prefix });
   }
 
@@ -69,7 +69,7 @@ export abstract class HeaderMatch {
    * @param headerName the name of the header to match against
    * @param suffix The suffix to test against
    */
-  static valueEndsWith(headerName: string, suffix: string): HeaderMatch {
+  public static valueEndsWith(headerName: string, suffix: string): HeaderMatch {
     return new HeaderMatchImpl(headerName, false, { suffix });
   }
 
@@ -80,7 +80,7 @@ export abstract class HeaderMatch {
    * @param headerName the name of the header to match against
    * @param suffix The suffix to test against
    */
-  static valueDoesNotEndWith(headerName: string, suffix: string): HeaderMatch {
+  public static valueDoesNotEndWith(headerName: string, suffix: string): HeaderMatch {
     return new HeaderMatchImpl(headerName, true, { suffix });
   }
 
@@ -91,7 +91,7 @@ export abstract class HeaderMatch {
    * @param headerName the name of the header to match against
    * @param regex The regex to test against
    */
-  static valueMatchesRegex(headerName: string, regex: string): HeaderMatch {
+  public static valueMatchesRegex(headerName: string, regex: string): HeaderMatch {
     return new HeaderMatchImpl(headerName, false, { regex });
   }
 
@@ -102,7 +102,7 @@ export abstract class HeaderMatch {
    * @param headerName the name of the header to match against
    * @param regex The regex to test against
    */
-  static valueDoesNotMatchRegex(headerName: string, regex: string): HeaderMatch {
+  public static valueDoesNotMatchRegex(headerName: string, regex: string): HeaderMatch {
     return new HeaderMatchImpl(headerName, true, { regex });
   }
 
@@ -114,7 +114,7 @@ export abstract class HeaderMatch {
    * @param start Match on values starting at and including this value
    * @param end Match on values up to but not including this value
    */
-  static valuesIsInRange(headerName: string, start: number, end: number): HeaderMatch {
+  public static valuesIsInRange(headerName: string, start: number, end: number): HeaderMatch {
     return new HeaderMatchImpl(headerName, false, {
       range: {
         start,
@@ -131,7 +131,7 @@ export abstract class HeaderMatch {
    * @param start Match on values starting at and including this value
    * @param end Match on values up to but not including this value
    */
-  static valuesIsNotInRange(headerName: string, start: number, end: number): HeaderMatch {
+  public static valuesIsNotInRange(headerName: string, start: number, end: number): HeaderMatch {
     return new HeaderMatchImpl(headerName, true, {
       range: {
         start,

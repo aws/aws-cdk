@@ -840,15 +840,14 @@ export = {
           },
         }),
       });
-    });
+    }, /Number of headers provided for matching must be between 1 and 10, got: 0/);
 
     test.throws(() => {
-      router.addRoute('route', {
+      router.addRoute('route2', {
         routeSpec: appmesh.RouteSpec.http2({
           weightedTargets: [{ virtualNode }],
           match: {
             prefixPath: '/',
-            // Empty header
             // 11 headers
             headers: [
               appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
@@ -866,7 +865,7 @@ export = {
           },
         }),
       });
-    });
+    }, /Number of headers provided for matching must be between 1 and 10, got: 11/);
 
     test.done();
   },
