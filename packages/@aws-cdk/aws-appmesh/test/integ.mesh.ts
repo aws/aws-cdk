@@ -55,7 +55,7 @@ router.addRoute('route-1', {
       },
     ],
     match: {
-      prefixPath: '/',
+      path: appmesh.HttpRoutePathMatch.startingWith('/'),
     },
     timeout: {
       idle: cdk.Duration.seconds(10),
@@ -158,7 +158,7 @@ router.addRoute('route-2', {
       },
     ],
     match: {
-      prefixPath: '/path2',
+      path: appmesh.HttpRoutePathMatch.startingWith('/path2'),
     },
     timeout: {
       idle: cdk.Duration.seconds(11),
@@ -202,7 +202,7 @@ router.addRoute('route-matching', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [{ virtualNode: node3 }],
     match: {
-      prefixPath: '/',
+      path: appmesh.HttpRoutePathMatch.startingWith('/'),
       method: appmesh.HttpRouteMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
@@ -250,6 +250,41 @@ router.addRoute('route-grpc-retry', {
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
       retryAttempts: 5,
       retryTimeout: cdk.Duration.seconds(1),
+    },
+  }),
+});
+
+router.addRoute('route-6', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [
+      {
+        virtualNode: node2,
+        weight: 30,
+      },
+    ],
+    match: {
+      path: appmesh.HttpRoutePathMatch.regex('regex'),
+      queryParameters: [
+        appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+      ],
+    },
+  }),
+});
+
+router.addRoute('route-7', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [
+      {
+        virtualNode: node4,
+        weight: 20,
+      },
+    ],
+    match: {
+      serviceName: 'test-service',
+      methodName: 'test-method',
+      metadata: [
+        appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+      ],
     },
   }),
 });

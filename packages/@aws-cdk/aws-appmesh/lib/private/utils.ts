@@ -2,6 +2,7 @@ import { Token, TokenComparison } from '@aws-cdk/core';
 import { CfnVirtualNode } from '../appmesh.generated';
 import { HeaderMatch } from '../header-match';
 import { ListenerTlsOptions } from '../listener-tls-options';
+import { GrpcRouteMatch } from '../route-spec';
 import { TlsClientPolicy } from '../tls-client-policy';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -97,11 +98,28 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string) : 
 /**
  * This is the helper method to validate the length of match array when it is specified.
  */
-export function validateMatchArrayLength(headers?: HeaderMatch[]) {
+export function validateMatchArrayLength(headers?: HeaderMatch[], metadata?: HeaderMatch[]) {
   const MIN_LENGTH = 1;
   const MAX_LENGTH = 10;
 
   if (headers && (headers.length < MIN_LENGTH || headers.length > MAX_LENGTH)) {
     throw new Error(`Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${headers.length}`);
   }
+
+  if (metadata && (metadata.length < MIN_LENGTH || metadata.length > MAX_LENGTH)) {
+    throw new Error(`Number of metadata provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${metadata.length}`);
+  }
+}
+
+/**
+ * This is the helper method to validate at least one of gRPC match type is defined.
+ */
+export function validateGprcMatch(match: GrpcRouteMatch) {
+  for (const property in match) {
+    if (match.hasOwnProperty(property)) {
+      return;
+    }
+  }
+
+  throw new Error('At least one gRPC match property must be provided');
 }

@@ -237,7 +237,7 @@ export = {
             },
           ],
           match: {
-            prefixPath: '/node',
+            path: appmesh.HttpRoutePathMatch.startingWith('/node'),
           },
           timeout: {
             idle: cdk.Duration.seconds(10),
@@ -442,7 +442,9 @@ export = {
       router.addRoute('test-grpc-route', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: { serviceName: 'servicename' },
+          match: {
+            serviceName: 'servicename',
+          },
           retryPolicy: {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
             httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
@@ -492,7 +494,9 @@ export = {
       router.addRoute('test-grpc-route', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: { serviceName: 'example' },
+          match: {
+            serviceName: 'example',
+          },
           retryPolicy: {
             grpcRetryEvents: [],
             httpRetryEvents: [],
@@ -506,7 +510,9 @@ export = {
       router.addRoute('test-grpc-route2', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: { serviceName: 'example' },
+          match: {
+            serviceName: 'example',
+          },
           retryPolicy: {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.CANCELLED],
             httpRetryEvents: [],
@@ -563,7 +569,9 @@ export = {
         router.addRoute('test-grpc-route', {
           routeSpec: appmesh.RouteSpec.grpc({
             weightedTargets: [{ virtualNode }],
-            match: { serviceName: 'servicename' },
+            match: {
+              serviceName: 'servicename',
+            },
             retryPolicy: {
               retryAttempts: 5,
               retryTimeout: cdk.Duration.seconds(10),
@@ -598,7 +606,9 @@ export = {
           mesh: sharedMesh,
           routeSpec: appmesh.RouteSpec.grpc({
             weightedTargets: [{ virtualNode }],
-            match: { serviceName: 'example' },
+            match: {
+              serviceName: 'example',
+            },
           }),
           virtualRouter: router,
 
@@ -635,7 +645,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          prefixPath: '/',
+          path: appmesh.HttpRoutePathMatch.startingWith('/'),
           headers: [
             appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
             appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
@@ -749,7 +759,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          prefixPath: '/',
+          path: appmesh.HttpRoutePathMatch.startingWith('/'),
           method: appmesh.HttpRouteMethod.GET,
         },
       }),
@@ -791,7 +801,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          prefixPath: '/',
+          path: appmesh.HttpRoutePathMatch.startingWith('/'),
           protocol: appmesh.HttpRouteProtocol.HTTP,
         },
       }),
@@ -812,7 +822,282 @@ export = {
     test.done();
   },
 
-  'should throw an error with invalid number of headers'(test: Test) {
+  'should match routes based on metadata'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN
+    new appmesh.Route(stack, 'test-grpc-route', {
+      mesh: mesh,
+      virtualRouter: router,
+      routeSpec: appmesh.RouteSpec.grpc({
+        weightedTargets: [{ virtualNode }],
+        match: {
+          metadata: [
+            appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+            appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
+            appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/'),
+            appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+            appmesh.HeaderMatch.valueEndsWith('Content-Type', '/json'),
+            appmesh.HeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+            appmesh.HeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+            appmesh.HeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+            appmesh.HeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
+            appmesh.HeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+          ],
+        },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        GrpcRoute: {
+          Match: {
+            Metadata: [
+              {
+                Invert: false,
+                Match: { Exact: 'application/json' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: true,
+                Match: { Exact: 'text/html' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: false,
+                Match: { Prefix: 'application/' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: true,
+                Match: { Prefix: 'text/' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: false,
+                Match: { Suffix: '/json' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: true,
+                Match: { Suffix: '/json+foobar' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: false,
+                Match: { Regex: 'application/.*' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: true,
+                Match: { Regex: 'text/.*' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: false,
+                Match: {
+                  Range: {
+                    End: 5,
+                    Start: 1,
+                  },
+                },
+                Name: 'Max-Forward',
+              },
+              {
+                Invert: true,
+                Match: {
+                  Range: {
+                    End: 5,
+                    Start: 1,
+                  },
+                },
+                Name: 'Max-Forward',
+              },
+            ],
+          },
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'should match routes based on path'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN
+    new appmesh.Route(stack, 'test-http-route', {
+      mesh: mesh,
+      virtualRouter: router,
+      routeSpec: appmesh.RouteSpec.http({
+        weightedTargets: [{ virtualNode }],
+        match: {
+          path: appmesh.HttpRoutePathMatch.exactly('/exact'),
+        },
+      }),
+    });
+
+    new appmesh.Route(stack, 'test-http2-route', {
+      mesh: mesh,
+      virtualRouter: router,
+      routeSpec: appmesh.RouteSpec.http2({
+        weightedTargets: [{ virtualNode }],
+        match: {
+          path: appmesh.HttpRoutePathMatch.regex('regex'),
+        },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        HttpRoute: {
+          Match: {
+            Path: {
+              Exact: '/exact',
+            },
+          },
+        },
+      },
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        Http2Route: {
+          Match: {
+            Path: {
+              Regex: 'regex',
+            },
+          },
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'should match routes based query parameter'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN
+    new appmesh.Route(stack, 'test-http-route', {
+      mesh: mesh,
+      virtualRouter: router,
+      routeSpec: appmesh.RouteSpec.http({
+        weightedTargets: [{ virtualNode }],
+        match: {
+          queryParameters: [appmesh.QueryParameterMatch.valueIs('query-field', 'value')],
+        },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        HttpRoute: {
+          Match: {
+            QueryParameters: [
+              {
+                Name: 'query-field',
+                Match: {
+                  Exact: 'value',
+                },
+              },
+            ],
+          },
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'should match routes based method name'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN
+    new appmesh.Route(stack, 'test-http-route', {
+      mesh: mesh,
+      virtualRouter: router,
+      routeSpec: appmesh.RouteSpec.grpc({
+        priority: 20,
+        weightedTargets: [{ virtualNode }],
+        match: {
+          serviceName: 'test',
+          methodName: 'testMethod',
+        },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        GrpcRoute: {
+          Match: {
+            ServiceName: 'test',
+            MethodName: 'testMethod',
+          },
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'should throw an error if no gRPC match type is defined'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -830,42 +1115,50 @@ export = {
 
     // WHEN + THEN
     test.throws(() => {
-      router.addRoute('route', {
-        routeSpec: appmesh.RouteSpec.http2({
+      new appmesh.Route(stack, 'test-http-route', {
+        mesh: mesh,
+        virtualRouter: router,
+        routeSpec: appmesh.RouteSpec.grpc({
+          priority: 20,
           weightedTargets: [{ virtualNode }],
-          match: {
-            prefixPath: '/',
-            // Empty header
-            headers: [],
-          },
+          match: {},
         }),
       });
-    }, /Number of headers provided for matching must be between 1 and 10, got: 0/);
+    }, /At least one gRPC match property must be provided/);
 
+    test.done();
+  },
+
+  'should throw an error if method name is specified without service name'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN + THEN
     test.throws(() => {
-      router.addRoute('route2', {
-        routeSpec: appmesh.RouteSpec.http2({
+      new appmesh.Route(stack, 'test-http-route', {
+        mesh: mesh,
+        virtualRouter: router,
+        routeSpec: appmesh.RouteSpec.grpc({
+          priority: 20,
           weightedTargets: [{ virtualNode }],
           match: {
-            prefixPath: '/',
-            // 11 headers
-            headers: [
-              appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
-              appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
-              appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
-              appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/'),
-              appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
-              appmesh.HeaderMatch.valueEndsWith('Content-Type', '/json'),
-              appmesh.HeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
-              appmesh.HeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
-              appmesh.HeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
-              appmesh.HeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
-              appmesh.HeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
-            ],
+            methodName: 'test_method',
           },
         }),
       });
-    }, /Number of headers provided for matching must be between 1 and 10, got: 11/);
+    }, /If you specify a method name, you must also specify a service name/);
 
     test.done();
   },

@@ -406,6 +406,18 @@ A `route` is associated with a virtual router, and it's used to match requests f
 
 If your `route` matches a request, you can distribute traffic to one or more target virtual nodes with relative weighting.
 
+The _RouteSpec_ class provides an easy interface for defining new protocol specific route specs.
+The `tcp()`, `http()`, `http2()`, and `grpc()` methods provide the spec necessary to define a protocol specific spec.
+
+For HTTP based routes, the match field can be used to match on 
+path (prefix, exact, or regex), HTTP method, scheme, HTTP headers, and query parameters.
+By default, an HTTP based route will match on all routes.
+
+For gRPC based routes, the match field can be used to match on service name, method name, and metadata.
+When specifying the method name, service name must also be specified.
+
+Add an HTTP route that matches based on prefix path.
+
 ```ts
 router.addRoute('route-http', {
   routeSpec: appmesh.RouteSpec.http({
@@ -415,13 +427,14 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      prefixPath: '/path-to-app',
+      // Path that is passed to this method must start with '/'.
+      path: appmesh.HttpRoutePathMatch.startingWith('/path-to-app'),
     },
   }),
 });
 ```
 
-Add an HTTP2 route that matches based on method, scheme and header:
+Add an HTTP2 route that matches based on exact path, method, scheme, header, and query parameter:
 
 ```ts
 router.addRoute('route-http2', {
@@ -432,14 +445,18 @@ router.addRoute('route-http2', {
       },
     ],
     match: {
-      prefixPath: '/',
+      path: appmesh.HttpRoutePathMatch.exactly('/exact'),
       method: appmesh.HttpRouteMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
         // All specified headers must match for the route to match.
         appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
         appmesh.HeaderMatch.valueIsNot('Content-Type', 'application/json'),
-      ]
+      ],
+      queryParameters: [
+        // All specified query parameters must match for the route to match.
+        appmesh.QueryParameterMatch.valueIs('query-field', 'value')
+      ],
     },
   }),
 });
@@ -461,7 +478,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      prefixPath: '/path-to-app',
+      path: appmesh.HttpRoutePathMatch.startingWith('/path-to-app'),
     },
   }),
 });
@@ -511,12 +528,28 @@ router.addRoute('route-grpc-retry', {
 });
 ```
 
-The _RouteSpec_ class provides an easy interface for defining new protocol specific route specs.
-The `tcp()`, `http()` and `http2()` methods provide the spec necessary to define a protocol specific spec.
+Add an gRPC route that matches based on method name and metadata:
 
-For HTTP based routes, the match field can be used to match on a route prefix.
-By default, an HTTP based route will match on `/`. All matches must start with a leading `/`.
-The timeout field can also be specified for `idle` and `perRequest` timeouts.
+```ts
+router.addRoute('route-grpc-retry', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [{ virtualNode: node }],
+    match: { 
+      // When method name is specified, service name must be also specified.
+      methodName: 'methodname',
+      serviceName: 'servicename',
+      metadata: [
+        // All specified metadata must match for the route to match.
+        appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/'),
+        appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+      ],
+    },
+    
+  }),
+});
+```
+
+Add a gRPC route with time out:
 
 ```ts
 router.addRoute('route-http', {
