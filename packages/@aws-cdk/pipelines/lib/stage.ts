@@ -1,14 +1,13 @@
-import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Stage, Aspects, Duration } from '@aws-cdk/core';
+import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction } from './actions';
+import { CdkPipeline } from './pipeline';
+import { ApplicationSecurityCheck } from './private/application-security-check';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from './private/asset-manifest';
 import { topologicalSort } from './private/toposort';
 
@@ -41,11 +40,6 @@ export interface CdkStageProps {
   readonly host: IStageHost;
 }
 
-interface SecurityCheckConstructs {
-  preApproveLambda: lambda.Function;
-  build: codebuild.Project;
-}
-
 
 /**
  * Stage in a CdkPipeline
@@ -61,12 +55,16 @@ export class CdkStage extends CoreConstruct {
   private readonly stacksToDeploy = new Array<DeployStackCommand>();
   private readonly stageName: string;
   private readonly host: IStageHost;
+  private readonly pipeline?: CdkPipeline;
+  private _applicationSecurityCheck?: ApplicationSecurityCheck;
   private _prepared = false;
-
-  private _securityCheckConstructs?: SecurityCheckConstructs;
 
   constructor(scope: Construct, id: string, props: CdkStageProps) {
     super(scope, id);
+
+    if (scope instanceof CdkPipeline) {
+      this.pipeline = scope;
+    }
 
     this.stageName = props.stageName;
     this.pipelineStage = props.pipelineStage;
@@ -91,14 +89,14 @@ export class CdkStage extends CoreConstruct {
     const asm = appStage.synth({ validateOnSynthesis: true });
     const extraRunOrderSpace = options.extraRunOrderSpace ?? 0 + (options.securityCheck ? 2 : 0);
 
+    if (options.securityCheck) {
+      this.addSecurityCheck();
+    }
+
     if (asm.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
       // error will be thrown come deployment time.
       throw new Error(`The given Stage construct ('${appStage.node.path}') should contain at least one Stack`);
-    }
-
-    if (options.securityCheck) {
-      this.securityCheck();
     }
 
     const sortedTranches = topologicalSort(asm.stacks,
@@ -122,6 +120,29 @@ export class CdkStage extends CoreConstruct {
         this.addStackArtifactDeployment(stack, { runOrder, executeRunOrder });
       }
     }
+  }
+
+  /**
+   * Get a cached version of an ApplicationSecurityCheck, which consists of:
+   *  - CodeBuild Project to check for security changes in a stage
+   *  - Lambda Function that approves the manual approval if no security changes are detected
+   *
+   * The ApplicationSecurityCheck is cached from the pipeline **if** this stage is scoped
+   * to a CDK Pipeline. If this stage **is not** scoped to a pipeline, create an ApplicationSecurityCheck
+   * scoped to the stage itself.
+   *
+   * @internal
+   */
+  private getApplicationSecurityCheck(): ApplicationSecurityCheck {
+    if (this._applicationSecurityCheck) {
+      return this._applicationSecurityCheck;
+    }
+    if (this.pipeline) {
+      this._applicationSecurityCheck = this.pipeline._getApplicationSecurityCheck();
+    } else {
+      this._applicationSecurityCheck = new ApplicationSecurityCheck(this, 'StageApplicationSecurityCheck');
+    }
+    return this._applicationSecurityCheck;
   }
 
   /**
@@ -241,16 +262,27 @@ export class CdkStage extends CoreConstruct {
     return stripPrefix(s, `${this.stageName}-`);
   }
 
-  private securityCheck() {
-    const { build } = this.securityCheckProperties();
+  /**
+   * Add a security check before the prepare/deploy actions of an CDK stage.
+   * The security check consists of two actions:
+   *  - CodeBuild Action to check for security changes in a stage
+   *  - Manual Approval Action that is auto approved via a Lambda if no security changes detected
+   */
+  private addSecurityCheck() {
+    const { cdkDiffProject } = this.getApplicationSecurityCheck();
+
     const approveActionName = `${this.stageName}ManualApproval`;
     const diffAction = new CodeBuildAction({
       runOrder: this.nextSequentialRunOrder(),
       actionName: `${this.stageName}SecurityCheck`,
       input: this.cloudAssemblyArtifact,
-      project: build,
+      project: cdkDiffProject,
       variablesNamespace: `${this.stageName}SecurityCheck`,
       environmentVariables: {
+        STACK_NAME: {
+          value: this.pipelineStage.pipeline.stack.stackName,
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+        },
         STAGE_NAME: {
           value: this.stageName,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
@@ -269,71 +301,6 @@ export class CdkStage extends CoreConstruct {
     });
 
     this.addActions(diffAction, approve);
-  }
-
-  private securityCheckProperties() {
-    if (!this._securityCheckConstructs) {
-
-      const preApproveLambda = new lambda.Function(this, 'CDKPipelinesAutoApprove', {
-        handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_8,
-        code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
-        timeout: Duration.seconds(30),
-      });
-      const assemblyPath = `assembly-${this.pipelineStage.pipeline.stack.stackName}-${this.stageName}/`;
-      const invokeLambda =
-        'aws lambda invoke' +
-        ` --function-name ${preApproveLambda.functionName}` +
-        ' --invocation-type Event' +
-        ' --payload "$payload"' +
-        ' lambda.out';
-
-      const build = new codebuild.Project(this, 'CDKSecurityCheck', {
-        buildSpec: codebuild.BuildSpec.fromObject({
-          version: 0.2,
-          phases: {
-            build: {
-              commands: [
-                'npm install -g aws-cdk',
-                // $CODEBUILD_INITIATOR will always be Code Pipeline and in the form of:
-                // "codepipeline/example-pipeline-name-Xxx"
-                'payload="$(node -pe \'JSON.stringify({ "PipelineName": process.env.CODEBUILD_INITIATOR.split("/")[1], "StageName": process.env.STAGE_NAME, "ActionName": process.env.ACTION_NAME })\' )"',
-                // ARN: "arn:aws:codebuild:$region:$account_id:build/$project_name:$project_execution_id$"
-                'ARN=$CODEBUILD_BUILD_ARN',
-                'REGION="$(node -pe \'`${process.env.ARN}`.split(":")[3]\')"',
-                'ACCOUNT_ID="$(node -pe \'`${process.env.ARN}`.split(":")[4]\')"',
-                'PROJECT_NAME="$(node -pe \'`${process.env.ARN}`.split(":")[5].split("/")[1]\')"',
-                'PROJECT_ID="$(node -pe \'`${process.env.ARN}`.split(":")[6]\')"',
-                'export LINK="https://$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION"',
-                // Run invoke only if cdk diff passes (returns exit code 0)
-                // 0 -> true, 1 -> false
-                `(cdk diff -a '${assemblyPath}' --security-only --fail && ${invokeLambda}) || echo 'Changes detected! Requires Manual Approval'`,
-              ],
-            },
-          },
-          env: {
-            'exported-variables': [
-              'LINK',
-            ],
-          },
-        }),
-      });
-
-      preApproveLambda.grantInvoke(build);
-
-      build.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['cloudformation:DescribeStacks', 'cloudformation:GetTemplate'],
-        resources: ['*'], // this is needed to check the status the stacks when doing `cdk diff`
-      }));
-
-      preApproveLambda.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['codepipeline:GetPipelineState', 'codepipeline:PutApprovalResult'],
-        resources: ['*'],
-      }));
-
-      this._securityCheckConstructs = { preApproveLambda, build };
-    }
-    return this._securityCheckConstructs;
   }
 
   /**

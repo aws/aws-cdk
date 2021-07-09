@@ -15,7 +15,6 @@ class MyStage extends Stage {
     const stack = new Stack(this, 'MyStack');
 
     const bucket = new s3.Bucket(stack, 'MyBucket', {
-      autoDeleteObjects: true,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 

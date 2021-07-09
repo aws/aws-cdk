@@ -6,6 +6,7 @@ import { Annotations, App, Aws, CfnOutput, Fn, Lazy, PhysicalName, Stack, Stage 
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from './docker-credentials';
+import { ApplicationSecurityCheck } from './private/application-security-check';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
 
@@ -183,6 +184,7 @@ export class CdkPipeline extends CoreConstruct {
   private readonly _outputArtifacts: Record<string, codepipeline.Artifact> = {};
   private readonly _cloudAssemblyArtifact: codepipeline.Artifact;
   private readonly _dockerCredentials: DockerCredential[];
+  private _applicationSecurityCheck?: ApplicationSecurityCheck;
 
   constructor(scope: Construct, id: string, props: CdkPipelineProps) {
     super(scope, id);
@@ -285,6 +287,20 @@ export class CdkPipeline extends CoreConstruct {
    */
   public stage(stageName: string): codepipeline.IStage {
     return this._pipeline.stage(stageName);
+  }
+
+  /**
+   * Get a cached version of an Application Security Check, which consists of:
+   *  - CodeBuild Project to check for security changes in a stage
+   *  - Lambda Function that approves the manual approval if no security changes are detected
+   *
+   * @internal
+   */
+  public _getApplicationSecurityCheck(): ApplicationSecurityCheck {
+    if (!this._applicationSecurityCheck) {
+      this._applicationSecurityCheck = new ApplicationSecurityCheck(this, 'PipelineApplicationSecurityCheck');
+    }
+    return this._applicationSecurityCheck;
   }
 
   /**
