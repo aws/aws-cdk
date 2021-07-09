@@ -106,7 +106,8 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * Combine the build artifacts for a batch builds.
    *
-   * Enabling this will enable to combine the build artifacts into the same location for a batch builds on the CodeBuild project.
+   * Enabling this will combine the build artifacts into the same location for batch builds.
+   * If `executeBatchBuild` is not set to `true`, this property is ignored.
    *
    * @default false
    */
