@@ -3,7 +3,7 @@ import { CfnRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
-import { validateGprcMatch, validateMatchArrayLength } from './private/utils';
+import { validateGprcMatch, validateGrpcMatchArrayLength, validateHttpMatchArrayLength } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
@@ -449,6 +449,7 @@ class HttpRouteSpec extends RouteSpec {
     const prefixPathMatch = pathMatchConfig ? pathMatchConfig.prefixPathMatch : '/';
     const wholePathMatch = pathMatchConfig?.wholePathMatch;
     const headers = this.match?.headers;
+    const queryParameters = this.match?.queryParameters;
 
     if (prefixPathMatch && prefixPathMatch[0] !== '/') {
       throw new Error(`Prefix Path for the match must start with \'/\', got: ${prefixPathMatch}`);
@@ -456,7 +457,7 @@ class HttpRouteSpec extends RouteSpec {
     if (wholePathMatch?.exact && wholePathMatch.exact[0] !== '/') {
       throw new Error(`Exact Path for the match must start with \'/\', got: ${wholePathMatch.exact}`);
     }
-    validateMatchArrayLength(headers);
+    validateHttpMatchArrayLength(headers, queryParameters);
 
     const httpConfig: CfnRoute.HttpRouteProperty = {
       action: {
@@ -468,7 +469,7 @@ class HttpRouteSpec extends RouteSpec {
         headers: headers?.map(header => header.bind(scope).headerMatch),
         method: this.match?.method,
         scheme: this.match?.protocol,
-        queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameterMatch),
+        queryParameters: queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameterMatch),
       },
       timeout: renderTimeout(this.timeout),
       retryPolicy: this.retryPolicy ? renderHttpRetryPolicy(this.retryPolicy) : undefined,
@@ -563,7 +564,7 @@ class GrpcRouteSpec extends RouteSpec {
     const metadata = this.match.metadata;
 
     validateGprcMatch(this.match);
-    validateMatchArrayLength(undefined, metadata);
+    validateGrpcMatchArrayLength(metadata);
 
     if (methodName && !serviceName) {
       throw new Error('If you specify a method name, you must also specify a service name');

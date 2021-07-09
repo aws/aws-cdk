@@ -434,7 +434,7 @@ router.addRoute('route-http', {
 });
 ```
 
-Add an HTTP2 route that matches based on exact path, method, scheme, header, and query parameter:
+Add an HTTP2 route that matches based on exact path, method, scheme, headers, and query parameters:
 
 ```ts
 router.addRoute('route-http2', {

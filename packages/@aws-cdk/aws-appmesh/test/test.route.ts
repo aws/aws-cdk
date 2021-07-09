@@ -442,9 +442,7 @@ export = {
       router.addRoute('test-grpc-route', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: {
-            serviceName: 'servicename',
-          },
+          match: { serviceName: 'servicename' },
           retryPolicy: {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
             httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
@@ -494,9 +492,7 @@ export = {
       router.addRoute('test-grpc-route', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: {
-            serviceName: 'example',
-          },
+          match: { serviceName: 'example' },
           retryPolicy: {
             grpcRetryEvents: [],
             httpRetryEvents: [],
@@ -510,9 +506,7 @@ export = {
       router.addRoute('test-grpc-route2', {
         routeSpec: appmesh.RouteSpec.grpc({
           weightedTargets: [{ virtualNode }],
-          match: {
-            serviceName: 'example',
-          },
+          match: { serviceName: 'example' },
           retryPolicy: {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.CANCELLED],
             httpRetryEvents: [],
@@ -569,9 +563,7 @@ export = {
         router.addRoute('test-grpc-route', {
           routeSpec: appmesh.RouteSpec.grpc({
             weightedTargets: [{ virtualNode }],
-            match: {
-              serviceName: 'servicename',
-            },
+            match: { serviceName: 'servicename' },
             retryPolicy: {
               retryAttempts: 5,
               retryTimeout: cdk.Duration.seconds(10),
@@ -1093,6 +1085,183 @@ export = {
         },
       },
     }));
+
+    test.done();
+  },
+
+  'should throw an error with invalid number of headers'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN + THEN
+    test.throws(() => {
+      router.addRoute('route', {
+        routeSpec: appmesh.RouteSpec.http2({
+          weightedTargets: [{ virtualNode }],
+          match: {
+            path: appmesh.HttpRoutePathMatch.startingWith('/'),
+            // Empty header
+            headers: [],
+          },
+        }),
+      });
+    }, /Number of headers provided for matching must be between 1 and 10, got: 0/);
+
+    test.throws(() => {
+      router.addRoute('route2', {
+        routeSpec: appmesh.RouteSpec.http2({
+          weightedTargets: [{ virtualNode }],
+          match: {
+            path: appmesh.HttpRoutePathMatch.startingWith('/'),
+            // 11 headers
+            headers: [
+              appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+              appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+              appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
+              appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/'),
+              appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+              appmesh.HeaderMatch.valueEndsWith('Content-Type', '/json'),
+              appmesh.HeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+              appmesh.HeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+              appmesh.HeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+              appmesh.HeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
+              appmesh.HeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+            ],
+          },
+        }),
+      });
+    }, /Number of headers provided for matching must be between 1 and 10, got: 11/);
+
+    test.done();
+  },
+
+  'should throw an error with invalid number of query parameters'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN + THEN
+    test.throws(() => {
+      router.addRoute('route', {
+        routeSpec: appmesh.RouteSpec.http2({
+          weightedTargets: [{ virtualNode }],
+          match: {
+            path: appmesh.HttpRoutePathMatch.startingWith('/'),
+            // Empty header
+            queryParameters: [],
+          },
+        }),
+      });
+    }, /Number of query parameters provided for matching must be between 1 and 10, got: 0/);
+
+    test.throws(() => {
+      router.addRoute('route2', {
+        routeSpec: appmesh.RouteSpec.http2({
+          weightedTargets: [{ virtualNode }],
+          match: {
+            path: appmesh.HttpRoutePathMatch.startingWith('/'),
+            // 11 headers
+            queryParameters: [
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+              appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
+            ],
+          },
+        }),
+      });
+    }, /Number of query parameters provided for matching must be between 1 and 10, got: 11/);
+
+    test.done();
+  },
+
+  'should throw an error with invalid number of metadata'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN + THEN
+    test.throws(() => {
+      new appmesh.Route(stack, 'test-http-route', {
+        mesh: mesh,
+        virtualRouter: router,
+        routeSpec: appmesh.RouteSpec.grpc({
+          priority: 20,
+          weightedTargets: [{ virtualNode }],
+          match: {
+            metadata: [],
+          },
+        }),
+      });
+    }, /Number of metadata provided for matching must be between 1 and 10, got: 0/);
+
+    // WHEN + THEN
+    test.throws(() => {
+      new appmesh.Route(stack, 'test-http-route-1', {
+        mesh: mesh,
+        virtualRouter: router,
+        routeSpec: appmesh.RouteSpec.grpc({
+          priority: 20,
+          weightedTargets: [{ virtualNode }],
+          match: {
+            metadata: [
+              appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+              appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+              appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
+              appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/'),
+              appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+              appmesh.HeaderMatch.valueEndsWith('Content-Type', '/json'),
+              appmesh.HeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+              appmesh.HeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+              appmesh.HeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+              appmesh.HeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
+              appmesh.HeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+            ],
+          },
+        }),
+      });
+    }, /Number of metadata provided for matching must be between 1 and 10, got: 11/);
 
     test.done();
   },
