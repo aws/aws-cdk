@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
@@ -74,6 +75,19 @@ export class PayloadFormatVersion {
 }
 
 /**
+ * Specifies the TLS configuration for a private integration
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
+ */
+export class TlsConfig {
+  /** hostname to verify as a string */
+  public readonly serverNameToVerify: string;
+
+  constructor(serverNameToVerify: string) {
+    this.serverNameToVerify = serverNameToVerify;
+  }
+}
+
+/**
  * The integration properties
  */
 export interface HttpIntegrationProps {
@@ -120,6 +134,13 @@ export interface HttpIntegrationProps {
    * @default - defaults to latest in the case of HttpIntegrationType.LAMBDA_PROXY`, irrelevant otherwise.
    */
   readonly payloadFormatVersion?: PayloadFormatVersion;
+
+  /**
+   * Specifies the TLS configuration for a private integration
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
+   * @default - undefined
+   */
+  readonly tlsConfig?: TlsConfig;
 }
 
 /**
@@ -142,6 +163,13 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       connectionType: props.connectionType,
       payloadFormatVersion: props.payloadFormatVersion?.version,
     });
+
+    if (props.tlsConfig) {
+      integ.tlsConfig = {
+        serverNameToVerify: props.tlsConfig.serverNameToVerify,
+      };
+    }
+
     this.integrationId = integ.ref;
     this.httpApi = props.httpApi;
   }
@@ -215,4 +243,11 @@ export interface HttpRouteIntegrationConfig {
    * @default - undefined
    */
   readonly payloadFormatVersion: PayloadFormatVersion;
+
+  /**
+   * Specifies the TLS configuration for a private integration
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
+   * @default - undefined
+   */
+  readonly tlsConfig?: TlsConfig
 }
