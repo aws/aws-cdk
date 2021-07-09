@@ -433,7 +433,7 @@ const targetGroup2 = listener.addTargets('ECS2', {
 });
 ```
 
-> Note: ECS Anywhere doesn't support application/network load balancer
+> Note: ECS Anywhere doesn't support application/network load balancers.
 
 Note that in the example above, the default `service` only allows you to register the first essential container or the first mapped port on the container as a target and add it to a new target group. To have more control over which container and port to register as targets, you can use `service.loadBalancerTarget()` to return a load balancing target for a specific container and port.
 
