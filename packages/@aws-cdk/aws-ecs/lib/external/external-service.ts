@@ -23,7 +23,6 @@ export interface ExternalServiceProps extends BaseServiceOptions {
   /**
    * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
    *
-   * This property is only used for tasks that use the awsvpc network mode.
    *
    * @default - A new security group is created.
    */
