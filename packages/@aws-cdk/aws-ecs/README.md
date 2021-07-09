@@ -299,7 +299,7 @@ const volume = {
 const container = fargateTaskDefinition.addVolume("mydatavolume");
 ```
 
-> Note: ECS Anywhere doesn't support volume attachment part of the task definition.
+> Note: ECS Anywhere doesn't support volume attachments in the task definition.
 
 To use a TaskDefinition that can be used with either Amazon EC2 or
 AWS Fargate launch types, use the `TaskDefinition` construct.
