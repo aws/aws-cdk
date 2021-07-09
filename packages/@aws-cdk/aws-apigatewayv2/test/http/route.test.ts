@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import '@aws-cdk/assert-internal/jest';
 import { Stack, App } from '@aws-cdk/core';
 import {
