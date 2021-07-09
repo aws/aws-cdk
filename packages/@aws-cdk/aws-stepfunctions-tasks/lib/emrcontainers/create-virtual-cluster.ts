@@ -1,46 +1,26 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * Enum for supported types of Container Providers
+ * Class for supported types of Container Providers
  */
-export enum ContainerProviderTypes {
+export class ContainerProviderTypes {
+
+  static type: string;
 
   /**
-   * Supported container provider type is an EKS Cluster
+   * Supported container provider type for a EKS Cluster
    */
-  EKS = 'EKS',
-}
+  static EKS(): ContainerProviderTypes {
+    return new ContainerProviderTypes('EKS');
+  }
 
-/**
- * The information about the EKS cluster.
- */
-export interface EksInfo {
-
-  /**
-   * The namespaces of the EKS cluster.
-   * Length Constraints: Minimum length of 1. Maximum length of 63.
-   *
-   * @default - No namespace
-   */
-  readonly namespace?: string;
-}
-
-/**
- * The information about the container used for a job run or a managed endpoint.
- */
-export interface ContainerInfo {
-
-  /**
-   * The information about the EKS cluster.
-   *
-   * @default - No EKS info
-   */
-  readonly eksInfo?: EksInfo;
+  constructor(public readonly type: string) {
+    ContainerProviderTypes.type = type;
+  }
 }
 
 /**
@@ -56,17 +36,16 @@ export interface ContainerProvider {
   readonly id: string;
 
   /**
-   * The information about the container cluster.
+   * The namespace of an EKS cluster
    *
-   * @default - No container info
+   * @default - No namespace
    */
-  readonly info?: ContainerInfo;
+  readonly namespace?: string;
 
   /**
    * The type of the container provider.
-   * EKS is the only supported type as of now.
    */
-  readonly type: string;
+  readonly type: ContainerProviderTypes;
 }
 
 /**
@@ -85,9 +64,9 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
    *
    * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_ContainerProvider.html
    *
-   * @default - No container provider
+   * @default - No containerProvider
    */
-  readonly containerProvider: ContainerProvider;
+  readonly containerProvider: ContainerProvider
 
   /**
    * The tags assigned to the virtual cluster
@@ -113,10 +92,10 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EMRContainersCreateVirtualClusterProps) {
+  constructor(scope: Construct, id: string, private readonly props: EmrContainersCreateVirtualClusterProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, EMRContainersCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(this.integrationPattern, EmrContainersCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -133,7 +112,7 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
           Id: this.props.containerProvider.id,
           Info: {
             EksInfo: {
-              Namespace: this.props.containerProvider.info?.eksInfo?.namespace,
+              Namespace: this.props.containerProvider.namespace,
             },
           },
           Type: this.props.containerProvider.type,
@@ -146,11 +125,17 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
   private createPolicyStatements(): iam.PolicyStatement[] {
     return [
       new iam.PolicyStatement({
-        resources: ['*'],
+        resources: ['*'], // We need * permissions for creating a virtual cluster https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-iam.html
         actions: ['emr-containers:CreateVirtualCluster'],
       }),
       new iam.PolicyStatement({
-        resources: ['*'],
+        resources: [
+          cdk.Stack.of(this).formatArn({
+            service: 'iam',
+            resource: 'role/aws-service-role/emr-containers.amazonaws.com',
+            resourceName: 'AWSServiceRoleForAmazonEMRContainers',
+          }),
+        ],
         actions: ['iam:CreateServiceLinkedRole'],
         conditions: {
           stringLike: {

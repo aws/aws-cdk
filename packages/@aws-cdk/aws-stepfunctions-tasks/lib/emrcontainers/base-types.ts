@@ -1,3 +1,7 @@
+import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
 /**
  * The information about job driver for Spark submit.
  */
@@ -9,7 +13,7 @@ export interface SparkSubmitJobDriver {
    *
    * @default - No entry point
    */
-  readonly entryPoint: string;
+  readonly entryPoint: sfn.TaskInput;
 
   /**
    * The arguments for job application.
@@ -17,7 +21,7 @@ export interface SparkSubmitJobDriver {
    *
    * @default - No arguments defined
    */
-  readonly entryPointArguments?: string[];
+  readonly entryPointArguments?: sfn.TaskInput[];
 
   /**
    * The Spark submit parameters that are used for job runs.
@@ -87,7 +91,7 @@ export interface CloudWatchMonitoringConfiguration {
    *
    * @default - No default log group name
    */
-  readonly logGroupName: string;
+  readonly logGroupName: logs.ILogGroup;
 
   /**
    * The specified name prefix for log streams.
@@ -95,7 +99,7 @@ export interface CloudWatchMonitoringConfiguration {
    *
    * @default - No default log stream prefix name
    */
-  readonly logStreamNamePrefix?: string;
+  readonly logStreamNamePrefix?: logs.ILogStream;
 }
 
 /**
@@ -110,7 +114,7 @@ export interface S3MonitoringConfiguration {
    *
    * @default - No default S3 Destination URI
    */
-  readonly logUri: string;
+  readonly logUri: s3.IBucket;
 }
 
 /**
@@ -124,13 +128,13 @@ export interface MonitoringConfiguration {
    *
    * @default - No CloudWatch monitoring configuration
    */
-  readonly cloudWatchMonitoringConfig?: CloudWatchMonitoringConfiguration;
+  readonly cloudWatchMonitoringConfiguration?: CloudWatchMonitoringConfiguration;
 
   /**
    * Monitoring configurations for the persistent application UI.
    * Valid values - ENABLED | DISABLED
    *
-   * @default - No persistent application UI configuration
+   * @default - ENABLED
    */
   readonly persistentAppUI?: string;
 
@@ -140,7 +144,7 @@ export interface MonitoringConfiguration {
    *
    * @default - No S3 monitoring configuration
    */
-  readonly s3MonitoringConfig?: S3MonitoringConfiguration;
+  readonly s3MonitoringConfiguration?: S3MonitoringConfiguration;
 }
 
 /**
@@ -156,7 +160,7 @@ export interface ConfigurationOverrides {
    *
    * @default - No application config
    */
-  readonly applicationConfig?: Configuration[];
+  readonly applicationConfiguration?: Configuration[];
 
   /**
    * The configurations for monitoring.
@@ -165,5 +169,55 @@ export interface ConfigurationOverrides {
    *
    * @default - No monitoring configurations
    */
-  readonly monitoringConfig?: MonitoringConfiguration;
+  readonly monitoringConfiguration?: MonitoringConfiguration;
 }
+
+/**
+ * The Amazon EMR release version to use for the job run.
+ *
+ * @default - EMR_6_3_0()
+ */
+export class ReleaseLabel {
+  static releaseLabel: string;
+
+  static EMR_5_32_0(): ReleaseLabel {
+    return new ReleaseLabel('emr-5.32.0-latest');
+  }
+
+  static EMR_5_33_0(): ReleaseLabel {
+    return new ReleaseLabel('emr-5.33.0-latest');
+  }
+
+  static EMR_6_2_0(): ReleaseLabel {
+    return new ReleaseLabel('emr-6.2.0-latest');
+  }
+
+  static EMR_6_3_0(): ReleaseLabel {
+    return new ReleaseLabel('emr-6.3.0-latest');
+  }
+
+  constructor(public readonly label: string) {
+    ReleaseLabel.releaseLabel = label;
+  }
+}
+
+/**
+ * Contains the virtual cluster ID for which the job run request is submitted
+ *
+ * @default - fromTaskInput(taskInput: sfn.TaskInput)
+ */
+export class VirtualClusterProp {
+  static id: string;
+
+  static fromTaskInput(taskInput: sfn.TaskInput): VirtualClusterProp {
+    return new VirtualClusterProp(taskInput.value);
+  }
+  static fromVirtualClusterId(virtualClusterId: string): VirtualClusterProp {
+    return new VirtualClusterProp(virtualClusterId);
+  }
+
+  constructor(public readonly id: string) {
+    VirtualClusterProp.id = id;
+  }
+}
+

@@ -1,13 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * The props for a EMR Containers DeleteVirtualCluster Task.
  */
-export interface EMRContainersDeleteVirtualClusterProps extends sfn.TaskStateBaseProps {
+export interface EmrContainersDeleteVirtualClusterProps extends sfn.TaskStateBaseProps {
+
   /**
    * The ID of the virtual cluster that will be deleted.
    */
@@ -19,7 +20,7 @@ export interface EMRContainersDeleteVirtualClusterProps extends sfn.TaskStateBas
  *
  * @see https://docs.amazonaws.cn/en_us/step-functions/latest/dg/connect-emr-eks.html
  */
-export class EMRContainersDeleteVirtualCluster extends sfn.TaskStateBase {
+export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -31,11 +32,11 @@ export class EMRContainersDeleteVirtualCluster extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EMRContainersDeleteVirtualClusterProps) {
+  constructor(scope: Construct, id: string, private readonly props: EmrContainersDeleteVirtualClusterProps) {
     super(scope, id, props);
-    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
+    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(this.integrationPattern, EMRContainersDeleteVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(this.integrationPattern, EmrContainersDeleteVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -47,7 +48,7 @@ export class EMRContainersDeleteVirtualCluster extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('emr-containers', 'deleteVirtualCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        Id: this.props.id,
+        Id: this.props.virtualClusterId.value,
       }),
     };
   };
@@ -59,14 +60,19 @@ export class EMRContainersDeleteVirtualCluster extends sfn.TaskStateBase {
       iamActions = ['emr-containers:DeleteVirtualCluster'];
     } else if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       iamActions = [
-        'emr-containers:ListVirtualClusters',
         'emr-containers:DescribeVirtualCluster',
         'emr-containers:DeleteVirtualCluster',
       ];
     }
 
     return [new iam.PolicyStatement({
-      resources: ['*'],
+      resources: [
+        cdk.Stack.of(this).formatArn({
+          service: 'emr-containers',
+          resource: 'virtualclusters',
+          resourceName: this.props.virtualClusterId.value ? this.props.virtualClusterId.value : '*', // https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html need wild card here for dynamic resources
+        }),
+      ],
       actions: iamActions,
     })];
   }

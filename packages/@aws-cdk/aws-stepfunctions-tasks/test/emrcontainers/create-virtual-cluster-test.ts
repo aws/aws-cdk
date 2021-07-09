@@ -1,7 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import { EMRContainersCreateVirtualCluster, ContainerProviderTypes } from '../../lib/emrcontainers/create-virtual-cluster';
+import { EmrContainersCreateVirtualCluster, ContainerProviderTypes, ContainerProvider } from '../../lib/emrcontainers/create-virtual-cluster';
 
 const emrContainersVirtualClusterName = 'EMR Containers Virtual Cluster';
 let stack: Stack;
@@ -20,11 +20,11 @@ beforeEach(() => {
 
 test('Invoke emr-containers CreateVirtualCluster without EksInfo and ContainerInfo properties', () => {
   // WHEN
-  const task = new EMRContainersCreateVirtualCluster(stack, 'Task', {
+  const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
     name: emrContainersVirtualClusterName,
     containerProvider: {
       id: clusterId,
-      type: ContainerProviderTypes.EKS,
+      type: ContainerProviderTypes.EKS(),
     },
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
@@ -61,7 +61,7 @@ test('Invoke emr-containers CreateVirtualCluster without EksInfo and ContainerIn
 
 test('Invoke emr-containers CreateVirtualCluster with all properties', () => {
   // WHEN
-  const task = new EMRContainersCreateVirtualCluster(stack, 'Task', {
+  const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
     name: emrContainersVirtualClusterName,
     containerProvider: {
       id: clusterId,
@@ -112,7 +112,7 @@ test('Invoke emr-containers CreateVirtualCluster with all properties', () => {
 
 test('Create virtual cluster with Id from payload', () => {
   // WHEN
-  const task = new EMRContainersCreateVirtualCluster(stack, 'Task', {
+  const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
     name: emrContainersVirtualClusterName,
     containerProvider: {
       id: sfn.TaskInput.fromDataAt('$.Id').value,
@@ -149,7 +149,7 @@ test('Create virtual cluster with Id from payload', () => {
 
 test('Permitted role actions included for CreateVirtualCluster if service integration pattern is REQUEST_RESPONSE', () => {
   // WHEN
-  const task = new EMRContainersCreateVirtualCluster(stack, 'Task', {
+  const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
     name: emrContainersVirtualClusterName,
     containerProvider: {
       id: clusterId,
@@ -181,7 +181,7 @@ test('Permitted role actions included for CreateVirtualCluster if service integr
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new EMRContainersCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
+    new EmrContainersCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
       name: emrContainersVirtualClusterName,
       containerProvider: {
         id: clusterId,
@@ -199,7 +199,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
 
 test('Task throws if RUN_JOB is supplied as service integration pattern', () => {
   expect(() => {
-    new EMRContainersCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
+    new EmrContainersCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
       name: emrContainersVirtualClusterName,
       containerProvider: {
         id: clusterId,

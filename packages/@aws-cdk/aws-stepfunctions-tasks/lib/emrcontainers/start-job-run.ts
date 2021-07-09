@@ -1,18 +1,19 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { JobDriver, ConfigurationOverrides } from './base-types';
+import { JobDriver, ConfigurationOverrides, ReleaseLabel, VirtualClusterProp } from './base-types';
 
 /**
  * The props for a EMR Containers StartJobRun Task.
  */
-export interface EMRContainersStartJobRunProps extends sfn.TaskStateBaseProps {
+export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
 
   /**
    * The virtual cluster ID for which the job run request is submitted.
    */
-  readonly clusterId: string;
+  readonly virtualCluster: VirtualClusterProp;
 
   /**
    * The name of the job run.
@@ -26,12 +27,12 @@ export interface EMRContainersStartJobRunProps extends sfn.TaskStateBaseProps {
    *
    * @default - No execution arn
    */
-  readonly executionRoleArn: string;
+  readonly executionRoleArn: iam.IRole;
 
   /**
    * The Amazon EMR release version to use for the job run.
    */
-  readonly releaseLabel: string;
+  readonly releaseLabel: ReleaseLabel;
 
   /**
    * The job driver for the job run.
@@ -65,7 +66,7 @@ export interface EMRContainersStartJobRunProps extends sfn.TaskStateBaseProps {
  *
  * @see https://docs.amazonaws.cn/en_us/step-functions/latest/dg/connect-emr-eks.html
  */
-export class EMRContainersStartJobRun extends sfn.TaskStateBase {
+export class EmrContainersStartJobRun extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -76,11 +77,13 @@ export class EMRContainersStartJobRun extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EMRContainersStartJobRunProps) {
+  constructor(scope: Construct, id: string, private readonly props: EmrContainersStartJobRunProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
 
-    validatePatternSupported(this.integrationPattern, EMRContainersStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(this.integrationPattern, EmrContainersStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
+
+    this.taskPolicies = this.createPolicyStatements();
   }
 
   /**
@@ -92,14 +95,72 @@ export class EMRContainersStartJobRun extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('emr-containers', 'startJobRun', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        VirtualClusterId: this.props.clusterId,
+        VirtualClusterId: this.props.virtualCluster.id,
         JobName: this.props.jobName,
-        ExecutionRoleArn: this.props.executionRoleArn,
+        ExecutionRoleArn: this.props.executionRoleArn.roleArn,
         ReleaseLabel: this.props.releaseLabel,
-        JobDriver: this.props.jobDriver,
-        ConfigurationOverrides: this.props.configurationOverrides,
-        Tags: this.props.tags,
+        JobDriver: {
+          SparkSubmitDriver: {
+            EntryPoint: this.props.jobDriver.sparkSubmitJobDriver?.entryPoint,
+            EntryPointArguments: this.props.jobDriver.sparkSubmitJobDriver?.entryPointArguments,
+            SparkSubmitParameters: this.props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters,
+            Tags: this.props.tags,
+          },
+        },
+        ConfigurationOverrides: {
+          ApplicationConfiguration: this.props.configurationOverrides?.applicationConfiguration,
+          MonitoringConfiguration: {
+            CloudWatchMonitoringConfiguration: {
+              LogGroupName: this.props.configurationOverrides?.monitoringConfiguration?.cloudWatchMonitoringConfiguration?.logGroupName,
+              LogStreamNamePrefix: this.props.configurationOverrides?.monitoringConfiguration?.cloudWatchMonitoringConfiguration?.logStreamNamePrefix,
+            },
+            PersistentAppUI: this.props.configurationOverrides?.monitoringConfiguration?.persistentAppUI,
+            S3MonitoringConfiguration: {
+              LogUri: this.props.configurationOverrides?.monitoringConfiguration?.s3MonitoringConfiguration?.logUri,
+            },
+          },
+        },
       }),
     };
-  };
+  }
+
+  private createPolicyStatements(): iam.PolicyStatement[] {
+    const policyStatements = [
+      new iam.PolicyStatement({
+        resources: [
+          cdk.Stack.of(this).formatArn({
+            service: 'emr-containers',
+            resource: 'virtualclusters',
+            resourceName: this.props.virtualCluster.id ? this.props.virtualCluster.id : '*', // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
+          }),
+        ],
+        actions: ['emr-containers:StartJobRun'],
+        conditions: {
+          stringEquals: {
+            'emr-containers:ExecutionRoleArn': this.props.executionRoleArn,
+          },
+        },
+      }),
+    ];
+
+    if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          resources: [
+            cdk.Stack.of(this).formatArn({
+              service: 'emr-containers',
+              resource: 'virtualclusters',
+              resourceName: this.props.virtualCluster.id ? `${this.props.virtualCluster.id}/jobruns/*` : '*', // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
+            }),
+          ],
+          actions: [
+            'emr-containers:DescribeJobRun',
+            'emr-containers:CancelJobRun',
+          ],
+        }),
+      );
+    }
+
+    return policyStatements;
+  }
 }

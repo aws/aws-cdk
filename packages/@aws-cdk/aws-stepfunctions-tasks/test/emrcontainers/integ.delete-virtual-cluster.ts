@@ -1,6 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { EMRContainersDeleteVirtualCluster } from '../../lib';
+import { EmrContainersDeleteVirtualCluster } from '../../lib';
 
 /**
  * Stack verification steps:
@@ -14,7 +14,7 @@ import { EMRContainersDeleteVirtualCluster } from '../../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-delete-virtual-cluster-integ');
 
-const deleteVirtualCluster = new EMRContainersDeleteVirtualCluster(stack, 'EMR Containers Delete Virtual Cluster', {
+const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'EMR Containers Delete Virtual Cluster', {
   id: 'z0yghc9wfddurogzx9ws12qr0',
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
 });

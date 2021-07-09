@@ -138,5 +138,8 @@
       "monocdk/yaml",
       "monocdk/yaml/**"
     ]
+  },
+  "dependencies": {
+    "@aws-cdk/aws-logs": "file:packages/@aws-cdk/aws-logs"
   }
 }
