@@ -81,17 +81,17 @@ class GitHubSource extends CodePipelineSource {
   }
 
   public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
-    return {
-      action: new cp_actions.GitHubSourceAction({
-        actionName: options.actionName,
-        oauthToken: this.authentication,
-        output: options.artifacts.toCodePipeline(this.primaryOutput!),
-        owner: this.owner,
-        repo: this.repo,
-        branch: this.branch,
-        runOrder: options.runOrder,
-        trigger: cp_actions.GitHubTrigger.WEBHOOK,
-      }),
-    };
+    options.stage.addAction(new cp_actions.GitHubSourceAction({
+      actionName: options.actionName,
+      oauthToken: this.authentication,
+      output: options.artifacts.toCodePipeline(this.primaryOutput!),
+      owner: this.owner,
+      repo: this.repo,
+      branch: this.branch,
+      runOrder: options.runOrder,
+      trigger: cp_actions.GitHubTrigger.WEBHOOK,
+    }));
+
+    return { runOrdersConsumed: 1 };
   }
 }

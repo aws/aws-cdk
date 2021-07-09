@@ -17,6 +17,11 @@ export interface CodePipelineActionOptions {
   readonly actionName: string;
 
   /**
+   * Stage to add any actions
+   */
+  readonly stage: cp.IStage;
+
+  /**
    * RunOrder the action should get
    */
   readonly runOrder: number;
@@ -71,7 +76,17 @@ export interface ICodePipelineActionFactory {
   produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult;
 }
 
+/**
+ * The result of adding actions to the pipeline
+ */
 export interface CodePipelineActionFactoryResult {
-  readonly action: cp.IAction;
+  /**
+   * How many RunOrders were consumed
+   */
+  readonly runOrdersConsumed: number;
+
+  /**
+   * If a CodeBuild project got created, the project
+   */
   readonly project?: cb.IProject;
 }

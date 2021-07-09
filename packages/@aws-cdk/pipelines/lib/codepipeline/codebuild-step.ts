@@ -66,11 +66,6 @@ export interface CodeBuildStepProps extends ScriptStepProps {
   readonly role?: iam.IRole;
 
   /**
-   * Include a hash of the build config into the invocation
-   */
-  readonly includeBuildHashInPipeline?: boolean;
-
-  /**
    * Build environment
    */
   readonly buildEnvironment?: codebuild.BuildEnvironment;

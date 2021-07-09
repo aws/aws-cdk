@@ -8,7 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Node } from 'constructs';
 import { FileSetLocation, ScriptStep, StackDeployment } from '../blueprint';
-import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
+import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
 import { mapValues, mkdict, noEmptyObject, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { ICodePipelineActionFactory, CodePipelineActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
@@ -70,6 +70,29 @@ export interface CodeBuildFactoryProps {
    * @default false
    */
   readonly passBuildSpecViaCloudAssembly?: boolean;
+
+  /**
+   * Override the construct tree where the CodeBuild project is created.
+   *
+   * Normally, the construct tree will look like this:
+   *
+   *  ── Pipeline
+   *      └── 'MyStage'         <- options.scope
+   *           └── 'MyAction'   <- this is the CodeBuild project
+   *
+   * If this flag is set, the construct tree will look like this:
+   *
+   *  ── Pipeline
+   *      └── 'MyStage'                         <- options.scope
+   *           └── 'MyAction'                   <- just a scope
+   *                  └── 'BackwardsCompatName' <- CodeBuild project
+   *
+   * This is to maintain logicalID compatibility with the previous iteration
+   * of pipelines (where the Action was a construct that would create the Project).
+   *
+   * @default true
+   */
+  readonly additionalConstructLevel?: boolean;
 }
 
 /**
@@ -168,7 +191,14 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       buildSpecString: actualBuildSpec.toBuildSpec(),
     }));
 
-    const project = new codebuild.PipelineProject(options.scope, this.constructId, {
+    const actionName = options.actionName ?? this.runScript.id;
+
+    let projectScope = options.scope;
+    if (this.props.additionalConstructLevel ?? true) {
+      projectScope = obtainScope(options.scope, actionName);
+    }
+
+    const project = new codebuild.PipelineProject(projectScope, this.constructId, {
       projectName: this.props.projectName,
       environment,
       vpc: projectOptions.vpc,
@@ -192,8 +222,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       ? { _PROJECT_CONFIG_HASH: projectConfigHash }
       : {};
 
-    const action = new codepipeline_actions.CodeBuildAction({
-      actionName: options.actionName ?? this.runScript.id,
+    options.stage.addAction(new codepipeline_actions.CodeBuildAction({
+      actionName: actionName,
       input: inputArtifact,
       extraInputs: extraInputArtifacts,
       outputs: outputArtifacts,
@@ -209,11 +239,11 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         ...configHashEnv,
         ...stackOutputEnv,
       })),
-    });
+    }));
 
     this._project = project;
 
-    return { action, project };
+    return { runOrdersConsumed: 1, project };
   }
 }
 
