@@ -5,7 +5,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/core';
+import { IDependable, Stack } from '@aws-cdk/core';
 import { Node } from 'constructs';
 import { FileSetLocation, ScriptStep, StackDeployment } from '../blueprint';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
@@ -93,6 +93,13 @@ export interface CodeBuildFactoryProps {
    * @default true
    */
   readonly additionalConstructLevel?: boolean;
+
+  /**
+   * Additional dependency that the CodeBuild project should take
+   *
+   * @default -
+   */
+  readonly additionalDependable?: IDependable;
 }
 
 /**
@@ -207,6 +214,10 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       buildSpec: projectBuildSpec,
       role: this.props.role,
     });
+
+    if (this.props.additionalDependable) {
+      project.node.addDependency(this.props.additionalDependable);
+    }
 
     if (projectOptions?.rolePolicyStatements !== undefined) {
       projectOptions?.rolePolicyStatements.forEach(policyStatement => {

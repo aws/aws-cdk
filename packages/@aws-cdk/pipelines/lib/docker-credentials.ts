@@ -104,11 +104,11 @@ export interface EcrDockerCredentialOptions {
 /** Defines which stages of a pipeline require the specified credentials */
 export enum DockerCredentialUsage {
   /** Synth/Build */
-  SYNTH,
+  SYNTH = 'SYNTH',
   /** Self-update */
-  SELF_UPDATE,
+  SELF_UPDATE = 'SELF_UPDATE',
   /** Asset publishing */
-  ASSET_PUBLISHING,
+  ASSET_PUBLISHING = 'ASSET_PUBLISHING',
 };
 
 /** DockerCredential defined by registry domain and a secret */

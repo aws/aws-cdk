@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Fn, IDependable, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
-import { AssetType, BlueprintQueries, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
+import { AssetType, FileSet, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { BuildDeploymentOptions, IDeploymentEngine } from '../main/engine';
@@ -17,7 +17,7 @@ import { enumerate, flatten, maybeSuffix } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
 import { CodeBuildFactory, mergeCodeBuildOptions, stackVariableNamespace } from './_codebuild-factory';
 import { ArtifactMap } from './artifact-map';
-import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodePipelineActionFactoryResult, CodePipelineActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
 export interface CodePipelineEngineProps {
   // Legacy and tweaking props
@@ -156,6 +156,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
    */
   private _fallbackArtifact?: cp.Artifact;
 
+  private _cloudAssemblyFileSet?: FileSet;
+
   constructor(private readonly props: CodePipelineEngineProps={}) {
     this.selfMutation = this.props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
@@ -179,6 +181,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       selfMutation: this.selfMutation,
       singlePublisherPerAssetType: this.props.singlePublisherPerAssetType,
     });
+    this._cloudAssemblyFileSet = graphFromBp.cloudAssemblyFileSet;
 
     this.pipelineStagesAndActionsFromGraph(graphFromBp);
   }
@@ -243,22 +246,28 @@ export class CodePipelineEngine implements IDeploymentEngine {
           const runOrdersConsumed = [0];
 
           for (const node of tranche) {
+            const factory = this.actionFromNode(node);
+
             if (node.data?.type === 'self-update') {
               beforeSelfMutation = false;
             }
 
-            const result = this.actionFromNode({
-              graphFromBp: structure,
+            const nodeType = this.nodeTypeFromNode(node);
+
+            const result = factory.produce({
+              actionName: actionName(node, sharedParent),
               runOrder,
-              node,
               stage: pipelineStage,
-              sharedParent,
-              beforeSelfUpdate: beforeSelfMutation,
-              queries: structure.queries,
-              // This will be the Stage construct, necessary to keep the same
-              // construct tree as the legacy API
+              artifacts: this.artifacts,
               scope: obtainScope(this.pipeline, stageName),
+              fallbackArtifact: this._fallbackArtifact,
+              queries: structure.queries,
+              // If this step happens to produce a CodeBuild job, set the default options
+              codeBuildDefaults: nodeType ? this.codeBuildOptionsFor(nodeType) : undefined,
+              beforeSelfMutation,
             });
+
+            this.postProcessNode(node, result);
 
             runOrdersConsumed.push(result.runOrdersConsumed);
           }
@@ -270,44 +279,57 @@ export class CodePipelineEngine implements IDeploymentEngine {
   }
 
   /**
+   * Do additional things after the action got added to the pipeline
+   *
+   * Some minor state manipulation of CodeBuild projects and pipeline
+   * artifacts.
+   */
+  private postProcessNode(node: AGraphNode, result: CodePipelineActionFactoryResult) {
+    const nodeType = this.nodeTypeFromNode(node);
+
+    if (result.project) {
+      const dockerUsage = dockerUsageFromCodeBuild(nodeType ?? CodeBuildProjectType.STEP);
+      if (dockerUsage) {
+        for (const c of this.dockerCredentials) {
+          c.grantRead(result.project, dockerUsage);
+        }
+      }
+
+      if (nodeType === CodeBuildProjectType.SYNTH) {
+        this._buildProject = result.project;
+      }
+    }
+
+    if (node.data?.type === 'step' && node.data.step.primaryOutput?.primaryOutput && !this._fallbackArtifact) {
+      this._fallbackArtifact = this.artifacts.toCodePipeline(node.data.step.primaryOutput?.primaryOutput);
+    }
+  }
+
+  /**
    * Make an action from the given node and/or step
    */
-  private actionFromNode(options: MakeActionOptions): CodePipelineActionFactoryResult {
-    switch (options.node.data?.type) {
+  private actionFromNode(node: AGraphNode): ICodePipelineActionFactory {
+    switch (node.data?.type) {
       // Nothing for these, they are groupings (shouldn't even have popped up here)
       case 'group':
       case 'stack-group':
       case undefined:
-        throw new Error(`makeAction: did not expect to get group nodes: ${options.node.data?.type}`);
+        throw new Error(`makeAction: did not expect to get group nodes: ${node.data?.type}`);
 
       case 'self-update':
-        return this.selfMutateAction(options);
+        return this.selfMutateAction();
 
       case 'publish-assets':
-        return this.publishAssetsAction(options.node.data.assets, options);
+        return this.publishAssetsAction(node, node.data.assets);
 
       case 'prepare':
-        return this.createChangeSetAction(options.node.data.stack, options);
+        return this.createChangeSetAction(node.data.stack);
 
       case 'execute':
-        return this.executeChangeSetAction(options.node.data.stack, options.node.data.captureOutputs, options);
+        return this.executeChangeSetAction(node.data.stack, node.data.captureOutputs);
 
       case 'step':
-        const result = this.actionFromStep(options.node.data.step, options);
-
-        if (this.nodeTypeFromNode(options.node) === CodeBuildProjectType.SYNTH && result.project) {
-          this._buildProject = result.project;
-
-          for (const c of this.dockerCredentials) {
-            c.grantRead(result.project, DockerCredentialUsage.SYNTH);
-          }
-        }
-
-        if (options.node.data.step.primaryOutput?.primaryOutput && !this._fallbackArtifact) {
-          this._fallbackArtifact = this.artifacts.toCodePipeline(options.node.data.step.primaryOutput?.primaryOutput);
-        }
-
-        return result;
+        return this.actionFromStep(node, node.data.step);
     }
   }
 
@@ -323,25 +345,12 @@ export class CodePipelineEngine implements IDeploymentEngine {
    * The rest is expressed in terms of these 3, or in terms of graph nodes
    * which are handled elsewhere.
    */
-  private actionFromStep(step: Step, options: MakeActionOptions): CodePipelineActionFactoryResult {
-    const nodeType = this.nodeTypeFromNode(options.node);
-
-    // If this step happens to produce a CodeBuild job, set the default options
-    const codeBuildProjectOptions = this.codeBuildOptionsFor(nodeType);
+  private actionFromStep(node: AGraphNode, step: Step): ICodePipelineActionFactory {
+    const nodeType = this.nodeTypeFromNode(node);
 
     // CodePipeline-specific steps first -- this includes Sources
     if (isCodePipelineActionFactory(step)) {
-      return step.produce({
-        scope: options.scope,
-        stage: options.stage,
-        actionName: actionName(options.node, options.sharedParent),
-        runOrder: options.runOrder,
-        artifacts: this.artifacts,
-        fallbackArtifact: this._fallbackArtifact,
-        queries: options.queries,
-        codeBuildDefaults: codeBuildProjectOptions,
-        beforeSelfMutation: options.beforeSelfUpdate,
-      });
+      return step;
     }
 
     // Now built-in steps
@@ -351,77 +360,79 @@ export class CodePipelineEngine implements IDeploymentEngine {
         ? 'CdkBuildProject'
         : step.id;
 
-      return new CodeBuildFactory(constructId, step, {}).produce({
-        actionName: actionName(options.node, options.sharedParent),
-        runOrder: options.runOrder,
-        stage: options.stage,
-        artifacts: this.artifacts,
-        scope: options.scope,
-        fallbackArtifact: this._fallbackArtifact,
-        queries: options.queries,
-        codeBuildDefaults: codeBuildProjectOptions,
-        beforeSelfMutation: options.beforeSelfUpdate,
-      });
+      return new CodeBuildFactory(constructId, step, {});
     }
 
     if (step instanceof ManualApprovalStep) {
-      options.stage.addAction(new cpa.ManualApprovalAction({
-        actionName: actionName(options.node, options.sharedParent),
-        runOrder: options.runOrder,
-        additionalInformation: step.comment,
-      }));
-      return { runOrdersConsumed: 1 };
+      return {
+        produce: (options) => {
+          options.stage.addAction(new cpa.ManualApprovalAction({
+            actionName: options.actionName,
+            runOrder: options.runOrder,
+            additionalInformation: step.comment,
+          }));
+          return { runOrdersConsumed: 1 };
+        },
+      };
     }
 
     throw new Error(`Deployment step '${step}' is not supported for CodePipeline-backed pipelines`);
   }
 
-  private createChangeSetAction(stack: StackDeployment, options: MakeActionOptions): CodePipelineActionFactoryResult {
+  private createChangeSetAction(stack: StackDeployment): ICodePipelineActionFactory {
     const changeSetName = 'PipelineChange';
 
-    const templateArtifact = this.artifacts.toCodePipeline(stack.customCloudAssembly ?? options.graphFromBp.cloudAssemblyFileSet);
+    const templateArtifact = this.artifacts.toCodePipeline(stack.customCloudAssembly ?? this._cloudAssemblyFileSet!);
     const templateConfigurationPath = this.writeTemplateConfiguration(stack);
 
     const region = stack.region !== Stack.of(this.scope).region ? stack.region : undefined;
     const account = stack.account !== Stack.of(this.scope).account ? stack.account : undefined;
 
-    options.stage.addAction(new cpa.CloudFormationCreateReplaceChangeSetAction({
-      actionName: actionName(options.node, options.sharedParent),
-      runOrder: options.runOrder,
-      changeSetName,
-      stackName: stack.stackName,
-      templatePath: templateArtifact.atPath(toPosixPath(stack.relativeTemplatePath(this.myCxAsmRoot))),
-      adminPermissions: true,
-      role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
-      deploymentRole: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.executionRoleArn),
-      region: region,
-      templateConfiguration: templateConfigurationPath
-        ? templateArtifact.atPath(toPosixPath(templateConfigurationPath))
-        : undefined,
-    }));
-    return { runOrdersConsumed: 1 };
+    return {
+      produce: (options) => {
+        options.stage.addAction(new cpa.CloudFormationCreateReplaceChangeSetAction({
+          actionName: options.actionName,
+          runOrder: options.runOrder,
+          changeSetName,
+          stackName: stack.stackName,
+          templatePath: templateArtifact.atPath(toPosixPath(stack.relativeTemplatePath(this.myCxAsmRoot))),
+          adminPermissions: true,
+          role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
+          deploymentRole: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.executionRoleArn),
+          region: region,
+          templateConfiguration: templateConfigurationPath
+            ? templateArtifact.atPath(toPosixPath(templateConfigurationPath))
+            : undefined,
+        }));
+        return { runOrdersConsumed: 1 };
+      },
+    };
   }
 
-  private executeChangeSetAction(stack: StackDeployment, captureOutputs: boolean, options: MakeActionOptions): CodePipelineActionFactoryResult {
+  private executeChangeSetAction(stack: StackDeployment, captureOutputs: boolean): ICodePipelineActionFactory {
     const changeSetName = 'PipelineChange';
 
     const region = stack.region !== Stack.of(this.scope).region ? stack.region : undefined;
     const account = stack.account !== Stack.of(this.scope).account ? stack.account : undefined;
 
-    options.stage.addAction(new cpa.CloudFormationExecuteChangeSetAction({
-      actionName: actionName(options.node, options.sharedParent),
-      runOrder: options.runOrder,
-      changeSetName,
-      stackName: stack.stackName,
-      role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
-      region: region,
-      variablesNamespace: captureOutputs ? stackVariableNamespace(stack) : undefined,
-    }));
+    return {
+      produce: (options) => {
+        options.stage.addAction(new cpa.CloudFormationExecuteChangeSetAction({
+          actionName: options.actionName,
+          runOrder: options.runOrder,
+          changeSetName,
+          stackName: stack.stackName,
+          role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
+          region: region,
+          variablesNamespace: captureOutputs ? stackVariableNamespace(stack) : undefined,
+        }));
 
-    return { runOrdersConsumed: 1 };
+        return { runOrdersConsumed: 1 };
+      },
+    };
   }
 
-  private selfMutateAction(options: MakeActionOptions): CodePipelineActionFactoryResult {
+  private selfMutateAction(): ICodePipelineActionFactory {
     const installSuffix = this.props.cdkCliVersion ? `@${this.props.cdkCliVersion}` : '';
 
     const pipelineStack = Stack.of(this.pipeline);
@@ -432,7 +443,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
     const displayName = 'SelfMutate';
 
     const scriptStep = new ScriptStep(displayName, {
-      input: options.graphFromBp.cloudAssemblyFileSet,
+      input: this._cloudAssemblyFileSet,
       installCommands: [
         `npm install -g aws-cdk${installSuffix}`,
       ],
@@ -441,7 +452,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       ],
     });
 
-    const result = new CodeBuildFactory(id, scriptStep, {
+    const factory = new CodeBuildFactory(id, scriptStep, {
       projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
       additionalConstructLevel: false,
 
@@ -472,29 +483,15 @@ export class CodePipelineEngine implements IDeploymentEngine {
           }),
         ],
       },
-    }).produce({
-      actionName: displayName,
-      runOrder: options.runOrder,
-      stage: options.stage,
-      artifacts: this.artifacts,
-      // Override scope for backwards compatibility
-      scope: obtainScope(this.scope, 'UpdatePipeline'),
-      fallbackArtifact: this._fallbackArtifact,
-      queries: options.queries,
-      codeBuildDefaults: this.codeBuildOptionsFor(CodeBuildProjectType.SELF_MUTATE),
-      beforeSelfMutation: true,
     });
 
-    if (result.project) {
-      for (const c of this.dockerCredentials) {
-        c.grantRead(result.project, DockerCredentialUsage.SELF_UPDATE);
-      }
-    }
-
-    return result;
+    // Override scope for backwards compatibility
+    return overrideOptions(factory, {
+      scope: obtainScope(this.scope, 'UpdatePipeline'),
+    });
   }
 
-  private publishAssetsAction(assets: StackAsset[], options: MakeActionOptions): CodePipelineActionFactoryResult {
+  private publishAssetsAction(node: AGraphNode, assets: StackAsset[]): ICodePipelineActionFactory {
     const installSuffix = this.props.cdkCliVersion ? `@${this.props.cdkCliVersion}` : '';
 
     const commands = assets.map(asset => {
@@ -514,20 +511,20 @@ export class CodePipelineEngine implements IDeploymentEngine {
       }
     }
 
-    const assetBuildConfig = this.obtainAssetCodeBuildConfig(assets[0].assetType);
+    const assetBuildConfig = this.obtainAssetCodeBuildRole(assets[0].assetType);
 
     // The base commands that need to be run
-    const script = new ScriptStep(options.node.id, {
+    const script = new ScriptStep(node.id, {
       commands,
       installCommands: [
         `npm install -g cdk-assets${installSuffix}`,
       ],
-      input: options.graphFromBp.cloudAssemblyFileSet,
+      input: this._cloudAssemblyFileSet,
     });
 
-    // With CodeBuild customization, including types of customization that are
-    // not accessible to regular users.
-    const result = new CodeBuildFactory(options.node.id, script, {
+    // Use CodeBuildFactory directly to access customizations that are not
+    // accessible to regular users (additionalConstructLevel, passBuildSpec)
+    const factory = new CodeBuildFactory(node.id, script, {
       projectOptions: {
         buildEnvironment: {
           privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
@@ -541,29 +538,26 @@ export class CodePipelineEngine implements IDeploymentEngine {
       passBuildSpecViaCloudAssembly: this.props.singlePublisherPerAssetType,
 
       role: assetBuildConfig.role,
-    }).produce({
-      actionName: actionName(options.node, options.sharedParent),
-      runOrder: options.runOrder,
-      stage: options.stage,
-      artifacts: this.artifacts,
-      // Override scope for backwards compatibility with legacy pipeline
-      scope: this.assetsScope,
-      fallbackArtifact: this._fallbackArtifact,
-      queries: options.queries,
-      codeBuildDefaults: this.codeBuildOptionsFor(CodeBuildProjectType.ASSETS),
-      beforeSelfMutation: true,
+      additionalDependable: assetBuildConfig.dependable,
     });
 
-    if (result.project && assetBuildConfig.dependable) {
-      result.project.node.addDependency(assetBuildConfig.dependable);
-    }
-
-    return result;
+    // Override scope for backwards compatibility with legacy pipeline
+    return overrideOptions(factory, {
+      scope: this.assetsScope,
+    });
   }
 
   private nodeTypeFromNode(node: AGraphNode) {
-    const isSynthStep = node.data?.type === 'step' && !!node.data?.isBuildStep;
-    return isSynthStep ? CodeBuildProjectType.SYNTH : CodeBuildProjectType.STEP;
+    if (node.data?.type === 'step') {
+      return !!node.data?.isBuildStep ? CodeBuildProjectType.SYNTH : CodeBuildProjectType.STEP;
+    }
+    if (node.data?.type === 'publish-assets') {
+      return CodeBuildProjectType.ASSETS;
+    }
+    if (node.data?.type === 'self-update') {
+      return CodeBuildProjectType.SELF_MUTATE;
+    }
+    return undefined;
   }
 
   private codeBuildOptionsFor(nodeType: CodeBuildProjectType): CodeBuildProjectOptions | undefined {
@@ -659,7 +653,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
    * Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
    * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
-  private obtainAssetCodeBuildConfig(assetType: AssetType): AssetCodeBuildConfig {
+  private obtainAssetCodeBuildRole(assetType: AssetType): AssetCodeBuildRole {
     if (this.assetCodeBuildRoles[assetType]) {
       return {
         role: this.assetCodeBuildRoles[assetType],
@@ -787,27 +781,16 @@ function dockerUsageFromCodeBuild(cbt: CodeBuildProjectType): DockerCredentialUs
   }
 }
 
-interface AssetCodeBuildConfig {
+interface AssetCodeBuildRole {
   readonly role: iam.IRole;
   readonly dependable?: IDependable;
 }
 
 enum CodeBuildProjectType {
-  SYNTH,
-  ASSETS,
-  SELF_MUTATE,
-  STEP,
-}
-
-interface MakeActionOptions {
-  readonly graphFromBp: PipelineGraph;
-  readonly runOrder: number;
-  readonly node: AGraphNode;
-  readonly sharedParent: AGraphNode;
-  readonly beforeSelfUpdate: boolean;
-  readonly queries: BlueprintQueries;
-  readonly scope: Construct;
-  readonly stage: cp.IStage;
+  SYNTH = 'SYNTH',
+  ASSETS = 'ASSETS',
+  SELF_MUTATE = 'SELF_MUTATE',
+  STEP = 'STEP',
 }
 
 function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
@@ -853,4 +836,10 @@ function chunkTranches<A>(n: number, xss: A[][]): A[][][] {
 
 function isCodePipelineActionFactory(x: any): x is ICodePipelineActionFactory {
   return !!x.produce;
+}
+
+function overrideOptions(factory: ICodePipelineActionFactory, overrides: Partial<CodePipelineActionOptions>): ICodePipelineActionFactory {
+  return {
+    produce: (options) => factory.produce({ ...options, ...overrides }),
+  };
 }
