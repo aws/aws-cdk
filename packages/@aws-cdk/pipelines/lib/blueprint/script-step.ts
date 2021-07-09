@@ -23,7 +23,6 @@ export class ScriptStep extends Step {
   public readonly installCommands: string[];
   public readonly env: Record<string, string>;
   public readonly envFromOutputs: Record<string, StackOutputReference>;
-
   public readonly inputs: FileSetLocation[] = [];
   public readonly outputs: FileSetLocation[] = [];
 

@@ -17,7 +17,8 @@ import { enumerate, flatten, maybeSuffix } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
 import { CodeBuildFactory, mergeCodeBuildOptions, stackVariableNamespace } from './_codebuild-factory';
 import { ArtifactMap } from './artifact-map';
-import { CodePipelineActionFactoryResult, CodePipelineActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildStep } from './codebuild-step';
+import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
 export interface CodePipelineEngineProps {
   // Legacy and tweaking props
@@ -40,21 +41,21 @@ export interface CodePipelineEngineProps {
    *
    * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
    */
-  readonly codeBuildDefaults?: CodeBuildProjectOptions;
+  readonly codeBuildDefaults?: CodeBuildDefaults;
 
   /**
    * Additional customizations to apply to the asset publishing CodeBuild projects
    *
    * @default - Only `codeBuildProjectDefaults` are applied
    */
-  readonly assetPublishingCodeBuildDefaults?: CodeBuildProjectOptions;
+  readonly assetPublishingCodeBuildDefaults?: CodeBuildDefaults;
 
   /**
    * Additional customizations to apply to the self mutation CodeBuild projects
    *
    * @default - Only `codeBuildProjectDefaults` are applied
    */
-  readonly selfMutationCodeBuildDefaults?: CodeBuildProjectOptions;
+  readonly selfMutationCodeBuildDefaults?: CodeBuildDefaults;
 
   /**
    * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
@@ -76,7 +77,7 @@ export interface CodePipelineEngineProps {
 /**
  * Options for customizing a single CodeBuild project
  */
-export interface CodeBuildProjectOptions {
+export interface CodeBuildDefaults {
   /**
    * Partial build environment, will be combined with other build environments that apply
    *
@@ -248,10 +249,6 @@ export class CodePipelineEngine implements IDeploymentEngine {
           for (const node of tranche) {
             const factory = this.actionFromNode(node);
 
-            if (node.data?.type === 'self-update') {
-              beforeSelfMutation = false;
-            }
-
             const nodeType = this.nodeTypeFromNode(node);
 
             const result = factory.produce({
@@ -263,9 +260,13 @@ export class CodePipelineEngine implements IDeploymentEngine {
               fallbackArtifact: this._fallbackArtifact,
               queries: structure.queries,
               // If this step happens to produce a CodeBuild job, set the default options
-              codeBuildDefaults: nodeType ? this.codeBuildOptionsFor(nodeType) : undefined,
+              codeBuildDefaults: nodeType ? this.codeBuildDefaultsFor(nodeType) : undefined,
               beforeSelfMutation,
             });
+
+            if (node.data?.type === 'self-update') {
+              beforeSelfMutation = false;
+            }
 
             this.postProcessNode(node, result);
 
@@ -354,13 +355,15 @@ export class CodePipelineEngine implements IDeploymentEngine {
     }
 
     // Now built-in steps
-    if (step instanceof ScriptStep) {
+    if (step instanceof ScriptStep || step instanceof CodeBuildStep) {
       // The 'CdkBuildProject' will be the construct ID of the CodeBuild project, necessary for backwards compat
       let constructId = nodeType === CodeBuildProjectType.SYNTH
         ? 'CdkBuildProject'
         : step.id;
 
-      return new CodeBuildFactory(constructId, step, {});
+      return step instanceof CodeBuildStep
+        ? CodeBuildFactory.fromCodeBuildStep(constructId, step)
+        : CodeBuildFactory.fromScriptStep(constructId, step);
     }
 
     if (step instanceof ManualApprovalStep) {
@@ -438,11 +441,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
     const pipelineStack = Stack.of(this.pipeline);
     const pipelineStackIdentifier = pipelineStack.node.path ?? pipelineStack.stackName;
 
-    // Different on purpose -- id needed for backwards compatible LogicalID
-    const id = 'SelfMutation';
-    const displayName = 'SelfMutate';
-
-    const scriptStep = new ScriptStep(displayName, {
+    const step = new CodeBuildStep('SelfMutate', {
+      projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
       input: this._cloudAssemblyFileSet,
       installCommands: [
         `npm install -g aws-cdk${installSuffix}`,
@@ -450,43 +450,37 @@ export class CodePipelineEngine implements IDeploymentEngine {
       commands: [
         `cdk -a ${toPosixPath(embeddedAsmPath(this.pipeline))} deploy ${pipelineStackIdentifier} --require-approval=never --verbose`,
       ],
-    });
 
-    const factory = new CodeBuildFactory(id, scriptStep, {
-      projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
-      additionalConstructLevel: false,
-
-      projectOptions: {
-        buildEnvironment: {
-          privileged: this.props.pipelineUsesAssets ? true : undefined,
-        },
-
-        rolePolicyStatements: [
-          // allow the self-mutating project permissions to assume the bootstrap Action role
-          new iam.PolicyStatement({
-            actions: ['sts:AssumeRole'],
-            resources: [`arn:*:iam::${Stack.of(this.pipeline).account}:role/*`],
-            conditions: {
-              'ForAnyValue:StringEquals': {
-                'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
-              },
-            },
-          }),
-          new iam.PolicyStatement({
-            actions: ['cloudformation:DescribeStacks'],
-            resources: ['*'], // this is needed to check the status of the bootstrap stack when doing `cdk deploy`
-          }),
-          // S3 checks for the presence of the ListBucket permission
-          new iam.PolicyStatement({
-            actions: ['s3:ListBucket'],
-            resources: ['*'],
-          }),
-        ],
+      buildEnvironment: {
+        privileged: this.props.pipelineUsesAssets ? true : undefined,
       },
+
+      rolePolicyStatements: [
+        // allow the self-mutating project permissions to assume the bootstrap Action role
+        new iam.PolicyStatement({
+          actions: ['sts:AssumeRole'],
+          resources: [`arn:*:iam::${Stack.of(this.pipeline).account}:role/*`],
+          conditions: {
+            'ForAnyValue:StringEquals': {
+              'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
+            },
+          },
+        }),
+        new iam.PolicyStatement({
+          actions: ['cloudformation:DescribeStacks'],
+          resources: ['*'], // this is needed to check the status of the bootstrap stack when doing `cdk deploy`
+        }),
+        // S3 checks for the presence of the ListBucket permission
+        new iam.PolicyStatement({
+          actions: ['s3:ListBucket'],
+          resources: ['*'],
+        }),
+      ],
     });
 
-    // Override scope for backwards compatibility
-    return overrideOptions(factory, {
+    // Different on purpose -- id needed for backwards compatible LogicalID
+    return CodeBuildFactory.fromCodeBuildStep('SelfMutation', step, {
+      additionalConstructLevel: false,
       scope: obtainScope(this.scope, 'UpdatePipeline'),
     });
   }
@@ -514,35 +508,26 @@ export class CodePipelineEngine implements IDeploymentEngine {
     const assetBuildConfig = this.obtainAssetCodeBuildRole(assets[0].assetType);
 
     // The base commands that need to be run
-    const script = new ScriptStep(node.id, {
+    const script = new CodeBuildStep(node.id, {
       commands,
       installCommands: [
         `npm install -g cdk-assets${installSuffix}`,
       ],
       input: this._cloudAssemblyFileSet,
+      buildEnvironment: {
+        privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
+      },
+      role: assetBuildConfig.role,
     });
 
-    // Use CodeBuildFactory directly to access customizations that are not
-    // accessible to regular users (additionalConstructLevel, passBuildSpec)
-    const factory = new CodeBuildFactory(node.id, script, {
-      projectOptions: {
-        buildEnvironment: {
-          privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
-        },
-      },
-
+    // Customizations that are not accessible to regular users
+    return CodeBuildFactory.fromCodeBuildStep(node.id, script, {
       additionalConstructLevel: false,
+      additionalDependable: assetBuildConfig.dependable,
 
       // If we use a single publisher, pass buildspec via file otherwise it'll
       // grow too big.
       passBuildSpecViaCloudAssembly: this.props.singlePublisherPerAssetType,
-
-      role: assetBuildConfig.role,
-      additionalDependable: assetBuildConfig.dependable,
-    });
-
-    // Override scope for backwards compatibility with legacy pipeline
-    return overrideOptions(factory, {
       scope: this.assetsScope,
     });
   }
@@ -560,8 +545,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
     return undefined;
   }
 
-  private codeBuildOptionsFor(nodeType: CodeBuildProjectType): CodeBuildProjectOptions | undefined {
-    const defaultOptions: CodeBuildProjectOptions = {
+  private codeBuildDefaultsFor(nodeType: CodeBuildProjectType): CodeBuildDefaults | undefined {
+    const defaultOptions: CodeBuildDefaults = {
       buildEnvironment: {
         buildImage: cb.LinuxBuildImage.STANDARD_5_0,
         computeType: cb.ComputeType.SMALL,
@@ -730,7 +715,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
     // VPC permissions required for CodeBuild
     // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
     // we need to do this.
-    const assetCodeBuildOptions = this.codeBuildOptionsFor(CodeBuildProjectType.ASSETS);
+    const assetCodeBuildOptions = this.codeBuildDefaultsFor(CodeBuildProjectType.ASSETS);
     if (assetCodeBuildOptions?.vpc) {
       const vpcPolicy = new iam.Policy(assetRole, 'VpcPolicy', {
         statements: [
@@ -836,10 +821,4 @@ function chunkTranches<A>(n: number, xss: A[][]): A[][][] {
 
 function isCodePipelineActionFactory(x: any): x is ICodePipelineActionFactory {
   return !!x.produce;
-}
-
-function overrideOptions(factory: ICodePipelineActionFactory, overrides: Partial<CodePipelineActionOptions>): ICodePipelineActionFactory {
-  return {
-    produce: (options) => factory.produce({ ...options, ...overrides }),
-  };
 }

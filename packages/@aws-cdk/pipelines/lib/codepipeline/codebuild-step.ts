@@ -1,9 +1,7 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { FileSet, ScriptStep, ScriptStepProps } from '../blueprint';
-import { CodeBuildFactory } from './_codebuild-factory';
-import { CodePipelineActionOptions, CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { ScriptStep, ScriptStepProps } from '../blueprint';
 
 /**
  * Construction props for SimpleSynthAction
@@ -84,16 +82,82 @@ export interface CodeBuildStepProps extends ScriptStepProps {
 /**
  * Run a script as a CodeBuild Project
  */
-export class CodeBuildStep extends ScriptStep implements ICodePipelineActionFactory {
-  public readonly primaryOutput?: FileSet | undefined;
+export class CodeBuildStep extends ScriptStep {
+  /**
+   * Name for the generated CodeBuild project
+   *
+   * @default - No value specified at construction time, use defaults
+   */
+  public readonly projectName?: string;
+
+  /**
+   * Additional configuration that can only be configured via BuildSpec
+   *
+   * @default - No value specified at construction time, use defaults
+   */
+  public readonly partialBuildSpec?: codebuild.BuildSpec;
+
+  /**
+   * The VPC where to execute the SimpleSynth.
+   *
+   * @default - No value specified at construction time, use defaults
+   */
+  public readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * @default - No value specified at construction time, use defaults
+   */
+  public readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * Policy statements to add to role used during the synth
+   *
+   * @default - No value specified at construction time, use defaults
+   */
+  public readonly rolePolicyStatements?: iam.PolicyStatement[];
+
+  /**
+   * Custom execution role to be used for the CodeBuild project
+   *
+   * @default - No value specified at construction time, use defaults
+   */
+  public readonly role?: iam.IRole;
+
+  /**
+   * Build environment
+   *
+   * @default - No value specified at construction time, use defaults
+   */
+  readonly buildEnvironment?: codebuild.BuildEnvironment;
+
+  /**
+   * Which security group to associate with the script's project network interfaces.
+   *
+   * @default - No value specified at construction time, use defaults
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
   private _project?: codebuild.IProject;
 
-  constructor(id: string, private readonly props: CodeBuildStepProps) {
+  constructor(id: string, props: CodeBuildStepProps) {
     super(id, props);
+
+    this.projectName = props.projectName;
+    this.buildEnvironment = props.buildEnvironment;
+    this.partialBuildSpec = props.partialBuildSpec;
+    this.vpc = props.vpc;
+    this.subnetSelection = props.subnetSelection;
+    this.role = props.role;
+    this.rolePolicyStatements = props.rolePolicyStatements;
+    this.securityGroups = props.securityGroups;
   }
 
   /**
-   * Project generated to run the synth command
+   * CodeBiuld Project generated for the pipeline
+   *
+   * Will only be available after the pipeline has been built.
    */
   public get project(): codebuild.IProject {
     if (!this._project) {
@@ -102,27 +166,19 @@ export class CodeBuildStep extends ScriptStep implements ICodePipelineActionFact
     return this._project;
   }
 
-  public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
-    const factory = new CodeBuildFactory(this.id, this, {
-      ...this.props,
-      projectOptions: {
-        buildEnvironment: this.props.buildEnvironment,
-        rolePolicyStatements: this.props.rolePolicyStatements,
-        securityGroups: this.props.securityGroups,
-        partialBuildSpec: this.props.partialBuildSpec,
-        vpc: this.props.vpc,
-        subnetSelection: this.props.subnetSelection,
-      },
-    });
-    const ret = factory.produce(options);
-    this._project = factory.project;
-    return ret;
-  }
-
   /**
    * The CodeBuild Project's principal
    */
   public get grantPrincipal(): iam.IPrincipal {
     return this.project.grantPrincipal;
+  }
+
+  /**
+   * Set the internal project value
+   *
+   * @internal
+   */
+  public _setProject(project: codebuild.IProject) {
+    this._project = project;
   }
 }

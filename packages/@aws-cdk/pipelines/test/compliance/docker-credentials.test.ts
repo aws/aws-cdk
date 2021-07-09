@@ -35,17 +35,17 @@ behavior('synth action receives install commands and access to relevant credenti
     const pipeline = new LegacyPipelineWithCreds(pipelineStack, 'Cdk');
     pipeline.addApplicationStage(new DockerAssetApp(app, 'App1'));
 
-    THEN_codePipelineExpectation('Cdk*BuildProjectRole*');
+    THEN_codePipelineExpectation();
   });
 
   suite.modern(() => {
     const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
     pipeline.addStage(new DockerAssetApp(app, 'App1'));
 
-    THEN_codePipelineExpectation('Cdk*SynthRole*');
+    THEN_codePipelineExpectation();
   });
 
-  function THEN_codePipelineExpectation(roleIdPattern: string) {
+  function THEN_codePipelineExpectation() {
     const expectedCredsConfig = JSON.stringify({
       version: '1.0',
       domainCredentials: { 'synth.example.com': { secretsManagerSecretId: secretSynthArn } },
@@ -79,7 +79,7 @@ behavior('synth action receives install commands and access to relevant credenti
         }),
         Version: '2012-10-17',
       },
-      Roles: [{ Ref: stringLike(roleIdPattern) }],
+      Roles: [{ Ref: stringLike('Cdk*BuildProjectRole*') }],
     });
   }
 });

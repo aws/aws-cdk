@@ -3,7 +3,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import { Construct } from 'constructs';
 import { BlueprintQueries } from '../blueprint';
 import { ArtifactMap } from './artifact-map';
-import { CodeBuildProjectOptions } from './codepipeline-engine';
+import { CodeBuildDefaults } from './codepipeline-engine';
 
 export interface CodePipelineActionOptions {
   /**
@@ -52,7 +52,7 @@ export interface CodePipelineActionOptions {
    *
    * @default - No CodeBuild project defaults
    */
-  readonly codeBuildDefaults?: CodeBuildProjectOptions;
+  readonly codeBuildDefaults?: CodeBuildDefaults;
 
   /**
    * Whether or not this action is inserted before self mutation.
