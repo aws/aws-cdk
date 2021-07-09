@@ -1,4 +1,4 @@
-import { ConventionalCommit, filterCommits } from '../lib/conventional-commits';
+import { ConventionalCommit, filterCommits, getConventionalCommitsFromGitHistory } from '../lib/conventional-commits';
 import { changelog } from '../lib/lifecycles/changelog';
 import { ReleaseOptions } from '../lib/types';
 
@@ -87,6 +87,17 @@ describe('Changelog generation', () => {
 * **scope:** super important feature
 
 `);
+  });
+
+  test('makes it so that no Git commits are queried if Changelog generation is skipped', async () => {
+    const commits = await getConventionalCommitsFromGitHistory({
+      ...args,
+      skip: {
+        changelog: true,
+      },
+    }, '3.9.2');
+
+    expect(commits).toHaveLength(0);
   });
 });
 
