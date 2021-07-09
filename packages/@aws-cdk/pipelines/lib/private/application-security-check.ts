@@ -69,5 +69,11 @@ export class ApplicationSecurityCheck extends Construct {
         },
       }),
     });
+
+    this.cdkDiffProject.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['cloudformation:DescribeStacks', 'cloudformation:GetTemplate'],
+      resources: ['*'], // this is needed to check the status the stacks when doing `cdk diff`
+    }));
   }
+
 }
