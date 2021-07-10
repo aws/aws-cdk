@@ -9,10 +9,34 @@ import { Duration } from '@aws-cdk/core';
 import { Construct } from '@aws-cdk/core';
 
 /**
- * Blah
+ * A construct containing both the Lambda and CodeBuild Project
+ * needed to conduct a security check on any given application stage.
+ *
+ * The Lambda acts as an auto approving mechanism that should only be
+ * triggered when the CodeBuild Project registers no security changes.
+ *
+ * The CodeBuild Project runs a security diff on the application stage,
+ * and exports the link to the console of the project.
  */
 export class ApplicationSecurityCheck extends Construct {
+  /**
+   * A lambda function that approves a Manual Approval Action, given
+   * the following payload:
+   *
+   * {
+   *  "PipelineName": [CodePipelineName],
+   *  "StageName": [CodePipelineStageName],
+   *  "ActionName": [ManualApprovalActionName]
+   * }
+   */
   public readonly preApproveLambda: lambda.Function;
+  /**
+   * A CodeBuild Project that runs a security diff on the application stage.
+   *
+   * - If the diff registers no security changes, CodeBuild will invoke the
+   *   pre-approval lambda and approve the ManualApprovalAction.
+   * - If changes are detected, CodeBuild will exit into a ManualApprovalAction
+   */
   public readonly cdkDiffProject: codebuild.Project;
 
   constructor(scope: Construct, id: string) {
@@ -54,17 +78,21 @@ export class ApplicationSecurityCheck extends Construct {
               'ACCOUNT_ID="$(node -pe \'`${process.env.ARN}`.split(":")[4]\')"',
               'PROJECT_NAME="$(node -pe \'`${process.env.ARN}`.split(":")[5].split("/")[1]\')"',
               'PROJECT_ID="$(node -pe \'`${process.env.ARN}`.split(":")[6]\')"',
+              // Manual Approval adds 'http/https' to the resolved link
               'export LINK="$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION"',
               'echo "assembly-$STACK_NAME-$STAGE_NAME/"',
               // Run invoke only if cdk diff passes (returns exit code 0)
               // 0 -> true, 1 -> false
-              `(cdk diff -a "${assemblyPath}" --security-only --fail && ${invokeLambda}) || echo 'Changes detected! Requires Manual Approval'`,
+              `if cdk diff -a "${assemblyPath}" --security-only --fail; then ${invokeLambda}; export MESSAGE='No changes detected.'; ` +
+              'else export MESSAGE="Changes detected! Requires Manual Approval"; ' +
+              'fi',
             ],
           },
         },
         env: {
           'exported-variables': [
             'LINK',
+            'MESSAGE',
           ],
         },
       }),
@@ -74,6 +102,7 @@ export class ApplicationSecurityCheck extends Construct {
       actions: ['cloudformation:DescribeStacks', 'cloudformation:GetTemplate'],
       resources: ['*'], // this is needed to check the status the stacks when doing `cdk diff`
     }));
-  }
 
+    this.preApproveLambda.grantInvoke(this.cdkDiffProject);
+  }
 }

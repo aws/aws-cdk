@@ -8,12 +8,12 @@ import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAct
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from './docker-credentials';
 import { ApplicationSecurityCheck } from './private/application-security-check';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
-import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
+import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
+import { SimpleSynthAction } from './synths';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-import { SimpleSynthAction } from './synths';
 
 const CODE_BUILD_LENGTH_LIMIT = 100;
 /**
@@ -315,7 +315,7 @@ export class CdkPipeline extends CoreConstruct {
    * publishing stage.
    */
   public addApplicationStage(appStage: Stage, options: AddStageOptions = {}): CdkStage {
-    const stage = this.addStage(appStage.stageName);
+    const stage = this.addStage(appStage.stageName, options);
     stage.addApplication(appStage, options);
     return stage;
   }
@@ -327,7 +327,7 @@ export class CdkPipeline extends CoreConstruct {
    * application, but you can use this method if you want to add other kinds of
    * Actions to a pipeline.
    */
-  public addStage(stageName: string) {
+  public addStage(stageName: string, options?: BaseStageOptions) {
     const pipelineStage = this._pipeline.addStage({
       stageName,
     });
@@ -340,6 +340,7 @@ export class CdkPipeline extends CoreConstruct {
         publishAsset: this._assets.addPublishAssetAction.bind(this._assets),
         stackOutputArtifact: (artifactId) => this._outputArtifacts[artifactId],
       },
+      ...options,
     });
     this._stages.push(stage);
     return stage;

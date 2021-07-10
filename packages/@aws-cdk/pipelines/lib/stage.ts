@@ -2,6 +2,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
+import * as sns from '@aws-cdk/aws-sns';
 import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -38,6 +39,41 @@ export interface CdkStageProps {
    * Features the Stage needs from its environment
    */
   readonly host: IStageHost;
+
+  /**
+   * Run a security check before every application prepare/deploy actions.
+   *
+   * Note: Stage level security check can be overriden per application as follows:
+   *   `stage.addApplication(app, { securityCheck: false })`
+   *
+   * @default false
+   */
+  readonly securityCheck?: boolean;
+
+  /**
+   * Optional SNS topic to send notifications to when any security check registers
+   * changes within a application.
+   *
+   * Note: The Stage Notification Topic can be overriden per application as follows:
+   *   `stage.addApplication(app, { securityNotifyEmails: [] })`
+   *
+   * @default undefined no stage level notification topic
+   */
+  readonly securityNotificationTopic?: sns.ITopic;
+
+  /**
+   * A list of email addresses to subscribe to notifications when any security check
+   * action registers changes.
+   *
+   * If this has been provided, but not `securityNotificationTopic`,
+   * a new Topic will be created.
+   *
+   * Note: The Stage Notification Topic can be overriden per application as follows:
+   *   `stage.addApplication(app, { securityNotifyEmails: [] })`
+   *
+   * @default undefined no stage level email list
+   */
+  readonly securityNotifyEmails?: string[];
 }
 
 
@@ -55,7 +91,10 @@ export class CdkStage extends CoreConstruct {
   private readonly stacksToDeploy = new Array<DeployStackCommand>();
   private readonly stageName: string;
   private readonly host: IStageHost;
+  private readonly securityCheck: boolean;
   private readonly pipeline?: CdkPipeline;
+  private readonly securityNotificationTopic?: sns.ITopic;
+  private readonly securityNotifyEmails?: string[];
   private _applicationSecurityCheck?: ApplicationSecurityCheck;
   private _prepared = false;
 
@@ -70,6 +109,9 @@ export class CdkStage extends CoreConstruct {
     this.pipelineStage = props.pipelineStage;
     this.cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     this.host = props.host;
+    this.securityCheck = props.securityCheck ?? false;
+    this.securityNotificationTopic = props.securityNotificationTopic;
+    this.securityNotifyEmails = props.securityNotifyEmails;
 
     Aspects.of(this).add({ visit: () => this.prepareStage() });
   }
@@ -89,8 +131,8 @@ export class CdkStage extends CoreConstruct {
     const asm = appStage.synth({ validateOnSynthesis: true });
     const extraRunOrderSpace = options.extraRunOrderSpace ?? 0 + (options.securityCheck ? 2 : 0);
 
-    if (options.securityCheck) {
-      this.addSecurityCheck();
+    if (options.securityCheck ?? this.securityCheck) {
+      this.addSecurityCheck(appStage.stageName, options);
     }
 
     if (asm.stacks.length === 0) {
@@ -137,11 +179,9 @@ export class CdkStage extends CoreConstruct {
     if (this._applicationSecurityCheck) {
       return this._applicationSecurityCheck;
     }
-    if (this.pipeline) {
-      this._applicationSecurityCheck = this.pipeline._getApplicationSecurityCheck();
-    } else {
-      this._applicationSecurityCheck = new ApplicationSecurityCheck(this, 'StageApplicationSecurityCheck');
-    }
+    this._applicationSecurityCheck = this.pipeline
+      ? this.pipeline._getApplicationSecurityCheck()
+      : new ApplicationSecurityCheck(this, 'StageApplicationSecurityCheck');
     return this._applicationSecurityCheck;
   }
 
@@ -268,16 +308,16 @@ export class CdkStage extends CoreConstruct {
    *  - CodeBuild Action to check for security changes in a stage
    *  - Manual Approval Action that is auto approved via a Lambda if no security changes detected
    */
-  private addSecurityCheck() {
+  private addSecurityCheck(appStageName: string, options?: BaseStageOptions) {
     const { cdkDiffProject } = this.getApplicationSecurityCheck();
 
-    const approveActionName = `${this.stageName}ManualApproval`;
+    const approveActionName = `${appStageName}ManualApproval`;
     const diffAction = new CodeBuildAction({
       runOrder: this.nextSequentialRunOrder(),
-      actionName: `${this.stageName}SecurityCheck`,
+      actionName: `${appStageName}SecurityCheck`,
       input: this.cloudAssemblyArtifact,
       project: cdkDiffProject,
-      variablesNamespace: `${this.stageName}SecurityCheck`,
+      variablesNamespace: `${appStageName}SecurityCheck`,
       environmentVariables: {
         STACK_NAME: {
           value: this.pipelineStage.pipeline.stack.stackName,
@@ -297,7 +337,13 @@ export class CdkStage extends CoreConstruct {
     const approve = new cpactions.ManualApprovalAction({
       actionName: approveActionName,
       runOrder: this.nextSequentialRunOrder(),
-      externalEntityLink: `https://#{${this.stageName}SecurityCheck.LINK}`,
+      additionalInformation: `#{${appStageName}SecurityCheck.MESSAGE}`,
+      // Boot strap cicd2 us-west-1 --trust
+      externalEntityLink: `https://#{${appStageName}SecurityCheck.LINK}`,
+      notificationTopic: (options?.securityNotifyEmails !== []
+        ? options?.securityNotificationTopic ?? this.securityNotificationTopic
+        : undefined),
+      notifyEmails: options?.securityNotifyEmails ?? this.securityNotifyEmails,
     });
 
     this.addActions(diffAction, approve);
@@ -449,9 +495,48 @@ export interface AssetPublishingCommand {
 }
 
 /**
+ * Base options for a pipelines stage
+ */
+export interface BaseStageOptions {
+  /**
+   * Runs a `cdk diff --security-only --fail` to pause the pipeline if there
+   * are any security changes.
+   *
+   * If the stage is configured with `securityCheck` enabled, you can use this
+   * property to override the stage configuration. For example, Pipeline Stage
+   * "Prod" has securityCheck enabled, with applications "A", "B", "C". All three
+   * applications will run a securityCheck, but if we want to disable the one for "C",
+   * we run `stage.addApplication(C, { securityCheck: false })` to override the pipeline
+   * stage behavior.
+   *
+   * Adds 1 to the run order space.
+   *
+   * @default false
+   */
+  readonly securityCheck?: boolean;
+  /**
+   * Optional SNS topic to send notifications to when the security check registers
+   * changes within the application.
+   *
+   * @default undefined no notification topic for security check manual approval action
+   */
+  readonly securityNotificationTopic?: sns.ITopic;
+  /**
+   * A list of email addresses to subscribe to notifications when the security diff
+   * registers changes.
+   *
+   * If this has been provided, but not `securityNotificationTopic`,
+   * a new Topic will be created.
+   *
+   * @default undefined no email list for security check manual approval action
+   */
+  readonly securityNotifyEmails?: string[];
+}
+
+/**
  * Options for adding an application stage to a pipeline
  */
-export interface AddStageOptions {
+export interface AddStageOptions extends BaseStageOptions {
   /**
    * Add manual approvals before executing change sets
    *
@@ -470,15 +555,6 @@ export interface AddStageOptions {
    * @default 0
    */
   readonly extraRunOrderSpace?: number;
-  /**
-   * Runs a `cdk diff --security-only --fail` to pause the pipeline if there
-   * are any security changes.
-   *
-   * Adds 1 to the run order space.
-   *
-   * @default false
-   */
-  readonly securityCheck?: boolean;
 }
 
 /**

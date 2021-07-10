@@ -2,8 +2,8 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as iam from '@aws-cdk/aws-iam';
-import * as s3 from '@aws-cdk/aws-s3';
-import { App, RemovalPolicy, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import * as sns from '@aws-cdk/aws-sns';
+import { App, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 
@@ -12,19 +12,30 @@ class MyStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
-    const stack = new Stack(this, 'MyStack');
-
-    const bucket = new s3.Bucket(stack, 'MyBucket', {
-      removalPolicy: RemovalPolicy.DESTROY,
+    const stack = new Stack(this, 'MyStack', {
+      env: props?.env,
     });
 
-    bucket.addToResourcePolicy(new iam.PolicyStatement({
-      principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
-      actions: ['cloudformation:DescribeStacks'],
-      resources: ['*'],
-    }));
+    const topic = new sns.Topic(stack, 'Topic');
+
+    topic.grantPublish(new iam.AccountPrincipal(this.account));
   }
 }
+
+
+class MySafeStage extends Stage {
+
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+    const stack = new Stack(this, 'MySafeStack', {
+      env: props?.env,
+    });
+
+    new sns.Topic(stack, 'MySafeTopic');
+  }
+}
+
 export class TestCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -52,7 +63,27 @@ export class TestCdkStack extends Stack {
       }),
     });
 
-    pipeline.addApplicationStage(new MyStage(this, 'PreProduction', {
+    pipeline.addApplicationStage(new MyStage(this, 'SingleStage', {
+      env: { account: this.account, region: this.region },
+    }), { securityCheck: true });
+
+    const stage1 = pipeline.addApplicationStage(new MyStage(this, 'PreProduction', {
+      env: { account: this.account, region: this.region },
+    }), { securityCheck: true });
+
+    stage1.addApplication(new MySafeStage(this, 'SafeProduction', {
+      env: { account: this.account, region: this.region },
+    }));
+
+    stage1.addApplication(new MySafeStage(this, 'DisableSecurityCheck', {
+      env: { account: this.account, region: this.region },
+    }), { securityCheck: false });
+
+    const stage2 = pipeline.addApplicationStage(new MyStage(this, 'NoSecurityCheck', {
+      env: { account: this.account, region: this.region },
+    }));
+
+    stage2.addApplication(new MyStage(this, 'EnableSecurityCheck', {
       env: { account: this.account, region: this.region },
     }), { securityCheck: true });
   }
