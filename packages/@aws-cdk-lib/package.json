@@ -9,7 +9,7 @@
     "build": "lerna run --stream build",
     "test": "lerna run --stream test",
     "package": "lerna run --stream package",
-    "rosetta:extract": "lerna run --stream rosetta:extract",
+    "rosetta:extract": "lerna exec --stream jsii-rosetta extract",
     "build+test": "yarn build && yarn test",
     "build+test+extract": "yarn build+test && yarn rosetta:extract",
     "build+test+package": "yarn build+test && yarn package"
