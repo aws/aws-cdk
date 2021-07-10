@@ -106,6 +106,7 @@
   "awscdkio": {
     "announce": false
   },
+  "separate-module": false,
   "publishConfig": {
     "tag": "latest"
   }
