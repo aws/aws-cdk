@@ -831,6 +831,7 @@ function cdkModuleName(name: string) {
 
   name = name.replace(/^aws-cdk-/, '');
   name = name.replace(/^@aws-cdk\//, '');
+  name = name.replace(/^@aws-cdk-lib-alpha\//, 'alpha.');
 
   const dotnetSuffix = name.split('-')
     .map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s))
@@ -839,13 +840,15 @@ function cdkModuleName(name: string) {
   const pythonName = name.replace(/^@/g, '').replace(/\//g, '.').split('.').map(caseUtils.kebab).join('.');
 
   return {
-    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
+    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId:
-      isLegacyCdkPkg ? 'cdk'
-        : isCdkPkg ? 'core'
-          : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
-            : name.startsWith('cdk-') ? name
-              : `cdk-${name}`,
+      isLegacyCdkPkg
+        ? 'cdk'
+        : (isCdkPkg
+          ? 'core'
+          : (name.startsWith('aws-') || name.startsWith('alexa-')
+            ? name.replace(/aws-/, '')
+            : (name.startsWith('cdk-') ? name : `cdk-${name}`))),
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
