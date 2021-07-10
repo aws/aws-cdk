@@ -5,7 +5,9 @@ import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * Class for supported types of Container Providers
+ * Class for supported types of EMR Containers' Container Providers
+ *
+ * @default - EKS()
  */
 export class ContainerProviderTypes {
 
@@ -13,6 +15,8 @@ export class ContainerProviderTypes {
 
   /**
    * Supported container provider type for a EKS Cluster
+   *
+   * @returns 'EKS'
    */
   static EKS(): ContainerProviderTypes {
     return new ContainerProviderTypes('EKS');
@@ -31,7 +35,7 @@ export interface ContainerProvider {
   /**
    * The ID of the container cluster.
    *
-   * @default - No Cluster Id
+   * @default - No cluster id
    */
   readonly id: string;
 

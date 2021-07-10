@@ -1,6 +1,7 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { EMRContainersStartJobRun } from '../../lib';
+import { EmrContainersStartJobRun } from '../../lib';
+import { ReleaseLabel } from '../../lib/emrcontainers/base-types';
 
 /**
  * Stack verification steps:
@@ -20,11 +21,11 @@ const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-start-j
 
 // TODO: MAYBE CREATE JOB EXECUTION ROLE?, FINISH CREATE STARTJOBRUN OBJECT
 // https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
-const startJobRunJob = new EMRContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-  virtualClusterId: 'z0yghc9wfddurogzx9ws12qr0',
+const startJobRunJob = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+  virtualClusterId: sfn.TaskInput.fromText('z0yghc9wfddurogzx9ws12qr0'),
   jobName: 'Run EMR Containers Job',
   executionRoleArn: 'arn:aws:iam::123456789:role/job-execution-role',
-  releaseLabel: 'emr-6.2.0-latest',
+  releaseLabel: ReleaseLabel.EMR_6_2_0(),
   jobDriver: {
     sparkSubmitJobDriver: {
 

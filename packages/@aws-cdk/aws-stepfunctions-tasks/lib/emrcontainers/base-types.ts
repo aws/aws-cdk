@@ -201,23 +201,4 @@ export class ReleaseLabel {
   }
 }
 
-/**
- * Contains the virtual cluster ID for which the job run request is submitted
- *
- * @default - fromTaskInput(taskInput: sfn.TaskInput)
- */
-export class VirtualClusterProp {
-  static id: string;
-
-  static fromTaskInput(taskInput: sfn.TaskInput): VirtualClusterProp {
-    return new VirtualClusterProp(taskInput.value);
-  }
-  static fromVirtualClusterId(virtualClusterId: string): VirtualClusterProp {
-    return new VirtualClusterProp(virtualClusterId);
-  }
-
-  constructor(public readonly id: string) {
-    VirtualClusterProp.id = id;
-  }
-}
 

@@ -18,12 +18,8 @@ const createVirtualClusterJob = new EmrContainersCreateVirtualCluster(stack, 'Cr
   name: 'emr-containers-test-cluster',
   containerProvider: {
     id: 'test-eks',
-    info: {
-      eksInfo: {
-        namespace: 'kube-system',
-      },
-    },
-    type: ContainerProviderTypes.EKS,
+    namespace: 'kube-system',
+    type: ContainerProviderTypes.EKS(),
   },
   integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
 });

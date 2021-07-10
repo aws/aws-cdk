@@ -4,7 +4,7 @@ import { EmrContainersDeleteVirtualCluster } from '../../lib';
 
 /**
  * Stack verification steps:
- * Everything in the link below besides the last step must be setup before running the state machine.
+ * Everything in the link below must be setup before running the state machine.
  * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html
  *
  * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
@@ -15,7 +15,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-delete-virtual-cluster-integ');
 
 const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'EMR Containers Delete Virtual Cluster', {
-  id: 'z0yghc9wfddurogzx9ws12qr0',
+  virtualClusterId: sfn.TaskInput.fromText('z0yghc9wfddurogzx9ws12qr0'),
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
 });
 

@@ -3,7 +3,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { JobDriver, ConfigurationOverrides, ReleaseLabel, VirtualClusterProp } from './base-types';
+import { JobDriver, ConfigurationOverrides, ReleaseLabel } from './base-types';
 
 /**
  * The props for a EMR Containers StartJobRun Task.
@@ -13,7 +13,7 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
   /**
    * The virtual cluster ID for which the job run request is submitted.
    */
-  readonly virtualCluster: VirtualClusterProp;
+  readonly virtualClusterId: sfn.TaskInput;
 
   /**
    * The name of the job run.
@@ -27,7 +27,7 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
    *
    * @default - No execution arn
    */
-  readonly executionRoleArn: iam.IRole;
+  readonly executionRoleArn: string;
 
   /**
    * The Amazon EMR release version to use for the job run.
@@ -95,9 +95,9 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('emr-containers', 'startJobRun', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        VirtualClusterId: this.props.virtualCluster.id,
+        VirtualClusterId: this.props.virtualClusterId,
         JobName: this.props.jobName,
-        ExecutionRoleArn: this.props.executionRoleArn.roleArn,
+        ExecutionRoleArn: this.props.executionRoleArn,
         ReleaseLabel: this.props.releaseLabel,
         JobDriver: {
           SparkSubmitDriver: {
@@ -131,7 +131,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
           cdk.Stack.of(this).formatArn({
             service: 'emr-containers',
             resource: 'virtualclusters',
-            resourceName: this.props.virtualCluster.id ? this.props.virtualCluster.id : '*', // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
+            resourceName: this.props.virtualClusterId.value ? this.props.virtualClusterId.value : '*', // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
           }),
         ],
         actions: ['emr-containers:StartJobRun'],
@@ -150,7 +150,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
             cdk.Stack.of(this).formatArn({
               service: 'emr-containers',
               resource: 'virtualclusters',
-              resourceName: this.props.virtualCluster.id ? `${this.props.virtualCluster.id}/jobruns/*` : '*', // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
+              resourceName: this.props.virtualClusterId.value ? `${this.props.virtualClusterId.value}/jobruns/*` : '*', // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
             }),
           ],
           actions: [
