@@ -103,5 +103,6 @@
   "publishConfig": {
     "tag": "next"
   },
+  "separate-module": false,
   "private": true
 }
