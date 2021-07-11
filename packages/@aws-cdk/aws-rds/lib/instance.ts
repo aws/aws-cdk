@@ -7,7 +7,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { ArnComponents, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
@@ -901,36 +901,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       return this.addSingleUserRotationForMasterSecret(options);
     }
 
-    const id = 'RotationSingleUser';
-    return this.addSingleUserRotationForSecret(options.secret as unknown as Construct, id, options.secret, options);
-  }
-
-  private addSingleUserRotationForMasterSecret(options: RotationSingleUserOptions): secretsmanager.SecretRotation {
-    if (!this.secret) {
-      throw new Error('Cannot add single user rotation for an instance without master secret.');
-    }
-
-    const id = 'RotationSingleUser';
-    return this.addSingleUserRotationForSecret(this, id, this.secret, options);
-  }
-
-  private addSingleUserRotationForSecret(scope: Construct, id: string, secret: secretsmanager.ISecret, options: RotationSingleUserOptions)
-    : secretsmanager.SecretRotation {
-    // TODO: this is a hack! what's the right way to do it?
-    if ((scope as any).node.tryFindChild(id)) {
-      const secretId = this === scope ? 'master' : 'additional'; // Is there a better way to do this?
-      throw new Error(`A single user rotation for ${secretId} secret is already added to this instance.`);
-    }
-
-    return new secretsmanager.SecretRotation(scope, id, {
-      application: this.singleUserRotationApplication,
-      vpc: this.vpc,
-      vpcSubnets: this.vpcPlacement,
-      target: this,
-      ...options,
-      secret: secret,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
-    });
+    return this.addSingleUserRotationForSecret(options.secret as unknown as Construct, 'RotationSingleUser', options.secret, options);
   }
 
   /**
@@ -948,6 +919,32 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
       target: this,
+    });
+  }
+
+  private addSingleUserRotationForMasterSecret(options: RotationSingleUserOptions): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add single user rotation for an instance without master secret.');
+    }
+
+    return this.addSingleUserRotationForSecret(this, 'RotationSingleUser', this.secret, options);
+  }
+
+  private addSingleUserRotationForSecret(scope: Construct, id: string, secret: secretsmanager.ISecret, options: RotationSingleUserOptions)
+    : secretsmanager.SecretRotation {
+    if (Node.of(scope).tryFindChild(id)) {
+      const secretName = this === scope ? 'master' : 'additional'; // Is there a better way to do this?
+      throw new Error(`A single user rotation for ${secretName} secret was already added to this instance.`);
+    }
+
+    return new secretsmanager.SecretRotation(scope, id, {
+      application: this.singleUserRotationApplication,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcPlacement,
+      target: this,
+      ...options,
+      secret: secret,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 }

@@ -822,7 +822,7 @@ describe('cluster', () => {
     cluster.addRotationSingleUser();
 
     // THEN
-    expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation for master secret is already added to this cluster/);
+    expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation for master secret was already added to this cluster/);
   });
 
   test('throws when trying to add single user rotation for additional secret which is master secret', () => {
@@ -844,7 +844,7 @@ describe('cluster', () => {
     // THEN
     expect(() => {
       cluster.addRotationSingleUser({ secret: cluster.secret });
-    }).toThrow(/A single user rotation for master secret is already added to this cluster/);
+    }).toThrow(/A single user rotation for master secret was already added to this cluster/);
   });
 
   test('add single user rotation for two additional secrets', () => {
@@ -916,7 +916,7 @@ describe('cluster', () => {
     // THEN
     expect(() => {
       cluster.addRotationSingleUser({ secret });
-    }).toThrow(/A single user rotation for additional secret is already added to this cluster/);
+    }).toThrow(/A single user rotation for additional secret was already added to this cluster/);
   });
 
   test('create a cluster with s3 import role', () => {

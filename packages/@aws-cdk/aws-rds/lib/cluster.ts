@@ -6,7 +6,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Annotations, Duration, FeatureFlags, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
@@ -550,34 +550,6 @@ export class DatabaseCluster extends DatabaseClusterNew {
     return this.addSingleUserRotationForSecret(options.secret as unknown as Construct, id, options.secret, options);
   }
 
-  private addSingleUserRotationForMasterSecret(options: RotationSingleUserOptions): secretsmanager.SecretRotation {
-    if (!this.secret) {
-      throw new Error('Cannot add single user rotation for a cluster without master secret.');
-    }
-
-    const id = 'RotationSingleUser';
-    return this.addSingleUserRotationForSecret(this, id, this.secret, options);
-  }
-
-  private addSingleUserRotationForSecret(scope: Construct, id: string, secret: secretsmanager.ISecret, options: RotationSingleUserOptions)
-    : secretsmanager.SecretRotation {
-    // TODO: this is a hack! what's the right way to do it?
-    if ((scope as any).node.tryFindChild(id)) {
-      const secretId = this === scope ? 'master' : 'additional'; // Is there a better way to do this?
-      throw new Error(`A single user rotation for ${secretId} secret is already added to this cluster.`);
-    }
-
-    return new secretsmanager.SecretRotation(scope, id, {
-      application: this.singleUserRotationApplication,
-      vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
-      target: this,
-      ...options,
-      secret: secret,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
-    });
-  }
-
   /**
    * Adds the multi user rotation to this cluster.
    */
@@ -594,6 +566,33 @@ export class DatabaseCluster extends DatabaseClusterNew {
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
+    });
+  }
+
+  private addSingleUserRotationForMasterSecret(options: RotationSingleUserOptions): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add single user rotation for a cluster without master secret.');
+    }
+
+    const id = 'RotationSingleUser';
+    return this.addSingleUserRotationForSecret(this, id, this.secret, options);
+  }
+
+  private addSingleUserRotationForSecret(scope: Construct, id: string, secret: secretsmanager.ISecret, options: RotationSingleUserOptions)
+    : secretsmanager.SecretRotation {
+    if (Node.of(scope).tryFindChild(id)) {
+      const secretName = this === scope ? 'master' : 'additional'; // Is there a better way to do this?
+      throw new Error(`A single user rotation for ${secretName} secret was already added to this cluster.`);
+    }
+
+    return new secretsmanager.SecretRotation(scope, id, {
+      application: this.singleUserRotationApplication,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      target: this,
+      ...options,
+      secret: secret,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 }

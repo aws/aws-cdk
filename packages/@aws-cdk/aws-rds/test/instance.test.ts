@@ -767,7 +767,7 @@ describe('instance', () => {
     // THEN
     expect(() => {
       instance.addRotationSingleUser();
-    }).toThrow(/A single user rotation for master secret is already added to this instance/);
+    }).toThrow(/A single user rotation for master secret was already added to this instance/);
   });
 
   test('throws when trying to add single user rotation for additional secret which is master secret', () => {
@@ -784,7 +784,7 @@ describe('instance', () => {
     // THEN
     expect(() => {
       instance.addRotationSingleUser({ secret: instance.secret });
-    }).toThrow(/A single user rotation for master secret is already added to this instance/);
+    }).toThrow(/A single user rotation for master secret was already added to this instance/);
   });
 
   test('add single user rotation for two additional secrets', () => {
@@ -846,7 +846,7 @@ describe('instance', () => {
     // THEN
     expect(() => {
       instance.addRotationSingleUser({ secret });
-    }).toThrow(/A single user rotation for additional secret is already added to this instance/);
+    }).toThrow(/A single user rotation for additional secret was already added to this instance/);
   });
 
   test('throws when timezone is set for non-sqlserver database engine', () => {
