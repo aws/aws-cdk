@@ -54,6 +54,12 @@ export class ClientVpnAuthorizationRule extends Resource {
   constructor(scope: Construct, id: string, props: ClientVpnAuthorizationRuleProps) {
     super(scope, id);
 
+    if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
+      throw 'some error';
+    }
+    if (props.clientVpnEndoint && props.clientVpnEndpoint) {
+      throw 'some other error';
+    }
     new CfnClientVpnAuthorizationRule(this, 'Resource', {
       clientVpnEndpointId: props.clientVpnEndpoint!.endpointId,
       targetNetworkCidr: props.cidr,
