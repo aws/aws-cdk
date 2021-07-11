@@ -444,6 +444,7 @@ export = {
         taskImageOptions: {
           image: ecs.ContainerImage.fromRegistry('test'),
         },
+        enableExecuteCommand: false,
       });
 
       // THEN - stack contains a service with execute-command enabled
