@@ -50,7 +50,9 @@
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::CodeStarNotifications",
@@ -75,6 +77,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "pkglint": "0.0.0",
     "@aws-cdk/assert-internal": "0.0.0"
@@ -90,8 +93,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "cfn-only",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   },

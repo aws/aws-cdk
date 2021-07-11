@@ -154,6 +154,8 @@ async function main() {
         compat: 'cdk-compat',
         gen: 'cfn2ts',
         'rosetta:extract': 'yarn --silent jsii-rosetta extract',
+        'build+extract': 'yarn build && yarn rosetta:extract',
+        'build+test+extract': 'yarn build+test && yarn rosetta:extract',
       },
       'cdk-build': {
         cloudformation: namespace,
@@ -252,6 +254,7 @@ async function main() {
       '**/cdk.out',
       'junit.xml',
       'test/',
+      '!*.lit.ts',
     ]);
 
     await write('lib/index.ts', [
