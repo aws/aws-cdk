@@ -153,6 +153,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
     };
     new ClientVpnAuthorizationRule(stack, 'Rule', { cidr: '10.0.10.0/32', clientVpnEndpoint });
     expect(stack).toCountResources('AWS::EC2::ClientVpnAuthorizationRule', 1);
+    expect(stack.node.children.length).toBe(2);
   });
   test('either clientVpnEndoint (deprecated due to typo) or clientVpnEndpoint is required', () => {
     expect(() => {
@@ -183,5 +184,12 @@ describe('ClientVpnAuthorizationRule constructor', () => {
         clientVpnEndpoint,
       });
     }).toThrow();
+  });
+  test('invalid constructor calls should not add anything to the stack', () => {
+    try {
+      new ClientVpnAuthorizationRule(stack, 'InvalidRule', { cidr: '10.0.10.0/32' });
+    } catch {
+      expect(stack.node.children.length).toBe(1);
+    }
   });
 });

@@ -52,14 +52,13 @@ export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationR
  */
 export class ClientVpnAuthorizationRule extends Resource {
   constructor(scope: Construct, id: string, props: ClientVpnAuthorizationRuleProps) {
-    super(scope, id);
-
     if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
       throw 'some error';
     }
     if (props.clientVpnEndoint && props.clientVpnEndpoint) {
       throw 'some other error';
     }
+    super(scope, id);
     new CfnClientVpnAuthorizationRule(this, 'Resource', {
       clientVpnEndpointId: props.clientVpnEndpoint!.endpointId,
       targetNetworkCidr: props.cidr,
