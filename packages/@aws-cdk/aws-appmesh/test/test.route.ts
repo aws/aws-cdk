@@ -237,7 +237,7 @@ export = {
             },
           ],
           match: {
-            path: appmesh.HttpRoutePathMatch.startingWith('/node'),
+            path: appmesh.HttpRoutePathMatch.startsWith('/node'),
           },
           timeout: {
             idle: cdk.Duration.seconds(10),
@@ -635,7 +635,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.startingWith('/'),
+          path: appmesh.HttpRoutePathMatch.startsWith('/'),
           headers: [
             appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
             appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
@@ -749,7 +749,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.startingWith('/'),
+          path: appmesh.HttpRoutePathMatch.startsWith('/'),
           method: appmesh.HttpRouteMethod.GET,
         },
       }),
@@ -791,7 +791,7 @@ export = {
       routeSpec: appmesh.RouteSpec.http2({
         weightedTargets: [{ virtualNode }],
         match: {
-          path: appmesh.HttpRoutePathMatch.startingWith('/'),
+          path: appmesh.HttpRoutePathMatch.startsWith('/'),
           protocol: appmesh.HttpRouteProtocol.HTTP,
         },
       }),
@@ -1109,7 +1109,7 @@ export = {
         routeSpec: appmesh.RouteSpec.http2({
           weightedTargets: [{ virtualNode }],
           match: {
-            path: appmesh.HttpRoutePathMatch.startingWith('/'),
+            path: appmesh.HttpRoutePathMatch.startsWith('/'),
             // Empty header
             headers: [],
           },
@@ -1122,7 +1122,7 @@ export = {
         routeSpec: appmesh.RouteSpec.http2({
           weightedTargets: [{ virtualNode }],
           match: {
-            path: appmesh.HttpRoutePathMatch.startingWith('/'),
+            path: appmesh.HttpRoutePathMatch.startsWith('/'),
             // 11 headers
             headers: [
               appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
@@ -1167,7 +1167,7 @@ export = {
         routeSpec: appmesh.RouteSpec.http2({
           weightedTargets: [{ virtualNode }],
           match: {
-            path: appmesh.HttpRoutePathMatch.startingWith('/'),
+            path: appmesh.HttpRoutePathMatch.startsWith('/'),
             // Empty header
             queryParameters: [],
           },
@@ -1180,7 +1180,7 @@ export = {
         routeSpec: appmesh.RouteSpec.http2({
           weightedTargets: [{ virtualNode }],
           match: {
-            path: appmesh.HttpRoutePathMatch.startingWith('/'),
+            path: appmesh.HttpRoutePathMatch.startsWith('/'),
             // 11 headers
             queryParameters: [
               appmesh.QueryParameterMatch.valueIs('query-field', 'value'),

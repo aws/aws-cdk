@@ -411,12 +411,12 @@ The `tcp()`, `http()`, `http2()`, and `grpc()` methods provide the spec necessar
 
 For HTTP based routes, the match field can be used to match on 
 path (prefix, exact, or regex), HTTP method, scheme, HTTP headers, and query parameters.
-By default, an HTTP based route will match on all routes.
+By default, an HTTP based route will match all requests.
 
 For gRPC based routes, the match field can be used to match on service name, method name, and metadata.
 When specifying the method name, service name must also be specified.
 
-Add an HTTP route that matches based on prefix path.
+For example, here's how to add an HTTP route that matches based on a prefix of the URL path:
 
 ```ts
 router.addRoute('route-http', {
@@ -428,7 +428,7 @@ router.addRoute('route-http', {
     ],
     match: {
       // Path that is passed to this method must start with '/'.
-      path: appmesh.HttpRoutePathMatch.startingWith('/path-to-app'),
+      path: appmesh.HttpRoutePathMatch.startsWith('/path-to-app'),
     },
   }),
 });
@@ -478,7 +478,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.startingWith('/path-to-app'),
+      path: appmesh.HttpRoutePathMatch.startsWith('/path-to-app'),
     },
   }),
 });
@@ -544,7 +544,6 @@ router.addRoute('route-grpc-retry', {
         appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
       ],
     },
-    
   }),
 });
 ```

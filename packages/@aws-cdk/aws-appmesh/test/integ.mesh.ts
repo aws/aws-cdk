@@ -55,7 +55,7 @@ router.addRoute('route-1', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.startingWith('/'),
+      path: appmesh.HttpRoutePathMatch.startsWith('/'),
     },
     timeout: {
       idle: cdk.Duration.seconds(10),
@@ -158,7 +158,7 @@ router.addRoute('route-2', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.startingWith('/path2'),
+      path: appmesh.HttpRoutePathMatch.startsWith('/path2'),
     },
     timeout: {
       idle: cdk.Duration.seconds(11),
@@ -202,7 +202,7 @@ router.addRoute('route-matching', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [{ virtualNode: node3 }],
     match: {
-      path: appmesh.HttpRoutePathMatch.startingWith('/'),
+      path: appmesh.HttpRoutePathMatch.startsWith('/'),
       method: appmesh.HttpRouteMethod.POST,
       protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [

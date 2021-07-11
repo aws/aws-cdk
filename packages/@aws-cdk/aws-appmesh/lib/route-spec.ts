@@ -3,7 +3,7 @@ import { CfnRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
-import { validateGprcMatch, validateGrpcMatchArrayLength, validateHttpMatchArrayLength } from './private/utils';
+import { validateGrpcMatch, validateGrpcMatchArrayLength, validateHttpMatchArrayLength } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
@@ -451,12 +451,6 @@ class HttpRouteSpec extends RouteSpec {
     const headers = this.match?.headers;
     const queryParameters = this.match?.queryParameters;
 
-    if (prefixPathMatch && prefixPathMatch[0] !== '/') {
-      throw new Error(`Prefix Path for the match must start with \'/\', got: ${prefixPathMatch}`);
-    }
-    if (wholePathMatch?.exact && wholePathMatch.exact[0] !== '/') {
-      throw new Error(`Exact Path for the match must start with \'/\', got: ${wholePathMatch.exact}`);
-    }
     validateHttpMatchArrayLength(headers, queryParameters);
 
     const httpConfig: CfnRoute.HttpRouteProperty = {
@@ -563,7 +557,7 @@ class GrpcRouteSpec extends RouteSpec {
     const methodName = this.match.methodName;
     const metadata = this.match.metadata;
 
-    validateGprcMatch(this.match);
+    validateGrpcMatch(this.match);
     validateGrpcMatchArrayLength(metadata);
 
     if (methodName && !serviceName) {

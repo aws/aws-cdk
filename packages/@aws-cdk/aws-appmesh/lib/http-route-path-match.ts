@@ -52,8 +52,8 @@ export abstract class HttpRoutePathMatch {
    *  You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
    *  and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
    */
-  public static startingWith(prefix: string): HttpRoutePathMatch {
-    return new HttpRoutePathPrefixMatch(prefix);
+  public static startsWith(prefix: string): HttpRoutePathMatch {
+    return new HttpRoutePrefixPathMatch(prefix);
   }
 
   /**
@@ -62,7 +62,7 @@ export abstract class HttpRoutePathMatch {
   public abstract bind(scope: Construct): HttpRoutePathMatchConfig;
 }
 
-class HttpRoutePathPrefixMatch extends HttpRoutePathMatch {
+class HttpRoutePrefixPathMatch extends HttpRoutePathMatch {
   constructor(
     private readonly prefix: string,
   ) {
@@ -70,6 +70,9 @@ class HttpRoutePathPrefixMatch extends HttpRoutePathMatch {
   }
 
   bind(_scope: Construct): HttpRoutePathMatchConfig {
+    if (this.prefix && this.prefix[0] !== '/') {
+      throw new Error(`Prefix Path for the match must start with \'/\', got: ${this.prefix}`);
+    }
     return {
       prefixPathMatch: this.prefix,
     };
@@ -84,6 +87,10 @@ class HttpRouteWholePathMatch extends HttpRoutePathMatch {
   }
 
   bind(_scope: Construct): HttpRoutePathMatchConfig {
+    if (this.match.exact && this.match.exact[0] !== '/') {
+      throw new Error(`Exact Path for the match must start with \'/\', got: ${this.match.exact}`);
+    }
+
     return {
       wholePathMatch: this.match,
     };

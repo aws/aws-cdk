@@ -99,7 +99,7 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string) : 
 /**
  * This is the helper method to validate the length of HTTP match array when it is specified.
  */
-export function validateHttpMatchArrayLength(headers?: HeaderMatch[], queryParameter?: QueryParameterMatch[]) {
+export function validateHttpMatchArrayLength(headers?: HeaderMatch[], queryParameters?: QueryParameterMatch[]) {
   const MIN_LENGTH = 1;
   const MAX_LENGTH = 10;
 
@@ -107,15 +107,15 @@ export function validateHttpMatchArrayLength(headers?: HeaderMatch[], queryParam
     throw new Error(`Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${headers.length}`);
   }
 
-  if (queryParameter && (queryParameter.length < MIN_LENGTH || queryParameter.length > MAX_LENGTH)) {
-    throw new Error(`Number of query parameters provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${queryParameter.length}`);
+  if (queryParameters && (queryParameters.length < MIN_LENGTH || queryParameters.length > MAX_LENGTH)) {
+    throw new Error(`Number of query parameters provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${queryParameters.length}`);
   }
 }
 
 /**
  * This is the helper method to validate the length of gRPC match array when it is specified.
  */
-export function validateGrpcMatchArrayLength(metadata?: HeaderMatch[]) {
+export function validateGrpcMatchArrayLength(metadata?: HeaderMatch[]): void {
   const MIN_LENGTH = 1;
   const MAX_LENGTH = 10;
 
@@ -127,7 +127,7 @@ export function validateGrpcMatchArrayLength(metadata?: HeaderMatch[]) {
 /**
  * This is the helper method to validate at least one of gRPC match type is defined.
  */
-export function validateGprcMatch(match: GrpcRouteMatch) {
+export function validateGrpcMatch(match: GrpcRouteMatch): void {
   for (const property in match) {
     if (match.hasOwnProperty(property)) {
       return;
