@@ -43,7 +43,7 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
   grantPutRecords(grantee: iam.IGrantable): iam.Grant;
 
   /**
-   * Return the given named metric for this delivery stream
+   * Return the given named metric for this delivery stream.
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 

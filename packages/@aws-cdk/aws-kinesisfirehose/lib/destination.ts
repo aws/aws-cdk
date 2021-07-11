@@ -214,7 +214,7 @@ export interface S3BackupDestinationProps extends DestinationLoggingProps, Commo
 }
 
 /**
- * Generic properties for defining a delivery stream destination
+ * Generic properties for defining a delivery stream destination.
  */
 export interface DestinationProps extends DestinationLoggingProps {
   /**
