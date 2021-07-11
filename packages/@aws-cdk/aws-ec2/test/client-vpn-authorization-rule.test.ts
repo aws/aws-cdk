@@ -195,10 +195,9 @@ describe('ClientVpnAuthorizationRule constructor', () => {
     );
   });
   test('invalid constructor calls should not add anything to the stack', () => {
-    try {
+    expect(() => {
       new ClientVpnAuthorizationRule(stack, 'InvalidRule', { cidr: '10.0.10.0/32' });
-    } catch {
-      expect(stack.node.children.length).toBe(1);
-    }
+    }).toThrow();
+    expect(stack.node.children.length).toBe(1);
   });
 });
