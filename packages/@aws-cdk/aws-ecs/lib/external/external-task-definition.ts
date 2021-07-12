@@ -71,6 +71,7 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
     super(scope, id, {
       ...props,
       compatibility: Compatibility.EXTERNAL,
+      networkMode: NetworkMode.BRIDGE,
     });
   }
 
