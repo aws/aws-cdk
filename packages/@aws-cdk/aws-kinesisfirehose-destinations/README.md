@@ -19,4 +19,4 @@ This library provides constructs for adding destinations to a Amazon Kinesis Dat
 delivery stream. Destinations can be added by specifying the `destination` prop when
 defining a delivery stream.
 
-See Amazon Kinesis Data Firehose module README for usage examples.
+See [Amazon Kinesis Data Firehose module README](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-kinesisfirehose-readme.html) for usage examples.
