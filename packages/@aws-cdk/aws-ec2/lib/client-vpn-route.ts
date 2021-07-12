@@ -69,8 +69,8 @@ export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
   readonly clientVpnEndpoint?: IClientVpnEndpoint;
   /**
    * The client VPN endpoint to which to add the route.
-   * @deprecated by typo. moved to clientVpnEndpoint
-   * @default clientVpnEndpoint is required.
+   * @deprecated Use `clientVpnEndpoint` instead
+   * @default clientVpnEndpoint is required
 
    */
   readonly clientVpnEndoint?: IClientVpnEndpoint;
