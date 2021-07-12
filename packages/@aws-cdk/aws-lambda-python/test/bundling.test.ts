@@ -185,13 +185,13 @@ test('Bundling Docker with custom bundling image', () => {
   });
 
   expect(fromBuildMock).toHaveBeenCalledWith(expect.stringContaining('/tmp/python-bundling'),
-    expect.objectContaining({
+    {
       buildArgs: expect.objectContaining({
         HELLO: 'WORLD',
       }),
-    }),
-    expect.objectContaining({
+    },
+    {
       file: expect.stringContaining('Dockerfile.build'),
-    }),
+    },
   );
 });
