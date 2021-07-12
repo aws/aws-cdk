@@ -1,3 +1,4 @@
+import { arrayWith } from '@aws-cdk/assert-internal/';
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
@@ -192,5 +193,100 @@ describe('S3 destination', () => {
         ],
       },
     });
+  });
+
+  it('grants read/write access to the backup bucket', () => {
+    const destination = new firehosedestinations.S3(bucket, {
+      backupConfiguration: {
+        backupMode: firehose.BackupMode.ALL,
+      },
+    });
+
+    destination.bind(stack, { deliveryStream });
+
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Roles: ['DeliveryStreamRole'],
+      PolicyDocument: {
+        Statement: arrayWith(
+          {
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+              's3:PutObject*',
+              's3:Abort*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'BackupBucket26B8E51C',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'BackupBucket26B8E51C',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ),
+      },
+    });
+  });
+
+  it('test BackupMode.ALL is converted to Enabled', () => {
+    const destination = new firehosedestinations.S3(bucket, {
+      backupConfiguration: {
+        backupMode: firehose.BackupMode.ALL,
+      },
+    });
+
+    const destinationConfig = destination.bind(stack, { deliveryStream });
+    expect(stack.resolve(destinationConfig)).toHaveProperty('properties.extendedS3DestinationConfiguration.s3BackupMode', 'Enabled');
+  });
+
+  it('test BackupMode.DISABLED', () => {
+    const destination = new firehosedestinations.S3(bucket, {
+      backupConfiguration: {
+        backupMode: firehose.BackupMode.DISABLED,
+      },
+    });
+
+    const destinationConfig = destination.bind(stack, { deliveryStream });
+    expect(stack.resolve(destinationConfig)).toHaveProperty('properties.extendedS3DestinationConfiguration.s3BackupMode', 'Disabled');
+  });
+
+  it('test BackupMode.FAILED throws error', () => {
+    const destination = new firehosedestinations.S3(bucket, {
+      backupConfiguration: {
+        backupMode: firehose.BackupMode.FAILED,
+      },
+    });
+
+    expect(() => destination.bind(stack, { deliveryStream })).toThrowError('S3 destinations do not support BackupMode.FAILED');
+  });
+
+  it('s3BackupMode is enabled when a backup bucket is provided', () => {
+    const backup = new s3.Bucket(stack, 'Backup');
+    const destination = new firehosedestinations.S3(bucket, {
+      backupConfiguration: {
+        backupBucket: backup,
+      },
+    });
+
+    const destinationConfig = destination.bind(stack, { deliveryStream });
+    expect(stack.resolve(destinationConfig)).toHaveProperty('properties.extendedS3DestinationConfiguration.s3BackupMode', 'Enabled');
   });
 });
