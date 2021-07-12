@@ -443,10 +443,9 @@ class HttpRouteSpec extends RouteSpec {
   }
 
   public bind(scope: Construct): RouteSpecConfig {
-    const pathMatchConfig = this.match?.path?.bind(scope);
+    const pathMatchConfig = (this.match?.path ?? HttpRoutePathMatch.startsWith('/')).bind(scope);
 
     // Set prefix path match to '/' if none of path matches are defined.
-    const prefixPathMatch = pathMatchConfig ? pathMatchConfig.prefixPathMatch : '/';
     const headers = this.match?.headers;
     const queryParameters = this.match?.queryParameters;
 
@@ -457,7 +456,7 @@ class HttpRouteSpec extends RouteSpec {
         weightedTargets: renderWeightedTargets(this.weightedTargets),
       },
       match: {
-        prefix: prefixPathMatch,
+        prefix: pathMatchConfig.prefixPathMatch,
         path: pathMatchConfig?.wholePathMatch,
         headers: headers?.map(header => header.bind(scope).headerMatch),
         method: this.match?.method,

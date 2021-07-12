@@ -5,32 +5,33 @@ import { CfnRoute } from './appmesh.generated';
 import { Construct } from '@aws-cdk/core';
 
 /**
- * Path and Prefix properties for HTTP route match.
+ * The type returned from the `bind()` method in {@link HttpRoutePathMatch}.
  */
 export interface HttpRoutePathMatchConfig {
   /**
-   * Route CFN configuration for path match.
+   * Route configuration for matching on the complete URL path of the request.
    *
-   * @default - no path match.
+   * @default - no matching will be performed on the complete URL path
    */
   readonly wholePathMatch?: CfnRoute.HttpPathMatchProperty;
 
   /**
-   * String defining the prefix match.
+   * Route configuration for matching on the prefix of the URL path of the request.
    *
-   * @default - no prefix match
+   * @default - no matching will be performed on the prefix of the URL path
    */
   readonly prefixPathMatch?: string;
 }
 
 /**
- * Defines HTTP route path or prefix request match.
+ * Defines HTTP route matching based on the URL path of the request.
  */
 export abstract class HttpRoutePathMatch {
   /**
    * The value of the path must match the specified value exactly.
+   * The provided `path` must start with the '/' character.
    *
-   * @param path The exact path to match on
+   * @param path the exact path to match on
    */
   public static exactly(path: string): HttpRoutePathMatch {
     return new HttpRouteWholePathMatch({ exact: path });
@@ -39,7 +40,7 @@ export abstract class HttpRoutePathMatch {
   /**
    * The value of the path must match the specified regex.
    *
-   * @param regex The regex used to match the path
+   * @param regex the regex used to match the path
    */
   public static regex(regex: string): HttpRoutePathMatch {
     return new HttpRouteWholePathMatch({ regex: regex });
@@ -48,9 +49,10 @@ export abstract class HttpRoutePathMatch {
   /**
    * The value of the path must match the specified prefix.
    *
-   * @param prefix This parameter must always start with /, which by itself matches all requests to the virtual service name.
-   *  You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
-   *  and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
+   * @param prefix the value to use to match the beginning of the path part of the URL of the request.
+   *   It must start with the '/' character. If provided as "/", matches all requests.
+   *   For example, if your virtual service name is "my-service.local"
+   *   and you want the route to match requests to "my-service.local/metrics", your prefix should be "/metrics".
    */
   public static startsWith(prefix: string): HttpRoutePathMatch {
     return new HttpRoutePrefixPathMatch(prefix);
@@ -67,12 +69,13 @@ class HttpRoutePrefixPathMatch extends HttpRoutePathMatch {
     private readonly prefix: string,
   ) {
     super();
-  }
 
-  bind(_scope: Construct): HttpRoutePathMatchConfig {
     if (this.prefix && this.prefix[0] !== '/') {
       throw new Error(`Prefix Path for the match must start with \'/\', got: ${this.prefix}`);
     }
+  }
+
+  bind(_scope: Construct): HttpRoutePathMatchConfig {
     return {
       prefixPathMatch: this.prefix,
     };
@@ -84,13 +87,13 @@ class HttpRouteWholePathMatch extends HttpRoutePathMatch {
     private readonly match: CfnRoute.HttpPathMatchProperty,
   ) {
     super();
-  }
 
-  bind(_scope: Construct): HttpRoutePathMatchConfig {
     if (this.match.exact && this.match.exact[0] !== '/') {
       throw new Error(`Exact Path for the match must start with \'/\', got: ${this.match.exact}`);
     }
+  }
 
+  bind(_scope: Construct): HttpRoutePathMatchConfig {
     return {
       wholePathMatch: this.match,
     };

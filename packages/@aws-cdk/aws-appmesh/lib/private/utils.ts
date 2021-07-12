@@ -128,11 +128,7 @@ export function validateGrpcMatchArrayLength(metadata?: HeaderMatch[]): void {
  * This is the helper method to validate at least one of gRPC match type is defined.
  */
 export function validateGrpcMatch(match: GrpcRouteMatch): void {
-  for (const property in match) {
-    if (match.hasOwnProperty(property)) {
-      return;
-    }
+  if (match.serviceName === undefined && match.metadata === undefined && match.methodName === undefined) {
+    throw new Error('At least one gRPC match property must be provided');
   }
-
-  throw new Error('At least one gRPC match property must be provided');
 }
