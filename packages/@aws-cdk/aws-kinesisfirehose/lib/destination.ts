@@ -161,8 +161,6 @@ export interface CommonS3Props {
   /**
    * The AWS KMS key used to encrypt the data that it delivers to your Amazon S3 bucket.
    *
-   * TODO: why do we have this instead of encrypting the bucket. I say we just don't support this
-   *
    * @default - Data is not encrypted.
    */
   readonly encryptionKey?: kms.IKey;

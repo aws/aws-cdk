@@ -1,5 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
+import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -12,9 +14,11 @@ describe('destination', () => {
   let deliveryStreamRole: iam.IRole;
   let deliveryStream: firehose.IDeliveryStream;
 
+  const deliveryStreamRoleArn = 'arn:aws:iam::111122223333:role/DeliveryStreamRole';
+
   beforeEach(() => {
     stack = new cdk.Stack();
-    deliveryStreamRole = iam.Role.fromRoleArn(stack, 'Delivery Stream Role', 'arn:aws:iam::111122223333:role/DeliveryStreamRole');
+    deliveryStreamRole = iam.Role.fromRoleArn(stack, 'Delivery Stream Role', deliveryStreamRoleArn);
     deliveryStream = firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'Delivery Stream', {
       deliveryStreamName: 'mydeliverystream',
       role: deliveryStreamRole,
@@ -203,7 +207,7 @@ describe('destination', () => {
           testDestinationConfig: {
             backupConfig: {
               bucketArn: { 'Fn::GetAtt': ['BackupBucket26B8E51C', 'Arn'] },
-              roleArn: 'arn:aws:iam::111122223333:role/DeliveryStreamRole',
+              roleArn: deliveryStreamRoleArn,
               encryptionConfiguration: {
                 noEncryptionConfig: 'NoEncryption',
               },
@@ -229,7 +233,7 @@ describe('destination', () => {
           testDestinationConfig: {
             backupConfig: {
               bucketArn: { 'Fn::GetAtt': ['BackupBucket26B8E51C', 'Arn'] },
-              roleArn: 'arn:aws:iam::111122223333:role/DeliveryStreamRole',
+              roleArn: deliveryStreamRoleArn,
               encryptionConfiguration: {
                 noEncryptionConfig: 'NoEncryption',
               },
@@ -256,7 +260,7 @@ describe('destination', () => {
           testDestinationConfig: {
             backupConfig: {
               bucketArn: { 'Fn::GetAtt': ['BackupBucket26B8E51C', 'Arn'] },
-              roleArn: 'arn:aws:iam::111122223333:role/DeliveryStreamRole',
+              roleArn: deliveryStreamRoleArn,
               encryptionConfiguration: {
                 noEncryptionConfig: 'NoEncryption',
               },
@@ -264,6 +268,47 @@ describe('destination', () => {
             },
           },
         },
+      });
+    });
+
+    test('allows encryption', () => {
+      const encryptionKeyArn = 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab';
+      const encryptionKey = kms.Key.fromKeyArn(stack, 'Backup Key', encryptionKeyArn);
+      const testDestination = new BackupDestination({
+        backupConfiguration: {
+          encryptionKey,
+          backupMode: firehose.BackupMode.ALL,
+        },
+      });
+
+      const testDestinationConfig = testDestination.bind(stack, { deliveryStream });
+
+      expect(stack.resolve(testDestinationConfig)).toStrictEqual({
+        properties: {
+          testDestinationConfig: {
+            backupConfig: {
+              bucketArn: { 'Fn::GetAtt': ['BackupBucket26B8E51C', 'Arn'] },
+              roleArn: deliveryStreamRoleArn,
+              encryptionConfiguration: {
+                kmsEncryptionConfig: {
+                  awskmsKeyArn: encryptionKeyArn,
+                },
+              },
+            },
+          },
+        },
+      });
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: arrayWith(objectLike({
+            Action: arrayWith(
+              'kms:Encrypt',
+              'kms:Decrypt',
+            ),
+            Resource: encryptionKeyArn,
+          })),
+        },
+        Roles: [ 'DeliveryStreamRole' ],
       });
     });
 
@@ -278,7 +323,7 @@ describe('destination', () => {
           testDestinationConfig: {
             backupConfig: {
               bucketArn: { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
-              roleArn: 'arn:aws:iam::111122223333:role/DeliveryStreamRole',
+              roleArn: deliveryStreamRoleArn,
               encryptionConfiguration: {
                 noEncryptionConfig: 'NoEncryption',
               },
@@ -325,9 +370,10 @@ describe('destination', () => {
     }
 
     let lambdaFunction: lambda.IFunction;
+    const lambdaFunctionArn = 'arn:aws:lambda:us-west-1:111122223333:function:my-function';
     beforeEach(() => {
       lambdaFunction = lambda.Function.fromFunctionAttributes(stack, 'Processor', {
-        functionArn: 'arn:aws:lambda:xx-west-1:111122223333:function:my-function',
+        functionArn: lambdaFunctionArn,
         sameEnvironment: true,
       });
     });
@@ -371,11 +417,11 @@ describe('destination', () => {
                   parameters: [
                     {
                       parameterName: 'RoleArn',
-                      parameterValue: 'arn:aws:iam::111122223333:role/DeliveryStreamRole',
+                      parameterValue: deliveryStreamRoleArn,
                     },
                     {
                       parameterName: 'LambdaArn',
-                      parameterValue: 'arn:aws:lambda:xx-west-1:111122223333:function:my-function',
+                      parameterValue: lambdaFunctionArn,
                     },
                   ],
                   type: 'Lambda',
@@ -410,11 +456,11 @@ describe('destination', () => {
                   parameters: [
                     {
                       parameterName: 'RoleArn',
-                      parameterValue: 'arn:aws:iam::111122223333:role/DeliveryStreamRole',
+                      parameterValue: deliveryStreamRoleArn,
                     },
                     {
                       parameterName: 'LambdaArn',
-                      parameterValue: 'arn:aws:lambda:xx-west-1:111122223333:function:my-function',
+                      parameterValue: lambdaFunctionArn,
                     },
                     {
                       parameterName: 'BufferIntervalInSeconds',
