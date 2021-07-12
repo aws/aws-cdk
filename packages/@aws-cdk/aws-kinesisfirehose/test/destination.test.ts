@@ -194,7 +194,7 @@ describe('destination', () => {
     });
 
     test('create resources and configuration if explicitly enabled', () => {
-      const testDestination = new BackupDestination({ backupConfiguration: { backupMode: firehose.BackupMode.ALL }});
+      const testDestination = new BackupDestination({ backupConfiguration: { backupMode: firehose.BackupMode.ALL } });
 
       const testDestinationConfig = testDestination.bind(stack, { deliveryStream });
 
@@ -268,7 +268,7 @@ describe('destination', () => {
     });
 
     test('creates configuration using bucket if provided', () => {
-      const testDestination = new BackupDestination({ backupConfiguration: { backupBucket: new s3.Bucket(stack, 'Bucket') }});
+      const testDestination = new BackupDestination({ backupConfiguration: { backupBucket: new s3.Bucket(stack, 'Bucket') } });
 
       const testDestinationConfig = testDestination.bind(stack, { deliveryStream });
 
@@ -289,13 +289,13 @@ describe('destination', () => {
     });
 
     test('throws error if backup disabled and bucket provided', () => {
-      const testDestination = new BackupDestination({ backupConfiguration: { backupMode: firehose.BackupMode.DISABLED, backupBucket: new s3.Bucket(stack, 'Bucket') }});
+      const testDestination = new BackupDestination({ backupConfiguration: { backupMode: firehose.BackupMode.DISABLED, backupBucket: new s3.Bucket(stack, 'Bucket') } });
 
       expect(() => testDestination.bind(stack, { deliveryStream })).toThrowError('Destination backup cannot be set to DISABLED when backupBucket is provided');
     });
 
     test('can configure backup prefix', () => {
-      const testDestination = new BackupDestination({ backupConfiguration: { backupMode: firehose.BackupMode.ALL, prefix: 'backupPrefix' }});
+      const testDestination = new BackupDestination({ backupConfiguration: { backupMode: firehose.BackupMode.ALL, prefix: 'backupPrefix' } });
 
       const testDestinationConfig = testDestination.bind(stack, { deliveryStream });
 
@@ -390,7 +390,11 @@ describe('destination', () => {
     test('creates configuration if a processor is specified with optional parameters', () => {
       const testDestination = new ProcessingDestination({
         processors: [
-          new firehose.LambdaFunctionProcessor(lambdaFunction, { bufferInterval: cdk.Duration.minutes(1), bufferSize: cdk.Size.kibibytes(1024), retries: 1 }),
+          new firehose.LambdaFunctionProcessor(lambdaFunction, {
+            bufferInterval: cdk.Duration.minutes(1),
+            bufferSize: cdk.Size.kibibytes(1024),
+            retries: 1,
+          }),
         ],
       });
 
@@ -453,7 +457,8 @@ describe('destination', () => {
         return {
           properties: {
             testDestinationConfig: {
-              bufferingConfig: this.createBufferingHints(this.props.backupConfiguration?.bufferingInterval, this.props.backupConfiguration?.bufferingSize),
+              bufferingConfig: this.createBufferingHints(this.props.backupConfiguration?.bufferingInterval,
+                this.props.backupConfiguration?.bufferingSize),
             },
           },
         };
@@ -473,7 +478,9 @@ describe('destination', () => {
     });
 
     test('creates configuration when interval and size provided', () => {
-      const testDestination = new BufferingDestination({ backupConfiguration: { bufferingInterval: cdk.Duration.minutes(1), bufferingSize: cdk.Size.kibibytes(1024) }});
+      const testDestination = new BufferingDestination({
+        backupConfiguration: { bufferingInterval: cdk.Duration.minutes(1), bufferingSize: cdk.Size.kibibytes(1024) },
+      });
 
       const testDestinationConfig = testDestination.bind(stack, { deliveryStream });
 
@@ -490,23 +497,31 @@ describe('destination', () => {
     });
 
     test('throws when only one of interval and size provided', () => {
-      expect(() => new BufferingDestination({ backupConfiguration: { bufferingInterval: cdk.Duration.minutes(1) }}).bind(stack, { deliveryStream }))
+      expect(() => new BufferingDestination({ backupConfiguration: { bufferingInterval: cdk.Duration.minutes(1) } }).bind(stack, { deliveryStream }))
         .toThrowError('If bufferingInterval is specified, bufferingSize must also be specified');
-      expect(() => new BufferingDestination({ backupConfiguration: { bufferingSize: cdk.Size.kibibytes(1024) }}).bind(stack, { deliveryStream }))
+      expect(() => new BufferingDestination({ backupConfiguration: { bufferingSize: cdk.Size.kibibytes(1024) } }).bind(stack, { deliveryStream }))
         .toThrowError('If bufferingSize is specified, bufferingInterval must also be specified');
     });
 
     test('validates bufferingInterval', () => {
-      expect(() => new BufferingDestination({ backupConfiguration: { bufferingInterval: cdk.Duration.seconds(30), bufferingSize: cdk.Size.mebibytes(1) }}).bind(stack, { deliveryStream }))
+      expect(() => new BufferingDestination({
+        backupConfiguration: { bufferingInterval: cdk.Duration.seconds(30), bufferingSize: cdk.Size.mebibytes(1) },
+      }).bind(stack, { deliveryStream }))
         .toThrowError('Buffering interval must be between 60 and 900 seconds');
-      expect(() => new BufferingDestination({ backupConfiguration: { bufferingInterval: cdk.Duration.minutes(16), bufferingSize: cdk.Size.mebibytes(1) }}).bind(stack, { deliveryStream }))
+      expect(() => new BufferingDestination({
+        backupConfiguration: { bufferingInterval: cdk.Duration.minutes(16), bufferingSize: cdk.Size.mebibytes(1) },
+      }).bind(stack, { deliveryStream }))
         .toThrowError('Buffering interval must be between 60 and 900 seconds');
     });
 
     test('validates bufferingSize', () => {
-      expect(() => new BufferingDestination({ backupConfiguration: { bufferingSize: cdk.Size.mebibytes(0), bufferingInterval: cdk.Duration.minutes(1) }}).bind(stack, { deliveryStream }))
+      expect(() => new BufferingDestination({
+        backupConfiguration: { bufferingSize: cdk.Size.mebibytes(0), bufferingInterval: cdk.Duration.minutes(1) },
+      }).bind(stack, { deliveryStream }))
         .toThrowError('Buffering size must be between 1 and 128 MBs');
-      expect(() => new BufferingDestination({ backupConfiguration: { bufferingSize: cdk.Size.mebibytes(256), bufferingInterval: cdk.Duration.minutes(1) }}).bind(stack, { deliveryStream }))
+      expect(() => new BufferingDestination({
+        backupConfiguration: { bufferingSize: cdk.Size.mebibytes(256), bufferingInterval: cdk.Duration.minutes(1) },
+      }).bind(stack, { deliveryStream }))
         .toThrowError('Buffering size must be between 1 and 128 MBs');
     });
   });

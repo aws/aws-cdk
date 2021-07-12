@@ -89,7 +89,12 @@ export class Compression {
    */
   public static readonly ZIP = new Compression('ZIP');
 
-  constructor(public readonly value: string) { }
+  constructor(
+    /**
+     * String value of the Compression.
+     */
+    public readonly value: string,
+  ) { }
 }
 
 /**
