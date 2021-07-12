@@ -73,18 +73,21 @@ export interface BundlingOptions {
   readonly assetHash?: string;
 
   /**
-   * Bundling Docker image to use.
+   * Bundling Docker image options to use. If no options are provided, the default bundling image
+   * will be used. This is useful for specifying a custom Docker image for bundling. Additionally,
+   * the correct AWS SAM build image based on the runtime of the function will be passed as the build arg
+   * `IMAGE` to the Docker image.
    *
    * @default - uses default bundling.
    */
-  readonly buildImage?: cdk.DockerImage;
+  readonly buildImageOptions?: cdk.DockerBuildOptions;
 }
 
 /**
  * Produce bundled Lambda asset code
  */
 export function bundle(options: BundlingOptions): lambda.Code {
-  const { entry, runtime, outputPathSuffix, buildImage } = options;
+  const { entry, runtime, outputPathSuffix, buildImageOptions } = options;
 
   const stagedir = cdk.FileSystem.mkdtemp('python-bundling-');
   const hasDeps = stageDependencies(entry, stagedir);
@@ -105,14 +108,16 @@ export function bundle(options: BundlingOptions): lambda.Code {
   // copy Dockerfile to workdir
   fs.copyFileSync(path.join(__dirname, dockerfile), path.join(stagedir, dockerfile));
 
-  const defaultBuildImage = cdk.DockerImage.fromBuild(stagedir, {
-    buildArgs: {
-      IMAGE: runtime.bundlingImage.image,
-    },
-    file: dockerfile,
-  });
+  const buildArgs = {
+    IMAGE: runtime.bundlingImage.image,
+    ...buildImageOptions?.buildArgs,
+  };
 
-  const image = buildImage?? defaultBuildImage;
+  const image = cdk.DockerImage.fromBuild(stagedir, {
+    file: dockerfile,
+    ...buildImageOptions,
+    buildArgs,
+  });
 
   return lambda.Code.fromAsset(entry, {
     assetHashType: options.assetHashType,
