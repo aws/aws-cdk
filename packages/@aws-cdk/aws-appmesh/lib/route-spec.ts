@@ -447,7 +447,6 @@ class HttpRouteSpec extends RouteSpec {
 
     // Set prefix path match to '/' if none of path matches are defined.
     const prefixPathMatch = pathMatchConfig ? pathMatchConfig.prefixPathMatch : '/';
-    const wholePathMatch = pathMatchConfig?.wholePathMatch;
     const headers = this.match?.headers;
     const queryParameters = this.match?.queryParameters;
 
@@ -459,7 +458,7 @@ class HttpRouteSpec extends RouteSpec {
       },
       match: {
         prefix: prefixPathMatch,
-        path: wholePathMatch,
+        path: pathMatchConfig?.wholePathMatch,
         headers: headers?.map(header => header.bind(scope).headerMatch),
         method: this.match?.method,
         scheme: this.match?.protocol,
