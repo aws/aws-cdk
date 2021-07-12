@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.113.0](https://github.com/aws/aws-cdk/compare/v1.112.0...v1.113.0) (2021-07-12)
+
+
+### Features
+
+* **assets:** docker images from tar file ([#15438](https://github.com/aws/aws-cdk/issues/15438)) ([76f06fc](https://github.com/aws/aws-cdk/commit/76f06fc2ae4404242e5854d2eeaf4f11b98f98f0)), closes [#15419](https://github.com/aws/aws-cdk/issues/15419)
+* **codepipeline-actions:** support combining batch build artifacts in CodeBuildAction ([#15457](https://github.com/aws/aws-cdk/issues/15457)) ([0952f1f](https://github.com/aws/aws-cdk/commit/0952f1f2045f2dbdffeb840c4737522d12ea7df6)), closes [#15455](https://github.com/aws/aws-cdk/issues/15455)
+* **events:** cross-region event rules ([#14731](https://github.com/aws/aws-cdk/issues/14731)) ([c62afe9](https://github.com/aws/aws-cdk/commit/c62afe905c0414d2feb38271b0b3df4907ac3caf))
+
+
+### Bug Fixes
+
+* **aws-ecs:** token is added to Options instead of SecretOptions in SplunkLogDriver ([#15408](https://github.com/aws/aws-cdk/issues/15408)) ([23abe22](https://github.com/aws/aws-cdk/commit/23abe22a173281361855efc8671529e4bae30ae5))
+
 ## [1.112.0](https://github.com/aws/aws-cdk/compare/v1.111.0...v1.112.0) (2021-07-09)
 
 
