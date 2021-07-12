@@ -200,11 +200,15 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
 
-    // Step Concurrency Level is only valid with EMR release label >= emr-5.28.0
-    if (this.props.stepConcurrencyLevel !== undefined && this.props.stepConcurrencyLevel > 1) {
-      const minSupported = '5.28.0'
-      if (this.props.releaseLabel !== undefined && semver.lt(this.props.releaseLabel.substring(4), minSupported)) {
-        throw new Error('Step Concurrency Level can not be specified with release label less then emr-5.28.0.');
+    if (this.props.stepConcurrencyLevel) {
+      if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
+        throw new Error('Step concurrency level must be in range [1, 256]');
+      }
+      if (this.props.releaseLabel) {
+        const [major, minor] = this.props.releaseLabel.substr(4).split('.');
+        if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
+          throw new Error('Step concurrency is only supported in EMR release version 5.28.0 and above);
+        }
       }
     }
   }
