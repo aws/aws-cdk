@@ -142,6 +142,15 @@ describe('S3 destination', () => {
           errorOutputPrefix: 'backupErrorPrefix',
           prefix: 'backupPrefix',
           roleArn: deliveryStreamRole.roleArn,
+          cloudWatchLoggingOptions: {
+            enabled: true,
+            logGroupName: {
+              Ref: 'BackupLogGroupB15A0768',
+            },
+            logStreamName: {
+              Ref: 'BackupLogGroupS3BackupA7B3FB1E',
+            },
+          },
         },
         s3BackupMode: 'Enabled',
       },

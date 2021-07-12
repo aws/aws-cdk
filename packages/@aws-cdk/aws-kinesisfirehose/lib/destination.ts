@@ -234,6 +234,7 @@ export interface DestinationProps extends DestinationLoggingProps {
  */
 export abstract class DestinationBase implements IDestination {
   private logGroup?: logs.ILogGroup;
+  private backupLogGroup?: logs.ILogGroup;
 
   constructor(protected readonly props: DestinationProps = {}) { }
 
@@ -311,6 +312,7 @@ export abstract class DestinationBase implements IDestination {
         bufferingHints: this.createBufferingHints(this.props.backupConfiguration.bufferingInterval, this.props.backupConfiguration.bufferingSize),
         compressionFormat: this.props.backupConfiguration.compression?.value,
         encryptionConfiguration: this.createEncryptionConfig(deliveryStream, this.props.backupConfiguration.encryptionKey),
+        cloudWatchLoggingOptions: this.createBackupLoggingOptions(scope, deliveryStream, 'S3Backup'),
       };
     }
     return undefined;
@@ -341,5 +343,25 @@ export abstract class DestinationBase implements IDestination {
     return encryptionKey != null
       ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
       : { noEncryptionConfig: 'NoEncryption' };
+  }
+
+  private createBackupLoggingOptions(
+    scope: Construct,
+    deliveryStream: IDeliveryStream,
+    streamId: string,
+  ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
+    if (this.props.backupConfiguration?.logging === false && this.props.backupConfiguration?.logGroup) {
+      throw new Error('Backup destination logging cannot be set to false when logGroup is provided');
+    }
+    if (this.props.logging !== false || this.props.logGroup) {
+      this.backupLogGroup = this.backupLogGroup ?? this.props.backupConfiguration?.logGroup ?? new logs.LogGroup(scope, 'BackupLogGroup');
+      this.backupLogGroup.grantWrite(deliveryStream);
+      return {
+        enabled: true,
+        logGroupName: this.backupLogGroup.logGroupName,
+        logStreamName: this.backupLogGroup.addStream(streamId).logStreamName,
+      };
+    }
+    return undefined;
   }
 }

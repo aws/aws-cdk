@@ -211,6 +211,15 @@ describe('destination', () => {
               encryptionConfiguration: {
                 noEncryptionConfig: 'NoEncryption',
               },
+              cloudWatchLoggingOptions: {
+                enabled: true,
+                logGroupName: {
+                  Ref: 'BackupLogGroupB15A0768',
+                },
+                logStreamName: {
+                  Ref: 'BackupLogGroupS3BackupA7B3FB1E',
+                },
+              },
             },
           },
         },
@@ -239,6 +248,15 @@ describe('destination', () => {
               },
               prefix: 'custom-prefix',
               errorOutputPrefix: 'custom-error-prefix',
+              cloudWatchLoggingOptions: {
+                enabled: true,
+                logGroupName: {
+                  Ref: 'BackupLogGroupB15A0768',
+                },
+                logStreamName: {
+                  Ref: 'BackupLogGroupS3BackupA7B3FB1E',
+                },
+              },
             },
           },
         },
@@ -265,6 +283,15 @@ describe('destination', () => {
                 noEncryptionConfig: 'NoEncryption',
               },
               compressionFormat: 'GZIP',
+              cloudWatchLoggingOptions: {
+                enabled: true,
+                logGroupName: {
+                  Ref: 'BackupLogGroupB15A0768',
+                },
+                logStreamName: {
+                  Ref: 'BackupLogGroupS3BackupA7B3FB1E',
+                },
+              },
             },
           },
         },
@@ -292,6 +319,15 @@ describe('destination', () => {
               encryptionConfiguration: {
                 kmsEncryptionConfig: {
                   awskmsKeyArn: encryptionKeyArn,
+                },
+              },
+              cloudWatchLoggingOptions: {
+                enabled: true,
+                logGroupName: {
+                  Ref: 'BackupLogGroupB15A0768',
+                },
+                logStreamName: {
+                  Ref: 'BackupLogGroupS3BackupA7B3FB1E',
                 },
               },
             },
@@ -326,6 +362,15 @@ describe('destination', () => {
               roleArn: deliveryStreamRoleArn,
               encryptionConfiguration: {
                 noEncryptionConfig: 'NoEncryption',
+              },
+              cloudWatchLoggingOptions: {
+                enabled: true,
+                logGroupName: {
+                  Ref: 'BackupLogGroupB15A0768',
+                },
+                logStreamName: {
+                  Ref: 'BackupLogGroupS3BackupA7B3FB1E',
+                },
               },
             },
           },
