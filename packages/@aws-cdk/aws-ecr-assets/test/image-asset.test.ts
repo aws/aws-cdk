@@ -10,7 +10,7 @@ import { DockerImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
 
-const DEMO_IMAGE_ASSET_HASH = '0c7eaa76a180464444a0b21036987c8415680b2bef014e3450abd59747c7772e';
+const DEMO_IMAGE_ASSET_HASH = '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48';
 
 const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
 
@@ -29,11 +29,11 @@ describe('image asset', () => {
     expect(artifact.assets).toEqual([
       {
         repositoryName: 'aws-cdk/assets',
-        imageTag: '0c7eaa76a180464444a0b21036987c8415680b2bef014e3450abd59747c7772e',
-        id: '0c7eaa76a180464444a0b21036987c8415680b2bef014e3450abd59747c7772e',
+        imageTag: '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+        id: '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
         packaging: 'container-image',
-        path: 'asset.0c7eaa76a180464444a0b21036987c8415680b2bef014e3450abd59747c7772e',
-        sourceHash: '0c7eaa76a180464444a0b21036987c8415680b2bef014e3450abd59747c7772e',
+        path: 'asset.8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+        sourceHash: '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
       },
     ]);
 
@@ -283,13 +283,13 @@ describe('image asset', () => {
     const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
     const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, repositoryName: 'foo' });
 
-    expect(asset1.assetHash).toEqual('d7e09a7a4e6370fd0acc3c54882be997c8ceb7e0e8175b02fe76e8647dce17de');
-    expect(asset2.assetHash).toEqual('3f1bac72f858173107f49acaf5df9018003226fc51909bf5d11d58af025c2e4e');
-    expect(asset3.assetHash).toEqual('fdb2b671eb30fd132aae702101baae15afdb25b91e8f33726ce3b86c01c3a6ad');
-    expect(asset4.assetHash).toEqual('ac36f45819cb7082e6ac234864b253625490016f449757b2f5299ce28ed23003');
-    expect(asset5.assetHash).toEqual('ea5aec0adbda43ad6fa9a25e6b25a99c2744e19de76f7f24fafd5dcb4919e814');
-    expect(asset6.assetHash).toEqual('36110bd07cff1789ca3a29d2906c72825526b2db6eb1a15201a9d462b3540c70');
-    expect(asset7.assetHash).toEqual('2514ad564b15614d3821b497d753d036ca43d01eb5236ae6555d86b6378c3e74');
+    expect(asset1.assetHash).toEqual('365b5d951fc5f725f78093a07e3e1cc7819b4cbe582ca71a4c344752c23bf409');
+    expect(asset2.assetHash).toEqual('9560a36f786f317c5e1abb986b58269b2453ed1cab16c36fd9b76646c837078c');
+    expect(asset3.assetHash).toEqual('4f4e16f5b0cfab21be4298a04b20f62f63cd91a649ef4620d6d3c948d29f3cb4');
+    expect(asset4.assetHash).toEqual('72b961f96e358b8dad935719cfc2704c3d14a46434871825ac81e3b94caa4853');
+    expect(asset5.assetHash).toEqual('c23d34b3a1dac5a80c42e8fa6c88a0ac697eb709a6f36ebdb6e36ee8c75edc75');
+    expect(asset6.assetHash).toEqual('7e950a9b08c58d371c1658e04d377c0ec59d89a47fc245a86a50525b36a8949b');
+    expect(asset7.assetHash).toEqual('313dd1f45a939b77fa8a4eb7780190aa7a20a40c95f503eca9e099186643d717');
 
   });
 });
