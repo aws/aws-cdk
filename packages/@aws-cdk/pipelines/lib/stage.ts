@@ -55,25 +55,11 @@ export interface CdkStageProps {
    * changes within a application.
    *
    * Note: The Stage Notification Topic can be overriden per application as follows:
-   *   `stage.addApplication(app, { securityNotifyEmails: [] })`
+   *   `stage.addApplication(app, { securityNotificationTopic: newTopic })`
    *
    * @default undefined no stage level notification topic
    */
   readonly securityNotificationTopic?: sns.ITopic;
-
-  /**
-   * A list of email addresses to subscribe to notifications when any security check
-   * action registers changes.
-   *
-   * If this has been provided, but not `securityNotificationTopic`,
-   * a new Topic will be created.
-   *
-   * Note: The Stage Notification Topic can be overriden per application as follows:
-   *   `stage.addApplication(app, { securityNotifyEmails: [] })`
-   *
-   * @default undefined no stage level email list
-   */
-  readonly securityNotifyEmails?: string[];
 }
 
 
@@ -94,7 +80,6 @@ export class CdkStage extends CoreConstruct {
   private readonly securityCheck: boolean;
   private readonly pipeline?: CdkPipeline;
   private readonly securityNotificationTopic?: sns.ITopic;
-  private readonly securityNotifyEmails?: string[];
   private _applicationSecurityCheck?: ApplicationSecurityCheck;
   private _prepared = false;
 
@@ -111,7 +96,6 @@ export class CdkStage extends CoreConstruct {
     this.host = props.host;
     this.securityCheck = props.securityCheck ?? false;
     this.securityNotificationTopic = props.securityNotificationTopic;
-    this.securityNotifyEmails = props.securityNotifyEmails;
 
     Aspects.of(this).add({ visit: () => this.prepareStage() });
   }
@@ -310,6 +294,8 @@ export class CdkStage extends CoreConstruct {
    */
   private addSecurityCheck(appStageName: string, options?: BaseStageOptions) {
     const { cdkDiffProject } = this.getApplicationSecurityCheck();
+    const notificationTopic: sns.ITopic | undefined = options?.securityNotificationTopic ?? this.securityNotificationTopic;
+    notificationTopic?.grantPublish(cdkDiffProject);
 
     const approveActionName = `${appStageName}ManualApproval`;
     const diffAction = new CodeBuildAction({
@@ -331,6 +317,13 @@ export class CdkStage extends CoreConstruct {
           value: approveActionName,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
+        NOTIFICATION_ARN: {
+          value: notificationTopic?.topicArn ?? false,
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+        },
+        NOTIFICATION_SUBJECT: {
+          value: `Security Changes detected in ${appStageName}`,
+        },
       },
     });
 
@@ -340,10 +333,7 @@ export class CdkStage extends CoreConstruct {
       additionalInformation: `#{${appStageName}SecurityCheck.MESSAGE}`,
       // Boot strap cicd2 us-west-1 --trust
       externalEntityLink: `https://#{${appStageName}SecurityCheck.LINK}`,
-      notificationTopic: (options?.securityNotifyEmails !== []
-        ? options?.securityNotificationTopic ?? this.securityNotificationTopic
-        : undefined),
-      notifyEmails: options?.securityNotifyEmails ?? this.securityNotifyEmails,
+      notificationTopic: notificationTopic,
     });
 
     this.addActions(diffAction, approve);
@@ -521,16 +511,6 @@ export interface BaseStageOptions {
    * @default undefined no notification topic for security check manual approval action
    */
   readonly securityNotificationTopic?: sns.ITopic;
-  /**
-   * A list of email addresses to subscribe to notifications when the security diff
-   * registers changes.
-   *
-   * If this has been provided, but not `securityNotificationTopic`,
-   * a new Topic will be created.
-   *
-   * @default undefined no email list for security check manual approval action
-   */
-  readonly securityNotifyEmails?: string[];
 }
 
 /**

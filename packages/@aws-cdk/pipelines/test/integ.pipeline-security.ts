@@ -8,30 +8,22 @@ import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 
 class MyStage extends Stage {
-
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
-
     const stack = new Stack(this, 'MyStack', {
       env: props?.env,
     });
-
     const topic = new sns.Topic(stack, 'Topic');
-
     topic.grantPublish(new iam.AccountPrincipal(this.account));
   }
 }
 
-
 class MySafeStage extends Stage {
-
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
-
     const stack = new Stack(this, 'MySafeStack', {
       env: props?.env,
     });
-
     new sns.Topic(stack, 'MySafeTopic');
   }
 }

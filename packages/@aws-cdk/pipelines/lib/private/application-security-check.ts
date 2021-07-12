@@ -62,6 +62,12 @@ export class ApplicationSecurityCheck extends Construct {
       ' --payload "$payload"' +
       ' lambda.out';
 
+    const publishNotification =
+      'aws sns publish' +
+      ' --topic-arn $NOTIFICATION_ARN' +
+      ' --subject "$NOTIFICATION_SUBJECT"' +
+      ' --message "Changes detected! Requires Manual Approval."';
+
     this.cdkDiffProject = new codebuild.Project(this, 'CDKSecurityCheck', {
       buildSpec: codebuild.BuildSpec.fromObject({
         version: 0.2,
@@ -84,7 +90,7 @@ export class ApplicationSecurityCheck extends Construct {
               // Run invoke only if cdk diff passes (returns exit code 0)
               // 0 -> true, 1 -> false
               `if cdk diff -a "${assemblyPath}" --security-only --fail; then ${invokeLambda}; export MESSAGE='No changes detected.'; ` +
-              'else export MESSAGE="Changes detected! Requires Manual Approval"; ' +
+              `else export MESSAGE="Changes detected! Requires Manual Approval"; [[ ! "$NOTIFICATION_ARN" ]] || ${publishNotification}; ` +
               'fi',
             ],
           },
