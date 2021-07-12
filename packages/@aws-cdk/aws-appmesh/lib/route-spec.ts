@@ -562,8 +562,7 @@ class GrpcRouteSpec extends RouteSpec {
     if (methodName && !serviceName) {
       throw new Error('If you specify a method name, you must also specify a service name');
     }
-
-
+    
     return {
       priority: this.priority,
       grpcRouteSpec: {
