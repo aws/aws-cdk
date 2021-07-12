@@ -51,10 +51,10 @@ describe('destination', () => {
             loggingConfig: {
               enabled: true,
               logGroupName: {
-                Ref: 'LogGroupD9735569',
+                Ref: 'LogGroupF5B46931',
               },
               logStreamName: {
-                Ref: 'LogGroupstreamIdA1293DC2',
+                Ref: 'LogGroupstreamId3B940622',
               },
             },
           },
@@ -140,18 +140,18 @@ describe('destination', () => {
           testDestinationConfig: {
             loggingConfig: {
               logGroupName: {
-                Ref: 'LogGroupD9735569',
+                Ref: 'LogGroupF5B46931',
               },
               logStreamName: {
-                Ref: 'LogGroupstreamIdA1293DC2',
+                Ref: 'LogGroupstreamId3B940622',
               },
             },
             anotherLoggingConfig: {
               logGroupName: {
-                Ref: 'LogGroupD9735569',
+                Ref: 'LogGroupF5B46931',
               },
               logStreamName: {
-                Ref: 'LogGroupanotherStreamIdE609928E',
+                Ref: 'LogGroupanotherStreamIdF2754481',
               },
             },
           },

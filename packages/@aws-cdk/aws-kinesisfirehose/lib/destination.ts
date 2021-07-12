@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import { ILogGroup } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -233,8 +234,10 @@ export interface DestinationProps extends DestinationLoggingProps {
  * Abstract base class that destination types can extend to benefit from methods that create generic configuration.
  */
 export abstract class DestinationBase implements IDestination {
-  private logGroup?: logs.ILogGroup;
-  private backupLogGroup?: logs.ILogGroup;
+  private logGroups: { [key: string]: ILogGroup | undefined } = {
+    LogGroup: undefined,
+    BackupLogGroup: undefined,
+  };
 
   constructor(protected readonly props: DestinationProps = {}) { }
 
@@ -245,19 +248,14 @@ export abstract class DestinationBase implements IDestination {
     deliveryStream: IDeliveryStream,
     streamId: string,
   ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    if (this.props.logging === false && this.props.logGroup) {
-      throw new Error('Destination logging cannot be set to false when logGroup is provided');
-    }
-    if (this.props.logging !== false || this.props.logGroup) {
-      this.logGroup = this.logGroup ?? this.props.logGroup ?? new logs.LogGroup(scope, 'Log Group');
-      this.logGroup.grantWrite(deliveryStream);
-      return {
-        enabled: true,
-        logGroupName: this.logGroup.logGroupName,
-        logStreamName: this.logGroup.addStream(streamId).logStreamName,
-      };
-    }
-    return undefined;
+    return this._createLoggingOptions(
+      scope,
+      deliveryStream,
+      streamId,
+      false,
+      this.props.logging,
+      this.props.logGroup,
+    );
   }
 
   protected createProcessingConfig(deliveryStream: IDeliveryStream): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
@@ -345,23 +343,42 @@ export abstract class DestinationBase implements IDestination {
       : { noEncryptionConfig: 'NoEncryption' };
   }
 
+  private _createLoggingOptions(
+    scope: Construct,
+    deliveryStream: IDeliveryStream,
+    streamId: string,
+    isBackupLogging: boolean,
+    logging?: boolean,
+    propsLogGroup?: logs.ILogGroup,
+  ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
+    if (logging === false && propsLogGroup) {
+      throw new Error('Destination logging cannot be set to false when logGroup is provided.');
+    }
+    const logGroupKey = isBackupLogging ? 'BackupLogGroup' : 'LogGroup';
+    if (logging !== false || propsLogGroup) {
+      this.logGroups[logGroupKey] = this.logGroups[logGroupKey] ?? propsLogGroup ?? new logs.LogGroup(scope, logGroupKey);
+      this.logGroups[logGroupKey]?.grantWrite(deliveryStream);
+      return {
+        enabled: true,
+        logGroupName: this.logGroups[logGroupKey]?.logGroupName,
+        logStreamName: this.logGroups[logGroupKey]?.addStream(streamId).logStreamName,
+      };
+    }
+    return undefined;
+  }
+
   private createBackupLoggingOptions(
     scope: Construct,
     deliveryStream: IDeliveryStream,
     streamId: string,
   ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    if (this.props.backupConfiguration?.logging === false && this.props.backupConfiguration?.logGroup) {
-      throw new Error('Backup destination logging cannot be set to false when logGroup is provided');
-    }
-    if (this.props.logging !== false || this.props.logGroup) {
-      this.backupLogGroup = this.backupLogGroup ?? this.props.backupConfiguration?.logGroup ?? new logs.LogGroup(scope, 'BackupLogGroup');
-      this.backupLogGroup.grantWrite(deliveryStream);
-      return {
-        enabled: true,
-        logGroupName: this.backupLogGroup.logGroupName,
-        logStreamName: this.backupLogGroup.addStream(streamId).logStreamName,
-      };
-    }
-    return undefined;
+    return this._createLoggingOptions(
+      scope,
+      deliveryStream,
+      streamId,
+      true,
+      this.props.backupConfiguration?.logging,
+      this.props.backupConfiguration?.logGroup,
+    );
   }
 }

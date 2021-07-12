@@ -34,10 +34,10 @@ describe('S3 destination', () => {
         cloudWatchLoggingOptions: {
           enabled: true,
           logGroupName: {
-            Ref: 'LogGroupD9735569',
+            Ref: 'LogGroupF5B46931',
           },
           logStreamName: {
-            Ref: 'LogGroupS3Destination023CDA9D',
+            Ref: 'LogGroupS3Destination70CE1003',
           },
         },
         encryptionConfiguration: {
@@ -89,10 +89,10 @@ describe('S3 destination', () => {
         cloudWatchLoggingOptions: {
           enabled: true,
           logGroupName: {
-            Ref: 'LogGroupD9735569',
+            Ref: 'LogGroupF5B46931',
           },
           logStreamName: {
-            Ref: 'LogGroupS3Destination023CDA9D',
+            Ref: 'LogGroupS3Destination70CE1003',
           },
         },
         compressionFormat: 'ZIP',
