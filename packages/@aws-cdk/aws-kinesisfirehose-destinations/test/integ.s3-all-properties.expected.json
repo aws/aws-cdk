@@ -419,7 +419,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "DeliveryStreamServiceRole0BC8A494": {
+    "DeliveryStreamServiceRole964EEBCC": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -436,7 +436,7 @@
         }
       }
     },
-    "DeliveryStreamServiceRoleDefaultPolicyFDA81BCE": {
+    "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -563,10 +563,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "DeliveryStreamServiceRoleDefaultPolicyFDA81BCE",
+        "PolicyName": "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF",
         "Roles": [
           {
-            "Ref": "DeliveryStreamServiceRole0BC8A494"
+            "Ref": "DeliveryStreamServiceRole964EEBCC"
           }
         ]
       }
@@ -617,7 +617,7 @@
                     "ParameterName": "RoleArn",
                     "ParameterValue": {
                       "Fn::GetAtt": [
-                        "DeliveryStreamServiceRole0BC8A494",
+                        "DeliveryStreamServiceRole964EEBCC",
                         "Arn"
                       ]
                     }
@@ -650,7 +650,7 @@
           },
           "RoleARN": {
             "Fn::GetAtt": [
-              "DeliveryStreamServiceRole0BC8A494",
+              "DeliveryStreamServiceRole964EEBCC",
               "Arn"
             ]
           },
@@ -680,7 +680,7 @@
             "Prefix": "backupPrefix",
             "RoleARN": {
               "Fn::GetAtt": [
-                "DeliveryStreamServiceRole0BC8A494",
+                "DeliveryStreamServiceRole964EEBCC",
                 "Arn"
               ]
             }
@@ -689,8 +689,8 @@
         }
       },
       "DependsOn": [
-        "DeliveryStreamServiceRoleDefaultPolicyFDA81BCE",
-        "DeliveryStreamServiceRole0BC8A494"
+        "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF",
+        "DeliveryStreamServiceRole964EEBCC"
       ]
     }
   },

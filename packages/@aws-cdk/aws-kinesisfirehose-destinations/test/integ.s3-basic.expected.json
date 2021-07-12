@@ -165,7 +165,7 @@
         "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
       ]
     },
-    "DeliveryStreamServiceRole0BC8A494": {
+    "DeliveryStreamServiceRole964EEBCC": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -182,7 +182,7 @@
         }
       }
     },
-    "DeliveryStreamServiceRoleDefaultPolicyFDA81BCE": {
+    "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -228,7 +228,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "DeliveryStreamLogGroup9D8FA3BB",
+                  "DeliveryStreamLogGroupD821FBBE",
                   "Arn"
                 ]
               }
@@ -236,15 +236,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "DeliveryStreamServiceRoleDefaultPolicyFDA81BCE",
+        "PolicyName": "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF",
         "Roles": [
           {
-            "Ref": "DeliveryStreamServiceRole0BC8A494"
+            "Ref": "DeliveryStreamServiceRole964EEBCC"
           }
         ]
       }
     },
-    "DeliveryStreamLogGroup9D8FA3BB": {
+    "DeliveryStreamLogGroupD821FBBE": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
         "RetentionInDays": 731
@@ -252,11 +252,11 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "DeliveryStreamLogGroupS3DestinationE25573DB": {
+    "DeliveryStreamLogGroupS3Destination02068E68": {
       "Type": "AWS::Logs::LogStream",
       "Properties": {
         "LogGroupName": {
-          "Ref": "DeliveryStreamLogGroup9D8FA3BB"
+          "Ref": "DeliveryStreamLogGroupD821FBBE"
         }
       },
       "UpdateReplacePolicy": "Retain",
@@ -276,10 +276,10 @@
           "CloudWatchLoggingOptions": {
             "Enabled": true,
             "LogGroupName": {
-              "Ref": "DeliveryStreamLogGroup9D8FA3BB"
+              "Ref": "DeliveryStreamLogGroupD821FBBE"
             },
             "LogStreamName": {
-              "Ref": "DeliveryStreamLogGroupS3DestinationE25573DB"
+              "Ref": "DeliveryStreamLogGroupS3Destination02068E68"
             }
           },
           "EncryptionConfiguration": {
@@ -287,15 +287,15 @@
           },
           "RoleARN": {
             "Fn::GetAtt": [
-              "DeliveryStreamServiceRole0BC8A494",
+              "DeliveryStreamServiceRole964EEBCC",
               "Arn"
             ]
           }
         }
       },
       "DependsOn": [
-        "DeliveryStreamServiceRoleDefaultPolicyFDA81BCE",
-        "DeliveryStreamServiceRole0BC8A494"
+        "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF",
+        "DeliveryStreamServiceRole964EEBCC"
       ]
     }
   },
