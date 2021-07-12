@@ -5,7 +5,10 @@ import { BlueprintQueries } from '../blueprint';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildDefaults } from './codepipeline-engine';
 
-export interface CodePipelineActionOptions {
+/**
+ * Options for the `CodePipelineActionFactory.produce()` method.
+ */
+export interface ProduceActionOptions {
   /**
    * Scope in which to create constructs
    */
@@ -17,7 +20,7 @@ export interface CodePipelineActionOptions {
   readonly actionName: string;
 
   /**
-   * Stage to add any actions
+   * Stage to add the action to
    */
   readonly stage: cp.IStage;
 
@@ -69,11 +72,19 @@ export interface CodePipelineActionOptions {
 /**
  * Factory for explicit CodePipeline Actions
  *
- * Indirection because some aspects of the Action creation need to be controlled by the workflow engine (name and
+ * If you have specific types of Actions you want to add to a
+ * CodePipeline, write a subclass of `Step` that implements this
+ * interface, and add the action or actions you want in the `produce` method.
+ *
+ * There needs to be a level of indirection here, because some aspects of the
+ * Action creation need to be controlled by the workflow engine (name and
  * runOrder). All the rest of the properties are controlled by the factory.
  */
 export interface ICodePipelineActionFactory {
-  produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult;
+  /**
+   * Create the desired Action and add it to the pipeline
+   */
+  produce(options: ProduceActionOptions): CodePipelineActionFactoryResult;
 }
 
 /**
@@ -87,6 +98,8 @@ export interface CodePipelineActionFactoryResult {
 
   /**
    * If a CodeBuild project got created, the project
+   *
+   * @default - This factory did not create a CodeBuild project
    */
   readonly project?: cb.IProject;
 }

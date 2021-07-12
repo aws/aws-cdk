@@ -1,18 +1,48 @@
 import * as cdk from '@aws-cdk/core';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { isStackArtifact } from '../private/cloud-assembly-internals';
-import { IFileSet } from './file-set';
-import { StackAsset, StackDeployment } from './stack-deployment';
+import { StackDeployment } from './stack-deployment';
 import { Step } from './step';
 
+/**
+ * Properties for a `StageDeployment`
+ */
 export interface StageDeploymentProps {
+  /**
+   * Stage name to use in the pipeline
+   *
+   * @default - Use Stage's construct ID
+   */
   readonly stageName?: string;
+
+  /**
+   * Additional steps to run before any of the stacks in the stage
+   *
+   * @default - No additional steps
+   */
   readonly pre?: Step[];
+
+  /**
+   * Additional steps to run after all of the stacks in the stage
+   *
+   * @default - No additional steps
+   */
   readonly post?: Step[];
-  readonly customCloudAssembly?: IFileSet;
 }
 
+/**
+ * Deployment of a single `Stage`
+ *
+ * A `Stage` consists of one or more `Stacks`, which will be
+ * deployed in dependency order.
+ */
 export class StageDeployment {
+  /**
+   * Create a new `StageDeployment` from a `Stage`
+   *
+   * Synthesizes the target stage, and deployes the stacks found inside
+   * in dependency order.
+   */
   public static fromStage(stage: cdk.Stage, props: StageDeploymentProps = {}) {
     const assembly = stage.synth();
     if (assembly.stacks.length === 0) {
@@ -23,10 +53,7 @@ export class StageDeployment {
 
     const stepFromArtifact = new Map<CloudFormationStackArtifact, StackDeployment>();
     for (const artifact of assembly.stacks) {
-      const step = StackDeployment.fromArtifact(artifact, {
-        scope: stage,
-        customCloudAssembly: props.customCloudAssembly,
-      });
+      const step = StackDeployment.fromArtifact(artifact);
       stepFromArtifact.set(artifact, step);
     }
 
@@ -47,33 +74,40 @@ export class StageDeployment {
     });
   }
 
+  /**
+   * The display name of this stage
+   */
   public readonly stageName: string;
+
+  /**
+   * Additional steps that are run before any of the stacks in the stage
+   */
   public readonly pre: Step[];
+
+  /**
+   * Additional steps that are run after all of the stacks in the stage
+   */
   public readonly post: Step[];
 
-  private constructor(public readonly stacks: StackDeployment[], props: StageDeploymentProps = {}) {
+  private constructor(
+    /** The stacks deployed in this stage */
+    public readonly stacks: StackDeployment[], props: StageDeploymentProps = {}) {
     this.stageName = props.stageName ?? '';
     this.pre = props.pre ?? [];
     this.post = props.post ?? [];
   }
 
+  /**
+   * Add an additional step to run before any of the stacks in this stage
+   */
   public addPre(...steps: Step[]) {
     this.pre.push(...steps);
   }
 
+  /**
+   * Add an additional step to run after all of the stacks in this stage
+   */
   public addPost(...steps: Step[]) {
     this.post.push(...steps);
-  }
-
-  public get requiredAssets(): StackAsset[] {
-    const assets = new Map<string, StackAsset>();
-
-    for (const stack of this.stacks) {
-      for (const asset of stack.requiredAssets) {
-        assets.set(asset.assetSelector, asset);
-      }
-    }
-
-    return Array.from(assets.values());
   }
 }

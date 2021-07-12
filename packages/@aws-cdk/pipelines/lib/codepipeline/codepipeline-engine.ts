@@ -20,21 +20,68 @@ import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
+/**
+ * Creation properties for a `CodePipelineEngine`
+ */
 export interface CodePipelineEngineProps {
-  // Legacy and tweaking props
+  /**
+   * The name of the CodePipeline pipeline
+   *
+   * @default - Automatically generated
+   */
   readonly pipelineName?: string;
-  readonly crossAccountKeys?: boolean;
-  readonly cdkCliVersion?: string;
-  readonly selfMutation?: boolean;
 
   /**
-   * Set if the pipeline uses assets
+   * Create KMS keys for the artifact buckets, allowing cross-account deployments
    *
-   * Configures privileged mode for the 'synth' CodeBuild action.
+   * The artifact buckets have to be encrypted to support deploying CDK apps to
+   * another account, so if you want to do that or want to have your artifact
+   * buckets encrypted, be sure to set this value to `true`.
+   *
+   * Be aware there is a cost associated with maintaining the KMS keys.
    *
    * @default false
    */
-  readonly pipelineUsesAssets?: boolean;
+  readonly crossAccountKeys?: boolean;
+
+  /**
+   * CDK CLI version to use in self-mutation and asset publishing steps
+   *
+   * If you want to lock the CDK CLI version used in the pipeline, by steps
+   * that are automatically generated for you, specify the version here.
+   *
+   * You should not typically need to specify this value.
+   *
+   * @default - Latest version
+   */
+  readonly cdkCliVersion?: string;
+
+  /**
+   * Whether the pipeline will update itself
+   *
+   * This needs to be set to `true` to allow the pipeline to reconfigure
+   * itself when assets or stages are being added to it, and `true` is the
+   * recommended setting.
+   *
+   * You can temporarily set this to `false` while you are iterating
+   * on the pipeline itself and prefer to deploy changes using `cdk deploy`.
+   *
+   * @default true
+   */
+  readonly selfMutation?: boolean;
+
+  /**
+   * Set if the pipeline itself builds Docker container assets
+   *
+   * NOTE: this only applies to Docker assets used for the Pipeline
+   * or the Pipeline stack itself. It does not apply for Docker assets
+   * used in the Stages and Stacks that are *deployed* by this pipeline.
+   *
+   * Configures privileged mode for the self-mutation CodeBuild action.
+   *
+   * @default false
+   */
+  readonly pipelineUsesDockerAssets?: boolean;
 
   /**
    * Customize the CodeBuild projects created for this pipeline
@@ -128,10 +175,17 @@ export interface CodeBuildDefaults {
   readonly subnetSelection?: ec2.SubnetSelection;
 }
 
+/**
+ * Deployment engine that deploys CDK apps using a CodePipeline Pipeline
+ *
+ * Either pass an instance of this class as an `engine` to the generic
+ * `Pipeline` class, or instantiate a `CodePipelinePipeline` class,
+ * which comes preconfigured with a `CodePipelineEngine` engine.
+ */
 export class CodePipelineEngine implements IDeploymentEngine {
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
-  private _buildProject?: cb.IProject;
+  private _synthProject?: cb.IProject;
   private readonly selfMutation: boolean;
   private _myCxAsmRoot?: string;
   private _scope?: Construct;
@@ -187,13 +241,23 @@ export class CodePipelineEngine implements IDeploymentEngine {
     this.pipelineStagesAndActionsFromGraph(graphFromBp);
   }
 
-  public get buildProject(): cb.IProject {
-    if (!this._buildProject) {
-      throw new Error('Call pipeline.build() before reading this property');
+  /**
+   * The CodeBuild project that performs the Synth
+   *
+   * Only available after the pipeline has been built.
+   */
+  public get synthProject(): cb.IProject {
+    if (!this._synthProject) {
+      throw new Error('Call pipeline.buildPipeline() before reading this property');
     }
-    return this._buildProject;
+    return this._synthProject;
   }
 
+  /**
+   * The CodePipeline pipeline that deploys the CDK app
+   *
+   * Only available after the pipeline has been built.
+   */
   public get pipeline(): cp.Pipeline {
     if (!this._pipeline) {
       throw new Error('Pipeline not created yet');
@@ -297,7 +361,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       }
 
       if (nodeType === CodeBuildProjectType.SYNTH) {
-        this._buildProject = result.project;
+        this._synthProject = result.project;
       }
     }
 
@@ -385,7 +449,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
   private createChangeSetAction(stack: StackDeployment): ICodePipelineActionFactory {
     const changeSetName = 'PipelineChange';
 
-    const templateArtifact = this.artifacts.toCodePipeline(stack.customCloudAssembly ?? this._cloudAssemblyFileSet!);
+    const templateArtifact = this.artifacts.toCodePipeline(this._cloudAssemblyFileSet!);
     const templateConfigurationPath = this.writeTemplateConfiguration(stack);
 
     const region = stack.region !== Stack.of(this.scope).region ? stack.region : undefined;
@@ -452,7 +516,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       ],
 
       buildEnvironment: {
-        privileged: this.props.pipelineUsesAssets ? true : undefined,
+        privileged: this.props.pipelineUsesDockerAssets ? true : undefined,
       },
 
       rolePolicyStatements: [

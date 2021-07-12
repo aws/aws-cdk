@@ -1,23 +1,53 @@
 import * as cp_actions from '@aws-cdk/aws-codepipeline-actions';
 import { SecretValue, Token } from '@aws-cdk/core';
 import { FileSet, Step } from '../blueprint';
-import { CodePipelineActionFactoryResult, CodePipelineActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
-
+/**
+ * CodePipeline source steps
+ *
+ * This class contains a number of factory methods for the different types
+ * of sources that CodePipeline supports.
+ */
 export abstract class CodePipelineSource extends Step implements ICodePipelineActionFactory {
-  public static fromString(repoString: string): CodePipelineSource {
+  /**
+   * Parse a URL from common source providers and return an appropriate Source action
+   *
+   * The input string cannot be a token.
+   */
+  public static fromUrl(repoString: string): CodePipelineSource {
     if (Token.isUnresolved(repoString)) {
       throw new Error('Argument to CodePipelineSource.fromString() cannot be unresolved');
     }
 
     const githubPrefix = 'https://github.com/';
     if (repoString.startsWith(githubPrefix)) {
-      return CodePipelineSource.gitHub(repoString.substr(githubPrefix.length));
+      return CodePipelineSource.gitHub(repoString.substr(githubPrefix.length).replace(/\.git$/, ''));
     }
 
     throw new Error(`CodePipelineSource.fromString(): unrecognized string format: '${repoString}'`);
   }
 
+  /**
+   * Return a GitHub source
+   *
+   * Pass in the owner and repository in a single string, like this:
+   *
+   * ```ts
+   * CodePipelineSource.gitHub('owner/repo', {
+   *   branch: 'master',
+   * });
+   * ```
+   *
+   * The branch is `main` unless specified otherwise, and authentication
+   * will be done by a secret called `github-token` in AWS Secrets Manager
+   * (unless specified otherwise).
+   *
+   * The token should have these permissions:
+   *
+   * * **repo** - to read the repository
+   * * **admin:repo_hook** - if you plan to use webhooks (true by default)
+   */
   public static gitHub(repoString: string, props: GitHubSourceOptions = {}): CodePipelineSource {
     return new GitHubSource(repoString, props);
   }
@@ -25,9 +55,12 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   // tells `PipelineGraph` to hoist a "Source" step
   public readonly isSource = true;
 
-  public abstract produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult;
+  public abstract produce(options: ProduceActionOptions): CodePipelineActionFactoryResult;
 }
 
+/**
+ * Options for GitHub sources
+ */
 export interface GitHubSourceOptions {
   /**
    * The branch to use.
@@ -41,8 +74,10 @@ export interface GitHubSourceOptions {
    *
    * It is recommended to use a Secrets Manager `Secret` to obtain the token:
    *
-   *   const oauth = cdk.SecretValue.secretsManager('my-github-token');
-   *   new GitHubSource(this, 'GitHubSource', { oauthToken: oauth, ... });
+   * ```ts
+   * const oauth = cdk.SecretValue.secretsManager('my-github-token');
+   * new GitHubSource(this, 'GitHubSource', { oauthToken: oauth, ... });
+   * ```
    *
    * The GitHub Personal Access Token should have these scopes:
    *
@@ -80,7 +115,7 @@ class GitHubSource extends CodePipelineSource {
     this.primaryOutput = new FileSet('Source', this);
   }
 
-  public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
+  public produce(options: ProduceActionOptions): CodePipelineActionFactoryResult {
     options.stage.addAction(new cp_actions.GitHubSourceAction({
       actionName: options.actionName,
       oauthToken: this.authentication,

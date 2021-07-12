@@ -1,13 +1,38 @@
-import { FileSet, IFileSet } from './file-set';
+import { FileSet, IFileSetProducer } from './file-set';
 
-export abstract class Step implements IFileSet {
-
+/**
+ * A generic Step which can be added to a Pipeline
+ *
+ * Steps can be used to add Sources, Build Actions and Validations
+ * to your pipeline.
+ *
+ * This class is abstract. See specific subclasses of Step for
+ * useful steps to add to your Pipeline
+ */
+export abstract class Step implements IFileSetProducer {
+  /**
+   * The primary FileSet produced by this Step
+   *
+   * Not all steps produce an output FileSet--if they do
+   * you can substitute the `Step` object for the `FileSet` object.
+   */
   public abstract readonly primaryOutput?: FileSet;
 
+  /**
+   * The list of FileSets consumed by this Step
+   */
   public readonly requiredFileSets: FileSet[] = [];
+
+  /**
+   * Whether or not this is a Source step
+   *
+   * What it means to be a Source step depends on the engine.
+   */
   public readonly isSource: boolean = false;
 
-  constructor(public readonly id: string) {
+  constructor(
+    /** Identifier for this step */
+    public readonly id: string) {
   }
 
   /**
@@ -17,12 +42,18 @@ export abstract class Step implements IFileSet {
     return this.requiredFileSets.map(f => f.producer);
   }
 
+  /**
+   * Return a string representation of this Step
+   */
   public toString() {
     return `${this.constructor.name}(${this.id})`;
   }
 
   /**
    * Return an additional (named) output from this step
+   *
+   * It depends on the Step type what this returns. See `ScriptStep`
+   * for an example of how this works.
    */
   public additionalOutput(name: string): FileSet {
     // Default implementation, should be overriden by children

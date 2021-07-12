@@ -8,6 +8,9 @@ export class ArtifactMap {
   private artifacts = new Map<FileSet, cp.Artifact>();
   private usedNames = new Set<string>();
 
+  /**
+   * Return the matching CodePipeline artifact for a FileSet
+   */
   public toCodePipeline(x: FileSet): cp.Artifact {
     let ret = this.artifacts.get(x);
     if (!ret) {

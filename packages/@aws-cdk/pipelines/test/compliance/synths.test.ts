@@ -770,7 +770,7 @@ behavior('Synth CodeBuild project role can be granted permissions', (suite) => {
     pipe.buildPipeline();
 
     // WHEN
-    bucket.grantRead(engine.buildProject);
+    bucket.grantRead(engine.synthProject);
 
     THEN_codePipelineExpectation();
   });

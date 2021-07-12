@@ -64,7 +64,12 @@ export interface CodeBuildStepProps extends ScriptStepProps {
   readonly role?: iam.IRole;
 
   /**
-   * Build environment
+   * Changes to environment
+   *
+   * This environment will be combined with the pipeline's default
+   * environment.
+   *
+   * @default - Use the pipeline's default build environment
    */
   readonly buildEnvironment?: codebuild.BuildEnvironment;
 

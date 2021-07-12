@@ -1,4 +1,4 @@
-import { Step, ScriptStep, StackOutputReference, Blueprint, StackDeployment } from '../blueprint';
+import { Step, ScriptStep, StackOutputReference, Blueprint, StackDeployment, StackAsset, StageDeployment } from '../blueprint';
 
 /**
  * Answer some questions about a pipeline blueprint
@@ -47,5 +47,20 @@ export class BlueprintQueries {
     }
 
     throw new Error(`Stack '${outputReference.stackDescription}' (producing output '${outputReference.outputName}') is not in the pipeline; call 'addStage()' to add the stack's Stage to the pipeline`);
+  }
+
+  /**
+   * All assets referenced in all the Stacks of a StageDeployment
+   */
+  public assetsInStage(stage: StageDeployment): StackAsset[] {
+    const assets = new Map<string, StackAsset>();
+
+    for (const stack of stage.stacks) {
+      for (const asset of stack.requiredAssets) {
+        assets.set(asset.assetSelector, asset);
+      }
+    }
+
+    return Array.from(assets.values());
   }
 }

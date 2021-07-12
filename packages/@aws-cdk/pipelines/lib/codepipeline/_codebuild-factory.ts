@@ -12,7 +12,7 @@ import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-int
 import { mapValues, mkdict, noEmptyObject, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
-import { ICodePipelineActionFactory, CodePipelineActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
+import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
 import { CodeBuildDefaults } from './codepipeline-engine';
 
 export interface CodeBuildFactoryProps {
@@ -167,7 +167,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     return this._project;
   }
 
-  public produce(options: CodePipelineActionOptions): CodePipelineActionFactoryResult {
+  public produce(options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const projectOptions = mergeCodeBuildOptions(options.codeBuildDefaults, this.props.projectOptions);
 
     const inputs = this.props.inputs ?? [];

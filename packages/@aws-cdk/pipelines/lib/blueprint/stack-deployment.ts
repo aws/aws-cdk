@@ -1,29 +1,97 @@
 import * as path from 'path';
 import { parse as parseUrl } from 'url';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { isAssetManifest } from '../private/cloud-assembly-internals';
 import { AssetType } from './asset-type';
-import { FileSet, IFileSet } from './file-set';
 
+/**
+ * Properties for a `StackDeployment`
+ */
 export interface StackDeploymentProps {
+  /**
+   * Artifact ID for this stack
+   */
   readonly stackArtifactId: string;
+
+  /**
+   * Construct path for this stack
+   */
   readonly stackHierarchicalId: string;
+
+  /**
+   * Name for this stack
+   */
   readonly stackName: string;
+
+  /**
+   * Region where the stack should be deployed
+   *
+   * @default - Pipeline region
+   */
   readonly region?: string;
+
+  /**
+   * Account where the stack should be deployed
+   *
+   * @default - Pipeline account
+   */
   readonly account?: string;
+
+  /**
+   * Role to assume before deploying this stack
+   *
+   * @default - Don't assume any role
+   */
   readonly assumeRoleArn?: string;
+
+  /**
+   * Execution role to pass to CloudFormation
+   *
+   * @default - No execution role
+   */
   readonly executionRoleArn?: string;
+
+  /**
+   * Tags to apply to the stack
+   *
+   * @default - No tags
+   */
   readonly tags?: Record<string, string>;
-  readonly customCloudAssembly?: IFileSet;
+
+  /**
+   * Template path on disk to CloudAssembly
+   */
   readonly absoluteTemplatePath: string;
+
+  /**
+   * Assets referenced by this stack
+   *
+   * @default - No assets
+   */
   readonly assets?: StackAsset[];
+
+  /**
+   * The S3 URL which points to the template asset location in the publishing
+   * bucket.
+   *
+   * @default - Stack template is not published
+   */
   readonly templateS3Uri?: string;
 }
 
+/**
+ * Deployment of a single Stack
+ *
+ * You don't need to instantiate this class -- it will
+ * be automatically instantiated as necessary when you
+ * add a `Stage` to a pipeline.
+ */
 export class StackDeployment {
-  public static fromArtifact(stackArtifact: cxapi.CloudFormationStackArtifact, options: FromArtifactOptions): StackDeployment {
+  /**
+   * Build a `StackDeployment` from a Stack Artifact in a Cloud Assembly.
+   */
+  public static fromArtifact(stackArtifact: cxapi.CloudFormationStackArtifact): StackDeployment {
     const artRegion = stackArtifact.environment.region;
     const region = artRegion === cxapi.UNKNOWN_REGION ? undefined : artRegion;
     const artAccount = stackArtifact.environment.account;
@@ -33,7 +101,6 @@ export class StackDeployment {
       account,
       region,
       tags: stackArtifact.tags,
-      customCloudAssembly: options.customCloudAssembly,
       stackArtifactId: stackArtifact.id,
       stackHierarchicalId: stackArtifact.hierarchicalId,
       stackName: stackArtifact.stackName,
@@ -45,17 +112,67 @@ export class StackDeployment {
     });
   }
 
+  /**
+   * Artifact ID for this stack
+   */
   public readonly stackArtifactId: string;
+
+  /**
+   * Construct path for this stack
+   */
   public readonly stackHierarchicalId: string;
+
+  /**
+   * Name for this stack
+   */
   public readonly stackName: string;
+
+  /**
+   * Region where the stack should be deployed
+   *
+   * @default - Pipeline region
+   */
   public readonly region?: string;
+
+  /**
+   * Account where the stack should be deployed
+   *
+   * @default - Pipeline account
+   */
   public readonly account?: string;
+
+  /**
+   * Role to assume before deploying this stack
+   *
+   * @default - Don't assume any role
+   */
   public readonly assumeRoleArn?: string;
+
+  /**
+   * Execution role to pass to CloudFormation
+   *
+   * @default - No execution role
+   */
   public readonly executionRoleArn?: string;
+
+  /**
+   * Tags to apply to the stack
+   */
   public readonly tags: Record<string, string>;
-  public readonly customCloudAssembly?: FileSet;
+
+  /**
+   * Template path on disk to CloudAssembly
+   */
   public readonly absoluteTemplatePath: string;
+
+  /**
+   * Assets referenced by this stack
+   */
   public readonly requiredAssets: StackAsset[];
+
+  /**
+   * Other stacks this stack depends on
+   */
   public readonly dependsOnStacks: StackDeployment[] = [];
 
   /**
@@ -73,7 +190,7 @@ export class StackDeployment {
    */
   public readonly templateUrl?: string;
 
-  constructor(props: StackDeploymentProps) {
+  private constructor(props: StackDeploymentProps) {
     this.stackArtifactId = props.stackArtifactId;
     this.stackHierarchicalId = props.stackHierarchicalId;
     this.account = props.account;
@@ -82,7 +199,6 @@ export class StackDeployment {
     this.assumeRoleArn = props.assumeRoleArn;
     this.executionRoleArn = props.executionRoleArn;
     this.stackName = props.stackName;
-    this.customCloudAssembly = props.customCloudAssembly?.primaryOutput;
     this.absoluteTemplatePath = props.absoluteTemplatePath;
     this.templateUrl = props.templateS3Uri ? s3UrlFromUri(props.templateS3Uri, props.region) : undefined;
 
@@ -97,20 +213,24 @@ export class StackDeployment {
     }
   }
 
+  /**
+   * Return the template path relative to the given directory
+   */
   public relativeTemplatePath(root: string) {
     return path.relative(root, this.absoluteTemplatePath);
   }
 
+  /**
+   * Add a dependency on another stack
+   */
   public addDependency(stackDeployment: StackDeployment) {
     this.dependsOnStacks.push(stackDeployment);
   }
 }
 
-export interface FromArtifactOptions {
-  readonly scope: Construct;
-  readonly customCloudAssembly?: IFileSet;
-}
-
+/**
+ * An asset used by a Stack
+ */
 export interface StackAsset {
   /**
    * Absolute asset manifest path
@@ -137,11 +257,15 @@ export interface StackAsset {
 
   /**
    * Role ARN to assume to publish
+   *
+   * @default - No need to assume any role
    */
   readonly assetPublishingRoleArn?: string;
 
   /**
    * Does this asset represent the template.
+   *
+   * @default false
    */
   readonly isTemplate?: boolean;
 }

@@ -192,7 +192,7 @@ behavior('Pipeline stack itself can use assets (has implications for selfupdate)
     // WHEN
     new ModernTestGitHubNpmPipeline(pipelineStack, 'PrivilegedPipeline', {
       engine: new CodePipelineEngine({
-        pipelineUsesAssets: true,
+        pipelineUsesDockerAssets: true,
       }),
     });
 

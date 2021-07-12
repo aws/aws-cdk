@@ -146,8 +146,7 @@ export class PipelineGraph {
 
       stackGraphs.set(stack, stackGraph);
 
-      // Depend on Cloud Assembly
-      const cloudAssembly = stack.customCloudAssembly?.primaryOutput ?? this.cloudAssemblyFileSet;
+      const cloudAssembly = this.cloudAssemblyFileSet;
 
       firstDeployNode.dependOn(this.addAndRecurse(cloudAssembly.producer, retGraph));
 
