@@ -290,7 +290,7 @@ describe('delivery stream', () => {
 
   describe('metric methods provide a Metric with configured and attached properties', () => {
     beforeEach(() => {
-      stack = new cdk.Stack(undefined, undefined, { env: { account: '111122223333', region: 'xx-west-1' } });
+      stack = new cdk.Stack(undefined, undefined, { env: { account: '000000000000', region: 'us-west-1' } });
     });
 
     test('metric', () => {

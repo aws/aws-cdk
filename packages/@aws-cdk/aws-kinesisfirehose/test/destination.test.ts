@@ -308,7 +308,7 @@ describe('destination', () => {
             Resource: encryptionKeyArn,
           })),
         },
-        Roles: [ 'DeliveryStreamRole' ],
+        Roles: ['DeliveryStreamRole'],
       });
     });
 
