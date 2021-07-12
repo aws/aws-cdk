@@ -222,7 +222,6 @@ metric configurations for any metric provided by Kinesis Data Firehose; the conf
 are pre-populated with the correct dimensions for the delivery stream.
 
 ```ts fixture=with-delivery-stream
-// TODO: confirm this is a valid alarm
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 // Alarm that triggers when the per-second average of incoming bytes exceeds 90% of the current service limit
 const incomingBytesPercentOfLimit = new cloudwatch.MathExpression({
@@ -344,7 +343,9 @@ Data can be transformed before being delivered to destinations. There are two ty
 data processing for delivery streams: record transformation with AWS Lambda, and record
 format conversion using a schema stored in an AWS Glue table. If both types of data
 processing are configured, then the Lambda transformation is performed first. By default,
-no data processing occurs. This construct library currently only support data transformation with AWS Lambda. See [#15501](https://github.com/aws/aws-cdk/issues/15501) to track the status of adding support for record format conversion. 
+no data processing occurs. This construct library currently only support data
+transformation with AWS Lambda. See [#15501](https://github.com/aws/aws-cdk/issues/15501)
+to track the status of adding support for record format conversion.
 
 ### Data transformation with AWS Lambda
 

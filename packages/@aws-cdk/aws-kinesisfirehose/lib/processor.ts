@@ -85,7 +85,6 @@ export interface IDataProcessor {
 
 /**
  * Use a Lambda function to transform records.
- * TODO: inspect timeout to validate < 5 minutes?
  */
 export class LambdaFunctionProcessor implements IDataProcessor {
   private readonly processorType = 'Lambda';

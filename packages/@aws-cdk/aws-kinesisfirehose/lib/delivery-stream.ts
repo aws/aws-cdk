@@ -361,7 +361,6 @@ function setConnections(scope: Construct) {
       mapping,
     });
     cidrBlock = cdk.Fn.findInMap(cfnMapping.logicalId, region, 'FirehoseCidrBlock');
-    // TODO: this fails deployment if the region isn't configured, is that acceptable?
   }
 
   return new ec2.Connections({

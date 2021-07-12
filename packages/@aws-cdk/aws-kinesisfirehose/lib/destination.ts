@@ -171,8 +171,6 @@ export interface CommonS3Props {
    * This prefix appears immediately following the bucket name.
    * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
    *
-   * TODO: add support for building these with shortcuts and validation
-   *
    * @default "YYYY/MM/DD/HH"
    */
   readonly errorOutputPrefix?: string;
@@ -219,8 +217,6 @@ export interface DestinationProps extends DestinationLoggingProps {
   /**
    * The series of data transformations that should be performed on the data before writing to the destination.
    *
-   * TODO: add connection to Lambda VPC from fixed Firehose CIDR
-   *
    * @default [] - no data transformation will occur.
    */
   readonly processors?: IDataProcessor[];
@@ -253,11 +249,11 @@ export abstract class DestinationBase implements IDestination {
     }
     if (this.props.logging !== false || this.props.logGroup) {
       this.logGroup = this.logGroup ?? this.props.logGroup ?? new logs.LogGroup(scope, 'Log Group');
-      this.logGroup.grantWrite(deliveryStream); // TODO: too permissive? add a new grant on the stream resource?
+      this.logGroup.grantWrite(deliveryStream);
       return {
         enabled: true,
         logGroupName: this.logGroup.logGroupName,
-        logStreamName: this.logGroup.addStream(streamId).logStreamName, // TODO: probably concatenate the stream ID with the construct node ID so conflicts don't occur
+        logStreamName: this.logGroup.addStream(streamId).logStreamName,
       };
     }
     return undefined;
@@ -276,7 +272,6 @@ export abstract class DestinationBase implements IDestination {
           parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processorConfig.bufferInterval.toSeconds().toString() });
         }
         if (processorConfig.bufferSize) {
-          // TODO: validate buffer size < 6MB due to Lambda synchronous invocation request/response size limits
           parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processorConfig.bufferSize.toMebibytes().toString() });
         }
         if (processorConfig.retries) {
