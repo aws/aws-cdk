@@ -163,12 +163,13 @@ test('Bundling Docker with custom build args', () => {
   });
 
   expect(fromBuildMock).toHaveBeenCalledWith(expect.stringContaining('/tmp/python-bundling'),
-    expect.objectContaining({
+    {
       buildArgs: expect.objectContaining({
         HELLO: 'WORLD',
-      }),
-    }));
-});
+        IMAGE: Runtime.PYTHON_3_7.bundlingImage.image,
+      })
+    }
+);
 
 test('Bundling Docker with custom bundling image', () => {
   const entry = path.join(__dirname, 'lambda-handler-custom-build-docker-image');
@@ -179,6 +180,7 @@ test('Bundling Docker with custom bundling image', () => {
     buildImageOptions: {
       buildArgs: {
         HELLO: 'WORLD',
+        IMAGE: Runtime.PYTHON_3_7.bundlingImage.image,
       },
       file: path.join(__dirname, 'lambda-handler-custom-build-docker-image', 'Dockerfile.build'),
     },
@@ -188,9 +190,8 @@ test('Bundling Docker with custom bundling image', () => {
     {
       buildArgs: expect.objectContaining({
         HELLO: 'WORLD',
+        IMAGE: Runtime.PYTHON_3_7.bundlingImage.image,
       }),
-    },
-    {
       file: expect.stringContaining('Dockerfile.build'),
     },
   );
