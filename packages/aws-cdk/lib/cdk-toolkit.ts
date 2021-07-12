@@ -15,7 +15,7 @@ import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
 import { Configuration } from './settings';
-import { partition } from './util';
+import { numberFromBool, partition } from './util';
 
 export interface CdkToolkitProps {
 
@@ -94,13 +94,17 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
-      diffs = printStackDiff(template, stacks.firstStack, strict, contextLines, stream);
+      diffs = options.securityOnly
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
-        diffs += printStackDiff(currentTemplate, stack, strict, contextLines, stream);
+        diffs += options.securityOnly
+          ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
+          : printStackDiff(currentTemplate, stack, strict, contextLines, stream);
       }
     }
 
@@ -296,8 +300,8 @@ export class CdkToolkit {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean): Promise<any> {
-    const stacks = await this.selectStacksForDiff(stackNames, exclusively);
+  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean, autoValidate?: boolean): Promise<any> {
+    const stacks = await this.selectStacksForDiff(stackNames, exclusively, autoValidate);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
@@ -392,7 +396,7 @@ export class CdkToolkit {
     return stacks;
   }
 
-  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean) {
+  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean, autoValidate?: boolean) {
     const assembly = await this.assembly();
 
     const selectedForDiff = await assembly.selectStacks({ patterns: stackNames }, {
@@ -401,9 +405,11 @@ export class CdkToolkit {
     });
 
     const allStacks = await this.selectStacksForList([]);
-    const flaggedStacks = allStacks.filter(art => art.validateOnSynth ?? false);
+    const autoValidateStacks = autoValidate
+      ? allStacks.filter(art => art.validateOnSynth ?? false)
+      : new StackCollection(assembly, []);
 
-    await this.validateStacks(selectedForDiff.concat(flaggedStacks));
+    await this.validateStacks(selectedForDiff.concat(autoValidateStacks));
 
     return selectedForDiff;
   }
@@ -503,6 +509,13 @@ export interface DiffOptions {
    * @default false
    */
   fail?: boolean;
+
+  /**
+   * Only run diff on broadened security changes
+   *
+   * @default false
+   */
+  securityOnly?: boolean;
 }
 
 export interface DeployOptions {
