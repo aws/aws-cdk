@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { AcceptLanguage, TagOption } from './common';
-import { TagUpdatesOptions } from './constraints';
+import { MessageLanguage } from './common';
+import { TagUpdateConstraintOptions } from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -23,11 +23,11 @@ export interface PortfolioShareOptions {
   readonly shareTagOptions?: boolean;
 
   /**
-   * The accept language of the share.
+   * The message language of the share.
    * Controls status and error message language for share.
    * @default - accept language not specified
    */
-  readonly acceptedMessageLanguage?: AcceptLanguage;
+  readonly messageLanguage?: MessageLanguage;
 }
 
 /**
@@ -78,16 +78,9 @@ export interface IPortfolio extends cdk.IResource {
   addProduct(product: IProduct): void;
 
   /**
-   * Associate Tag Options.
-   * A TagOption is a key-value pair managed in AWS Service Catalog.
-   * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
+   * Allow or disallow tag updates, which adds a Resource Update Constraint.
    */
-  addTagOptions(tagOptions: TagOption): void;
-
-  /**
-   * Add a Resource Update Constraint.
-   */
-  addResourceUpdateConstraint(product: IProduct, options?: TagUpdatesOptions): void;
+  allowTagUpdates(product: IProduct, options?: TagUpdateConstraintOptions): void;
 }
 
 abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
@@ -117,16 +110,12 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
       portfolioId: this.portfolioId,
       accountId: accountId,
       shareTagOptions: options.shareTagOptions,
-      acceptLanguage: options.acceptedMessageLanguage,
+      acceptLanguage: options.messageLanguage,
     });
   }
 
-  public addTagOptions(tagOption: TagOption) {
-    AssociationManager.associateTagOption(this, this.portfolioId, tagOption);
-  }
-
-  public addResourceUpdateConstraint(product: IProduct, options: TagUpdatesOptions = {}) {
-    AssociationManager.addResourceUpdateConstraint(this, this, product, options);
+  public allowTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}) {
+    AssociationManager.allowTagUpdates(this, this, product, options);
   }
 
   /**
@@ -166,11 +155,11 @@ export interface PortfolioProps {
   readonly providerName: string;
 
   /**
-   * The accept language. Controls language for
-   * status logging and errors.
+   * The language code. Controls language for status logging and errors.
+   * If not specified will default to English in the console and CLI.
    * @default - No accept language provided
    */
-  readonly acceptedMessageLanguage?: AcceptLanguage;
+  readonly messageLanguage?: MessageLanguage;
 
   /**
    * Description for portfolio.
@@ -225,7 +214,7 @@ export class Portfolio extends PortfolioBase {
       displayName: props.displayName,
       providerName: props.providerName,
       description: props.description,
-      acceptLanguage: props.acceptedMessageLanguage,
+      acceptLanguage: props.messageLanguage,
     });
     this.portfolioId = this.portfolio.ref;
     this.portfolioArn = cdk.Stack.of(this).formatArn({

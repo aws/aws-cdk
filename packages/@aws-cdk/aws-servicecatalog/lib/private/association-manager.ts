@@ -1,103 +1,68 @@
 import * as cdk from '@aws-cdk/core';
-import { TagOption } from '../common';
-import { TagUpdatesOptions } from '../constraints';
+import { TagUpdateConstraintOptions } from '../constraints';
 import { IPortfolio } from '../portfolio';
 import { IProduct } from '../product';
-import { CfnPortfolioProductAssociation, CfnResourceUpdateConstraint, CfnTagOption, CfnTagOptionAssociation } from '../servicecatalog.generated';
+import { CfnPortfolioProductAssociation, CfnResourceUpdateConstraint } from '../servicecatalog.generated';
 import { hashValues } from './util';
 import { InputValidator } from './validation';
 
+/**
+ * Simplify type for constraint map to hold the L1 constraint resources.
+ */
+type AssociationOrConstraint = CfnPortfolioProductAssociation | CfnResourceUpdateConstraint;
+
 export class AssociationManager {
-  public static associateProductWithPortfolio(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct) {
-    const associationKey = hashValues(portfolio.node.addr, product.node.addr, scope.stack.node.addr);
+  public static associateProductWithPortfolio(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct): void {
+    const associationKey = this.getAssociationKey(scope, portfolio, product);
     if (!this.associationMap.has(associationKey)) {
       const association = new CfnPortfolioProductAssociation(scope, `PortfolioProductAssociation${associationKey}`, {
         portfolioId: portfolio.portfolioId,
         productId: product.productId,
       });
 
-      const associationValue = new Map<Constraints, CfnConstraintResource>();
+      const associationValue = new Map<Constraints, AssociationOrConstraint>();
       associationValue.set(Constraints.ASSOCIATION, association);
       this.associationMap.set(associationKey, associationValue);
     }
   }
 
-  public static addResourceUpdateConstraint(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct, options: TagUpdatesOptions) {
-    const associationKey = this.associationPrecheck(scope, portfolio, product);
-    InputValidator.validateLength(this.prettyPrintAssociation(scope, portfolio, product), 'description', 0, 2000, options.description);
+  public static allowTagUpdates(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct,
+    options: TagUpdateConstraintOptions): void {
+    InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options.description);
+    const associationKey = this.ensureProductIsAssociatedWithPortfolio(scope, portfolio, product);
     if (!this.associationMap.get(associationKey)!.has(Constraints.RESOURCE_UPDATE)) {
       const constraint = new CfnResourceUpdateConstraint(scope, `ResourceUpdateConstraint${associationKey}`, {
-        acceptLanguage: options.acceptedMessageLanguage,
+        acceptLanguage: options.messageLanguage,
         description: options.description,
         portfolioId: portfolio.portfolioId,
         productId: product.productId,
-        tagUpdateOnProvisionedProduct: options.allowUpdatingProvisionedProductTags === false ? Allowed.NOT_ALLOWED : Allowed.ALLOWED,
+        tagUpdateOnProvisionedProduct: options.allowUpdatingProvisionedProductTags === false ? 'NOT_ALLOWED' : 'ALLOWED',
       });
 
+      // Add dependsOn to force proper order in deployment.
       constraint.addDependsOn(this.associationMap.get(associationKey)!.get(Constraints.ASSOCIATION)!);
       this.associationMap.get(associationKey)!.set(Constraints.RESOURCE_UPDATE, constraint);
     } else {
-      throw new Error(`Cannot have multiple resource update constraints for association ${this.prettyPrintAssociation(scope, portfolio, product)}`);
+      throw new Error(`Cannot have multiple resource update constraints for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
   }
 
-  public static associateTagOption(scope: cdk.Resource, resourceId: string, tagOption: TagOption) {
-    Object.keys(tagOption).forEach(key => {
-      InputValidator.validateLength(resourceId, 'TagOption key', 1, 128, key);
-      tagOption[key].forEach(value => {
-        InputValidator.validateLength(resourceId, 'TagOption value', 1, 256, value.value);
-        const tagOptionKey = hashValues(key, value.value, scope.stack.node.addr);
-        if (!this.tagOptionMap.has(tagOptionKey)) {
-          const cfnTagOption = new CfnTagOption(scope, `TagOption${tagOptionKey}`, {
-            key: key,
-            value: value.value,
-            active: value.active ?? true,
-          });
-          this.tagOptionMap.set(tagOptionKey, cfnTagOption);
+  private static associationMap = new Map<string, Map<Constraints, AssociationOrConstraint>>();
 
-          new CfnTagOptionAssociation(scope, `TagOptionAssociation${hashValues(scope.node.addr, tagOptionKey)}`, {
-            resourceId: resourceId,
-            tagOptionId: this.tagOptionMap.get(tagOptionKey)!.ref,
-          });
-        }
-      });
-    });
+  private static getAssociationKey(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct): string {
+    return hashValues(portfolio.node.addr, product.node.addr, scope.stack.node.addr);
   }
-
-  private static associationMap = new Map<string, Map<Constraints, CfnConstraintResource>>();
-  private static tagOptionMap = new Map<string, CfnTagOption>();
-
-  private static associationPrecheck(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct): string {
-    const associationKey = hashValues(portfolio.node.addr, product.node.addr, scope.stack.node.addr);
+  private static ensureProductIsAssociatedWithPortfolio(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct): string {
+    const associationKey = this.getAssociationKey(scope, portfolio, product);
     if (!this.associationMap.has(associationKey)) {
       this.associateProductWithPortfolio(scope, portfolio, product);
     }
     return associationKey;
   }
 
-  private static prettyPrintAssociation(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct) {
-    return `- Portfolio: ${scope.stack.resolve(portfolio.node.path)} | Product: ${scope.stack.resolve(product.node.path)}`;
+  private static prettyPrintAssociation(portfolio: IPortfolio, product: IProduct): string {
+    return `- Portfolio: ${portfolio.node.path} | Product: ${product.node.path}`;
   }
-}
-
-/**
- * Simplify type for constraint map to hold the L1 constraint resources.
- */
-type CfnConstraintResource = CfnPortfolioProductAssociation | CfnResourceUpdateConstraint;
-
-/**
- * Custom allow code
- */
-enum Allowed {
-  /**
-   * Allow operation
-   */
-  ALLOWED = 'ALLOWED',
-
-  /**
-   * Not allowed operation
-   */
-  NOT_ALLOWED = 'NOT_ALLOWED'
 }
 
 /**

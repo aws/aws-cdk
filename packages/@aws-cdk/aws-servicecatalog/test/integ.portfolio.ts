@@ -15,20 +15,11 @@ const portfolio = new servicecatalog.Portfolio(stack, 'TestPortfolio', {
   displayName: 'TestPortfolio',
   providerName: 'TestProvider',
   description: 'This is our Service Catalog Portfolio',
-  acceptedMessageLanguage: servicecatalog.AcceptLanguage.EN,
+  messageLanguage: servicecatalog.MessageLanguage.EN,
 });
 
 portfolio.giveAccessToRole(role);
 portfolio.giveAccessToGroup(group);
-
-const tagOptions = {
-  key1: [
-    { value: 'value1' },
-    { value: 'value2' },
-  ],
-  key2: [{ value: 'value1' }],
-};
-portfolio.addTagOptions(tagOptions);
 
 portfolio.shareWithAccount('123456789012');
 
@@ -46,8 +37,8 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
 
 portfolio.addProduct(product);
 
-portfolio.addResourceUpdateConstraint(product, {
-  allowUpdatingProvisionedProductTags: false,
+portfolio.allowTagUpdates(product, {
+  allowUpdatingProvisionedProductTags: true,
 });
 
 app.synth();
