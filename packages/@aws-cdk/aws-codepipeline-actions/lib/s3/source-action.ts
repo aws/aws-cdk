@@ -72,7 +72,10 @@ export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
   readonly trigger?: S3Trigger;
 
   /**
-   * The Amazon S3 bucket that stores the source code
+   * The Amazon S3 bucket that stores the source code.
+   *
+   * If you import an encrypted bucket in your stack, please specify
+   * the encryption key at import time by using `Bucket.fromBucketAttributes()` method.
    */
   readonly bucket: s3.IBucket;
 }
@@ -122,7 +125,7 @@ export class S3SourceAction extends Action {
     }
 
     // we need to read from the source bucket...
-    this.props.bucket.grantRead(options.role);
+    this.props.bucket.grantRead(options.role, this.props.bucketKey);
 
     // ...and write to the Pipeline bucket
     options.bucket.grantWrite(options.role);

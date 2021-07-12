@@ -3,6 +3,7 @@ import * as colors from 'colors/safe';
 import * as minimatch from 'minimatch';
 import * as semver from 'semver';
 import { error, print, warning } from '../../logging';
+import { flatten } from '../../util';
 import { versionNumber } from '../../version';
 
 export enum DefaultSelection {
@@ -135,9 +136,7 @@ export class CloudAssembly {
       return false;
     };
 
-    const matchedStacks = patterns
-      .map(pattern => stacks.find(matchingPattern(pattern)))
-      .filter(s => s != null) as cxapi.CloudFormationStackArtifact[];
+    const matchedStacks = flatten(patterns.map(pattern => stacks.filter(matchingPattern(pattern))));
 
     return this.extendStacks(matchedStacks, stacks, extend);
   }
