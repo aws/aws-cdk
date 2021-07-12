@@ -7,12 +7,11 @@ import { CfnEventBusPolicy, CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
-import { mergeEventPattern, sameEnvDimension } from './util';
+import { mergeEventPattern, renderEventPattern, sameEnvDimension } from './util';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 
 /**
  * Properties for defining an EventBridge Rule
@@ -394,23 +393,7 @@ export class Rule extends Resource implements IRule {
    * @internal
    */
   public _renderEventPattern(): any {
-    const eventPattern = this.eventPattern;
-
-    if (Object.keys(eventPattern).length === 0) {
-      return undefined;
-    }
-
-    // rename 'detailType' to 'detail-type'
-    const out: any = {};
-    for (let key of Object.keys(eventPattern)) {
-      const value = (eventPattern as any)[key];
-      if (key === 'detailType') {
-        key = 'detail-type';
-      }
-      out[key] = value;
-    }
-
-    return out;
+    return renderEventPattern(this.eventPattern);
   }
 
   protected validate() {
