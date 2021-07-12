@@ -6,7 +6,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
-import { LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
+import { LaunchType } from '../../lib/base/base-service';
 
 nodeunitShim({
   'When creating an External Service': {
@@ -276,29 +276,6 @@ nodeunitShim({
     })).toThrow('Cloud map options are not supported for External service');
 
     // THEN
-    test.done();
-  },
-
-  'with both propagateTags and propagateTaskTagsFrom defined'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
-    test.throws(() => new ecs.ExternalService(stack, 'ExternalService', {
-      cluster,
-      taskDefinition,
-      propagateTags: PropagatedTagSource.SERVICE,
-      propagateTaskTagsFrom: PropagatedTagSource.SERVICE,
-    }));
-
     test.done();
   },
 

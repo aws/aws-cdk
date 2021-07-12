@@ -27,15 +27,6 @@ export interface ExternalServiceProps extends BaseServiceOptions {
    * @default - A new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
-
-  /**
-   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
-   * Tags can only be propagated to the tasks within the service during service creation.
-   *
-   * @deprecated Use `propagateTags` instead.
-   * @default PropagatedTagSource.NONE
-   */
-  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 
 /**
@@ -106,10 +97,6 @@ export class ExternalService extends BaseService implements IExternalService {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
     }
 
-    if (props.propagateTags && props.propagateTaskTagsFrom) {
-      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
-    }
-
     if (props.cluster.defaultCloudMapNamespace !== undefined) {
       throw new Error (`Cloud map integration is not supported for External service ${props.cluster.defaultCloudMapNamespace}`);
     }
@@ -126,7 +113,7 @@ export class ExternalService extends BaseService implements IExternalService {
       throw new Error ('Capacity Providers are not supported for External service');
     }
 
-    const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
+    const propagateTagsFromSource = props.propagateTags ?? PropagatedTagSource.NONE;
 
     super(scope, id, {
       ...props,
