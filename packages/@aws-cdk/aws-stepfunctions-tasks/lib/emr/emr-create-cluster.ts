@@ -134,7 +134,7 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
   /**
    * Specifies the step concurrency level to allow multiple steps to run in parallel. Requires Amazon EMR release label >=emr-5.28.0
    *
-   * @default - 1
+   * @default 1 - no step concurrency allowed
    */
   readonly stepConcurrencyLevel?: number;
 
