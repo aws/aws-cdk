@@ -167,9 +167,10 @@ test('Bundling Docker with custom build args', () => {
       buildArgs: expect.objectContaining({
         HELLO: 'WORLD',
         IMAGE: Runtime.PYTHON_3_7.bundlingImage.image,
-      })
-    }
-);
+      }),
+    },
+  );
+});
 
 test('Bundling Docker with custom bundling image', () => {
   const entry = path.join(__dirname, 'lambda-handler-custom-build-docker-image');
