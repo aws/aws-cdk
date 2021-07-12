@@ -1,8 +1,8 @@
 // Fixture with packages imported, but nothing else
-import { Construct, Stack } from '@aws-cdk/core';
-import { ElasticsearchDestination, RedshiftDestination } from '@aws-cdk/aws-kinesisfirehose-destinations';
+import { Construct } from '@aws-cdk/core';
+import { S3 } from '@aws-cdk/aws-kinesisfirehose-destinations';
 
-class Fixture extends Stack {
+class Fixture extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
