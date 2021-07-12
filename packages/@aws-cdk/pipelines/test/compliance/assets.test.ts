@@ -765,6 +765,56 @@ describe('pipeline with single asset publisher', () => {
       expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
     }
   });
+
+  behavior('other pipeline writes to separate assets build spec file', (suite) => {
+    suite.legacy(() => {
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        singlePublisherPerType: true,
+      });
+      pipeline.addApplicationStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+
+      const pipelineStack2 = new Stack(app, 'PipelineStack2', { env: PIPELINE_ENV });
+      const otherPipeline = new LegacyTestGitHubNpmPipeline(pipelineStack2, 'Cdk', {
+        singlePublisherPerType: true,
+      });
+      otherPipeline.addApplicationStage(new TwoFileAssetsApp(app, 'OtherFileAssetApp'));
+
+      THEN_codePipelineExpectation(pipelineStack2);
+    });
+
+    suite.modern(() => {
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        engine: new cdkp.CodePipelineEngine({ singlePublisherPerAssetType: true }),
+      });
+      pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+
+      const pipelineStack2 = new Stack(app, 'PipelineStack2', { env: PIPELINE_ENV });
+      const otherPipeline = new ModernTestGitHubNpmPipeline(pipelineStack2, 'Cdk', {
+        engine: new cdkp.CodePipelineEngine({ singlePublisherPerAssetType: true }),
+      });
+      otherPipeline.addStage(new TwoFileAssetsApp(app, 'OtherFileAssetApp'));
+
+      THEN_codePipelineExpectation(pipelineStack2);
+    });
+
+    function THEN_codePipelineExpectation(pipelineStack2: Stack) {
+      // THEN
+      const buildSpecName1 = Capture.aString();
+      const buildSpecName2 = Capture.aString();
+      expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+        Source: {
+          BuildSpec: buildSpecName1.capture(stringLike('buildspec-*.yaml')),
+        },
+      });
+      expect(pipelineStack2).toHaveResourceLike('AWS::CodeBuild::Project', {
+        Source: {
+          BuildSpec: buildSpecName2.capture(stringLike('buildspec-*.yaml')),
+        },
+      });
+
+      expect(buildSpecName1.capturedValue).not.toEqual(buildSpecName2.capturedValue);
+    }
+  });
 });
 
 function expectedAssetRolePolicy(assumeRolePattern: string | string[], attachedRole: string) {
