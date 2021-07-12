@@ -1,6 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
-import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as iam from '@aws-cdk/aws-iam';
+import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -51,7 +51,7 @@ describe('S3 destination', () => {
     const processor = lambda.Function.fromFunctionAttributes(stack, 'Processor', {
       functionArn: 'arn:aws:lambda:us-west-2:111122223333:function/Processor',
       sameEnvironment: true,
-    })
+    });
     const destination = new firehosedestinations.S3(bucket, {
       logging: true,
       processors: [
@@ -153,7 +153,7 @@ describe('S3 destination', () => {
     destination.bind(stack, { deliveryStream });
 
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      Roles: [ 'DeliveryStreamRole' ],
+      Roles: ['DeliveryStreamRole'],
       PolicyDocument: {
         Statement: [
           {
@@ -163,15 +163,15 @@ describe('S3 destination', () => {
               's3:List*',
               's3:DeleteObject*',
               's3:PutObject*',
-              's3:Abort*'
+              's3:Abort*',
             ],
             Effect: 'Allow',
             Resource: [
               {
                 'Fn::GetAtt': [
                   'destinationDB878FB5',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
               {
                 'Fn::Join': [
@@ -180,17 +180,17 @@ describe('S3 destination', () => {
                     {
                       'Fn::GetAtt': [
                         'destinationDB878FB5',
-                        'Arn'
-                      ]
+                        'Arn',
+                      ],
                     },
-                    '/*'
-                  ]
-                ]
-              }
-            ]
+                    '/*',
+                  ],
+                ],
+              },
+            ],
           },
         ],
-      }
+      },
     });
   });
 });
