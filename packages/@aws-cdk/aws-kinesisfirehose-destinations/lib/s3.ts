@@ -38,7 +38,7 @@ export class S3 extends firehose.DestinationBase {
       s3BackupMode: this.getS3BackupMode(),
       bufferingHints: this.createBufferingHints(this.s3Props.bufferingInterval, this.s3Props.bufferingSize),
       bucketArn: this.bucket.bucketArn,
-      compressionFormat: this.s3Props.compression?.toString(),
+      compressionFormat: this.s3Props.compression?.value,
       encryptionConfiguration: this.createEncryptionConfig(deliveryStream, this.s3Props.encryptionKey),
       errorOutputPrefix: this.s3Props.errorOutputPrefix,
       prefix: this.s3Props.prefix,
@@ -56,7 +56,7 @@ export class S3 extends firehose.DestinationBase {
       case firehose.BackupMode.DISABLED:
         return 'Disabled';
       case firehose.BackupMode.FAILED:
-        throw new Error('Invalid backup mode. Kinesis Data Firehose does not support backup of only failed records for S3 destinations.');
+        throw new Error('S3 destinations do not support BackupMode.FAILED');
       default:
         return undefined;
     }

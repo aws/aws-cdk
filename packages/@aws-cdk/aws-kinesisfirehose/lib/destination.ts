@@ -89,20 +89,7 @@ export class Compression {
    */
   public static readonly ZIP = new Compression('ZIP');
 
-  private readonly format: string;
-
-  constructor(format: string) {
-    this.format = format;
-  }
-
-  /**
-   * Convert a Compression object to its string representation.
-   *
-   * @returns a string representation of the compression format.
-   */
-  public toString(): string {
-    return this.format;
-  }
+  constructor(public readonly value: string) { }
 }
 
 /**
@@ -134,6 +121,7 @@ export interface CommonS3Props {
    * The length of time that Firehose buffers incoming data before delivering
    * it to the S3 bucket.
    *
+   * If bufferingInterval is specified, bufferingSize must also be specified.
    * Minimum: Duration.seconds(60)
    * Maximum: Duration.seconds(900)
    *
@@ -145,6 +133,7 @@ export interface CommonS3Props {
    * The size of the buffer that Kinesis Data Firehose uses for incoming data before
    * delivering it to the S3 bucket.
    *
+   * If bufferingSize is specified, bufferingInterval must also be specified.
    * Minimum: Size.mebibytes(1)
    * Maximum: Size.mebibytes(128)
    *
@@ -165,8 +154,9 @@ export interface CommonS3Props {
   readonly compression?: Compression;
 
   /**
-   *  The AWS KMS key used to encrypt the data that it delivers
-   *  to your Amazon S3 bucket.
+   * The AWS KMS key used to encrypt the data that it delivers to your Amazon S3 bucket.
+   *
+   * TODO: why do we have this instead of encrypting the bucket. I say we just don't support this
    *
    * @default - Data is not encrypted.
    */
@@ -174,25 +164,31 @@ export interface CommonS3Props {
 
   /**
    * A prefix that Kinesis Data Firehose evaluates and adds to failed records before writing them to S3.
-   * This prefix appears immediately following the bucket name. For information about how to specify this prefix,
-   * see [Custom Prefixes for Amazon S3 Objects](https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html).
    *
-   * @default - "YYYY/MM/DD/HH"
+   * This prefix appears immediately following the bucket name.
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
+   *
+   * TODO: add support for building these with shortcuts and validation
+   *
+   * @default "YYYY/MM/DD/HH"
    */
   readonly errorOutputPrefix?: string;
 
   /**
-    * The "YYYY/MM/DD/HH" time format prefix is automatically used for delivered Amazon S3 files. You can also specify
-    * a custom prefix, as described in [Custom Prefixes for Amazon S3 Objects](https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html).
-    *
-    * @default - YYYY/MM/DD/HH"
-    */
+   * A prefix that Kinesis Data Firehose evaluates and adds to records before writing them to S3.
+   *
+   * This prefix appears immediately following the bucket name.
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
+   *
+   * @default "YYYY/MM/DD/HH"
+   */
   readonly prefix?: string;
 }
 
 /**
- * Properties for defining an S3 backup destination. S3 backup is available for all destinations, regardless of if
- * the final destination is in S3 or not.
+ * Properties for defining an S3 backup destination.
+ *
+ * S3 backup is available for all destinations, regardless of whether the final destination is S3 or not.
  */
 export interface S3BackupDestinationProps extends DestinationLoggingProps, CommonS3Props {
   /**
@@ -249,9 +245,12 @@ export abstract class DestinationBase implements IDestination {
     deliveryStream: IDeliveryStream,
     streamId: string,
   ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
+    if (this.props.logging === false && this.props.logGroup) {
+      throw new Error('Destination logging cannot be set to false when logGroup is provided');
+    }
     if (this.props.logging !== false || this.props.logGroup) {
-      this.logGroup = this.logGroup ?? this.props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
-      this.logGroup.grantWrite(deliveryStream);
+      this.logGroup = this.logGroup ?? this.props.logGroup ?? new logs.LogGroup(scope, 'Log Group');
+      this.logGroup.grantWrite(deliveryStream); // TODO: too permissive? add a new grant on the stream resource?
       return {
         enabled: true,
         logGroupName: this.logGroup.logGroupName,
@@ -312,7 +311,7 @@ export abstract class DestinationBase implements IDestination {
         prefix: this.props.backupConfiguration.prefix,
         errorOutputPrefix: this.props.backupConfiguration.errorOutputPrefix,
         bufferingHints: this.createBufferingHints(this.props.backupConfiguration.bufferingInterval, this.props.backupConfiguration.bufferingSize),
-        compressionFormat: this.props.backupConfiguration.compression?.toString(),
+        compressionFormat: this.props.backupConfiguration.compression?.value,
         encryptionConfiguration: this.createEncryptionConfig(deliveryStream, this.props.backupConfiguration.encryptionKey),
       };
     }
@@ -320,25 +319,23 @@ export abstract class DestinationBase implements IDestination {
   }
 
   protected createBufferingHints(bufferingInterval?: Duration, bufferingSize?: Size): CfnDeliveryStream.BufferingHintsProperty | undefined {
-    if (!bufferingInterval && !bufferingSize) {
-      return undefined;
+    if (bufferingInterval && bufferingSize) {
+      if (bufferingInterval.toSeconds() < 60 || bufferingInterval.toSeconds() > 900) {
+        throw new Error('Buffering interval must be between 60 and 900 seconds');
+      }
+      if (bufferingSize.toMebibytes() < 1 || bufferingSize.toMebibytes() > 128) {
+        throw new Error('Buffering size must be between 1 and 128 MBs');
+      }
+      return {
+        intervalInSeconds: bufferingInterval.toSeconds(),
+        sizeInMBs: bufferingSize.toMebibytes(),
+      };
+    } else if (!bufferingInterval && bufferingSize) {
+      throw new Error('If bufferingSize is specified, bufferingInterval must also be specified');
+    } else if (bufferingInterval && !bufferingSize) {
+      throw new Error('If bufferingInterval is specified, bufferingSize must also be specified');
     }
-    if (!bufferingInterval && bufferingSize) {
-      throw new Error('When specifying a bufferingSize, you must also specify a bufferingInterval');
-    }
-    if (bufferingInterval && !bufferingSize) {
-      throw new Error('When specifying a bufferingInterval, you must also specify a bufferingSize');
-    }
-    if (bufferingInterval && (bufferingInterval.toSeconds() < 60 || bufferingInterval.toSeconds() > 900)) {
-      throw new Error('Buffering interval must be between 60 and 900 seconds');
-    }
-    if (bufferingSize && (bufferingSize.toMebibytes() < 1 || bufferingSize.toMebibytes() > 128)) {
-      throw new Error('Buffering size must be between 1 and 128 MBs');
-    }
-    return {
-      intervalInSeconds: bufferingInterval?.toSeconds(),
-      sizeInMBs: bufferingSize?.toMebibytes(),
-    };
+    return undefined;
   }
 
   protected createEncryptionConfig(deliveryStream: IDeliveryStream, encryptionKey?: kms.IKey): CfnDeliveryStream.EncryptionConfigurationProperty {

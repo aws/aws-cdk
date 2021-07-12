@@ -22,7 +22,7 @@
         }
       }
     },
-    "DeliveryStreamServiceRole0BC8A494": {
+    "DeliveryStreamServiceRole964EEBCC": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -59,7 +59,7 @@
         }
       },
       "DependsOn": [
-        "DeliveryStreamServiceRole0BC8A494"
+        "DeliveryStreamServiceRole964EEBCC"
       ]
     }
   },

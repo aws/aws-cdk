@@ -96,9 +96,6 @@ export abstract class DeliveryStreamBase extends cdk.Resource implements IDelive
 
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
-  /**
-   * Network connections between Kinesis Firehose and other resources, i.e. Redshift cluster.
-   */
   public readonly connections: ec2.Connections;
 
   public readonly tags = new cdk.TagManager(cdk.TagType.STANDARD, 'AWS::KinesisFirehose::DeliveryStream');
@@ -188,7 +185,7 @@ export interface DeliveryStreamProps {
    * The destinations that this delivery stream will deliver data to.
    *
    * Only a singleton array is supported at this time.
-  */
+   */
   readonly destinations: IDestination[];
 
   /**
@@ -308,7 +305,7 @@ export class DeliveryStream extends DeliveryStreamBase {
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {
     super(scope, id);
 
-    const role = props.role ?? new iam.Role(this, 'ServiceRole', {
+    const role = props.role ?? new iam.Role(this, 'Service Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
     this.grantPrincipal = role;
