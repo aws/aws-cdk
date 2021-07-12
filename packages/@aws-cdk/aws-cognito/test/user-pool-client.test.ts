@@ -555,13 +555,30 @@ describe('User Pool Client', () => {
     });
   });
 
-  test('enableTokenRevocation', () => {
+  test('enableTokenRevocation in addClient', () => {
     // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
     // WHEN
     pool.addClient('Client', {
+      enableTokenRevocation: true,
+    });
+
+    // THEN
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: true,
+    });
+  });
+
+  test('enableTokenRevocation in UserPoolClient', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client1', {
+      userPool: pool,
       enableTokenRevocation: true,
     });
 
