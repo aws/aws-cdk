@@ -261,16 +261,12 @@ describe('Portfolio', () => {
 });
 
 describe('portfolio associations and product constraints', () => {
-  let app: cdk.App;
   let stack: cdk.Stack;
   let portfolio: servicecatalog.Portfolio;
   let product: servicecatalog.CloudFormationProduct;
-  let testStackNameCounter = 0; //We need to maintain unique stack names since we use node addresses for ids
 
   beforeEach(() => {
-    //AssociationManager.associationMap.clear();
-    stack = new cdk.Stack(app, `TestStack${testStackNameCounter}`);
-    testStackNameCounter += 1;
+    stack = new cdk.Stack();
 
     portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
       displayName: 'testPortfolio',
@@ -303,7 +299,7 @@ describe('portfolio associations and product constraints', () => {
 
   test('add tag update constraint', () => {
     portfolio.addProduct(product);
-    portfolio.allowTagUpdates(product, {
+    portfolio.constrainTagUpdates(product, {
       allowUpdatingProvisionedProductTags: true,
     });
 
@@ -313,7 +309,7 @@ describe('portfolio associations and product constraints', () => {
   });
 
   test('tag update constraint still adds without explicit association', () => {
-    portfolio.allowTagUpdates(product, {
+    portfolio.constrainTagUpdates(product, {
       messageLanguage: servicecatalog.MessageLanguage.EN,
       description: 'test constraint description',
       allowUpdatingProvisionedProductTags: false,
@@ -327,12 +323,12 @@ describe('portfolio associations and product constraints', () => {
   }),
 
   test('fails to add multiple tag update constraints', () => {
-    portfolio.allowTagUpdates(product, {
+    portfolio.constrainTagUpdates(product, {
       description: 'test constraint description',
     });
 
     expect(() => {
-      portfolio.allowTagUpdates(product, {
+      portfolio.constrainTagUpdates(product, {
         allowUpdatingProvisionedProductTags: false,
         description: 'another test constraint description',
       });

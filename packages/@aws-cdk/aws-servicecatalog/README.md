@@ -178,16 +178,14 @@ If tag updating is allowed, then new tags associated with the product or portfol
 ```ts fixture=portfolio-product
 portfolio.addProduct(product);
 
-portfolio.allowTagUpdates(product);
+portfolio.constrainTagUpdates(product);
 ```
 
-If you want to disable this feature later one, you can update it by setting the flag to false:
+If you want to disable this feature later on, you can update it by setting the parameter flag to false:
 
 ```ts fixture=portfolio-product
-portfolio.addProduct(product);
-
 // to disable tag updates:
-portfolio.allowTagUpdates(product, {
+portfolio.constrainTagUpdates(product, {
   allowUpdatingProvisionedProductTags: false,
 });
 ```
