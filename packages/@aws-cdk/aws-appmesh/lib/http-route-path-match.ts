@@ -158,6 +158,7 @@ export abstract class HttpGatewayRoutePathMatch {
    * The value of the path must match the specified prefix.
    *
    * @param prefixPathMatch the value to use to match the beginning of the path part of the URL of the request.
+   *   When `prefixRewrite` is provided, `prefixPathMatch` must start and end with the '/' character.
    *   If provided as "/", matches all requests.
    *   For example, if your virtual service name is "my-service.local"
    *   and you want the route to match requests to "my-service.local/metrics", your prefix should be "/metrics".
