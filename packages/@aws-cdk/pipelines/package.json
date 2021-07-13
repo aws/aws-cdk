@@ -75,9 +75,12 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "aws-sdk": "^2.848.0",
     "constructs": "^3.3.69"
   },
-  "bundledDependencies": [],
+  "bundledDependencies": [
+    "aws-sdk"
+  ],
   "keywords": [
     "aws",
     "cdk",

@@ -44,10 +44,10 @@ export class TestCdkStack extends Stack {
       sourceAction: new codepipeline_actions.GitHubSourceAction({
         actionName: 'GitHub',
         output: sourceArtifact,
-        oauthToken: SecretValue.plainText('not-a-secret'),
-        owner: 'OWNER',
-        repo: 'REPO',
-        trigger: codepipeline_actions.GitHubTrigger.POLL,
+        oauthToken: SecretValue.secretsManager('github-token'),
+        owner: 'BryanPan342',
+        repo: 'test-cdk',
+        branch: 'main',
       }),
       synthAction: cdkp.SimpleSynthAction.standardYarnSynth({
         sourceArtifact,
@@ -71,15 +71,15 @@ export class TestCdkStack extends Stack {
     });
 
     const topic = new sns.Topic(this, 'SecurityChangesTopic');
-    topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
+    topic.addSubscription(new subscriptions.EmailSubscription('bryanpan342@gmail.com'));
 
     unattachedStage.addApplication(new MyStage(this, 'SingleStage', {
       env: { account: this.account, region: this.region },
-    }), { securityCheck: true, securityNotificationTopic: topic });
+    }), { checkBroadeningPermissions: true, securityNotificationTopic: topic });
 
     const stage1 = pipeline.addApplicationStage(new MyStage(this, 'PreProduction', {
       env: { account: this.account, region: this.region },
-    }), { securityCheck: true });
+    }), { checkBroadeningPermissions: true, securityNotificationTopic: topic });
 
     stage1.addApplication(new MySafeStage(this, 'SafeProduction', {
       env: { account: this.account, region: this.region },
@@ -87,7 +87,7 @@ export class TestCdkStack extends Stack {
 
     stage1.addApplication(new MySafeStage(this, 'DisableSecurityCheck', {
       env: { account: this.account, region: this.region },
-    }), { securityCheck: false });
+    }), { checkBroadeningPermissions: false });
 
     const stage2 = pipeline.addApplicationStage(new MyStage(this, 'NoSecurityCheck', {
       env: { account: this.account, region: this.region },
@@ -95,7 +95,7 @@ export class TestCdkStack extends Stack {
 
     stage2.addApplication(new MyStage(this, 'EnableSecurityCheck', {
       env: { account: this.account, region: this.region },
-    }), { securityCheck: true });
+    }), { checkBroadeningPermissions: true });
   }
 }
 
@@ -105,6 +105,6 @@ const app = new App({
   },
 });
 new TestCdkStack(app, 'PipelineSecurityStack', {
-  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  env: { account: '045046196850', region: 'us-west-2' },
 });
 app.synth();

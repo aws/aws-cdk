@@ -44,9 +44,9 @@ export class ApplicationSecurityCheck extends Construct {
 
     this.preApproveLambda = new lambda.Function(this, 'CDKPipelinesAutoApprove', {
       handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_8,
+      runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(path.resolve(__dirname, '../lambda')),
-      timeout: Duration.seconds(30),
+      timeout: Duration.minutes(5),
     });
 
     this.preApproveLambda.addToRolePolicy(new iam.PolicyStatement({
@@ -66,6 +66,12 @@ export class ApplicationSecurityCheck extends Construct {
       ' --invocation-type Event' +
       ' --payload "$payload"' +
       ' lambda.out';
+
+    const publishNotification =
+      'aws sns publish' +
+      ' --topic-arn $NOTIFICATION_ARN' +
+      ' --subject "$NOTIFICATION_SUBJECT"' +
+      ' --message "Changes detected! Requires Manual Approval.\n\n$LINK"';
 
     this.cdkDiffProject = new codebuild.Project(this, 'CDKSecurityCheck', {
       buildSpec: codebuild.BuildSpec.fromObject({
@@ -87,9 +93,17 @@ export class ApplicationSecurityCheck extends Construct {
               'export LINK="$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION"',
               // Run invoke only if cdk diff passes (returns exit code 0)
               // 0 -> true, 1 -> false
-              `if cdk diff -a "${assemblyPath}" --security-only --fail; then ${invokeLambda}; export MESSAGE='No changes detected.'; ` +
-              'else export MESSAGE="Changes detected! Requires Manual Approval"; ' +
-              'fi',
+              ifElse({
+                condition: `cdk diff -a "${assemblyPath}" --security-only --fail`,
+                thenStatements: [
+                  invokeLambda,
+                  'export MESSAGE="No changes detected."',
+                ],
+                elseStatements: [
+                  `[[ -z "\${NOTIFICATION_ARN}" ]] && ${publishNotification}`,
+                  'export MESSAGE="Changes detected! Requires Manual Approval"',
+                ],
+              }),
             ],
           },
         },
@@ -102,11 +116,37 @@ export class ApplicationSecurityCheck extends Construct {
       }),
     });
 
+    // this is needed to check the status the stacks when doing `cdk diff`
     this.cdkDiffProject.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['cloudformation:DescribeStacks', 'cloudformation:GetTemplate'],
-      resources: ['*'], // this is needed to check the status the stacks when doing `cdk diff`
+      actions: ['sts:AssumeRole'],
+      resources: ['*'],
+      conditions: {
+        'ForAnyValue:StringEquals': {
+          'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
+        },
+      },
     }));
 
     this.preApproveLambda.grantInvoke(this.cdkDiffProject);
   }
 }
+
+interface ifElseOptions {
+  readonly condition: string,
+  readonly thenStatements: string[],
+  readonly elseStatements?: string[]
+}
+
+const ifElse = ({ condition, thenStatements, elseStatements }: ifElseOptions): string => {
+  let statement = thenStatements.reduce((acc, ifTrue) => {
+    return `${acc} ${ifTrue};`;
+  }, `if ${condition}; then`);
+
+  if (elseStatements) {
+    statement = elseStatements.reduce((acc, ifFalse) => {
+      return `${acc} ${ifFalse};`;
+    }, `${statement} else`);
+  }
+
+  return `${statement} fi`;
+};

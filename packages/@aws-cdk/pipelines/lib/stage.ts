@@ -44,11 +44,11 @@ export interface CdkStageProps {
    * Run a security check before every application prepare/deploy actions.
    *
    * Note: Stage level security check can be overriden per application as follows:
-   *   `stage.addApplication(app, { securityCheck: false })`
+   *   `stage.addApplication(app, { checkBroadeningPermissions: false })`
    *
    * @default false
    */
-  readonly securityCheck?: boolean;
+  readonly checkBroadeningPermissions?: boolean;
 
   /**
    * Optional SNS topic to send notifications to when any security check registers
@@ -77,7 +77,7 @@ export class CdkStage extends CoreConstruct {
   private readonly stacksToDeploy = new Array<DeployStackCommand>();
   private readonly stageName: string;
   private readonly host: IStageHost;
-  private readonly securityCheck: boolean;
+  private readonly checkBroadeningPermissions: boolean;
   private readonly pipeline?: CdkPipeline;
   private readonly securityNotificationTopic?: sns.ITopic;
   private _applicationSecurityCheck?: ApplicationSecurityCheck;
@@ -94,7 +94,7 @@ export class CdkStage extends CoreConstruct {
     this.pipelineStage = props.pipelineStage;
     this.cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     this.host = props.host;
-    this.securityCheck = props.securityCheck ?? false;
+    this.checkBroadeningPermissions = props.checkBroadeningPermissions ?? false;
     this.securityNotificationTopic = props.securityNotificationTopic;
 
     Aspects.of(this).add({ visit: () => this.prepareStage() });
@@ -115,7 +115,7 @@ export class CdkStage extends CoreConstruct {
     const asm = appStage.synth({ validateOnSynthesis: true });
     const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
 
-    if (options.securityCheck ?? this.securityCheck) {
+    if (options.checkBroadeningPermissions ?? this.checkBroadeningPermissions) {
       this.addSecurityCheck(appStage.stageName, options);
     }
 
@@ -298,6 +298,7 @@ export class CdkStage extends CoreConstruct {
   private addSecurityCheck(appStageName: string, options?: BaseStageOptions) {
     const { cdkDiffProject } = this.getApplicationSecurityCheck();
     const notificationTopic: sns.ITopic | undefined = options?.securityNotificationTopic ?? this.securityNotificationTopic;
+    notificationTopic?.grantPublish(cdkDiffProject);
 
     const approveActionName = `${appStageName}ManualApproval`;
     const diffAction = new CodeBuildAction({
@@ -319,6 +320,16 @@ export class CdkStage extends CoreConstruct {
           value: approveActionName,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
+        ...notificationTopic ? {
+          NOTIFICATION_ARN: {
+            value: notificationTopic.topicArn,
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          },
+          NOTIFICATION_SUBJECT: {
+            value: `Security Changes detected in ${appStageName}`,
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          },
+        } : {},
       },
     });
 
@@ -328,7 +339,6 @@ export class CdkStage extends CoreConstruct {
       additionalInformation: `#{${appStageName}SecurityCheck.MESSAGE}`,
       // Boot strap cicd2 us-west-1 --trust
       externalEntityLink: `https://#{${appStageName}SecurityCheck.LINK}`,
-      notificationTopic: notificationTopic,
     });
 
     this.addActions(diffAction, approve);
@@ -487,18 +497,18 @@ export interface BaseStageOptions {
    * Runs a `cdk diff --security-only --fail` to pause the pipeline if there
    * are any security changes.
    *
-   * If the stage is configured with `securityCheck` enabled, you can use this
+   * If the stage is configured with `checkBroadeningPermissions` enabled, you can use this
    * property to override the stage configuration. For example, Pipeline Stage
-   * "Prod" has securityCheck enabled, with applications "A", "B", "C". All three
-   * applications will run a securityCheck, but if we want to disable the one for "C",
-   * we run `stage.addApplication(C, { securityCheck: false })` to override the pipeline
+   * "Prod" has checkBroadeningPermissions enabled, with applications "A", "B", "C". All three
+   * applications will run a security check, but if we want to disable the one for "C",
+   * we run `stage.addApplication(C, { checkBroadeningPermissions: false })` to override the pipeline
    * stage behavior.
    *
    * Adds 1 to the run order space.
    *
    * @default false
    */
-  readonly securityCheck?: boolean;
+  readonly checkBroadeningPermissions?: boolean;
   /**
    * Optional SNS topic to send notifications to when the security check registers
    * changes within the application.

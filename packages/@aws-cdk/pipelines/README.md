@@ -749,18 +749,13 @@ more references to the old asset bucket.
 
 ### Security Check
 
-CDK Pipelines offers a security check option for the applications you deploy. The 
-security check includes a Lambda and CodeBuild Project. The CodeBuild Project runs 
-a security diff on the application and exports a link to the console of the project. 
-The Lambda acts as an auto approving mechanism that can only be triggered when the 
-CodeBuild Project registers no security changes.
-
-**CDK will create one Lambda/CodeBuild Project per pipeline for all CdkStages scoped to the pipeline.**
+CDK Pipelines offers a security check option for the applications you deploy. A security
+check allows you to catch broadening permissions before they are deployed in the real world.
 
 Adding a security check to an application creates two actions that precede the prepare
-and deploy actions of an application. The first action runs the aforementioned CodeBuild
-Project that runs a security diff on the stage. The second action is a Manual Approval 
-Action that can be approved via the above Lambda function.
+and deploy actions of an application. The first action runs a CodeBuild Project that 
+runs a security diff on the stage. The second action is a Manual Approval Action 
+that can be approved via the above Lambda function.
 
 ```txt
 Pipeline
@@ -788,7 +783,7 @@ You can enable the security check in one of two ways:
       // ...source and build information here (see above)
     });
     const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
-      securityCheck: true,
+      checkBroadeningPermissions: true,
     });
     // The 'PreProd' application is also run against a security diff because we configured
     // the stage to enable security checks
@@ -803,24 +798,24 @@ You can enable the security check in one of two ways:
     });
     const stage = pipeline.addApplicationStage(new MyApplication(this, 'NoCheck'));
     stage.addApplication(new MyApplication(this, 'RunSecurityDiff'), {
-      securityCheck: true,
+      checkBroadeningPermissions: true,
     });
     ```
 
 **Note**: Application level options have higher priority than stage level configuration.
-For example, we can disable stage wide security check by disabling `securityCheck` at the
-applciaiton level.
+For example, we can disable stage wide security check by disabling `checkBroadeningPermissions`
+at the application level.
 
 ```ts
 const pipeline = new CdkPipeline(app, 'Pipeline', {
   // ...source and build information here (see above)
 });
 const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
-  securityCheck: true,
+  checkBroadeningPermissions: true,
 });
 // The 'NoDiff' application will not have a security check
 stage.addApplication(new MyApplication(this, 'NoDiff'), {
-  securityCheck: false,
+  checkBroadeningPermissions: false,
 });
 ```
 
@@ -842,7 +837,7 @@ const pipeline = new CdkPipeline(app, 'Pipeline', {
   // ...source and build information here (see above)
 });
 const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
-  securityCheck: true,
+  checkBroadeningPermissions: true,
   securityNotificationTopic: topic,
 });
 ```
