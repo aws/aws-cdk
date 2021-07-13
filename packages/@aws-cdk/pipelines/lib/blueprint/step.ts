@@ -16,12 +16,12 @@ export abstract class Step implements IFileSetProducer {
    * Not all steps produce an output FileSet--if they do
    * you can substitute the `Step` object for the `FileSet` object.
    */
-  public abstract readonly primaryOutput?: FileSet;
+  public readonly primaryOutput?: FileSet;
 
   /**
    * The list of FileSets consumed by this Step
    */
-  public readonly requiredFileSets: FileSet[] = [];
+  public readonly dependencyFileSets: FileSet[] = [];
 
   /**
    * Whether or not this is a Source step
@@ -36,10 +36,10 @@ export abstract class Step implements IFileSetProducer {
   }
 
   /**
-   * Return the steps this step depends on by its FileSets
+   * Return the steps this step depends on, based on the FileSets it requires
    */
-  public get dependencySteps(): Step[] {
-    return this.requiredFileSets.map(f => f.producer);
+  public get dependencies(): Step[] {
+    return this.dependencyFileSets.map(f => f.producer);
   }
 
   /**
@@ -50,23 +50,11 @@ export abstract class Step implements IFileSetProducer {
   }
 
   /**
-   * Return an additional (named) output from this step
-   *
-   * It depends on the Step type what this returns. See `ScriptStep`
-   * for an example of how this works.
-   */
-  public additionalOutput(name: string): FileSet {
-    // Default implementation, should be overriden by children
-    Array.isArray(name);
-    throw new Error(`${this}: step does not produce any outputs`);
-  }
-
-  /**
    * Add an additional FileSet to the set of file sets required by this step
    *
    * This will lead to a dependency on the producer of that file set.
    */
-  protected requireFileSet(fs: FileSet) {
-    this.requiredFileSets.push(fs);
+  protected addDependencyFileSet(fs: FileSet) {
+    this.dependencyFileSets.push(fs);
   }
 }

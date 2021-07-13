@@ -1,4 +1,3 @@
-import { FileSet } from './file-set';
 import { Step } from './step';
 
 /**
@@ -23,8 +22,6 @@ export interface ManualApprovalStepProps {
  * support this step type.
  */
 export class ManualApprovalStep extends Step {
-  public readonly primaryOutput?: FileSet | undefined;
-
   /**
    * The comment associated with this manual approval
    *

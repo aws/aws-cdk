@@ -28,7 +28,7 @@ export interface ScriptStepProps {
    *
    * @default - No environment variables
    */
-  readonly env?: Record<string, string>;
+  readonly env?: Record<string, string | undefined>;
 
   /**
    * Set environment variables based on Stack Outputs
@@ -40,13 +40,14 @@ export interface ScriptStepProps {
    *
    * @default - No environment variables created from stack outputs
    */
-  readonly envFromOutputs?: Record<string, CfnOutput>;
+  readonly envFromCfnOutputs?: Record<string, CfnOutput>;
 
   /**
    * FileSet to run these scripts on
    *
-   * The files in the FileSet will be in the working directory when
-   * the script is executed.
+   * The files in the FileSet will be placed in the working directory when
+   * the script is executed. Use `additionalInputs` to download file sets
+   * to other directories as well.
    *
    * @default - No input specified
    */
@@ -87,33 +88,6 @@ export interface ScriptStepProps {
    */
   readonly primaryOutputDirectory?: string;
 
-  /**
-   * Additional directories that contain output FileSets.
-   *
-   * A map of output name to relative directory name (N.B.: this is
-   * reversed from `additionalInputs`).
-   *
-   * After running the script, the contents of the given directory
-   * will be exported as `FileSet`s. The `FileSet` objects can be
-   * retrieved by calling `additionalOutut(name)`.
-   *
-   * The following example exports the `cdk.out` directory as primary
-   * output, and the `integ` directory as an additional output
-   * with the name `IntegrationTests`:
-   *
-   * ```ts
-   * const script = new ScriptStep('MainScript', {
-   *   // ...
-   *   primaryOutputDirectory: 'cdk.out',
-   *   additionalOutputDirectories: {
-   *     IntegrationTests: 'integ',
-   *   }
-   * });
-   * ```
-   *
-   * @default - No additional outputs
-   */
-  readonly additionalOutputDirectories?: Record<string, string>;
 }
 
 /**
@@ -141,26 +115,28 @@ export class ScriptStep extends Step {
    *
    * @default - No environment variables
    */
-  public readonly env: Record<string, string>;
+  public readonly env: Record<string, string | undefined>;
 
   /**
    * Set environment variables based on Stack Outputs
    *
    * @default - No environment variables created from stack outputs
    */
-  public readonly envFromOutputs: Record<string, StackOutputReference>;
+  public readonly envFromCfnOutputs: Record<string, StackOutputReference>;
 
   /**
    * Input FileSets
    *
-   * A list of `(FileSet, directory)` pairs.
+   * A list of `(FileSet, directory)` pairs, which are a copy of the
+   * input properties. This list should not be modified directly.
    */
   public readonly inputs: FileSetLocation[] = [];
 
   /**
    * Output FileSets
    *
-   * A list of `(FileSet, directory)` pairs.
+   * A list of `(FileSet, directory)` pairs, which are a copy of the
+   * input properties. This list should not be modified directly.
    */
   public readonly outputs: FileSetLocation[] = [];
 
@@ -172,7 +148,7 @@ export class ScriptStep extends Step {
     this.commands = props.commands;
     this.installCommands = props.installCommands ?? [];
     this.env = props.env ?? {};
-    this.envFromOutputs = mapValues(props.envFromOutputs ?? {}, StackOutputReference.fromCfnOutput);
+    this.envFromCfnOutputs = mapValues(props.envFromCfnOutputs ?? {}, StackOutputReference.fromCfnOutput);
 
     // Inputs
     if (props.input) {
@@ -180,7 +156,7 @@ export class ScriptStep extends Step {
       if (!fileSet) {
         throw new Error(`'${id}': primary input should be a step that produces a file set, got ${props.input}`);
       }
-      this.requireFileSet(fileSet);
+      this.addDependencyFileSet(fileSet);
       this.inputs.push({ directory: '.', fileSet });
     }
 
@@ -193,7 +169,7 @@ export class ScriptStep extends Step {
       if (!fileSet) {
         throw new Error(`'${id}': additionalInput for directory '${directory}' should be a step that produces a file set, got ${step}`);
       }
-      this.requireFileSet(fileSet);
+      this.addDependencyFileSet(fileSet);
       this.inputs.push({ directory, fileSet });
     }
 
@@ -203,26 +179,26 @@ export class ScriptStep extends Step {
       this.primaryOutput = new FileSet('Output', this);
       this.outputs.push({ directory: props.primaryOutputDirectory, fileSet: this.primaryOutput });
     }
-
-    for (const [name, directory] of Object.entries(props.additionalOutputDirectories ?? {})) {
-      const fileSet = new FileSet(directory, this);
-      this._additionalOutputs[name] = fileSet;
-      this.outputs.push({ directory, fileSet });
-    }
   }
 
   /**
-   * Retrieve an additional output by name
+   * Add an additional output FileSet based on a directory.
    *
-   * The name must have been configured by passing
-   * `additionalOutputDirectories`.
+   * After running the script, the contents of the given directory
+   * will be exported as a `FileSet`. Use the `FileSet` as the
+   * input to another step.
+   *
+   * Multiple calls with the exact same directory name (not normalized)
+   * will return the same FileSet.
    */
-  public additionalOutput(name: string): FileSet {
-    const fs = this._additionalOutputs[name];
-    if (!fs) {
-      throw new Error(`No additional output defined with name '${name}'. Define it by passing 'additionalOutputs'`);
+  public addOutputDirectory(directory: string): FileSet {
+    let fileSet = this._additionalOutputs[directory];
+    if (!fileSet) {
+      fileSet = new FileSet(directory, this);
+      this._additionalOutputs[directory] = fileSet;
+      this.outputs.push({ directory, fileSet });
     }
-    return fs;
+    return fileSet;
   }
 }
 

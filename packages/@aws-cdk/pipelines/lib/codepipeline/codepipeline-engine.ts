@@ -13,7 +13,7 @@ import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } fr
 import { BuildDeploymentOptions, IDeploymentEngine } from '../main/engine';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
-import { enumerate, flatten, maybeSuffix } from '../private/javascript';
+import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
 import { CodeBuildFactory, mergeCodeBuildOptions, stackVariableNamespace } from './_codebuild-factory';
 import { ArtifactMap } from './artifact-map';
@@ -105,11 +105,19 @@ export interface CodePipelineEngineProps {
   readonly selfMutationCodeBuildDefaults?: CodeBuildOptions;
 
   /**
-   * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
+   * Publish assets in multiple CodeBuild projects
    *
-   * @default false
+   * If set to false, use one Project per type to publish all assets.
+   *
+   * Publishing in parallel improves concurrency and may reduce publishing
+   * latency, but may also increase overall provisioning time of the CodeBuild
+   * projects.
+   *
+   * Experiment and see what value works best for you.
+   *
+   * @default true
    */
-  readonly singlePublisherPerAssetType?: boolean;
+  readonly publishAssetsInParallel?: boolean;
 
   /**
    * A list of credentials used to authenticate to Docker registries.
@@ -179,7 +187,7 @@ export interface CodeBuildOptions {
  * Deployment engine that deploys CDK apps using a CodePipeline Pipeline
  *
  * Either pass an instance of this class as an `engine` to the generic
- * `Pipeline` class, or instantiate a `CodePipelinePipeline` class,
+ * `Pipeline` class, or instantiate a `CodePipeline` class,
  * which comes preconfigured with a `CodePipelineEngine` engine.
  */
 export class CodePipelineEngine implements IDeploymentEngine {
@@ -213,9 +221,12 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
   private _cloudAssemblyFileSet?: FileSet;
 
+  private readonly singlePublisherPerAssetType: boolean;
+
   constructor(private readonly props: CodePipelineEngineProps={}) {
     this.selfMutation = this.props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
+    this.singlePublisherPerAssetType = !(this.props.publishAssetsInParallel ?? true);
   }
 
   public buildDeployment(options: BuildDeploymentOptions): void {
@@ -229,12 +240,14 @@ export class CodePipelineEngine implements IDeploymentEngine {
     this._pipeline = new cp.Pipeline(this._scope, 'Pipeline', {
       pipelineName: this.props.pipelineName,
       crossAccountKeys: this.props.crossAccountKeys ?? false,
+      // This is necessary to make self-mutation work (deployments are guaranteed
+      // to happen only after the builds of the latest pipeline definition).
       restartExecutionOnUpdate: true,
     });
 
     const graphFromBp = new PipelineGraph(options.blueprint, {
       selfMutation: this.selfMutation,
-      singlePublisherPerAssetType: this.props.singlePublisherPerAssetType,
+      singlePublisherPerAssetType: this.singlePublisherPerAssetType,
     });
     this._cloudAssemblyFileSet = graphFromBp.cloudAssemblyFileSet;
 
@@ -379,7 +392,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
       case 'group':
       case 'stack-group':
       case undefined:
-        throw new Error(`makeAction: did not expect to get group nodes: ${node.data?.type}`);
+        throw new Error(`actionFromNode: did not expect to get group nodes: ${node.data?.type}`);
 
       case 'self-update':
         return this.selfMutateAction();
@@ -455,6 +468,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
     const region = stack.region !== Stack.of(this.scope).region ? stack.region : undefined;
     const account = stack.account !== Stack.of(this.scope).account ? stack.account : undefined;
 
+    const relativeTemplatePath = path.relative(this.myCxAsmRoot, stack.absoluteTemplatePath);
+
     return {
       produce: (options) => {
         options.stage.addAction(new cpa.CloudFormationCreateReplaceChangeSetAction({
@@ -462,7 +477,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
           runOrder: options.runOrder,
           changeSetName,
           stackName: stack.stackName,
-          templatePath: templateArtifact.atPath(toPosixPath(stack.relativeTemplatePath(this.myCxAsmRoot))),
+          templatePath: templateArtifact.atPath(toPosixPath(relativeTemplatePath)),
           adminPermissions: true,
           role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
           deploymentRole: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.executionRoleArn),
@@ -591,7 +606,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
       // If we use a single publisher, pass buildspec via file otherwise it'll
       // grow too big.
-      passBuildSpecViaCloudAssembly: this.props.singlePublisherPerAssetType,
+      passBuildSpecViaCloudAssembly: this.singlePublisherPerAssetType,
       scope: this.assetsScope,
     });
   }
@@ -690,7 +705,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
     // no better hook to write this file (`construct.onSynthesize()` would have been the prime candidate
     // but that is being deprecated--and DeployCdkStackAction isn't even a construct).
     writeTemplateConfiguration(absConfigPath, {
-      Tags: stack.tags,
+      Tags: noUndefined(stack.tags),
     });
 
     return relativeConfigPath;

@@ -23,7 +23,7 @@ export class BlueprintQueries {
     for (const step of steps) {
       if (!(step instanceof ScriptStep)) { continue; }
 
-      for (const outputRef of Object.values(step.envFromOutputs)) {
+      for (const outputRef of Object.values(step.envFromCfnOutputs)) {
         if (outputRef.isProducedBy(stack)) {
           ret.push(outputRef.outputName);
         }
@@ -56,7 +56,7 @@ export class BlueprintQueries {
     const assets = new Map<string, StackAsset>();
 
     for (const stack of stage.stacks) {
-      for (const asset of stack.requiredAssets) {
+      for (const asset of stack.assets) {
         assets.set(asset.assetSelector, asset);
       }
     }

@@ -64,6 +64,10 @@ export function noEmptyObject<A>(xs: Record<string, A>): Record<string, A> | und
   return xs;
 }
 
+export function noUndefined<A>(xs: Record<string, A>): Record<string, NonNullable<A>> {
+  return mkdict(Object.entries(xs).filter(([_, v]) => isDefined(v))) as any;
+}
+
 export function maybeSuffix(x: string | undefined, suffix: string): string | undefined {
   if (x === undefined) { return undefined; }
   return `${x}${suffix}`;
@@ -79,4 +83,8 @@ export function partition<T>(xs: T[], pred: (x: T) => boolean): [T[], T[]] {
     (pred(x) ? yes : no).push(x);
   }
   return [yes, no];
+}
+
+export function isDefined<A>(x: A): x is NonNullable<A> {
+  return x !== undefined;
 }

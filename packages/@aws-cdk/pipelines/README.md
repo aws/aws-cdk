@@ -45,7 +45,7 @@ details.
 
 CDK Pipelines supports multiple *deployment engines* (see below), and comes with
 a deployment engine that deployes CDK apps using AWS CodePipeline. To use the
-CodePipeline engine, define a `CodePipelinePipeline` construct.  The following
+CodePipeline engine, define a `CodePipeline` construct.  The following
 example creates a CodePipeline that deploys an application from GitHub:
 
 ```ts
@@ -56,7 +56,7 @@ example creates a CodePipeline that deploys an application from GitHub:
   */
 import { DatabaseStack, ComputeStack } from '../lib/my-stacks';
 import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
-import { CodePipelinePipeline, CodePipelineSource, SynthStep } from '@aws-cdk/pipelines';
+import { CodePipeline, CodePipelineSource, SynthStep } from '@aws-cdk/pipelines';
 
 /**
  * Stack to hold the pipeline
@@ -65,7 +65,7 @@ class MyPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const pipeline = new CodePipelinePipeline(this, 'Pipeline', {
+    const pipeline = new CodePipeline(this, 'Pipeline', {
       synth: new SynthStep('Synth', {
         // Will use a SecretsManager secret named 'github-token' by default
         input: CodePipelineSource.gitHub('my-org/my-app'),
@@ -174,7 +174,7 @@ off temporarily, by passing `selfMutation: false` property, example:
 
 ```ts
 // Modern API
-const pipeline = new CodePipelinePipeline(this, 'Pipeline', {
+const pipeline = new CodePipeline(this, 'Pipeline', {
   selfMutation: false,
   ...
 });
@@ -194,7 +194,7 @@ the section *Using a different deployment engine* below.
 
 ### Synth and sources
 
-To define a pipeline, instantiate a `CodePipelinePipeline` construct. It takes
+To define a pipeline, instantiate a `CodePipeline` construct. It takes
 one argument, a `synth` step, which is expected to produce the CDK Cloud
 Assembly as its single output (the contents of the `cdk.out` directory after
 running `cdk synth`). "Steps" are arbitrary actions in the pipeline, typically
@@ -208,7 +208,7 @@ a set of `commands`:
 ```ts
 const source = /* the repository source */;
 
-const pipeline = new CodePipelinePipeline(this, 'Pipeline', {
+const pipeline = new CodePipeline(this, 'Pipeline', {
   synth: new SynthStep('Synth', {
     input: source,
     commands: [
@@ -265,7 +265,7 @@ const synth = new SynthStep('Synth', {
   commands: ['./build.sh'],
 });
 
-const pipeline = new CodePipelinePipeline(this, 'Pipeline', {
+const pipeline = new CodePipeline(this, 'Pipeline', {
   synth,
 });
 ```
@@ -325,7 +325,7 @@ KMS key.
 Example:
 
 ```ts
-const pipeline = new CodePipelinePipeline(this, 'Pipeline', {
+const pipeline = new CodePipeline(this, 'Pipeline', {
   // Encrypt artifacts, required for cross-account deployments
   crossAccountKeys: true,
 });
@@ -367,7 +367,7 @@ names, validations have support for reading back CloudFormation Outputs after a 
 makes it possible to pass (for example) the generated URL of a load balancer to the test set.
 
 To use Stack Outputs, expose the `CfnOutput` object you're interested in, and
-pass it to `envFromOutputs` of the `ScriptStep`:
+pass it to `envFromCfnOutputs` of the `ScriptStep`:
 
 ```ts
 class MyApplicationStage extends Stage {
@@ -379,7 +379,7 @@ const lbApp = new MyApplicationStage(this, 'MyApp', { /* ... */ });
 pipeline.addStage(lbApp, {
   post: [
     new ScriptStep('HitEndpoint', {
-      envFromOutputs: {
+      envFromCfnOutputs: {
         // Make the load balancer address available as $URL inside the commands
         URL: lbApp.loadBalancerAddress,
       },
@@ -402,21 +402,12 @@ Here's an example that captures an additional output directory in the synth
 step and runs tests from there:
 
 ```ts
-const synth = new SynthStep('Synth', {
-  // ...
-
-  // Defines an additional output named 'IntegTests', and which will contain
-  // the 'integ' directory
-  additionalOutputDirectories: {
-    'IntegTests': './integ',
-  },
-});
-
-const pipeline = new CodePipelinePipeline(this, 'Pipeline', { synth });
+const synth = new SynthStep('Synth', { /* ... */ });
+const pipeline = new CodePipeline(this, 'Pipeline', { synth });
 
 new ScriptStep('Approve', {
-  // Get additional output artifact by name
-  input: synth.additionalOutput('IntegTests'),
+  // Use the contents of the 'integ' directory from the synth step as the input
+  input: synth.addOutputDirectory('integ'),
   commands: ['cd integ && ./run.sh'],
 });
 ```
@@ -470,7 +461,7 @@ or just for the asset publishing and self-mutation projects by passing `assetPub
 or `selfMutationCodeBuildDefaults`:
 
 ```ts
-new CodePipelinePipeline(this, 'Pipeline', {
+new CodePipeline(this, 'Pipeline', {
   // ...
 
   // Defaults for all CodeBuild projects
@@ -530,7 +521,7 @@ pass `pipelineUsesDockerAssets: true`.
 The following example shows both:
 
 ```ts
-new CodePipelinePipeline(this, 'Pipeline', {
+new CodePipeline(this, 'Pipeline', {
   synth: new CodeBuildStep('Synth', {
     // If you are using a CodeBuildStep explicitly, set the 'cdk.out' directory
     // to be the synth step's output.
@@ -587,7 +578,7 @@ class MyApprovalStep extends Step implements ICodePipelineActionFactory {
 
 ### Using a different deployment engine
 
-In all of the examples above, we have used the `CodePipelinePipeline` construct.
+In all of the examples above, we have used the `CodePipeline` construct.
 This is actually a convenience class around the more generic `Pipeline` construct,
 which takes an `engine` argument that specifies the deployment engine:
 
@@ -1115,7 +1106,7 @@ const customRegSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'CRSec
 const repo1 = ecr.Repository.fromRepositoryArn(stack, 'Repo', 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo1');
 const repo2 = ecr.Repository.fromRepositoryArn(stack, 'Repo', 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo2');
 
-const pipeline = new CodePipelinePipeline(this, 'Pipeline', {
+const pipeline = new CodePipeline(this, 'Pipeline', {
   dockerCredentials: [
     DockerCredential.dockerHub(dockerHubSecret),
     DockerCredential.customRegistry('dockerregistry.example.com', customRegSecret),

@@ -16,7 +16,7 @@ export class FileSet implements IFileSetProducer {
   private _producer?: Step;
 
   constructor(
-    /** Identifier for this file set */
+    /** Human-readable descriptor for this file set (does not need to be unique) */
     public readonly id: string, producer?: Step) {
     this._producer = producer;
   }

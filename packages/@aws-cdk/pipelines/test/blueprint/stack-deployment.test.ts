@@ -59,8 +59,8 @@ test('"requiredAssets" contain only assets that are not the template', () => {
   const sd = StageDeployment.fromStage(stage);
 
   // THEN
-  expect(sd.stacks[0].requiredAssets.length).toBe(1);
-  expect(sd.stacks[0].requiredAssets[0].assetType).toBe('file');
-  expect(sd.stacks[0].requiredAssets[0].isTemplate).toBeFalsy();
+  expect(sd.stacks[0].assets.length).toBe(1);
+  expect(sd.stacks[0].assets[0].assetType).toBe('file');
+  expect(sd.stacks[0].assets[0].isTemplate).toBeFalsy();
 });
 

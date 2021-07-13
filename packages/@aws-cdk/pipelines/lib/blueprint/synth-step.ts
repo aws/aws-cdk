@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { toPosixPath } from '../private/fs';
-import { mapValues, mkdict } from '../private/javascript';
+import { mkdict } from '../private/javascript';
 import { IFileSetProducer } from './file-set';
 import { ScriptStep } from './script-step';
 
@@ -9,9 +9,9 @@ import { ScriptStep } from './script-step';
  */
 export interface SynthStepProps {
   /**
-   * Subdirectory of the input FileSet that contains the CDK app
+   * Subdirectory of the input FileSet that contains the CDK app to synthesize
    *
-   * The very first command will be a `cd` to the given subdirectory,
+   * The very first command executed will be a `cd` to the given subdirectory,
    * and all *output* fileset paths will be relative to the given subdirectory.
    *
    * If you want to change the value of `subdirectory`, you will typically need
@@ -85,34 +85,6 @@ export interface SynthStepProps {
    * @default 'cdk.out'
    */
   readonly cloudAssemblyOutputDirectory?: string;
-
-  /**
-   * Additional directories that contain output FileSets.
-   *
-   * A map of output name to relative directory name (N.B.: this is
-   * reversed from `additionalInputs`).
-   *
-   * After running the script, the contents of the given directory
-   * will be exported as `FileSet`s. The `FileSet` objects can be
-   * retrieved by calling `additionalOutut(name)`.
-   *
-   * The following example exports the `cdk.out` directory as primary
-   * output, and the `integ` directory as an additional output
-   * with the name `IntegrationTests`:
-   *
-   * ```ts
-   * const script = new ScriptStep('MainScript', {
-   *   // ...
-   *   primaryOutputDirectory: 'cdk.out',
-   *   additionalOutputDirectories: {
-   *     IntegrationTests: 'integ',
-   *   }
-   * });
-   * ```
-   *
-   * @default - No additional outputs
-   */
-  readonly additionalOutputDirectories?: Record<string, string>;
 }
 
 /**
@@ -131,6 +103,8 @@ export interface SynthStepProps {
  * pass `primaryOutputDirectory: 'cdk.out'`.
  */
 export class SynthStep extends ScriptStep {
+  private readonly subdirectory: string;
+
   constructor(id: string, props: SynthStepProps) {
     const subdirectory = props.subdirectory ?? '.';
 
@@ -144,7 +118,12 @@ export class SynthStep extends ScriptStep {
         [toPosixPath(dir), fileSet] as const,
       )),
       primaryOutputDirectory: path.join(subdirectory, props.cloudAssemblyOutputDirectory ?? 'cdk.out'),
-      additionalOutputDirectories: mapValues(props.additionalOutputDirectories ?? {}, dir => path.join(subdirectory, dir)),
     });
+
+    this.subdirectory = subdirectory;
+  }
+
+  public addOutputDirectory(directory: string) {
+    return super.addOutputDirectory(path.join(this.subdirectory, directory));
   }
 }

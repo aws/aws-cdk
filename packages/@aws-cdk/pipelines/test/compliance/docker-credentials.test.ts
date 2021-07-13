@@ -103,7 +103,7 @@ behavior('synth action receives Windows install commands if a Windows image is d
       synth: new CodeBuildStep('Synth', {
         commands: ['cdk synth'],
         primaryOutputDirectory: 'cdk.out',
-        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        input: cdkp.CodePipelineSource.github('test/test'),
         buildEnvironment: {
           buildImage: cb.WindowsBuildImage.WINDOWS_BASE_2_0,
           computeType: cb.ComputeType.MEDIUM,

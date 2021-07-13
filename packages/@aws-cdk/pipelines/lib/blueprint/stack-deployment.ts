@@ -17,7 +17,7 @@ export interface StackDeploymentProps {
   /**
    * Construct path for this stack
    */
-  readonly stackHierarchicalId: string;
+  readonly constructPath: string;
 
   /**
    * Name for this stack
@@ -57,10 +57,10 @@ export interface StackDeploymentProps {
    *
    * @default - No tags
    */
-  readonly tags?: Record<string, string>;
+  readonly tags?: Record<string, string | undefined>;
 
   /**
-   * Template path on disk to CloudAssembly
+   * Template path on disk to cloud assembly (cdk.out)
    */
   readonly absoluteTemplatePath: string;
 
@@ -102,7 +102,7 @@ export class StackDeployment {
       region,
       tags: stackArtifact.tags,
       stackArtifactId: stackArtifact.id,
-      stackHierarchicalId: stackArtifact.hierarchicalId,
+      constructPath: stackArtifact.hierarchicalId,
       stackName: stackArtifact.stackName,
       absoluteTemplatePath: path.join(stackArtifact.assembly.directory, stackArtifact.templateFile),
       assumeRoleArn: stackArtifact.assumeRoleArn,
@@ -120,7 +120,7 @@ export class StackDeployment {
   /**
    * Construct path for this stack
    */
-  public readonly stackHierarchicalId: string;
+  public readonly constructPath: string;
 
   /**
    * Name for this stack
@@ -158,22 +158,17 @@ export class StackDeployment {
   /**
    * Tags to apply to the stack
    */
-  public readonly tags: Record<string, string>;
-
-  /**
-   * Template path on disk to CloudAssembly
-   */
-  public readonly absoluteTemplatePath: string;
+  public readonly tags: Record<string, string | undefined>;
 
   /**
    * Assets referenced by this stack
    */
-  public readonly requiredAssets: StackAsset[];
+  public readonly assets: StackAsset[];
 
   /**
    * Other stacks this stack depends on
    */
-  public readonly dependsOnStacks: StackDeployment[] = [];
+  public readonly stackDependencies: StackDeployment[] = [];
 
   /**
    * The asset that represents the CloudFormation template for this stack.
@@ -184,15 +179,21 @@ export class StackDeployment {
    * The S3 URL which points to the template asset location in the publishing
    * bucket.
    *
-   * This is `undefined` if the stack template is not published.
+   * This is `undefined` if the stack template is not published. Use the
+   * `DefaultStackSynthesizer` to ensure it is.
    *
    * @example https://bucket.s3.amazonaws.com/object/key
    */
   public readonly templateUrl?: string;
 
+  /**
+   * Template path on disk to CloudAssembly
+   */
+  public readonly absoluteTemplatePath: string;
+
   private constructor(props: StackDeploymentProps) {
     this.stackArtifactId = props.stackArtifactId;
-    this.stackHierarchicalId = props.stackHierarchicalId;
+    this.constructPath = props.constructPath;
     this.account = props.account;
     this.region = props.region;
     this.tags = props.tags ?? {};
@@ -202,29 +203,22 @@ export class StackDeployment {
     this.absoluteTemplatePath = props.absoluteTemplatePath;
     this.templateUrl = props.templateS3Uri ? s3UrlFromUri(props.templateS3Uri, props.region) : undefined;
 
-    this.requiredAssets = new Array<StackAsset>();
+    this.assets = new Array<StackAsset>();
 
     for (const asset of props.assets ?? []) {
       if (asset.isTemplate) {
         this.templateAsset = asset;
       } else {
-        this.requiredAssets.push(asset);
+        this.assets.push(asset);
       }
     }
   }
 
   /**
-   * Return the template path relative to the given directory
-   */
-  public relativeTemplatePath(root: string) {
-    return path.relative(root, this.absoluteTemplatePath);
-  }
-
-  /**
    * Add a dependency on another stack
    */
-  public addDependency(stackDeployment: StackDeployment) {
-    this.dependsOnStacks.push(stackDeployment);
+  public addStackDependency(stackDeployment: StackDeployment) {
+    this.stackDependencies.push(stackDeployment);
   }
 }
 
@@ -263,11 +257,11 @@ export interface StackAsset {
   readonly assetPublishingRoleArn?: string;
 
   /**
-   * Does this asset represent the template.
+   * Does this asset represent the CloudFormation template for the stack
    *
    * @default false
    */
-  readonly isTemplate?: boolean;
+  readonly isTemplate: boolean;
 }
 
 function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): StackAsset[] {
@@ -279,7 +273,7 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
 
     for (const entry of manifest.entries) {
       let assetType: AssetType;
-      let isTemplate;
+      let isTemplate = false;
 
       if (entry instanceof DockerImageManifestEntry) {
         assetType = AssetType.DOCKER_IMAGE;

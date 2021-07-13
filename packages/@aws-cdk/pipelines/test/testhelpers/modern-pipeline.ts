@@ -9,7 +9,7 @@ export class ModernTestGitHubNpmPipeline extends cdkp.Pipeline {
   public readonly synth: cdkp.Step;
 
   constructor(scope: Construct, id: string, props?: ModernTestGitHubNpmPipelineProps) {
-    const source = cdkp.CodePipelineSource.gitHub('test/test');
+    const source = cdkp.CodePipelineSource.github('test/test');
     const synth = props?.synth ?? new cdkp.SynthStep('Synth', {
       input: source,
       installCommands: ['npm ci'],

@@ -20,7 +20,7 @@ describe('blueprint with one stage', () => {
   beforeEach(() => {
     blueprint = new cdkp.Blueprint({
       synth: new cdkp.SynthStep('Synth', {
-        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        input: cdkp.CodePipelineSource.github('test/test'),
         commands: ['build'],
       }),
     });
@@ -71,7 +71,7 @@ describe('blueprint with wave and stage', () => {
   beforeEach(() => {
     blueprint = new cdkp.Blueprint({
       synth: new cdkp.SynthStep('Synth', {
-        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        input: cdkp.CodePipelineSource.github('test/test'),
         commands: ['build'],
       }),
     });
@@ -163,14 +163,14 @@ describe('with app with output', () => {
   beforeEach(() => {
     blueprint = new cdkp.Blueprint({
       synth: new cdkp.SynthStep('Synth', {
-        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        input: cdkp.CodePipelineSource.github('test/test'),
         commands: ['build'],
       }),
     });
 
     myApp = new AppWithOutput(app, 'Alpha');
     scriptStep = new cdkp.ScriptStep('PrintBucketName', {
-      envFromOutputs: {
+      envFromCfnOutputs: {
         BUCKET_NAME: myApp.theOutput,
       },
       commands: ['echo $BUCKET_NAME'],

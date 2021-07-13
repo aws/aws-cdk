@@ -162,7 +162,7 @@ export class PipelineGraph {
       // Depend on Assets
       // FIXME: Custom Cloud Assembly currently doesn't actually help separating
       // out templates from assets!!!
-      for (const asset of stack.requiredAssets) {
+      for (const asset of stack.assets) {
         const assetNode = this.publishAsset(asset);
         firstDeployNode.dependOn(assetNode);
       }
@@ -174,7 +174,7 @@ export class PipelineGraph {
     }
 
     for (const stack of stage.stacks) {
-      for (const dep of stack.dependsOnStacks) {
+      for (const dep of stack.stackDependencies) {
         const stackNode = stackGraphs.get(stack);
         const depNode = stackGraphs.get(dep);
         if (!stackNode) {
@@ -228,7 +228,7 @@ export class PipelineGraph {
     parent.add(node);
     this.added.set(step, node);
 
-    for (const dep of step.dependencySteps) {
+    for (const dep of step.dependencies) {
       const producerNode = this.addAndRecurse(dep, parent);
       node.dependOn(producerNode);
     }
@@ -236,7 +236,7 @@ export class PipelineGraph {
     // Add stack dependencies (by use of the dependencybuilder this also works
     // if we encounter the Step before the Stack has been properly added yet)
     if (step instanceof ScriptStep) {
-      for (const output of Object.values(step.envFromOutputs)) {
+      for (const output of Object.values(step.envFromCfnOutputs)) {
         const stack = this.queries.producingStack(output);
         this.stackOutputDependencies.get(stack).dependBy(node);
       }

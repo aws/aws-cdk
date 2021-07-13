@@ -22,7 +22,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
 
     const githubPrefix = 'https://github.com/';
     if (repoString.startsWith(githubPrefix)) {
-      return CodePipelineSource.gitHub(repoString.substr(githubPrefix.length).replace(/\.git$/, ''));
+      return CodePipelineSource.github(repoString.substr(githubPrefix.length).replace(/\.git$/, ''));
     }
 
     throw new Error(`CodePipelineSource.fromString(): unrecognized string format: '${repoString}'`);
@@ -34,7 +34,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Pass in the owner and repository in a single string, like this:
    *
    * ```ts
-   * CodePipelineSource.gitHub('owner/repo', {
+   * CodePipelineSource.github('owner/repo', {
    *   branch: 'master',
    * });
    * ```
@@ -48,7 +48,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * * **repo** - to read the repository
    * * **admin:repo_hook** - if you plan to use webhooks (true by default)
    */
-  public static gitHub(repoString: string, props: GitHubSourceOptions = {}): CodePipelineSource {
+  public static github(repoString: string, props: GitHubSourceOptions = {}): CodePipelineSource {
     return new GitHubSource(repoString, props);
   }
 

@@ -7,9 +7,9 @@ import { CodePipelineEngine, CodePipelineEngineProps } from './codepipeline-engi
 
 
 /**
- * Properties for a `CodePipelinePipeline`
+ * Properties for a `CodePipeline`
  */
-export interface CodePipelinePipelineProps extends CodePipelineEngineProps {
+export interface CodePipelineProps extends CodePipelineEngineProps {
   /**
    * The build step that produces the CDK Cloud Assembly
    *
@@ -30,10 +30,10 @@ export interface CodePipelinePipelineProps extends CodePipelineEngineProps {
  * `CodePipelineEngine`, and exists for nicer ergonomics for
  * users that don't need to switch out engines.
  */
-export class CodePipelinePipeline extends Pipeline {
+export class CodePipeline extends Pipeline {
   private readonly _engine: CodePipelineEngine;
 
-  constructor(scope: Construct, id: string, props: CodePipelinePipelineProps) {
+  constructor(scope: Construct, id: string, props: CodePipelineProps) {
     const engine = new CodePipelineEngine(props);
 
     super(scope, id, {

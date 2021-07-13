@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { AddStageOpts, AddWaveOptions, Blueprint, Step } from '../blueprint';
+import { AddStageOpts, WaveOptions, Blueprint, Step } from '../blueprint';
 import { IDeploymentEngine } from './engine';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -95,7 +95,7 @@ export class Pipeline extends CoreConstruct {
    * wave.addStage(new MyStage('Stage2', ...));
    * ```
    */
-  public addWave(id: string, options?: AddWaveOptions) {
+  public addWave(id: string, options?: WaveOptions) {
     if (this.built) {
       throw new Error('addStage: can\'t add Stages anymore after build() has been called');
     }

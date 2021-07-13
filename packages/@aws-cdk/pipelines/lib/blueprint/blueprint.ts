@@ -55,7 +55,7 @@ export class Blueprint {
    * wave.addStage(new MyStage('Stage2', ...));
    * ```
    */
-  public addWave(id: string, options: AddWaveOptions = {}) {
+  public addWave(id: string, options: WaveOptions = {}) {
     const wave = new Wave(id, options);
     this.waves.push(wave);
     return wave;
@@ -76,7 +76,7 @@ export class Blueprint {
 /**
  * Options to pass to `addWave`
  */
-export interface AddWaveOptions {
+export interface WaveOptions {
   /**
    * Additional steps to run before any of the stages in the wave
    *

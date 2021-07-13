@@ -9,7 +9,7 @@ import { IDependable, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { FileSetLocation, ScriptStep, StackDeployment, StackOutputReference } from '../blueprint';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
-import { mapValues, mkdict, noEmptyObject, partition } from '../private/javascript';
+import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
@@ -94,8 +94,8 @@ export interface CodeBuildFactoryProps {
   readonly commands: string[];
   readonly installCommands?: string[];
 
-  readonly env?: Record<string, string>;
-  readonly envFromOutputs?: Record<string, StackOutputReference>;
+  readonly env?: Record<string, string | undefined>;
+  readonly envFromCfnOutputs?: Record<string, StackOutputReference>;
 
   /**
    * If given, override the scope from the produce call with this scope.
@@ -114,7 +114,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     return new CodeBuildFactory(constructId, {
       commands: scriptStep.commands,
       env: scriptStep.env,
-      envFromOutputs: scriptStep.envFromOutputs,
+      envFromCfnOutputs: scriptStep.envFromCfnOutputs,
       inputs: scriptStep.inputs,
       outputs: scriptStep.outputs,
       stepId: scriptStep.id,
@@ -204,8 +204,9 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 
     // Partition environment variables into environment variables that can go on the project
     // and environment variables that MUST go in the pipeline (those that reference CodePipeline variables)
+    const env = noUndefined(this.props.env ?? {});
 
-    const [actionEnvs, projectEnvs] = partition(Object.entries(this.props.env ?? {}), ([, v]) => containsPipelineVariable(v));
+    const [actionEnvs, projectEnvs] = partition(Object.entries(env ?? {}), ([, v]) => containsPipelineVariable(v));
 
     const environment = mergeBuildEnvironments(
       projectOptions?.buildEnvironment ?? {},
@@ -272,7 +273,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       });
     }
 
-    const stackOutputEnv = mapValues(this.props.envFromOutputs ?? {}, outputRef =>
+    const stackOutputEnv = mapValues(this.props.envFromCfnOutputs ?? {}, outputRef =>
       `#{${stackVariableNamespace(options.queries.producingStack(outputRef))}.${outputRef.outputName}}`,
     );
 

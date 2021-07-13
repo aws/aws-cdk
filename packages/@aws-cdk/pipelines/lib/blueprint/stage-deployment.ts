@@ -58,13 +58,18 @@ export class StageDeployment {
     }
 
     for (const artifact of assembly.stacks) {
+      const thisStep = stepFromArtifact.get(artifact);
+      if (!thisStep) {
+        throw new Error('Logic error: we just added a step for this artifact but it disappeared.');
+      }
+
       const stackDependencies = artifact.dependencies.filter(isStackArtifact);
       for (const dep of stackDependencies) {
         const depStep = stepFromArtifact.get(dep);
         if (!depStep) {
           throw new Error(`Stack '${artifact.id}' depends on stack not found in same Stage: '${dep.id}'`);
         }
-        stepFromArtifact.get(artifact)?.addDependency(depStep);
+        thisStep.addStackDependency(depStep);
       }
     }
 

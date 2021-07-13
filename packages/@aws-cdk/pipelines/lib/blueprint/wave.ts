@@ -22,7 +22,7 @@ export interface WaveProps {
 }
 
 /**
- * Multiple Stages that are deployed in parallel
+ * Multiple stages that are deployed in parallel
  */
 export class Wave {
   /**

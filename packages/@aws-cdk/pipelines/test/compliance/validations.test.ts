@@ -8,6 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
+import { CodePipelineSource, SynthStep } from '../../lib';
 import { AppWithOutput, behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, PIPELINE_ENV, sortedByRunOrder, StageWithStackOutput, stringNoLongerThan, TestApp, TwoStackApp } from '../testhelpers';
 
 let app: TestApp;
@@ -121,7 +122,7 @@ behavior('script validation steps can use stack outputs as environment variables
       post: [
         new cdkp.ScriptStep('Approve', {
           commands: ['/bin/true'],
-          envFromOutputs: {
+          envFromCfnOutputs: {
             THE_OUTPUT: myApp.theOutput,
           },
         }),
@@ -198,7 +199,7 @@ behavior('stackOutput generates names limited to 100 characters', (suite) => {
       post: [
         new cdkp.ScriptStep('TestOutput', {
           commands: ['echo $BUCKET_NAME'],
-          envFromOutputs: {
+          envFromCfnOutputs: {
             BUCKET_NAME: stage.output,
           },
         }),
@@ -305,15 +306,18 @@ behavior('can use additional output artifacts from build', (suite) => {
   });
 
   suite.modern(() => {
+    const synth = new SynthStep('Synth', {
+      input: CodePipelineSource.github('test/test'),
+      commands: ['synth'],
+    });
+
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      additionalOutputDirectories: {
-        TestArtifact: 'test',
-      },
+      synth,
     });
     pipeline.addStage(new TwoStackApp(app, 'Test'), {
       post: [
         new cdkp.ScriptStep('UseBuildArtifact', {
-          input: pipeline.synth.additionalOutput('TestArtifact'),
+          input: synth.addOutputDirectory('test'),
           commands: ['set -eu', 'true'],
         }),
       ],
