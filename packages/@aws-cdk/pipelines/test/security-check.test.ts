@@ -67,20 +67,14 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'codepipeline:GetPipelineState',
-              'codepipeline:PutApprovalResult',
-            ],
+            Action: ['codepipeline:GetPipelineState', 'codepipeline:PutApprovalResult'],
             Condition: {
-              StringEquals: {
-                'aws:ResourceTag/SECURITY_CHECK': 'ALLOW_APPROVE',
-              },
+              StringEquals: { 'aws:ResourceTag/SECURITY_CHECK': 'ALLOW_APPROVE' },
             },
             Effect: 'Allow',
             Resource: '*',
           },
         ],
-        Version: '2012-10-17',
       },
       PolicyName: 'CdkPipelineApplicationSecurityCheckCDKPipelinesAutoApproveServiceRoleDefaultPolicyDC837235',
     });
@@ -89,31 +83,8 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'logs:CreateLogGroup',
-              'logs:CreateLogStream',
-              'logs:PutLogEvents',
-            ],
+            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':logs:us-pipeline:123pipeline:log-group:/aws/codebuild/',
-                  { Ref: 'CdkPipelineApplicationSecurityCheckCDKSecurityCheckE8A1395F' },
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':logs:us-pipeline:123pipeline:log-group:/aws/codebuild/',
-                  { Ref: 'CdkPipelineApplicationSecurityCheckCDKSecurityCheckE8A1395F' },
-                  ':*',
-                ]],
-              },
-            ],
           },
           {
             Action: [
@@ -124,21 +95,9 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
               'codebuild:BatchPutCodeCoverages',
             ],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':codebuild:us-pipeline:123pipeline:report-group/',
-                { Ref: 'CdkPipelineApplicationSecurityCheckCDKSecurityCheckE8A1395F' },
-                '-*',
-              ]],
-            },
           },
           {
-            Action: [
-              'cloudformation:DescribeStacks',
-              'cloudformation:GetTemplate',
-            ],
+            Action: ['cloudformation:DescribeStacks', 'cloudformation:GetTemplate'],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -153,59 +112,16 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
             },
           },
           {
-            Action: [
-              's3:GetObject*',
-              's3:GetBucket*',
-              's3:List*',
-            ],
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'CdkPipelineArtifactsBucket7B46C7BF',
-                  'Arn',
-                ],
-              },
-              {
-                'Fn::Join': ['', [
-                  {
-                    'Fn::GetAtt': [
-                      'CdkPipelineArtifactsBucket7B46C7BF',
-                      'Arn',
-                    ],
-                  },
-                  '/*',
-                ]],
-              },
-            ],
           },
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-            ],
+            Action: ['kms:Decrypt', 'kms:DescribeKey'],
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'CdkPipelineArtifactsBucketEncryptionKeyDDD3258C',
-                'Arn',
-              ],
-            },
           },
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
+            Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'CdkPipelineArtifactsBucketEncryptionKeyDDD3258C',
-                'Arn',
-              ],
-            },
           },
         ],
       },
@@ -315,7 +231,6 @@ behavior('securityCheck and notification topic options generates the right resou
                 ProjectName: { Ref: 'CdkPipelineApplicationSecurityCheckCDKSecurityCheckE8A1395F' },
                 EnvironmentVariables: '[{"name":"STACK_NAME","type":"PLAINTEXT","value":"PipelineSecurityStack"},{"name":"STAGE_NAME","type":"PLAINTEXT","value":"MyStack"},{"name":"ACTION_NAME","type":"PLAINTEXT","value":"MyStackManualApproval"}]',
               },
-              InputArtifacts: [{ Name: 'Artifact_Build_Synth' }],
               Name: 'MyStackSecurityCheck',
               Namespace: 'MyStackSecurityCheck',
               RunOrder: 1,
@@ -361,8 +276,9 @@ behavior('Stages declared outside the pipeline create their own ApplicationSecur
     });
 
     // THEN
-    expect(pipelineStack).toCountResources('AWS::CodeBuild::Project', 3);
     expect(pipelineStack).toCountResources('AWS::Lambda::Function', 1);
+    // 1 for github build, 1 for synth stage, and 1 for the application security check
+    expect(pipelineStack).toCountResources('AWS::CodeBuild::Project', 3);
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       Tags: [
         {
@@ -381,13 +297,6 @@ behavior('Stages declared outside the pipeline create their own ApplicationSecur
                 ProjectName: { Ref: 'UnattachedStageStageApplicationSecurityCheckCDKSecurityCheckADCE795B' },
               },
               Name: 'UnattachedStageSecurityCheck',
-              Namespace: 'UnattachedStageSecurityCheck',
-              RoleArn: {
-                'Fn::GetAtt': [
-                  'CdkPipelineUnattachedStageUnattachedStageSecurityCheckCodePipelineActionRoleEA0C3635',
-                  'Arn',
-                ],
-              },
               RunOrder: 1,
             },
             {
@@ -396,12 +305,6 @@ behavior('Stages declared outside the pipeline create their own ApplicationSecur
                 ExternalEntityLink: 'https://#{UnattachedStageSecurityCheck.LINK}',
               },
               Name: 'UnattachedStageManualApproval',
-              RoleArn: {
-                'Fn::GetAtt': [
-                  'CdkPipelineUnattachedStageUnattachedStageManualApprovalCodePipelineActionRoleDF5263E6',
-                  'Arn',
-                ],
-              },
               RunOrder: 2,
             },
             { Name: 'Stack.Prepare', RunOrder: 3 },
