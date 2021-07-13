@@ -346,10 +346,9 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
             const nodeType = this.nodeTypeFromNode(node);
 
-            const result = factory.produce({
+            const result = factory.produceAction(pipelineStage, {
               actionName: actionName(node, sharedParent),
               runOrder,
-              stage: pipelineStage,
               artifacts: this.artifacts,
               scope: obtainScope(this.pipeline, stageName),
               fallbackArtifact: this._fallbackArtifact,
@@ -463,8 +462,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
 
     if (step instanceof ManualApprovalStep) {
       return {
-        produce: (options) => {
-          options.stage.addAction(new cpa.ManualApprovalAction({
+        produceAction: (stage, options) => {
+          stage.addAction(new cpa.ManualApprovalAction({
             actionName: options.actionName,
             runOrder: options.runOrder,
             additionalInformation: step.comment,
@@ -489,8 +488,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
     const relativeTemplatePath = path.relative(this.myCxAsmRoot, stack.absoluteTemplatePath);
 
     return {
-      produce: (options) => {
-        options.stage.addAction(new cpa.CloudFormationCreateReplaceChangeSetAction({
+      produceAction: (stage, options) => {
+        stage.addAction(new cpa.CloudFormationCreateReplaceChangeSetAction({
           actionName: options.actionName,
           runOrder: options.runOrder,
           changeSetName,
@@ -516,8 +515,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
     const account = stack.account !== Stack.of(this.scope).account ? stack.account : undefined;
 
     return {
-      produce: (options) => {
-        options.stage.addAction(new cpa.CloudFormationExecuteChangeSetAction({
+      produceAction: (stage, options) => {
+        stage.addAction(new cpa.CloudFormationExecuteChangeSetAction({
           actionName: options.actionName,
           runOrder: options.runOrder,
           changeSetName,

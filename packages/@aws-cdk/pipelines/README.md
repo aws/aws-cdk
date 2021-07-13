@@ -559,11 +559,11 @@ just illustrative, as `ManualApprovalStep` already exists):
 
 ```ts
 class MyApprovalStep extends Step implements ICodePipelineActionFactory {
-  public produce(options: ProduceActionOptions): CodePipelineActionFactoryResult {
+  public produceAction(stage: codepipeline.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
 
     // This is where you control what type of Action gets added to the
     // CodePipeline
-    options.stage.addAction(new codepipeline_actions.ManualApprovalAction({
+    stage.addAction(new codepipeline_actions.ManualApprovalAction({
       // Copy 'actionName' and 'runOrder' from the options
       actionName: options.actionName,
       runOrder: options.runOrder,

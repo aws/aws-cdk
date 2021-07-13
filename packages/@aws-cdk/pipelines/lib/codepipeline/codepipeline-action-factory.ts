@@ -20,11 +20,6 @@ export interface ProduceActionOptions {
   readonly actionName: string;
 
   /**
-   * Stage to add the action to
-   */
-  readonly stage: cp.IStage;
-
-  /**
    * RunOrder the action should get
    */
   readonly runOrder: number;
@@ -84,7 +79,7 @@ export interface ICodePipelineActionFactory {
   /**
    * Create the desired Action and add it to the pipeline
    */
-  produce(options: ProduceActionOptions): CodePipelineActionFactoryResult;
+  produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult;
 }
 
 /**

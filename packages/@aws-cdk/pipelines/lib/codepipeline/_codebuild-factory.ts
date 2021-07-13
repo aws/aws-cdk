@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -140,8 +141,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     });
 
     return {
-      produce: (options) => {
-        const result = factory.produce(options);
+      produceAction: (options) => {
+        const result = factory.produceAction(options);
         if (result.project) {
           step._setProject(result.project);
         }
@@ -167,7 +168,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     return this._project;
   }
 
-  public produce(options: ProduceActionOptions): CodePipelineActionFactoryResult {
+  public produceAction(stage: codepipeline.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const projectOptions = mergeCodeBuildOptions(options.codeBuildDefaults, this.props.projectOptions);
 
     const inputs = this.props.inputs ?? [];
@@ -281,7 +282,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       ? { _PROJECT_CONFIG_HASH: projectConfigHash }
       : {};
 
-    options.stage.addAction(new codepipeline_actions.CodeBuildAction({
+    stage.addAction(new codepipeline_actions.CodeBuildAction({
       actionName: actionName,
       input: inputArtifact,
       extraInputs: extraInputArtifacts,
