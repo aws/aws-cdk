@@ -75,19 +75,6 @@ export class PayloadFormatVersion {
 }
 
 /**
- * Specifies the TLS configuration for a private integration
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
- */
-export class TlsConfig {
-  /** hostname to verify as a string */
-  public readonly serverNameToVerify: string;
-
-  constructor(serverNameToVerify: string) {
-    this.serverNameToVerify = serverNameToVerify;
-  }
-}
-
-/**
  * The integration properties
  */
 export interface HttpIntegrationProps {
@@ -138,9 +125,9 @@ export interface HttpIntegrationProps {
   /**
    * Specifies the TLS configuration for a private integration
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
-   * @default - undefined
+   * @default - undefined - HTTP will be used to call the backend integration
    */
-  readonly tlsConfig?: TlsConfig;
+  readonly secureServerName?: string;
 }
 
 /**
@@ -164,9 +151,9 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       payloadFormatVersion: props.payloadFormatVersion?.version,
     });
 
-    if (props.tlsConfig) {
+    if (props.secureServerName) {
       integ.tlsConfig = {
-        serverNameToVerify: props.tlsConfig.serverNameToVerify,
+        serverNameToVerify: props.secureServerName,
       };
     }
 
@@ -245,9 +232,9 @@ export interface HttpRouteIntegrationConfig {
   readonly payloadFormatVersion: PayloadFormatVersion;
 
   /**
-   * Specifies the TLS configuration for a private integration
+   * Specifies the server name to verified by HTTPS when calling the backend integration
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
-   * @default - undefined
+   * @default - undefined - HTTP will be used to call the backend integration
    */
-  readonly tlsConfig?: TlsConfig
+  readonly secureServerName?: string;
 }

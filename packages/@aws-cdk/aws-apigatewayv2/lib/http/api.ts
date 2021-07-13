@@ -304,7 +304,7 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
       connectionId: config.connectionId,
       connectionType: config.connectionType,
       payloadFormatVersion: config.payloadFormatVersion,
-      tlsConfig: config.tlsConfig,
+      secureServerName: config.secureServerName,
     });
     this._integrationCache.saveIntegration(scope, config, integration);
 

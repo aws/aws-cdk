@@ -1,4 +1,3 @@
-import { SynthUtils } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, VpcLink } from '@aws-cdk/aws-apigatewayv2';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -132,9 +131,7 @@ describe('HttpAlbIntegration', () => {
       httpApi: api,
       integration: new HttpAlbIntegration({
         listener,
-        tlsConfig: {
-          serverNameToVerify: 'name-to-verify',
-        },
+        secureServerName: 'name-to-verify',
       }),
       routeKey: HttpRouteKey.with('/pets'),
     });

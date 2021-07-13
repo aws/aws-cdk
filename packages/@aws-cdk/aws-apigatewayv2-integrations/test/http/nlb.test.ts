@@ -128,16 +128,16 @@ describe('HttpNlbIntegration', () => {
       httpApi: api,
       integration: new HttpNlbIntegration({
         listener,
-        tlsConfig: {
-          serverNameToVerify: 'name-to-verify',
-        },
+        secureServerName: 'name-to-verify',
       }),
       routeKey: HttpRouteKey.with('/pets'),
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ServerNameToVerify: 'name-to-verify',
+      TlsConfig: {
+        ServerNameToVerify: 'name-to-verify',
+      },
     });
   });
 });

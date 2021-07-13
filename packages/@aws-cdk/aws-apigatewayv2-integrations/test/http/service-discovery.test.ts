@@ -113,9 +113,7 @@ describe('HttpServiceDiscoveryIntegration', () => {
       integration: new HttpServiceDiscoveryIntegration({
         vpcLink,
         service,
-        tlsConfig: {
-          serverNameToVerify: 'name-to-verify',
-        },
+        secureServerName: 'name-to-verify',
       }),
       routeKey: HttpRouteKey.with('/pets'),
     });

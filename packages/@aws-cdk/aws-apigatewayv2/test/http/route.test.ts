@@ -173,9 +173,7 @@ describe('HttpRoute', () => {
           connectionId: 'some-connection-id',
           connectionType: HttpConnectionType.VPC_LINK,
           uri: 'some-target-arn',
-          tlsConfig: {
-            serverNameToVerify: 'some-server-name',
-          },
+          secureServerName: 'some-server-name',
         };
       }
     }
