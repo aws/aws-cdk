@@ -230,13 +230,13 @@ earlier by calling `pipeline.buildPipeline()`. After you've called
 that method, you can inspect the constructs that were produced by
 accessing the properties of the `pipeline` object.
 
-#### Sources
+#### CodePipeline Sources
 
 In CodePipeline, *Sources* define where the source of your application lives.
 When a change to the source is detected, the pipeline will start executing.
 Sources objects can be created by factory methods on the `CodePipelineSource` class:
 
-* `CodePipelineSource.gitHub('org/repo', { branch, authentication })`: use a
+* `CodePipelineSource.github('org/repo', { branch, authentication })`: use a
   GitHub respository as the source. By default, it assumes your GitHub OAuth
   token lives in a Secret in Secrets Manager with the name `github-token`.
   You can override that by passing the `authentication` property.
@@ -497,11 +497,11 @@ new CodePipeline(this, 'Pipeline', {
 
 Docker can be used in 3 different places in the pipeline:
 
-- If you are using Docker image assets in your application stages: Docker will
+* If you are using Docker image assets in your application stages: Docker will
   run in the asset publishing projects.
-- If you are using Docker image assets in your stack (for example as
+* If you are using Docker image assets in your stack (for example as
   images for your CodeBuild projects): Docker will run in the self-mutate project.
-- If you are using Docker to bundle file assets anywhere in your project (for
+* If you are using Docker to bundle file assets anywhere in your project (for
   example, if you are using such construct libraries as
   `@aws-cdk/aws-lambda-nodejs`): Docker will run in the
   *synth* project.
@@ -1384,8 +1384,8 @@ update to the right state).
 
 An "S3 Access Denied" error can have two causes:
 
-- Asset hashes have changed, but self-mutation has been disabled in the pipeline.
-- You have deleted and recreated the bootstrap stack, or changed its qualifier.
+* Asset hashes have changed, but self-mutation has been disabled in the pipeline.
+* You have deleted and recreated the bootstrap stack, or changed its qualifier.
 
 #### Self-mutation step has been removed
 
