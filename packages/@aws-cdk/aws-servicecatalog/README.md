@@ -186,6 +186,6 @@ If you want to disable this feature later on, you can update it by setting the p
 ```ts fixture=portfolio-product
 // to disable tag updates:
 portfolio.constrainTagUpdates(product, {
-  allowUpdatingProvisionedProductTags: false,
+  allow: false,
 });
 ```

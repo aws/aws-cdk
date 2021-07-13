@@ -300,7 +300,7 @@ describe('portfolio associations and product constraints', () => {
   test('add tag update constraint', () => {
     portfolio.addProduct(product);
     portfolio.constrainTagUpdates(product, {
-      allowUpdatingProvisionedProductTags: true,
+      allow: true,
     });
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::ResourceUpdateConstraint', {
@@ -312,7 +312,7 @@ describe('portfolio associations and product constraints', () => {
     portfolio.constrainTagUpdates(product, {
       messageLanguage: servicecatalog.MessageLanguage.EN,
       description: 'test constraint description',
-      allowUpdatingProvisionedProductTags: false,
+      allow: false,
     });
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::ResourceUpdateConstraint', {
@@ -329,9 +329,9 @@ describe('portfolio associations and product constraints', () => {
 
     expect(() => {
       portfolio.constrainTagUpdates(product, {
-        allowUpdatingProvisionedProductTags: false,
+        allow: false,
         description: 'another test constraint description',
       });
-    }).toThrowError(/Cannot have multiple resource update constraints for association/);
+    }).toThrowError(/Cannot have multiple tag update constraints for association/);
   });
 });

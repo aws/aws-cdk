@@ -25,8 +25,8 @@ export interface CommonConstraintOptions {
  */
 export interface TagUpdateConstraintOptions extends CommonConstraintOptions {
   /**
-   * Toggle for if users should be allowed to change/update tags.
+   * Toggle for if users should be allowed to change/update tags on provisioned products.
    * @default true
    */
-  readonly allowUpdatingProvisionedProductTags?: boolean;
+  readonly allow?: boolean;
 }
