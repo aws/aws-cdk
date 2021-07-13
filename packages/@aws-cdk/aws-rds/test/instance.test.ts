@@ -692,31 +692,6 @@ describe('instance', () => {
 
   });
 
-  test('add single user rotation for master secret', () => {
-    const instance = new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-      credentials: rds.Credentials.fromUsername('syscdk'),
-      vpc,
-    });
-
-    // WHEN
-    instance.addRotationSingleUser();
-
-    // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
-      SecretId: {
-        Ref: 'DatabaseSecretAttachmentE5D1B020',
-      },
-      RotationLambdaARN: {
-        'Fn::GetAtt': [
-          'DatabaseRotationSingleUser65F55654',
-          'Outputs.RotationLambdaARN',
-        ],
-      },
-    });
-  });
-
   test('add single user rotation for additional secret which is master secret', () => {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
@@ -750,7 +725,9 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(() => instance.addRotationSingleUser()).toThrow(/without master secret/);
+    expect(() => {
+      instance.addRotationSingleUser();
+    }).toThrow(/without master secret/);
   });
 
   test('throws when trying to add single user rotation for master secret multiple times', () => {
@@ -767,7 +744,7 @@ describe('instance', () => {
     // THEN
     expect(() => {
       instance.addRotationSingleUser();
-    }).toThrow(/A single user rotation for master secret was already added to this instance/);
+    }).toThrow(/Single user rotation was already enabled for the master secret of this instance/);
   });
 
   test('throws when trying to add single user rotation for additional secret which is master secret', () => {
@@ -784,7 +761,7 @@ describe('instance', () => {
     // THEN
     expect(() => {
       instance.addRotationSingleUser({ secret: instance.secret });
-    }).toThrow(/A single user rotation for master secret was already added to this instance/);
+    }).toThrow(/Single user rotation was already enabled for the master secret of this instance/);
   });
 
   test('add single user rotation for two additional secrets', () => {
@@ -846,7 +823,7 @@ describe('instance', () => {
     // THEN
     expect(() => {
       instance.addRotationSingleUser({ secret });
-    }).toThrow(/A single user rotation for additional secret was already added to this instance/);
+    }).toThrow(/Single user rotation was already enabled for the secret 'Default\/MySecret' of this instance/);
   });
 
   test('throws when timezone is set for non-sqlserver database engine', () => {

@@ -721,36 +721,6 @@ describe('cluster', () => {
 
   });
 
-  test('add single user rotation for master secret', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      credentials: { username: 'admin' },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
-    });
-
-    // WHEN
-    cluster.addRotationSingleUser();
-
-    // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
-      SecretId: {
-        Ref: 'DatabaseSecretAttachmentE5D1B020',
-      },
-      RotationLambdaARN: {
-        'Fn::GetAtt': [
-          'DatabaseRotationSingleUser65F55654',
-          'Outputs.RotationLambdaARN',
-        ],
-      },
-    });
-  });
-
   test('add single user rotation for additional secret which is master secret', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -800,9 +770,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(() => cluster.addRotationSingleUser()).toThrow(/without master secret/);
-
-
+    expect(() => {
+      cluster.addRotationSingleUser();
+    }).toThrow(/without master secret/);
   });
 
   test('throws when trying to add single user rotation multiple times', () => {
@@ -822,7 +792,9 @@ describe('cluster', () => {
     cluster.addRotationSingleUser();
 
     // THEN
-    expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation for master secret was already added to this cluster/);
+    expect(() => {
+      cluster.addRotationSingleUser();
+    }).toThrow(/Single user rotation was already enabled for the master secret of this cluster/);
   });
 
   test('throws when trying to add single user rotation for additional secret which is master secret', () => {
@@ -844,7 +816,7 @@ describe('cluster', () => {
     // THEN
     expect(() => {
       cluster.addRotationSingleUser({ secret: cluster.secret });
-    }).toThrow(/A single user rotation for master secret was already added to this cluster/);
+    }).toThrow(/Single user rotation was already enabled for the master secret of this cluster/);
   });
 
   test('add single user rotation for two additional secrets', () => {
@@ -916,7 +888,7 @@ describe('cluster', () => {
     // THEN
     expect(() => {
       cluster.addRotationSingleUser({ secret });
-    }).toThrow(/A single user rotation for additional secret was already added to this cluster/);
+    }).toThrow(/Single user rotation was already enabled for the secret 'Default\/MySecret' of this cluster/);
   });
 
   test('create a cluster with s3 import role', () => {

@@ -542,12 +542,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
    * Adds the single user rotation of the master password to this cluster.
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
-    if (!options.secret || options.secret === this.secret) {
-      return this.addSingleUserRotationForMasterSecret(options);
-    }
-
-    const id = 'RotationSingleUser';
-    return this.addSingleUserRotationForSecret(options.secret as unknown as Construct, id, options.secret, options);
+    return !options.secret || options.secret === this.secret
+      ? this.addSingleUserRotationForMasterSecret(options)
+      : this.addSingleUserRotationForSecret(options.secret as unknown as Construct, 'RotationSingleUser', options.secret, options);
   }
 
   /**
@@ -578,11 +575,12 @@ export class DatabaseCluster extends DatabaseClusterNew {
     return this.addSingleUserRotationForSecret(this, id, this.secret, options);
   }
 
-  private addSingleUserRotationForSecret(scope: Construct, id: string, secret: secretsmanager.ISecret, options: RotationSingleUserOptions)
-    : secretsmanager.SecretRotation {
+  private addSingleUserRotationForSecret(
+    scope: Construct, id: string, secret: secretsmanager.ISecret, options: RotationSingleUserOptions,
+  ): secretsmanager.SecretRotation {
     if (Node.of(scope).tryFindChild(id)) {
-      const secretName = this === scope ? 'master' : 'additional'; // Is there a better way to do this?
-      throw new Error(`A single user rotation for ${secretName} secret was already added to this cluster.`);
+      const secretDescription = this === scope ? 'master secret' : `secret '${Node.of(secret).path}'`;
+      throw new Error(`Single user rotation was already enabled for the ${secretDescription} of this cluster!`);
     }
 
     return new secretsmanager.SecretRotation(scope, id, {

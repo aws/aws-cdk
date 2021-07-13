@@ -897,11 +897,9 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    *                if you want to override the defaults
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
-    if (!options.secret || options.secret === this.secret) {
-      return this.addSingleUserRotationForMasterSecret(options);
-    }
-
-    return this.addSingleUserRotationForSecret(options.secret as unknown as Construct, 'RotationSingleUser', options.secret, options);
+    return !options.secret || options.secret === this.secret
+      ? this.addSingleUserRotationForMasterSecret(options)
+      : this.addSingleUserRotationForSecret(options.secret as unknown as Construct, 'RotationSingleUser', options.secret, options);
   }
 
   /**
@@ -930,11 +928,12 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     return this.addSingleUserRotationForSecret(this, 'RotationSingleUser', this.secret, options);
   }
 
-  private addSingleUserRotationForSecret(scope: Construct, id: string, secret: secretsmanager.ISecret, options: RotationSingleUserOptions)
-    : secretsmanager.SecretRotation {
+  private addSingleUserRotationForSecret(
+    scope: Construct, id: string, secret: secretsmanager.ISecret, options: RotationSingleUserOptions,
+  ): secretsmanager.SecretRotation {
     if (Node.of(scope).tryFindChild(id)) {
-      const secretName = this === scope ? 'master' : 'additional'; // Is there a better way to do this?
-      throw new Error(`A single user rotation for ${secretName} secret was already added to this instance.`);
+      const secretDescription = this === scope ? 'master secret' : `secret '${Node.of(secret).path}'`;
+      throw new Error(`Single user rotation was already enabled for the ${secretDescription} of this instance.`);
     }
 
     return new secretsmanager.SecretRotation(scope, id, {
