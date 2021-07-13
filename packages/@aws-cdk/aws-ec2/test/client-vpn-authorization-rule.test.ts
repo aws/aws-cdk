@@ -67,4 +67,17 @@ describe('ClientVpnAuthorizationRule constructor', () => {
     }).toThrow();
     expect(stack.node.children.length).toBe(0);
   });
+  test('supplying clientVpnEndoint (deprecated due to typo) should still work', () => {
+    const clientVpnEndoint: IClientVpnEndpoint = {
+      endpointId: 'myClientVpnEndpoint',
+      targetNetworksAssociated: [],
+      stack,
+      env: { account: 'myAccount', region: 'us-east-1' },
+      connections: new Connections(),
+      node: stack.node,
+    };
+    new ClientVpnAuthorizationRule(stack, 'Rule', { cidr: '10.0.10.0/32', clientVpnEndoint });
+    expect(stack).toCountResources('AWS::EC2::ClientVpnAuthorizationRule', 1);
+    expect(stack.node.children.length).toBe(1);
+  });
 });

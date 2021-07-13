@@ -63,9 +63,10 @@ export class ClientVpnAuthorizationRule extends Resource {
           ', but not both',
       );
     }
+    const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;
     super(scope, id);
     new CfnClientVpnAuthorizationRule(this, 'Resource', {
-      clientVpnEndpointId: props.clientVpnEndpoint!.endpointId,
+      clientVpnEndpointId: clientVpnEndpoint!.endpointId,
       targetNetworkCidr: props.cidr,
       accessGroupId: props.groupId,
       authorizeAllGroups: !props.groupId,
