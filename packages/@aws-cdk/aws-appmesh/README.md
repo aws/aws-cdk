@@ -678,7 +678,7 @@ gateway.addGatewayRoute('gateway-route-http-1', {
     routeTarget: virtualService,
     match: {
       // If the request full path is '/path-to-app/xxxxx', this rewrites the path to '/rewrittenUri/xxxxx'
-      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app', appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUri/')),    
+      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app/', appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUri/')),    
     },
   }),
 });
