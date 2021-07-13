@@ -376,7 +376,7 @@ gateway.addGatewayRoute('gateway1-route-http2-2', {
   routeSpec: appmesh.GatewayRouteSpec.http2({
     routeTarget: virtualService,
     match: {
-      path: appmesh.HttpGatewayRoutePathMatch.exactly('/', '/'),
+      path: appmesh.HttpGatewayRoutePathMatch.exactly('/exact', '/rewrittenpath'),
     },
   }),
 });

@@ -2,7 +2,7 @@ import { CfnGatewayRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
 import { HttpGatewayRoutePathMatch } from './http-route-path-match';
-import { validateGrpcMatch, validateGrpcMatchArrayLength } from './private/utils';
+import { validateGrpcMatchArrayLength, validateGrpcGatewayRouteMatch } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
@@ -268,18 +268,17 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
-    const pathMatchConfig = this.match?.path?.bind(scope);
+    const pathMatchConfig = (this.match?.path ?? HttpGatewayRoutePathMatch.startsWith('/')).bind(scope);
     const defaultTargetHostname = this.match?.rewriteRequestHostname;
 
     // Set prefix path match to '/' if none of path matches are defined.
-    const prefixPathMatch = pathMatchConfig ? pathMatchConfig.prefixPathMatch : '/';
     const prefixPathRewrite = pathMatchConfig?.prefixPathRewrite;
     const wholePathRewrite = pathMatchConfig?.wholePathRewrite;
 
     const httpConfig: CfnGatewayRoute.HttpGatewayRouteProperty = {
       match: {
-        prefix: prefixPathMatch,
-        path: pathMatchConfig?.wholePathMatch,
+        prefix: pathMatchConfig.prefixPathMatch,
+        path: pathMatchConfig.wholePathMatch,
         hostname: this.match?.hostname?.bind(scope).hostnameMatch,
         method: this.match?.method,
         headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
@@ -328,7 +327,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
   public bind(scope: Construct): GatewayRouteSpecConfig {
     const metadataMatch = this.match.metadata;
 
-    validateGrpcMatch(this.match);
+    validateGrpcGatewayRouteMatch(this.match);
     validateGrpcMatchArrayLength(metadataMatch);
 
     return {

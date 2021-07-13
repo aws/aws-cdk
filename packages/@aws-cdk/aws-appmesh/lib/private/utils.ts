@@ -1,5 +1,6 @@
 import { Token, TokenComparison } from '@aws-cdk/core';
 import { CfnVirtualNode } from '../appmesh.generated';
+import { GrpcGatewayRouteMatch } from '../gateway-route-spec';
 import { HeaderMatch } from '../header-match';
 import { ListenerTlsOptions } from '../listener-tls-options';
 import { QueryParameterMatch } from '../query-parameter-match';
@@ -125,10 +126,19 @@ export function validateGrpcMatchArrayLength(metadata?: HeaderMatch[]): void {
 }
 
 /**
- * This is the helper method to validate at least one of gRPC match type is defined.
+ * This is the helper method to validate at least one of gRPC route match type is defined.
  */
-export function validateGrpcMatch(match: GrpcRouteMatch): void {
+export function validateGrpcRouteMatch(match: GrpcRouteMatch): void {
   if (match.serviceName === undefined && match.metadata === undefined && match.methodName === undefined) {
     throw new Error('At least one gRPC match property must be provided');
+  }
+}
+
+/**
+ * This is the helper method to validate at least one of gRPC gateway route match type is defined.
+ */
+export function validateGrpcGatewayRouteMatch(match: GrpcGatewayRouteMatch): void {
+  if (match.serviceName === undefined && match.metadata === undefined && match.hostname === undefined) {
+    throw new Error('At least one gRPC gateway route match property must be provided');
   }
 }

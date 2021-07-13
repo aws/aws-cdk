@@ -631,7 +631,7 @@ The `backendDefaults` property is added to the node while creating the virtual g
 A _gateway route_ is attached to a virtual gateway and routes traffic to an existing virtual service.
 If a route matches a request, it can distribute traffic to a target virtual service.
 
-For HTTP based routes, the match field can be used to match on 
+For HTTP based gateway routes, the match field can be used to match on 
 path (prefix, exact, or regex), HTTP method, host name, HTTP headers, and query parameters.
 By default, an HTTP based route will match all requests.
 
@@ -646,7 +646,7 @@ gateway.addGatewayRoute('gateway-route-http', {
 });
 ```
 
-For gRPC based routes, the match field can be used to match on service name, host name, and metadata.
+For gRPC based gateway routes, the match field can be used to match on service name, host name, and metadata.
 
 ```ts
 gateway.addGatewayRoute('gateway-route-grpc', {
@@ -659,16 +659,16 @@ gateway.addGatewayRoute('gateway-route-grpc', {
 });
 ```
 
-For HTTP based routes, App Mesh automatically rewrites the matched path in Gateway Route to “/”.
-This default path rewrite can be configured by specifying the rewrite rule when defining the path match:
+For HTTP based gateway routes, App Mesh automatically rewrites the matched path in Gateway Route to “/”.
+This automatic rewrite configuration can be overwritten in following ways:
 
 ```ts
 gateway.addGatewayRoute('gateway-route-http', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      // This disables the default rewrite to '/' and retains '/path-to-app'.
-      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app', appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix()),
+      // This disables the default rewrite to '/', and retains original path.
+      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app/', appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix()),
     },
   }),
 });

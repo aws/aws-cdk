@@ -1558,7 +1558,7 @@
             "Action": {
               "Rewrite": {
                 "Path": {
-                  "Exact": "/"
+                  "Exact": "/rewrittenpath"
                 }
               },
               "Target": {
@@ -1574,7 +1574,7 @@
             },
             "Match": {
               "Path": {
-                "Exact": "/"
+                "Exact": "/exact"
               }
             }
           }

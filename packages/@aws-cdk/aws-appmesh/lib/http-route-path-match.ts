@@ -97,44 +97,46 @@ class HttpRouteWholePathMatch extends HttpRoutePathMatch {
 }
 
 /**
- * Path and Prefix properties for HTTP gateway route match and rewrite.
+ * The type returned from the `bind()` method in {@link HttpGatewayRoutePathMatch}.
  */
 export interface HttpGatewayRoutePathMatchConfig {
   /**
-   * Gateway route CFN configuration for HTTP path match.
+   * Gateway route configuration for matching on the complete URL path of the request.
    *
-   * @default - no path match.
+   * @default - no matching will be performed on the complete URL path
    */
   readonly wholePathMatch?: CfnGatewayRoute.HttpPathMatchProperty;
 
   /**
-   * String defining the HTTP prefix match.
+   * Gateway route configuration for matching on the prefix of the URL path of the request.
    *
-   * @default - matches requests with any path
+   * @default - no matching will be performed on the prefix of the URL path
    */
   readonly prefixPathMatch?: string;
 
   /**
-   * Gateway route CFN configuration for HTTP path rewrite.
+   * Gateway route configuration for rewriting the complete URL path of the request..
    *
-   * @default - no path rewrite
+   * @default - no rewrite will be performed on the request's complete URL path
    */
   readonly wholePathRewrite?: CfnGatewayRoute.HttpGatewayRoutePathRewriteProperty;
 
   /**
-   * Gateway route CFN configuration for HTTP prefix rewrite.
+   * Gateway route configuration for rewriting the prefix of the URL path of the request.
    *
-   * @default - rewrite prefix to '/'.
+   * @default - rewrites the request's URL path to '/'
    */
   readonly prefixPathRewrite?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
 }
 
 /**
- * Defines HTTP gateway route path or prefix request match.
+ * Defines HTTP gateway route matching based on the URL path of the request.
  */
 export abstract class HttpGatewayRoutePathMatch {
   /**
    * The value of the path must match the specified value exactly.
+   * The provided `path` must start with the '/' character.
+   * If path rewrite is specified, the provided `path must also end with the `/` character.
    *
    * @param path the exact path to match on
    * @param exactPathRewrite the value to substitute for the matched part of the path of the gateway request URL
@@ -156,13 +158,14 @@ export abstract class HttpGatewayRoutePathMatch {
   /**
    * The value of the path must match the specified prefix.
    *
-   * @param prefixMatch This parameter must always start with /, which by itself matches all requests to the virtual service name.
-   *  You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
-   *  and you want the gateway route to match requests to my-service.local/metrics, your prefix should be /metrics.
+   * @param prefixPathMatch the value to use to match the beginning of the path part of the URL of the request.
+   *   It must start with the '/' character. If provided as "/", matches all requests.
+   *   For example, if your virtual service name is "my-service.local"
+   *   and you want the route to match requests to "my-service.local/metrics", your prefix should be "/metrics".
    * @param prefixRewrite Specify either disabling automatic rewrite to '/' or rewriting to specified prefix path.
    */
-  public static startsWith(prefixMatch: string, prefixRewrite?: HttpGatewayRoutePathRewrite): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRoutePrefixPathMatch(prefixMatch, prefixRewrite);
+  public static startsWith(prefixPathMatch: string, prefixRewrite?: HttpGatewayRoutePathRewrite): HttpGatewayRoutePathMatch {
+    return new HttpGatewayRoutePrefixPathMatch(prefixPathMatch, prefixRewrite);
   }
 
   /**
@@ -177,16 +180,26 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
     private readonly pathRewrite?: HttpGatewayRoutePathRewrite,
   ) {
     super();
+
+    if (this.pathRewrite) {
+      if (this.prefixPathMatch[0] !== '/') {
+        throw new Error('When prefix path for the rewrite is specified, prefix path for the match must start with \'/\', '
+          + `got: ${this.prefixPathMatch}`);
+      }
+      if (this.prefixPathMatch[this.prefixPathMatch.length-1] !== '/') {
+        throw new Error('When prefix path for the rewrite is specified, prefix path for the match must end with \'/\', '
+          + `got: ${this.prefixPathMatch}`);
+      }
+    }
   }
 
   bind(scope: Construct): HttpGatewayRoutePathMatchConfig {
     const prefixPathRewrite = this.pathRewrite?.bind(scope).prefixPathPath;
-
-    if (this.prefixPathMatch && this.prefixPathMatch[0] !== '/') {
-      throw new Error(`Prefix Path for the match must start with \'/\', got: ${this.prefixPathMatch}`);
-    }
     if (prefixPathRewrite?.value && prefixPathRewrite.value[0] !== '/') {
-      throw new Error(`Prefix Path for the rewrite must start with \'/\', got: ${prefixPathRewrite.value}`);
+      throw new Error(`Prefix path for the rewrite must start with \'/\', got: ${prefixPathRewrite.value}`);
+    }
+    if (prefixPathRewrite?.value && prefixPathRewrite.value[prefixPathRewrite.value.length-1] !== '/') {
+      throw new Error(`Prefix path for the rewrite must end with \'/\', got: ${prefixPathRewrite.value}`);
     }
 
     return {
@@ -202,16 +215,16 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
     private readonly wholePathRewrite?: CfnGatewayRoute.HttpGatewayRoutePathRewriteProperty,
   ) {
     super();
-  }
 
-  bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     if (this.wholePathMatch?.exact && this.wholePathMatch.exact[0] !== '/') {
       throw new Error(`Exact Path for the match must start with \'/\', got: ${ this.wholePathMatch.exact }`);
     }
     if (this.wholePathRewrite?.exact && this.wholePathRewrite.exact[0] !== '/') {
       throw new Error(`Exact Path for the rewrite must start with \'/\', got: ${ this.wholePathRewrite.exact }`);
     }
+  }
 
+  bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
       wholePathMatch: this.wholePathMatch,
       wholePathRewrite: this.wholePathRewrite?.exact
@@ -222,19 +235,19 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
 }
 
 /**
- * Prefix properties for HTTP gateway route rewrite.
+ * The type returned from the `bind()` method in {@link HttpGatewayRoutePathRewrite}.
  */
 export interface HttpGatewayRoutePrefixPathRewriteConfig {
   /**
-   * GatewayRoute CFN configuration for HTTP gateway route prefix rewrite.
+   * Gateway route configuration for rewriting the URL path of the request.
    *
-   * @default - rewrite prefix to '/'.
+   * @default - rewrites the request's URL path to '/'
    */
   readonly prefixPathPath?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
 }
 
 /**
- * Used to generate HTTP gateway route rewrite other than the host name.
+ * Defines HTTP gateway route path rewrite based on the URL path of the request.
  */
 export abstract class HttpGatewayRoutePathRewrite {
   /**
@@ -249,7 +262,7 @@ export abstract class HttpGatewayRoutePathRewrite {
   /**
    * Replace the incoming route prefix when rewritten.
    *
-   * @param value The value used to replace the incoming route prefix when rewritten.
+   * @param value the value used to replace the incoming route prefix when rewritten
    */
   public static customPrefix(value: string): HttpGatewayRoutePathRewrite {
     return new HttpGatewayRoutePrefixPathRewriteImpl({ value: value } );
