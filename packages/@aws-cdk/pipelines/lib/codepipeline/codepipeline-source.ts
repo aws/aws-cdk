@@ -1,3 +1,4 @@
+import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cp_actions from '@aws-cdk/aws-codepipeline-actions';
 import { SecretValue, Token } from '@aws-cdk/core';
 import { FileSet, Step } from '../blueprint';
@@ -55,7 +56,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   // tells `PipelineGraph` to hoist a "Source" step
   public readonly isSource = true;
 
-  public abstract produceAction(options: ProduceActionOptions): CodePipelineActionFactoryResult;
+  public abstract produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult;
 }
 
 /**
@@ -115,8 +116,8 @@ class GitHubSource extends CodePipelineSource {
     this.primaryOutput = new FileSet('Source', this);
   }
 
-  public produceAction(options: ProduceActionOptions): CodePipelineActionFactoryResult {
-    options.stage.addAction(new cp_actions.GitHubSourceAction({
+  public produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
+    stage.addAction(new cp_actions.GitHubSourceAction({
       actionName: options.actionName,
       oauthToken: this.authentication,
       output: options.artifacts.toCodePipeline(this.primaryOutput!),

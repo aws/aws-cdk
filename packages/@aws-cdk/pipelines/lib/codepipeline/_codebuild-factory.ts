@@ -141,8 +141,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     });
 
     return {
-      produceAction: (options) => {
-        const result = factory.produceAction(options);
+      produceAction: (stage, options) => {
+        const result = factory.produceAction(stage, options);
         if (result.project) {
           step._setProject(result.project);
         }
