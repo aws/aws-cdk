@@ -30,17 +30,17 @@ describe('Portfolio', () => {
       });
     }),
 
-    test('portfolio with explicit acceptLanguage and description', () => {
+    test('portfolio with explicit message language and description', () => {
       new servicecatalog.Portfolio(stack, 'MyPortfolio', {
         displayName: 'testPortfolio',
         providerName: 'testProvider',
         description: 'test portfolio description',
-        acceptLanguage: servicecatalog.AcceptLanguage.ZH,
+        messageLanguage: servicecatalog.MessageLanguage.ZH,
       });
 
       expect(stack).toHaveResourceLike('AWS::ServiceCatalog::Portfolio', {
         Description: 'test portfolio description',
-        AcceptLanguage: servicecatalog.AcceptLanguage.ZH,
+        AcceptLanguage: servicecatalog.MessageLanguage.ZH,
       });
     }),
 
@@ -185,7 +185,7 @@ describe('Portfolio', () => {
 
       portfolio.shareWithAccount(shareAccountId, {
         shareTagOptions: true,
-        acceptLanguage: servicecatalog.AcceptLanguage.EN,
+        messageLanguage: servicecatalog.MessageLanguage.EN,
       });
 
       expect(stack).toHaveResourceLike('AWS::ServiceCatalog::PortfolioShare', {
@@ -257,5 +257,84 @@ describe('Portfolio', () => {
       portfolio.giveAccessToRole(role);
       portfolio.giveAccessToRole(role);
     });
+  });
+});
+
+describe('portfolio associations and product constraints', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let portfolio: servicecatalog.Portfolio;
+  let product: servicecatalog.CloudFormationProduct;
+  let testStackNameCounter = 0; //We need to maintain unique stack names since we use node addresses for ids
+
+  beforeEach(() => {
+    stack = new cdk.Stack(app, `TestStack${testStackNameCounter}`);
+    testStackNameCounter += 1;
+
+    portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+      displayName: 'testPortfolio',
+      providerName: 'testProvider',
+    });
+
+    product = new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+        },
+      ],
+    });
+  }),
+
+  test('basic portfolio product association', () => {
+    portfolio.addProduct(product);
+
+    expect(stack).toHaveResource('AWS::ServiceCatalog::PortfolioProductAssociation');
+  });
+
+  test('portfolio product associations are idempotent', () => {
+    portfolio.addProduct(product);
+    portfolio.addProduct(product); // If not idempotent these calls should fail
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::PortfolioProductAssociation', 1); //check anyway
+  }),
+
+  test('add tag update constraint', () => {
+    portfolio.addProduct(product);
+    portfolio.allowTagUpdates(product, {
+      allowUpdatingProvisionedProductTags: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::ResourceUpdateConstraint', {
+      TagUpdateOnProvisionedProduct: 'ALLOWED',
+    });
+  });
+
+  test('tag update constraint still adds without explicit association', () => {
+    portfolio.allowTagUpdates(product, {
+      messageLanguage: servicecatalog.MessageLanguage.EN,
+      description: 'test constraint description',
+      allowUpdatingProvisionedProductTags: false,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::ResourceUpdateConstraint', {
+      AcceptLanguage: servicecatalog.MessageLanguage.EN,
+      Description: 'test constraint description',
+      TagUpdateOnProvisionedProduct: 'NOT_ALLOWED',
+    });
+  }),
+
+  test('fails to add multiple tag update constraints', () => {
+    portfolio.allowTagUpdates(product, {
+      description: 'test constraint description',
+    });
+
+    expect(() => {
+      portfolio.allowTagUpdates(product, {
+        allowUpdatingProvisionedProductTags: false,
+        description: 'another test constraint description',
+      });
+    }).toThrowError(/Cannot have multiple resource update constraints for association/);
   });
 });

@@ -1,8 +1,11 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { AcceptLanguage } from './common';
+import { MessageLanguage } from './common';
+import { TagUpdateConstraintOptions } from './constraints';
+import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
+import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -20,10 +23,11 @@ export interface PortfolioShareOptions {
   readonly shareTagOptions?: boolean;
 
   /**
-   * The accept language of the share
+   * The message language of the share.
+   * Controls status and error message language for share.
    * @default - accept language not specified
    */
-  readonly acceptLanguage?: AcceptLanguage;
+  readonly messageLanguage?: MessageLanguage;
 }
 
 /**
@@ -66,6 +70,17 @@ export interface IPortfolio extends cdk.IResource {
    * @param options Options for the initiate share
    */
   shareWithAccount(accountId: string, options?: PortfolioShareOptions): void;
+
+  /**
+   * Associate portfolio with the given product.
+   * @param product A service catalog produt.
+   */
+  addProduct(product: IProduct): void;
+
+  /**
+   * Allow or disallow tag updates, which adds a Resource Update Constraint.
+   */
+  allowTagUpdates(product: IProduct, options?: TagUpdateConstraintOptions): void;
 }
 
 abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
@@ -85,14 +100,22 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     this.associatePrincipal(group.groupArn, group.node.addr);
   }
 
+  public addProduct(product: IProduct) {
+    AssociationManager.associateProductWithPortfolio(this, this, product);
+  }
+
   public shareWithAccount(accountId: string, options: PortfolioShareOptions = {}): void {
     const hashId = this.generateUniqueHash(accountId);
     new CfnPortfolioShare(this, `PortfolioShare${hashId}`, {
       portfolioId: this.portfolioId,
       accountId: accountId,
       shareTagOptions: options.shareTagOptions,
-      acceptLanguage: options.acceptLanguage,
+      acceptLanguage: options.messageLanguage,
     });
+  }
+
+  public allowTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}) {
+    AssociationManager.allowTagUpdates(this, this, product, options);
   }
 
   /**
@@ -132,10 +155,11 @@ export interface PortfolioProps {
   readonly providerName: string;
 
   /**
-   * The accept language.
+   * The language code. Controls language for status logging and errors.
+   * If not specified will default to English in the console and CLI.
    * @default - No accept language provided
    */
-  readonly acceptLanguage?: AcceptLanguage;
+  readonly messageLanguage?: MessageLanguage;
 
   /**
    * Description for portfolio.
@@ -156,7 +180,7 @@ export class Portfolio extends PortfolioBase {
    * @param portfolioArn the Amazon Resource Name of the existing portfolio.
    */
   public static fromPortfolioArn(scope: Construct, id: string, portfolioArn: string): IPortfolio {
-    const arn = cdk.Stack.of(scope).parseArn(portfolioArn);
+    const arn = cdk.Stack.of(scope).splitArn(portfolioArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
     const portfolioId = arn.resourceName;
 
     if (!portfolioId) {
@@ -190,7 +214,7 @@ export class Portfolio extends PortfolioBase {
       displayName: props.displayName,
       providerName: props.providerName,
       description: props.description,
-      acceptLanguage: props.acceptLanguage,
+      acceptLanguage: props.messageLanguage,
     });
     this.portfolioId = this.portfolio.ref;
     this.portfolioArn = cdk.Stack.of(this).formatArn({
