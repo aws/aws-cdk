@@ -136,7 +136,6 @@ export abstract class HttpGatewayRoutePathMatch {
   /**
    * The value of the path must match the specified value exactly.
    * The provided `path` must start with the '/' character.
-   * If path rewrite is specified, the provided `path must also end with the `/` character.
    *
    * @param path the exact path to match on
    * @param exactPathRewrite the value to substitute for the matched part of the path of the gateway request URL
@@ -159,7 +158,7 @@ export abstract class HttpGatewayRoutePathMatch {
    * The value of the path must match the specified prefix.
    *
    * @param prefixPathMatch the value to use to match the beginning of the path part of the URL of the request.
-   *   It must start with the '/' character. If provided as "/", matches all requests.
+   *   If provided as "/", matches all requests.
    *   For example, if your virtual service name is "my-service.local"
    *   and you want the route to match requests to "my-service.local/metrics", your prefix should be "/metrics".
    * @param prefixRewrite Specify either disabling automatic rewrite to '/' or rewriting to specified prefix path.
@@ -178,33 +177,12 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly prefixPathMatch: string,
     private readonly pathRewrite?: HttpGatewayRoutePathRewrite,
-  ) {
-    super();
-
-    if (this.pathRewrite) {
-      if (this.prefixPathMatch[0] !== '/') {
-        throw new Error('When prefix path for the rewrite is specified, prefix path for the match must start with \'/\', '
-          + `got: ${this.prefixPathMatch}`);
-      }
-      if (this.prefixPathMatch[this.prefixPathMatch.length-1] !== '/') {
-        throw new Error('When prefix path for the rewrite is specified, prefix path for the match must end with \'/\', '
-          + `got: ${this.prefixPathMatch}`);
-      }
-    }
-  }
+  ) { super(); }
 
   bind(scope: Construct): HttpGatewayRoutePathMatchConfig {
-    const prefixPathRewrite = this.pathRewrite?.bind(scope).prefixPathPath;
-    if (prefixPathRewrite?.value && prefixPathRewrite.value[0] !== '/') {
-      throw new Error(`Prefix path for the rewrite must start with \'/\', got: ${prefixPathRewrite.value}`);
-    }
-    if (prefixPathRewrite?.value && prefixPathRewrite.value[prefixPathRewrite.value.length-1] !== '/') {
-      throw new Error(`Prefix path for the rewrite must end with \'/\', got: ${prefixPathRewrite.value}`);
-    }
-
     return {
       prefixPathMatch: this.prefixPathMatch,
-      prefixPathRewrite: prefixPathRewrite,
+      prefixPathRewrite: this.pathRewrite?.bind(scope).prefixPathRewrite,
     };
   }
 }
@@ -213,16 +191,7 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly wholePathMatch: CfnGatewayRoute.HttpPathMatchProperty,
     private readonly wholePathRewrite?: CfnGatewayRoute.HttpGatewayRoutePathRewriteProperty,
-  ) {
-    super();
-
-    if (this.wholePathMatch?.exact && this.wholePathMatch.exact[0] !== '/') {
-      throw new Error(`Exact Path for the match must start with \'/\', got: ${ this.wholePathMatch.exact }`);
-    }
-    if (this.wholePathRewrite?.exact && this.wholePathRewrite.exact[0] !== '/') {
-      throw new Error(`Exact Path for the rewrite must start with \'/\', got: ${ this.wholePathRewrite.exact }`);
-    }
-  }
+  ) { super(); }
 
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
@@ -243,7 +212,7 @@ export interface HttpGatewayRoutePrefixPathRewriteConfig {
    *
    * @default - rewrites the request's URL path to '/'
    */
-  readonly prefixPathPath?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
+  readonly prefixPathRewrite?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
 }
 
 /**
@@ -281,7 +250,7 @@ class HttpGatewayRoutePrefixPathRewriteImpl extends HttpGatewayRoutePathRewrite 
 
   bind(_scope: Construct): HttpGatewayRoutePrefixPathRewriteConfig {
     return {
-      prefixPathPath: this.prefixRewrite,
+      prefixPathRewrite: this.prefixRewrite,
     };
   }
 }

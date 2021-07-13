@@ -271,7 +271,6 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
     const pathMatchConfig = (this.match?.path ?? HttpGatewayRoutePathMatch.startsWith('/')).bind(scope);
     const defaultTargetHostname = this.match?.rewriteRequestHostname;
 
-    // Set prefix path match to '/' if none of path matches are defined.
     const prefixPathRewrite = pathMatchConfig?.prefixPathRewrite;
     const wholePathRewrite = pathMatchConfig?.wholePathRewrite;
 
