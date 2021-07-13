@@ -19,7 +19,7 @@ describe('blueprint with one stage', () => {
   let blueprint: cdkp.Blueprint;
   beforeEach(() => {
     blueprint = new cdkp.Blueprint({
-      synthStep: new cdkp.SynthStep('Synth', {
+      synth: new cdkp.SynthStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         commands: ['build'],
       }),
@@ -70,7 +70,7 @@ describe('blueprint with wave and stage', () => {
   let blueprint: cdkp.Blueprint;
   beforeEach(() => {
     blueprint = new cdkp.Blueprint({
-      synthStep: new cdkp.SynthStep('Synth', {
+      synth: new cdkp.SynthStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         commands: ['build'],
       }),
@@ -119,7 +119,7 @@ describe('options for other engines', () => {
   test('"publishTemplate" will add steps to publish CFN templates as assets', () => {
     // GIVEN
     const blueprint = new cdkp.Blueprint({
-      synthStep: new cdkp.SynthStep('Synth', {
+      synth: new cdkp.SynthStep('Synth', {
         commands: ['build'],
       }),
     });
@@ -137,7 +137,7 @@ describe('options for other engines', () => {
   test('"prepareStep: false" can be used to disable the "prepare" step for stack deployments', () => {
     // GIVEN
     const blueprint = new cdkp.Blueprint({
-      synthStep: new cdkp.SynthStep('Synth', {
+      synth: new cdkp.SynthStep('Synth', {
         commands: ['build'],
       }),
     });
@@ -162,7 +162,7 @@ describe('with app with output', () => {
   let scriptStep: cdkp.ScriptStep;
   beforeEach(() => {
     blueprint = new cdkp.Blueprint({
-      synthStep: new cdkp.SynthStep('Synth', {
+      synth: new cdkp.SynthStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         commands: ['build'],
       }),

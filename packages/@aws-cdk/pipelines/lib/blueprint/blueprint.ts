@@ -16,7 +16,7 @@ export interface BlueprintProps {
    * configured correctly; if you use a different kind of `Step`, you
    * may need to configure it explicitly.
    */
-  readonly synthStep: Step;
+  readonly synth: Step;
 }
 
 /**
@@ -30,7 +30,7 @@ export class Blueprint {
   /**
    * The build step that produces the CDK Cloud Assembly
    */
-  public readonly synthStep: Step;
+  public readonly synth: Step;
 
   /**
    * The waves in this pipeline
@@ -38,7 +38,7 @@ export class Blueprint {
   public readonly waves: Wave[];
 
   constructor(props: BlueprintProps) {
-    this.synthStep = props.synthStep;
+    this.synth = props.synth;
     this.waves = [];
   }
 

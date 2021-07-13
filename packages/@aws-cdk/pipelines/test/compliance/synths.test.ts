@@ -302,7 +302,7 @@ behavior('CodeBuild: environment variables specified in multiple places are corr
 
   suite.modern(() => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      synthStep: new CodeBuildStep('Synth', {
+      synth: new CodeBuildStep('Synth', {
         env: {
           SOME_ENV_VAR: 'SomeValue',
         },
@@ -326,7 +326,7 @@ behavior('CodeBuild: environment variables specified in multiple places are corr
 
   suite.additional('modern2, using the specific CodeBuild action', () => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      synthStep: new cdkp.CodeBuildStep('Synth', {
+      synth: new cdkp.CodeBuildStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         primaryOutputDirectory: '.',
         env: {
@@ -488,7 +488,7 @@ behavior('Synth can output additional artifacts', (suite) => {
 
   suite.modern(() => {
     // WHEN
-    const synthStep = new cdkp.SynthStep('Synth', {
+    const synth = new cdkp.SynthStep('Synth', {
       input: cdkp.CodePipelineSource.gitHub('test/test'),
       commands: ['cdk synth'],
       additionalOutputDirectories: {
@@ -496,7 +496,7 @@ behavior('Synth can output additional artifacts', (suite) => {
       },
     });
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      synthStep,
+      synth: synth,
     });
 
     THEN_codePipelineExpectation('Synth_Output', 'Synth_test');
@@ -559,7 +559,7 @@ behavior('Synth can be made to run in a VPC', (suite) => {
 
   suite.additional('Modern, using CodeBuildStep', () => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      synthStep: new CodeBuildStep('Synth', {
+      synth: new CodeBuildStep('Synth', {
         commands: ['asdf'],
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         primaryOutputDirectory: 'cdk.out',
@@ -659,7 +659,7 @@ behavior('Pipeline action contains a hash that changes as the buildspec changes'
       installCommands: ['do install'],
     }));
     const hash3 = modernSynthWithAction(() => ({
-      synthStep: new CodeBuildStep('Synth', {
+      synth: new CodeBuildStep('Synth', {
         commands: ['asdf'],
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         primaryOutputDirectory: 'cdk.out',
@@ -813,7 +813,7 @@ behavior('Synth can reference an imported ECR repo', (suite) => {
 
   suite.modern(() => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      synthStep: new cdkp.CodeBuildStep('Synth', {
+      synth: new cdkp.CodeBuildStep('Synth', {
         commands: ['build'],
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         primaryOutputDirectory: 'cdk.out',
@@ -854,7 +854,7 @@ behavior('CodeBuild: Can specify additional policy statements', (suite) => {
   suite.modern(() => {
     // WHEN
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      synthStep: new cdkp.CodeBuildStep('Synth', {
+      synth: new cdkp.CodeBuildStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         primaryOutputDirectory: '.',
         commands: ['synth'],

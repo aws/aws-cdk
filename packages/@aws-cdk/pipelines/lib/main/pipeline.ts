@@ -20,7 +20,7 @@ export interface PipelineProps {
    * configured correctly; if you use a different kind of `Step`, you
    * may need to configure it explicitly.
    */
-  readonly synthStep: Step;
+  readonly synth: Step;
 
   /**
    * The deployment engine
@@ -55,13 +55,13 @@ export class Pipeline extends CoreConstruct {
   constructor(scope: Construct, id: string, props: PipelineProps) {
     super(scope, id);
 
-    if (!props.synthStep.primaryOutput) {
-      throw new Error(`synthStep ${props.synthStep} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`);
+    if (!props.synth.primaryOutput) {
+      throw new Error(`synthStep ${props.synth} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`);
     }
 
     this.engine = props.engine;
     this.blueprint = new Blueprint({
-      synthStep: props.synthStep,
+      synth: props.synth,
     });
 
     Aspects.of(this).add({ visit: () => this.buildJustInTime() });

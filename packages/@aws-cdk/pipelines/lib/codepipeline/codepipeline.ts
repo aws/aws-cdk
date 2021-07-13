@@ -20,7 +20,7 @@ export interface CodePipelinePipelineProps extends CodePipelineEngineProps {
    * configured correctly; if you use a different kind of `Step`, you
    * may need to configure it explicitly.
    */
-  readonly synthStep: Step;
+  readonly synth: Step;
 }
 
 /**
@@ -37,7 +37,7 @@ export class CodePipelinePipeline extends Pipeline {
     const engine = new CodePipelineEngine(props);
 
     super(scope, id, {
-      synthStep: props.synthStep,
+      synth: props.synth,
       engine,
     });
 

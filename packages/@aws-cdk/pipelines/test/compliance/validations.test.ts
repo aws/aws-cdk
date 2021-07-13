@@ -313,7 +313,7 @@ behavior('can use additional output artifacts from build', (suite) => {
     pipeline.addStage(new TwoStackApp(app, 'Test'), {
       post: [
         new cdkp.ScriptStep('UseBuildArtifact', {
-          input: pipeline.synthStep.additionalOutput('TestArtifact'),
+          input: pipeline.synth.additionalOutput('TestArtifact'),
           commands: ['set -eu', 'true'],
         }),
       ],

@@ -63,15 +63,15 @@ export class PipelineGraph {
 
     this.queries = new BlueprintQueries(blueprint);
 
-    this.synthNode = this.addBuildStep(blueprint.synthStep);
+    this.synthNode = this.addBuildStep(blueprint.synth);
     if (this.synthNode.data?.type === 'step') {
       this.synthNode.data.isBuildStep = true;
     }
     this.lastPreparationNode = this.synthNode;
 
-    const cloudAssembly = blueprint.synthStep.primaryOutput?.primaryOutput;
+    const cloudAssembly = blueprint.synth.primaryOutput?.primaryOutput;
     if (!cloudAssembly) {
-      throw new Error(`The synth step must produce the cloud assembly artifact, but doesn't: ${blueprint.synthStep}`);
+      throw new Error(`The synth step must produce the cloud assembly artifact, but doesn't: ${blueprint.synth}`);
     }
 
     this.cloudAssemblyFileSet = cloudAssembly;

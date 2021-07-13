@@ -100,7 +100,7 @@ behavior('synth action receives Windows install commands if a Windows image is d
 
   suite.modern(() => {
     const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk2', {
-      synthStep: new CodeBuildStep('Synth', {
+      synth: new CodeBuildStep('Synth', {
         commands: ['cdk synth'],
         primaryOutputDirectory: 'cdk.out',
         input: cdkp.CodePipelineSource.gitHub('test/test'),

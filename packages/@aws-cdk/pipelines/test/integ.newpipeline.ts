@@ -10,7 +10,7 @@ class PipelineStack extends Stack {
     super(scope, id, props);
 
     const pipeline = new pipelines.CodePipelinePipeline(this, 'Pipeline', {
-      synthStep: new pipelines.SynthStep('Synth', {
+      synth: new pipelines.SynthStep('Synth', {
         input: pipelines.CodePipelineSource.gitHub('rix0rrr/cdk-pipelines-demo'),
         commands: [
           'npm ci',
