@@ -3,6 +3,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
 import { App, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
@@ -14,7 +15,7 @@ class MyStage extends Stage {
       env: props?.env,
     });
     const topic = new sns.Topic(stack, 'Topic');
-    topic.grantPublish(new iam.AccountPrincipal(this.account));
+    topic.grantPublish(new iam.AccountPrincipal(stack.account));
   }
 }
 
@@ -43,10 +44,10 @@ export class TestCdkStack extends Stack {
       sourceAction: new codepipeline_actions.GitHubSourceAction({
         actionName: 'GitHub',
         output: sourceArtifact,
-        oauthToken: SecretValue.secretsManager('github-token'),
-        owner: 'BryanPan342',
-        repo: 'test-cdk',
-        branch: 'main',
+        oauthToken: SecretValue.plainText('not-a-secret'),
+        owner: 'OWNER',
+        repo: 'REPO',
+        trigger: codepipeline_actions.GitHubTrigger.POLL,
       }),
       synthAction: cdkp.SimpleSynthAction.standardYarnSynth({
         sourceArtifact,
@@ -55,9 +56,26 @@ export class TestCdkStack extends Stack {
       }),
     });
 
-    pipeline.addApplicationStage(new MyStage(this, 'SingleStage', {
+    const pipelineStage = pipeline.codePipeline.addStage({
+      stageName: 'UnattachedStage',
+    });
+
+    const unattachedStage = new cdkp.CdkStage(this, 'UnattachedStage', {
+      stageName: 'UnattachedStage',
+      pipelineStage,
+      cloudAssemblyArtifact,
+      host: {
+        publishAsset: () => undefined,
+        stackOutputArtifact: () => undefined,
+      },
+    });
+
+    const topic = new sns.Topic(this, 'SecurityChangesTopic');
+    topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
+
+    unattachedStage.addApplication(new MyStage(this, 'SingleStage', {
       env: { account: this.account, region: this.region },
-    }), { securityCheck: true });
+    }), { securityCheck: true, securityNotificationTopic: topic });
 
     const stage1 = pipeline.addApplicationStage(new MyStage(this, 'PreProduction', {
       env: { account: this.account, region: this.region },
@@ -87,6 +105,6 @@ const app = new App({
   },
 });
 new TestCdkStack(app, 'PipelineSecurityStack', {
-  env: { account: '045046196850', region: 'us-west-2' },
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
 app.synth();

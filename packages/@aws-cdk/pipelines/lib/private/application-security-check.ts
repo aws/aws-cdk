@@ -51,6 +51,11 @@ export class ApplicationSecurityCheck extends Construct {
 
     this.preApproveLambda.addToRolePolicy(new iam.PolicyStatement({
       actions: ['codepipeline:GetPipelineState', 'codepipeline:PutApprovalResult'],
+      conditions: {
+        StringEquals: {
+          'aws:ResourceTag/SECURITY_CHECK': 'ALLOW_APPROVE',
+        },
+      },
       resources: ['*'],
     }));
 
@@ -61,12 +66,6 @@ export class ApplicationSecurityCheck extends Construct {
       ' --invocation-type Event' +
       ' --payload "$payload"' +
       ' lambda.out';
-
-    const publishNotification =
-      'aws sns publish' +
-      ' --topic-arn $NOTIFICATION_ARN' +
-      ' --subject "$NOTIFICATION_SUBJECT"' +
-      ' --message "Changes detected! Requires Manual Approval."';
 
     this.cdkDiffProject = new codebuild.Project(this, 'CDKSecurityCheck', {
       buildSpec: codebuild.BuildSpec.fromObject({
@@ -86,11 +85,10 @@ export class ApplicationSecurityCheck extends Construct {
               'PROJECT_ID="$(node -pe \'`${process.env.ARN}`.split(":")[6]\')"',
               // Manual Approval adds 'http/https' to the resolved link
               'export LINK="$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION"',
-              'echo "assembly-$STACK_NAME-$STAGE_NAME/"',
               // Run invoke only if cdk diff passes (returns exit code 0)
               // 0 -> true, 1 -> false
               `if cdk diff -a "${assemblyPath}" --security-only --fail; then ${invokeLambda}; export MESSAGE='No changes detected.'; ` +
-              `else export MESSAGE="Changes detected! Requires Manual Approval"; [[ ! "$NOTIFICATION_ARN" ]] || ${publishNotification}; ` +
+              'else export MESSAGE="Changes detected! Requires Manual Approval"; ' +
               'fi',
             ],
           },

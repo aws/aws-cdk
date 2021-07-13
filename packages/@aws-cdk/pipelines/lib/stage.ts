@@ -3,7 +3,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
 import * as sns from '@aws-cdk/aws-sns';
-import { Stage, Aspects } from '@aws-cdk/core';
+import { Stage, Aspects, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction } from './actions';
@@ -113,7 +113,7 @@ export class CdkStage extends CoreConstruct {
    */
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
     const asm = appStage.synth({ validateOnSynthesis: true });
-    const extraRunOrderSpace = options.extraRunOrderSpace ?? 0 + (options.securityCheck ? 2 : 0);
+    const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
 
     if (options.securityCheck ?? this.securityCheck) {
       this.addSecurityCheck(appStage.stageName, options);
@@ -163,6 +163,9 @@ export class CdkStage extends CoreConstruct {
     if (this._applicationSecurityCheck) {
       return this._applicationSecurityCheck;
     }
+    Tags.of(this.pipelineStage.pipeline).add('SECURITY_CHECK', 'ALLOW_APPROVE', {
+      includeResourceTypes: ['AWS::CodePipeline::Pipeline'],
+    });
     this._applicationSecurityCheck = this.pipeline
       ? this.pipeline._getApplicationSecurityCheck()
       : new ApplicationSecurityCheck(this, 'StageApplicationSecurityCheck');
@@ -295,7 +298,6 @@ export class CdkStage extends CoreConstruct {
   private addSecurityCheck(appStageName: string, options?: BaseStageOptions) {
     const { cdkDiffProject } = this.getApplicationSecurityCheck();
     const notificationTopic: sns.ITopic | undefined = options?.securityNotificationTopic ?? this.securityNotificationTopic;
-    notificationTopic?.grantPublish(cdkDiffProject);
 
     const approveActionName = `${appStageName}ManualApproval`;
     const diffAction = new CodeBuildAction({
@@ -316,13 +318,6 @@ export class CdkStage extends CoreConstruct {
         ACTION_NAME: {
           value: approveActionName,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-        },
-        NOTIFICATION_ARN: {
-          value: notificationTopic?.topicArn ?? false,
-          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-        },
-        NOTIFICATION_SUBJECT: {
-          value: `Security Changes detected in ${appStageName}`,
         },
       },
     });

@@ -745,7 +745,112 @@ and orphan the old bucket. You should manually delete the orphaned bucket
 after you are sure you have redeployed all CDK applications and there are no
 more references to the old asset bucket.
 
-## Security Tips
+## Security
+
+### Security Check
+
+CDK Pipelines offers a security check option for the applications you deploy. The 
+security check includes a Lambda and CodeBuild Project. The CodeBuild Project runs 
+a security diff on the application and exports a link to the console of the project. 
+The Lambda acts as an auto approving mechanism that can only be triggered when the 
+CodeBuild Project registers no security changes.
+
+**CDK will create one Lambda/CodeBuild Project per pipeline for all CdkStages scoped to the pipeline.**
+
+Adding a security check to an application creates two actions that precede the prepare
+and deploy actions of an application. The first action runs the aforementioned CodeBuild
+Project that runs a security diff on the stage. The second action is a Manual Approval 
+Action that can be approved via the above Lambda function.
+
+```txt
+Pipeline
+├── Stage: Build
+│   └── ...
+├── Stage: Synth
+│   └── ...
+├── Stage: UpdatePipeline
+│   └── ...
+├── Stage: MyApplicationStage
+│   └── Actions
+│       ├── MyApplicationSecurityCheck       // Security Diff Action
+│       ├── MyApplicationManualApproval      // Manual Approval Action
+│       ├── Stack.Prepare
+│       └── Stack.Deploy
+└── ...
+```
+
+You can enable the security check in one of two ways:
+
+1. Enable security check across the entire `CdkStage`
+
+    ```ts
+    const pipeline = new CdkPipeline(app, 'Pipeline', {
+      // ...source and build information here (see above)
+    });
+    const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
+      securityCheck: true,
+    });
+    // The 'PreProd' application is also run against a security diff because we configured
+    // the stage to enable security checks
+    stage.addApplication(new MyApplication(this, 'PreProd'));
+    ```
+
+2. Enable security check for a single application
+
+    ```ts
+    const pipeline = new CdkPipeline(app, 'Pipeline', {
+      // ...source and build information here (see above)
+    });
+    const stage = pipeline.addApplicationStage(new MyApplication(this, 'NoCheck'));
+    stage.addApplication(new MyApplication(this, 'RunSecurityDiff'), {
+      securityCheck: true,
+    });
+    ```
+
+**Note**: Application level options have higher priority than stage level configuration.
+For example, we can disable stage wide security check by disabling `securityCheck` at the
+applciaiton level.
+
+```ts
+const pipeline = new CdkPipeline(app, 'Pipeline', {
+  // ...source and build information here (see above)
+});
+const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
+  securityCheck: true,
+});
+// The 'NoDiff' application will not have a security check
+stage.addApplication(new MyApplication(this, 'NoDiff'), {
+  securityCheck: false,
+});
+```
+
+### Notifications
+
+You can enable notifications for your security check manual approvals.
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
+import * as pipelines from '@aws-cdk/pipelines';
+
+// ... initialize app and pipeline stack
+
+const topic = new sns.Topic(this, 'SecurityChangesTopic');
+topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
+
+const pipeline = new CdkPipeline(app, 'Pipeline', {
+  // ...source and build information here (see above)
+});
+const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
+  securityCheck: true,
+  securityNotificationTopic: topic,
+});
+```
+
+**Note**: Manual Approvals notifications only apply when an application has security
+check enabled.
+
+### Tips
 
 It's important to stay safe while employing Continuous Delivery. The CDK Pipelines
 library comes with secure defaults to the best of our ability, but by its
