@@ -65,9 +65,7 @@ export abstract class HttpRoutePathMatch {
 }
 
 class HttpRoutePrefixPathMatch extends HttpRoutePathMatch {
-  constructor(
-    private readonly prefix: string,
-  ) {
+  constructor(private readonly prefix: string) {
     super();
 
     if (this.prefix && this.prefix[0] !== '/') {
@@ -83,9 +81,7 @@ class HttpRoutePrefixPathMatch extends HttpRoutePathMatch {
 }
 
 class HttpRouteWholePathMatch extends HttpRoutePathMatch {
-  constructor(
-    private readonly match: CfnRoute.HttpPathMatchProperty,
-  ) {
+  constructor(private readonly match: CfnRoute.HttpPathMatchProperty) {
     super();
 
     if (this.match.exact && this.match.exact[0] !== '/') {

@@ -457,7 +457,7 @@ class HttpRouteSpec extends RouteSpec {
       },
       match: {
         prefix: pathMatchConfig.prefixPathMatch,
-        path: pathMatchConfig?.wholePathMatch,
+        path: pathMatchConfig.wholePathMatch,
         headers: headers?.map(header => header.bind(scope).headerMatch),
         method: this.match?.method,
         scheme: this.match?.protocol,
