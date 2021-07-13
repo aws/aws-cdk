@@ -275,20 +275,17 @@ class LegacyPipelineWithCreds extends LegacyTestGitHubNpmPipeline {
 class ModernPipelineWithCreds extends ModernTestGitHubNpmPipeline {
   constructor(scope: Construct, id: string, props?: ConstructorParameters<typeof ModernTestGitHubNpmPipeline>[2]) {
     super(scope, id, {
-      engine: new cdkp.CodePipelineEngine({
-        dockerCredentials: [
-          cdkp.DockerCredential.customRegistry('synth.example.com', secretSynth, {
-            usages: [cdkp.DockerCredentialUsage.SYNTH],
-          }),
-          cdkp.DockerCredential.customRegistry('selfupdate.example.com', secretUpdate, {
-            usages: [cdkp.DockerCredentialUsage.SELF_UPDATE],
-          }),
-          cdkp.DockerCredential.customRegistry('publish.example.com', secretPublish, {
-            usages: [cdkp.DockerCredentialUsage.ASSET_PUBLISHING],
-          }),
-        ],
-        ...props,
-      }),
+      dockerCredentials: [
+        cdkp.DockerCredential.customRegistry('synth.example.com', secretSynth, {
+          usages: [cdkp.DockerCredentialUsage.SYNTH],
+        }),
+        cdkp.DockerCredential.customRegistry('selfupdate.example.com', secretUpdate, {
+          usages: [cdkp.DockerCredentialUsage.SELF_UPDATE],
+        }),
+        cdkp.DockerCredential.customRegistry('publish.example.com', secretPublish, {
+          usages: [cdkp.DockerCredentialUsage.ASSET_PUBLISHING],
+        }),
+      ],
       ...props,
     });
   }

@@ -5,7 +5,6 @@ import '@aws-cdk/assert-internal/jest';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
-import * as cdkp from '../../lib';
 import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, FileAssetApp, MegaAssetsApp, TwoFileAssetsApp, DockerAssetApp, PlainStackApp } from '../testhelpers';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
@@ -342,9 +341,7 @@ describe('basic pipeline', () => {
 
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine( {
-          cliVersion: '1.2.3',
-        }),
+        cliVersion: '1.2.3',
       });
       pipeline.addStage(new FileAssetApp(pipelineStack, 'FileAssetApp'));
 
@@ -381,7 +378,7 @@ describe('basic pipeline', () => {
       suite.modern(() => {
         const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
           // Expectation expects to see KMS key policy permissions
-          engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+          crossAccountKeys: true,
         });
         pipeline.addStage(new FileAssetApp(app, 'App1'));
 
@@ -427,7 +424,7 @@ describe('basic pipeline', () => {
       suite.modern(() => {
         const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
           // Expectation expects to see KMS key policy permissions
-          engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+          crossAccountKeys: true,
         });
 
         pipeline.addStage(new FileAssetApp(app, 'App1'));
@@ -461,7 +458,7 @@ describe('basic pipeline', () => {
       suite.modern(() => {
         const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
           // Expectation expects to see KMS key policy permissions
-          engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+          crossAccountKeys: true,
         });
         pipeline.addStage(new FileAssetApp(app, 'App1'));
         pipeline.addStage(new FileAssetApp(app, 'App2'));
@@ -487,7 +484,7 @@ describe('basic pipeline', () => {
       suite.modern(() => {
         const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
           // Expectation expects to see KMS key policy permissions
-          engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+          crossAccountKeys: true,
         });
         pipeline.addStage(new DockerAssetApp(app, 'App1'));
 
@@ -528,7 +525,7 @@ describe('basic pipeline', () => {
       suite.modern(() => {
         const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
           // Expectation expects to see KMS key policy permissions
-          engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+          crossAccountKeys: true,
         });
         pipeline.addStage(new FileAssetApp(app, 'App1'));
         pipeline.addStage(new DockerAssetApp(app, 'App2'));
@@ -560,20 +557,18 @@ behavior('can supply pre-install scripts to asset upload', (suite) => {
 
   suite.modern(() => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({
-        assetPublishingCodeBuildDefaults: {
-          partialBuildSpec: cb.BuildSpec.fromObject({
-            version: '0.2',
-            phases: {
-              install: {
-                commands: [
-                  'npm config set registry https://registry.com',
-                ],
-              },
+      assetPublishingCodeBuildDefaults: {
+        partialBuildSpec: cb.BuildSpec.fromObject({
+          version: '0.2',
+          phases: {
+            install: {
+              commands: [
+                'npm config set registry https://registry.com',
+              ],
             },
-          }),
-        },
-      }),
+          },
+        }),
+      },
     });
     pipeline.addStage(new FileAssetApp(app, 'FileAssetApp'));
 
@@ -616,9 +611,7 @@ describe('pipeline with VPC', () => {
 
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({
-          codeBuildDefaults: { vpc },
-        }),
+        codeBuildDefaults: { vpc },
       });
       pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
 
@@ -654,7 +647,7 @@ describe('pipeline with VPC', () => {
 
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({ codeBuildDefaults: { vpc } }),
+        codeBuildDefaults: { vpc },
       });
       pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
       THEN_codePipelineExpectation();
@@ -689,7 +682,7 @@ describe('pipeline with VPC', () => {
 
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({ codeBuildDefaults: { vpc } }),
+        codeBuildDefaults: { vpc },
       });
       pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
       THEN_codePipelineExpectation();
@@ -727,9 +720,7 @@ describe('pipeline with single asset publisher', () => {
 
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({
-          publishAssetsInParallel: true,
-        }),
+        publishAssetsInParallel: false,
       });
       pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
 
@@ -784,13 +775,13 @@ describe('pipeline with single asset publisher', () => {
 
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({ publishAssetsInParallel: true }),
+        publishAssetsInParallel: false,
       });
       pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
 
       const pipelineStack2 = new Stack(app, 'PipelineStack2', { env: PIPELINE_ENV });
       const otherPipeline = new ModernTestGitHubNpmPipeline(pipelineStack2, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({ publishAssetsInParallel: true }),
+        publishAssetsInParallel: false,
       });
       otherPipeline.addStage(new TwoFileAssetsApp(app, 'OtherFileAssetApp'));
 

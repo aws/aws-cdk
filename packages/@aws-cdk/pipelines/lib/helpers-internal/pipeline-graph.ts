@@ -1,4 +1,5 @@
-import { AssetType, Blueprint, BlueprintQueries, FileSet, ScriptStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
+import { AssetType, FileSet, PipelineQueries, ScriptStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
+import { Pipeline } from '../main/pipeline';
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 
 export interface PipelineGraphProps {
@@ -40,7 +41,7 @@ export interface PipelineGraphProps {
 export class PipelineGraph {
   public readonly graph: AGraph = Graph.of('', { type: 'group' });
   public readonly cloudAssemblyFileSet: FileSet;
-  public readonly queries: BlueprintQueries;
+  public readonly queries: PipelineQueries;
 
   private readonly added = new Map<Step, AGraphNode>();
   private readonly assetNodes = new Map<string, AGraphNode>();
@@ -56,22 +57,22 @@ export class PipelineGraph {
   private _fileAssetCtr = 0;
   private _dockerAssetCtr = 0;
 
-  constructor(public readonly blueprint: Blueprint, props: PipelineGraphProps = {}) {
+  constructor(public readonly pipeline: Pipeline, props: PipelineGraphProps = {}) {
     this.publishTemplate = props.publishTemplate ?? false;
     this.prepareStep = props.prepareStep ?? true;
     this.singlePublisher = props.singlePublisherPerAssetType ?? false;
 
-    this.queries = new BlueprintQueries(blueprint);
+    this.queries = new PipelineQueries(pipeline);
 
-    this.synthNode = this.addBuildStep(blueprint.synth);
+    this.synthNode = this.addBuildStep(pipeline.synth);
     if (this.synthNode.data?.type === 'step') {
       this.synthNode.data.isBuildStep = true;
     }
     this.lastPreparationNode = this.synthNode;
 
-    const cloudAssembly = blueprint.synth.primaryOutput?.primaryOutput;
+    const cloudAssembly = pipeline.synth.primaryOutput?.primaryOutput;
     if (!cloudAssembly) {
-      throw new Error(`The synth step must produce the cloud assembly artifact, but doesn't: ${blueprint.synth}`);
+      throw new Error(`The synth step must produce the cloud assembly artifact, but doesn't: ${pipeline.synth}`);
     }
 
     this.cloudAssemblyFileSet = cloudAssembly;
@@ -86,7 +87,7 @@ export class PipelineGraph {
       this.lastPreparationNode = this.selfMutateNode;
     }
 
-    const waves = blueprint.waves.map(w => this.addWave(w));
+    const waves = pipeline.waves.map(w => this.addWave(w));
 
     // Make sure the waves deploy sequentially
     for (let i = 1; i < waves.length; i++) {

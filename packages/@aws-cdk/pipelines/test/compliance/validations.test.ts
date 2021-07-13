@@ -501,7 +501,7 @@ behavior('can run shell script actions in a VPC', (suite) => {
   suite.modern(() => {
     // All CodeBuild jobs automatically go into the VPC
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({ codeBuildDefaults: { vpc } }),
+      codeBuildDefaults: { vpc },
     });
 
     pipeline.addStage(new TwoStackApp(app, 'MyApp'), {
@@ -648,13 +648,11 @@ behavior('can run scripts with specified BuildEnvironment', (suite) => {
   suite.modern(() => {
     // Run all Build jobs with the given image
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({
-        codeBuildDefaults: {
-          buildEnvironment: {
-            buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
-          },
+      codeBuildDefaults: {
+        buildEnvironment: {
+          buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
         },
-      }),
+      },
     });
 
     pipeline.addStage(new TwoStackApp(app, 'Test'), {

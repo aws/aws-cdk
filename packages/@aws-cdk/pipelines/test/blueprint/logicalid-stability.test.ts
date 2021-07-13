@@ -1,6 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
-import { CodePipelineEngine } from '../../lib';
 import { mkdict } from '../../lib/private/javascript';
 import { PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, MegaAssetsApp, stackTemplate } from '../testhelpers';
 
@@ -39,9 +38,7 @@ test('stateful or nameable resources have the same logicalID between old and new
   }));
 
   const modernPipe = new ModernTestGitHubNpmPipeline(modernPipelineStack, 'Cdk', {
-    engine: new CodePipelineEngine({
-      crossAccountKeys: true,
-    }),
+    crossAccountKeys: true,
   });
   modernPipe.addStage(new MegaAssetsApp(modernPipelineStack, 'MyApp', {
     numAssets: 2,
@@ -65,10 +62,8 @@ test('nameable resources have the same names between old and new API', () => {
   }));
 
   const modernPipe = new ModernTestGitHubNpmPipeline(modernPipelineStack, 'Cdk', {
-    engine: new CodePipelineEngine({
-      pipelineName: 'asdf',
-      crossAccountKeys: true,
-    }),
+    pipelineName: 'asdf',
+    crossAccountKeys: true,
   });
   modernPipe.addStage(new MegaAssetsApp(modernPipelineStack, 'MyApp', {
     numAssets: 2,

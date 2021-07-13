@@ -5,7 +5,6 @@ import { arrayWith, Capture, objectLike, stringLike } from '@aws-cdk/assert-inte
 import '@aws-cdk/assert-internal/jest';
 import { Stack, Stage, StageProps, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as cdkp from '../../lib';
 import { behavior, LegacyTestGitHubNpmPipeline, OneStackApp, BucketStack, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';
 
 let app: TestApp;
@@ -144,14 +143,10 @@ behavior('changing CLI version leads to a different pipeline structure (restarti
 
     // WHEN
     new ModernTestGitHubNpmPipeline(stack2, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({
-        cliVersion: '1.2.3',
-      }),
+      cliVersion: '1.2.3',
     });
     new ModernTestGitHubNpmPipeline(stack3, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({
-        cliVersion: '4.5.6',
-      }),
+      cliVersion: '4.5.6',
     });
 
     THEN_codePipelineExpectation(stack2, stack3);

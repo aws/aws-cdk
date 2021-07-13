@@ -92,3 +92,22 @@ export interface AddStageOpts {
    */
   readonly post?: Step[];
 }
+
+/**
+ * Options to pass to `addWave`
+ */
+export interface WaveOptions {
+  /**
+   * Additional steps to run before any of the stages in the wave
+   *
+   * @default - No additional steps
+   */
+  readonly pre?: Step[];
+
+  /**
+   * Additional steps to run after all of the stages in the wave
+   *
+   * @default - No additional steps
+   */
+  readonly post?: Step[];
+}

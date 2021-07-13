@@ -549,9 +549,7 @@ behavior('Synth can be made to run in a VPC', (suite) => {
 
   suite.modern(() => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({
-        codeBuildDefaults: { vpc },
-      }),
+      codeBuildDefaults: { vpc },
     });
   });
 
@@ -565,9 +563,7 @@ behavior('Synth can be made to run in a VPC', (suite) => {
           computeType: cbuild.ComputeType.LARGE,
         },
       }),
-      engine: new cdkp.CodePipelineEngine({
-        codeBuildDefaults: { vpc },
-      }),
+      codeBuildDefaults: { vpc },
     });
   });
 
@@ -761,14 +757,11 @@ behavior('Synth CodeBuild project role can be granted permissions', (suite) => {
 
   suite.modern(() => {
     // GIVEN
-    const engine = new cdkp.CodePipelineEngine();
-    const pipe = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine,
-    });
+    const pipe = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipe.buildPipeline();
 
     // WHEN
-    bucket.grantRead(engine.synthProject);
+    bucket.grantRead(pipe.synthProject);
 
     THEN_codePipelineExpectation();
   });

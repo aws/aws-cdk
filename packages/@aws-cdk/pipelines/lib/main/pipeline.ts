@@ -1,10 +1,10 @@
+import { Aspects, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AddStageOpts, WaveOptions, Blueprint, Step } from '../blueprint';
-import { IDeploymentEngine } from './engine';
+import { AddStageOpts as StageOptions, WaveOptions, Step, Wave } from '../blueprint';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Aspects, Construct as CoreConstruct, Stage } from '@aws-cdk/core';
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties for a `Pipeline`
@@ -21,48 +21,43 @@ export interface PipelineProps {
    * may need to configure it explicitly.
    */
   readonly synth: Step;
-
-  /**
-   * The deployment engine
-   *
-   * This controls what deployment system will be used to deploy this
-   * pipeline.
-   *
-   * Right now, only `new CodePipelineEngine()` is supported in this library,
-   * though 3rd implementations may be available.
-   *
-   * The engine is invoked when `buildPipeline()` is called, or when
-   * `app.synth()` is called (whichever happens first).
-   */
-  readonly engine: IDeploymentEngine;
 }
 
 /**
  * A generic CDK Pipelines pipeline
  *
- * The Pipeline should receive an Engine which builds actual infrastructure from
- * the pipeline definition.
+ * Different deployment systems will provide subclasses of `Pipeline` that generate
+ * the deployment infrastructure necessary to deploy CDK apps, specific to that system.
+ *
+ * This library comes with the `CodePipeline` class, which uses AWS CodePipeline
+ * to deploy CDK apps.
  *
  * The actual pipeline infrastructure is constructed (by invoking the engine)
  * when `buildPipeline()` is called, or when `app.synth()` is called (whichever
  * happens first).
  */
-export class Pipeline extends CoreConstruct {
-  private readonly blueprint: Blueprint;
-  private readonly engine: IDeploymentEngine;
+export abstract class Pipeline extends CoreConstruct {
+  /**
+   * The build step that produces the CDK Cloud Assembly
+   */
+  public readonly synth: Step;
+
+  /**
+   * The waves in this pipeline
+   */
+  public readonly waves: Wave[];
+
   private built = false;
 
   constructor(scope: Construct, id: string, props: PipelineProps) {
     super(scope, id);
 
+    this.synth = props.synth;
+    this.waves = [];
+
     if (!props.synth.primaryOutput) {
       throw new Error(`synthStep ${props.synth} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`);
     }
-
-    this.engine = props.engine;
-    this.blueprint = new Blueprint({
-      synth: props.synth,
-    });
 
     Aspects.of(this).add({ visit: () => this.buildJustInTime() });
   }
@@ -74,12 +69,12 @@ export class Pipeline extends CoreConstruct {
    * Stages added to the pipeline. All Stacks in the stage will be deployed
    * in an order automatically determined by their relative dependencies.
    */
-  public addStage(stage: Stage, options?: AddStageOpts) {
+  public addStage(stage: Stage, options?: StageOptions) {
     if (this.built) {
-      throw new Error('addStage: can\'t add Stages anymore after build() has been called');
+      throw new Error('addStage: can\'t add Stages anymore after buildPipeline() has been called');
     }
 
-    return this.blueprint.addStage(stage, options);
+    return this.addWave(stage.stageName).addStage(stage, options);
   }
 
   /**
@@ -97,10 +92,12 @@ export class Pipeline extends CoreConstruct {
    */
   public addWave(id: string, options?: WaveOptions) {
     if (this.built) {
-      throw new Error('addStage: can\'t add Stages anymore after build() has been called');
+      throw new Error('addWave: can\'t add Waves anymore after buildPipeline() has been called');
     }
 
-    return this.blueprint.addWave(id, options);
+    const wave = new Wave(id, options);
+    this.waves.push(wave);
+    return wave;
   }
 
   /**
@@ -112,9 +109,14 @@ export class Pipeline extends CoreConstruct {
     if (this.built) {
       throw new Error('build() has already been called: can only call it once');
     }
-    this.engine.buildDeployment({ blueprint: this.blueprint, scope: this });
+    this.doBuildPipeline();
     this.built = true;
   }
+
+  /**
+   * Implemented by subclasses to do the actual pipeline construction
+   */
+  protected abstract doBuildPipeline(): void;
 
   /**
    * Automatically call 'build()' just before synthesis if the user hasn't explicitly called it yet

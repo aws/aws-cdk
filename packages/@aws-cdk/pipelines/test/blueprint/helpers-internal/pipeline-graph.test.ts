@@ -16,9 +16,9 @@ afterEach(() => {
 });
 
 describe('blueprint with one stage', () => {
-  let blueprint: cdkp.Blueprint;
+  let blueprint: Blueprint;
   beforeEach(() => {
-    blueprint = new cdkp.Blueprint({
+    blueprint = new Blueprint(app, 'Bp', {
       synth: new cdkp.SynthStep('Synth', {
         input: cdkp.CodePipelineSource.github('test/test'),
         commands: ['build'],
@@ -67,9 +67,9 @@ describe('blueprint with one stage', () => {
 });
 
 describe('blueprint with wave and stage', () => {
-  let blueprint: cdkp.Blueprint;
+  let blueprint: Blueprint;
   beforeEach(() => {
-    blueprint = new cdkp.Blueprint({
+    blueprint = new Blueprint(app, 'Bp', {
       synth: new cdkp.SynthStep('Synth', {
         input: cdkp.CodePipelineSource.github('test/test'),
         commands: ['build'],
@@ -118,7 +118,7 @@ describe('blueprint with wave and stage', () => {
 describe('options for other engines', () => {
   test('"publishTemplate" will add steps to publish CFN templates as assets', () => {
     // GIVEN
-    const blueprint = new cdkp.Blueprint({
+    const blueprint = new Blueprint(app, 'Bp', {
       synth: new cdkp.SynthStep('Synth', {
         commands: ['build'],
       }),
@@ -136,7 +136,7 @@ describe('options for other engines', () => {
 
   test('"prepareStep: false" can be used to disable the "prepare" step for stack deployments', () => {
     // GIVEN
-    const blueprint = new cdkp.Blueprint({
+    const blueprint = new Blueprint(app, 'Bp', {
       synth: new cdkp.SynthStep('Synth', {
         commands: ['build'],
       }),
@@ -157,11 +157,11 @@ describe('options for other engines', () => {
 
 
 describe('with app with output', () => {
-  let blueprint: cdkp.Blueprint;
+  let blueprint: Blueprint;
   let myApp: AppWithOutput;
   let scriptStep: cdkp.ScriptStep;
   beforeEach(() => {
-    blueprint = new cdkp.Blueprint({
+    blueprint = new Blueprint(app, 'Bp', {
       synth: new cdkp.SynthStep('Synth', {
         input: cdkp.CodePipelineSource.github('test/test'),
         commands: ['build'],
@@ -256,4 +256,9 @@ function assertGraph<A>(g: GraphNode<A> | undefined): Graph<A> {
   if (!g) { throw new Error('Expected a graph node, got undefined'); }
   if (!(g instanceof Graph)) { throw new Error(`Expected a Graph, got: ${g}`); }
   return g;
+}
+
+class Blueprint extends cdkp.Pipeline {
+  protected doBuildPipeline(): void {
+  }
 }

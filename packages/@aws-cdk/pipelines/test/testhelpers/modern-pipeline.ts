@@ -2,9 +2,9 @@
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 
-export type ModernTestGitHubNpmPipelineProps = Partial<cdkp.SynthStepProps> & { synth?: cdkp.Step, engine?: cdkp.IDeploymentEngine };
+export type ModernTestGitHubNpmPipelineProps = Partial<cdkp.CodePipelineProps> & Partial<cdkp.SynthStepProps>;
 
-export class ModernTestGitHubNpmPipeline extends cdkp.Pipeline {
+export class ModernTestGitHubNpmPipeline extends cdkp.CodePipeline {
   public readonly gitHubSource: cdkp.CodePipelineSource;
   public readonly synth: cdkp.Step;
 
@@ -19,7 +19,7 @@ export class ModernTestGitHubNpmPipeline extends cdkp.Pipeline {
 
     super(scope, id, {
       synth: synth,
-      engine: props?.engine ?? new cdkp.CodePipelineEngine(),
+      ...props,
     });
 
     this.gitHubSource = source;

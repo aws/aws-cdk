@@ -2,7 +2,6 @@
 import { arrayWith, objectLike, stringLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
-import * as cdkp from '../../lib';
 import { behavior, LegacyTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';
 
 let app: TestApp;
@@ -101,7 +100,7 @@ behavior('action has right settings for cross-account deployment', (suite) => {
   suite.modern(() => {
     // WHEN
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+      crossAccountKeys: true,
     });
     pipeline.addStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
 
@@ -186,7 +185,7 @@ behavior('action has right settings for cross-region deployment', (suite) => {
 
   suite.modern(() => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+      crossAccountKeys: true,
     });
     pipeline.addStage(new OneStackApp(app, 'CrossRegion', { env: { region: 'elsewhere' } }));
 
@@ -269,7 +268,7 @@ behavior('action has right settings for cross-account/cross-region deployment', 
   suite.modern(() => {
     // WHEN
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new cdkp.CodePipelineEngine({ crossAccountKeys: true }),
+      crossAccountKeys: true,
     });
     pipeline.addStage(new OneStackApp(app, 'CrossBoth', {
       env: {

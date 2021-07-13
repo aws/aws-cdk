@@ -1,10 +1,11 @@
-import { Step, ScriptStep, StackOutputReference, Blueprint, StackDeployment, StackAsset, StageDeployment } from '../blueprint';
+import { Step, ScriptStep, StackOutputReference, StackDeployment, StackAsset, StageDeployment } from '.';
+import { Pipeline } from '../main/pipeline';
 
 /**
  * Answer some questions about a pipeline blueprint
  */
-export class BlueprintQueries {
-  constructor(private readonly blueprint: Blueprint) {
+export class PipelineQueries {
+  constructor(private readonly pipeline: Pipeline) {
   }
 
   /**
@@ -12,7 +13,7 @@ export class BlueprintQueries {
    */
   public stackOutputsReferenced(stack: StackDeployment): string[] {
     const steps = new Array<Step>();
-    for (const wave of this.blueprint.waves) {
+    for (const wave of this.pipeline.waves) {
       steps.push(...wave.pre, ...wave.post);
       for (const stage of wave.stages) {
         steps.push(...stage.pre, ...stage.post);
@@ -36,7 +37,7 @@ export class BlueprintQueries {
    * Find the stack deployment that is producing the given reference
    */
   public producingStack(outputReference: StackOutputReference): StackDeployment {
-    for (const wave of this.blueprint.waves) {
+    for (const wave of this.pipeline.waves) {
       for (const stage of wave.stages) {
         for (const stack of stage.stacks) {
           if (outputReference.isProducedBy(stack)) {

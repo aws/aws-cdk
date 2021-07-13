@@ -3,7 +3,6 @@ import { anything, arrayWith, deepObjectLike, encodedJson, notMatching, objectLi
 import '@aws-cdk/assert-internal/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Stack, Stage } from '@aws-cdk/core';
-import { CodePipelineEngine } from '../../lib';
 import { behavior, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, stackTemplate, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';
 
 let app: TestApp;
@@ -116,9 +115,7 @@ behavior('selfmutation feature can be turned off', (suite) => {
   suite.modern(() => {
     // WHEN
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new CodePipelineEngine({
-        selfMutation: false,
-      }),
+      selfMutation: false,
     });
 
     THEN_codePipelineExpectation();
@@ -147,10 +144,8 @@ behavior('can control fix/CLI version used in pipeline selfupdate', (suite) => {
 
   suite.modern(() => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      engine: new CodePipelineEngine({
-        pipelineName: 'vpipe',
-        cliVersion: '1.2.3',
-      }),
+      pipelineName: 'vpipe',
+      cliVersion: '1.2.3',
     });
 
     THEN_codePipelineExpectation();
@@ -191,9 +186,7 @@ behavior('Pipeline stack itself can use assets (has implications for selfupdate)
   suite.modern(() => {
     // WHEN
     new ModernTestGitHubNpmPipeline(pipelineStack, 'PrivilegedPipeline', {
-      engine: new CodePipelineEngine({
-        pipelineUsesDockerAssets: true,
-      }),
+      pipelineUsesDockerAssets: true,
     });
 
     // THEN

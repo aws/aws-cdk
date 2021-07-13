@@ -13,8 +13,8 @@ import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-int
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
+import { CodeBuildOptions } from './codepipeline';
 import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
-import { CodeBuildOptions } from './codepipeline-engine';
 
 export interface CodeBuildFactoryProps {
   /**

@@ -1,9 +1,9 @@
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Construct } from 'constructs';
-import { BlueprintQueries } from '../blueprint';
+import { PipelineQueries as PipelineQueries } from '../blueprint';
 import { ArtifactMap } from './artifact-map';
-import { CodeBuildOptions } from './codepipeline-engine';
+import { CodeBuildOptions } from './codepipeline';
 
 /**
  * Options for the `CodePipelineActionFactory.produce()` method.
@@ -25,7 +25,7 @@ export interface ProduceActionOptions {
   readonly runOrder: number;
 
   /**
-   * Helper object to translate Blueprint FileSets to CodePipeline Artifacts
+   * Helper object to translate FileSets to CodePipeline Artifacts
    */
   readonly artifacts: ArtifactMap;
 
@@ -41,9 +41,9 @@ export interface ProduceActionOptions {
   readonly fallbackArtifact?: cp.Artifact;
 
   /**
-   * Queries to perform on the blueprint
+   * Queries to perform on the pipeline
    */
-  readonly queries: BlueprintQueries;
+  readonly queries: PipelineQueries;
 
   /**
    * If this action factory creates a CodeBuild step, default options to inherit
