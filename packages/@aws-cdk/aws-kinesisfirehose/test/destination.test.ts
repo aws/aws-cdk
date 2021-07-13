@@ -92,7 +92,7 @@ describe('destination', () => {
     test('throws error if logging disabled but log group provided', () => {
       const testDestination = new LoggingDestination({ logging: false, logGroup: new logs.LogGroup(stack, 'Log Group') });
 
-      expect(() => testDestination.bind(stack, { deliveryStream })).toThrowError('Destination logging cannot be set to false when logGroup is provided');
+      expect(() => testDestination.bind(stack, { deliveryStream })).toThrowError('logging cannot be set to false when logGroup is provided');
     });
 
     test('uses provided log group', () => {

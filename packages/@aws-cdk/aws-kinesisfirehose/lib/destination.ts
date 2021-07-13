@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
-import { ILogGroup } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -234,10 +233,7 @@ export interface DestinationProps extends DestinationLoggingProps {
  * Abstract base class that destination types can extend to benefit from methods that create generic configuration.
  */
 export abstract class DestinationBase implements IDestination {
-  private logGroups: { [key: string]: ILogGroup | undefined } = {
-    LogGroup: undefined,
-    BackupLogGroup: undefined,
-  };
+  private logGroups: { [logGroupId: string]: logs.ILogGroup } = {};
 
   constructor(protected readonly props: DestinationProps = {}) { }
 
@@ -248,14 +244,7 @@ export abstract class DestinationBase implements IDestination {
     deliveryStream: IDeliveryStream,
     streamId: string,
   ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    return this._createLoggingOptions(
-      scope,
-      deliveryStream,
-      streamId,
-      false,
-      this.props.logging,
-      this.props.logGroup,
-    );
+    return this._createLoggingOptions(scope, deliveryStream, streamId, 'LogGroup', this.props.logging, this.props.logGroup);
   }
 
   protected createProcessingConfig(deliveryStream: IDeliveryStream): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
@@ -343,42 +332,34 @@ export abstract class DestinationBase implements IDestination {
       : { noEncryptionConfig: 'NoEncryption' };
   }
 
-  private _createLoggingOptions(
-    scope: Construct,
-    deliveryStream: IDeliveryStream,
-    streamId: string,
-    isBackupLogging: boolean,
-    logging?: boolean,
-    propsLogGroup?: logs.ILogGroup,
-  ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    if (logging === false && propsLogGroup) {
-      throw new Error('Destination logging cannot be set to false when logGroup is provided.');
-    }
-    const logGroupKey = isBackupLogging ? 'BackupLogGroup' : 'LogGroup';
-    if (logging !== false || propsLogGroup) {
-      this.logGroups[logGroupKey] = this.logGroups[logGroupKey] ?? propsLogGroup ?? new logs.LogGroup(scope, logGroupKey);
-      this.logGroups[logGroupKey]?.grantWrite(deliveryStream);
-      return {
-        enabled: true,
-        logGroupName: this.logGroups[logGroupKey]?.logGroupName,
-        logStreamName: this.logGroups[logGroupKey]?.addStream(streamId).logStreamName,
-      };
-    }
-    return undefined;
-  }
-
   private createBackupLoggingOptions(
     scope: Construct,
     deliveryStream: IDeliveryStream,
     streamId: string,
   ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    return this._createLoggingOptions(
-      scope,
-      deliveryStream,
-      streamId,
-      true,
-      this.props.backupConfiguration?.logging,
-      this.props.backupConfiguration?.logGroup,
-    );
+    return this._createLoggingOptions(scope, deliveryStream, streamId, 'BackupLogGroup', this.props.backupConfiguration?.logging, this.props.backupConfiguration?.logGroup);
+  }
+
+  private _createLoggingOptions(
+    scope: Construct,
+    deliveryStream: IDeliveryStream,
+    streamId: string,
+    logGroupId: string,
+    logging?: boolean,
+    propsLogGroup?: logs.ILogGroup,
+  ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
+    if (logging === false && propsLogGroup) {
+      throw new Error('logging cannot be set to false when logGroup is provided');
+    }
+    if (logging !== false || propsLogGroup) {
+      this.logGroups[logGroupId] = this.logGroups[logGroupId] ?? propsLogGroup ?? new logs.LogGroup(scope, logGroupId);
+      this.logGroups[logGroupId].grantWrite(deliveryStream);
+      return {
+        enabled: true,
+        logGroupName: this.logGroups[logGroupId].logGroupName,
+        logStreamName: this.logGroups[logGroupId].addStream(streamId).logStreamName,
+      };
+    }
+    return undefined;
   }
 }

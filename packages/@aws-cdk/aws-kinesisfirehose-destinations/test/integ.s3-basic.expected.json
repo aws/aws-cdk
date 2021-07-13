@@ -228,7 +228,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "DeliveryStreamLogGroupD821FBBE",
+                  "DeliveryStreamLogGroup9D8FA3BB",
                   "Arn"
                 ]
               }
@@ -244,7 +244,7 @@
         ]
       }
     },
-    "DeliveryStreamLogGroupD821FBBE": {
+    "DeliveryStreamLogGroup9D8FA3BB": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
         "RetentionInDays": 731
@@ -252,11 +252,11 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "DeliveryStreamLogGroupS3Destination02068E68": {
+    "DeliveryStreamLogGroupS3DestinationE25573DB": {
       "Type": "AWS::Logs::LogStream",
       "Properties": {
         "LogGroupName": {
-          "Ref": "DeliveryStreamLogGroupD821FBBE"
+          "Ref": "DeliveryStreamLogGroup9D8FA3BB"
         }
       },
       "UpdateReplacePolicy": "Retain",
@@ -276,10 +276,10 @@
           "CloudWatchLoggingOptions": {
             "Enabled": true,
             "LogGroupName": {
-              "Ref": "DeliveryStreamLogGroupD821FBBE"
+              "Ref": "DeliveryStreamLogGroup9D8FA3BB"
             },
             "LogStreamName": {
-              "Ref": "DeliveryStreamLogGroupS3Destination02068E68"
+              "Ref": "DeliveryStreamLogGroupS3DestinationE25573DB"
             }
           },
           "EncryptionConfiguration": {
