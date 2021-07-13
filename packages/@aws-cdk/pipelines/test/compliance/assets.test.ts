@@ -728,7 +728,7 @@ describe('pipeline with single asset publisher', () => {
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
         engine: new cdkp.CodePipelineEngine({
-          singlePublisherPerAssetType: true,
+          publishAssetsInParallel: true,
         }),
       });
       pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
@@ -784,13 +784,13 @@ describe('pipeline with single asset publisher', () => {
 
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({ singlePublisherPerAssetType: true }),
+        engine: new cdkp.CodePipelineEngine({ publishAssetsInParallel: true }),
       });
       pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
 
       const pipelineStack2 = new Stack(app, 'PipelineStack2', { env: PIPELINE_ENV });
       const otherPipeline = new ModernTestGitHubNpmPipeline(pipelineStack2, 'Cdk', {
-        engine: new cdkp.CodePipelineEngine({ singlePublisherPerAssetType: true }),
+        engine: new cdkp.CodePipelineEngine({ publishAssetsInParallel: true }),
       });
       otherPipeline.addStage(new TwoFileAssetsApp(app, 'OtherFileAssetApp'));
 

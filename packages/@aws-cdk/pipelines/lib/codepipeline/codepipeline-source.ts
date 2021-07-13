@@ -55,7 +55,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   // tells `PipelineGraph` to hoist a "Source" step
   public readonly isSource = true;
 
-  public abstract produce(options: ProduceActionOptions): CodePipelineActionFactoryResult;
+  public abstract produceAction(options: ProduceActionOptions): CodePipelineActionFactoryResult;
 }
 
 /**
@@ -115,7 +115,7 @@ class GitHubSource extends CodePipelineSource {
     this.primaryOutput = new FileSet('Source', this);
   }
 
-  public produce(options: ProduceActionOptions): CodePipelineActionFactoryResult {
+  public produceAction(options: ProduceActionOptions): CodePipelineActionFactoryResult {
     options.stage.addAction(new cp_actions.GitHubSourceAction({
       actionName: options.actionName,
       oauthToken: this.authentication,
