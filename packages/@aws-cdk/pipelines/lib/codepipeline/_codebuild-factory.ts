@@ -95,7 +95,7 @@ export interface CodeBuildFactoryProps {
   readonly commands: string[];
   readonly installCommands?: string[];
 
-  readonly env?: Record<string, string | undefined>;
+  readonly env?: Record<string, string>;
   readonly envFromCfnOutputs?: Record<string, StackOutputReference>;
 
   /**

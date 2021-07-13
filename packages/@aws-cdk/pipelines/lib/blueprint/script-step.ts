@@ -28,7 +28,7 @@ export interface ScriptStepProps {
    *
    * @default - No environment variables
    */
-  readonly env?: Record<string, string | undefined>;
+  readonly env?: Record<string, string>;
 
   /**
    * Set environment variables based on Stack Outputs
@@ -115,7 +115,7 @@ export class ScriptStep extends Step {
    *
    * @default - No environment variables
    */
-  public readonly env: Record<string, string | undefined>;
+  public readonly env: Record<string, string>;
 
   /**
    * Set environment variables based on Stack Outputs
