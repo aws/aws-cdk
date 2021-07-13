@@ -57,7 +57,7 @@ export interface StackDeploymentProps {
    *
    * @default - No tags
    */
-  readonly tags?: Record<string, string | undefined>;
+  readonly tags?: Record<string, string>;
 
   /**
    * Template path on disk to cloud assembly (cdk.out)
@@ -158,7 +158,7 @@ export class StackDeployment {
   /**
    * Tags to apply to the stack
    */
-  public readonly tags: Record<string, string | undefined>;
+  public readonly tags: Record<string, string>;
 
   /**
    * Assets referenced by this stack
