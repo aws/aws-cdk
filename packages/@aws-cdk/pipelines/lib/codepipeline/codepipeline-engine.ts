@@ -54,7 +54,7 @@ export interface CodePipelineEngineProps {
    *
    * @default - Latest version
    */
-  readonly cdkCliVersion?: string;
+  readonly cliVersion?: string;
 
   /**
    * Whether the pipeline will update itself
@@ -88,21 +88,21 @@ export interface CodePipelineEngineProps {
    *
    * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
    */
-  readonly codeBuildDefaults?: CodeBuildDefaults;
+  readonly codeBuildDefaults?: CodeBuildOptions;
 
   /**
    * Additional customizations to apply to the asset publishing CodeBuild projects
    *
    * @default - Only `codeBuildProjectDefaults` are applied
    */
-  readonly assetPublishingCodeBuildDefaults?: CodeBuildDefaults;
+  readonly assetPublishingCodeBuildDefaults?: CodeBuildOptions;
 
   /**
    * Additional customizations to apply to the self mutation CodeBuild projects
    *
    * @default - Only `codeBuildProjectDefaults` are applied
    */
-  readonly selfMutationCodeBuildDefaults?: CodeBuildDefaults;
+  readonly selfMutationCodeBuildDefaults?: CodeBuildOptions;
 
   /**
    * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
@@ -124,7 +124,7 @@ export interface CodePipelineEngineProps {
 /**
  * Options for customizing a single CodeBuild project
  */
-export interface CodeBuildDefaults {
+export interface CodeBuildOptions {
   /**
    * Partial build environment, will be combined with other build environments that apply
    *
@@ -137,7 +137,7 @@ export interface CodeBuildDefaults {
    *
    * @default - No policy statements added to CodeBuild Project Role
    */
-  readonly rolePolicyStatements?: iam.PolicyStatement[];
+  readonly rolePolicy?: iam.PolicyStatement[];
 
   /**
    * Partial buildspec, will be combined with other buildspecs that apply
@@ -500,7 +500,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
   }
 
   private selfMutateAction(): ICodePipelineActionFactory {
-    const installSuffix = this.props.cdkCliVersion ? `@${this.props.cdkCliVersion}` : '';
+    const installSuffix = this.props.cliVersion ? `@${this.props.cliVersion}` : '';
 
     const pipelineStack = Stack.of(this.pipeline);
     const pipelineStackIdentifier = pipelineStack.node.path ?? pipelineStack.stackName;
@@ -550,7 +550,7 @@ export class CodePipelineEngine implements IDeploymentEngine {
   }
 
   private publishAssetsAction(node: AGraphNode, assets: StackAsset[]): ICodePipelineActionFactory {
-    const installSuffix = this.props.cdkCliVersion ? `@${this.props.cdkCliVersion}` : '';
+    const installSuffix = this.props.cliVersion ? `@${this.props.cliVersion}` : '';
 
     const commands = assets.map(asset => {
       const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
@@ -609,8 +609,8 @@ export class CodePipelineEngine implements IDeploymentEngine {
     return undefined;
   }
 
-  private codeBuildDefaultsFor(nodeType: CodeBuildProjectType): CodeBuildDefaults | undefined {
-    const defaultOptions: CodeBuildDefaults = {
+  private codeBuildDefaultsFor(nodeType: CodeBuildProjectType): CodeBuildOptions | undefined {
+    const defaultOptions: CodeBuildOptions = {
       buildEnvironment: {
         buildImage: cb.LinuxBuildImage.STANDARD_5_0,
         computeType: cb.ComputeType.SMALL,

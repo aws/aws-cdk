@@ -149,7 +149,7 @@ behavior('can control fix/CLI version used in pipeline selfupdate', (suite) => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       engine: new CodePipelineEngine({
         pipelineName: 'vpipe',
-        cdkCliVersion: '1.2.3',
+        cliVersion: '1.2.3',
       }),
     });
 

@@ -13,7 +13,7 @@ import { mapValues, mkdict, noEmptyObject, partition } from '../private/javascri
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
-import { CodeBuildDefaults } from './codepipeline-engine';
+import { CodeBuildOptions } from './codepipeline-engine';
 
 export interface CodeBuildFactoryProps {
   /**
@@ -31,7 +31,7 @@ export interface CodeBuildFactoryProps {
    *
    * @default - No special values
    */
-  readonly projectOptions?: CodeBuildDefaults;
+  readonly projectOptions?: CodeBuildOptions;
 
   /**
    * Custom execution role to be used for the CodeBuild project
@@ -129,7 +129,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       role: step.role,
       projectOptions: {
         buildEnvironment: step.buildEnvironment,
-        rolePolicyStatements: step.rolePolicyStatements,
+        rolePolicy: step.rolePolicyStatements,
         securityGroups: step.securityGroups,
         partialBuildSpec: step.partialBuildSpec,
         vpc: step.vpc,
@@ -266,8 +266,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       project.node.addDependency(this.props.additionalDependable);
     }
 
-    if (projectOptions.rolePolicyStatements !== undefined) {
-      projectOptions.rolePolicyStatements.forEach(policyStatement => {
+    if (projectOptions.rolePolicy !== undefined) {
+      projectOptions.rolePolicy.forEach(policyStatement => {
         project.addToRolePolicy(policyStatement);
       });
     }
@@ -353,7 +353,7 @@ function renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLoca
   return { 'secondary-artifacts': secondary };
 }
 
-export function mergeCodeBuildOptions(...opts: Array<CodeBuildDefaults | undefined>) {
+export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefined>) {
   const xs = [{}, ...opts.filter(isDefined)];
   while (xs.length > 1) {
     const [a, b] = xs.splice(xs.length - 2, 2);
@@ -361,10 +361,10 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildDefaults | undefin
   }
   return xs[0];
 
-  function merge2(a: CodeBuildDefaults, b: CodeBuildDefaults): CodeBuildDefaults {
+  function merge2(a: CodeBuildOptions, b: CodeBuildOptions): CodeBuildOptions {
     return {
       buildEnvironment: mergeBuildEnvironments(a.buildEnvironment, b.buildEnvironment),
-      rolePolicyStatements: definedArray([...a.rolePolicyStatements ?? [], ...b.rolePolicyStatements ?? []]),
+      rolePolicy: definedArray([...a.rolePolicy ?? [], ...b.rolePolicy ?? []]),
       securityGroups: definedArray([...a.securityGroups ?? [], ...b.securityGroups ?? []]),
       partialBuildSpec: mergeBuildSpecs(a.partialBuildSpec, b.partialBuildSpec),
       vpc: b.vpc ?? a.vpc,

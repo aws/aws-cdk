@@ -343,7 +343,7 @@ describe('basic pipeline', () => {
     suite.modern(() => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
         engine: new cdkp.CodePipelineEngine( {
-          cdkCliVersion: '1.2.3',
+          cliVersion: '1.2.3',
         }),
       });
       pipeline.addStage(new FileAssetApp(pipelineStack, 'FileAssetApp'));

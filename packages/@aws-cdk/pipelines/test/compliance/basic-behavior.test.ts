@@ -145,12 +145,12 @@ behavior('changing CLI version leads to a different pipeline structure (restarti
     // WHEN
     new ModernTestGitHubNpmPipeline(stack2, 'Cdk', {
       engine: new cdkp.CodePipelineEngine({
-        cdkCliVersion: '1.2.3',
+        cliVersion: '1.2.3',
       }),
     });
     new ModernTestGitHubNpmPipeline(stack3, 'Cdk', {
       engine: new cdkp.CodePipelineEngine({
-        cdkCliVersion: '4.5.6',
+        cliVersion: '4.5.6',
       }),
     });
 
