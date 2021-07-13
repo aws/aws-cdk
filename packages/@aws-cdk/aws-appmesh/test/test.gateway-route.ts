@@ -803,7 +803,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              path: appmesh.HttpGatewayRoutePathMatch.exactly('/exact'),
+              path: appmesh.HttpGatewayRoutePathMatch.exactly('/exact', undefined),
             },
           }),
           gatewayRouteName: 'gateway-http-route',

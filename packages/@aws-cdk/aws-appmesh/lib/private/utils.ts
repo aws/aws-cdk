@@ -130,7 +130,7 @@ export function validateGrpcMatchArrayLength(metadata?: HeaderMatch[]): void {
  */
 export function validateGrpcRouteMatch(match: GrpcRouteMatch): void {
   if (match.serviceName === undefined && match.metadata === undefined && match.methodName === undefined) {
-    throw new Error('At least one gRPC match property must be provided');
+    throw new Error('At least one gRPC route match property must be provided');
   }
 }
 
@@ -139,6 +139,6 @@ export function validateGrpcRouteMatch(match: GrpcRouteMatch): void {
  */
 export function validateGrpcGatewayRouteMatch(match: GrpcGatewayRouteMatch): void {
   if (match.serviceName === undefined && match.metadata === undefined && match.hostname === undefined) {
-    throw new Error('At least one gRPC gateway route match property must be provided');
+    throw new Error('At least one gRPC gateway route match property beside rewriteRequestHostname must be provided');
   }
 }

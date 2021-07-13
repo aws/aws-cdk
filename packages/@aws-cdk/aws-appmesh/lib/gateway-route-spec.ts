@@ -269,10 +269,10 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
     const pathMatchConfig = (this.match?.path ?? HttpGatewayRoutePathMatch.startsWith('/')).bind(scope);
-    const defaultTargetHostname = this.match?.rewriteRequestHostname;
+    const rewriteRequestHostname = this.match?.rewriteRequestHostname;
 
-    const prefixPathRewrite = pathMatchConfig?.prefixPathRewrite;
-    const wholePathRewrite = pathMatchConfig?.wholePathRewrite;
+    const prefixPathRewrite = pathMatchConfig.prefixPathRewrite;
+    const wholePathRewrite = pathMatchConfig.wholePathRewrite;
 
     const httpConfig: CfnGatewayRoute.HttpGatewayRouteProperty = {
       match: {
@@ -289,12 +289,12 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
             virtualServiceName: this.routeTarget.virtualServiceName,
           },
         },
-        rewrite: defaultTargetHostname !== undefined || (prefixPathRewrite || wholePathRewrite)
+        rewrite: rewriteRequestHostname !== undefined || prefixPathRewrite || wholePathRewrite
           ? {
-            hostname: defaultTargetHostname === undefined
+            hostname: rewriteRequestHostname === undefined
               ? undefined
               : {
-                defaultTargetHostname: defaultTargetHostname? 'ENABLED' : 'DISABLED',
+                defaultTargetHostname: rewriteRequestHostname? 'ENABLED' : 'DISABLED',
               },
             prefix: prefixPathRewrite,
             path: wholePathRewrite,
@@ -331,6 +331,11 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
 
     return {
       grpcSpecConfig: {
+        match: {
+          serviceName: this.match.serviceName,
+          hostname: this.match.hostname?.bind(scope).hostnameMatch,
+          metadata: metadataMatch?.map(metadata => metadata.bind(scope).headerMatch),
+        },
         action: {
           target: {
             virtualService: {
@@ -344,11 +349,6 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
                 defaultTargetHostname: this.match.rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
               },
             },
-        },
-        match: {
-          serviceName: this.match.serviceName,
-          hostname: this.match.hostname?.bind(scope).hostnameMatch,
-          metadata: metadataMatch?.map(metadata => metadata.bind(scope).headerMatch),
         },
       },
     };
