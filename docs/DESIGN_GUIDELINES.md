@@ -610,7 +610,7 @@ A pattern for an "Enum-like Class" should be used in such cases:
 
 ```ts
 export interface MyProps {
-  option: MyOption;
+  readonly option: MyOption;
 }
 
 export class MyOption {
