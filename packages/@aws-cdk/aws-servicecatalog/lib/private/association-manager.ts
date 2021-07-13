@@ -7,14 +7,14 @@ import { hashValues } from './util';
 import { InputValidator } from './validation';
 
 /**
- * Simplify type for constraint map to hold the L1 constraint resources.
+ * Simplify type for constraint map to hold the L1 constraint and association resources.
  */
 type AssociationOrConstraint = CfnPortfolioProductAssociation | CfnResourceUpdateConstraint;
 
 export class AssociationManager {
   public static associateProductWithPortfolio(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct): void {
     const associationKey = this.getAssociationKey(scope, portfolio, product);
-    if (!this.associationMap.has(associationKey)) {
+    if (this.checkConstraintOrAssocationExists(associationKey, Constraints.ASSOCIATION)) {
       const association = new CfnPortfolioProductAssociation(scope, `PortfolioProductAssociation${associationKey}`, {
         portfolioId: portfolio.portfolioId,
         productId: product.productId,
@@ -26,11 +26,13 @@ export class AssociationManager {
     }
   }
 
-  public static allowTagUpdates(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct,
-    options: TagUpdateConstraintOptions): void {
+  public static allowTagUpdates(
+    scope: cdk.Resource, portfolio: IPortfolio, product: IProduct,
+    options: TagUpdateConstraintOptions,
+  ): void {
     InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options.description);
     const associationKey = this.ensureProductIsAssociatedWithPortfolio(scope, portfolio, product);
-    if (!this.associationMap.get(associationKey)!.has(Constraints.RESOURCE_UPDATE)) {
+    if (this.checkConstraintOrAssocationExists(associationKey, Constraints.RESOURCE_UPDATE)) {
       const constraint = new CfnResourceUpdateConstraint(scope, `ResourceUpdateConstraint${associationKey}`, {
         acceptLanguage: options.messageLanguage,
         description: options.description,
@@ -52,12 +54,19 @@ export class AssociationManager {
   private static getAssociationKey(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct): string {
     return hashValues(portfolio.node.addr, product.node.addr, scope.stack.node.addr);
   }
+
   private static ensureProductIsAssociatedWithPortfolio(scope: cdk.Resource, portfolio: IPortfolio, product: IProduct): string {
     const associationKey = this.getAssociationKey(scope, portfolio, product);
-    if (!this.associationMap.has(associationKey)) {
-      this.associateProductWithPortfolio(scope, portfolio, product);
-    }
+    // We can still call this because it will check if the association already exists before creating a new one
+    this.associateProductWithPortfolio(scope, portfolio, product);
     return associationKey;
+  }
+
+  private static checkConstraintOrAssocationExists(associationKey: string, constraint: Constraints): boolean {
+    if (constraint === Constraints.ASSOCIATION) {
+      return !this.associationMap.has(associationKey);
+    }
+    return !this.associationMap.get(associationKey)!.has(constraint);
   }
 
   private static prettyPrintAssociation(portfolio: IPortfolio, product: IProduct): string {

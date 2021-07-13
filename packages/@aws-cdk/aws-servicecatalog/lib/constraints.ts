@@ -5,14 +5,16 @@ import { MessageLanguage } from './common';
  */
 export interface CommonConstraintOptions {
   /**
-   * The language code. Configures the language for error messages
-   * from service catalog.
-   * @default - No accept language provided
+   * The language code.
+   * Configures the language for error messages from service catalog.
+   *
+   * @default - English
    */
   readonly messageLanguage?: MessageLanguage;
 
   /**
    * The description of the constraint.
+   *
    * @default - No description provided
    */
   readonly description?: string;
@@ -23,8 +25,8 @@ export interface CommonConstraintOptions {
  */
 export interface TagUpdateConstraintOptions extends CommonConstraintOptions {
   /**
-   * Toggle for if users should be allowed to change/update tags
-   * @default - true
+   * Toggle for if users should be allowed to change/update tags.
+   * @default true
    */
   readonly allowUpdatingProvisionedProductTags?: boolean;
 }

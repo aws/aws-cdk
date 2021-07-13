@@ -268,6 +268,7 @@ describe('portfolio associations and product constraints', () => {
   let testStackNameCounter = 0; //We need to maintain unique stack names since we use node addresses for ids
 
   beforeEach(() => {
+    //AssociationManager.associationMap.clear();
     stack = new cdk.Stack(app, `TestStack${testStackNameCounter}`);
     testStackNameCounter += 1;
 

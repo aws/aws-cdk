@@ -18,6 +18,7 @@ import { Construct } from 'constructs';
 export interface PortfolioShareOptions {
   /**
    * Whether to share tagOptions as a part of the portfolio share
+   *
    * @default - share not specified
    */
   readonly shareTagOptions?: boolean;
@@ -25,7 +26,8 @@ export interface PortfolioShareOptions {
   /**
    * The message language of the share.
    * Controls status and error message language for share.
-   * @default - accept language not specified
+   *
+   * @default - English
    */
   readonly messageLanguage?: MessageLanguage;
 }
@@ -78,7 +80,7 @@ export interface IPortfolio extends cdk.IResource {
   addProduct(product: IProduct): void;
 
   /**
-   * Allow or disallow tag updates, which adds a Resource Update Constraint.
+   * Add a Resource Update Constraint.
    */
   allowTagUpdates(product: IProduct, options?: TagUpdateConstraintOptions): void;
 }
@@ -100,7 +102,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     this.associatePrincipal(group.groupArn, group.node.addr);
   }
 
-  public addProduct(product: IProduct) {
+  public addProduct(product: IProduct): void {
     AssociationManager.associateProductWithPortfolio(this, this, product);
   }
 
@@ -114,7 +116,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     });
   }
 
-  public allowTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}) {
+  public allowTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}): void {
     AssociationManager.allowTagUpdates(this, this, product, options);
   }
 
@@ -155,9 +157,10 @@ export interface PortfolioProps {
   readonly providerName: string;
 
   /**
-   * The language code. Controls language for status logging and errors.
-   * If not specified will default to English in the console and CLI.
-   * @default - No accept language provided
+   * The message language. Controls language for
+   * status logging and errors.
+   *
+   * @default - English
    */
   readonly messageLanguage?: MessageLanguage;
 

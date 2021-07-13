@@ -37,8 +37,6 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
 
 portfolio.addProduct(product);
 
-portfolio.allowTagUpdates(product, {
-  allowUpdatingProvisionedProductTags: true,
-});
+portfolio.allowTagUpdates(product);
 
 app.synth();

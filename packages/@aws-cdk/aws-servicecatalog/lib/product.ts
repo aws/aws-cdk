@@ -77,7 +77,9 @@ export interface CloudFormationProductProps {
 
   /**
    * The language code.
-   * @default - No message language provided
+   * Controls language for logging and errors.
+   *
+   * @default - English
    */
   readonly messageLanguage?: MessageLanguage;
 

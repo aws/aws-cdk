@@ -30,9 +30,9 @@ enables organizations to create and manage catalogs of products for their end us
   - [Granting access to a portfolio](#granting-access-to-a-portfolio)
   - [Sharing a portfolio with another AWS account](#sharing-a-portfolio-with-another-aws-account)
 - [Product](#product)
-  - [Adding a product to a portfolio](#associations)
+  - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
 - [Constraints](#constraints)
-  - [Tag update constraint](#tag-update)
+  - [Tag update constraint](#tag-update-constraint)
 
 The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
@@ -161,23 +161,33 @@ portfolio.addProduct(product);
 
 Constraints define governance mechanisms that allow you to manage permissions, notifications, and options related to actions end users can perform on products,
 Constraints are applied on a portfolio-product association.
-Using the cdk, if you do not explicitly associate a product to a portfolio and add a constraint, it will automatically add an association for you.
+Using the CDK, if you do not explicitly associate a product to a portfolio and add a constraint, it will automatically add an association for you.
 
-There are rules around plurariliites of constraints for a portfolio and product. For example, you can only have one `TagUpdate`
-constraint applied to a portfolio-product association. 
+There are rules around plurariliites of constraints for a portfolio and product.
+For example, you can only have a single "tag update" constraint applied to a portfolio-product association. 
 If a misconfigured constraint is added, `synth` will fail with an error message.
 
 Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints.html).
 
 ### Tag update constraint
 
-Tag update constraints allow or disallow end users to update tags on resources associated with an AWS Service Catalog product upon provisioning. By default, tag updating is not configured.
+Tag update constraints allow or disallow end users to update tags on resources associated with an AWS Service Catalog product upon provisioning.
+By default, tag updating is not permitted.
 If tag updating is allowed, then new tags associated with the product or portfolio will be applied to provisioned resources during a provisioned product update.
 
 ```ts fixture=portfolio-product
 portfolio.addProduct(product);
 
+portfolio.allowTagUpdates(product);
+```
+
+If you want to disable this feature later one, you can update it by setting the flag to false:
+
+```ts fixture=portfolio-product
+portfolio.addProduct(product);
+
+// to disable tag updates:
 portfolio.allowTagUpdates(product, {
-  allowUpdatingProvisionedProductTags: true,
+  allowUpdatingProvisionedProductTags: false,
 });
 ```
