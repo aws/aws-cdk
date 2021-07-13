@@ -119,6 +119,13 @@ export interface CodePipelineEngineProps {
    * @default []
    */
   readonly dockerCredentials?: DockerCredential[];
+
+  /**
+   * An existing Pipeline to be reused and built upon.
+   *
+   * @default - a new underlying pipeline is created.
+   */
+  readonly codePipeline?: cp.Pipeline;
 }
 
 /**
@@ -226,11 +233,22 @@ export class CodePipelineEngine implements IDeploymentEngine {
     this._scope = options.scope;
     this._myCxAsmRoot = path.resolve(assemblyBuilderOf(appOf(this.scope)).outdir);
 
-    this._pipeline = new cp.Pipeline(this._scope, 'Pipeline', {
-      pipelineName: this.props.pipelineName,
-      crossAccountKeys: this.props.crossAccountKeys ?? false,
-      restartExecutionOnUpdate: true,
-    });
+    if (this.props.codePipeline) {
+      if (this.props.pipelineName) {
+        throw new Error('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
+      if (this.props.crossAccountKeys !== undefined) {
+        throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
+
+      this._pipeline = this.props.codePipeline;
+    } else {
+      this._pipeline = new cp.Pipeline(this._scope, 'Pipeline', {
+        pipelineName: this.props.pipelineName,
+        crossAccountKeys: this.props.crossAccountKeys ?? false,
+        restartExecutionOnUpdate: true,
+      });
+    }
 
     const graphFromBp = new PipelineGraph(options.blueprint, {
       selfMutation: this.selfMutation,

@@ -89,6 +89,9 @@ describe('with custom Source stage in existing Pipeline', () => {
         ],
       });
     });
+
+    // There is no synthAction in the modern pipeline
+    suite.doesNotApply.modern();
   });
 });
 
@@ -125,6 +128,9 @@ describe('with Source and Build stages in existing Pipeline', () => {
         ],
       });
     });
+
+    // synthStep is required
+    suite.doesNotApply.modern();
   });
 });
 
