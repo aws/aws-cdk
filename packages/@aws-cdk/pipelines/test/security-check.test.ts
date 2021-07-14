@@ -30,7 +30,7 @@ afterEach(() => {
 behavior('security check option generates lambda/codebuild at pipeline scope', (suite) => {
   suite.legacy(() => {
     // WHEN
-    pipeline.addApplicationStage(new OneStackApp(app, 'App'), { checkBroadeningPermissions: true });
+    pipeline.addApplicationStage(new OneStackApp(app, 'App'), { confirmBroadeningPermissions: true });
 
     // THEN
     expect(pipelineStack).toCountResources('AWS::Lambda::Function', 1);
@@ -50,7 +50,7 @@ behavior('security check option generates lambda/codebuild at pipeline scope', (
 behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid permissions', (suite) => {
   suite.legacy(() => {
     // WHEN
-    pipeline.addApplicationStage(new OneStackApp(app, 'App'), { checkBroadeningPermissions: true });
+    pipeline.addApplicationStage(new OneStackApp(app, 'App'), { confirmBroadeningPermissions: true });
 
     // THEN
     // CodePipeline must be tagged as SECURITY_CHECK=ALLOW_APPROVE
@@ -138,12 +138,12 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
   });
 });
 
-behavior('checkBroadeningPermissions option at addApplicationStage runs security check on all apps unless overriden', (suite) => {
+behavior('confirmBroadeningPermissions option at addApplicationStage runs security check on all apps unless overriden', (suite) => {
   suite.legacy(() => {
     // WHEN
-    const securityStage = pipeline.addApplicationStage(new OneStackApp(app, 'StageSecurityCheckStack'), { checkBroadeningPermissions: true });
+    const securityStage = pipeline.addApplicationStage(new OneStackApp(app, 'StageSecurityCheckStack'), { confirmBroadeningPermissions: true });
     securityStage.addApplication(new OneStackApp(app, 'AnotherStack'));
-    securityStage.addApplication(new OneStackApp(app, 'SkipCheckStack'), { checkBroadeningPermissions: false });
+    securityStage.addApplication(new OneStackApp(app, 'SkipCheckStack'), { confirmBroadeningPermissions: false });
 
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -180,11 +180,11 @@ behavior('checkBroadeningPermissions option at addApplicationStage runs security
   });
 });
 
-behavior('checkBroadeningPermissions option at addApplication runs security check only on selected application', (suite) => {
+behavior('confirmBroadeningPermissions option at addApplication runs security check only on selected application', (suite) => {
   suite.legacy(() => {
     // WHEN
     const noSecurityStage = pipeline.addApplicationStage(new OneStackApp(app, 'NoSecurityCheckStack'));
-    noSecurityStage.addApplication(new OneStackApp(app, 'EnableCheckStack'), { checkBroadeningPermissions: true });
+    noSecurityStage.addApplication(new OneStackApp(app, 'EnableCheckStack'), { confirmBroadeningPermissions: true });
 
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -217,12 +217,12 @@ behavior('checkBroadeningPermissions option at addApplication runs security chec
   });
 });
 
-behavior('checkBroadeningPermissions and notification topic options generates the right resources', (suite) => {
+behavior('confirmBroadeningPermissions and notification topic options generates the right resources', (suite) => {
   suite.legacy(() => {
     // WHEN
     const topic = new Topic(pipelineStack, 'NotificationTopic');
     pipeline.addApplicationStage(new OneStackApp(app, 'MyStack'), {
-      checkBroadeningPermissions: true,
+      confirmBroadeningPermissions: true,
       securityNotificationTopic: topic,
     });
 
@@ -242,7 +242,7 @@ behavior('checkBroadeningPermissions and notification topic options generates th
                   'Fn::Join': ['', [
                     '[{"name":"STACK_NAME","type":"PLAINTEXT","value":"PipelineSecurityStack"},{"name":"STAGE_NAME","type":"PLAINTEXT","value":"MyStack"},{"name":"ACTION_NAME","type":"PLAINTEXT","value":"MyStackManualApproval"},{"name":"NOTIFICATION_ARN","type":"PLAINTEXT","value":"',
                     { Ref: 'NotificationTopicEB7A0DF1' },
-                    '"},{"name":"NOTIFICATION_SUBJECT","type":"PLAINTEXT","value":"Security Changes detected in MyStack"}]',
+                    '"},{"name":"NOTIFICATION_SUBJECT","type":"PLAINTEXT","value":"Confirm Broadening IAM Permissions in MyStack"}]',
                   ]],
                 },
               },
@@ -286,7 +286,7 @@ behavior('Stages declared outside the pipeline create their own ApplicationSecur
     });
 
     unattachedStage.addApplication(new OneStackApp(app, 'UnattachedStage'), {
-      checkBroadeningPermissions: true,
+      confirmBroadeningPermissions: true,
     });
 
     // THEN

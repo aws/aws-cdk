@@ -67,11 +67,23 @@ export class ApplicationSecurityCheck extends Construct {
       ' --payload "$payload"' +
       ' lambda.out';
 
+    const message = [
+      'Broadening IAM Permssions detected in $PIPELINE_NAME: $STAGE_NAME.',
+      'You must manually approve the changes in CodePipeline to unblock the pipeline.',
+      '',
+      'See the security changes in the CodeBuild Logs',
+      '===',
+      '$LINK',
+      '',
+      'Approve changes in CodePipline',
+      '===',
+      '$PIPELINE_LINK',
+    ];
     const publishNotification =
       'aws sns publish' +
       ' --topic-arn $NOTIFICATION_ARN' +
       ' --subject "$NOTIFICATION_SUBJECT"' +
-      ' --message "Changes detected! Requires Manual Approval.\n\n$LINK"';
+      ` --message "${message.join('\n')}"`;
 
     this.cdkDiffProject = new codebuild.Project(this, 'CDKSecurityCheck', {
       buildSpec: codebuild.BuildSpec.fromObject({
@@ -82,7 +94,8 @@ export class ApplicationSecurityCheck extends Construct {
               'npm install -g aws-cdk',
               // $CODEBUILD_INITIATOR will always be Code Pipeline and in the form of:
               // "codepipeline/example-pipeline-name-Xxx"
-              'payload="$(node -pe \'JSON.stringify({ "PipelineName": process.env.CODEBUILD_INITIATOR.split("/")[1], "StageName": process.env.STAGE_NAME, "ActionName": process.env.ACTION_NAME })\' )"',
+              'export PIPELINE_NAME="$(node -pe \'`${process.env.CODEBUILD_INITIATOR}`.split("/")[1]\')"',
+              'payload="$(node -pe \'JSON.stringify({ "PipelineName": process.env.PIPELINE_NAME, "StageName": process.env.STAGE_NAME, "ActionName": process.env.ACTION_NAME })\' )"',
               // ARN: "arn:aws:codebuild:$region:$account_id:build/$project_name:$project_execution_id$"
               'ARN=$CODEBUILD_BUILD_ARN',
               'REGION="$(node -pe \'`${process.env.ARN}`.split(":")[3]\')"',
@@ -91,6 +104,7 @@ export class ApplicationSecurityCheck extends Construct {
               'PROJECT_ID="$(node -pe \'`${process.env.ARN}`.split(":")[6]\')"',
               // Manual Approval adds 'http/https' to the resolved link
               'export LINK="$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION"',
+              'export PIPELINE_LINK=="$REGION.console.aws.amazon.com/codesuite/codepipeline/pipelines/$PIPELINE_NAME/view?region=$REGION"',
               // Run invoke only if cdk diff passes (returns exit code 0)
               // 0 -> true, 1 -> false
               ifElse({
@@ -100,7 +114,7 @@ export class ApplicationSecurityCheck extends Construct {
                   'export MESSAGE="No changes detected."',
                 ],
                 elseStatements: [
-                  `[[ -z "\${NOTIFICATION_ARN}" ]] && ${publishNotification}`,
+                  `[ -z "\${NOTIFICATION_ARN}" ] || ${publishNotification}`,
                   'export MESSAGE="Changes detected! Requires Manual Approval"',
                 ],
               }),

@@ -1,7 +1,8 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
 
 const client = new AWS.CodePipeline({ apiVersion: '2015-07-09' });
-const timeout = 5;
+const TIMEOUT_IN_MINUTES = 5;
 
 const sleep = (seconds: number) => {
   return new Promise(resolve => setTimeout(resolve, seconds * 1000));
@@ -25,7 +26,7 @@ export async function handler(event: any, _context: any) {
     return latest ? latest.token : undefined;
   }
 
-  const deadline = Date.now() + timeout * 60000;
+  const deadline = Date.now() + TIMEOUT_IN_MINUTES * 60000;
   while (Date.now() < deadline) {
     const response = await client.getPipelineState({ name: pipelineName }).promise();
     const token = parseState(response);

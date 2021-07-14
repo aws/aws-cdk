@@ -75,11 +75,11 @@ export class TestCdkStack extends Stack {
 
     unattachedStage.addApplication(new MyStage(this, 'SingleStage', {
       env: { account: this.account, region: this.region },
-    }), { checkBroadeningPermissions: true, securityNotificationTopic: topic });
+    }), { confirmBroadeningPermissions: true, securityNotificationTopic: topic });
 
     const stage1 = pipeline.addApplicationStage(new MyStage(this, 'PreProduction', {
       env: { account: this.account, region: this.region },
-    }), { checkBroadeningPermissions: true, securityNotificationTopic: topic });
+    }), { confirmBroadeningPermissions: true, securityNotificationTopic: topic });
 
     stage1.addApplication(new MySafeStage(this, 'SafeProduction', {
       env: { account: this.account, region: this.region },
@@ -87,7 +87,7 @@ export class TestCdkStack extends Stack {
 
     stage1.addApplication(new MySafeStage(this, 'DisableSecurityCheck', {
       env: { account: this.account, region: this.region },
-    }), { checkBroadeningPermissions: false });
+    }), { confirmBroadeningPermissions: false });
 
     const stage2 = pipeline.addApplicationStage(new MyStage(this, 'NoSecurityCheck', {
       env: { account: this.account, region: this.region },
@@ -95,7 +95,7 @@ export class TestCdkStack extends Stack {
 
     stage2.addApplication(new MyStage(this, 'EnableSecurityCheck', {
       env: { account: this.account, region: this.region },
-    }), { checkBroadeningPermissions: true });
+    }), { confirmBroadeningPermissions: true });
   }
 }
 

@@ -783,7 +783,7 @@ You can enable the security check in one of two ways:
       // ...source and build information here (see above)
     });
     const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
-      checkBroadeningPermissions: true,
+      confirmBroadeningPermissions: true,
     });
     // The 'PreProd' application is also run against a security diff because we configured
     // the stage to enable security checks
@@ -798,12 +798,12 @@ You can enable the security check in one of two ways:
     });
     const stage = pipeline.addApplicationStage(new MyApplication(this, 'NoCheck'));
     stage.addApplication(new MyApplication(this, 'RunSecurityDiff'), {
-      checkBroadeningPermissions: true,
+      confirmBroadeningPermissions: true,
     });
     ```
 
 **Note**: Application level options have higher priority than stage level configuration.
-For example, we can disable stage wide security check by disabling `checkBroadeningPermissions`
+For example, we can disable stage wide security check by disabling `confirmBroadeningPermissions`
 at the application level.
 
 ```ts
@@ -811,11 +811,11 @@ const pipeline = new CdkPipeline(app, 'Pipeline', {
   // ...source and build information here (see above)
 });
 const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
-  checkBroadeningPermissions: true,
+  confirmBroadeningPermissions: true,
 });
 // The 'NoDiff' application will not have a security check
 stage.addApplication(new MyApplication(this, 'NoDiff'), {
-  checkBroadeningPermissions: false,
+  confirmBroadeningPermissions: false,
 });
 ```
 
@@ -837,7 +837,7 @@ const pipeline = new CdkPipeline(app, 'Pipeline', {
   // ...source and build information here (see above)
 });
 const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
-  checkBroadeningPermissions: true,
+  confirmBroadeningPermissions: true,
   securityNotificationTopic: topic,
 });
 ```
