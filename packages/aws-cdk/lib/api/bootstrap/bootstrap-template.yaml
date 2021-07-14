@@ -293,6 +293,9 @@ Resources:
                 Resource: "*"
             Version: '2012-10-17'
           PolicyName: LookupRolePolicy
+      Tags:
+        - Key: aws-cdk:bootstrap-role
+          Value: lookup
   FilePublishingRoleDefaultPolicy:
     Type: AWS::IAM::Policy
     Properties:
