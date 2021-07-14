@@ -50,7 +50,7 @@ export abstract class HttpRoutePathMatch {
    * The value of the path must match the specified prefix.
    *
    * @param prefix the value to use to match the beginning of the path part of the URL of the request.
-   *   It must start with the '/' character. If provided as "/", matches all requests.
+   *   If provided as "/", matches all requests.
    *   For example, if your virtual service name is "my-service.local"
    *   and you want the route to match requests to "my-service.local/metrics", your prefix should be "/metrics".
    */

@@ -427,7 +427,6 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      // Path that is passed to this method must start with '/'.
       path: appmesh.HttpRoutePathMatch.startsWith('/path-to-app'),
     },
   }),
