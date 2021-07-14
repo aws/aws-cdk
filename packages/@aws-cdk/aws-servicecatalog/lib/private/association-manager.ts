@@ -1,5 +1,4 @@
 import * as cdk from '@aws-cdk/core';
-import { CfnResource } from '@aws-cdk/core';
 import { TagUpdateConstraintOptions } from '../constraints';
 import { IPortfolio } from '../portfolio';
 import { IProduct } from '../product';
@@ -8,23 +7,30 @@ import { hashValues } from './util';
 import { InputValidator } from './validation';
 
 export class AssociationManager {
-  public static associateProductWithPortfolio(portfolio: IPortfolio, product: IProduct): string {
-    const associationKey = hashValues(portfolio.node.addr, product.node.addr);
+  public static associateProductWithPortfolio(
+    portfolio: IPortfolio, product: IProduct,
+  ): { associationKey: string, cfnPortfolioProductAssociation: CfnPortfolioProductAssociation } {
+    const associationKey = hashValues(portfolio.node.addr, product.node.addr, portfolio.stack.node.addr);
     const constructId = `PortfolioProductAssociation${associationKey}`;
+    const associationNode = portfolio.node.tryFindChild(constructId);
 
-    if (!portfolio.node.tryFindChild(constructId)) {
-      new CfnPortfolioProductAssociation(portfolio as unknown as cdk.Resource, constructId, {
+    let createAssociation: () => CfnPortfolioProductAssociation = function (): CfnPortfolioProductAssociation {
+      return new CfnPortfolioProductAssociation(portfolio as unknown as cdk.Resource, constructId, {
         portfolioId: portfolio.portfolioId,
         productId: product.productId,
       });
-    }
-    return associationKey;
+    };
+
+    return {
+      associationKey: associationKey,
+      cfnPortfolioProductAssociation: !associationNode ? createAssociation() : associationNode as CfnPortfolioProductAssociation,
+    };
   }
 
   public static constrainTagUpdates(portfolio: IPortfolio, product: IProduct, options: TagUpdateConstraintOptions): void {
     InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options.description);
-    const associationKey = this.associateProductWithPortfolio(portfolio, product);
-    const constructId = `ResourceUpdateConstraint${associationKey}`;
+    const association = this.associateProductWithPortfolio(portfolio, product);
+    const constructId = `ResourceUpdateConstraint${association.associationKey}`;
 
     if (!portfolio.node.tryFindChild(constructId)) {
       const constraint = new CfnResourceUpdateConstraint(portfolio as unknown as cdk.Resource, constructId, {
@@ -36,7 +42,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependsOn(portfolio.node.tryFindChild(`PortfolioProductAssociation${associationKey}`) as CfnResource);
+      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
     } else {
       throw new Error(`Cannot have multiple tag update constraints for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }

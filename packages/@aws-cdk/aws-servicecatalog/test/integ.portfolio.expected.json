@@ -83,7 +83,7 @@
         }
       }
     },
-    "TestPortfolioPortfolioProductAssociationeb1f185b8c3cD327BFBF": {
+    "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7": {
       "Type": "AWS::ServiceCatalog::PortfolioProductAssociation",
       "Properties": {
         "PortfolioId": {
@@ -94,7 +94,7 @@
         }
       }
     },
-    "TestPortfolioResourceUpdateConstrainteb1f185b8c3c565A4478": {
+    "TestPortfolioResourceUpdateConstrainta0185761d231AB0EAAE0": {
       "Type": "AWS::ServiceCatalog::ResourceUpdateConstraint",
       "Properties": {
         "PortfolioId": {
@@ -106,7 +106,7 @@
         "TagUpdateOnProvisionedProduct": "ALLOWED"
       },
       "DependsOn": [
-        "TestPortfolioPortfolioProductAssociationeb1f185b8c3cD327BFBF"
+        "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
     "TestProduct7606930B": {
