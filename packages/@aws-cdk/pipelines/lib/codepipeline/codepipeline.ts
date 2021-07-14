@@ -144,7 +144,7 @@ export interface CodePipelineProps {
   /**
    * An existing Pipeline to be reused and built upon.
    *
-   * disable-awslint:ref-via-interface: this pipeline needs to be modifiable.
+   * [disable-awslint:ref-via-interface]
    *
    * @default - a new underlying pipeline is created.
    */
