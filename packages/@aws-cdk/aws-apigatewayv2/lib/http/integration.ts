@@ -223,6 +223,10 @@ export enum HttpIntegrationSubtype {
    * EventBridge PutEvents integration
    */
   EVENTBRIDGE_PUTEVENTS = 'EventBridge-PutEvents',
+  /**
+   * SQS SendMessage integration
+   */
+  SQS_SENDMESSAGE = 'SQS-SendMessage',
 }
 
 /**
