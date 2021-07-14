@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Fn, IDependable, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
-import { AssetType, FileSet, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
+import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
@@ -34,7 +34,7 @@ export interface CodePipelineProps {
    * If you use a `ScriptStep` here and you don't configure an output directory,
    * the output directory will automatically be assumed to be `cdk.out`.
    */
-  readonly synth: Step;
+  readonly synth: IFileSetProducer;
 
   /**
    * The name of the CodePipeline pipeline

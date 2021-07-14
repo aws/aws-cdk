@@ -4,7 +4,8 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import { SecretValue, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
-import { behavior, FileAssetApp, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, TestApp, TestGitHubAction } from '../testhelpers';
+import { CodePipelineFileSet } from '../../lib';
+import { behavior, FileAssetApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, PIPELINE_ENV, TestApp, TestGitHubAction } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -35,6 +36,9 @@ describe('with empty existing CodePipeline', () => {
         new cdkp.CdkPipeline(pipelineStack, 'Cdk', { cloudAssemblyArtifact, codePipeline });
       }).toThrow(/You must pass a 'sourceAction'/);
     });
+
+    // 'synth' is not optional so this doesn't apply
+    suite.doesNotApply.modern();
   });
 
   behavior('can give both actions', (suite) => {
@@ -47,6 +51,23 @@ describe('with empty existing CodePipeline', () => {
         synthAction: cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact }),
       });
 
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      // WHEN
+      new cdkp.CodePipeline(pipelineStack, 'Cdk', {
+        codePipeline,
+        synth: new cdkp.ScriptStep('Synth', {
+          input: cdkp.CodePipelineSource.github('test/test'),
+          commands: ['true'],
+        }),
+      });
+
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
       // THEN
       expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         Stages: [
@@ -55,7 +76,7 @@ describe('with empty existing CodePipeline', () => {
           objectLike({ Name: 'UpdatePipeline' }),
         ],
       });
-    });
+    }
   });
 });
 
@@ -80,6 +101,20 @@ describe('with custom Source stage in existing Pipeline', () => {
         synthAction: cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact }),
       });
 
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      new cdkp.CodePipeline(pipelineStack, 'Cdk', {
+        codePipeline,
+        synth: new cdkp.ScriptStep('Synth', {
+          input: cdkp.CodePipelineFileSet.fromArtifact(sourceArtifact),
+          commands: ['true'],
+        }),
+      });
+    });
+
+    function THEN_codePipelineExpectation() {
       // THEN
       expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         Stages: [
@@ -88,10 +123,7 @@ describe('with custom Source stage in existing Pipeline', () => {
           objectLike({ Name: 'UpdatePipeline' }),
         ],
       });
-    });
-
-    // There is no synthAction in the modern pipeline
-    suite.doesNotApply.modern();
+    }
   });
 });
 
@@ -119,6 +151,19 @@ describe('with Source and Build stages in existing Pipeline', () => {
         cloudAssemblyArtifact,
       });
 
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      new cdkp.CodePipeline(pipelineStack, 'Cdk', {
+        codePipeline,
+        synth: cdkp.CodePipelineFileSet.fromArtifact(cloudAssemblyArtifact),
+      });
+
+      THEN_codePipelineExpectation();
+    });
+
+    function THEN_codePipelineExpectation() {
       // THEN
       expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         Stages: [
@@ -127,10 +172,7 @@ describe('with Source and Build stages in existing Pipeline', () => {
           objectLike({ Name: 'UpdatePipeline' }),
         ],
       });
-    });
-
-    // synthStep is required
-    suite.doesNotApply.modern();
+    }
   });
 });
 
@@ -146,24 +188,42 @@ behavior('can add another action to an existing stage', (suite) => {
       repo: 'REPO',
     }));
 
-    // THEN
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    pipeline.buildPipeline();
+
+    pipeline.pipeline.stages[0].addAction(new cpa.GitHubSourceAction({
+      actionName: 'GitHub2',
+      oauthToken: SecretValue.plainText('oops'),
+      output: new cp.Artifact(),
+      owner: 'OWNER',
+      repo: 'REPO',
+    }));
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       Stages: arrayWith({
         Name: 'Source',
         Actions: [
-          objectLike({ Name: 'GitHub' }),
-          objectLike({ Name: 'GitHub2' }),
+          objectLike({ ActionTypeId: objectLike({ Provider: 'GitHub' }) }),
+          objectLike({ ActionTypeId: objectLike({ Provider: 'GitHub' }), Name: 'GitHub2' }),
         ],
       }),
     });
-  });
+  }
 });
 
 
 behavior('assets stage inserted after existing pipeline actions', (suite) => {
-  suite.legacy(() => {
-    // WHEN
-    const existingCodePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
+  let existingCodePipeline: cp.Pipeline;
+  beforeEach(() => {
+    existingCodePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
       stages: [
         {
           stageName: 'CustomSource',
@@ -175,6 +235,9 @@ behavior('assets stage inserted after existing pipeline actions', (suite) => {
         },
       ],
     });
+  });
+
+  suite.legacy(() => {
     const pipeline = new cdkp.CdkPipeline(pipelineStack, 'CdkEmptyPipeline', {
       cloudAssemblyArtifact: cloudAssemblyArtifact,
       selfMutating: false,
@@ -183,7 +246,22 @@ behavior('assets stage inserted after existing pipeline actions', (suite) => {
     });
     pipeline.addApplicationStage(new FileAssetApp(app, 'App'));
 
-    // THEN
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    const pipeline = new cdkp.CodePipeline(pipelineStack, 'CdkEmptyPipeline', {
+      codePipeline: existingCodePipeline,
+      selfMutation: false,
+      synth: CodePipelineFileSet.fromArtifact(cloudAssemblyArtifact),
+      // No source/build actions
+    });
+    pipeline.addStage(new FileAssetApp(app, 'App'));
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       Stages: [
         objectLike({ Name: 'CustomSource' }),
@@ -192,5 +270,5 @@ behavior('assets stage inserted after existing pipeline actions', (suite) => {
         objectLike({ Name: 'App' }),
       ],
     });
-  });
+  }
 });

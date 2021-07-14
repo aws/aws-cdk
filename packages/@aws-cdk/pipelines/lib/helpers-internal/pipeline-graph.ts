@@ -40,6 +40,11 @@ export interface PipelineGraphProps {
  * This code makes all the decisions on how to lay out the CodePipeline
  */
 export class PipelineGraph {
+  /**
+   * A Step object that may be used as the producer of FileSets that should not be represented in the graph
+   */
+  public static readonly NO_STEP: Step = new class extends Step { } ('NO_STEP');
+
   public readonly graph: AGraph = Graph.of('', { type: 'group' });
   public readonly cloudAssemblyFileSet: FileSet;
   public readonly queries: PipelineQueries;
@@ -67,7 +72,7 @@ export class PipelineGraph {
 
     if (pipeline.synth instanceof Step) {
       this.synthNode = this.addBuildStep(pipeline.synth);
-      if (this.synthNode.data?.type === 'step') {
+      if (this.synthNode?.data?.type === 'step') {
         this.synthNode.data.isBuildStep = true;
       }
     }
@@ -204,7 +209,7 @@ export class PipelineGraph {
     }
     for (const p of post) {
       const postNode = this.addAndRecurse(p, parent);
-      postNode.dependOn(...currentNodes.nodes);
+      postNode?.dependOn(...currentNodes.nodes);
     }
   }
 
@@ -218,6 +223,8 @@ export class PipelineGraph {
   }
 
   private addAndRecurse(step: Step, parent: AGraph) {
+    if (step === PipelineGraph.NO_STEP) { return undefined; }
+
     const previous = this.added.get(step);
     if (previous) { return previous; }
 

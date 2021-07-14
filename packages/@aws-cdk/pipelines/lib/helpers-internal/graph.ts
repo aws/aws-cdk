@@ -304,9 +304,9 @@ export class GraphNodeCollection<A> {
     this.nodes = Array.from(nodes);
   }
 
-  public dependOn(...dependencies: GraphNode<A>[]) {
+  public dependOn(...dependencies: Array<GraphNode<A> | undefined>) {
     for (const node of this.nodes) {
-      node.dependOn(...dependencies);
+      node.dependOn(...dependencies.filter(isDefined));
     }
   }
 

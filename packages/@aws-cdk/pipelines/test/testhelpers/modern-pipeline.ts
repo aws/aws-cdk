@@ -6,7 +6,6 @@ export type ModernTestGitHubNpmPipelineProps = Partial<cdkp.CodePipelineProps> &
 
 export class ModernTestGitHubNpmPipeline extends cdkp.CodePipeline {
   public readonly gitHubSource: cdkp.CodePipelineSource;
-  public readonly synth: cdkp.Step;
 
   constructor(scope: Construct, id: string, props?: ModernTestGitHubNpmPipelineProps) {
     const source = cdkp.CodePipelineSource.github('test/test');
@@ -23,6 +22,5 @@ export class ModernTestGitHubNpmPipeline extends cdkp.CodePipeline {
     });
 
     this.gitHubSource = source;
-    this.synth = synth;
   }
 }
