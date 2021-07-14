@@ -14,7 +14,7 @@ export class ArtifactMap {
    */
   public toCodePipeline(x: FileSet): cp.Artifact {
     if (x instanceof CodePipelineFileSet) {
-      return x.artifact;
+      return x._artifact;
     }
 
     let ret = this.artifacts.get(x);
@@ -62,10 +62,10 @@ export class CodePipelineFileSet extends FileSet {
    *
    * @internal
    */
-  public readonly artifact: cp.Artifact;
+  public readonly _artifact: cp.Artifact;
 
   private constructor(artifact: cp.Artifact) {
     super(artifact.artifactName ?? 'Imported', PipelineGraph.NO_STEP);
-    this.artifact = artifact;
+    this._artifact = artifact;
   }
 }
