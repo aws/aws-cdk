@@ -134,6 +134,22 @@ export interface HttpGatewayRoutePathMatchConfig {
  */
 export abstract class HttpGatewayRoutePathMatch {
   /**
+   * The value of the path must match the specified prefix.
+   *
+   * @param prefixPathMatch the value to use to match the beginning of the path part of the URL of the request.
+   *   It must start with the '/' character.
+   *   When `rewriteTo` is provided, it must also end with the '/' character.
+   *   If provided as "/", matches all requests.
+   *   For example, if your virtual service name is "my-service.local"
+   *   and you want the route to match requests to "my-service.local/metrics", your prefix should be "/metrics".
+   * @param rewriteTo Specify either disabling automatic rewrite to '/' or rewriting to specified prefix path.
+   *  To disable automatic rewrite, provide `''`.
+   */
+  public static startsWith(prefixPathMatch: string, rewriteTo: string = '/'): HttpGatewayRoutePathMatch {
+    return new HttpGatewayRoutePrefixPathMatch(prefixPathMatch, rewriteTo);
+  }
+
+  /**
    * The value of the path must match the specified value exactly.
    * The provided `path` must start with the '/' character.
    *
@@ -155,21 +171,6 @@ export abstract class HttpGatewayRoutePathMatch {
   }
 
   /**
-   * The value of the path must match the specified prefix.
-   *
-   * @param prefixPathMatch the value to use to match the beginning of the path part of the URL of the request.
-   *   When `rewriteTo` is provided, `prefixPathMatch` must start and end with the '/' character.
-   *   If provided as "/", matches all requests.
-   *   For example, if your virtual service name is "my-service.local"
-   *   and you want the route to match requests to "my-service.local/metrics", your prefix should be "/metrics".
-   * @param rewriteTo Specify either disabling automatic rewrite to '/' or rewriting to specified prefix path.
-   *  To disable automatic rewrite, provide `''`.
-   */
-  public static startsWith(prefixPathMatch: string, rewriteTo: string = '/'): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRoutePrefixPathMatch(prefixPathMatch, rewriteTo);
-  }
-
-  /**
    * Returns the gateway route path match configuration.
    */
   public abstract bind(scope: Construct): HttpGatewayRoutePathMatchConfig;
@@ -179,7 +180,25 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly prefixPathMatch: string,
     private readonly rewriteTo: string,
-  ) { super(); }
+  ) {
+    super();
+
+    if (this.prefixPathMatch[0] !== '/') {
+      throw new Error('Prefix path for the match must start with \'/\', '
+        + `got: ${this.prefixPathMatch}`);
+    }
+
+    if (this.rewriteTo !== '/' && this.rewriteTo !== '') {
+      if (this.prefixPathMatch[this.prefixPathMatch.length-1] !== '/') {
+        throw new Error('When prefix path for the rewrite is specified, prefix path for the match must end with \'/\', '
+          + `got: ${this.prefixPathMatch}`);
+      }
+      if (this.rewriteTo[0] !== '/' || this.rewriteTo[this.rewriteTo.length-1] !== '/') {
+        throw new Error('Prefix path for the rewrite must start and end with \'/\', '
+          + `got: ${this.rewriteTo}`);
+      }
+    }
+  }
 
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return this.rewriteTo === ''
@@ -206,7 +225,16 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly wholePathMatch: CfnGatewayRoute.HttpPathMatchProperty,
     private readonly wholePathRewrite?: CfnGatewayRoute.HttpGatewayRoutePathRewriteProperty,
-  ) { super(); }
+  ) {
+    super();
+
+    if (this.wholePathMatch?.exact && this.wholePathMatch.exact[0] !== '/') {
+      throw new Error(`Exact Path for the match must start with \'/\', got: ${ this.wholePathMatch.exact }`);
+    }
+    if (this.wholePathRewrite?.exact && this.wholePathRewrite.exact[0] !== '/') {
+      throw new Error(`Exact Path for the rewrite must start with \'/\', got: ${ this.wholePathRewrite.exact }`);
+    }
+  }
 
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {

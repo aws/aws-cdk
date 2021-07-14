@@ -113,6 +113,27 @@ export = {
       test.done();
     },
 
+    'should throw an exception if you start an http prefix match not with a /'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      const virtualService = new appmesh.VirtualService(stack, 'testVirtualService', {
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+      });
+      test.throws(() => appmesh.GatewayRouteSpec.http({
+        routeTarget: virtualService,
+        match: {
+          path: appmesh.HttpRoutePathMatch.startsWith('wrong'),
+        },
+      }).bind(stack),
+      /Prefix Path for the match must start with \'\/\', got: wrong/);
+      test.done();
+    },
+
     'with shared service mesh': {
       'Mesh Owner is the AWS account ID of the account that shared the mesh with your account'(test:Test) {
         // GIVEN
@@ -228,7 +249,7 @@ export = {
       },
     },
 
-    'with path rewrite': {
+    'with wholePath rewrite': {
       'should set exact path'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
@@ -375,6 +396,99 @@ export = {
             },
           },
         }));
+
+        test.done();
+      },
+
+      "should throw an error if the prefix match does not start and end with '/'"(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // WHEN + THEN
+        test.throws(() => {
+          virtualGateway.addGatewayRoute('gateway-http-route', {
+            routeSpec: appmesh.GatewayRouteSpec.http({
+              routeTarget: virtualService,
+              match: {
+                path: appmesh.HttpGatewayRoutePathMatch.startsWith('test/', '/rewrittenUri/'),
+              },
+            }),
+            gatewayRouteName: 'gateway-http-route',
+          });
+        }, /Prefix path for the match must start with \'\/\', got: test\//);
+
+
+        test.throws(() => {
+          virtualGateway.addGatewayRoute('gateway-http2-route', {
+            routeSpec: appmesh.GatewayRouteSpec.http2({
+              routeTarget: virtualService,
+              match: {
+                path: appmesh.HttpGatewayRoutePathMatch.startsWith('/test', '/rewrittenUri/'),
+              },
+            }),
+            gatewayRouteName: 'gateway-http2-route',
+          });
+        }, /When prefix path for the rewrite is specified, prefix path for the match must end with \'\/\', got: \/test/);
+
+        test.done();
+      },
+
+      "should throw an error if the custom prefix does not start and end with '/'"(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // WHEN + THEN
+        test.throws(() => {
+          virtualGateway.addGatewayRoute('gateway-http2-route', {
+            routeSpec: appmesh.GatewayRouteSpec.http2({
+              routeTarget: virtualService,
+              match: {
+                path: appmesh.HttpGatewayRoutePathMatch.startsWith('/', 'rewrittenUri/'),
+              },
+            }),
+            gatewayRouteName: 'gateway-http2-route',
+          });
+        }, /Prefix path for the rewrite must start and end with \'\/\', got: rewrittenUri\//);
+
+        test.throws(() => {
+          virtualGateway.addGatewayRoute('gateway-http2-route-1', {
+            routeSpec: appmesh.GatewayRouteSpec.http2({
+              routeTarget: virtualService,
+              match: {
+                path: appmesh.HttpGatewayRoutePathMatch.startsWith('/', '/rewrittenUri'),
+              },
+            }),
+            gatewayRouteName: 'gateway-http2-route',
+          });
+        }, /Prefix path for the rewrite must start and end with \'\/\', got: \/rewrittenUri/);
 
         test.done();
       },
