@@ -10,18 +10,22 @@ export class AssociationManager {
   public static associateProductWithPortfolio(
     portfolio: IPortfolio, product: IProduct,
   ): { associationKey: string, cfnPortfolioProductAssociation: CfnPortfolioProductAssociation } {
-    const associationKey = hashValues(portfolio.node.addr, product.node.addr, portfolio.stack.node.addr);
+    const associationKey = hashValues(portfolio.node.addr, product.node.addr, product.stack.node.addr);
     const constructId = `PortfolioProductAssociation${associationKey}`;
-    const associationNode = portfolio.node.tryFindChild(constructId);
+    const existingAssociation = portfolio.node.tryFindChild(constructId);
+    const cfnAssociation = existingAssociation
+      ? existingAssociation as CfnPortfolioProductAssociation
+      : new CfnPortfolioProductAssociation(portfolio as unknown as cdk.Resource, constructId, {
+        portfolioId: portfolio.portfolioId,
+        productId: product.productId,
+      });
 
     return {
       associationKey: associationKey,
-      cfnPortfolioProductAssociation: !associationNode ? new CfnPortfolioProductAssociation(portfolio as unknown as cdk.Resource, constructId, {
-        portfolioId: portfolio.portfolioId,
-        productId: product.productId,
-      }) : associationNode as CfnPortfolioProductAssociation,
+      cfnPortfolioProductAssociation: cfnAssociation,
     };
   }
+  
 
   public static constrainTagUpdates(portfolio: IPortfolio, product: IProduct, options: TagUpdateConstraintOptions): void {
     InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options.description);
