@@ -931,6 +931,102 @@
         "RouteName": "route-grpc-retry"
       }
     },
+    "meshrouterroute699804AE1": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode2092BA426",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 30
+                }
+              ]
+            },
+            "Match": {
+              "Path": {
+                "Regex": "regex"
+              },
+              "QueryParameters": [
+                {
+                  "Match": {
+                    "Exact": "value"
+                  },
+                  "Name": "query-field"
+                }
+              ]
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-6"
+      }
+    },
+    "meshrouterroute76C21E6E7": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "GrpcRoute": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode4AE87F692",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 20
+                }
+              ]
+            },
+            "Match": {
+              "Metadata": [
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Exact": "application/json"
+                  },
+                  "Name": "Content-Type"
+                }
+              ],
+              "MethodName": "test-method",
+              "ServiceName": "test-service"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-7"
+      }
+    },
     "meshnode726C787D": {
       "Type": "AWS::AppMesh::VirtualNode",
       "Properties": {
@@ -1202,7 +1298,8 @@
           },
           "ServiceDiscovery": {
             "DNS": {
-              "Hostname": "node4.domain.local"
+              "Hostname": "node4.domain.local",
+              "ResponseType": "ENDPOINTS"
             }
           }
         },

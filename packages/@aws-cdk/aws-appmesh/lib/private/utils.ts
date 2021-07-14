@@ -1,7 +1,10 @@
-import { CfnVirtualNode } from '../appmesh.generated';
-import { ListenerTlsOptions } from '../listener-tls-options';
-import { TlsClientPolicy } from '../tls-client-policy';
 import { Token, TokenComparison } from '@aws-cdk/core';
+import { CfnVirtualNode } from '../appmesh.generated';
+import { HeaderMatch } from '../header-match';
+import { ListenerTlsOptions } from '../listener-tls-options';
+import { QueryParameterMatch } from '../query-parameter-match';
+import { GrpcRouteMatch } from '../route-spec';
+import { TlsClientPolicy } from '../tls-client-policy';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -91,4 +94,41 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string) : 
   return comparison === TokenComparison.DIFFERENT || comparison === TokenComparison.ONE_UNRESOLVED
     ? meshAccount
     : undefined;
+}
+
+/**
+ * This is the helper method to validate the length of HTTP match array when it is specified.
+ */
+export function validateHttpMatchArrayLength(headers?: HeaderMatch[], queryParameters?: QueryParameterMatch[]) {
+  const MIN_LENGTH = 1;
+  const MAX_LENGTH = 10;
+
+  if (headers && (headers.length < MIN_LENGTH || headers.length > MAX_LENGTH)) {
+    throw new Error(`Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${headers.length}`);
+  }
+
+  if (queryParameters && (queryParameters.length < MIN_LENGTH || queryParameters.length > MAX_LENGTH)) {
+    throw new Error(`Number of query parameters provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${queryParameters.length}`);
+  }
+}
+
+/**
+ * This is the helper method to validate the length of gRPC match array when it is specified.
+ */
+export function validateGrpcMatchArrayLength(metadata?: HeaderMatch[]): void {
+  const MIN_LENGTH = 1;
+  const MAX_LENGTH = 10;
+
+  if (metadata && (metadata.length < MIN_LENGTH || metadata.length > MAX_LENGTH)) {
+    throw new Error(`Number of metadata provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${metadata.length}`);
+  }
+}
+
+/**
+ * This is the helper method to validate at least one of gRPC match type is defined.
+ */
+export function validateGrpcMatch(match: GrpcRouteMatch): void {
+  if (match.serviceName === undefined && match.metadata === undefined && match.methodName === undefined) {
+    throw new Error('At least one gRPC match property must be provided');
+  }
 }
