@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { ABSENT } from '@aws-cdk/assert-internal';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -151,6 +152,100 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'IncomingRecords',
+        dimensions: {
+          DeliveryStreamName: deliveryStream.deliveryStreamName,
+        },
+      });
+    });
+    test('metricIncomingBytes', () => {
+      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
+        destinations: [mockS3Destination],
+      });
+
+      const metric = deliveryStream.metricIncomingBytes();
+
+      expect(metric).toMatchObject({
+        account: stack.account,
+        region: stack.region,
+        namespace: 'AWS/Firehose',
+        metricName: 'IncomingBytes',
+        statistic: cloudwatch.Statistic.AVERAGE,
+        dimensions: {
+          DeliveryStreamName: deliveryStream.deliveryStreamName,
+        },
+      });
+    });
+
+    test('metricIncomingRecords', () => {
+      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
+        destinations: [mockS3Destination],
+      });
+
+      const metric = deliveryStream.metricIncomingRecords();
+
+      expect(metric).toMatchObject({
+        account: stack.account,
+        region: stack.region,
+        namespace: 'AWS/Firehose',
+        metricName: 'IncomingRecords',
+        statistic: cloudwatch.Statistic.AVERAGE,
+        dimensions: {
+          DeliveryStreamName: deliveryStream.deliveryStreamName,
+        },
+      });
+    });
+
+    test('metricBackupToS3Bytes', () => {
+      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
+        destinations: [mockS3Destination],
+      });
+
+      const metric = deliveryStream.metricBackupToS3Bytes();
+
+      expect(metric).toMatchObject({
+        account: stack.account,
+        region: stack.region,
+        namespace: 'AWS/Firehose',
+        metricName: 'BackupToS3.Bytes',
+        statistic: cloudwatch.Statistic.AVERAGE,
+        dimensions: {
+          DeliveryStreamName: deliveryStream.deliveryStreamName,
+        },
+      });
+    });
+
+    test('metricBackupToS3DataFreshness', () => {
+      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
+        destinations: [mockS3Destination],
+      });
+
+      const metric = deliveryStream.metricBackupToS3DataFreshness();
+
+      expect(metric).toMatchObject({
+        account: stack.account,
+        region: stack.region,
+        namespace: 'AWS/Firehose',
+        metricName: 'BackupToS3.DataFreshness',
+        statistic: cloudwatch.Statistic.AVERAGE,
+        dimensions: {
+          DeliveryStreamName: deliveryStream.deliveryStreamName,
+        },
+      });
+    });
+
+    test('metricBackupToS3Records', () => {
+      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
+        destinations: [mockS3Destination],
+      });
+
+      const metric = deliveryStream.metricBackupToS3Records();
+
+      expect(metric).toMatchObject({
+        account: stack.account,
+        region: stack.region,
+        namespace: 'AWS/Firehose',
+        metricName: 'BackupToS3.Records',
+        statistic: cloudwatch.Statistic.AVERAGE,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },

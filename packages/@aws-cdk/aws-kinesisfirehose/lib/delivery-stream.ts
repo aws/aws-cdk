@@ -5,6 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { Construct } from 'constructs';
 import { IDestination } from './destination';
+import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 const PUT_RECORD_ACTIONS = [
@@ -44,6 +45,43 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
    * Return the given named metric for this delivery stream.
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of bytes ingested successfully into the delivery stream over the specified time period after throttling.
+   *
+   * By default, this metric will be calculated as an average over a period of 5 minutes.
+   */
+  metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of records ingested successfully into the delivery stream over the specified time period after throttling.
+   *
+   * By default, this metric will be calculated as an average over a period of 5 minutes.
+   */
+  metricIncomingRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of bytes delivered to Amazon S3 for backup over the specified time period.
+   *
+   * By default, this metric will be calculated as an average over a period of 5 minutes.
+   */
+  metricBackupToS3Bytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the age (from getting into Kinesis Data Firehose to now) of the oldest record in Kinesis Data Firehose.
+   *
+   * Any record older than this age has been delivered to the Amazon S3 bucket for backup.
+   *
+   * By default, this metric will be calculated as an average over a period of 5 minutes.
+   */
+  metricBackupToS3DataFreshness(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of records delivered to Amazon S3 for backup over the specified time period.
+   *
+   * By default, this metric will be calculated as an average over a period of 5 minutes.
+   */
+  metricBackupToS3Records(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -89,6 +127,33 @@ export abstract class DeliveryStreamBase extends cdk.Resource implements IDelive
       dimensions: {
         DeliveryStreamName: this.deliveryStreamName,
       },
+      ...props,
+    }).attachTo(this);
+  }
+
+  public metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(FirehoseMetrics.incomingBytesAverage, props);
+  }
+
+  public metricIncomingRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(FirehoseMetrics.incomingRecordsAverage, props);
+  }
+
+  public metricBackupToS3Bytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(FirehoseMetrics.backupToS3BytesAverage, props);
+  }
+
+  public metricBackupToS3DataFreshness(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(FirehoseMetrics.backupToS3DataFreshnessAverage, props);
+  }
+
+  public metricBackupToS3Records(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(FirehoseMetrics.backupToS3RecordsAverage, props);
+  }
+
+  private cannedMetric(fn: (dims: { DeliveryStreamName: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ DeliveryStreamName: this.deliveryStreamName }),
       ...props,
     }).attachTo(this);
   }
