@@ -25,7 +25,7 @@ export class AssociationManager {
       cfnPortfolioProductAssociation: cfnAssociation,
     };
   }
-  
+
 
   public static constrainTagUpdates(portfolio: IPortfolio, product: IProduct, options: TagUpdateConstraintOptions): void {
     InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options.description);
