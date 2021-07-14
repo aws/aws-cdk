@@ -1,4 +1,4 @@
-import { arrayWith, deepObjectLike, encodedJson, objectLike, Capture } from '@aws-cdk/assert-internal';
+import { arrayWith, deepObjectLike, encodedJson, objectLike, Capture, anything } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as cbuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -876,4 +876,76 @@ behavior('CodeBuild: Can specify additional policy statements', (suite) => {
       },
     });
   }
+});
+
+behavior('Multiple input sources in side-by-side directories', (suite) => {
+  // Legacy API does not support this
+  suite.doesNotApply.legacy();
+
+  suite.modern(() => {
+    // WHEN
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synth: new cdkp.ScriptStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        commands: ['false'],
+        additionalInputs: {
+          '../sibling': cdkp.CodePipelineSource.gitHub('foo/bar'),
+          'sub': new cdkp.ScriptStep('Prebuild', {
+            input: cdkp.CodePipelineSource.gitHub('pre/build'),
+            commands: ['true'],
+            primaryOutputDirectory: 'built',
+          }),
+        },
+      }),
+    });
+
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: arrayWith(
+        {
+          Name: 'Source',
+          Actions: [
+            objectLike({ Configuration: objectLike({ Repo: 'bar' }) }),
+            objectLike({ Configuration: objectLike({ Repo: 'build' }) }),
+            objectLike({ Configuration: objectLike({ Repo: 'test' }) }),
+          ],
+        },
+        {
+          Name: 'Build',
+          Actions: [
+            objectLike({ Name: 'Prebuild', RunOrder: 1 }),
+            objectLike({
+              Name: 'Synth',
+              RunOrder: 2,
+              InputArtifacts: [
+                // 3 input artifacts
+                anything(),
+                anything(),
+                anything(),
+              ],
+            }),
+          ],
+        },
+      ),
+    });
+
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Source: {
+        BuildSpec: encodedJson(deepObjectLike({
+          phases: {
+            install: {
+              commands: [
+                'ln -s "$CODEBUILD_SRC_DIR_foo_bar_Source" "../sibling"',
+                'ln -s "$CODEBUILD_SRC_DIR_Prebuild_Output" "sub"',
+              ],
+            },
+            build: {
+              commands: [
+                'false',
+              ],
+            },
+          },
+        })),
+      },
+    });
+  });
 });

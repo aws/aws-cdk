@@ -9,7 +9,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { CodePipelineSource, ScriptStep } from '../../lib';
-import { AppWithOutput, behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, PIPELINE_ENV, sortedByRunOrder, StageWithStackOutput, stringNoLongerThan, TestApp, TwoStackApp } from '../testhelpers';
+import { AppWithOutput, behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortedByRunOrder, StageWithStackOutput, stringNoLongerThan, TestApp, TwoStackApp } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -45,6 +45,40 @@ behavior('can add manual approval after app', (suite) => {
           objectLike({ Name: 'Stack1.Deploy' }),
           objectLike({ Name: 'Stack2.Prepare' }),
           objectLike({ Name: 'Stack2.Deploy' }),
+          objectLike({ Name: 'Approve' }),
+        ]),
+      }),
+    });
+  });
+});
+
+behavior('can add steps to wave', (suite) => {
+  // No need to be backwards compatible
+  suite.doesNotApply.legacy();
+
+  suite.modern(() => {
+    // WHEN
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    const wave = pipeline.addWave('MyWave', {
+      post: [
+        new cdkp.ManualApprovalStep('Approve'),
+      ],
+    });
+    wave.addStage(new OneStackApp(pipelineStack, 'Stage1'));
+    wave.addStage(new OneStackApp(pipelineStack, 'Stage2'));
+    wave.addStage(new OneStackApp(pipelineStack, 'Stage3'));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: arrayWith({
+        Name: 'MyWave',
+        Actions: sortedByRunOrder([
+          objectLike({ Name: 'Stage1.Stack.Prepare' }),
+          objectLike({ Name: 'Stage2.Stack.Prepare' }),
+          objectLike({ Name: 'Stage3.Stack.Prepare' }),
+          objectLike({ Name: 'Stage1.Stack.Deploy' }),
+          objectLike({ Name: 'Stage2.Stack.Deploy' }),
+          objectLike({ Name: 'Stage3.Stack.Deploy' }),
           objectLike({ Name: 'Approve' }),
         ]),
       }),
