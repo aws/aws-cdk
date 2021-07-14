@@ -143,9 +143,9 @@ export abstract class HttpGatewayRoutePathMatch {
    *   For example, if your virtual service name is "my-service.local"
    *   and you want the route to match requests to "my-service.local/metrics", your prefix should be "/metrics".
    * @param rewriteTo Specify either disabling automatic rewrite to '/' or rewriting to specified prefix path.
-   *  To disable automatic rewrite, provide `''`.
+   *   To disable automatic rewrite, provide `''`.
    */
-  public static startsWith(prefixPathMatch: string, rewriteTo: string = '/'): HttpGatewayRoutePathMatch {
+  public static startsWith(prefixPathMatch: string, rewriteTo?: string): HttpGatewayRoutePathMatch {
     return new HttpGatewayRoutePrefixPathMatch(prefixPathMatch, rewriteTo);
   }
 
@@ -179,7 +179,7 @@ export abstract class HttpGatewayRoutePathMatch {
 class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly prefixPathMatch: string,
-    private readonly rewriteTo: string,
+    private readonly rewriteTo?: string,
   ) {
     super();
 
@@ -188,12 +188,12 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
         + `got: ${this.prefixPathMatch}`);
     }
 
-    if (this.rewriteTo !== '/' && this.rewriteTo !== '') {
-      if (this.prefixPathMatch[this.prefixPathMatch.length-1] !== '/') {
+    if (this.rewriteTo && this.rewriteTo !== '') {
+      if (this.prefixPathMatch[this.prefixPathMatch.length - 1] !== '/') {
         throw new Error('When prefix path for the rewrite is specified, prefix path for the match must end with \'/\', '
           + `got: ${this.prefixPathMatch}`);
       }
-      if (this.rewriteTo[0] !== '/' || this.rewriteTo[this.rewriteTo.length-1] !== '/') {
+      if (this.rewriteTo[0] !== '/' || this.rewriteTo[this.rewriteTo.length - 1] !== '/') {
         throw new Error('Prefix path for the rewrite must start and end with \'/\', '
           + `got: ${this.rewriteTo}`);
       }
@@ -203,10 +203,12 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
       prefixPathMatch: this.prefixPathMatch,
-      prefixPathRewrite: this.rewriteTo === '/' ? undefined : {
-        defaultPrefix: this.rewriteTo === '' ? 'DISABLED' : undefined,
-        value: this.rewriteTo === '' ? undefined : this.rewriteTo,
-      },
+      prefixPathRewrite: this.rewriteTo === '' || this.rewriteTo
+        ? {
+          defaultPrefix: this.rewriteTo === '' ? 'DISABLED' : undefined,
+          value: this.rewriteTo === '' ? undefined : this.rewriteTo,
+        }
+        : undefined,
     };
   }
 }
