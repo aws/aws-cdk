@@ -14,16 +14,12 @@ export class AssociationManager {
     const constructId = `PortfolioProductAssociation${associationKey}`;
     const associationNode = portfolio.node.tryFindChild(constructId);
 
-    let createAssociation: () => CfnPortfolioProductAssociation = function (): CfnPortfolioProductAssociation {
-      return new CfnPortfolioProductAssociation(portfolio as unknown as cdk.Resource, constructId, {
-        portfolioId: portfolio.portfolioId,
-        productId: product.productId,
-      });
-    };
-
     return {
       associationKey: associationKey,
-      cfnPortfolioProductAssociation: !associationNode ? createAssociation() : associationNode as CfnPortfolioProductAssociation,
+      cfnPortfolioProductAssociation: !associationNode ? new CfnPortfolioProductAssociation(portfolio as unknown as cdk.Resource, constructId, {
+        portfolioId: portfolio.portfolioId,
+        productId: product.productId,
+      }) : associationNode as CfnPortfolioProductAssociation,
     };
   }
 
