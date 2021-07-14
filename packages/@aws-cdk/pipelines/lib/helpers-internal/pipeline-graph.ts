@@ -1,5 +1,5 @@
 import { AssetType, FileSet, ScriptStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
-import { Pipeline } from '../main/pipeline';
+import { PipelineBase } from '../main/pipeline-base';
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 import { PipelineQueries } from './pipeline-queries';
 
@@ -58,7 +58,7 @@ export class PipelineGraph {
   private _fileAssetCtr = 0;
   private _dockerAssetCtr = 0;
 
-  constructor(public readonly pipeline: Pipeline, props: PipelineGraphProps = {}) {
+  constructor(public readonly pipeline: PipelineBase, props: PipelineGraphProps = {}) {
     this.publishTemplate = props.publishTemplate ?? false;
     this.prepareStep = props.prepareStep ?? true;
     this.singlePublisher = props.singlePublisherPerAssetType ?? false;

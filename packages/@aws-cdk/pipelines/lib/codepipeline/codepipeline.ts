@@ -10,7 +10,7 @@ import { Construct, Node } from 'constructs';
 import { AssetType, FileSet, ManualApprovalStep, ScriptStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
-import { Pipeline } from '../main';
+import { PipelineBase } from '../main';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
@@ -211,7 +211,7 @@ export interface CodeBuildOptions {
  * `CodePipelineEngine`, and exists for nicer ergonomics for
  * users that don't need to switch out engines.
  */
-export class CodePipeline extends Pipeline {
+export class CodePipeline extends PipelineBase {
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
   private _synthProject?: cb.IProject;

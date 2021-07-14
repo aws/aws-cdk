@@ -258,7 +258,7 @@ function assertGraph<A>(g: GraphNode<A> | undefined): Graph<A> {
   return g;
 }
 
-class Blueprint extends cdkp.Pipeline {
+class Blueprint extends cdkp.PipelineBase {
   protected doBuildPipeline(): void {
   }
 }
