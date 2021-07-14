@@ -9,6 +9,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { IDependable, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { FileSetLocation, ScriptStep, StackDeployment, StackOutputReference } from '../blueprint';
+import { PipelineQueries } from '../helpers-internal/pipeline-queries';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
@@ -274,8 +275,10 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       });
     }
 
+    const queries = new PipelineQueries(options.pipeline);
+
     const stackOutputEnv = mapValues(this.props.envFromCfnOutputs ?? {}, outputRef =>
-      `#{${stackVariableNamespace(options.queries.producingStack(outputRef))}.${outputRef.outputName}}`,
+      `#{${stackVariableNamespace(queries.producingStack(outputRef))}.${outputRef.outputName}}`,
     );
 
     const configHashEnv = options.beforeSelfMutation

@@ -360,7 +360,7 @@ export class CodePipeline extends Pipeline {
               artifacts: this.artifacts,
               scope: obtainScope(this.pipeline, stageName),
               fallbackArtifact: this._fallbackArtifact,
-              queries: structure.queries,
+              pipeline: this,
               // If this step happens to produce a CodeBuild job, set the default options
               codeBuildDefaults: nodeType ? this.codeBuildDefaultsFor(nodeType) : undefined,
               beforeSelfMutation,

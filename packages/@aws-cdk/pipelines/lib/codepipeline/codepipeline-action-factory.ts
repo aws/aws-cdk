@@ -1,7 +1,7 @@
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Construct } from 'constructs';
-import { PipelineQueries as PipelineQueries } from '../blueprint';
+import { Pipeline } from '../main';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildOptions } from './codepipeline';
 
@@ -41,9 +41,9 @@ export interface ProduceActionOptions {
   readonly fallbackArtifact?: cp.Artifact;
 
   /**
-   * Queries to perform on the pipeline
+   * The pipeline the action is being generated for
    */
-  readonly queries: PipelineQueries;
+  readonly pipeline: Pipeline;
 
   /**
    * If this action factory creates a CodeBuild step, default options to inherit

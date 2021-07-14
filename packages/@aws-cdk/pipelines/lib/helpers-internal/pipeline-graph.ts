@@ -1,6 +1,7 @@
-import { AssetType, FileSet, PipelineQueries, ScriptStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
+import { AssetType, FileSet, ScriptStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
 import { Pipeline } from '../main/pipeline';
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
+import { PipelineQueries } from './pipeline-queries';
 
 export interface PipelineGraphProps {
   /**
