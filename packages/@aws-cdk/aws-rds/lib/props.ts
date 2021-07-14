@@ -95,11 +95,7 @@ export interface InstanceProps {
   /**
    * Indicates whether to copy tags from the DB instance to snapshots of the DB instance.
    *
-<<<<<<< HEAD
-   * @default: ?
-=======
-   * @default: - false
->>>>>>> dbd812fb8 (added CopyTagsToSnapshot property to RDS database cluster props.)
+   * @default: false
    */
   readonly copyTagsToSnapshot?: boolean;
 }
