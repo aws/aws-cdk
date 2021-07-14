@@ -490,7 +490,7 @@ behavior('Synth can output additional artifacts', (suite) => {
 
   suite.modern(() => {
     // WHEN
-    const synth = new cdkp.ScriptStep('Synth', {
+    const synth = new cdkp.ShellStep('Synth', {
       input: cdkp.CodePipelineSource.gitHub('test/test'),
       commands: ['cdk synth'],
     });
@@ -885,12 +885,12 @@ behavior('Multiple input sources in side-by-side directories', (suite) => {
   suite.modern(() => {
     // WHEN
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      synth: new cdkp.ScriptStep('Synth', {
+      synth: new cdkp.ShellStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         commands: ['false'],
         additionalInputs: {
           '../sibling': cdkp.CodePipelineSource.gitHub('foo/bar'),
-          'sub': new cdkp.ScriptStep('Prebuild', {
+          'sub': new cdkp.ShellStep('Prebuild', {
             input: cdkp.CodePipelineSource.gitHub('pre/build'),
             commands: ['true'],
             primaryOutputDirectory: 'built',

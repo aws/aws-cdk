@@ -19,7 +19,7 @@ describe('blueprint with one stage', () => {
   let blueprint: Blueprint;
   beforeEach(() => {
     blueprint = new Blueprint(app, 'Bp', {
-      synth: new cdkp.ScriptStep('Synth', {
+      synth: new cdkp.ShellStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         commands: ['build'],
       }),
@@ -70,7 +70,7 @@ describe('blueprint with wave and stage', () => {
   let blueprint: Blueprint;
   beforeEach(() => {
     blueprint = new Blueprint(app, 'Bp', {
-      synth: new cdkp.ScriptStep('Synth', {
+      synth: new cdkp.ShellStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         commands: ['build'],
       }),
@@ -119,7 +119,7 @@ describe('options for other engines', () => {
   test('"publishTemplate" will add steps to publish CFN templates as assets', () => {
     // GIVEN
     const blueprint = new Blueprint(app, 'Bp', {
-      synth: new cdkp.ScriptStep('Synth', {
+      synth: new cdkp.ShellStep('Synth', {
         commands: ['build'],
       }),
     });
@@ -137,7 +137,7 @@ describe('options for other engines', () => {
   test('"prepareStep: false" can be used to disable the "prepare" step for stack deployments', () => {
     // GIVEN
     const blueprint = new Blueprint(app, 'Bp', {
-      synth: new cdkp.ScriptStep('Synth', {
+      synth: new cdkp.ShellStep('Synth', {
         commands: ['build'],
       }),
     });
@@ -159,17 +159,17 @@ describe('options for other engines', () => {
 describe('with app with output', () => {
   let blueprint: Blueprint;
   let myApp: AppWithOutput;
-  let scriptStep: cdkp.ScriptStep;
+  let scriptStep: cdkp.ShellStep;
   beforeEach(() => {
     blueprint = new Blueprint(app, 'Bp', {
-      synth: new cdkp.ScriptStep('Synth', {
+      synth: new cdkp.ShellStep('Synth', {
         input: cdkp.CodePipelineSource.gitHub('test/test'),
         commands: ['build'],
       }),
     });
 
     myApp = new AppWithOutput(app, 'Alpha');
-    scriptStep = new cdkp.ScriptStep('PrintBucketName', {
+    scriptStep = new cdkp.ShellStep('PrintBucketName', {
       envFromCfnOutputs: {
         BUCKET_NAME: myApp.theOutput,
       },

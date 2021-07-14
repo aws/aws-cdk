@@ -5,9 +5,9 @@ import { StackDeployment } from './stack-deployment';
 import { Step } from './step';
 
 /**
- * Construction properties for a `ScriptStep`.
+ * Construction properties for a `ShellStep`.
  */
-export interface ScriptStepProps {
+export interface ShellStepProps {
   /**
    * Commands to run
    */
@@ -33,7 +33,7 @@ export interface ScriptStepProps {
   /**
    * Set environment variables based on Stack Outputs
    *
-   * `ScriptSteps` following stack or stage deployments may
+   * `ShellStep`s following stack or stage deployments may
    * access the `CfnOutput`s of those stacks to get access to
    * --for example--automatically generated resource names or
    * endpoint URLs.
@@ -65,7 +65,7 @@ export interface ScriptStepProps {
    * following configuration:
    *
    * ```ts
-   * const script = new ScriptStep('MainScript', {
+   * const script = new ShellStep('MainScript', {
    *   // ...
    *   input: MyEngineSource.gitHub('org/source1'),
    *   additionalInputs: {
@@ -93,7 +93,7 @@ export interface ScriptStepProps {
 /**
  * Run shell script commands in the pipeline
  */
-export class ScriptStep extends Step {
+export class ShellStep extends Step {
   /**
    * Commands to run
    */
@@ -143,7 +143,7 @@ export class ScriptStep extends Step {
 
   private _primaryOutputDirectory?: string;
 
-  constructor(id: string, props: ScriptStepProps) {
+  constructor(id: string, props: ShellStepProps) {
     super(id);
 
     this.commands = props.commands;
@@ -188,7 +188,7 @@ export class ScriptStep extends Step {
    * Configure the given output directory as primary output
    *
    * If no primary output has been configured yet, this directory
-   * will become the primary output of this ScriptStep, otherwise this
+   * will become the primary output of this ShellStep, otherwise this
    * method will throw if the given directory is different than the
    * currently configured primary output directory.
    */
@@ -231,7 +231,7 @@ export class ScriptStep extends Step {
 }
 
 /**
- * Location of a FileSet consumed or produced by a ScriptStep
+ * Location of a FileSet consumed or produced by a ShellStep
  */
 export interface FileSetLocation {
   /**

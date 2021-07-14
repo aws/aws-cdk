@@ -8,7 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
-import { CodePipelineSource, ScriptStep } from '../../lib';
+import { CodePipelineSource, ShellStep } from '../../lib';
 import { AppWithOutput, behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortedByRunOrder, StageWithStackOutput, stringNoLongerThan, TestApp, TwoStackApp } from '../testhelpers';
 
 let app: TestApp;
@@ -154,7 +154,7 @@ behavior('script validation steps can use stack outputs as environment variables
     const myApp = new AppWithOutput(app, 'Alpha');
     pipeline.addStage(myApp, {
       post: [
-        new cdkp.ScriptStep('Approve', {
+        new cdkp.ShellStep('Approve', {
           commands: ['/bin/true'],
           envFromCfnOutputs: {
             THE_OUTPUT: myApp.theOutput,
@@ -231,7 +231,7 @@ behavior('stackOutput generates names limited to 100 characters', (suite) => {
     const stage = new StageWithStackOutput(app, 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild');
     pipeline.addStage(stage, {
       post: [
-        new cdkp.ScriptStep('TestOutput', {
+        new cdkp.ShellStep('TestOutput', {
           commands: ['echo $BUCKET_NAME'],
           envFromCfnOutputs: {
             BUCKET_NAME: stage.output,
@@ -272,7 +272,7 @@ behavior('validation step can run from scripts in source', (suite) => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addStage(new TwoStackApp(app, 'Test'), {
       post: [
-        new cdkp.ScriptStep('UseSources', {
+        new cdkp.ShellStep('UseSources', {
           input: pipeline.gitHubSource,
           commands: ['set -eu', 'true'],
         }),
@@ -340,7 +340,7 @@ behavior('can use additional output artifacts from build', (suite) => {
   });
 
   suite.modern(() => {
-    const synth = new ScriptStep('Synth', {
+    const synth = new ShellStep('Synth', {
       input: CodePipelineSource.gitHub('test/test'),
       commands: ['synth'],
     });
@@ -350,7 +350,7 @@ behavior('can use additional output artifacts from build', (suite) => {
     });
     pipeline.addStage(new TwoStackApp(app, 'Test'), {
       post: [
-        new cdkp.ScriptStep('UseBuildArtifact', {
+        new cdkp.ShellStep('UseBuildArtifact', {
           input: synth.addOutputDirectory('test'),
           commands: ['set -eu', 'true'],
         }),
@@ -539,7 +539,7 @@ behavior('can run shell script actions in a VPC', (suite) => {
     });
 
     pipeline.addStage(new TwoStackApp(app, 'MyApp'), {
-      post: [new cdkp.ScriptStep('VpcAction', {
+      post: [new cdkp.ShellStep('VpcAction', {
         commands: ['set -eu', 'true'],
       })],
     });
@@ -690,7 +690,7 @@ behavior('can run scripts with specified BuildEnvironment', (suite) => {
     });
 
     pipeline.addStage(new TwoStackApp(app, 'Test'), {
-      post: [new cdkp.ScriptStep('imageAction', {
+      post: [new cdkp.ShellStep('imageAction', {
         commands: ['true'],
       })],
     });
@@ -742,7 +742,7 @@ behavior('can run scripts with magic environment variables', (suite) => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
     pipeline.addStage(new TwoStackApp(app, 'Test'), {
-      post: [new cdkp.ScriptStep('imageAction', {
+      post: [new cdkp.ShellStep('imageAction', {
         commands: ['true'],
         env: {
           VERSION: codepipeline.GlobalVariables.executionId,

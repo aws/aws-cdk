@@ -8,7 +8,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { IDependable, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import { FileSetLocation, ScriptStep, StackDeployment, StackOutputReference } from '../blueprint';
+import { FileSetLocation, ShellStep, StackDeployment, StackOutputReference } from '../blueprint';
 import { PipelineQueries } from '../helpers-internal/pipeline-queries';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../private/javascript';
@@ -115,11 +115,12 @@ export interface CodeBuildFactoryProps {
 /**
  * Produce a CodeBuild project from a RunScript step and some CodeBuild-specific customizations
  *
- * The functionality here is shared between the `CodePipelinEngine` translating a `ScriptStep` into
+ * The functionality here is shared between the `CodePipeline` translating a `ShellStep` into
  * a CodeBuild project, as well as the `CodeBuildStep` straight up.
  */
 export class CodeBuildFactory implements ICodePipelineActionFactory {
-  public static fromScriptStep(constructId: string, scriptStep: ScriptStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
+  // eslint-disable-next-line max-len
+  public static fromShellStep(constructId: string, scriptStep: ShellStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
     return new CodeBuildFactory(constructId, {
       commands: scriptStep.commands,
       env: scriptStep.env,
@@ -133,7 +134,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
   }
 
   public static fromCodeBuildStep(constructId: string, step: CodeBuildStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
-    const factory = CodeBuildFactory.fromScriptStep(constructId, step, {
+    const factory = CodeBuildFactory.fromShellStep(constructId, step, {
       projectName: step.projectName,
       role: step.role,
       projectOptions: {

@@ -58,7 +58,7 @@ describe('with empty existing CodePipeline', () => {
       // WHEN
       new cdkp.CodePipeline(pipelineStack, 'Cdk', {
         codePipeline,
-        synth: new cdkp.ScriptStep('Synth', {
+        synth: new cdkp.ShellStep('Synth', {
           input: cdkp.CodePipelineSource.gitHub('test/test'),
           commands: ['true'],
         }),
@@ -107,7 +107,7 @@ describe('with custom Source stage in existing Pipeline', () => {
     suite.modern(() => {
       new cdkp.CodePipeline(pipelineStack, 'Cdk', {
         codePipeline,
-        synth: new cdkp.ScriptStep('Synth', {
+        synth: new cdkp.ShellStep('Synth', {
           input: cdkp.CodePipelineFileSet.fromArtifact(sourceArtifact),
           commands: ['true'],
         }),

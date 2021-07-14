@@ -1,12 +1,12 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ScriptStep, ScriptStepProps } from '../blueprint';
+import { ShellStep, ShellStepProps } from '../blueprint';
 
 /**
  * Construction props for SimpleSynthAction
  */
-export interface CodeBuildStepProps extends ScriptStepProps {
+export interface CodeBuildStepProps extends ShellStepProps {
   /**
    * Name for the generated CodeBuild project
    *
@@ -87,7 +87,7 @@ export interface CodeBuildStepProps extends ScriptStepProps {
 /**
  * Run a script as a CodeBuild Project
  */
-export class CodeBuildStep extends ScriptStep {
+export class CodeBuildStep extends ShellStep {
   /**
    * Name for the generated CodeBuild project
    *
