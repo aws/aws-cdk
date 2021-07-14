@@ -38,8 +38,8 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
 
   /**
    * Returns a GitHub source, using OAuth tokens to authenticate with
-   * GitHub and a separate webhook to detect changes. This is no
-   * longer the recommended method. Please consider using {@link codeStarConnection}
+   * GitHub and a separate webhook to detect changes. This is no longer
+   * the recommended method. Please consider using `codeStarConnection()`
    * instead.
    *
    * Pass in the owner and repository in a single string, like this:
@@ -85,8 +85,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * access external resources, such as repositories in GitHub, GitHub Enterprise or
    * BitBucket.
    *
-   * To use this method, you first need to
-   * {@link https://docs.aws.amazon.com/dtconsole/latest/userguide/welcome-connections.html|create a CodeStar connection}
+   * To use this method, you first need to create a CodeStar connection
    * using the AWS console. In the process, you may have to sign in to the external provider
    * -- GitHub, for example -- to authorize AWS to read and modify your repository.
    * Once you have done this, copy the connection ARN and use it to create the source.
@@ -95,7 +94,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    *
    * ```ts
    * CodePipelineSource.codeStarConnection('owner/repo', 'main', {
-   *   connectionArn: ..., // Created using the AWS console
+   *   connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console
    * });
    * ```
    *
@@ -103,6 +102,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * @param branch The branch to use.
    * @param props The source properties, including the connection ARN.
    *
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/welcome-connections.html
    */
   public static codeStarConnection(repoString: string, branch: string, props: CodeStarSourceOptions): CodePipelineSource {
     return new CodeStarConnectionSource(repoString, branch, props);
