@@ -37,7 +37,10 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   }
 
   /**
-   * Return a GitHub source
+   * Returns a GitHub source, using OAuth tokens to authenticate with
+   * GitHub and a separate webhook to detect changes. This is no
+   * longer the recommended method. Please consider using {@link codeStarConnection}
+   * instead.
    *
    * Pass in the owner and repository in a single string, like this:
    *
@@ -45,9 +48,8 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * CodePipelineSource.gitHub('owner/repo', 'main');
    * ```
    *
-   * The branch is `main` unless specified otherwise, and authentication
-   * will be done by a secret called `github-token` in AWS Secrets Manager
-   * (unless specified otherwise).
+   * Authentication will be done by a secret called `github-token` in AWS
+   * Secrets Manager (unless specified otherwise).
    *
    * The token should have these permissions:
    *
@@ -79,22 +81,31 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   }
 
   /**
-   * Returns a CodeStar source.
+   * Returns a CodeStar connection source. A CodeStar connection allows AWS CodePipeline to
+   * access external resources, such as repositories in GitHub, GitHub Enterprise or
+   * BitBucket.
+   *
+   * To use this method, you first need to
+   * {@link https://docs.aws.amazon.com/dtconsole/latest/userguide/welcome-connections.html|create a CodeStar connection}
+   * using the AWS console. In the process, you may have to sign in to the external provider
+   * -- GitHub, for example -- to authorize AWS to read and modify your repository.
+   * Once you have done this, copy the connection ARN and use it to create the source.
+   *
+   * Example:
+   *
+   * ```ts
+   * CodePipelineSource.codeStarConnection('owner/repo', 'main', {
+   *   connectionArn: ..., // Created using the AWS console
+   * });
+   * ```
    *
    * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo').
    * @param branch The branch to use.
    * @param props The source properties, including the connection ARN.
    *
-   * Example:
-   *
-   * ```ts
-   * CodePipelineSource.codeStar('owner/repo', 'main', {
-   *   connectionArn: ..., // Created in the console, to connect to GitHub or BitBucket
-   * });
-   * ```
    */
-  public static codeStar(repoString: string, branch: string, props: CodeStarSourceOptions): CodePipelineSource {
-    return new CodeStarSource(repoString, branch, props);
+  public static codeStarConnection(repoString: string, branch: string, props: CodeStarSourceOptions): CodePipelineSource {
+    return new CodeStarConnectionSource(repoString, branch, props);
   }
 
   /**
@@ -284,7 +295,7 @@ export interface CodeStarSourceOptions {
   readonly triggerOnPush?: boolean;
 }
 
-class CodeStarSource extends CodePipelineSource {
+class CodeStarConnectionSource extends CodePipelineSource {
   private readonly owner: string;
   private readonly repo: string;
 
