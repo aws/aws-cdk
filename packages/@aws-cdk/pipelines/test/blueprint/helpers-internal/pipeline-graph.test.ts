@@ -20,7 +20,7 @@ describe('blueprint with one stage', () => {
   beforeEach(() => {
     blueprint = new Blueprint(app, 'Bp', {
       synth: new cdkp.ScriptStep('Synth', {
-        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
         commands: ['build'],
       }),
     });
@@ -71,7 +71,7 @@ describe('blueprint with wave and stage', () => {
   beforeEach(() => {
     blueprint = new Blueprint(app, 'Bp', {
       synth: new cdkp.ScriptStep('Synth', {
-        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
         commands: ['build'],
       }),
     });
@@ -163,7 +163,7 @@ describe('with app with output', () => {
   beforeEach(() => {
     blueprint = new Blueprint(app, 'Bp', {
       synth: new cdkp.ScriptStep('Synth', {
-        input: cdkp.CodePipelineSource.gitHub('test/test'),
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
         commands: ['build'],
       }),
     });

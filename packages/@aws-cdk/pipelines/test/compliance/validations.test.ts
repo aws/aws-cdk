@@ -341,7 +341,7 @@ behavior('can use additional output artifacts from build', (suite) => {
 
   suite.modern(() => {
     const synth = new ScriptStep('Synth', {
-      input: CodePipelineSource.gitHub('test/test'),
+      input: CodePipelineSource.gitHub('test/test', 'main'),
       commands: ['synth'],
     });
 
