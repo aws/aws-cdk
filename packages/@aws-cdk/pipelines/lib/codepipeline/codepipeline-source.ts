@@ -1,13 +1,13 @@
+import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as cp from '@aws-cdk/aws-codepipeline';
+import { Artifact } from '@aws-cdk/aws-codepipeline';
 import * as cp_actions from '@aws-cdk/aws-codepipeline-actions';
-import * as codecommit from '@aws-cdk/aws-codecommit'
+import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '@aws-cdk/aws-codepipeline-actions';
+import * as iam from '@aws-cdk/aws-iam';
+import { IBucket } from '@aws-cdk/aws-s3';
 import { SecretValue, Token } from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam'
 import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
-import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from "@aws-cdk/aws-codepipeline-actions";
-import { IBucket } from "@aws-cdk/aws-s3";
-import { Artifact } from "@aws-cdk/aws-codepipeline";
 
 /**
  * CodePipeline source steps
@@ -237,12 +237,10 @@ export interface S3SourceOptions {
 }
 
 class S3Source extends CodePipelineSource {
-  public primaryOutput: FileSet | undefined;
-
   constructor(readonly bucket: IBucket, readonly props: S3SourceOptions) {
     super(bucket.bucketName);
 
-    this.primaryOutput = new FileSet('Source', this);
+    this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
   protected getAction(output: Artifact, actionName: string, runOrder: number) {
@@ -257,6 +255,9 @@ class S3Source extends CodePipelineSource {
   }
 }
 
+/**
+ * Configuration options for CodeStar source
+ */
 export interface CodeStarSourceOptions {
   /**
    * The ARN of the CodeStar Connection created in the AWS console
@@ -299,7 +300,6 @@ export interface CodeStarSourceOptions {
 }
 
 class CodeStarSource extends CodePipelineSource {
-  public primaryOutput: FileSet | undefined;
   private readonly owner: string;
   private readonly repo: string;
 
@@ -312,7 +312,7 @@ class CodeStarSource extends CodePipelineSource {
     }
     this.owner = parts[0];
     this.repo = parts[1];
-    this.primaryOutput = new FileSet('Source', this);
+    this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
   protected getAction(output: Artifact, actionName: string, runOrder: number) {
@@ -326,10 +326,13 @@ class CodeStarSource extends CodePipelineSource {
       branch: this.props.branch,
       codeBuildCloneOutput: this.props.codeBuildCloneOutput,
       triggerOnPush: this.props.triggerOnPush,
-    })
+    });
   }
 }
 
+/**
+ * Configuration options for a CodeCommit source
+ */
 export interface CodeCommitSourceOptions {
   /**
    * The branch to use.
@@ -366,12 +369,10 @@ export interface CodeCommitSourceOptions {
 }
 
 class CodeCommitSource extends CodePipelineSource {
-  public primaryOutput: FileSet | undefined;
-
   constructor(readonly repository: codecommit.IRepository, readonly props: CodeCommitSourceOptions) {
     super(repository.repositoryName);
 
-    this.primaryOutput = new FileSet('Source', this);
+    this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
   protected getAction(output: Artifact, actionName: string, runOrder: number) {
