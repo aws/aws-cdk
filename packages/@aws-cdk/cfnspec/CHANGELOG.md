@@ -1,3 +1,56 @@
+# CloudFormation Resource Specification v39.5.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker MaintenanceWindowStartTime.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::CodeDeploy::Application Tags (__added__)
+* AWS::CodeDeploy::DeploymentConfig ComputePlatform (__added__)
+* AWS::CodeDeploy::DeploymentConfig TrafficRoutingConfig (__added__)
+* AWS::CodeDeploy::DeploymentGroup BlueGreenDeploymentConfiguration (__added__)
+* AWS::CodeDeploy::DeploymentGroup ECSServices (__added__)
+* AWS::DataBrew::Job DataCatalogOutputs (__added__)
+* AWS::ServiceDiscovery::HttpNamespace Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PrivateDnsNamespace Properties (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PublicDnsNamespace Properties (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedCanary (__added__)
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedLinear (__added__)
+* AWS::CodeDeploy::DeploymentConfig.TrafficRoutingConfig (__added__)
+* AWS::CodeDeploy::DeploymentGroup.BlueGreenDeploymentConfiguration (__added__)
+* AWS::CodeDeploy::DeploymentGroup.BlueInstanceTerminationOption (__added__)
+* AWS::CodeDeploy::DeploymentGroup.DeploymentReadyOption (__added__)
+* AWS::CodeDeploy::DeploymentGroup.ECSService (__added__)
+* AWS::CodeDeploy::DeploymentGroup.GreenFleetProvisioningOption (__added__)
+* AWS::DataBrew::Job.DataCatalogOutput (__added__)
+* AWS::DataBrew::Job.DatabaseTableOutputOptions (__added__)
+* AWS::DataBrew::Job.S3TableOutputOptions (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace.PrivateDnsPropertiesMutable (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace.Properties (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace.SOA (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace.Properties (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace.PublicDnsPropertiesMutable (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace.SOA (__added__)
+* AWS::ApiGatewayV2::DomainName.DomainNameConfiguration OwnershipVerificationCertificateArn (__deleted__)
+
+
 # CloudFormation Resource Specification v39.3.0
 
 ## New Resource Types
