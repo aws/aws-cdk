@@ -164,9 +164,9 @@ export interface GitHubSourceOptions {
   /**
    * How AWS CodePipeline should be triggered
    *
-   * With the default value "WEBHOOK", a webhook is created in GitHub that triggers the action
-   * With "POLL", CodePipeline periodically checks the source for changes
-   * With "None", the action is not triggered through changes in the source
+   * With the default value "WEBHOOK", a webhook is created in GitHub that triggers the action.
+   * With "POLL", CodePipeline periodically checks the source for changes.
+   * With "None", the action is not triggered through changes in the source.
    *
    * To use `WEBHOOK`, your GitHub Personal Access Token should have
    * **admin:repo_hook** scope (in addition to the regular **repo** scope).
