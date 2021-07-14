@@ -289,6 +289,20 @@ router.addRoute('route-7', {
   }),
 });
 
+router.addRoute('route-8', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [
+      {
+        virtualNode: node2,
+        weight: 30,
+      },
+    ],
+    match: {
+      path: appmesh.HttpRoutePathMatch.startsWith('prefixPath'),
+    },
+  }),
+});
+
 const gateway = mesh.addVirtualGateway('gateway1', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'gateway1',

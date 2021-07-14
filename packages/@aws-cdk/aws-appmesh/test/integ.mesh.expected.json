@@ -1027,6 +1027,44 @@
         "RouteName": "route-7"
       }
     },
+    "meshrouterroute802AC8A49": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode2092BA426",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 30
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "prefixPath"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-8"
+      }
+    },
     "meshnode726C787D": {
       "Type": "AWS::AppMesh::VirtualNode",
       "Properties": {

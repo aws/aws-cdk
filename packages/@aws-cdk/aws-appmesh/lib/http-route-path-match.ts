@@ -67,10 +67,6 @@ export abstract class HttpRoutePathMatch {
 class HttpRoutePrefixPathMatch extends HttpRoutePathMatch {
   constructor(private readonly prefix: string) {
     super();
-
-    if (this.prefix && this.prefix[0] !== '/') {
-      throw new Error(`Prefix Path for the match must start with \'/\', got: ${this.prefix}`);
-    }
   }
 
   bind(_scope: Construct): HttpRoutePathMatchConfig {
