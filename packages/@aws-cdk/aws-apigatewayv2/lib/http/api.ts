@@ -148,7 +148,7 @@ export interface HttpApiProps {
 /**
  * Supported CORS HTTP methods
  */
-export enum CorsHttpMethod{
+export enum CorsHttpMethod {
   /** HTTP ANY */
   ANY = '*',
   /** HTTP DELETE */
@@ -299,12 +299,15 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
     const integration = new HttpIntegration(scope, `HttpIntegration-${configHash}`, {
       httpApi: this,
       integrationType: config.type,
+      integrationSubtype: config.subtype,
       integrationUri: config.uri,
+      credentials: config.credentials,
       method: config.method,
       connectionId: config.connectionId,
       connectionType: config.connectionType,
       payloadFormatVersion: config.payloadFormatVersion,
       secureServerName: config.secureServerName,
+      requestParameters: config.requestParameters,
     });
     this._integrationCache.saveIntegration(scope, config, integration);
 

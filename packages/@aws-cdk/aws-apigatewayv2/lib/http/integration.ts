@@ -76,6 +76,27 @@ export class PayloadFormatVersion {
 }
 
 /**
+ * Credentials used for AWS Service integrations.
+ */
+export class IntegrationCredentials {
+  /** Use the specified role for integration requests */
+  public static fromRole(role: IRole): IntegrationCredentials {
+    return new IntegrationCredentials(role.roleArn);
+  }
+  /** Use the calling user's identity to call the integration */
+  public static useCallerIdentity(): IntegrationCredentials {
+    return new IntegrationCredentials('arn:aws:iam::*:user/*');
+  }
+
+  private constructor(
+    /**
+     * The credential ARN for the integration
+     */
+    readonly credentials: string,
+  ) { }
+}
+
+/**
  * The integration properties
  */
 export interface HttpIntegrationProps {
@@ -90,11 +111,20 @@ export interface HttpIntegrationProps {
   readonly integrationType: HttpIntegrationType;
 
   /**
+   * Integration subtype.
+   * Used for AWS Service integrations, specifies the target of the integration.
+   * @default - none. required if no integrationUri is defined.
+   */
+  readonly integrationSubtype?: HttpIntegrationSubtype;
+
+  /**
    * Integration URI.
    * This will be the function ARN in the case of `HttpIntegrationType.LAMBDA_PROXY`,
-   * or HTTP URL in the case of `HttpIntegrationType.HTTP_PROXY`.
+   * or HTTP URL in the case of `HttpIntegrationType.HTTP_PROXY`. Not set for AWS Service
+   * integrations.
+   * @default - none. required if no integrationSubtype is defined.
    */
-  readonly integrationUri: string;
+  readonly integrationUri?: string;
 
   /**
    * The HTTP method to use when calling the underlying HTTP proxy
@@ -117,6 +147,12 @@ export interface HttpIntegrationProps {
   readonly connectionType?: HttpConnectionType;
 
   /**
+   * The credentials with which to invoke the integration.
+   * @default - undefined
+   */
+  readonly credentials?: IntegrationCredentials;
+
+  /**
    * The version of the payload format
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
    * @default - defaults to latest in the case of HttpIntegrationType.LAMBDA_PROXY`, irrelevant otherwise.
@@ -129,6 +165,18 @@ export interface HttpIntegrationProps {
    * @default undefined private integration traffic will use HTTP protocol
    */
   readonly secureServerName?: string;
+
+  /**
+   * Mappings to apply to the request before it is sent to the integration.
+   * For AWS Service integrations, these define how the request is mapped onto the service.
+   * For HTTP integrations, these can transform aspects of the request for the target.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+   *
+   * @default - undefined
+   */
+  readonly requestParameters?: object;
 }
 
 /**
@@ -145,11 +193,14 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
     const integ = new CfnIntegration(this, 'Resource', {
       apiId: props.httpApi.apiId,
       integrationType: props.integrationType,
+      integrationSubtype: props.integrationSubtype,
       integrationUri: props.integrationUri,
       integrationMethod: props.method,
       connectionId: props.connectionId,
       connectionType: props.connectionType,
+      credentialsArn: props.credentials?.credentials,
       payloadFormatVersion: props.payloadFormatVersion?.version,
+      requestParameters: props.requestParameters,
     });
 
     if (props.secureServerName) {
@@ -167,62 +218,11 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
  * Supported integration subtypes
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html
  */
-export enum AwsServiceIntegrationType {
+export enum HttpIntegrationSubtype {
   /**
    * EventBridge PutEvents integration
    */
   EVENTBRIDGE_PUTEVENTS = 'EventBridge-PutEvents',
-}
-
-/**
- * Integration-specific details about how the incoming payload is mapped to the integration.
- */
-export abstract class IntegrationRequestMappingBase {
-}
-
-/**
- * AWS Service integration properties.
- */
-export interface AwsServiceIntegrationProps {
-  /**
-   * The HTTP API to which this integration should be bound.
-   */
-  readonly httpApi: IHttpApi;
-  /**
-   * The AWS integration subtype
-   */
-  readonly integrationSubType: AwsServiceIntegrationType;
-  /**
-   * The role with which to invoke the integration
-   */
-  readonly role: IRole;
-  /**
-   * Data mapping to the integration target
-   */
-  readonly requestMapping: IntegrationRequestMappingBase;
-}
-/**
- * An AWS Service integration for an API route.
- * @resource AWS::ApiGatewayV2::Integration
- */
-export class AwsServiceIntegration extends Resource implements IHttpIntegration {
-  public readonly integrationId: string;
-
-  public readonly httpApi: IHttpApi;
-
-  constructor(scope: Construct, id: string, props: AwsServiceIntegrationProps) {
-    super(scope, id);
-    const integ = new CfnIntegration(this, 'AwsResource', {
-      apiId: props.httpApi.apiId,
-      integrationType: HttpIntegrationType.LAMBDA_PROXY,
-      integrationSubtype: props.integrationSubType,
-      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0.version,
-      credentialsArn: props.role.roleArn,
-      requestParameters: props.requestMapping,
-    });
-    this.integrationId = integ.ref;
-    this.httpApi = props.httpApi;
-  }
 }
 
 /**
@@ -262,9 +262,17 @@ export interface HttpRouteIntegrationConfig {
   readonly type: HttpIntegrationType;
 
   /**
-   * Integration URI
+   * Integration subtype.
+   * Used for AWS Service integrations only.
+   * @default - none. required if no uri specified.
    */
-  readonly uri: string;
+  readonly subtype?: HttpIntegrationSubtype;
+
+  /**
+   * Integration URI.
+   * @default - none. required if no subtype specified.
+   */
+  readonly uri?: string;
 
   /**
    * The HTTP method that must be used to invoke the underlying proxy.
@@ -288,6 +296,12 @@ export interface HttpRouteIntegrationConfig {
   readonly connectionType?: HttpConnectionType;
 
   /**
+   * The identity to use for the integration. Only applicable to AWS Service integrations.
+   * @default - undefined
+   */
+  readonly credentials?: IntegrationCredentials;
+
+  /**
    * Payload format version in the case of lambda proxy integration
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
    * @default - undefined
@@ -300,4 +314,12 @@ export interface HttpRouteIntegrationConfig {
    * @default undefined private integration traffic will use HTTP protocol
    */
   readonly secureServerName?: string;
+
+  /**
+   * Mappings to apply to the request before it is sent to the integration.
+   * For AWS Service integrations, these define how the request is mapped onto the service.
+   * For HTTP integrations, these can transform aspects of the request for the target.
+   * @default - undefined
+   */
+  readonly requestParameters?: object;
 }
