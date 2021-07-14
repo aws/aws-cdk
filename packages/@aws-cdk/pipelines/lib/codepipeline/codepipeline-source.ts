@@ -20,15 +20,17 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Parse a URL from common source providers and return an appropriate Source action
    *
    * The input string cannot be a token.
+   *
+   * **NOTE**: Keeping the branch parameter until we decide what to do with this method.
    */
-  public static fromUrl(repoString: string): CodePipelineSource {
+  public static fromUrl(repoString: string, branch: string): CodePipelineSource {
     if (Token.isUnresolved(repoString)) {
       throw new Error('Argument to CodePipelineSource.fromString() cannot be unresolved');
     }
 
     const githubPrefix = 'https://github.com/';
     if (repoString.startsWith(githubPrefix)) {
-      return CodePipelineSource.gitHub(repoString.substr(githubPrefix.length).replace(/\.git$/, ''));
+      return CodePipelineSource.gitHub(repoString.substr(githubPrefix.length).replace(/\.git$/, ''), branch);
     }
 
     throw new Error(`CodePipelineSource.fromString(): unrecognized string format: '${repoString}'`);
@@ -40,9 +42,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Pass in the owner and repository in a single string, like this:
    *
    * ```ts
-   * CodePipelineSource.gitHub('owner/repo', {
-   *   branch: 'master',
-   * });
+   * CodePipelineSource.gitHub('owner/repo', 'main');
    * ```
    *
    * The branch is `main` unless specified otherwise, and authentication
@@ -54,8 +54,8 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * * **repo** - to read the repository
    * * **admin:repo_hook** - if you plan to use webhooks (true by default)
    */
-  public static gitHub(repoString: string, props: GitHubSourceOptions = {}): CodePipelineSource {
-    return new GitHubSource(repoString, props);
+  public static gitHub(repoString: string, branch: string, props: GitHubSourceOptions = {}): CodePipelineSource {
+    return new GitHubSource(repoString, branch, props);
   }
 
   /**
@@ -81,39 +81,38 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   /**
    * Returns a CodeStar source.
    *
-   * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo')
-   * @param props The source properties, including the branch and connection ARN.
+   * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo').
+   * @param branch The branch to use.
+   * @param props The source properties, including the connection ARN.
    *
    * Example:
    *
    * ```ts
-   * CodePipelineSource.codeStar('owner/repo', {
-   *   branch: 'main',
+   * CodePipelineSource.codeStar('owner/repo', 'main', {
    *   connectionArn: ..., // Created in the console, to connect to GitHub or BitBucket
    * });
    * ```
    */
-  public static codeStar(repoString: string, props: CodeStarSourceOptions): CodePipelineSource {
-    return new CodeStarSource(repoString, props);
+  public static codeStar(repoString: string, branch: string, props: CodeStarSourceOptions): CodePipelineSource {
+    return new CodeStarSource(repoString, branch, props);
   }
 
   /**
    * Returns a CodeCommit source.
    *
    * @param repository The CodeCommit repository.
-   * @param props The source properties, including the branch.
+   * @param branch The branch to use.
+   * @param props The source properties.
    *
    * Example:
    *
    * ```ts
    * const repository: IRepository = ...
-   * CodePipelineSource.codeCommit(repository, {
-   *   branch: 'main',
-   * });
+   * CodePipelineSource.codeCommit(repository, 'main');
    * ```
    */
-  public static codeCommit(repository: codecommit.IRepository, props: CodeCommitSourceOptions): CodePipelineSource {
-    return new CodeCommitSource(repository, props);
+  public static codeCommit(repository: codecommit.IRepository, branch: string, props: CodeCommitSourceOptions = {}): CodePipelineSource {
+    return new CodeCommitSource(repository, branch, props);
   }
 
   // tells `PipelineGraph` to hoist a "Source" step
@@ -133,13 +132,6 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
  * Options for GitHub sources
  */
 export interface GitHubSourceOptions {
-  /**
-   * The branch to use.
-   *
-   * @default "main"
-   */
-  readonly branch?: string;
-
   /**
    * A GitHub OAuth token to use for authentication.
    *
@@ -183,10 +175,9 @@ export interface GitHubSourceOptions {
 class GitHubSource extends CodePipelineSource {
   private readonly owner: string;
   private readonly repo: string;
-  private readonly branch: string;
   private readonly authentication: SecretValue;
 
-  constructor(repoString: string, readonly props: GitHubSourceOptions) {
+  constructor(repoString: string, readonly branch: string, readonly props: GitHubSourceOptions) {
     super(repoString);
 
     const parts = repoString.split('/');
@@ -195,7 +186,6 @@ class GitHubSource extends CodePipelineSource {
     }
     this.owner = parts[0];
     this.repo = parts[1];
-    this.branch = props.branch ?? 'main';
     this.authentication = props.authentication ?? SecretValue.secretsManager('github-token');
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
@@ -292,18 +282,13 @@ export interface CodeStarSourceOptions {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html
    */
   readonly triggerOnPush?: boolean;
-
-  /**
-   * The branch to use.
-   */
-  readonly branch: string;
 }
 
 class CodeStarSource extends CodePipelineSource {
   private readonly owner: string;
   private readonly repo: string;
 
-  constructor(repoString: string, readonly props: CodeStarSourceOptions) {
+  constructor(repoString: string, readonly branch: string, readonly props: CodeStarSourceOptions) {
     super(repoString);
 
     const parts = repoString.split('/');
@@ -323,7 +308,7 @@ class CodeStarSource extends CodePipelineSource {
       connectionArn: this.props.connectionArn,
       owner: this.owner,
       repo: this.repo,
-      branch: this.props.branch,
+      branch: this.branch,
       codeBuildCloneOutput: this.props.codeBuildCloneOutput,
       triggerOnPush: this.props.triggerOnPush,
     });
@@ -334,11 +319,6 @@ class CodeStarSource extends CodePipelineSource {
  * Configuration options for a CodeCommit source
  */
 export interface CodeCommitSourceOptions {
-  /**
-   * The branch to use.
-   */
-  readonly branch: string;
-
   /**
    * How should CodePipeline detect source changes for this Action.
    *
@@ -369,7 +349,7 @@ export interface CodeCommitSourceOptions {
 }
 
 class CodeCommitSource extends CodePipelineSource {
-  constructor(readonly repository: codecommit.IRepository, readonly props: CodeCommitSourceOptions) {
+  constructor(readonly repository: codecommit.IRepository, readonly branch: string, readonly props: CodeCommitSourceOptions) {
     super(repository.repositoryName);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
@@ -380,7 +360,7 @@ class CodeCommitSource extends CodePipelineSource {
       output,
       actionName,
       runOrder,
-      branch: this.props.branch,
+      branch: this.branch,
       trigger: this.props.trigger,
       repository: this.repository,
       eventRole: this.props.eventRole,
