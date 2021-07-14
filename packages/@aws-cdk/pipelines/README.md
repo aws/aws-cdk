@@ -516,61 +516,6 @@ new CodePipeline(this, 'Pipeline', {
 });
 ```
 
-### Building Docker image assets, and file asset bundling using Docker
-
-Docker can be used in 3 different places in the pipeline:
-
-* If you are using Docker image assets in your application stages: Docker will
-  run in the asset publishing projects.
-* If you are using Docker image assets in your stack (for example as
-  images for your CodeBuild projects): Docker will run in the self-mutate project.
-* If you are using Docker to bundle file assets anywhere in your project (for
-  example, if you are using such construct libraries as
-  `@aws-cdk/aws-lambda-nodejs`): Docker will run in the
-  *synth* project.
-
-For the first case, you don't need to do anything special. For the other two cases,
-you need to make sure that **privileged mode** is enabled on the correct CodeBuild
-projects, so that Docker can run correctly.
-
-If you are using asset bundling, use a `CodeBuildStep` as the `synth` step
-and pass `privileged: true`. If you are using Docker assets in the pipeline stack,
-pass `pipelineUsesDockerAssets: true`.
-
-> **Important**: You must turn on the `privileged` and `pipelineUsesDockerAssets` flags,
-> commit and allow the pipeline to self-update *before* adding the actual Docker asset or
-> bundling step.
-
-The following example shows both:
-
-```ts
-new CodePipeline(this, 'Pipeline', {
-  synth: new CodeBuildStep('Synth', {
-    // If you are using a CodeBuildStep explicitly, set the 'cdk.out' directory
-    // to be the synth step's output.
-    primaryOutputDirectory: 'cdk.out',
-
-    buildEnvironment: {
-      // Turn on privileged mode for asset bundling
-      privileged: true,
-
-      // Using an asset image in the pipeline requires turning on
-      // 'pipelineUsesDockerAssets' below.
-      buildImage: LinuxBuildImage.fromAsset(this, 'Image', {
-        directory: './docker-image',
-      })
-    },
-  }),
-
-  // Turn this on if the pipeline stack uses Docker image assets
-  pipelineUsesDockerAssets: true,
-});
-```
-
-You may also need to authenticate to Docker registries to avoid being throttled.
-See the section **Docker registry credentials** below for information on how to do
-that.
-
 ### Arbitrary CodePipeline actions
 
 If you want to add a type of CodePipeline action to the CDK Pipeline that
@@ -607,9 +552,82 @@ class MyJenkinsStep extends Step implements ICodePipelineActionFactory {
 }
 ```
 
-## Docker Registry Credentials
+## Using Docker in the pipeline
 
-(These instructions are the same for both the original and the modern API).
+Docker can be used in 3 different places in the pipeline:
+
+* If you are using Docker image assets in your application stages: Docker will
+  run in the asset publishing projects.
+* If you are using Docker image assets in your stack (for example as
+  images for your CodeBuild projects): Docker will run in the self-mutate project.
+* If you are using Docker to bundle file assets anywhere in your project (for
+  example, if you are using such construct libraries as
+  `@aws-cdk/aws-lambda-nodejs`): Docker will run in the
+  *synth* project.
+
+For the first case, you don't need to do anything special. For the other two cases,
+you need to make sure that **privileged mode** is enabled on the correct CodeBuild
+projects, so that Docker can run correctly. The follow sections describe how to do
+that.
+
+You may also need to authenticate to Docker registries to avoid being throttled.
+See the section **Authenticating to Docker registries** below for information on how to do
+that.
+
+### Using Docker image assets in the pipeline
+
+If your `PipelineStack` is using Docker image assets (as opposed to the application
+stacks the pipeline is deploying), for example by the use of `LinuxBuildImage.fromAsset()`,
+you need to pass `dockerEnabledForSelfMutation: true` to the pipeline. For example:
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  // ...
+
+  // Turn this on because the pipeline uses Docker image assets
+  dockerEnabledForSelfMutation: true,
+});
+
+pipeline.addWave('MyWave', {
+  post: [
+    new CodeBuildStep('RunApproval', {
+      commands: ['command-from-image'],
+      buildEnvironment: {
+        // The user of a Docker image asset in the pipeline requires turning on
+        // 'dockerEnabledForSelfMutation'.
+        buildImage: LinuxBuildImage.fromAsset(this, 'Image', {
+          directory: './docker-image',
+        })
+      },
+    })
+  ],
+});
+```
+
+> **Important**: You must turn on the `dockerEnabledForSelfMutation` flag,
+> commit and allow the pipeline to self-update *before* adding the actual
+> Docker asset.
+
+### Using bundled file assets
+
+If you are using asset bundling anywhere (such as automatically done for you
+if you add a construct like `@aws-cdk/aws-lambda-nodejs`), you need to pass
+`dockerEnabledForSynth: true` to the pipeline. For example:
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  // ...
+
+  // Turn this on because the application uses bundled file assets
+  dockerEnabledForSynth: true,
+});
+```
+
+> **Important**: You must turn on the `dockerEnabledForSynth` flag,
+> commit and allow the pipeline to self-update *before* adding the actual
+> Docker asset.
+
+### Authenticating to Docker registries
 
 You can specify credentials to use for authenticating to Docker registries as part of the
 pipeline definition. This can be useful if any Docker image assets — in the pipeline or
@@ -632,16 +650,17 @@ const pipeline = new CodePipeline(this, 'Pipeline', {
 });
 ```
 
-You can authenticate to DockerHub, or any other Docker registry, by specifying a secret
-with the username and secret/password to pass to `docker login`. The names of the fields
-within the secret to use for the username and password can be customized. Authentication
-to ECR repostories is done using the execution role of the relevant CodeBuild job. Both
-types of credentials can be provided with an optional role to assume before requesting
-the credentials.
+For authenticating to Docker registries that require a username and password combination
+(like DockerHub), create a Secrets Manager Secret with fields named `username`
+and `secret`, and import it (the field names change be customized).
 
-By default, the Docker credentials provided to the pipeline will be available to the
-Synth/Build, Self-Update, and Asset Publishing actions within the pipeline. The scope of
-the credentials can be limited via the `DockerCredentialUsage` option.
+Authentication to ECR repostories is done using the execution role of the
+relevant CodeBuild job. Both types of credentials can be provided with an
+optional role to assume before requesting the credentials.
+
+By default, the Docker credentials provided to the pipeline will be available to
+the **Synth**, **Self-Update**, and **Asset Publishing** actions within the
+*pipeline. The scope of the credentials can be limited via the `DockerCredentialUsage` option.
 
 ```ts
 const dockerHubSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'DHSecret', 'arn:aws:...');

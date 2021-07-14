@@ -186,7 +186,7 @@ behavior('Pipeline stack itself can use assets (has implications for selfupdate)
   suite.modern(() => {
     // WHEN
     new ModernTestGitHubNpmPipeline(pipelineStack, 'PrivilegedPipeline', {
-      pipelineUsesDockerAssets: true,
+      dockerEnabledForSelfMutation: true,
     });
 
     // THEN

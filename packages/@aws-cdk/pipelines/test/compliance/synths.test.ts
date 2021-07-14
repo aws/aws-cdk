@@ -949,3 +949,33 @@ behavior('Multiple input sources in side-by-side directories', (suite) => {
     });
   });
 });
+
+behavior('Can easily switch on privileged mode for synth', (suite) => {
+  // Legacy API does not support this
+  suite.doesNotApply.legacy();
+
+  suite.modern(() => {
+    // WHEN
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      dockerEnabledForSynth: true,
+      commands: ['LookAtMe'],
+    });
+
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: objectLike({
+        PrivilegedMode: true,
+      }),
+      Source: {
+        BuildSpec: encodedJson(deepObjectLike({
+          phases: {
+            build: {
+              commands: [
+                'LookAtMe',
+              ],
+            },
+          },
+        })),
+      },
+    });
+  });
+});

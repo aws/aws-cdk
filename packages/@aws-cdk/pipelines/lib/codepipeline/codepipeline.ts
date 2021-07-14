@@ -83,17 +83,46 @@ export interface CodePipelineProps {
   readonly selfMutation?: boolean;
 
   /**
-   * Set if the pipeline itself builds Docker container assets
+   * Enable Docker for the self-mutate step
    *
-   * NOTE: this only applies to Docker assets used for the Pipeline
-   * or the Pipeline stack itself. It does not apply for Docker assets
-   * used in the Stages and Stacks that are *deployed* by this pipeline.
+   * Set this to true if the pipeline itself uses Docker container assets
+   * (for example, if you use `LinuxBuildImage.fromAsset()` as the build
+   * image of a CodeBuild step in the pipeline).
+   *
+   * You do not need to set it if you build Docker image assets in the
+   * application Stages and Stacks that are *deployed* by this pipeline.
    *
    * Configures privileged mode for the self-mutation CodeBuild action.
    *
+   * If you are about to turn this on in an already-deployed Pipeline,
+   * set the value to `true` first, commit and allow the pipeline to
+   * self-update, and only then use the Docker asset in the pipeline.
+   *
    * @default false
    */
-  readonly pipelineUsesDockerAssets?: boolean;
+  readonly dockerEnabledForSelfMutation?: boolean;
+
+  /**
+   * Enable Docker for the 'synth' step
+   *
+   * Set this to true if you are using file assets that require
+   * "bundling" anywhere in your application (meaning an asset
+   * compilation step will be run with the tools provided by
+   * a Docker image), both for the Pipeline stack as well as the
+   * application stacks.
+   *
+   * A common way to use bundling assets in your application is by
+   * using the `@aws-cdk/aws-lambda-nodejs` library.
+   *
+   * Configures privileged mode for the synth CodeBuild action.
+   *
+   * If you are about to turn this on in an already-deployed Pipeline,
+   * set the value to `true` first, commit and allow the pipeline to
+   * self-update, and only then use the bundled asset.
+   *
+   * @default false
+   */
+  readonly dockerEnabledForSynth?: boolean;
 
   /**
    * Customize the CodeBuild projects created for this pipeline
@@ -556,10 +585,6 @@ export class CodePipeline extends PipelineBase {
         `cdk -a ${toPosixPath(embeddedAsmPath(this.pipeline))} deploy ${pipelineStackIdentifier} --require-approval=never --verbose`,
       ],
 
-      buildEnvironment: {
-        privileged: this.props.pipelineUsesDockerAssets ? true : undefined,
-      },
-
       rolePolicyStatements: [
         // allow the self-mutating project permissions to assume the bootstrap Action role
         new iam.PolicyStatement({
@@ -659,9 +684,16 @@ export class CodePipeline extends PipelineBase {
     };
 
     const typeBasedCustomizations = {
-      [CodeBuildProjectType.SYNTH]: {},
+      [CodeBuildProjectType.SYNTH]: this.props.dockerEnabledForSynth
+        ? { buildEnvironment: { privileged: true } }
+        : {},
+
       [CodeBuildProjectType.ASSETS]: this.props.assetPublishingCodeBuildDefaults,
-      [CodeBuildProjectType.SELF_MUTATE]: this.props.selfMutationCodeBuildDefaults,
+
+      [CodeBuildProjectType.SELF_MUTATE]: this.props.dockerEnabledForSelfMutation
+        ? mergeCodeBuildOptions(this.props.selfMutationCodeBuildDefaults, { buildEnvironment: { privileged: true } })
+        : this.props.selfMutationCodeBuildDefaults,
+
       [CodeBuildProjectType.STEP]: {},
     };
 
