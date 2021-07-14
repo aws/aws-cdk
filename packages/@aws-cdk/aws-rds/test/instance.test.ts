@@ -1364,7 +1364,10 @@ describe('instance', () => {
       CopyTagsToSnapshot: false,
     });
   });
+<<<<<<< HEAD
 
+=======
+>>>>>>> dbd812fb8 (added CopyTagsToSnapshot property to RDS database cluster props.)
 });
 
 test.each([
