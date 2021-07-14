@@ -237,7 +237,7 @@ export interface S3SourceOptions {
 }
 
 class S3Source extends CodePipelineSource {
-  public primaryOutput?: FileSet | undefined;
+  public primaryOutput: FileSet | undefined;
 
   constructor(readonly bucket: IBucket, readonly props: S3SourceOptions) {
     super(bucket.bucketName);
@@ -299,7 +299,7 @@ export interface CodeStarSourceOptions {
 }
 
 class CodeStarSource extends CodePipelineSource {
-  public primaryOutput?: FileSet | undefined;
+  public primaryOutput: FileSet | undefined;
   private readonly owner: string;
   private readonly repo: string;
 
@@ -366,7 +366,7 @@ export interface CodeCommitSourceOptions {
 }
 
 class CodeCommitSource extends CodePipelineSource {
-  public primaryOutput?: FileSet | undefined;
+  public primaryOutput: FileSet | undefined;
 
   constructor(readonly repository: codecommit.IRepository, readonly props: CodeCommitSourceOptions) {
     super(repository.repositoryName);
