@@ -181,7 +181,7 @@ portfolio.addProduct(product);
 portfolio.constrainTagUpdates(product);
 ```
 
-If you want to disable this feature later on, you can update it by setting the parameter flag to false:
+If you want to disable this feature later on, you can update it by setting the "allow" parameter to `false`:
 
 ```ts fixture=portfolio-product
 // to disable tag updates:
