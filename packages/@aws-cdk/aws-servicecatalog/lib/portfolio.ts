@@ -166,7 +166,7 @@ export interface PortfolioProps {
 
   /**
    * Description for portfolio.
-   * 
+   *
    * @default - No description provided
    */
   readonly description?: string;
