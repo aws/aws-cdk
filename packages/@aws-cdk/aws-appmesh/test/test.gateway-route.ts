@@ -988,6 +988,41 @@ export = {
 
         test.done();
       },
+
+      'should throw an error if empty string is passed'(test:Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // WHEN + THEN
+
+        test.throws(() => {
+          virtualGateway.addGatewayRoute('gateway-http-route', {
+            routeSpec: appmesh.GatewayRouteSpec.http({
+              routeTarget: virtualService,
+              match: {
+                path: appmesh.HttpGatewayRoutePathMatch.exactly('/exact', ''),
+              },
+            }),
+            gatewayRouteName: 'gateway-http-route',
+          });
+        }, /Exact Path for the rewrite cannot be empty. Unlike startsWith\(\) method, no automatic rewrite on whole path match/);
+
+        test.done();
+      },
     },
 
     'with query paramater match': {

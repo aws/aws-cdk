@@ -157,7 +157,7 @@ export abstract class HttpGatewayRoutePathMatch {
    * @param rewriteTo the value to substitute for the matched part of the path of the gateway request URL
    */
   public static exactly(path: string, rewriteTo?: string): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRouteWholePathMatch({ exact: path }, rewriteTo ? { exact: rewriteTo } : undefined);
+    return new HttpGatewayRouteWholePathMatch({ exact: path }, { exact: rewriteTo });
   }
 
   /**
@@ -167,7 +167,7 @@ export abstract class HttpGatewayRoutePathMatch {
    * @param rewriteTo the value to substitute for the matched part of the path of the gateway request URL
    */
   public static regex(regex: string, rewriteTo?: string): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRouteWholePathMatch({ regex }, rewriteTo ? { exact: rewriteTo } : undefined);
+    return new HttpGatewayRouteWholePathMatch({ regex }, { exact: rewriteTo });
   }
 
   /**
@@ -221,6 +221,9 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
     if (this.wholePathMatch.exact && this.wholePathMatch.exact[0] !== '/') {
       throw new Error(`Exact Path for the match must start with \'/\', got: ${ this.wholePathMatch.exact }`);
     }
+    if (this.wholePathRewrite?.exact === '') {
+      throw new Error('Exact Path for the rewrite cannot be empty. Unlike startsWith() method, no automatic rewrite on whole path match');
+    }
     if (this.wholePathRewrite?.exact && this.wholePathRewrite.exact[0] !== '/') {
       throw new Error(`Exact Path for the rewrite must start with \'/\', got: ${ this.wholePathRewrite.exact }`);
     }
@@ -229,7 +232,7 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
       wholePathMatch: this.wholePathMatch,
-      wholePathRewrite: this.wholePathRewrite,
+      wholePathRewrite: this.wholePathRewrite?.exact ? this.wholePathRewrite : undefined,
     };
   }
 }

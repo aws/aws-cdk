@@ -685,7 +685,8 @@ gateway.addGatewayRoute('gateway-route-http-1', {
 });
 ```
 
-If matching other path (exact or regex), no automatic rewrite is performed and only specific rewrite path can be specified.
+If matching other path (exact or regex), only specific rewrite path can be specified.
+Unlike `startsWith()` method above, no default rewrite is performed.
 
 ```ts
 gateway.addGatewayRoute('gateway-route-http-2', {
