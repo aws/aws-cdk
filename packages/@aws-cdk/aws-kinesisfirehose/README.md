@@ -145,6 +145,43 @@ new DeliveryStream(this, 'Delivery Stream', {
 See: [Monitoring using CloudWatch Logs](https://docs.aws.amazon.com/firehose/latest/dev/monitoring-with-cloudwatch-logs.html)
 in the *Kinesis Data Firehose Developer Guide*.
 
+### Metrics
+
+Kinesis Data Firehose sends metrics to CloudWatch so that you can collect and analyze the
+performance of the delivery stream, including data delivery, data ingestion, data
+transformation, format conversion, API usage, encryption, and resource usage. You can then
+use CloudWatch alarms to alert you, for example, when data freshness (the age of the
+oldest record in the delivery stream) exceeds the buffering limit (indicating that data is
+not being delivered to your destination), or when the rate of incoming records exceeds the
+limit of records per second (indicating data is flowing into your delivery stream faster
+than it is configured to process).
+
+CDK provides methods for accessing delivery stream metrics with default configuration,
+such as `metricIncomingBytes`, and `metricIncomingRecords` (see [`IDeliveryStream`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-kinesisfirehose.IDeliveryStream.html)
+for a full list). CDK also provides a generic `metric` method that can be used to produce
+metric configurations for any metric provided by Kinesis Data Firehose; the configurations
+are pre-populated with the correct dimensions for the delivery stream.
+
+```ts fixture=with-delivery-stream
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+// Alarm that triggers when the per-second average of incoming bytes exceeds 90% of the current service limit
+const incomingBytesPercentOfLimit = new cloudwatch.MathExpression({
+  expression: 'incomingBytes / 300 / bytePerSecLimit',
+  usingMetrics: {
+    incomingBytes: deliveryStream.metricIncomingBytes({ statistic: cloudwatch.Statistic.SUM }),
+    bytePerSecLimit: deliveryStream.metric('BytesPerSecondLimit'),
+  },
+});
+new Alarm(this, 'Alarm', {
+  metric: incomingBytesPercentOfLimit,
+  threshold: 0.9,
+  evaluationPeriods: 3,
+});
+```
+
+See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/firehose/latest/dev/monitoring-with-cloudwatch-metrics.html)
+in the *Kinesis Data Firehose Developer Guide*.
+
 ## Specifying an IAM role
 
 The DeliveryStream class automatically creates an IAM role with all the minimum necessary
