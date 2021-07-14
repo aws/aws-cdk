@@ -94,7 +94,6 @@ export interface ScriptStepProps {
  * Run shell script commands in the pipeline
  */
 export class ScriptStep extends Step {
-  public readonly primaryOutput?: FileSet | undefined;
   /**
    * Commands to run
    */
@@ -142,6 +141,8 @@ export class ScriptStep extends Step {
 
   private readonly _additionalOutputs: Record<string, FileSet> = {};
 
+  private _primaryOutputDirectory?: string;
+
   constructor(id: string, props: ScriptStepProps) {
     super(id);
 
@@ -176,19 +177,46 @@ export class ScriptStep extends Step {
     // Outputs
 
     if (props.primaryOutputDirectory) {
-      this.primaryOutput = new FileSet('Output', this);
-      this.outputs.push({ directory: props.primaryOutputDirectory, fileSet: this.primaryOutput });
+      this._primaryOutputDirectory = props.primaryOutputDirectory;
+      const fileSet = new FileSet('Output', this);
+      this.configurePrimaryOutput(fileSet);
+      this.outputs.push({ directory: props.primaryOutputDirectory, fileSet });
     }
+  }
+
+  /**
+   * Configure the given output directory as primary output
+   *
+   * If no primary output has been configured yet, this directory
+   * will become the primary output of this ScriptStep, otherwise this
+   * method will throw if the given directory is different than the
+   * currently configured primary output directory.
+   */
+  public primaryOutputDirectory(directory: string): FileSet {
+    if (this._primaryOutputDirectory !== undefined) {
+      if (this._primaryOutputDirectory !== directory) {
+        throw new Error(`${this}: primaryOutputDirectory is '${this._primaryOutputDirectory}', cannot be changed to '${directory}'`);
+      }
+
+      return this.primaryOutput!;
+    }
+
+    this._primaryOutputDirectory = directory;
+    const fileSet = new FileSet('Output', this);
+    this.configurePrimaryOutput(fileSet);
+    this.outputs.push({ directory: directory, fileSet });
+    return fileSet;
   }
 
   /**
    * Add an additional output FileSet based on a directory.
    *
+   *
    * After running the script, the contents of the given directory
    * will be exported as a `FileSet`. Use the `FileSet` as the
    * input to another step.
    *
-   * Multiple calls with the exact same directory name (not normalized)
+   * Multiple calls with the exact same directory name string (not normalized)
    * will return the same FileSet.
    */
   public addOutputDirectory(directory: string): FileSet {

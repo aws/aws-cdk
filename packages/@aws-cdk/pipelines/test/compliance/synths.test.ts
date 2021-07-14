@@ -145,7 +145,9 @@ behavior('synth supports setting subdirectory', (suite) => {
 
   suite.modern(() => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      subdirectory: 'subdir',
+      installCommands: ['cd subdir'],
+      commands: ['true'],
+      primaryOutputDirectory: 'subdir/cdk.out',
     });
     THEN_codePipelineExpectation(MODERN_INSTALLS);
   });
@@ -488,7 +490,7 @@ behavior('Synth can output additional artifacts', (suite) => {
 
   suite.modern(() => {
     // WHEN
-    const synth = new cdkp.SynthStep('Synth', {
+    const synth = new cdkp.ScriptStep('Synth', {
       input: cdkp.CodePipelineSource.github('test/test'),
       commands: ['cdk synth'],
     });

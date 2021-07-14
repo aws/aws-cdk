@@ -103,6 +103,13 @@ export interface CodeBuildFactoryProps {
    * If given, override the scope from the produce call with this scope.
    */
   readonly scope?: Construct;
+
+  /**
+   * Whether or not the given CodeBuild project is going to be the synth step
+   *
+   * @default false
+   */
+  readonly isSynth?: boolean;
 }
 
 /**

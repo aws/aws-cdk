@@ -11,14 +11,6 @@ import { FileSet, IFileSetProducer } from './file-set';
  */
 export abstract class Step implements IFileSetProducer {
   /**
-   * The primary FileSet produced by this Step
-   *
-   * Not all steps produce an output FileSet--if they do
-   * you can substitute the `Step` object for the `FileSet` object.
-   */
-  public readonly primaryOutput?: FileSet;
-
-  /**
    * The list of FileSets consumed by this Step
    */
   public readonly dependencyFileSets: FileSet[] = [];
@@ -29,6 +21,8 @@ export abstract class Step implements IFileSetProducer {
    * What it means to be a Source step depends on the engine.
    */
   public readonly isSource: boolean = false;
+
+  private _primaryOutput?: FileSet;
 
   constructor(
     /** Identifier for this step */
@@ -50,11 +44,29 @@ export abstract class Step implements IFileSetProducer {
   }
 
   /**
+   * The primary FileSet produced by this Step
+   *
+   * Not all steps produce an output FileSet--if they do
+   * you can substitute the `Step` object for the `FileSet` object.
+   */
+  public get primaryOutput(): FileSet | undefined {
+    // Accessor so it can be mutable in children
+    return this._primaryOutput;
+  }
+
+  /**
    * Add an additional FileSet to the set of file sets required by this step
    *
    * This will lead to a dependency on the producer of that file set.
    */
   protected addDependencyFileSet(fs: FileSet) {
     this.dependencyFileSets.push(fs);
+  }
+
+  /**
+   * Configure the given FileSet as the primary output of this step
+   */
+  protected configurePrimaryOutput(fs: FileSet) {
+    this._primaryOutput = fs;
   }
 }

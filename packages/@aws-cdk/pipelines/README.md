@@ -56,7 +56,7 @@ example creates a CodePipeline that deploys an application from GitHub:
   */
 import { DatabaseStack, ComputeStack } from '../lib/my-stacks';
 import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
-import { CodePipeline, CodePipelineSource, SynthStep } from '@aws-cdk/pipelines';
+import { CodePipeline, CodePipelineSource, ScriptStep } from '@aws-cdk/pipelines';
 
 /**
  * Stack to hold the pipeline
@@ -66,7 +66,7 @@ class MyPipelineStack extends Stack {
     super(scope, id, props);
 
     const pipeline = new CodePipeline(this, 'Pipeline', {
-      synth: new SynthStep('Synth', {
+      synth: new ScriptStep('Synth', {
         // Will use a SecretsManager secret named 'github-token' by default
         input: CodePipelineSource.gitHub('my-org/my-app'),
         commands: [
@@ -200,16 +200,16 @@ Assembly as its single output (the contents of the `cdk.out` directory after
 running `cdk synth`). "Steps" are arbitrary actions in the pipeline, typically
 used to run scripts or commands.
 
-The simplest type of step to use is the `SynthStep`, which assumes you will be
-running the `cdk synth` command as part of the build. The `SynthStep` takes an
-`input`, which represents the set of source files the build will be run on, and
-a set of `commands`:
+For the synth, use a `ScriptStep` and specify the commands necessary to build
+your project and run `cdk synth`; the specific commands required will depend on
+the programming language you are using. For a typical NPM-based project, the synth
+will look like this:
 
 ```ts
 const source = /* the repository source */;
 
 const pipeline = new CodePipeline(this, 'Pipeline', {
-  synth: new SynthStep('Synth', {
+  synth: new ScriptStep('Synth', {
     input: source,
     commands: [
       'npm ci',
@@ -220,9 +220,25 @@ const pipeline = new CodePipeline(this, 'Pipeline', {
 });
 ```
 
-Instead of `SynthStep`, you can also use `ScriptStep` or any
-other kind of `Step` that produces an output, as long as the step
-produces a Cloud Assembly at the end.
+The pipeline assumes that your `ScriptStep` will produce a `cdk.out`
+directory in the root, containing the CDK cloud assembly. If your
+CDK project lives in a subdirectory, be sure to adjust the
+`primaryOutputDirectory` to match:
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ScriptStep('Synth', {
+    input: source,
+    commands: [
+      'cd mysubdir',
+      'npm ci',
+      'npm run build',
+      'npx cdk synth',
+    ],
+    primaryOutputDirectory: 'mysubdir/cdk.out',
+  }),
+});
+```
 
 The underlying CodePipeline `Pipeline` construct will be produced
 when `app.synth()` is called. You can also force it to be produced
@@ -243,7 +259,7 @@ Sources objects can be created by factory methods on the `CodePipelineSource` cl
 
 #### Additional inputs
 
-`SynthStep` and `ScriptStep` allow passing in more than one input: additional
+`ScriptStep` allows passing in more than one input: additional
 inputs will be placed in the directories you specify. Any step that produces an
 output file set can be used as an input, such as a `CodePipelineSource`, but
 also other `ScriptSteps`:
@@ -255,7 +271,7 @@ const prebuild = new ScriptStep('Prebuild', {
   commands: ['./build.sh'],
 });
 
-const synth = new SynthStep('Synth', {
+const synth = new ScriptStep('Synth', {
   input: CodePipelineSource.gitHub('myorg/repo2'),
   additionalInputs: {
     'subdir': CodePipelineSource.gitHub('myorg/repo3'),
@@ -402,7 +418,7 @@ Here's an example that captures an additional output directory in the synth
 step and runs tests from there:
 
 ```ts
-const synth = new SynthStep('Synth', { /* ... */ });
+const synth = new ScriptStep('Synth', { /* ... */ });
 const pipeline = new CodePipeline(this, 'Pipeline', { synth });
 
 new ScriptStep('Approve', {
@@ -584,7 +600,7 @@ which takes an `engine` argument that specifies the deployment engine:
 
 ```ts
 new Pipeline(this, 'Pipeline', {
-  synth: new SynthStep(/* ... */),
+  synth: new ScriptStep(/* ... */),
   engine: new CodePipelineEngine({
     // CodePipeline configuration properties
   }),

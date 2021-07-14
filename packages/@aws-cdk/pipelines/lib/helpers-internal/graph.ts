@@ -1,7 +1,7 @@
 /**
  * A library for nested graphs
  */
-import { addAll, extract, flatMap } from '../private/javascript';
+import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 import { topoSort } from './toposort';
 
 export interface GraphNodeProps<A> {
@@ -38,11 +38,11 @@ export class GraphNode<A> {
     return [...this.dependencies, ...fromParent];
   }
 
-  public dependOn(...dependencies: GraphNode<A>[]) {
+  public dependOn(...dependencies: Array<GraphNode<A> | undefined>) {
     if (dependencies.includes(this)) {
       throw new Error(`Cannot add dependency on self: ${this}`);
     }
-    this.dependencies.push(...dependencies);
+    this.dependencies.push(...dependencies.filter(isDefined));
   }
 
   public ancestorPath(upTo: GraphNode<A>): GraphNode<A>[] {

@@ -96,7 +96,6 @@ export interface GitHubSourceOptions {
  * Extend CodePipelineSource so we can type-test in the CodePipelineEngine.
  */
 class GitHubSource extends CodePipelineSource {
-  public primaryOutput?: FileSet | undefined;
   private readonly owner: string;
   private readonly repo: string;
   private readonly branch: string;
@@ -113,7 +112,7 @@ class GitHubSource extends CodePipelineSource {
     this.repo = parts[1];
     this.branch = props.branch ?? 'main';
     this.authentication = props.authentication ?? SecretValue.secretsManager('github-token');
-    this.primaryOutput = new FileSet('Source', this);
+    this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
   public produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {

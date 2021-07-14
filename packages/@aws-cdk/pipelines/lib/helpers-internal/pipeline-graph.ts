@@ -47,14 +47,14 @@ export class PipelineGraph {
   private readonly added = new Map<Step, AGraphNode>();
   private readonly assetNodes = new Map<string, AGraphNode>();
   private readonly assetNodesByType = new Map<AssetType, AGraphNode>();
-  private readonly synthNode: AGraphNode;
+  private readonly synthNode?: AGraphNode;
   private readonly selfMutateNode?: AGraphNode;
   private readonly stackOutputDependencies = new DependencyBuilders<StackDeployment, any>();
   private readonly publishTemplate: boolean;
   private readonly prepareStep: boolean;
   private readonly singlePublisher: boolean;
 
-  private lastPreparationNode: AGraphNode;
+  private lastPreparationNode?: AGraphNode;
   private _fileAssetCtr = 0;
   private _dockerAssetCtr = 0;
 
@@ -65,9 +65,11 @@ export class PipelineGraph {
 
     this.queries = new PipelineQueries(pipeline);
 
-    this.synthNode = this.addBuildStep(pipeline.synth);
-    if (this.synthNode.data?.type === 'step') {
-      this.synthNode.data.isBuildStep = true;
+    if (pipeline.synth instanceof Step) {
+      this.synthNode = this.addBuildStep(pipeline.synth);
+      if (this.synthNode.data?.type === 'step') {
+        this.synthNode.data.isBuildStep = true;
+      }
     }
     this.lastPreparationNode = this.synthNode;
 

@@ -8,7 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
-import { CodePipelineSource, SynthStep } from '../../lib';
+import { CodePipelineSource, ScriptStep } from '../../lib';
 import { AppWithOutput, behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, PIPELINE_ENV, sortedByRunOrder, StageWithStackOutput, stringNoLongerThan, TestApp, TwoStackApp } from '../testhelpers';
 
 let app: TestApp;
@@ -306,7 +306,7 @@ behavior('can use additional output artifacts from build', (suite) => {
   });
 
   suite.modern(() => {
-    const synth = new SynthStep('Synth', {
+    const synth = new ScriptStep('Synth', {
       input: CodePipelineSource.github('test/test'),
       commands: ['synth'],
     });
