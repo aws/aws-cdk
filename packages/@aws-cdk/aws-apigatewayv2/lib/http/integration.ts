@@ -1,4 +1,5 @@
 /* eslint-disable quotes */
+import { IRole } from '@aws-cdk/aws-iam';
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
@@ -157,6 +158,68 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       };
     }
 
+    this.integrationId = integ.ref;
+    this.httpApi = props.httpApi;
+  }
+}
+
+/**
+ * Supported integration subtypes
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html
+ */
+export enum AwsServiceIntegrationType {
+  /**
+   * EventBridge PutEvents integration
+   */
+  EVENTBRIDGE_PUTEVENTS = 'EventBridge-PutEvents',
+}
+
+/**
+ * Integration-specific details about how the incoming payload is mapped to the integration.
+ */
+export abstract class IntegrationRequestMappingBase {
+}
+
+/**
+ * AWS Service integration properties.
+ */
+export interface AwsServiceIntegrationProps {
+  /**
+   * The HTTP API to which this integration should be bound.
+   */
+  readonly httpApi: IHttpApi;
+  /**
+   * The AWS integration subtype
+   */
+  readonly integrationSubType: AwsServiceIntegrationType;
+  /**
+   * The role with which to invoke the integration
+   */
+  readonly role: IRole;
+  /**
+   * Data mapping to the integration target
+   */
+  readonly requestMapping: IntegrationRequestMappingBase;
+}
+/**
+ * An AWS Service integration for an API route.
+ * @resource AWS::ApiGatewayV2::Integration
+ */
+export class AwsServiceIntegration extends Resource implements IHttpIntegration {
+  public readonly integrationId: string;
+
+  public readonly httpApi: IHttpApi;
+
+  constructor(scope: Construct, id: string, props: AwsServiceIntegrationProps) {
+    super(scope, id);
+    const integ = new CfnIntegration(this, 'AwsResource', {
+      apiId: props.httpApi.apiId,
+      integrationType: HttpIntegrationType.LAMBDA_PROXY,
+      integrationSubtype: props.integrationSubType,
+      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0.version,
+      credentialsArn: props.role.roleArn,
+      requestParameters: props.requestMapping,
+    });
     this.integrationId = integ.ref;
     this.httpApi = props.httpApi;
   }
