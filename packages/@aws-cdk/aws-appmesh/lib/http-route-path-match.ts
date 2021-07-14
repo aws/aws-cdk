@@ -151,21 +151,22 @@ export abstract class HttpGatewayRoutePathMatch {
    * @param exactPathRewrite the value to substitute for the matched part of the path of the gateway request URL
    */
   public static regex(regex: string, exactPathRewrite?: string): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRouteWholePathMatch({ regex: regex }, { exact: exactPathRewrite });
+    return new HttpGatewayRouteWholePathMatch({ regex }, { exact: exactPathRewrite });
   }
 
   /**
    * The value of the path must match the specified prefix.
    *
    * @param prefixPathMatch the value to use to match the beginning of the path part of the URL of the request.
-   *   When `prefixRewrite` is provided, `prefixPathMatch` must start and end with the '/' character.
+   *   When `rewriteTo` is provided, `prefixPathMatch` must start and end with the '/' character.
    *   If provided as "/", matches all requests.
    *   For example, if your virtual service name is "my-service.local"
    *   and you want the route to match requests to "my-service.local/metrics", your prefix should be "/metrics".
-   * @param prefixRewrite Specify either disabling automatic rewrite to '/' or rewriting to specified prefix path.
+   * @param rewriteTo Specify either disabling automatic rewrite to '/' or rewriting to specified prefix path.
+   *  To disable automatic rewrite, provide `''`.
    */
-  public static startsWith(prefixPathMatch: string, prefixRewrite?: HttpGatewayRoutePathRewrite): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRoutePrefixPathMatch(prefixPathMatch, prefixRewrite);
+  public static startsWith(prefixPathMatch: string, rewriteTo: string = '/'): HttpGatewayRoutePathMatch {
+    return new HttpGatewayRoutePrefixPathMatch(prefixPathMatch, rewriteTo);
   }
 
   /**
@@ -177,14 +178,27 @@ export abstract class HttpGatewayRoutePathMatch {
 class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly prefixPathMatch: string,
-    private readonly pathRewrite?: HttpGatewayRoutePathRewrite,
+    private readonly rewriteTo: string,
   ) { super(); }
 
-  bind(scope: Construct): HttpGatewayRoutePathMatchConfig {
-    return {
-      prefixPathMatch: this.prefixPathMatch,
-      prefixPathRewrite: this.pathRewrite?.bind(scope).prefixPathRewrite,
-    };
+  bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
+    return this.rewriteTo === ''
+      ? {
+        prefixPathMatch: this.prefixPathMatch,
+        prefixPathRewrite: {
+          defaultPrefix: 'DISABLED',
+        },
+      }
+      : this.rewriteTo === '/'
+        ? {
+          prefixPathMatch: this.prefixPathMatch,
+        }
+        : {
+          prefixPathMatch: this.prefixPathMatch,
+          prefixPathRewrite: {
+            value: this.rewriteTo,
+          },
+        };
   }
 }
 
@@ -198,58 +212,6 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
     return {
       wholePathMatch: this.wholePathMatch,
       wholePathRewrite: this.wholePathRewrite?.exact ? this.wholePathRewrite : undefined,
-    };
-  }
-}
-
-/**
- * The type returned from the `bind()` method in {@link HttpGatewayRoutePathRewrite}.
- */
-export interface HttpGatewayRoutePrefixPathRewriteConfig {
-  /**
-   * Gateway route configuration for rewriting the URL path of the request.
-   *
-   * @default - rewrites the request's URL path to '/'
-   */
-  readonly prefixPathRewrite?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
-}
-
-/**
- * Defines HTTP gateway route path rewrite based on the URL path of the request.
- */
-export abstract class HttpGatewayRoutePathRewrite {
-  /**
-   * The default prefix used to replace the incoming route prefix when rewritten.
-   * When enabled, rewrites the matched prefix in Gateway Route to '/'.
-   * When disabled, retains the original prefix from the request.
-   */
-  public static disableDefaultPrefix(): HttpGatewayRoutePathRewrite {
-    return new HttpGatewayRoutePrefixPathRewriteImpl({ defaultPrefix: 'DISABLED' });
-  }
-
-  /**
-   * Replace the incoming route prefix when rewritten.
-   *
-   * @param value the value used to replace the incoming route prefix when rewritten
-   */
-  public static customPrefix(value: string): HttpGatewayRoutePathRewrite {
-    return new HttpGatewayRoutePrefixPathRewriteImpl({ value: value } );
-  }
-
-  /**
-   * Return HTTP gateway route rewrite configuration.
-   */
-  abstract bind(scope: Construct): HttpGatewayRoutePrefixPathRewriteConfig;
-}
-
-class HttpGatewayRoutePrefixPathRewriteImpl extends HttpGatewayRoutePathRewrite {
-  constructor(
-    private readonly prefixRewrite: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty,
-  ) { super(); }
-
-  bind(_scope: Construct): HttpGatewayRoutePrefixPathRewriteConfig {
-    return {
-      prefixPathRewrite: this.prefixRewrite,
     };
   }
 }

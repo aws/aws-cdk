@@ -668,7 +668,7 @@ gateway.addGatewayRoute('gateway-route-http', {
     routeTarget: virtualService,
     match: {
       // This disables the default rewrite to '/', and retains original path.
-      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app/', appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix()),
+      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app/', ''),
     },
   }),
 });
@@ -677,8 +677,9 @@ gateway.addGatewayRoute('gateway-route-http-1', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      // If the request full path is '/path-to-app/xxxxx', this rewrites the path to '/rewrittenUri/xxxxx'
-      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app/', appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUri/')),    
+      // If the request full path is '/path-to-app/xxxxx', this rewrites the path to '/rewrittenUri/xxxxx'.
+      // Please note both `prefixPathMatch` and `rewriteTo` must start and end with the `/` character.
+      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app/', '/rewrittenUri/'),    
     },
   }),
 });

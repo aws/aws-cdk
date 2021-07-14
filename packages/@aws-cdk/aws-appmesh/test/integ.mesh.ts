@@ -343,7 +343,7 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/', appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix()),
+      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/', ''),
       hostname: appmesh.GatewayRouteHostnameMatch.exactly('example.com'),
       method: appmesh.HttpRouteMethod.POST,
       headers: [

@@ -306,7 +306,7 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              path: appmesh.HttpGatewayRoutePathMatch.startsWith('/test/', appmesh.HttpGatewayRoutePathRewrite.disableDefaultPrefix()),
+              path: appmesh.HttpGatewayRoutePathMatch.startsWith('/test/', ''),
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -317,10 +317,21 @@ export = {
           routeSpec: appmesh.GatewayRouteSpec.http2({
             routeTarget: virtualService,
             match: {
-              path: appmesh.HttpGatewayRoutePathMatch.startsWith('/test/', appmesh.HttpGatewayRoutePathRewrite.customPrefix('/rewrittenUri/')),
+              path: appmesh.HttpGatewayRoutePathMatch.startsWith('/test/', '/rewrittenUri/'),
             },
           }),
           gatewayRouteName: 'gateway-http2-route',
+        });
+
+        // Add an HTTP2 Route
+        virtualGateway.addGatewayRoute('gateway-http2-route-1', {
+          routeSpec: appmesh.GatewayRouteSpec.http2({
+            routeTarget: virtualService,
+            match: {
+              path: appmesh.HttpGatewayRoutePathMatch.startsWith('/test/'),
+            },
+          }),
+          gatewayRouteName: 'gateway-http2-route-1',
         });
 
         // THEN
@@ -349,6 +360,17 @@ export = {
                     Value: '/rewrittenUri/',
                   },
                 },
+              },
+            },
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http2-route-1',
+          Spec: {
+            Http2Route: {
+              Action: {
+                Rewrite: ABSENT,
               },
             },
           },

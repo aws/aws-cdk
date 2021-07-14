@@ -31,9 +31,7 @@ export abstract class GatewayRouteHostnameMatch {
    * @param name The exact host name to match on
    */
   public static exactly(name: string): GatewayRouteHostnameMatch {
-    return new GatewayRouteHostnameMatchImpl({
-      exact: name,
-    });
+    return new GatewayRouteHostnameMatchImpl({ exact: name });
   }
 
   /**
@@ -42,9 +40,7 @@ export abstract class GatewayRouteHostnameMatch {
    * @param suffix The specified ending characters of the host name to match on
    */
   public static endsWith(suffix: string): GatewayRouteHostnameMatch {
-    return new GatewayRouteHostnameMatchImpl({
-      suffix: suffix,
-    });
+    return new GatewayRouteHostnameMatchImpl({ suffix });
   }
 
   /**
