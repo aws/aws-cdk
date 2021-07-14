@@ -79,10 +79,6 @@ class HttpRoutePrefixPathMatch extends HttpRoutePathMatch {
 class HttpRouteWholePathMatch extends HttpRoutePathMatch {
   constructor(private readonly match: CfnRoute.HttpPathMatchProperty) {
     super();
-
-    if (this.match.exact && this.match.exact[0] !== '/') {
-      throw new Error(`Exact Path for the match must start with \'/\', got: ${this.match.exact}`);
-    }
   }
 
   bind(_scope: Construct): HttpRoutePathMatchConfig {
