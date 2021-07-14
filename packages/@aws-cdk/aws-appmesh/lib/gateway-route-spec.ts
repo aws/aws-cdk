@@ -154,7 +154,7 @@ export interface HttpGatewayRouteSpecOptions {
    * The criterion for determining a request match for this GatewayRoute.
    * When path match is defined, this may optionally determine the path rewrite configuration.
    *
-   * @default - matches on any path and automatically rewrites the path to '/'
+   * @default - matches any path and automatically rewrites the path to '/'
    */
   readonly match?: HttpGatewayRouteMatch;
 

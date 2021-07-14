@@ -154,20 +154,20 @@ export abstract class HttpGatewayRoutePathMatch {
    * The provided `path` must start with the '/' character.
    *
    * @param path the exact path to match on
-   * @param exactPathRewrite the value to substitute for the matched part of the path of the gateway request URL
+   * @param rewriteTo the value to substitute for the matched part of the path of the gateway request URL
    */
-  public static exactly(path: string, exactPathRewrite?: string): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRouteWholePathMatch({ exact: path }, { exact: exactPathRewrite });
+  public static exactly(path: string, rewriteTo?: string): HttpGatewayRoutePathMatch {
+    return new HttpGatewayRouteWholePathMatch({ exact: path }, rewriteTo ? { exact: rewriteTo } : undefined);
   }
 
   /**
    * The value of the path must match the specified regex.
    *
    * @param regex the regex used to match the path
-   * @param exactPathRewrite the value to substitute for the matched part of the path of the gateway request URL
+   * @param rewriteTo the value to substitute for the matched part of the path of the gateway request URL
    */
-  public static regex(regex: string, exactPathRewrite?: string): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRouteWholePathMatch({ regex }, { exact: exactPathRewrite });
+  public static regex(regex: string, rewriteTo?: string): HttpGatewayRoutePathMatch {
+    return new HttpGatewayRouteWholePathMatch({ regex }, rewriteTo ? { exact: rewriteTo } : undefined);
   }
 
   /**
@@ -201,23 +201,13 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
   }
 
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
-    return this.rewriteTo === ''
-      ? {
-        prefixPathMatch: this.prefixPathMatch,
-        prefixPathRewrite: {
-          defaultPrefix: 'DISABLED',
-        },
-      }
-      : this.rewriteTo === '/'
-        ? {
-          prefixPathMatch: this.prefixPathMatch,
-        }
-        : {
-          prefixPathMatch: this.prefixPathMatch,
-          prefixPathRewrite: {
-            value: this.rewriteTo,
-          },
-        };
+    return {
+      prefixPathMatch: this.prefixPathMatch,
+      prefixPathRewrite: this.rewriteTo === '/' ? undefined : {
+        defaultPrefix: this.rewriteTo === '' ? 'DISABLED' : undefined,
+        value: this.rewriteTo === '' ? undefined : this.rewriteTo,
+      },
+    };
   }
 }
 
@@ -228,7 +218,7 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
   ) {
     super();
 
-    if (this.wholePathMatch?.exact && this.wholePathMatch.exact[0] !== '/') {
+    if (this.wholePathMatch.exact && this.wholePathMatch.exact[0] !== '/') {
       throw new Error(`Exact Path for the match must start with \'/\', got: ${ this.wholePathMatch.exact }`);
     }
     if (this.wholePathRewrite?.exact && this.wholePathRewrite.exact[0] !== '/') {
@@ -239,7 +229,7 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
       wholePathMatch: this.wholePathMatch,
-      wholePathRewrite: this.wholePathRewrite?.exact ? this.wholePathRewrite : undefined,
+      wholePathRewrite: this.wholePathRewrite,
     };
   }
 }
