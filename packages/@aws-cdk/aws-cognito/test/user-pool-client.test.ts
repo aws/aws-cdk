@@ -1,5 +1,6 @@
 import { Match, TemplateAssertions } from '@aws-cdk/assertions';
 import { Stack, Duration } from '@aws-cdk/core';
+import * as pinpoint from '@aws-cdk/aws-pinpoint';
 import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
 
 describe('User Pool Client', () => {
@@ -884,6 +885,37 @@ describe('User Pool Client', () => {
           'preferred_username', 'profile', 'updated_at', 'website', 'zoneinfo']),
         WriteAttributes: Match.arrayWith(['custom:my_first', 'family_name', 'given_name']),
       });
+    });
+  });
+
+  test('Analytics', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const pinpointApp = new pinpoint.CfnApp(stack, 'PinpointApp');
+
+    // WHEN
+    pool.addClient('Client', {
+      userPoolClientName: 'Client',
+      analytics: {
+        application: pinpointApp,
+        userDataShared: true,
+      },
+      accessTokenValidity: Duration.minutes(60),
+      idTokenValidity: Duration.minutes(60),
+      refreshTokenValidity: Duration.days(30),
+    });
+
+    // THEN
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client',
+      AccessTokenValidity: 60,
+      IdTokenValidity: 60,
+      RefreshTokenValidity: 43200,
+      TokenValidityUnits: {
+        AccessToken: 'minutes',
+        IdToken: 'minutes',
+        RefreshToken: 'minutes',
+      },
     });
   });
 });

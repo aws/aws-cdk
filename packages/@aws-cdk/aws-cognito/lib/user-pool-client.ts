@@ -1,4 +1,5 @@
-import { IResource, Resource, Duration } from '@aws-cdk/core';
+import { IRole, IResource, Resource, Duration } from '@aws-cdk/core';
+import * as pinpoint from '@aws-cdk/aws-pinpoint'
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
@@ -154,6 +155,36 @@ export class OAuthScope {
 }
 
 /**
+ * Analytics configuration for the user pool client.
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html
+ */
+ export interface UserPoolClientAnalytics {
+  /**
+   * The pinpoint application to map to the user pool client.
+   * @default - no trigger configured
+   */
+   readonly application: pinpoint.CfnApp;
+
+  /**
+   * The external ID.
+   * @default - automatically generated ID by CloudFormation at deploy time
+   */
+   readonly externalId?: string;
+
+  /**
+   * An IAM role that authorizes Amazon Cognito to publish events to Amazon Pinpoint analytics.
+   * @default - automatically generated role by CloudFormation at deploy time
+   */
+   readonly role?: IRole;
+
+  /**
+   * Include user data in the events published to Amazon Pinpoint analytics.
+   * @default false
+   */
+   readonly userDataShared?: boolean;
+}
+
+/**
  * Identity providers supported by the UserPoolClient
  */
 export class UserPoolClientIdentityProvider {
@@ -246,6 +277,13 @@ export interface UserPoolClientOptions {
    * @default true for new stacks
    */
   readonly preventUserExistenceErrors?: boolean;
+
+  /**
+   * The Amazon Pinpoint analytics configuration for collecting metrics for a user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html
+   * @default - No analytics configuration.
+   */
+   readonly analytics?: UserPoolClientAnalytics;
 
   /**
    * The list of identity providers that users should be able to use to sign in using this client.
@@ -381,6 +419,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       supportedIdentityProviders: this.configureIdentityProviders(props),
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
+      analyticsConfiguration: this.configureAnalytics(props),
     });
     this.configureTokenValidity(resource, props);
 
@@ -397,6 +436,19 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       throw new Error('userPoolClientName is available only if specified on the UserPoolClient during initialization');
     }
     return this._userPoolClientName;
+  }
+
+  private configureAnalytics(props: UserPoolClientProps): CfnUserPoolClient.AnalyticsConfigurationProperty | undefined {
+    if (!props.analytics) {
+      return undefined;
+    }
+
+    return {
+      applicationId: props.analytics.application.ref,
+      externalId: props.analytics.externalId,
+      userDataShared: props.analytics.userDataShared,
+      roleArn: props.analytics.role ? props.analytics.role.roleArn : undefined,
+    };
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {

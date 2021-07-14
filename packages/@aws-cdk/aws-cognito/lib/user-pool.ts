@@ -1,5 +1,6 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { CfnApp as PinpointApp } from '@aws-cdk/aws-pinpoint'
 import { Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
