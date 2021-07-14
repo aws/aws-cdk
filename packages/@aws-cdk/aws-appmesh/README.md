@@ -659,7 +659,7 @@ gateway.addGatewayRoute('gateway-route-grpc', {
 });
 ```
 
-For HTTP based gateway routes, App Mesh automatically rewrites the matched path in Gateway Route to “/”.
+For HTTP based gateway routes, App Mesh automatically rewrites the matched prefix path in Gateway Route to “/”.
 This automatic rewrite configuration can be overwritten in following ways:
 
 ```ts
@@ -683,7 +683,11 @@ gateway.addGatewayRoute('gateway-route-http-1', {
     },
   }),
 });
+```
 
+If matching other path (exact or regex), no automatic rewrite is performed and only specific rewrite path can be specified.
+
+```ts
 gateway.addGatewayRoute('gateway-route-http-2', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
