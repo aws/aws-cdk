@@ -59,7 +59,7 @@ describe('with empty existing CodePipeline', () => {
       new cdkp.CodePipeline(pipelineStack, 'Cdk', {
         codePipeline,
         synth: new cdkp.ScriptStep('Synth', {
-          input: cdkp.CodePipelineSource.github('test/test'),
+          input: cdkp.CodePipelineSource.gitHub('test/test'),
           commands: ['true'],
         }),
       });

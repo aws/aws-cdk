@@ -252,7 +252,7 @@ In CodePipeline, *Sources* define where the source of your application lives.
 When a change to the source is detected, the pipeline will start executing.
 Sources objects can be created by factory methods on the `CodePipelineSource` class:
 
-* `CodePipelineSource.github('org/repo', { branch, authentication })`: use a
+* `CodePipelineSource.gitHub('org/repo', { branch, authentication })`: use a
   GitHub respository as the source. By default, it assumes your GitHub OAuth
   token lives in a Secret in Secrets Manager with the name `github-token`.
   You can override that by passing the `authentication` property.
