@@ -1988,7 +1988,6 @@ describe('cluster', () => {
   });
 });
 
-
 test.each([
   [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
   [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', ABSENT],
