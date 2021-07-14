@@ -1,8 +1,13 @@
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cp_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as codecommit from '@aws-cdk/aws-codecommit'
 import { SecretValue, Token } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam'
 import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from "@aws-cdk/aws-codepipeline-actions";
+import { IBucket } from "@aws-cdk/aws-s3";
+import { Artifact } from "@aws-cdk/aws-codepipeline";
 
 /**
  * CodePipeline source steps
@@ -53,10 +58,75 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
     return new GitHubSource(repoString, props);
   }
 
+  /**
+   * Returns an S3 source.
+   *
+   * @param bucket The bucket where the source code is located.
+   * @param props The options, which include the key that identifies the source code file and
+   * and how the pipeline should be triggered.
+   *
+   * Example:
+   *
+   * ```ts
+   * const bucket: IBucket = ...
+   * CodePipelineSource.s3(bucket, {
+   *   key: 'path/to/file.zip',
+   * });
+   * ```
+   */
+  public static s3(bucket: IBucket, props: S3SourceOptions): CodePipelineSource {
+    return new S3Source(bucket, props);
+  }
+
+  /**
+   * Returns a CodeStar source.
+   *
+   * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo')
+   * @param props The source properties, including the branch and connection ARN.
+   *
+   * Example:
+   *
+   * ```ts
+   * CodePipelineSource.codeStar('owner/repo', {
+   *   branch: 'main',
+   *   connectionArn: ..., // Created in the console, to connect to GitHub or BitBucket
+   * });
+   * ```
+   */
+  public static codeStar(repoString: string, props: CodeStarSourceOptions): CodePipelineSource {
+    return new CodeStarSource(repoString, props);
+  }
+
+  /**
+   * Returns a CodeCommit source.
+   *
+   * @param repository The CodeCommit repository.
+   * @param props The source properties, including the branch.
+   *
+   * Example:
+   *
+   * ```ts
+   * const repository: IRepository = ...
+   * CodePipelineSource.codeCommit(repository, {
+   *   branch: 'main',
+   * });
+   * ```
+   */
+  public static codeCommit(repository: codecommit.IRepository, props: CodeCommitSourceOptions): CodePipelineSource {
+    return new CodeCommitSource(repository, props);
+  }
+
   // tells `PipelineGraph` to hoist a "Source" step
   public readonly isSource = true;
 
-  public abstract produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult;
+  public produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
+    const output = options.artifacts.toCodePipeline(this.primaryOutput!);
+    const action = this.getAction(output, options.actionName, options.runOrder);
+    stage.addAction(action);
+    return { runOrdersConsumed: 1 };
+  }
+
+  protected abstract getAction(output: Artifact, actionName: string, runOrder: number): Action;
 }
 
 /**
@@ -90,6 +160,21 @@ export interface GitHubSourceOptions {
    * @default - SecretValue.secretsManager('github-token')
    */
   readonly authentication?: SecretValue;
+
+  /**
+   * How AWS CodePipeline should be triggered
+   *
+   * With the default value "WEBHOOK", a webhook is created in GitHub that triggers the action
+   * With "POLL", CodePipeline periodically checks the source for changes
+   * With "None", the action is not triggered through changes in the source
+   *
+   * To use `WEBHOOK`, your GitHub Personal Access Token should have
+   * **admin:repo_hook** scope (in addition to the regular **repo** scope).
+   *
+   * @default GitHubTrigger.WEBHOOK
+   */
+  readonly trigger?: GitHubTrigger;
+
 }
 
 /**
@@ -101,7 +186,7 @@ class GitHubSource extends CodePipelineSource {
   private readonly branch: string;
   private readonly authentication: SecretValue;
 
-  constructor(repoString: string, props: GitHubSourceOptions) {
+  constructor(repoString: string, readonly props: GitHubSourceOptions) {
     super(repoString);
 
     const parts = repoString.split('/');
@@ -115,18 +200,190 @@ class GitHubSource extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  public produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
-    stage.addAction(new cp_actions.GitHubSourceAction({
-      actionName: options.actionName,
+  protected getAction(output: Artifact, actionName: string, runOrder: number) {
+    return new cp_actions.GitHubSourceAction({
+      output,
+      actionName,
+      runOrder,
       oauthToken: this.authentication,
-      output: options.artifacts.toCodePipeline(this.primaryOutput!),
       owner: this.owner,
       repo: this.repo,
       branch: this.branch,
-      runOrder: options.runOrder,
-      trigger: cp_actions.GitHubTrigger.WEBHOOK,
-    }));
+      trigger: this.props.trigger,
+    });
+  }
+}
 
-    return { runOrdersConsumed: 1 };
+/**
+ * Options for S3 sources
+ */
+export interface S3SourceOptions {
+  /**
+   * The key within the S3 bucket that stores the source code.
+   *
+   * @example 'path/to/file.zip'
+   */
+  readonly bucketKey: string;
+
+  /**
+   * How should CodePipeline detect source changes for this Action.
+   * Note that if this is S3Trigger.EVENTS, you need to make sure to include the source Bucket in a CloudTrail Trail,
+   * as otherwise the CloudWatch Events will not be emitted.
+   *
+   * @default S3Trigger.POLL
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/log-s3-data-events.html
+   */
+  readonly trigger?: S3Trigger;
+}
+
+class S3Source extends CodePipelineSource {
+  public primaryOutput?: FileSet | undefined;
+
+  constructor(readonly bucket: IBucket, readonly props: S3SourceOptions) {
+    super(bucket.bucketName);
+
+    this.primaryOutput = new FileSet('Source', this);
+  }
+
+  protected getAction(output: Artifact, actionName: string, runOrder: number) {
+    return new cp_actions.S3SourceAction({
+      output,
+      actionName,
+      runOrder,
+      bucketKey: this.props.bucketKey,
+      trigger: this.props.trigger,
+      bucket: this.bucket,
+    });
+  }
+}
+
+export interface CodeStarSourceOptions {
+  /**
+   * The ARN of the CodeStar Connection created in the AWS console
+   * that has permissions to access this GitHub or BitBucket repository.
+   *
+   * @example 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh'
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/connections-create.html
+   */
+  readonly connectionArn: string;
+
+
+  // long URL in @see
+  /**
+   * Whether the output should be the contents of the repository
+   * (which is the default),
+   * or a link that allows CodeBuild to clone the repository before building.
+   *
+   * **Note**: if this option is true,
+   * then only CodeBuild actions can use the resulting {@link output}.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#action-reference-CodestarConnectionSource-config
+   */
+  readonly codeBuildCloneOutput?: boolean;
+
+  /**
+   * Controls automatically starting your pipeline when a new commit
+   * is made on the configured repository and branch. If unspecified,
+   * the default value is true, and the field does not display by default.
+   *
+   * @default true
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html
+   */
+  readonly triggerOnPush?: boolean;
+
+  /**
+   * The branch to use.
+   */
+  readonly branch: string;
+}
+
+class CodeStarSource extends CodePipelineSource {
+  public primaryOutput?: FileSet | undefined;
+  private readonly owner: string;
+  private readonly repo: string;
+
+  constructor(repoString: string, readonly props: CodeStarSourceOptions) {
+    super(repoString);
+
+    const parts = repoString.split('/');
+    if (parts.length !== 2) {
+      throw new Error(`CodeStar repository name should look like '<owner>/<repo>', got '${repoString}'`);
+    }
+    this.owner = parts[0];
+    this.repo = parts[1];
+    this.primaryOutput = new FileSet('Source', this);
+  }
+
+  protected getAction(output: Artifact, actionName: string, runOrder: number) {
+    return new cp_actions.CodeStarConnectionsSourceAction({
+      output,
+      actionName,
+      runOrder,
+      connectionArn: this.props.connectionArn,
+      owner: this.owner,
+      repo: this.repo,
+      branch: this.props.branch,
+      codeBuildCloneOutput: this.props.codeBuildCloneOutput,
+      triggerOnPush: this.props.triggerOnPush,
+    })
+  }
+}
+
+export interface CodeCommitSourceOptions {
+  /**
+   * The branch to use.
+   */
+  readonly branch: string;
+
+  /**
+   * How should CodePipeline detect source changes for this Action.
+   *
+   * @default CodeCommitTrigger.EVENTS
+   */
+  readonly trigger?: CodeCommitTrigger;
+
+  /**
+   * Role to be used by on commit event rule.
+   * Used only when trigger value is CodeCommitTrigger.EVENTS.
+   *
+   * @default a new role will be created.
+   */
+  readonly eventRole?: iam.IRole;
+
+  /**
+   * Whether the output should be the contents of the repository
+   * (which is the default),
+   * or a link that allows CodeBuild to clone the repository before building.
+   *
+   * **Note**: if this option is true,
+   * then only CodeBuild actions can use the resulting {@link output}.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
+   */
+  readonly codeBuildCloneOutput?: boolean;
+}
+
+class CodeCommitSource extends CodePipelineSource {
+  public primaryOutput?: FileSet | undefined;
+
+  constructor(readonly repository: codecommit.IRepository, readonly props: CodeCommitSourceOptions) {
+    super(repository.repositoryName);
+
+    this.primaryOutput = new FileSet('Source', this);
+  }
+
+  protected getAction(output: Artifact, actionName: string, runOrder: number) {
+    return new cp_actions.CodeCommitSourceAction({
+      output,
+      actionName,
+      runOrder,
+      branch: this.props.branch,
+      trigger: this.props.trigger,
+      repository: this.repository,
+      eventRole: this.props.eventRole,
+      codeBuildCloneOutput: this.props.codeBuildCloneOutput,
+    });
   }
 }
