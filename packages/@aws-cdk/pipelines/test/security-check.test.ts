@@ -238,7 +238,13 @@ behavior('checkBroadeningPermissions and notification topic options generates th
             {
               Configuration: {
                 ProjectName: { Ref: 'CdkPipelineApplicationSecurityCheckCDKSecurityCheckE8A1395F' },
-                EnvironmentVariables: '[{"name":"STACK_NAME","type":"PLAINTEXT","value":"PipelineSecurityStack"},{"name":"STAGE_NAME","type":"PLAINTEXT","value":"MyStack"},{"name":"ACTION_NAME","type":"PLAINTEXT","value":"MyStackManualApproval"}]',
+                EnvironmentVariables: {
+                  'Fn::Join': ['', [
+                    '[{"name":"STACK_NAME","type":"PLAINTEXT","value":"PipelineSecurityStack"},{"name":"STAGE_NAME","type":"PLAINTEXT","value":"MyStack"},{"name":"ACTION_NAME","type":"PLAINTEXT","value":"MyStackManualApproval"},{"name":"NOTIFICATION_ARN","type":"PLAINTEXT","value":"',
+                    { Ref: 'NotificationTopicEB7A0DF1' },
+                    '"},{"name":"NOTIFICATION_SUBJECT","type":"PLAINTEXT","value":"Security Changes detected in MyStack"}]',
+                  ]],
+                },
               },
               Name: 'MyStackSecurityCheck',
               Namespace: 'MyStackSecurityCheck',
@@ -246,7 +252,6 @@ behavior('checkBroadeningPermissions and notification topic options generates th
             },
             {
               Configuration: {
-                NotificationArn: { Ref: 'NotificationTopicEB7A0DF1' },
                 CustomData: '#{MyStackSecurityCheck.MESSAGE}',
                 ExternalEntityLink: 'https://#{MyStackSecurityCheck.LINK}',
               },

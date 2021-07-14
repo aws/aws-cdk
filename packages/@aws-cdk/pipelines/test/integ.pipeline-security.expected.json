@@ -427,7 +427,18 @@
                   "ProjectName": {
                     "Ref": "UnattachedStageStageApplicationSecurityCheckCDKSecurityCheckADCE795B"
                   },
-                  "EnvironmentVariables": "[{\"name\":\"STACK_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"UnattachedStage\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SingleStageManualApproval\"}]"
+                  "EnvironmentVariables": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "[{\"name\":\"STACK_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"UnattachedStage\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SingleStageManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
+                        {
+                          "Ref": "SecurityChangesTopic9762A9B3"
+                        },
+                        "\"},{\"name\":\"NOTIFICATION_SUBJECT\",\"type\":\"PLAINTEXT\",\"value\":\"Security Changes detected in SingleStage\"}]"
+                      ]
+                    ]
+                  }
                 },
                 "InputArtifacts": [
                   {
@@ -452,9 +463,6 @@
                   "Version": "1"
                 },
                 "Configuration": {
-                  "NotificationArn": {
-                    "Ref": "SecurityChangesTopic9762A9B3"
-                  },
                   "CustomData": "#{SingleStageSecurityCheck.MESSAGE}",
                   "ExternalEntityLink": "https://#{SingleStageSecurityCheck.LINK}"
                 },
@@ -556,7 +564,18 @@
                   "ProjectName": {
                     "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckBEE4547C"
                   },
-                  "EnvironmentVariables": "[{\"name\":\"STACK_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProductionManualApproval\"}]"
+                  "EnvironmentVariables": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "[{\"name\":\"STACK_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProductionManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
+                        {
+                          "Ref": "SecurityChangesTopic9762A9B3"
+                        },
+                        "\"},{\"name\":\"NOTIFICATION_SUBJECT\",\"type\":\"PLAINTEXT\",\"value\":\"Security Changes detected in PreProduction\"}]"
+                      ]
+                    ]
+                  }
                 },
                 "InputArtifacts": [
                   {
@@ -604,7 +623,18 @@
                   "ProjectName": {
                     "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckBEE4547C"
                   },
-                  "EnvironmentVariables": "[{\"name\":\"STACK_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SafeProductionManualApproval\"}]"
+                  "EnvironmentVariables": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "[{\"name\":\"STACK_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SafeProductionManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
+                        {
+                          "Ref": "SecurityChangesTopic9762A9B3"
+                        },
+                        "\"},{\"name\":\"NOTIFICATION_SUBJECT\",\"type\":\"PLAINTEXT\",\"value\":\"Security Changes detected in SafeProduction\"}]"
+                      ]
+                    ]
+                  }
                 },
                 "InputArtifacts": [
                   {
@@ -1438,29 +1468,6 @@
         }
       }
     },
-    "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleDefaultPolicy6B046282": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "SecurityChangesTopic9762A9B3"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleDefaultPolicy6B046282",
-        "Roles": [
-          {
-            "Ref": "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleF7A614C8"
-          }
-        ]
-      }
-    },
     "TestPipelinePreProductionPreProductionSecurityCheckCodePipelineActionRole4E54C194": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1784,7 +1791,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-          "S3Key": "008f0c3787ba4cb601fa66230d19768fcaa40c78d4953f8455655327983f7e96.zip"
+          "S3Key": "de9fa0635fb1000034351832ca080b40da856b0eaa4e46bb96c03d3b9032b85f.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1793,8 +1800,8 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "python3.8",
-        "Timeout": 30
+        "Runtime": "nodejs14.x",
+        "Timeout": 300
       },
       "DependsOn": [
         "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApproveServiceRoleDefaultPolicyE47AE90F",
@@ -1891,10 +1898,16 @@
               }
             },
             {
-              "Action": [
-                "cloudformation:DescribeStacks",
-                "cloudformation:GetTemplate"
-              ],
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "ForAnyValue:StringEquals": {
+                  "iam:ResourceTag/aws-cdk:bootstrap-role": [
+                    "image-publishing",
+                    "file-publishing",
+                    "deploy"
+                  ]
+                }
+              },
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -1906,6 +1919,13 @@
                   "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApprove1EE0AA81",
                   "Arn"
                 ]
+              }
+            },
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "SecurityChangesTopic9762A9B3"
               }
             },
             {
@@ -2005,7 +2025,7 @@
                 {
                   "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApprove1EE0AA81"
                 },
-                " --invocation-type Event --payload \\\"$payload\\\" lambda.out; export MESSAGE='No changes detected.'; else export MESSAGE=\\\"Changes detected! Requires Manual Approval\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
+                " --invocation-type Event --payload \\\"$payload\\\" lambda.out; export MESSAGE=\\\"No changes detected.\\\"; else [[ -z \\\"${NOTIFICATION_ARN}\\\" ]] && aws sns publish --topic-arn $NOTIFICATION_ARN --subject \\\"$NOTIFICATION_SUBJECT\\\" --message \\\"Changes detected! Requires Manual Approval.\\n\\n$LINK\\\"; export MESSAGE=\\\"Changes detected! Requires Manual Approval\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
               ]
             ]
           },
@@ -2084,7 +2104,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-          "S3Key": "008f0c3787ba4cb601fa66230d19768fcaa40c78d4953f8455655327983f7e96.zip"
+          "S3Key": "de9fa0635fb1000034351832ca080b40da856b0eaa4e46bb96c03d3b9032b85f.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -2093,8 +2113,8 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "python3.8",
-        "Timeout": 30
+        "Runtime": "nodejs14.x",
+        "Timeout": 300
       },
       "DependsOn": [
         "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApproveServiceRoleDefaultPolicy5AF69BD3",
@@ -2191,10 +2211,16 @@
               }
             },
             {
-              "Action": [
-                "cloudformation:DescribeStacks",
-                "cloudformation:GetTemplate"
-              ],
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "ForAnyValue:StringEquals": {
+                  "iam:ResourceTag/aws-cdk:bootstrap-role": [
+                    "image-publishing",
+                    "file-publishing",
+                    "deploy"
+                  ]
+                }
+              },
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -2206,6 +2232,13 @@
                   "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApprove249F82F9",
                   "Arn"
                 ]
+              }
+            },
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "SecurityChangesTopic9762A9B3"
               }
             },
             {
@@ -2305,7 +2338,7 @@
                 {
                   "Ref": "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApprove249F82F9"
                 },
-                " --invocation-type Event --payload \\\"$payload\\\" lambda.out; export MESSAGE='No changes detected.'; else export MESSAGE=\\\"Changes detected! Requires Manual Approval\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
+                " --invocation-type Event --payload \\\"$payload\\\" lambda.out; export MESSAGE=\\\"No changes detected.\\\"; else [[ -z \\\"${NOTIFICATION_ARN}\\\" ]] && aws sns publish --topic-arn $NOTIFICATION_ARN --subject \\\"$NOTIFICATION_SUBJECT\\\" --message \\\"Changes detected! Requires Manual Approval.\\n\\n$LINK\\\"; export MESSAGE=\\\"Changes detected! Requires Manual Approval\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
               ]
             ]
           },
