@@ -152,3 +152,88 @@ export class SQSSendMessageIntegration implements IHttpRouteIntegration {
     };
   }
 }
+
+export enum SQSAttribute {
+  ALL = 'All',
+  POLICY = 'Policy',
+  VISIBILITY_TIMEOUT = 'VisibilityTimeout',
+  MAXIMUM_MESSAGE_SIZE = 'MaximumMessageSize',
+  MESSAGE_RETENTION_PERIOD = 'MessageRetentionPeriod',
+  APPROXIMATE_NUMBER_OF_MESSAGES = 'ApproximateNumberOfMessages',
+  APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE = 'ApproximateNumberOfMessagesNotVisible',
+  CREATED_TIMESTAMP = 'CreatedTimestamp',
+  LAST_MODIFIED_TIMESTAMP = 'LastModifiedTimestamp',
+  QUEUE_ARN = 'QueueArn',
+  APPROXIMATE_NUMBER_OF_MESSAGES_DELAYED = 'ApproximateNumberOfMessagesDelayed',
+  DELAY_SECONDS = 'DelaySeconds',
+  RECEIVE_MESSAGE_WAIT_TIME_SECONDS = 'ReceiveMessageWaitTimeSeconds',
+  REDRIVE_POLICY = 'RedrivePolicy',
+  FIFO_QUEUE = 'FifoQueue',
+  CONTENT_BASED_DEDUPLICATION = 'ContentBasedDeduplication',
+  KMS_MASTER_KEY_ID = 'KmsMasterKeyId',
+  KMS_DATA_KEY_REUSE_PERIOD_SECONDS = 'KmsDataKeyReusePeriodSeconds',
+  DEDUPLICATION_SCOPE = 'DeduplicationScope',
+  FIFO_THROUGHPUT_LIMIT = 'FifoThroughputLimit',
+}
+
+export interface SQSReceiveMessageIntegrationProps extends SQSIntegrationProps {
+  /**
+   * The Queue to read messages from.
+   */
+  readonly queue: IQueue;
+  /**
+   * The attributes to return.
+   * @default - undefined
+   */
+  readonly attributeNames?: Array<SQSAttribute>;
+  /**
+   * The maximum number of messages to receive.
+   * Valid values: 1 to 10.
+   * @default - 1
+   */
+  readonly maxNumberOfMessages?: number;
+  /**
+   * The message attributes to return
+   * @default - undefined
+   */
+  readonly messageAttributeNames?: Array<string>;
+  /**
+   * The token used for deduplication of ReceiveMessage calls.
+   * Only applicable to FIFO queues.
+   * @default - undefined
+   */
+  readonly receiveRequestAttemptId?: string;
+  /**
+   * The duration that the received messages are hidden from subsequent retrieve requests after
+   * being retrieved by a ReceiveMessage request.
+   * @default - undefined
+   */
+  readonly visibilityTimeout?: Duration;
+  /**
+   * The duration for which the call waits for a message to arrive in the queue before returning.
+   * @default - undefined
+   */
+  readonly waitTime?: Duration;
+}
+
+export class SQSReceiveMessageIntegration implements IHttpRouteIntegration {
+  constructor(private readonly props: SQSReceiveMessageIntegrationProps) { }
+  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    return {
+      type: HttpIntegrationType.LAMBDA_PROXY,
+      subtype: HttpIntegrationSubtype.SQS_RECEIVEMESSAGE,
+      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+      credentials: this.props.credentials,
+      requestParameters: {
+        QueueUrl: this.props.queue.queueUrl,
+        AttributeNames: this.props.attributeNames,
+        MaxNumberOfMessages: this.props.maxNumberOfMessages,
+        MessageAttributeNames: this.props.messageAttributeNames,
+        ReceiveRequestAttemptId: this.props.receiveRequestAttemptId,
+        VisibilityTimeout: this.props.visibilityTimeout?.toSeconds(),
+        WaitTimeSeconds: this.props.waitTime?.toSeconds(),
+        Region: this.props.region,
+      },
+    };
+  }
+}

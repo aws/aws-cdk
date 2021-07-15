@@ -4,7 +4,7 @@ import { HttpApi, HttpRoute, HttpRouteKey, IntegrationCredentials } from '@aws-c
 import { Role } from '@aws-cdk/aws-iam';
 import { Queue } from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
-import { SQSSendMessageIntegration } from '../../lib/http/aws-proxy';
+import { SQSAttribute, SQSReceiveMessageIntegration, SQSSendMessageIntegration } from '../../lib/http/aws-proxy';
 
 describe('SQS Integrations', () => {
   describe('SendMessage', () => {
@@ -79,6 +79,57 @@ describe('SQS Integrations', () => {
           MessageSystemAttributes: 'system-attrs',
         },
       });
+    });
+  });
+
+  test('ReceiveMessage', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'API');
+    const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/sqs-receive');
+    const queue = Queue.fromQueueArn(stack, 'Queue', 'arn:aws:sqs:us-west-1:123456789012:receive-queue.fifo');
+
+    new HttpRoute(stack, 'Route', {
+      httpApi: api,
+      integration: new SQSReceiveMessageIntegration({
+        credentials: IntegrationCredentials.fromRole(role),
+        queue,
+        attributeNames: [SQSAttribute.ALL],
+        maxNumberOfMessages: 2,
+        messageAttributeNames: ['Attribute1'],
+        receiveRequestAttemptId: 'rra-id',
+        visibilityTimeout: Duration.seconds(30),
+        waitTime: Duration.seconds(4),
+        region: 'eu-central-1',
+      }),
+      routeKey: HttpRouteKey.DEFAULT,
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: 'AWS_PROXY',
+      IntegrationSubtype: 'SQS-ReceiveMessage',
+      PayloadFormatVersion: '1.0',
+      CredentialsArn: 'arn:aws:iam::123456789012:role/sqs-receive',
+      RequestParameters: {
+        QueueUrl: {
+          'Fn::Join': [
+            '',
+            [
+              'https://sqs.us-west-1.',
+              {
+                Ref: 'AWS::URLSuffix',
+              },
+              '/123456789012/receive-queue.fifo',
+            ],
+          ],
+        },
+        AttributeNames: ['All'],
+        MaxNumberOfMessages: 2,
+        MessageAttributeNames: ['Attribute1'],
+        ReceiveRequestAttemptId: 'rra-id',
+        VisibilityTimeout: 30,
+        WaitTimeSeconds: 4,
+        Region: 'eu-central-1',
+      },
     });
   });
 });
