@@ -73,7 +73,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^26.0.24",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "jest": "^26.6.3",
@@ -110,7 +110,8 @@
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterValue",
       "props-physical-name:@aws-cdk/aws-redshift.ClusterParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-redshift.ClusterSubnetGroupProps",
-      "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps"
+      "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps",
+      "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterId"
     ]
   },
   "stability": "experimental",
