@@ -188,6 +188,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       service: 'firehose',
       resource: 'deliverystream',
       resourceName: attrs.deliveryStreamName,
+      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
     class Import extends DeliveryStreamBase {
       public readonly deliveryStreamName = deliveryStreamName!;
