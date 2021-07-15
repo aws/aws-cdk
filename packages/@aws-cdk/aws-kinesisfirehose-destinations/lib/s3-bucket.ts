@@ -1,4 +1,3 @@
-import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -18,23 +17,18 @@ export class S3Bucket extends firehose.DestinationBase {
   }
 
   bind(scope: Construct, options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+
+    this.bucket.grantReadWrite(options.deliveryStream);
+
+    const s3ExtendedConfig: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty = {
+      cloudWatchLoggingOptions: this.createLoggingOptions(scope, options.deliveryStream, 'S3Destination'),
+      roleArn: options.role.roleArn,
+      bucketArn: this.bucket.bucketArn,
+    };
     return {
       properties: {
-        extendedS3DestinationConfiguration: this.createExtendedS3DestinationConfiguration(scope, options.deliveryStream, options.role),
+        extendedS3DestinationConfiguration: s3ExtendedConfig,
       },
-    };
-  }
-
-  private createExtendedS3DestinationConfiguration(
-    scope: Construct,
-    deliveryStream: firehose.IDeliveryStream,
-    role: iam.IRole,
-  ): CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty {
-    this.bucket.grantReadWrite(deliveryStream);
-    return {
-      cloudWatchLoggingOptions: this.createLoggingOptions(scope, deliveryStream, 'S3Destination'),
-      roleArn: role.roleArn,
-      bucketArn: this.bucket.bucketArn,
     };
   }
 }
