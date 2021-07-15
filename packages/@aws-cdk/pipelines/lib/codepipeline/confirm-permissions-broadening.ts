@@ -65,7 +65,7 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
       actionName: approveActionName,
       runOrder: options.runOrder + 1,
       additionalInformation: `#{${variablesNamespace}.MESSAGE}`,
-      externalEntityLink: `https://#{${variablesNamespace}.LINK}`,
+      externalEntityLink: `#{${variablesNamespace}.LINK}`,
     }));
 
     return { runOrdersConsumed: 2 };

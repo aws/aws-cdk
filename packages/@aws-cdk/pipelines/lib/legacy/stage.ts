@@ -339,8 +339,7 @@ export class CdkStage extends CoreConstruct {
       actionName: approveActionName,
       runOrder: this.nextSequentialRunOrder(),
       additionalInformation: `#{${appStageName}SecurityCheck.MESSAGE}`,
-      // Boot strap cicd2 us-west-1 --trust
-      externalEntityLink: `https://#{${appStageName}SecurityCheck.LINK}`,
+      externalEntityLink: `#{${appStageName}SecurityCheck.LINK}`,
     });
 
     this.addActions(diffAction, approve);

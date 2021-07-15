@@ -120,8 +120,8 @@ export class ApplicationSecurityCheck extends CoreConstruct {
               'PROJECT_NAME="$(node -pe \'`${process.env.ARN}`.split(":")[5].split("/")[1]\')"',
               'PROJECT_ID="$(node -pe \'`${process.env.ARN}`.split(":")[6]\')"',
               // Manual Approval adds 'http/https' to the resolved link
-              'export LINK="$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION"',
-              'export PIPELINE_LINK=="$REGION.console.aws.amazon.com/codesuite/codepipeline/pipelines/$PIPELINE_NAME/view?region=$REGION"',
+              'export LINK="https://$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION"',
+              'export PIPELINE_LINK="https://$REGION.console.aws.amazon.com/codesuite/codepipeline/pipelines/$PIPELINE_NAME/view?region=$REGION"',
               // Run invoke only if cdk diff passes (returns exit code 0)
               // 0 -> true, 1 -> false
               ifElse({

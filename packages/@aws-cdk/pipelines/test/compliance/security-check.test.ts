@@ -278,7 +278,7 @@ behavior('confirmBroadeningPermissions and notification topic options generates 
             objectLike({
               Configuration: {
                 CustomData: stringLike('#{*.MESSAGE}'),
-                ExternalEntityLink: stringLike('https://#{*.LINK}'),
+                ExternalEntityLink: stringLike('#{*.LINK}'),
               },
               Name: stringLike('*Approv*'),
               RunOrder: 2,
@@ -346,7 +346,7 @@ behavior('Stages declared outside the pipeline create their own ApplicationSecur
             {
               Configuration: {
                 CustomData: '#{UnattachedStageSecurityCheck.MESSAGE}',
-                ExternalEntityLink: 'https://#{UnattachedStageSecurityCheck.LINK}',
+                ExternalEntityLink: '#{UnattachedStageSecurityCheck.LINK}',
               },
               Name: 'UnattachedStageManualApproval',
               RunOrder: 2,
