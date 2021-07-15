@@ -1,8 +1,5 @@
+import { Construct } from 'constructs';
 import { CfnDistribution, IOrigin, OriginBase, OriginBindConfig, OriginBindOptions, OriginProps, OriginProtocolPolicy } from '../lib';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct } from '@aws-cdk/core';
 
 /** Used for testing common Origin functionality */
 export class TestOrigin extends OriginBase {
