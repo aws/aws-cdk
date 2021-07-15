@@ -178,7 +178,9 @@ export class DeliveryStream extends DeliveryStreamBase {
     if (!attrs.deliveryStreamName && !attrs.deliveryStreamArn) {
       throw new Error('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes');
     }
-    const deliveryStreamName = attrs.deliveryStreamName ?? cdk.Stack.of(scope).parseArn(attrs.deliveryStreamArn!).resourceName;
+    const deliveryStreamName = attrs.deliveryStreamName ??
+      cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+
     if (!deliveryStreamName) {
       throw new Error(`Could not import delivery stream from malformatted ARN ${attrs.deliveryStreamArn}: could not determine resource name`);
     }
