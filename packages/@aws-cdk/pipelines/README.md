@@ -887,18 +887,20 @@ Pipeline
 └── ...
 ```
 
-You can enable the security check by passing `confirmBroadeningPermissions` to
-`addApplicationStage`:
+You can insert the security check by using a `ConfirmPermissionsBroadening` step:
 
 ```ts
-const stage = pipeline.addApplicationStage(new MyApplication(this, 'PreProd'), {
-  confirmBroadeningPermissions: true,
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
+  pre: [
+    new ConfirmPermissionsBroadening('Check', { stage }),
+  ],
 });
 ```
 
 To get notified when there is a change that needs your manual approval,
-create an SNS Topic, subscribe your own email address, and pass it in via
-`securityNotificationTopic`:
+create an SNS Topic, subscribe your own email address, and pass it in as
+as the `notificationTopic` property:
 
 ```ts
 import * as sns from '@aws-cdk/aws-sns';
@@ -908,10 +910,14 @@ import * as pipelines from '@aws-cdk/pipelines';
 const topic = new sns.Topic(this, 'SecurityChangesTopic');
 topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
 
-const pipeline = new CdkPipeline(app, 'Pipeline', { /* ... */ });
-const stage = pipeline.addApplicationStage(new MyApplication(this, 'PreProd'), {
-  confirmBroadeningPermissions: true,
-  securityNotificationTopic: topic,
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
+  pre: [
+    new ConfirmPermissionsBroadening('Check', {
+      stage,
+      notificationTopic: topic,
+    }),
+  ],
 });
 ```
 
