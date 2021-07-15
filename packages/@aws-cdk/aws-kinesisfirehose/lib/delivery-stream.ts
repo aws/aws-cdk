@@ -15,7 +15,7 @@ const PUT_RECORD_ACTIONS = [
 /**
  * Represents a Kinesis Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable, cdk.ITaggable {
+export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of the delivery stream.
    *
@@ -61,8 +61,6 @@ export abstract class DeliveryStreamBase extends cdk.Resource implements IDelive
    * Network connections between Kinesis Data Firehose and other resources, i.e. Redshift cluster.
    */
   public readonly connections: ec2.Connections;
-
-  public readonly tags = new cdk.TagManager(cdk.TagType.STANDARD, 'AWS::KinesisFirehose::DeliveryStream');
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
