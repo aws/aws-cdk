@@ -182,7 +182,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!deliveryStreamName) {
-      throw new Error(`Could not import delivery stream from malformatted ARN ${attrs.deliveryStreamArn}: could not determine resource name`);
+      throw new Error(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`);
     }
     const deliveryStreamArn = attrs.deliveryStreamArn ?? cdk.Stack.of(scope).formatArn({
       service: 'firehose',
