@@ -62,8 +62,8 @@ export abstract class DeliveryStreamBase extends cdk.Resource implements IDelive
    */
   public readonly connections: ec2.Connections;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: cdk.ResourceProps = {}) {
+    super(scope, id, props);
 
     this.connections = setConnections(this);
   }
@@ -205,7 +205,9 @@ export class DeliveryStream extends DeliveryStreamBase {
   readonly grantPrincipal: iam.IPrincipal;
 
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.deliveryStreamName,
+    });
 
     const role = props.role ?? new iam.Role(this, 'Service Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
