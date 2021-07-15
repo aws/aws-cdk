@@ -60,7 +60,7 @@ export class TarballImageAsset extends CoreConstruct implements IAsset {
       throw new Error(`Cannot find file at ${props.tarballFile}`);
     }
 
-    const stagedTarball = new AssetStaging(scope, 'Staging', { sourcePath: props.tarballFile });
+    const stagedTarball = new AssetStaging(this, 'Staging', { sourcePath: props.tarballFile });
 
     this.sourceHash = stagedTarball.assetHash;
     this.assetHash = stagedTarball.assetHash;

@@ -2,7 +2,9 @@ import * as cdk from '@aws-cdk/core';
 import { CfnRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
-import { validateMatchArrayLength } from './private/utils';
+import { HttpRoutePathMatch } from './http-route-path-match';
+import { validateGrpcRouteMatch, validateGrpcMatchArrayLength, validateHttpMatchArrayLength } from './private/utils';
+import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
 
@@ -28,16 +30,15 @@ export interface WeightedTarget {
 }
 
 /**
- * The criterion for determining a request match for this GatewayRoute
+ * The criterion for determining a request match for this Route
  */
 export interface HttpRouteMatch {
   /**
-   * Specifies the path to match requests with.
-   * This parameter must always start with /, which by itself matches all requests to the virtual service name.
-   * You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
-   * and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
+   * Specifies how is the request matched based on the path part of its URL.
+   *
+   * @default - matches requests with all paths
    */
-  readonly prefixPath: string;
+  readonly path?: HttpRoutePathMatch;
 
   /**
    * Specifies the client request headers to match on. All specified headers
@@ -60,6 +61,14 @@ export interface HttpRouteMatch {
    * @default - do not match on HTTP2 request protocol
    */
   readonly protocol?: HttpRouteProtocol;
+
+  /**
+   * The query parameters to match on.
+   * All specified query parameters must match for the route to match.
+   *
+   * @default - do not match on query parameters
+   */
+  readonly queryParameters?: QueryParameterMatch[];
 }
 
 /**
@@ -78,13 +87,32 @@ export enum HttpRouteProtocol {
 }
 
 /**
- * The criterion for determining a request match for this GatewayRoute
+ * The criterion for determining a request match for this Route.
+ * At least one match type must be selected.
  */
 export interface GrpcRouteMatch {
   /**
-   * The fully qualified domain name for the service to match from the request
+   * Create service name based gRPC route match.
+   *
+   * @default - do not match on service name
    */
-  readonly serviceName: string;
+  readonly serviceName?: string;
+
+  /**
+   * Create metadata based gRPC route match.
+   * All specified metadata must match for the route to match.
+   *
+   * @default - do not match on metadata
+   */
+  readonly metadata?: HeaderMatch[];
+
+  /**
+   * The method name to match from the request.
+   * If the method name is specified, service name must be also provided.
+   *
+   * @default - do not match on method name
+   */
+  readonly methodName?: string;
 }
 
 /**
@@ -297,7 +325,7 @@ export enum GrpcRetryEvent {
 }
 
 /**
- * All Properties for GatewayRoute Specs
+ * All Properties for Route Specs
  */
 export interface RouteSpecConfig {
   /**
@@ -371,7 +399,7 @@ export abstract class RouteSpec {
   }
 
   /**
-   * Called when the GatewayRouteSpec type is initialized. Can be used to enforce
+   * Called when the RouteSpec type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
   public abstract bind(scope: Construct): RouteSpecConfig;
@@ -415,23 +443,25 @@ class HttpRouteSpec extends RouteSpec {
   }
 
   public bind(scope: Construct): RouteSpecConfig {
-    const prefixPath = this.match ? this.match.prefixPath : '/';
-    if (prefixPath[0] != '/') {
-      throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
-    }
+    const pathMatchConfig = (this.match?.path ?? HttpRoutePathMatch.startsWith('/')).bind(scope);
 
+    // Set prefix path match to '/' if none of path matches are defined.
     const headers = this.match?.headers;
-    validateMatchArrayLength(headers);
+    const queryParameters = this.match?.queryParameters;
+
+    validateHttpMatchArrayLength(headers, queryParameters);
 
     const httpConfig: CfnRoute.HttpRouteProperty = {
       action: {
         weightedTargets: renderWeightedTargets(this.weightedTargets),
       },
       match: {
-        prefix: prefixPath,
+        prefix: pathMatchConfig.prefixPathMatch,
+        path: pathMatchConfig.wholePathMatch,
         headers: headers?.map(header => header.bind(scope).headerMatch),
         method: this.match?.method,
         scheme: this.match?.protocol,
+        queryParameters: queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameterMatch),
       },
       timeout: renderTimeout(this.timeout),
       retryPolicy: this.retryPolicy ? renderHttpRetryPolicy(this.retryPolicy) : undefined,
@@ -520,7 +550,18 @@ class GrpcRouteSpec extends RouteSpec {
     }
   }
 
-  public bind(_scope: Construct): RouteSpecConfig {
+  public bind(scope: Construct): RouteSpecConfig {
+    const serviceName = this.match.serviceName;
+    const methodName = this.match.methodName;
+    const metadata = this.match.metadata;
+
+    validateGrpcRouteMatch(this.match);
+    validateGrpcMatchArrayLength(metadata);
+
+    if (methodName && !serviceName) {
+      throw new Error('If you specify a method name, you must also specify a service name');
+    }
+
     return {
       priority: this.priority,
       grpcRouteSpec: {
@@ -528,7 +569,9 @@ class GrpcRouteSpec extends RouteSpec {
           weightedTargets: renderWeightedTargets(this.weightedTargets),
         },
         match: {
-          serviceName: this.match.serviceName,
+          serviceName: serviceName,
+          methodName: methodName,
+          metadata: metadata?.map(singleMetadata => singleMetadata.bind(scope).headerMatch),
         },
         timeout: renderTimeout(this.timeout),
         retryPolicy: this.retryPolicy ? renderGrpcRetryPolicy(this.retryPolicy) : undefined,
@@ -538,8 +581,8 @@ class GrpcRouteSpec extends RouteSpec {
 }
 
 /**
-* Utility method to add weighted route targets to an existing route
-*/
+ * Utility method to add weighted route targets to an existing route
+ */
 function renderWeightedTargets(weightedTargets: WeightedTarget[]): CfnRoute.WeightedTargetProperty[] {
   const renderedTargets: CfnRoute.WeightedTargetProperty[] = [];
   for (const t of weightedTargets) {
