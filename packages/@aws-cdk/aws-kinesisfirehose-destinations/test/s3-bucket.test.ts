@@ -22,9 +22,9 @@ describe('S3 destination', () => {
   });
 
   it('provides defaults when no configuration is provided', () => {
-    const destination = new firehosedestinations.S3(bucket);
+    const destination = new firehosedestinations.S3Bucket(bucket);
 
-    const destinationProperties = destination.bind(stack, { deliveryStream }).properties;
+    const destinationProperties = destination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole }).properties;
 
     expect(stack.resolve(destinationProperties)).toStrictEqual({
       extendedS3DestinationConfiguration: {
@@ -44,11 +44,11 @@ describe('S3 destination', () => {
   });
 
   it('allows full configuration', () => {
-    const destination = new firehosedestinations.S3(bucket, {
+    const destination = new firehosedestinations.S3Bucket(bucket, {
       logging: true,
     });
 
-    const destinationProperties = destination.bind(stack, { deliveryStream }).properties;
+    const destinationProperties = destination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole }).properties;
 
     expect(stack.resolve(destinationProperties)).toStrictEqual({
       extendedS3DestinationConfiguration: {
@@ -68,9 +68,9 @@ describe('S3 destination', () => {
   });
 
   it('grants read/write access to the bucket', () => {
-    const destination = new firehosedestinations.S3(bucket);
+    const destination = new firehosedestinations.S3Bucket(bucket);
 
-    destination.bind(stack, { deliveryStream });
+    destination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole }).properties;
 
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       Roles: ['DeliveryStreamRole'],

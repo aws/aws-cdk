@@ -37,7 +37,7 @@ describe('destination', () => {
     test('creates resources and configuration by default', () => {
       const testDestination = new LoggingDestination();
 
-      const testDestinationConfig = testDestination.bind(stack, { deliveryStream });
+      const testDestinationConfig = testDestination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole });
 
       expect(stack).toHaveResource('AWS::Logs::LogGroup');
       expect(stack).toHaveResource('AWS::Logs::LogStream');
@@ -60,7 +60,7 @@ describe('destination', () => {
     test('does not create resources or configuration if disabled', () => {
       const testDestination = new LoggingDestination({ logging: false });
 
-      const testDestinationConfig = testDestination.bind(stack, { deliveryStream });
+      const testDestinationConfig = testDestination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole });
 
       expect(stack.resolve(testDestinationConfig)).toStrictEqual({
         properties: {
@@ -72,7 +72,7 @@ describe('destination', () => {
     test('creates configuration if log group provided', () => {
       const testDestination = new LoggingDestination({ logGroup: new logs.LogGroup(stack, 'Log Group') });
 
-      const testDestinationConfig = testDestination.bind(stack, { deliveryStream });
+      const testDestinationConfig = testDestination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole });
 
       expect(stack.resolve(testDestinationConfig)).toMatchObject({
         properties: {
@@ -88,13 +88,13 @@ describe('destination', () => {
     test('throws error if logging disabled but log group provided', () => {
       const testDestination = new LoggingDestination({ logging: false, logGroup: new logs.LogGroup(stack, 'Log Group') });
 
-      expect(() => testDestination.bind(stack, { deliveryStream })).toThrowError('logging cannot be set to false when logGroup is provided');
+      expect(() => testDestination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole })).toThrowError('logging cannot be set to false when logGroup is provided');
     });
 
     test('uses provided log group', () => {
       const testDestination = new LoggingDestination({ logGroup: new logs.LogGroup(stack, 'Log Group') });
 
-      const testDestinationConfig = testDestination.bind(stack, { deliveryStream });
+      const testDestinationConfig = testDestination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole });
 
       expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
       expect(stack.resolve(testDestinationConfig)).toMatchObject({
@@ -128,7 +128,7 @@ describe('destination', () => {
         }
       }();
 
-      const testDestinationConfig = testDestination.bind(stack, { deliveryStream });
+      const testDestinationConfig = testDestination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole });
 
       expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
       expect(stack.resolve(testDestinationConfig)).toMatchObject({

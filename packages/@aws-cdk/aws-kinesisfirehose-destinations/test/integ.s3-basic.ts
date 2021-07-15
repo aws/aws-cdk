@@ -14,7 +14,7 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
 });
 
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
-  destinations: [new destinations.S3(bucket)],
+  destinations: [new destinations.S3Bucket(bucket)],
 });
 
 app.synth();

@@ -20,7 +20,7 @@ export class S3Bucket extends firehose.DestinationBase {
   bind(scope: Construct, options: firehose.DestinationBindOptions): firehose.DestinationConfig {
     return {
       properties: {
-        extendedS3DestinationConfiguration: this.createExtendedS3DestinationConfiguration(scope, options.deliveryStream),
+        extendedS3DestinationConfiguration: this.createExtendedS3DestinationConfiguration(scope, options.deliveryStream, options.role),
       },
     };
   }
@@ -28,11 +28,12 @@ export class S3Bucket extends firehose.DestinationBase {
   private createExtendedS3DestinationConfiguration(
     scope: Construct,
     deliveryStream: firehose.IDeliveryStream,
+    role: iam.IRole,
   ): CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty {
     this.bucket.grantReadWrite(deliveryStream);
     return {
       cloudWatchLoggingOptions: this.createLoggingOptions(scope, deliveryStream, 'S3Destination'),
-      roleArn: (deliveryStream.grantPrincipal as iam.IRole).roleArn,
+      roleArn: role.roleArn,
       bucketArn: this.bucket.bucketArn,
     };
   }

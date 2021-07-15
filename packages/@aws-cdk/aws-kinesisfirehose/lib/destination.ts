@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import { Construct } from 'constructs';
 import { IDeliveryStream } from './delivery-stream';
@@ -21,6 +22,11 @@ export interface DestinationBindOptions {
    * The delivery stream.
    */
   readonly deliveryStream: IDeliveryStream;
+
+  /**
+   * The IAM service Role of the delivery stream.
+   */
+  readonly role: iam.IRole;
 }
 
 /**
