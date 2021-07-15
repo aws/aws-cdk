@@ -2,13 +2,13 @@ import '@aws-cdk/assert-internal/jest';
 import { Topic } from '@aws-cdk/aws-sns';
 import { Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as cdkp from '../lib';
-import { behavior } from './helpers/compliance';
-import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
+import * as cdkp from '../../lib';
+import { BucketStack, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, TestApp } from '../testhelpers';
+import { behavior } from '../testhelpers/compliance';
 
 let app: TestApp;
 let pipelineStack: Stack;
-let pipeline: TestGitHubNpmPipeline;
+let pipeline: LegacyTestGitHubNpmPipeline;
 
 class OneStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
@@ -20,7 +20,7 @@ class OneStackApp extends Stage {
 beforeEach(() => {
   app = new TestApp();
   pipelineStack = new Stack(app, 'PipelineSecurityStack', { env: PIPELINE_ENV });
-  pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk');
+  pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 });
 
 afterEach(() => {

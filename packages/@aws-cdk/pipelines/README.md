@@ -840,107 +840,7 @@ and orphan the old bucket. You should manually delete the orphaned bucket
 after you are sure you have redeployed all CDK applications and there are no
 more references to the old asset bucket.
 
-## Security
-
-### Security Check
-
-CDK Pipelines offers a security check option for the applications you deploy. A security
-check allows you to catch broadening permissions before they are deployed in the real world.
-
-Adding a security check to an application creates two actions that precede the prepare
-and deploy actions of an application. The first action runs a CodeBuild Project that 
-runs a security diff on the stage. The second action is a Manual Approval Action 
-that can be approved via the above Lambda function.
-
-```txt
-Pipeline
-├── Stage: Build
-│   └── ...
-├── Stage: Synth
-│   └── ...
-├── Stage: UpdatePipeline
-│   └── ...
-├── Stage: MyApplicationStage
-│   └── Actions
-│       ├── MyApplicationSecurityCheck       // Security Diff Action
-│       ├── MyApplicationManualApproval      // Manual Approval Action
-│       ├── Stack.Prepare
-│       └── Stack.Deploy
-└── ...
-```
-
-You can enable the security check in one of two ways:
-
-1. Enable security check across the entire `CdkStage`
-
-    ```ts
-    const pipeline = new CdkPipeline(app, 'Pipeline', {
-      // ...source and build information here (see above)
-    });
-    const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
-      confirmBroadeningPermissions: true,
-    });
-    // The 'PreProd' application is also run against a security diff because we configured
-    // the stage to enable security checks
-    stage.addApplication(new MyApplication(this, 'PreProd'));
-    ```
-
-2. Enable security check for a single application
-
-    ```ts
-    const pipeline = new CdkPipeline(app, 'Pipeline', {
-      // ...source and build information here (see above)
-    });
-    const stage = pipeline.addApplicationStage(new MyApplication(this, 'NoCheck'));
-    stage.addApplication(new MyApplication(this, 'RunSecurityDiff'), {
-      confirmBroadeningPermissions: true,
-    });
-    ```
-
-**Note**: Application level options have higher priority than stage level configuration.
-For example, we can disable stage wide security check by disabling `confirmBroadeningPermissions`
-at the application level.
-
-```ts
-const pipeline = new CdkPipeline(app, 'Pipeline', {
-  // ...source and build information here (see above)
-});
-const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
-  confirmBroadeningPermissions: true,
-});
-// The 'NoDiff' application will not have a security check
-stage.addApplication(new MyApplication(this, 'NoDiff'), {
-  confirmBroadeningPermissions: false,
-});
-```
-
-### Notifications
-
-You can enable notifications for your security check manual approvals.
-
-```ts
-import * as sns from '@aws-cdk/aws-sns';
-import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
-import * as pipelines from '@aws-cdk/pipelines';
-
-// ... initialize app and pipeline stack
-
-const topic = new sns.Topic(this, 'SecurityChangesTopic');
-topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
-
-const pipeline = new CdkPipeline(app, 'Pipeline', {
-  // ...source and build information here (see above)
-});
-const stage = pipeline.addApplicationStage(new MyApplication(this, 'Testing'), {
-  confirmBroadeningPermissions: true,
-  securityNotificationTopic: topic,
-});
-```
-
-**Note**: Manual Approvals notifications only apply when an application has security
-check enabled.
-
-### Tips
+## Security Considerations
 
 It's important to stay safe while employing Continuous Delivery. The CDK Pipelines
 library comes with secure defaults to the best of our ability, but by its
@@ -961,6 +861,62 @@ We therefore expect you to mind the following:
   developers to have access to any of the account credentials; all further
   changes can be deployed through git. Avoid the chances of credentials leaking
   by not having them in the first place!
+
+### Confirm permissions broadening
+
+To keep tabs on the security impact of changes going out through your pipeline,
+you can insert a security check before any stage deployment. This security check
+will check if the upcoming deployment would add any new IAM permissions or
+security group rules, and if so pause the pipeline and require you to confirm
+the changes.
+
+The security check will appear as two distinct actions in your pipeline: first
+a CodeBuild project that runs `cdk diff` on the stage that's about to be deployed,
+followed by a Manual Approval action that pauses the pipeline. If it so happens
+that there no new IAM permissions or security group rules will be added by the deployment,
+the manual approval step is automatically satisfied. The pipeline will look like this:
+
+```txt
+Pipeline
+├── ...
+├── MyApplicationStage
+│    ├── MyApplicationSecurityCheck       // Security Diff Action
+│    ├── MyApplicationManualApproval      // Manual Approval Action
+│    ├── Stack.Prepare
+│    └── Stack.Deploy
+└── ...
+```
+
+You can enable the security check by passing `confirmBroadeningPermissions` to
+`addApplicationStage`:
+
+```ts
+const stage = pipeline.addApplicationStage(new MyApplication(this, 'PreProd'), {
+  confirmBroadeningPermissions: true,
+});
+```
+
+To get notified when there is a change that needs your manual approval,
+create an SNS Topic, subscribe your own email address, and pass it in via
+`securityNotificationTopic`:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
+import * as pipelines from '@aws-cdk/pipelines';
+
+const topic = new sns.Topic(this, 'SecurityChangesTopic');
+topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
+
+const pipeline = new CdkPipeline(app, 'Pipeline', { /* ... */ });
+const stage = pipeline.addApplicationStage(new MyApplication(this, 'PreProd'), {
+  confirmBroadeningPermissions: true,
+  securityNotificationTopic: topic,
+});
+```
+
+**Note**: Manual Approvals notifications only apply when an application has security
+check enabled.
 
 ## Troubleshooting
 
