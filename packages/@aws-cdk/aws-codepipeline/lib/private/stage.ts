@@ -21,7 +21,7 @@ export class Stage implements IStage {
    * The Pipeline this Stage is a part of.
    */
   public readonly stageName: string;
-  private readonly scope: cdk.Construct;
+  private readonly scope: Construct;
   private readonly _pipeline: Pipeline;
   private readonly _actions = new Array<FullActionDescriptor>();
 
@@ -33,7 +33,7 @@ export class Stage implements IStage {
 
     this.stageName = props.stageName;
     this._pipeline = pipeline;
-    this.scope = new cdk.Construct(pipeline, this.stageName);
+    this.scope = new Construct(pipeline, this.stageName);
 
     for (const action of props.actions || []) {
       this.addAction(action);
@@ -145,7 +145,7 @@ export class Stage implements IStage {
     // If so, we simply reuse it.
     let actionScope = Node.of(this.scope).tryFindChild(action.actionProperties.actionName) as Construct | undefined;
     if (!actionScope) {
-      actionScope = new cdk.Construct(this.scope, action.actionProperties.actionName);
+      actionScope = new Construct(this.scope, action.actionProperties.actionName);
     }
     return this._pipeline._attachActionToPipeline(this, action, actionScope);
   }
