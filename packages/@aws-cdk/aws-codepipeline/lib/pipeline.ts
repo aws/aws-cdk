@@ -479,7 +479,7 @@ export class Pipeline extends PipelineBase {
   }
 
   /** @internal */
-  public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: CoreConstruct): FullActionDescriptor {
+  public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: Construct): FullActionDescriptor {
     const richAction = new RichAction(action, this);
 
     // handle cross-region actions here
@@ -491,8 +491,8 @@ export class Pipeline extends PipelineBase {
     // // CodePipeline Variables
     validateNamespaceName(richAction.actionProperties.variablesNamespace);
 
-    // bind the Action
-    const actionConfig = richAction.bind(actionScope, stage, {
+    // bind the Action (type h4x)
+    const actionConfig = richAction.bind(actionScope as CoreConstruct, stage, {
       role: actionRole ? actionRole : this.role,
       bucket: crossRegionInfo.artifactBucket,
     });
