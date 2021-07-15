@@ -52,7 +52,9 @@ export abstract class GatewayRouteHostnameMatch {
 class GatewayRouteHostnameMatchImpl extends GatewayRouteHostnameMatch {
   constructor(
     private readonly matchProperty: CfnGatewayRoute.GatewayRouteHostnameMatchProperty,
-  ) { super(); }
+  ) {
+    super();
+  }
 
   bind(_scope: Construct): GatewayRouteHostnameMatchConfig {
     return {

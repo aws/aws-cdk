@@ -136,7 +136,7 @@ export abstract class HttpGatewayRoutePathMatch {
   /**
    * The value of the path must match the specified prefix.
    *
-   * @param prefixPathMatch the value to use to match the beginning of the path part of the URL of the request.
+   * @param prefix the value to use to match the beginning of the path part of the URL of the request.
    *   It must start with the '/' character.
    *   When `rewriteTo` is provided, it must also end with the '/' character.
    *   If provided as "/", matches all requests.
@@ -146,8 +146,8 @@ export abstract class HttpGatewayRoutePathMatch {
    *   To disable automatic rewrite, provide `''`.
    *   As a default, request's URL path is automatically rewritten to '/'.
    */
-  public static startsWith(prefixPathMatch: string, rewriteTo?: string): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRoutePrefixPathMatch(prefixPathMatch, rewriteTo);
+  public static startsWith(prefix: string, rewriteTo?: string): HttpGatewayRoutePathMatch {
+    return new HttpGatewayRoutePrefixPathMatch(prefix, rewriteTo);
   }
 
   /**
@@ -191,7 +191,7 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
         + `got: ${prefixPathMatch}`);
     }
 
-    if (rewriteTo && rewriteTo !== '') {
+    if (rewriteTo) {
       if (prefixPathMatch[prefixPathMatch.length - 1] !== '/') {
         throw new Error('When prefix path for the rewrite is specified, prefix path for the match must end with \'/\', '
           + `got: ${prefixPathMatch}`);
@@ -206,12 +206,12 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
       prefixPathMatch: this.prefixPathMatch,
-      prefixPathRewrite: this.rewriteTo === '' || this.rewriteTo
-        ? {
+      prefixPathRewrite: this.rewriteTo === undefined
+        ? undefined
+        : {
           defaultPrefix: this.rewriteTo === '' ? 'DISABLED' : undefined,
           value: this.rewriteTo === '' ? undefined : this.rewriteTo,
-        }
-        : undefined,
+        },
     };
   }
 }
@@ -237,11 +237,7 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
       wholePathMatch: this.wholePathMatch,
-      wholePathRewrite: this.exactPathRewrite
-        ? {
-          exact: this.exactPathRewrite,
-        }
-        : undefined,
+      wholePathRewrite: this.exactPathRewrite === undefined ? undefined : { exact: this.exactPathRewrite },
     };
   }
 }
