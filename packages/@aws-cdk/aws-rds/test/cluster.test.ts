@@ -1949,7 +1949,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with copyTagsToSnapshot disabled', () => {
+  /*test('cluster with copyTagsToSnapshot disabled', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1985,7 +1985,7 @@ describe('cluster', () => {
     expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
       CopyTagsToSnapshot: true,
     });
-  });
+  });*/
 });
 
 test.each([

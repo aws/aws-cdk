@@ -74,6 +74,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   credentials: rds.Credentials.fromGeneratedSecret('syscdk'), // Optional - will default to 'admin' username and generated password
   vpc,
+  copyTagsToSnapshot: true, // Optional - will default to 'false'
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
   }
@@ -160,12 +161,6 @@ new rds.DatabaseCluster(stack, 'DatabaseCluster', {
   },
 });
 ```
-
-## Copying Tags From the DB Instance to the DB Snapshot
-
-You can enable or disable this for the database instance or cluster using the `copyTagsToSnapshot` property.
-If you specify `true`, tags will be copied from the database instance or cluster to snapshots of the DB instance.
-If you specify `false`, tags will not be copied.
 
 ## Instance events
 
