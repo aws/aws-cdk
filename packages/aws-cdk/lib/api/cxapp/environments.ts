@@ -27,6 +27,19 @@ export async function globEnvironmentsFromStacks(stacks: StackCollection, enviro
   return environments;
 }
 
+export function parseEnvironmentDescriptor(spec: string): cxapi.Environment | undefined {
+  const parts = spec.replace(/^aws:\/\//, '').split('/');
+  if (parts.length !== 2) {
+    return undefined;
+  }
+
+  return {
+    name: spec,
+    account: parts[0],
+    region: parts[1],
+  };
+}
+
 /**
  * Given a set of "<account>/<region>" strings, construct environments for them
  */
@@ -34,16 +47,12 @@ export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environme
   const ret = new Array<cxapi.Environment>();
 
   for (const spec of envSpecs) {
-    const parts = spec.replace(/^aws:\/\//, '').split('/');
-    if (parts.length !== 2) {
+    const env = parseEnvironmentDescriptor(spec);
+    if (!env) {
       throw new Error(`Expected environment name in format 'aws://<account>/<region>', got: ${spec}`);
     }
 
-    ret.push({
-      name: spec,
-      account: parts[0],
-      region: parts[1],
-    });
+    ret.push(env);
   }
 
   return ret;
