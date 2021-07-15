@@ -3,7 +3,7 @@ import { CfnRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
-import { validateGrpcMatch, validateGrpcMatchArrayLength, validateHttpMatchArrayLength } from './private/utils';
+import { validateGrpcRouteMatch, validateGrpcMatchArrayLength, validateHttpMatchArrayLength } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
@@ -555,7 +555,7 @@ class GrpcRouteSpec extends RouteSpec {
     const methodName = this.match.methodName;
     const metadata = this.match.metadata;
 
-    validateGrpcMatch(this.match);
+    validateGrpcRouteMatch(this.match);
     validateGrpcMatchArrayLength(metadata);
 
     if (methodName && !serviceName) {

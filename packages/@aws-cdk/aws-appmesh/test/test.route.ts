@@ -1291,7 +1291,7 @@ export = {
           match: {},
         }),
       });
-    }, /At least one gRPC match property must be provided/);
+    }, /At least one gRPC route match property must be provided/);
 
     test.done();
   },
