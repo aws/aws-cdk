@@ -1,7 +1,6 @@
 import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-
 import * as appmesh from '../lib';
 
 export = {
@@ -149,7 +148,7 @@ export = {
             },
           ],
           match: {
-            prefixPath: '/',
+            path: appmesh.HttpRoutePathMatch.startsWith('/'),
           },
         }),
       });
@@ -236,7 +235,7 @@ export = {
             },
           ],
           match: {
-            prefixPath: '/',
+            path: appmesh.HttpRoutePathMatch.startsWith('/'),
           },
         }),
       });
@@ -250,7 +249,7 @@ export = {
             },
           ],
           match: {
-            prefixPath: '/path2',
+            path: appmesh.HttpRoutePathMatch.startsWith('/path2'),
           },
         }),
       });
@@ -264,7 +263,7 @@ export = {
             },
           ],
           match: {
-            prefixPath: '/path3',
+            path: appmesh.HttpRoutePathMatch.startsWith('/path3'),
           },
         }),
       });
