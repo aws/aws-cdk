@@ -1,12 +1,26 @@
 import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as cp from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration } from '@aws-cdk/core';
+import { Duration, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
+/**
+ * Properteis for an ApplicationSecurityCheck
+ */
+export interface ApplicationSecurityCheckProps {
+  /**
+   * The pipeline that will be automatically approved
+   *
+   * Will have a tag added to it.
+   */
+  readonly codePipeline: cp.Pipeline;
+}
 
 /**
  * A construct containing both the Lambda and CodeBuild Project
@@ -18,7 +32,7 @@ import { Construct } from '@aws-cdk/core';
  * The CodeBuild Project runs a security diff on the application stage,
  * and exports the link to the console of the project.
  */
-export class ApplicationSecurityCheck extends Construct {
+export class ApplicationSecurityCheck extends CoreConstruct {
   /**
    * A lambda function that approves a Manual Approval Action, given
    * the following payload:
@@ -39,8 +53,12 @@ export class ApplicationSecurityCheck extends Construct {
    */
   public readonly cdkDiffProject: codebuild.Project;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: ApplicationSecurityCheckProps) {
     super(scope, id);
+
+    Tags.of(props.codePipeline).add('SECURITY_CHECK', 'ALLOW_APPROVE', {
+      includeResourceTypes: ['AWS::CodePipeline::Pipeline'],
+    });
 
     this.preApproveLambda = new lambda.Function(this, 'CDKPipelinesAutoApprove', {
       handler: 'index.handler',
@@ -59,7 +77,6 @@ export class ApplicationSecurityCheck extends Construct {
       resources: ['*'],
     }));
 
-    const assemblyPath = 'assembly-$STACK_NAME-$STAGE_NAME/';
     const invokeLambda =
       'aws lambda invoke' +
       ` --function-name ${this.preApproveLambda.functionName}` +
@@ -108,7 +125,7 @@ export class ApplicationSecurityCheck extends Construct {
               // Run invoke only if cdk diff passes (returns exit code 0)
               // 0 -> true, 1 -> false
               ifElse({
-                condition: `cdk diff -a "${assemblyPath}" --security-only --fail`,
+                condition: 'cdk diff -a . --security-only --fail $STAGE_PATH/\\*',
                 thenStatements: [
                   invokeLambda,
                   'export MESSAGE="No changes detected."',
@@ -136,7 +153,7 @@ export class ApplicationSecurityCheck extends Construct {
       resources: ['*'],
       conditions: {
         'ForAnyValue:StringEquals': {
-          'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
+          'iam:ResourceTag/aws-cdk:bootstrap-role': ['deploy'],
         },
       },
     }));

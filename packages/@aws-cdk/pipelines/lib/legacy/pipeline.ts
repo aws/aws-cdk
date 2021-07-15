@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, Aws, CfnOutput, Fn, Lazy, PhysicalName, Stack, Stage, Tags } from '@aws-cdk/core';
+import { Annotations, App, Aws, CfnOutput, Fn, Lazy, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../docker-credentials';
@@ -299,10 +299,9 @@ export class CdkPipeline extends CoreConstruct {
    */
   public _getApplicationSecurityCheck(): ApplicationSecurityCheck {
     if (!this._applicationSecurityCheck) {
-      Tags.of(this).add('SECURITY_CHECK', 'ALLOW_APPROVE', {
-        includeResourceTypes: ['AWS::CodePipeline::Pipeline'],
+      this._applicationSecurityCheck = new ApplicationSecurityCheck(this, 'PipelineApplicationSecurityCheck', {
+        codePipeline: this._pipeline,
       });
-      this._applicationSecurityCheck = new ApplicationSecurityCheck(this, 'PipelineApplicationSecurityCheck');
     }
     return this._applicationSecurityCheck;
   }

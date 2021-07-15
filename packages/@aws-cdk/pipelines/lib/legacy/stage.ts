@@ -3,7 +3,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
 import * as sns from '@aws-cdk/aws-sns';
-import { Stage, Aspects, Tags } from '@aws-cdk/core';
+import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
@@ -117,7 +117,7 @@ export class CdkStage extends CoreConstruct {
     const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
 
     if (options.confirmBroadeningPermissions ?? this.confirmBroadeningPermissions) {
-      this.addSecurityCheck(appStage.stageName, options);
+      this.addSecurityCheck(appStage, options);
     }
 
     if (asm.stacks.length === 0) {
@@ -164,12 +164,12 @@ export class CdkStage extends CoreConstruct {
     if (this._applicationSecurityCheck) {
       return this._applicationSecurityCheck;
     }
-    Tags.of(this.pipelineStage.pipeline).add('SECURITY_CHECK', 'ALLOW_APPROVE', {
-      includeResourceTypes: ['AWS::CodePipeline::Pipeline'],
-    });
+
     this._applicationSecurityCheck = this.pipeline
       ? this.pipeline._getApplicationSecurityCheck()
-      : new ApplicationSecurityCheck(this, 'StageApplicationSecurityCheck');
+      : new ApplicationSecurityCheck(this, 'StageApplicationSecurityCheck', {
+        codePipeline: this.pipelineStage.pipeline as codepipeline.Pipeline,
+      });
     return this._applicationSecurityCheck;
   }
 
@@ -296,11 +296,12 @@ export class CdkStage extends CoreConstruct {
    *  - CodeBuild Action to check for security changes in a stage
    *  - Manual Approval Action that is auto approved via a Lambda if no security changes detected
    */
-  private addSecurityCheck(appStageName: string, options?: BaseStageOptions) {
+  private addSecurityCheck(appStage: Stage, options?: BaseStageOptions) {
     const { cdkDiffProject } = this.getApplicationSecurityCheck();
     const notificationTopic: sns.ITopic | undefined = options?.securityNotificationTopic ?? this.securityNotificationTopic;
     notificationTopic?.grantPublish(cdkDiffProject);
 
+    const appStageName = appStage.stageName;
     const approveActionName = `${appStageName}ManualApproval`;
     const diffAction = new CodeBuildAction({
       runOrder: this.nextSequentialRunOrder(),
@@ -309,7 +310,7 @@ export class CdkStage extends CoreConstruct {
       project: cdkDiffProject,
       variablesNamespace: `${appStageName}SecurityCheck`,
       environmentVariables: {
-        STACK_NAME: {
+        STAGE_PATH: {
           value: this.pipelineStage.pipeline.stack.stackName,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },

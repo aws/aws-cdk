@@ -1,26 +1,17 @@
+import { arrayWith, objectLike, stringLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { Topic } from '@aws-cdk/aws-sns';
-import { Stack, Stage, StageProps } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
-import { BucketStack, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, TestApp } from '../testhelpers';
+import { LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp } from '../testhelpers';
 import { behavior } from '../testhelpers/compliance';
 
 let app: TestApp;
 let pipelineStack: Stack;
-let pipeline: LegacyTestGitHubNpmPipeline;
-
-class OneStackApp extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
-    super(scope, id, props);
-    new BucketStack(this, 'Stack');
-  }
-}
 
 beforeEach(() => {
   app = new TestApp();
   pipelineStack = new Stack(app, 'PipelineSecurityStack', { env: PIPELINE_ENV });
-  pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 });
 
 afterEach(() => {
@@ -29,30 +20,64 @@ afterEach(() => {
 
 behavior('security check option generates lambda/codebuild at pipeline scope', (suite) => {
   suite.legacy(() => {
-    // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addApplicationStage(new OneStackApp(app, 'App'), { confirmBroadeningPermissions: true });
 
-    // THEN
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    const stage = new OneStackApp(app, 'App');
+    pipeline.addStage(stage, {
+      pre: [
+        new cdkp.ConfirmPermissionsBroadening('Check', {
+          stage,
+        }),
+      ],
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     expect(pipelineStack).toCountResources('AWS::Lambda::Function', 1);
     expect(pipelineStack).toHaveResourceLike('AWS::Lambda::Function', {
       Role: {
         'Fn::GetAtt': [
-          'CdkPipelineApplicationSecurityCheckCDKPipelinesAutoApproveServiceRoleF6545652',
+          stringLike('CdkPipeline*SecurityCheckCDKPipelinesAutoApproveServiceRole*'),
           'Arn',
         ],
       },
     });
     // 1 for github build, 1 for synth stage, and 1 for the application security check
     expect(pipelineStack).toCountResources('AWS::CodeBuild::Project', 3);
-  });
+  }
 });
 
 behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid permissions', (suite) => {
   suite.legacy(() => {
-    // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addApplicationStage(new OneStackApp(app, 'App'), { confirmBroadeningPermissions: true });
 
-    // THEN
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    const stage = new OneStackApp(app, 'App');
+    pipeline.addStage(stage, {
+      pre: [
+        new cdkp.ConfirmPermissionsBroadening('Check', {
+          stage,
+        }),
+      ],
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     // CodePipeline must be tagged as SECURITY_CHECK=ALLOW_APPROVE
     expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', {
       Tags: [
@@ -76,33 +101,16 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
           },
         ],
       },
-      PolicyName: 'CdkPipelineApplicationSecurityCheckCDKPipelinesAutoApproveServiceRoleDefaultPolicyDC837235',
     });
     // CodeBuild must have access to the stacks and invoking the lambda function
     expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [
-          {
-            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-            Effect: 'Allow',
-          },
-          {
-            Action: [
-              'codebuild:CreateReportGroup',
-              'codebuild:CreateReport',
-              'codebuild:UpdateReport',
-              'codebuild:BatchPutTestCases',
-              'codebuild:BatchPutCodeCoverages',
-            ],
-            Effect: 'Allow',
-          },
+        Statement: arrayWith(
           {
             Action: 'sts:AssumeRole',
             Condition: {
               'ForAnyValue:StringEquals': {
                 'iam:ResourceTag/aws-cdk:bootstrap-role': [
-                  'image-publishing',
-                  'file-publishing',
                   'deploy',
                 ],
               },
@@ -115,37 +123,31 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'CdkPipelineApplicationSecurityCheckCDKPipelinesAutoApproveEAC6D2CE',
+                stringLike('*AutoApprove*'),
                 'Arn',
               ],
             },
           },
-          {
-            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-            Effect: 'Allow',
-          },
-          {
-            Action: ['kms:Decrypt', 'kms:DescribeKey'],
-            Effect: 'Allow',
-          },
-          {
-            Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
-            Effect: 'Allow',
-          },
-        ],
+        ),
       },
     });
-  });
+  }
 });
 
 behavior('confirmBroadeningPermissions option at addApplicationStage runs security check on all apps unless overriden', (suite) => {
   suite.legacy(() => {
-    // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     const securityStage = pipeline.addApplicationStage(new OneStackApp(app, 'StageSecurityCheckStack'), { confirmBroadeningPermissions: true });
     securityStage.addApplication(new OneStackApp(app, 'AnotherStack'));
     securityStage.addApplication(new OneStackApp(app, 'SkipCheckStack'), { confirmBroadeningPermissions: false });
 
-    // THEN
+    THEN_codePipelineExpectation();
+  });
+
+  // For the modern API, there is no inheritance
+  suite.doesNotApply.modern();
+
+  function THEN_codePipelineExpectation() {
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       Stages: [
         {
@@ -177,16 +179,22 @@ behavior('confirmBroadeningPermissions option at addApplicationStage runs securi
         },
       ],
     });
-  });
+  }
 });
 
 behavior('confirmBroadeningPermissions option at addApplication runs security check only on selected application', (suite) => {
   suite.legacy(() => {
-    // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     const noSecurityStage = pipeline.addApplicationStage(new OneStackApp(app, 'NoSecurityCheckStack'));
     noSecurityStage.addApplication(new OneStackApp(app, 'EnableCheckStack'), { confirmBroadeningPermissions: true });
 
-    // THEN
+    THEN_codePipelineExpectation();
+  });
+
+  // For the modern API, there is no inheritance
+  suite.doesNotApply.modern();
+
+  function THEN_codePipelineExpectation() {
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       Stages: [
         {
@@ -214,63 +222,79 @@ behavior('confirmBroadeningPermissions option at addApplication runs security ch
         },
       ],
     });
-  });
+  }
 });
 
 behavior('confirmBroadeningPermissions and notification topic options generates the right resources', (suite) => {
   suite.legacy(() => {
-    // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     const topic = new Topic(pipelineStack, 'NotificationTopic');
     pipeline.addApplicationStage(new OneStackApp(app, 'MyStack'), {
       confirmBroadeningPermissions: true,
       securityNotificationTopic: topic,
     });
 
-    // THEN
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    const topic = new Topic(pipelineStack, 'NotificationTopic');
+    const stage = new OneStackApp(app, 'MyStack');
+    pipeline.addStage(stage, {
+      pre: [
+        new cdkp.ConfirmPermissionsBroadening('Approve', {
+          stage,
+          notificationTopic: topic,
+        }),
+      ],
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     expect(pipelineStack).toCountResources('AWS::SNS::Topic', 1);
     expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: [
-        { Name: 'Source' },
-        { Name: 'Build' },
-        { Name: 'UpdatePipeline' },
+      Stages: arrayWith(
         {
+          Name: 'MyStack',
           Actions: [
-            {
+            objectLike({
               Configuration: {
-                ProjectName: { Ref: 'CdkPipelineApplicationSecurityCheckCDKSecurityCheckE8A1395F' },
+                ProjectName: { Ref: stringLike('*SecurityCheck*') },
                 EnvironmentVariables: {
                   'Fn::Join': ['', [
-                    '[{"name":"STACK_NAME","type":"PLAINTEXT","value":"PipelineSecurityStack"},{"name":"STAGE_NAME","type":"PLAINTEXT","value":"MyStack"},{"name":"ACTION_NAME","type":"PLAINTEXT","value":"MyStackManualApproval"},{"name":"NOTIFICATION_ARN","type":"PLAINTEXT","value":"',
+                    stringLike('*'),
                     { Ref: 'NotificationTopicEB7A0DF1' },
-                    '"},{"name":"NOTIFICATION_SUBJECT","type":"PLAINTEXT","value":"Confirm Broadening IAM Permissions in MyStack"}]',
+                    stringLike('*'),
                   ]],
                 },
               },
-              Name: 'MyStackSecurityCheck',
-              Namespace: 'MyStackSecurityCheck',
+              Name: stringLike('*Check'),
+              Namespace: stringLike('*'),
               RunOrder: 1,
-            },
-            {
+            }),
+            objectLike({
               Configuration: {
-                CustomData: '#{MyStackSecurityCheck.MESSAGE}',
-                ExternalEntityLink: 'https://#{MyStackSecurityCheck.LINK}',
+                CustomData: stringLike('#{*.MESSAGE}'),
+                ExternalEntityLink: stringLike('https://#{*.LINK}'),
               },
-              Name: 'MyStackManualApproval',
+              Name: stringLike('*Approv*'),
               RunOrder: 2,
-            },
-            { Name: 'Stack.Prepare', RunOrder: 3 },
-            { Name: 'Stack.Deploy', RunOrder: 4 },
+            }),
+            objectLike({ Name: 'Stack.Prepare', RunOrder: 3 }),
+            objectLike({ Name: 'Stack.Deploy', RunOrder: 4 }),
           ],
-          Name: 'MyStack',
         },
-      ],
+      ),
     });
-  });
+  }
 });
 
 behavior('Stages declared outside the pipeline create their own ApplicationSecurityCheck', (suite) => {
   suite.legacy(() => {
-    // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     const pipelineStage = pipeline.codePipeline.addStage({
       stageName: 'UnattachedStage',
     });
@@ -289,7 +313,13 @@ behavior('Stages declared outside the pipeline create their own ApplicationSecur
       confirmBroadeningPermissions: true,
     });
 
-    // THEN
+    THEN_codePipelineExpectation();
+  });
+
+  // Not a valid use of the modern API
+  suite.doesNotApply.modern();
+
+  function THEN_codePipelineExpectation() {
     expect(pipelineStack).toCountResources('AWS::Lambda::Function', 1);
     // 1 for github build, 1 for synth stage, and 1 for the application security check
     expect(pipelineStack).toCountResources('AWS::CodeBuild::Project', 3);
@@ -328,5 +358,5 @@ behavior('Stages declared outside the pipeline create their own ApplicationSecur
         },
       ],
     });
-  });
+  }
 });
