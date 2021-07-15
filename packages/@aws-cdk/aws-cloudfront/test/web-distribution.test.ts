@@ -971,7 +971,7 @@ added the ellipsis so a user would know there was more to ...`,
             behaviors: [{ isDefaultBehavior: true }],
           }],
           viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate, {
-            securityPolicy: SecurityPolicyProtocol.TLS_v1_2_2021,
+            securityPolicy: SecurityPolicyProtocol.TLS_V1_2_2021,
             sslMethod: SSLMethod.SNI,
             aliases: ['example.com', 'www.example.com'],
           }),
