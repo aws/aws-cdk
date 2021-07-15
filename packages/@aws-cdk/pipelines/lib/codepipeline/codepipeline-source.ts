@@ -5,7 +5,7 @@ import * as cp_actions from '@aws-cdk/aws-codepipeline-actions';
 import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '@aws-cdk/aws-codepipeline-actions';
 import * as iam from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
-import { SecretValue, Token } from '@aws-cdk/core';
+import { SecretValue } from '@aws-cdk/core';
 import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
@@ -17,29 +17,9 @@ import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineAct
  */
 export abstract class CodePipelineSource extends Step implements ICodePipelineActionFactory {
   /**
-   * Parse a URL from common source providers and return an appropriate Source action
-   *
-   * The input string cannot be a token.
-   *
-   * **NOTE**: Keeping the branch parameter until we decide what to do with this method.
-   */
-  public static fromUrl(repoString: string, branch: string): CodePipelineSource {
-    if (Token.isUnresolved(repoString)) {
-      throw new Error('Argument to CodePipelineSource.fromString() cannot be unresolved');
-    }
-
-    const githubPrefix = 'https://github.com/';
-    if (repoString.startsWith(githubPrefix)) {
-      return CodePipelineSource.gitHub(repoString.substr(githubPrefix.length).replace(/\.git$/, ''), branch);
-    }
-
-    throw new Error(`CodePipelineSource.fromString(): unrecognized string format: '${repoString}'`);
-  }
-
-  /**
    * Returns a GitHub source, using OAuth tokens to authenticate with
    * GitHub and a separate webhook to detect changes. This is no longer
-   * the recommended method. Please consider using `codeStarConnection()`
+   * the recommended method. Please consider using `connection()`
    * instead.
    *
    * Pass in the owner and repository in a single string, like this:
@@ -76,8 +56,8 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * });
    * ```
    */
-  public static s3(bucket: IBucket, props: S3SourceOptions): CodePipelineSource {
-    return new S3Source(bucket, props);
+  public static s3(bucket: IBucket, objectKey: string, props: S3SourceOptions = {}): CodePipelineSource {
+    return new S3Source(bucket, objectKey, props);
   }
 
   /**
@@ -93,7 +73,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Example:
    *
    * ```ts
-   * CodePipelineSource.codeStarConnection('owner/repo', 'main', {
+   * CodePipelineSource.connection('owner/repo', 'main', {
    *   connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console
    * });
    * ```
@@ -104,7 +84,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    *
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/welcome-connections.html
    */
-  public static codeStarConnection(repoString: string, branch: string, props: CodeStarSourceOptions): CodePipelineSource {
+  public static connection(repoString: string, branch: string, props: ConnectionSourceOptions): CodePipelineSource {
     return new CodeStarConnectionSource(repoString, branch, props);
   }
 
@@ -220,13 +200,6 @@ class GitHubSource extends CodePipelineSource {
  */
 export interface S3SourceOptions {
   /**
-   * The key within the S3 bucket that stores the source code.
-   *
-   * @example 'path/to/file.zip'
-   */
-  readonly bucketKey: string;
-
-  /**
    * How should CodePipeline detect source changes for this Action.
    * Note that if this is S3Trigger.EVENTS, you need to make sure to include the source Bucket in a CloudTrail Trail,
    * as otherwise the CloudWatch Events will not be emitted.
@@ -238,7 +211,7 @@ export interface S3SourceOptions {
 }
 
 class S3Source extends CodePipelineSource {
-  constructor(readonly bucket: IBucket, readonly props: S3SourceOptions) {
+  constructor(readonly bucket: IBucket, private readonly objectKey: string, readonly props: S3SourceOptions) {
     super(bucket.bucketName);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
@@ -249,7 +222,7 @@ class S3Source extends CodePipelineSource {
       output,
       actionName,
       runOrder,
-      bucketKey: this.props.bucketKey,
+      bucketKey: this.objectKey,
       trigger: this.props.trigger,
       bucket: this.bucket,
     });
@@ -259,7 +232,7 @@ class S3Source extends CodePipelineSource {
 /**
  * Configuration options for CodeStar source
  */
-export interface CodeStarSourceOptions {
+export interface ConnectionSourceOptions {
   /**
    * The ARN of the CodeStar Connection created in the AWS console
    * that has permissions to access this GitHub or BitBucket repository.
@@ -299,7 +272,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
   private readonly owner: string;
   private readonly repo: string;
 
-  constructor(repoString: string, readonly branch: string, readonly props: CodeStarSourceOptions) {
+  constructor(repoString: string, readonly branch: string, readonly props: ConnectionSourceOptions) {
     super(repoString);
 
     const parts = repoString.split('/');

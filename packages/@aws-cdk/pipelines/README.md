@@ -67,8 +67,11 @@ class MyPipelineStack extends Stack {
 
     const pipeline = new CodePipeline(this, 'Pipeline', {
       synth: new ShellStep('Synth', {
-        // Will use a SecretsManager secret named 'github-token' by default
-        input: CodePipelineSource.gitHub('my-org/my-app'),
+        // Use a connection created using the AWS console to authenticate to GitHub
+        // Other sources are available.
+        input: CodePipelineSource.connection('my-org/my-app', 'main', {
+          connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+        }),
         commands: [
           'npm ci',
           'npm run build',
@@ -253,10 +256,53 @@ In CodePipeline, *Sources* define where the source of your application lives.
 When a change to the source is detected, the pipeline will start executing.
 Source objects can be created by factory methods on the `CodePipelineSource` class:
 
-* `CodePipelineSource.gitHub('org/repo', { branch, authentication })`: use a
-  GitHub respository as the source. By default, it assumes your GitHub OAuth
-  token lives in a Secret in Secrets Manager with the name `github-token`.
-  You can override that by passing the `authentication` property.
+##### GitHub, GitHub Enterprise, BitBucket using a connection
+
+The recommended way of connecting to GitHub or BitBucket is by using a *connection*.
+You will first use the AWS Console to authenticate to the source control
+provider, and then use the connection ARN in your pipeline definition:
+
+```ts
+CodePipelineSource.connection('org/repo', 'branch', {
+  connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41',
+});
+```
+
+##### GitHub using OAuth
+
+You can also authenticate to GitHub using a personal access token. This expects
+that you've created a personal access token and stored it in Secrets Manager.
+By default, the source object will look for a secret named **github-token**, but
+you can change the name. The token should have the **repo** and **admin:repo_hook**
+scopes.
+
+```ts
+CodePipelineSource.gitHub('org/repo', 'branch', {
+  // This is optional
+  authentication: SecretValue.secretsManager('my-token'),
+});
+```
+
+##### CodeCommit
+
+You can use a CodeCommit repository as the source. Either create or import
+that the CodeCommit repository and then use `CodePipelineSource.codeCommit`
+to reference it:
+
+```ts
+const repository = codecommit.fromRepositoryName(this, 'Repository', 'my-repository');
+CodePipelineSource.codeCommit(repository);
+```
+
+##### S3
+
+You can use a zip file in S3 as the source of the pipeline. The pipeline will be
+triggered every time the file in S3 is changed:
+
+```ts
+const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket');
+CodePipelineSource.s3(bucket, 'my/source.zip');
+```
 
 #### Additional inputs
 
