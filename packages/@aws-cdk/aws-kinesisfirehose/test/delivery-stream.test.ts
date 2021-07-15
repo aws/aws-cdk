@@ -270,7 +270,7 @@ describe('delivery stream', () => {
 
     test('throws when malformatted ARN', () => {
       expect(() => firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', { deliveryStreamArn: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/' }))
-        .toThrowError(/Could not import delivery stream from malformatted ARN/);
+        .toThrowError("No delivery stream name found in ARN: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/'");
     });
 
     test('throws when without name or ARN', () => {
