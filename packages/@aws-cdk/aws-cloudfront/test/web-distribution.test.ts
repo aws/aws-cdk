@@ -991,7 +991,7 @@ added the ellipsis so a user would know there was more to ...`,
         }));
 
         test.done();
-      }
+      },
     },
     'iamCertificate': {
       'base usage'(test: Test) {
