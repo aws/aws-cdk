@@ -49,7 +49,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 
 const bucket = new s3.Bucket(this, 'Bucket');
 new DeliveryStream(this, 'Delivery Stream', {
-  destinations: [new destinations.S3(bucket)],
+  destinations: [new destinations.S3Bucket(bucket)],
 });
 ```
 
@@ -102,7 +102,7 @@ import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
 
 const bucket = new s3.Bucket(this, 'Bucket');
 
-const s3Destination = new destinations.S3(bucket);
+const s3Destination = new destinations.S3Bucket(bucket);
 
 new DeliveryStream(this, 'Delivery Stream', {
   destinations: [s3Destination],
@@ -162,7 +162,7 @@ const role = new iam.Role(this, 'Role', {
 }
 bucket.grantWrite(role);
 new DeliveryStream(stack, 'Delivery Stream', {
-  destinations: [new destinations.S3(bucket)],
+  destinations: [new destinations.S3Bucket(bucket)],
   role: role,
 });
 ```

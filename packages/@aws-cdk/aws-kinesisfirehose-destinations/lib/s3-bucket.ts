@@ -12,7 +12,7 @@ export interface S3Props extends firehose.DestinationProps { }
 /**
  * An S3 bucket destination for data from a Kinesis Data Firehose delivery stream.
  */
-export class S3 extends firehose.DestinationBase {
+export class S3Bucket extends firehose.DestinationBase {
   constructor(private readonly bucket: s3.IBucket, s3Props: S3Props = {}) {
     super(s3Props);
   }
