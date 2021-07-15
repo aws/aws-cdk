@@ -68,8 +68,8 @@ class HttpRoutePrefixPathMatch extends HttpRoutePathMatch {
   constructor(private readonly prefix: string) {
     super();
 
-    if (this.prefix && this.prefix[0] !== '/') {
-      throw new Error(`Prefix Path for the match must start with \'/\', got: ${this.prefix}`);
+    if (prefix && prefix[0] !== '/') {
+      throw new Error(`Prefix Path for the match must start with \'/\', got: ${prefix}`);
     }
   }
 
@@ -84,8 +84,8 @@ class HttpRouteWholePathMatch extends HttpRoutePathMatch {
   constructor(private readonly match: CfnRoute.HttpPathMatchProperty) {
     super();
 
-    if (this.match.exact && this.match.exact[0] !== '/') {
-      throw new Error(`Exact Path for the match must start with \'/\', got: ${this.match.exact}`);
+    if (match.exact && match.exact[0] !== '/') {
+      throw new Error(`Exact Path for the match must start with \'/\', got: ${match.exact}`);
     }
   }
 
@@ -142,8 +142,9 @@ export abstract class HttpGatewayRoutePathMatch {
    *   If provided as "/", matches all requests.
    *   For example, if your virtual service name is "my-service.local"
    *   and you want the route to match requests to "my-service.local/metrics", your prefix should be "/metrics".
-   * @param rewriteTo Specify either disabling automatic rewrite to '/' or rewriting to specified prefix path.
+   * @param rewriteTo Specify either disabling automatic rewrite or rewriting to specified prefix path.
    *   To disable automatic rewrite, provide `''`.
+   *   As a default, request's URL path is automatically rewritten to '/'.
    */
   public static startsWith(prefixPathMatch: string, rewriteTo?: string): HttpGatewayRoutePathMatch {
     return new HttpGatewayRoutePrefixPathMatch(prefixPathMatch, rewriteTo);
@@ -155,9 +156,10 @@ export abstract class HttpGatewayRoutePathMatch {
    *
    * @param path the exact path to match on
    * @param rewriteTo the value to substitute for the matched part of the path of the gateway request URL
+   *   As a default, retains original request's URL path.
    */
   public static exactly(path: string, rewriteTo?: string): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRouteWholePathMatch({ exact: path }, { exact: rewriteTo });
+    return new HttpGatewayRouteWholePathMatch({ exact: path }, rewriteTo);
   }
 
   /**
@@ -165,9 +167,10 @@ export abstract class HttpGatewayRoutePathMatch {
    *
    * @param regex the regex used to match the path
    * @param rewriteTo the value to substitute for the matched part of the path of the gateway request URL
+   *   As a default, retains original request's URL path.
    */
   public static regex(regex: string, rewriteTo?: string): HttpGatewayRoutePathMatch {
-    return new HttpGatewayRouteWholePathMatch({ regex }, { exact: rewriteTo });
+    return new HttpGatewayRouteWholePathMatch({ regex }, rewriteTo);
   }
 
   /**
@@ -183,19 +186,19 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
   ) {
     super();
 
-    if (this.prefixPathMatch[0] !== '/') {
+    if (prefixPathMatch[0] !== '/') {
       throw new Error('Prefix path for the match must start with \'/\', '
-        + `got: ${this.prefixPathMatch}`);
+        + `got: ${prefixPathMatch}`);
     }
 
-    if (this.rewriteTo && this.rewriteTo !== '') {
-      if (this.prefixPathMatch[this.prefixPathMatch.length - 1] !== '/') {
+    if (rewriteTo && rewriteTo !== '') {
+      if (prefixPathMatch[prefixPathMatch.length - 1] !== '/') {
         throw new Error('When prefix path for the rewrite is specified, prefix path for the match must end with \'/\', '
-          + `got: ${this.prefixPathMatch}`);
+          + `got: ${prefixPathMatch}`);
       }
-      if (this.rewriteTo[0] !== '/' || this.rewriteTo[this.rewriteTo.length - 1] !== '/') {
+      if (rewriteTo[0] !== '/' || rewriteTo[rewriteTo.length - 1] !== '/') {
         throw new Error('Prefix path for the rewrite must start and end with \'/\', '
-          + `got: ${this.rewriteTo}`);
+          + `got: ${rewriteTo}`);
       }
     }
   }
@@ -216,25 +219,29 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
 class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly wholePathMatch: CfnGatewayRoute.HttpPathMatchProperty,
-    private readonly wholePathRewrite?: CfnGatewayRoute.HttpGatewayRoutePathRewriteProperty,
+    private readonly exactPathRewrite?: string | undefined,
   ) {
     super();
 
-    if (this.wholePathMatch.exact && this.wholePathMatch.exact[0] !== '/') {
-      throw new Error(`Exact Path for the match must start with \'/\', got: ${ this.wholePathMatch.exact }`);
+    if (wholePathMatch.exact && wholePathMatch.exact[0] !== '/') {
+      throw new Error(`Exact Path for the match must start with \'/\', got: ${ wholePathMatch.exact }`);
     }
-    if (this.wholePathRewrite?.exact === '') {
+    if (exactPathRewrite === '') {
       throw new Error('Exact Path for the rewrite cannot be empty. Unlike startsWith() method, no automatic rewrite on whole path match');
     }
-    if (this.wholePathRewrite?.exact && this.wholePathRewrite.exact[0] !== '/') {
-      throw new Error(`Exact Path for the rewrite must start with \'/\', got: ${ this.wholePathRewrite.exact }`);
+    if (exactPathRewrite && exactPathRewrite[0] !== '/') {
+      throw new Error(`Exact Path for the rewrite must start with \'/\', got: ${ exactPathRewrite }`);
     }
   }
 
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
       wholePathMatch: this.wholePathMatch,
-      wholePathRewrite: this.wholePathRewrite?.exact ? this.wholePathRewrite : undefined,
+      wholePathRewrite: this.exactPathRewrite
+        ? {
+          exact: this.exactPathRewrite,
+        }
+        : undefined,
     };
   }
 }
