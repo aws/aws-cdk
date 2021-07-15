@@ -231,6 +231,10 @@ export enum HttpIntegrationSubtype {
    * SQS ReceiveMessage integration,
    */
   SQS_RECEIVEMESSAGE = 'SQS-ReceiveMessage',
+  /**
+   * SQS DeleteMessage integration,
+   */
+  SQS_DELETEMESSAGE = 'SQS-DeleteMessage',
 }
 
 /**

@@ -237,3 +237,27 @@ export class SQSReceiveMessageIntegration implements IHttpRouteIntegration {
     };
   }
 }
+
+export interface SQSDeleteMessageIntegrationProps extends SQSIntegrationProps {
+  /**
+   * The receipt handle associated with the message to delete.
+   */
+  readonly receiptHandle: string;
+}
+
+export class SQSDeleteMessageIntegration implements IHttpRouteIntegration {
+  constructor(private readonly props: SQSDeleteMessageIntegrationProps) { }
+  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    return {
+      type: HttpIntegrationType.LAMBDA_PROXY,
+      subtype: HttpIntegrationSubtype.SQS_DELETEMESSAGE,
+      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+      credentials: this.props.credentials,
+      requestParameters: {
+        QueueUrl: this.props.queue.queueUrl,
+        ReceiptHandle: this.props.receiptHandle,
+        Region: this.props.region,
+      },
+    };
+  }
+}
