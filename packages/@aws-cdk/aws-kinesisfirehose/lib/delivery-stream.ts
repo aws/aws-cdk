@@ -209,14 +209,15 @@ export class DeliveryStream extends DeliveryStreamBase {
       physicalName: props.deliveryStreamName,
     });
 
+    if (props.destinations.length !== 1) {
+      throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
+    }
+
     const role = props.role ?? new iam.Role(this, 'Service Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
     this.grantPrincipal = role;
 
-    if (props.destinations.length !== 1) {
-      throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
-    }
     const destinationConfig = props.destinations[0].bind(this, { deliveryStream: this, role: role });
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
