@@ -2,6 +2,7 @@ import { HttpIntegrationSubtype, HttpIntegrationType, HttpRouteIntegrationBindOp
 import { IEventBus } from '@aws-cdk/aws-events';
 import { IStream } from '@aws-cdk/aws-kinesis';
 import { IQueue } from '@aws-cdk/aws-sqs';
+import { IStateMachine } from '@aws-cdk/aws-stepfunctions';
 import { Duration } from '@aws-cdk/core';
 
 interface AwsServiceIntegrationProps {
@@ -323,6 +324,99 @@ export class KinesisPutRecordIntegration implements IHttpRouteIntegration {
         PartitionKey: this.props.partitionKey,
         SequenceNumberForOrdering: this.props.sequenceNumberForOrdering,
         ExplicitHashKey: this.props.explicitHashKey,
+        Region: this.props.region,
+      },
+    };
+  }
+}
+
+export interface StepFunctionsStartExecutionIntegrationProps extends AwsServiceIntegrationProps {
+  /**
+   * The StateMachine to execute.
+   */
+  readonly stateMachine: IStateMachine;
+  /**
+   * The name of the execution.
+   * @default - undefined
+   */
+  readonly name?: string;
+  /**
+   * The string that contains the JSON input data for the execution.
+   * @default - no input
+   */
+  readonly input?: string;
+  /**
+   * Passes the AWS X-Ray trace header.
+   */
+  readonly traceHeader?: string;
+}
+
+export class StepFunctionsStartExecutionIntegration implements IHttpRouteIntegration {
+  constructor(private readonly props: StepFunctionsStartExecutionIntegrationProps) { }
+  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    return {
+      type: HttpIntegrationType.LAMBDA_PROXY,
+      subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STARTEXECUTION,
+      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+      credentials: this.props.credentials,
+      requestParameters: {
+        StateMachineArn: this.props.stateMachine.stateMachineArn,
+        Name: this.props.name,
+        Input: this.props.input,
+        Region: this.props.region,
+      },
+    };
+  }
+}
+
+export class StepFunctionsStartSyncExecutionIntegration implements IHttpRouteIntegration {
+  constructor(private readonly props: StepFunctionsStartExecutionIntegrationProps) { }
+  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    return {
+      type: HttpIntegrationType.LAMBDA_PROXY,
+      subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STARTSYNCEXECUTION,
+      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+      credentials: this.props.credentials,
+      requestParameters: {
+        StateMachineArn: this.props.stateMachine.stateMachineArn,
+        Name: this.props.name,
+        Input: this.props.input,
+        TraceHeader: this.props.traceHeader,
+        Region: this.props.region,
+      },
+    };
+  }
+}
+
+export interface StepFunctionsStopExecutionIntegrationProps extends AwsServiceIntegrationProps {
+  /**
+   * The Amazon Resource Name (ARN) of the execution to stop.
+   */
+  executionArn: string;
+  /**
+   * A more detailed explanation of the cause of the failure.
+   * @default - undefined
+   */
+  cause?: string;
+  /**
+   * The error code of the failure.
+   * @default - undefined
+   */
+  error?: string;
+}
+
+export class StepFunctionsStopExecutionIntegration implements IHttpRouteIntegration {
+  constructor(private readonly props: StepFunctionsStopExecutionIntegrationProps) { }
+  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    return {
+      type: HttpIntegrationType.LAMBDA_PROXY,
+      subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STOPEXECUTION,
+      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+      credentials: this.props.credentials,
+      requestParameters: {
+        ExecutionArn: this.props.executionArn,
+        Cause: this.props.cause,
+        Error: this.props.error,
         Region: this.props.region,
       },
     };

@@ -247,6 +247,18 @@ export enum HttpIntegrationSubtype {
    * Kinesis PutRecord integration
    */
   KINESIS_PUTRECORD = 'Kinesis-PutRecord',
+  /**
+   * Step Functions StartExecution integration
+   */
+  STEPFUNCTIONS_STARTEXECUTION = 'StepFunctions-StartExecution',
+  /**
+   * Step Functions StartSyncExecution integration
+   */
+  STEPFUNCTIONS_STARTSYNCEXECUTION = 'StepFunctions-StartSyncExecution',
+  /**
+   * Step Functions StopExecution integration
+   */
+  STEPFUNCTIONS_STOPEXECUTION = 'StepFunctions-StopExecution',
 }
 
 /**
