@@ -299,6 +299,10 @@
                     "description": "The role that needs to be assumed to deploy the stack (Default - No role is assumed (current credentials are used))",
                     "type": "string"
                 },
+                "assumeRoleExternalId": {
+                    "description": "External ID to use when assuming role for cloudformation deployments (Default - No external ID)",
+                    "type": "string"
+                },
                 "cloudFormationExecutionRoleArn": {
                     "description": "The role that is passed to CloudFormation to execute the change set (Default - No role is passed (currently assumed role/credentials are used))",
                     "type": "string"

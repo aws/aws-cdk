@@ -99,6 +99,13 @@ export interface DefaultStackSynthesizerProps {
   readonly imageAssetPublishingExternalId?: string;
 
   /**
+   * External ID to use when assuming role for cloudformation deployments
+   *
+   * @default - No external ID
+   */
+  readonly deployRoleExternalId?: string;
+
+  /**
    * The role to assume to initiate a deployment in this environment
    *
    * You must supply this if you have given a non-standard name to the publishing role.
@@ -424,6 +431,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     const artifactId = this.writeAssetManifest(session);
 
     this.emitStackArtifact(this.stack, session, {
+      assumeRoleExternalId: this.props.deployRoleExternalId,
       assumeRoleArn: this._deployRoleArn,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
