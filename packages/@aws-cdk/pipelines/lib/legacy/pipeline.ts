@@ -6,14 +6,15 @@ import { Annotations, App, Aws, CfnOutput, Fn, Lazy, PhysicalName, Stack, Stage 
 import { Construct } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../docker-credentials';
+import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
 import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
-import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
+import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
+import { SimpleSynthAction } from './synths';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-import { SimpleSynthAction } from './synths';
 
 const CODE_BUILD_LENGTH_LIMIT = 100;
 /**
@@ -184,6 +185,7 @@ export class CdkPipeline extends CoreConstruct {
   private readonly _outputArtifacts: Record<string, codepipeline.Artifact> = {};
   private readonly _cloudAssemblyArtifact: codepipeline.Artifact;
   private readonly _dockerCredentials: DockerCredential[];
+  private _applicationSecurityCheck?: ApplicationSecurityCheck;
 
   constructor(scope: Construct, id: string, props: CdkPipelineProps) {
     super(scope, id);
@@ -289,6 +291,22 @@ export class CdkPipeline extends CoreConstruct {
   }
 
   /**
+   * Get a cached version of an Application Security Check, which consists of:
+   *  - CodeBuild Project to check for security changes in a stage
+   *  - Lambda Function that approves the manual approval if no security changes are detected
+   *
+   * @internal
+   */
+  public _getApplicationSecurityCheck(): ApplicationSecurityCheck {
+    if (!this._applicationSecurityCheck) {
+      this._applicationSecurityCheck = new ApplicationSecurityCheck(this, 'PipelineApplicationSecurityCheck', {
+        codePipeline: this._pipeline,
+      });
+    }
+    return this._applicationSecurityCheck;
+  }
+
+  /**
    * Add pipeline stage that will deploy the given application stage
    *
    * The application construct should subclass `Stage` and can contain any
@@ -300,7 +318,7 @@ export class CdkPipeline extends CoreConstruct {
    * publishing stage.
    */
   public addApplicationStage(appStage: Stage, options: AddStageOptions = {}): CdkStage {
-    const stage = this.addStage(appStage.stageName);
+    const stage = this.addStage(appStage.stageName, options);
     stage.addApplication(appStage, options);
     return stage;
   }
@@ -312,7 +330,7 @@ export class CdkPipeline extends CoreConstruct {
    * application, but you can use this method if you want to add other kinds of
    * Actions to a pipeline.
    */
-  public addStage(stageName: string) {
+  public addStage(stageName: string, options?: BaseStageOptions) {
     const pipelineStage = this._pipeline.addStage({
       stageName,
     });
@@ -325,6 +343,7 @@ export class CdkPipeline extends CoreConstruct {
         publishAsset: this._assets.addPublishAssetAction.bind(this._assets),
         stackOutputArtifact: (artifactId) => this._outputArtifacts[artifactId],
       },
+      ...options,
     });
     this._stages.push(stage);
     return stage;
