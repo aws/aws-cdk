@@ -142,7 +142,7 @@
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
-    "TestPortfolioLaunchNotificationConstraintb1547c0c178e7AAABF5C": {
+    "TestPortfolioLaunchNotificationConstrainteeb4ac7c7750FE183A36": {
       "Type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
       "Properties": {
         "NotificationArns": [
@@ -161,7 +161,7 @@
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
-    "TestPortfolioLaunchNotificationConstraint87c71e581e8d272D0C26": {
+    "TestPortfolioLaunchNotificationConstraintd8ff4fef84c7410D7DE7": {
       "Type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
       "Properties": {
         "NotificationArns": [
@@ -180,7 +180,7 @@
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
-    "TestPortfolioLaunchNotificationConstraintbf00f9c9cde2DC05E0C9": {
+    "TestPortfolioLaunchNotificationConstraintcc94388e1675E1E365CC": {
       "Type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
       "Properties": {
         "NotificationArns": [
@@ -199,7 +199,7 @@
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
-    "TestPortfolioLaunchNotificationConstraintc66e0915ca03566C1AC3": {
+    "TestPortfolioLaunchNotificationConstraintcf142bf0f47dCF6B145A": {
       "Type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
       "Properties": {
         "NotificationArns": [
