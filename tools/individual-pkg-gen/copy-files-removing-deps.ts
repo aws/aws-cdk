@@ -21,10 +21,21 @@ function copyFilesRemovingDependencies(): void {
     const destDir = path.join('.', packageUnscopedName);
     fs.mkdirpSync(destDir);
 
-    copyOrTransformFiles(pkg, srcDir, destDir);
+    copyOrTransformFiles(pkg, srcDir, destDir, [
+      // list of files to _not_ copy from the V1 package root
+      // .gitignore is not on the list, because pkglint checks it
+      'dist',
+      'node_modules',
+      'coverage',
+      '.nyc_output',
+      'nyc.config.js',
+      '.jsii',
+      'tsconfig.json',
+      'tsconfig.tsbuildinfo',
+    ]);
   }
 
-  function copyOrTransformFiles(pkg: any, srcDir: string, destDir: string): void {
+  function copyOrTransformFiles(pkg: any, srcDir: string, destDir: string, ignoredFiles: string[]): void {
     const sourceFiles = fs.readdirSync(srcDir);
     for (const sourceFileName of sourceFiles) {
       if (shouldIgnoreFile(sourceFileName)) {
@@ -68,10 +79,12 @@ function copyFilesRemovingDependencies(): void {
           // regular dependencies
           const alphaDependencies: { [dep: string]: string } = {};
           const constructsAndCdkLibDevDeps: { [dep: string]: string } = {};
+          const bundledDependencies: { [dep: string]: string } = {};
+          const v1BundledDependencies: string[] = packageJson.bundledDependencies || [];
           for (const dependency of Object.keys(packageJson.dependencies || {})) {
             // all 'regular' dependencies on alpha modules will be converted to
             // a pair of devDependency on '0.0.0' and peerDependency on '^0.0.0',
-            // and the package will have no regular dependencies anymore
+            // and the package will have no regular dependencies anymore...
             switch (dependency) {
               // @core corresponds to aws-cdk-lib
               case '@aws-cdk/core':
@@ -83,10 +96,13 @@ function copyFilesRemovingDependencies(): void {
               default:
                 if (alphaPackages[dependency]) {
                   alphaDependencies[alphaPackages[dependency]] = pkg.version;
+                } else if (v1BundledDependencies.indexOf(dependency) !== -1) {
+                  // ...other than third-party dependencies, which are in bundledDependencies
+                  bundledDependencies[dependency] = packageJson.dependencies[dependency];
                 }
             }
           }
-          packageJson.dependencies = undefined;
+          packageJson.dependencies = bundledDependencies;
 
           // devDependencies
           const alphaDevDependencies: { [dep: string]: string } = {};
@@ -150,10 +166,19 @@ function copyFilesRemovingDependencies(): void {
         // (as the unstable packages don't use direct dependencies,
         // but instead a combination of devDependencies + peerDependencies)
         fileProcessed = true;
-        const esLintRcContents = fs.readFileSync(source);
-        fs.outputFileSync(destination, Buffer.concat([esLintRcContents,
-          Buffer.from("\nbaseConfig.rules['import/no-extraneous-dependencies'] = ['error', " +
-              '{ devDependencies: true, peerDependencies: true } ];\n')]));
+        const esLintRcLines = fs.readFileSync(source).toString().split('\n');
+        const resultFileLines = [];
+        for (const line of esLintRcLines) {
+          resultFileLines.push(line);
+          // put our new line right after the parserOptions.project setting line,
+          // as some files export a copy of this object,
+          // in which case putting it at the end doesn't work
+          if (line.startsWith('baseConfig.parserOptions.project')) {
+            resultFileLines.push("\nbaseConfig.rules['import/no-extraneous-dependencies'] = ['error', " +
+              '{ devDependencies: true, peerDependencies: true } ];\n');
+          }
+        }
+        fs.outputFileSync(destination, resultFileLines.join('\n'));
       } else if (sourceFileName.endsWith('.ts') && !sourceFileName.endsWith('.d.ts')) {
         fileProcessed = true;
         const sourceCode = fs.readFileSync(source).toString();
@@ -169,26 +194,20 @@ function copyFilesRemovingDependencies(): void {
 
       const stat = fs.statSync(source);
       if (stat.isDirectory()) {
-        copyOrTransformFiles(pkg, source, destination);
+        // we only ignore files on the top level in the package,
+        // as some subdirectories we do want to copy over
+        // (for example, synthetics contains a node_modules/ in the test/ directory
+        // that is needed for running the tests)
+        copyOrTransformFiles(pkg, source, destination, []);
       } else {
         fs.copySync(source, destination);
       }
     }
-  }
-}
 
-function shouldIgnoreFile(name: string): boolean {
-  // .gitignore is not on the list, because pkglint checks it
-  return [
-    'dist',
-    'node_modules',
-    'coverage',
-    '.nyc_output',
-    'nyc.config.js',
-    '.jsii',
-    'tsconfig.json',
-    'tsconfig.tsbuildinfo',
-  ].indexOf(name) !== -1;
+    function shouldIgnoreFile(name: string): boolean {
+      return ignoredFiles.indexOf(name) !== -1;
+    }
+  }
 }
 
 function getAlphaPackages(packages: any[]): { [dep: string]: string } {
