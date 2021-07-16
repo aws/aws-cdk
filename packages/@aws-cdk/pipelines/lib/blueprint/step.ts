@@ -1,3 +1,4 @@
+import { Token } from '@aws-cdk/core';
 import { FileSet, IFileSetProducer } from './file-set';
 
 /**
@@ -27,6 +28,10 @@ export abstract class Step implements IFileSetProducer {
   constructor(
     /** Identifier for this step */
     public readonly id: string) {
+
+    if (Token.isUnresolved(id)) {
+      throw new Error(`Step id cannot be unresolved, got '${id}'`);
+    }
   }
 
   /**
