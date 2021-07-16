@@ -1,6 +1,6 @@
 import { Aspects, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AddStageOpts as StageOptions, WaveOptions, Wave, IFileSetProducer, ShellStep } from '../blueprint';
+import { AddStageOpts as StageOptions, WaveOptions, Wave, IFileSetProducer, ShellStep, FileSet } from '../blueprint';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -46,6 +46,13 @@ export abstract class PipelineBase extends CoreConstruct {
    */
   public readonly waves: Wave[];
 
+  /**
+   * The FileSet tha contains the cloud assembly
+   *
+   * This is the primary output of the synth step.
+   */
+  public readonly cloudAssemblyFileSet: FileSet;
+
   private built = false;
 
   constructor(scope: Construct, id: string, props: PipelineBaseProps) {
@@ -55,12 +62,13 @@ export abstract class PipelineBase extends CoreConstruct {
       props.synth.primaryOutputDirectory('cdk.out');
     }
 
-    this.synth = props.synth;
-    this.waves = [];
-
     if (!props.synth.primaryOutput) {
       throw new Error(`synthStep ${props.synth} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`);
     }
+
+    this.synth = props.synth;
+    this.waves = [];
+    this.cloudAssemblyFileSet = props.synth.primaryOutput;
 
     Aspects.of(this).add({ visit: () => this.buildJustInTime() });
   }
