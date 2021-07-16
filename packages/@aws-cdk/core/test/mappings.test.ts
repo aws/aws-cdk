@@ -122,3 +122,101 @@ nodeunitShim({
     test.done();
   },
 });
+
+describe('lazy mapping', () => {
+  let stack: Stack;
+  const backing = {
+    TopLevelKey1: {
+      SecondLevelKey1: [1, 2, 3],
+      SecondLevelKey2: { Hello: 'World' },
+    },
+  };
+  const mappingId = '@aws-cdk/core.TestLazyMapping';
+
+  beforeAll(() => {
+    CfnMapping.registerLazyMap(mappingId, backing);
+  });
+
+  beforeEach(() => {
+    stack = new Stack();
+  });
+
+  it('does not create CfnMapping if keys can be resolved', () => {
+    const retrievedValue = CfnMapping.findInLazyMap(stack, mappingId, 'TopLevelKey1', 'SecondLevelKey1');
+
+    expect(stack.resolve(retrievedValue)).toStrictEqual([1, 2, 3]);
+    expect(toCloudFormation(stack)).toStrictEqual({});
+  });
+
+  it('creates CfnMapping if top level key cannot be resolved', () => {
+    const retrievedValue = CfnMapping.findInLazyMap(stack, mappingId, Aws.REGION, 'SecondLevelKey1');
+
+    expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['awscdkcoreTestLazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1'] });
+    expect(toCloudFormation(stack)).toStrictEqual({
+      Mappings: {
+        awscdkcoreTestLazyMapping: {
+          TopLevelKey1: {
+            SecondLevelKey1: [1, 2, 3],
+            SecondLevelKey2: { Hello: 'World' },
+          },
+        },
+      },
+    });
+  });
+
+  it('creates CfnMapping if second level key cannot be resolved', () => {
+    const retrievedValue = CfnMapping.findInLazyMap(stack, mappingId, 'TopLevelKey1', Aws.REGION);
+
+    expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['awscdkcoreTestLazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }] });
+    expect(toCloudFormation(stack)).toStrictEqual({
+      Mappings: {
+        awscdkcoreTestLazyMapping: {
+          TopLevelKey1: {
+            SecondLevelKey1: [1, 2, 3],
+            SecondLevelKey2: { Hello: 'World' },
+          },
+        },
+      },
+    });
+  });
+
+  it('only creates CfnMapping once if key cannot be resolved', () => {
+    CfnMapping.findInLazyMap(stack, mappingId, Aws.REGION, 'SecondLevelKey1');
+
+    expect(() => CfnMapping.findInLazyMap(stack, mappingId, Aws.REGION, 'SecondLevelKey2')).not.toThrow();
+    expect(toCloudFormation(stack)).toStrictEqual({
+      Mappings: {
+        awscdkcoreTestLazyMapping: {
+          TopLevelKey1: {
+            SecondLevelKey1: [1, 2, 3],
+            SecondLevelKey2: { Hello: 'World' },
+          },
+        },
+      },
+    });
+  });
+
+  it('does not throw if mapping has already been registered with the same backing', () => {
+    expect(() => CfnMapping.registerLazyMap(mappingId, backing)).not.toThrow();
+  });
+
+  it('throws if mapping has already been registered with a different backing', () => {
+    expect(() => CfnMapping.registerLazyMap(mappingId, {
+      TopLevelKey2: {
+        SecondLevelKey3: 'somevalue',
+      },
+    })).toThrowError(/Attempted to register mapping .* but a different mapping has already been registered with this ID/);
+  });
+
+  it('throws if mapping has not been registered', () => {
+    expect(() => CfnMapping.findInLazyMap(stack, 'NonExistentMappingId', 'TopLevelKey1', 'SecondLevelKey1'))
+      .toThrowError(/Mapping .* is not registered as a lazy map/);
+  });
+
+  it('throws if keys can be resolved but are not found in backing', () => {
+    expect(() => CfnMapping.findInLazyMap(stack, mappingId, 'NonExistentKey', 'SecondLevelKey1'))
+      .toThrowError(/Mapping .* does not contain top-level key .*/);
+    expect(() => CfnMapping.findInLazyMap(stack, mappingId, 'TopLevelKey1', 'NonExistentKey'))
+      .toThrowError(/Mapping .* does not contain second-level key .*/);
+  });
+});
