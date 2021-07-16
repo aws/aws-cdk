@@ -435,7 +435,7 @@
                         {
                           "Ref": "SecurityChangesTopic9762A9B3"
                         },
-                        "\"},{\"name\":\"NOTIFICATION_SUBJECT\",\"type\":\"PLAINTEXT\",\"value\":\"Confirm Broadening IAM Permissions in SingleStage\"}]"
+                        "\"},{\"name\":\"NOTIFICATION_SUBJECT\",\"type\":\"PLAINTEXT\",\"value\":\"Confirm permission broadening in SingleStage\"}]"
                       ]
                     ]
                   }
@@ -572,7 +572,7 @@
                         {
                           "Ref": "SecurityChangesTopic9762A9B3"
                         },
-                        "\"},{\"name\":\"NOTIFICATION_SUBJECT\",\"type\":\"PLAINTEXT\",\"value\":\"Confirm Broadening IAM Permissions in PreProduction\"}]"
+                        "\"},{\"name\":\"NOTIFICATION_SUBJECT\",\"type\":\"PLAINTEXT\",\"value\":\"Confirm permission broadening in PreProduction\"}]"
                       ]
                     ]
                   }
@@ -631,7 +631,7 @@
                         {
                           "Ref": "SecurityChangesTopic9762A9B3"
                         },
-                        "\"},{\"name\":\"NOTIFICATION_SUBJECT\",\"type\":\"PLAINTEXT\",\"value\":\"Confirm Broadening IAM Permissions in SafeProduction\"}]"
+                        "\"},{\"name\":\"NOTIFICATION_SUBJECT\",\"type\":\"PLAINTEXT\",\"value\":\"Confirm permission broadening in SafeProduction\"}]"
                       ]
                     ]
                   }
@@ -1791,7 +1791,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-          "S3Key": "8c1fcf55931ef022deab1e63c3d8404f4387ba8fccc19626150e7fc64d4c3ff8.zip"
+          "S3Key": "6c6c8f170c2cc5c6e35d90fe172fbc17cae75777b84707d58332dee79f444404.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -2023,7 +2023,7 @@
                 {
                   "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApprove1EE0AA81"
                 },
-                " --invocation-type Event --payload \\\"$payload\\\" lambda.out; export MESSAGE=\\\"No changes detected.\\\"; else [ -z \\\"${NOTIFICATION_ARN}\\\" ] || aws sns publish --topic-arn $NOTIFICATION_ARN --subject \\\"$NOTIFICATION_SUBJECT\\\" --message \\\"Broadening IAM Permssions detected in $PIPELINE_NAME: $STAGE_NAME.\\nYou must manually approve the changes in CodePipeline to unblock the pipeline.\\n\\nSee the security changes in the CodeBuild Logs\\n===\\n$LINK\\n\\nApprove changes in CodePipline\\n===\\n$PIPELINE_LINK\\\"; export MESSAGE=\\\"Changes detected! Requires Manual Approval\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
+                " --invocation-type Event --payload \\\"$payload\\\" lambda.out; export MESSAGE=\\\"No security-impacting changes detected.\\\"; else [ -z \\\"${NOTIFICATION_ARN}\\\" ] || aws sns publish --topic-arn $NOTIFICATION_ARN --subject \\\"$NOTIFICATION_SUBJECT\\\" --message \\\"An upcoming change would broaden security changes in $PIPELINE_NAME.\\nReview and approve the changes in CodePipeline to proceed with the deployment.\\n\\nReview the changes in CodeBuild:\\n\\n$LINK\\n\\nApprove the changes in CodePipeline (stage $STAGE_NAME, action $ACTION_NAME):\\n\\n$PIPELINE_LINK\\\"; export MESSAGE=\\\"Deployment would make security-impacting changes. Click the link below to inspect them, then click Approve if all changes are expected.\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
               ]
             ]
           },
@@ -2102,7 +2102,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-          "S3Key": "8c1fcf55931ef022deab1e63c3d8404f4387ba8fccc19626150e7fc64d4c3ff8.zip"
+          "S3Key": "6c6c8f170c2cc5c6e35d90fe172fbc17cae75777b84707d58332dee79f444404.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -2334,7 +2334,7 @@
                 {
                   "Ref": "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApprove249F82F9"
                 },
-                " --invocation-type Event --payload \\\"$payload\\\" lambda.out; export MESSAGE=\\\"No changes detected.\\\"; else [ -z \\\"${NOTIFICATION_ARN}\\\" ] || aws sns publish --topic-arn $NOTIFICATION_ARN --subject \\\"$NOTIFICATION_SUBJECT\\\" --message \\\"Broadening IAM Permssions detected in $PIPELINE_NAME: $STAGE_NAME.\\nYou must manually approve the changes in CodePipeline to unblock the pipeline.\\n\\nSee the security changes in the CodeBuild Logs\\n===\\n$LINK\\n\\nApprove changes in CodePipline\\n===\\n$PIPELINE_LINK\\\"; export MESSAGE=\\\"Changes detected! Requires Manual Approval\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
+                " --invocation-type Event --payload \\\"$payload\\\" lambda.out; export MESSAGE=\\\"No security-impacting changes detected.\\\"; else [ -z \\\"${NOTIFICATION_ARN}\\\" ] || aws sns publish --topic-arn $NOTIFICATION_ARN --subject \\\"$NOTIFICATION_SUBJECT\\\" --message \\\"An upcoming change would broaden security changes in $PIPELINE_NAME.\\nReview and approve the changes in CodePipeline to proceed with the deployment.\\n\\nReview the changes in CodeBuild:\\n\\n$LINK\\n\\nApprove the changes in CodePipeline (stage $STAGE_NAME, action $ACTION_NAME):\\n\\n$PIPELINE_LINK\\\"; export MESSAGE=\\\"Deployment would make security-impacting changes. Click the link below to inspect them, then click Approve if all changes are expected.\\\"; fi\"\n      ]\n    }\n  },\n  \"env\": {\n    \"exported-variables\": [\n      \"LINK\",\n      \"MESSAGE\"\n    ]\n  }\n}"
               ]
             ]
           },
