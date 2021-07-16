@@ -3,7 +3,13 @@ import { HttpApi, HttpRoute, HttpRouteKey, IntegrationCredentials } from '@aws-c
 import { IRole, Role } from '@aws-cdk/aws-iam';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
-import { SQSAttribute, SQSDeleteMessageIntegration, SQSPurgeQueueIntegration, SQSReceiveMessageIntegration, SQSSendMessageIntegration } from '../../lib/http/aws-proxy';
+import {
+  SQSAttribute,
+  SQSDeleteMessageIntegration,
+  SQSPurgeQueueIntegration,
+  SQSReceiveMessageIntegration,
+  SQSSendMessageIntegration,
+} from '../../lib/http/aws-proxy';
 
 describe('SQS Integrations', () => {
   describe('SendMessage', () => {
@@ -38,7 +44,10 @@ describe('SQS Integrations', () => {
         api,
         queue,
         role,
-      } = setupTestFixtures('arn:aws:sqs:us-east-1:123456789012:queue', 'arn:aws:iam::123456789012:role/sqs-role');
+      } = setupTestFixtures(
+        'arn:aws:sqs:us-east-1:123456789012:queue',
+        'arn:aws:iam::123456789012:role/sqs-role',
+      );
       new HttpRoute(stack, 'Full', {
         httpApi: api,
         integration: new SQSSendMessageIntegration({
@@ -80,7 +89,10 @@ describe('SQS Integrations', () => {
       api,
       role,
       queue,
-    } = setupTestFixtures('arn:aws:sqs:us-west-1:123456789012:receive-queue.fifo', 'arn:aws:iam::123456789012:role/sqs-receive');
+    } = setupTestFixtures(
+      'arn:aws:sqs:us-west-1:123456789012:receive-queue.fifo',
+      'arn:aws:iam::123456789012:role/sqs-receive',
+    );
 
     new HttpRoute(stack, 'Route', {
       httpApi: api,
@@ -121,7 +133,10 @@ describe('SQS Integrations', () => {
       api,
       role,
       queue,
-    } = setupTestFixtures('arn:aws:sqs:eu-west-2:123456789012:queue', 'arn:aws:iam::123456789012:role/sqs-delete');
+    } = setupTestFixtures(
+      'arn:aws:sqs:eu-west-2:123456789012:queue',
+      'arn:aws:iam::123456789012:role/sqs-delete',
+    );
     new HttpRoute(stack, 'Route', {
       httpApi: api,
       integration: new SQSDeleteMessageIntegration({
@@ -151,7 +166,10 @@ describe('SQS Integrations', () => {
       api,
       queue,
       role,
-    } = setupTestFixtures('arn:aws:sqs:eu-west-1:123456789012:queue', 'arn:aws:iam::123456789012:role/purge');
+    } = setupTestFixtures(
+      'arn:aws:sqs:eu-west-1:123456789012:queue',
+      'arn:aws:iam::123456789012:role/purge',
+    );
     new HttpRoute(stack, 'Route', {
       httpApi: api,
       integration: new SQSPurgeQueueIntegration({
@@ -176,7 +194,12 @@ describe('SQS Integrations', () => {
 });
 
 function setupTestFixtures(queueArn: string): { stack: Stack, api: HttpApi, queue: IQueue };
-function setupTestFixtures(queueArn: string, roleArn: string): { stack: Stack, api: HttpApi, queue: IQueue, role: IRole };
+function setupTestFixtures(queueArn: string, roleArn: string): {
+  stack: Stack,
+  api: HttpApi,
+  queue: IQueue,
+  role: IRole,
+};
 function setupTestFixtures(queueArn: string, roleArn?: string) {
   const stack = new Stack();
   const api = new HttpApi(stack, 'API');
