@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { TemplateAssertions } from '@aws-cdk/assertions';
 import { Queue } from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as sns from '../lib';
@@ -17,7 +17,7 @@ describe('Subscription', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Endpoint: 'endpoint',
       Protocol: 'lambda',
       TopicArn: {
@@ -45,7 +45,7 @@ describe('Subscription', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Endpoint: 'endpoint',
       Protocol: 'lambda',
       TopicArn: {
@@ -60,11 +60,11 @@ describe('Subscription', () => {
         },
       },
     });
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       QueueName: 'MySubscription_DLQ',
       MessageRetentionPeriod: 1209600,
     });
-    expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -128,7 +128,7 @@ describe('Subscription', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       FilterPolicy: {
         color: [
           'red',
@@ -168,7 +168,7 @@ describe('Subscription', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       FilterPolicy: {
         size: [{ exists: true }],
       },

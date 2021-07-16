@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { TemplateAssertions } from '@aws-cdk/assertions';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -13,7 +13,7 @@ describe('Topic', () => {
       const stack = new cdk.Stack();
       new sns.Topic(stack, 'MyTopic');
 
-      expect(stack).toHaveResource('AWS::SNS::Topic');
+      TemplateAssertions.fromStack(stack).resourceCountIs('AWS::SNS::Topic', 1);
 
     });
 
@@ -24,7 +24,7 @@ describe('Topic', () => {
         topicName: 'topicName',
       });
 
-      expect(stack).toHaveResource('AWS::SNS::Topic', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         'TopicName': 'topicName',
       });
 
@@ -38,7 +38,7 @@ describe('Topic', () => {
         displayName: 'displayName',
       });
 
-      expect(stack).toHaveResource('AWS::SNS::Topic', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         'DisplayName': 'displayName',
       });
 
@@ -53,7 +53,7 @@ describe('Topic', () => {
         masterKey: key,
       });
 
-      expect(stack).toHaveResource('AWS::SNS::Topic', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         'KmsMasterKeyId': { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
       });
 
@@ -68,7 +68,7 @@ describe('Topic', () => {
         displayName: 'displayName',
       });
 
-      expect(stack).toHaveResource('AWS::SNS::Topic', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         'DisplayName': 'displayName',
         'TopicName': 'topicName',
       });
@@ -96,7 +96,7 @@ describe('Topic', () => {
         topicName: 'topicName',
       });
 
-      expect(stack).toHaveResource('AWS::SNS::Topic', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         'FifoTopic': true,
         'TopicName': 'topicName.fifo',
       });
@@ -112,7 +112,7 @@ describe('Topic', () => {
         topicName: 'topicName.fifo',
       });
 
-      expect(stack).toHaveResource('AWS::SNS::Topic', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         'FifoTopic': true,
         'TopicName': 'topicName.fifo',
       });
@@ -128,7 +128,7 @@ describe('Topic', () => {
         topicName: 'topicName',
       });
 
-      expect(stack).toHaveResource('AWS::SNS::Topic', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         'FifoTopic': true,
         'TopicName': 'topicName.fifo',
       });
@@ -145,7 +145,7 @@ describe('Topic', () => {
         topicName: 'topicName',
       });
 
-      expect(stack).toHaveResource('AWS::SNS::Topic', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         'ContentBasedDeduplication': true,
         'FifoTopic': true,
         'TopicName': 'topicName.fifo',
@@ -178,7 +178,7 @@ describe('Topic', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::SNS::TopicPolicy', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -204,7 +204,7 @@ describe('Topic', () => {
     topic.grantPublish(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         Version: '2012-10-17',
         'Statement': [
@@ -233,8 +233,7 @@ describe('Topic', () => {
     new sns.TopicPolicy(stack, 'topicpolicy', { topics: [topic], policyDocument: new iam.PolicyDocument({ assignSids: true, statements: [ps] }) });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SNS::Topic');
-    expect(stack).toHaveResource('AWS::SNS::TopicPolicy', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -271,7 +270,7 @@ describe('Topic', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::SNS::TopicPolicy', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -306,7 +305,7 @@ describe('Topic', () => {
       principals: [new iam.ArnPrincipal('arn')],
     }));
 
-    expect(stack).toHaveResource('AWS::SNS::TopicPolicy', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -387,7 +386,7 @@ describe('Topic', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SNS::Subscription');
+    TemplateAssertions.fromStack(stack).resourceCountIs('AWS::SNS::Subscription', 1);
 
   });
 
@@ -409,8 +408,8 @@ describe('Topic', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::SNS::Subscription');
-    expect(stack2).toHaveResource('AWS::SNS::Subscription');
+    TemplateAssertions.fromStack(stack).resourceCountIs('AWS::SNS::Subscription', 0);
+    TemplateAssertions.fromStack(stack2).resourceCountIs('AWS::SNS::Subscription', 1);
 
   });
 
@@ -463,7 +462,7 @@ describe('Topic', () => {
 
     rule.addTarget(topic);
 
-    expect(stack).toHaveResource('AWS::SNS::TopicPolicy', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
