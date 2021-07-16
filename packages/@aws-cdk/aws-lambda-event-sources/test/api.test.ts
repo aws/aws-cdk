@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { TemplateAssertions } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as events from '../lib';
@@ -17,15 +17,15 @@ describe('ApiEventSource', () => {
     handler.addEventSource(new events.ApiEventSource('get', '/foo'));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
       ParentId: { 'Fn::GetAtt': ['MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId'] },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FfooCA6F87E4' },
-    }));
+    });
 
 
   });
@@ -44,25 +44,25 @@ describe('ApiEventSource', () => {
     handler.addEventSource(new events.ApiEventSource('post', '/bar'));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
       ParentId: { 'Fn::GetAtt': ['MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId'] },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: 'bar',
       ParentId: { 'Fn::GetAtt': ['MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId'] },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FfooCA6F87E4' },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FbarDFB0F21B' },
-    }));
+    });
 
 
   });
@@ -82,25 +82,25 @@ describe('ApiEventSource', () => {
     handler.addEventSource(new events.ApiEventSource('post', '/foo/bar/zoo'));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
       ParentId: { 'Fn::GetAtt': ['MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId'] },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: 'bar',
       ParentId: { Ref: 'MyFuncApiEventSourceA7A86A4FfooCA6F87E4' },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FfooCA6F87E4' },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4Ffoobar028FFFDE' },
-    }));
+    });
 
 
   });

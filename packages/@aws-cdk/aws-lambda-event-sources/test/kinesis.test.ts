@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { TemplateAssertions } from '@aws-cdk/assertions';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
@@ -20,7 +20,7 @@ describe('KinesisEventSource', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -58,7 +58,7 @@ describe('KinesisEventSource', () => {
       }],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'S509448A1',
@@ -89,7 +89,7 @@ describe('KinesisEventSource', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'S509448A1',
@@ -120,7 +120,7 @@ describe('KinesisEventSource', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'S509448A1',
@@ -195,7 +195,7 @@ describe('KinesisEventSource', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'S509448A1',
@@ -256,7 +256,7 @@ describe('KinesisEventSource', () => {
     fn.addEventSource(eventSource);
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
 

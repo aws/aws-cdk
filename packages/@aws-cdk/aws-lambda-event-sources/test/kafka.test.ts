@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { arrayWith } from '@aws-cdk/assert-internal';
+import { TemplateAssertions, Match } from '@aws-cdk/assertions';
 import { SecurityGroup, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
@@ -25,7 +24,7 @@ describe('KafkaEventSource', () => {
         }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -48,7 +47,7 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         EventSourceArn: clusterArn,
         FunctionName: {
           Ref: 'Fn9270CBC0',
@@ -80,7 +79,7 @@ describe('KafkaEventSource', () => {
         }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -113,7 +112,7 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         EventSourceArn: clusterArn,
         FunctionName: {
           Ref: 'Fn9270CBC0',
@@ -156,7 +155,7 @@ describe('KafkaEventSource', () => {
         }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -180,7 +179,7 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         FunctionName: {
           Ref: 'Fn9270CBC0',
         },
@@ -246,8 +245,8 @@ describe('KafkaEventSource', () => {
           }));
 
         // THEN
-        expect(stack).not.toHaveResource('AWS::IAM::Policy');
-        expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
+        TemplateAssertions.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+        TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
           FunctionName: {
             Ref: 'Fn9270CBC0',
           },
@@ -306,7 +305,7 @@ describe('KafkaEventSource', () => {
           }));
 
         // THEN
-        expect(stack).toHaveResource('AWS::IAM::Policy', {
+        TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
@@ -330,7 +329,7 @@ describe('KafkaEventSource', () => {
           ],
         });
 
-        expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
+        TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
           FunctionName: {
             Ref: 'Fn9270CBC0',
           },
@@ -443,15 +442,15 @@ describe('KafkaEventSource', () => {
           authenticationMethod: sources.AuthenticationMethod.SASL_SCRAM_256_AUTH,
         }));
 
-      expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
-        SourceAccessConfigurations: arrayWith(
+      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SourceAccessConfigurations: Match.arrayWith([
           {
             Type: 'SASL_SCRAM_256_AUTH',
             URI: {
               Ref: 'SecretA720EF05',
             },
           },
-        ),
+        ]),
       });
 
 
