@@ -32,6 +32,15 @@ through a declarative interface [_awslint:props-coverage_].
 
 This section describes guidelines for construct props.
 
+* [Types](#types)
+* [Defaults](#defaults)
+* [Flat](#flat)
+* [Concise](#concise)
+* [Naming](#naming)
+* [Property Documentation](#property-documentation)
+* [Enums](#enums)
+* [Unions](#unions)
+
 ### Types
 
 Use **strong types** (and specifically, construct interfaces) instead of
