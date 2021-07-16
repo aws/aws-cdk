@@ -261,3 +261,22 @@ export class SQSDeleteMessageIntegration implements IHttpRouteIntegration {
     };
   }
 }
+
+export interface SQSPurgeQueueIntegrationProps extends SQSIntegrationProps {
+}
+
+export class SQSPurgeQueueIntegration implements IHttpRouteIntegration {
+  constructor(private readonly props: SQSPurgeQueueIntegrationProps) { }
+  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    return {
+      type: HttpIntegrationType.LAMBDA_PROXY,
+      subtype: HttpIntegrationSubtype.SQS_PURGEQUEUE,
+      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+      credentials: this.props.credentials,
+      requestParameters: {
+        QueueUrl: this.props.queue.queueUrl,
+        Region: this.props.region,
+      },
+    };
+  }
+}

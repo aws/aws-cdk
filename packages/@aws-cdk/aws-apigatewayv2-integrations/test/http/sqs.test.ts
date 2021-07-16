@@ -1,10 +1,9 @@
-import { anything } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { HttpApi, HttpRoute, HttpRouteKey, IntegrationCredentials } from '@aws-cdk/aws-apigatewayv2';
 import { Role } from '@aws-cdk/aws-iam';
 import { Queue } from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
-import { SQSAttribute, SQSDeleteMessageIntegration, SQSReceiveMessageIntegration, SQSSendMessageIntegration } from '../../lib/http/aws-proxy';
+import { SQSAttribute, SQSDeleteMessageIntegration, SQSPurgeQueueIntegration, SQSReceiveMessageIntegration, SQSSendMessageIntegration } from '../../lib/http/aws-proxy';
 
 describe('SQS Integrations', () => {
   describe('SendMessage', () => {
@@ -26,18 +25,7 @@ describe('SQS Integrations', () => {
         IntegrationSubtype: 'SQS-SendMessage',
         PayloadFormatVersion: '1.0',
         RequestParameters: {
-          QueueUrl: {
-            'Fn::Join': [
-              '',
-              [
-                'https://sqs.eu-west-2.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
-                '/123456789012/queue',
-              ],
-            ],
-          },
+          QueueUrl: makeQueueUrl('eu-west-2', '123456789012', 'queue'),
           MessageBody: 'message',
         },
       });
@@ -69,7 +57,7 @@ describe('SQS Integrations', () => {
         PayloadFormatVersion: '1.0',
         CredentialsArn: 'arn:aws:iam::123456789012:role/sqs-role',
         RequestParameters: {
-          QueueUrl: anything(),
+          QueueUrl: makeQueueUrl('us-east-1', '123456789012', 'queue'),
           DelaySeconds: 4,
           MessageAttributes: 'some-attributes',
           MessageBody: 'message-body',
@@ -110,18 +98,7 @@ describe('SQS Integrations', () => {
       PayloadFormatVersion: '1.0',
       CredentialsArn: 'arn:aws:iam::123456789012:role/sqs-receive',
       RequestParameters: {
-        QueueUrl: {
-          'Fn::Join': [
-            '',
-            [
-              'https://sqs.us-west-1.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/123456789012/receive-queue.fifo',
-            ],
-          ],
-        },
+        QueueUrl: makeQueueUrl('us-west-1', '123456789012', 'receive-queue.fifo'),
         AttributeNames: ['All'],
         MaxNumberOfMessages: 2,
         MessageAttributeNames: ['Attribute1'],
@@ -154,21 +131,51 @@ describe('SQS Integrations', () => {
       PayloadFormatVersion: '1.0',
       CredentialsArn: 'arn:aws:iam::123456789012:role/sqs-delete',
       RequestParameters: {
-        QueueUrl: {
-          'Fn::Join': [
-            '',
-            [
-              'https://sqs.eu-west-2.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/123456789012/queue',
-            ],
-          ],
-        },
+        QueueUrl: makeQueueUrl('eu-west-2', '123456789012', 'queue'),
         ReceiptHandle: 'MbZj6wDWli%2BJvwwJaBV%2B3dcjk2YW2vA3%2BSTFFljT',
         Region: 'eu-west-1',
       },
     });
   });
+  test('PurgeQueue', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'API');
+    const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/purge');
+    const queue = Queue.fromQueueArn(stack, 'Queue', 'arn:aws:sqs:eu-west-1:123456789012:queue');
+    new HttpRoute(stack, 'Route', {
+      httpApi: api,
+      integration: new SQSPurgeQueueIntegration({
+        queue,
+        credentials: IntegrationCredentials.fromRole(role),
+        region: 'us-east-2',
+      }),
+      routeKey: HttpRouteKey.DEFAULT,
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: 'AWS_PROXY',
+      IntegrationSubtype: 'SQS-PurgeQueue',
+      PayloadFormatVersion: '1.0',
+      CredentialsArn: 'arn:aws:iam::123456789012:role/purge',
+      RequestParameters: {
+        QueueUrl: makeQueueUrl('eu-west-1', '123456789012', 'queue'),
+        Region: 'us-east-2',
+      },
+    });
+  });
 });
+
+function makeQueueUrl(region: string, account: string, queueName: string) {
+  return {
+    'Fn::Join': [
+      '',
+      [
+        `https://sqs.${region}.`,
+        {
+          Ref: 'AWS::URLSuffix',
+        },
+        `/${account}/${queueName}`,
+      ],
+    ],
+  };
+}

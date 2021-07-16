@@ -235,6 +235,10 @@ export enum HttpIntegrationSubtype {
    * SQS DeleteMessage integration,
    */
   SQS_DELETEMESSAGE = 'SQS-DeleteMessage',
+  /**
+   * SQS PurgeQueue integration
+   */
+  SQS_PURGEQUEUE = 'SQS-PurgeQueue',
 }
 
 /**
