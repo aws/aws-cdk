@@ -210,7 +210,7 @@ base.
 Work your magic. Here are some guidelines:
 
 * Coding style.
-  * If your change introduces a new construct, take a look at our [design guidelines](./docs/DESIGN_GUIDELINES.md) for
+  * If your change introduces a new construct, take a look at our [design guidelines](./docs/api-design/README.md) for
     construct libraries.
     We also have an [example construct library](packages/@aws-cdk/example-construct-library) that showcases a simple
     construct library with a single construct.
@@ -629,14 +629,14 @@ $ lr pkglint
 
 **awslint** is a linter for the AWS Construct Library APIs. It is executed as a
 part of the build of all AWS modules in the project and enforces the [AWS
-Construct Library Design Guidelines](./docs/DESIGN_GUIDELINES.md).
+Construct Library Design Guidelines](./docs/api-design/README.md).
 
 For more information about this tool, see the [awslint
 README](./packages/awslint/README.md).
 
 Generally speaking, if you make any changes which violate an awslint rule, build
 will fail with appropriate messages. All rules are documented and explained in
-the [guidelines](./docs/DESIGN_GUIDELINES.md).
+the [guidelines](./docs/api-design/README.md).
 
 Here are a few useful commands:
 
