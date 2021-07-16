@@ -1,5 +1,6 @@
 import { HttpIntegrationSubtype, HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, IntegrationCredentials, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { IEventBus } from '@aws-cdk/aws-events';
+import { IStream } from '@aws-cdk/aws-kinesis';
 import { IQueue } from '@aws-cdk/aws-sqs';
 import { Duration } from '@aws-cdk/core';
 
@@ -275,6 +276,53 @@ export class SQSPurgeQueueIntegration implements IHttpRouteIntegration {
       credentials: this.props.credentials,
       requestParameters: {
         QueueUrl: this.props.queue.queueUrl,
+        Region: this.props.region,
+      },
+    };
+  }
+}
+
+export interface KinesisPutRecordIntegrationProps extends AwsServiceIntegrationProps {
+  /**
+   * The name of the stream to put the data record into.
+   */
+  readonly stream: IStream;
+  /**
+   * The data blob to put into the record, which is base64-encoded when the blob is serialized.
+   */
+  readonly data: string;
+  /**
+   * Determines which shard in the stream the data record is assigned to.
+   */
+  readonly partitionKey: string;
+  /**
+   * Guarantees strictly increasing sequence numbers, for puts from the same client and to the same
+   * partition key.
+   * @default - undefined
+   */
+  readonly sequenceNumberForOrdering?: string;
+  /**
+   * The hash value used to explicitly determine the shard the data record is assigned to by
+   * overriding the partition key hash.
+   * @default - undefined
+   */
+  readonly explicitHashKey?: string;
+}
+
+export class KinesisPutRecordIntegration implements IHttpRouteIntegration {
+  constructor(private readonly props: KinesisPutRecordIntegrationProps) { }
+  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    return {
+      type: HttpIntegrationType.LAMBDA_PROXY,
+      subtype: HttpIntegrationSubtype.KINESIS_PUTRECORD,
+      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+      credentials: this.props.credentials,
+      requestParameters: {
+        StreamName: this.props.stream.streamName,
+        Data: this.props.data,
+        PartitionKey: this.props.partitionKey,
+        SequenceNumberForOrdering: this.props.sequenceNumberForOrdering,
+        ExplicitHashKey: this.props.explicitHashKey,
         Region: this.props.region,
       },
     };

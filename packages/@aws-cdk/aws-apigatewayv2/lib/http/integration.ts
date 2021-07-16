@@ -239,6 +239,14 @@ export enum HttpIntegrationSubtype {
    * SQS PurgeQueue integration
    */
   SQS_PURGEQUEUE = 'SQS-PurgeQueue',
+  /**
+   * AppConfig GetConfiguration integration
+   */
+  APPCONFIG_GETCONFIGURATION = 'AppConfig-GetConfiguration',
+  /**
+   * Kinesis PutRecord integration
+   */
+  KINESIS_PUTRECORD = 'Kinesis-PutRecord',
 }
 
 /**
