@@ -683,12 +683,12 @@ export class Key extends KeyBase {
  * multiple copies of the `constructs` library on disk. This can happen
  * when upgrading and downgrading between v2 and v1, and in the use of CDK
  * Pipelines is going to an error that says "Can't use Pipeline/Pipeline/Role in
- * a cross-environment fahsion", which is very confusing.
+ * a cross-environment fashion", which is very confusing.
  */
 function isConstruct(x: any): x is Construct {
   const sym = Symbol.for('constructs.Construct.node');
   return (typeof x === 'object' && x &&
     (x instanceof Construct // happy fast case
-    || !!(x as Construct).node // constructs v10
+    || !!(x as any).node // constructs v10
     || !!(x as any)[sym])); // constructs v3
 }
