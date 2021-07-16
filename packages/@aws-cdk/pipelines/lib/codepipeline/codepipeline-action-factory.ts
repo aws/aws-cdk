@@ -1,9 +1,8 @@
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Construct } from 'constructs';
-import { PipelineBase } from '../main';
 import { ArtifactMap } from './artifact-map';
-import { CodeBuildOptions } from './codepipeline';
+import { CodeBuildOptions, CodePipeline } from './codepipeline';
 
 /**
  * Options for the `CodePipelineActionFactory.produce()` method.
@@ -43,7 +42,7 @@ export interface ProduceActionOptions {
   /**
    * The pipeline the action is being generated for
    */
-  readonly pipeline: PipelineBase;
+  readonly pipeline: CodePipeline;
 
   /**
    * If this action factory creates a CodeBuild step, default options to inherit
