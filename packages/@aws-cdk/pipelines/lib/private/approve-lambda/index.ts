@@ -5,7 +5,7 @@ const client = new AWS.CodePipeline({ apiVersion: '2015-07-09' });
 const TIMEOUT_IN_MINUTES = 5;
 
 const sleep = (seconds: number) => {
-  return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+  return new Promise<void>(resolve => setTimeout(resolve, seconds * 1000));
 };
 
 export async function handler(event: any, _context: any) {
