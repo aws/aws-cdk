@@ -16,7 +16,7 @@ const PUT_RECORD_ACTIONS = [
 /**
  * Represents a Kinesis Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable, cdk.ITaggable {
+export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of the delivery stream.
    *
@@ -100,10 +100,8 @@ export abstract class DeliveryStreamBase extends cdk.Resource implements IDelive
    */
   public readonly connections: ec2.Connections;
 
-  public readonly tags = new cdk.TagManager(cdk.TagType.STANDARD, 'AWS::KinesisFirehose::DeliveryStream');
-
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: cdk.ResourceProps = {}) {
+    super(scope, id, props);
 
     this.connections = setConnections(this);
   }
@@ -245,14 +243,17 @@ export class DeliveryStream extends DeliveryStreamBase {
     if (!attrs.deliveryStreamName && !attrs.deliveryStreamArn) {
       throw new Error('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes');
     }
-    const deliveryStreamName = attrs.deliveryStreamName ?? cdk.Stack.of(scope).parseArn(attrs.deliveryStreamArn!).resourceName;
+    const deliveryStreamName = attrs.deliveryStreamName ??
+      cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+
     if (!deliveryStreamName) {
-      throw new Error(`Could not import delivery stream from malformatted ARN ${attrs.deliveryStreamArn}: could not determine resource name`);
+      throw new Error(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`);
     }
     const deliveryStreamArn = attrs.deliveryStreamArn ?? cdk.Stack.of(scope).formatArn({
       service: 'firehose',
       resource: 'deliverystream',
       resourceName: attrs.deliveryStreamName,
+      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
     class Import extends DeliveryStreamBase {
       public readonly deliveryStreamName = deliveryStreamName!;
@@ -269,17 +270,20 @@ export class DeliveryStream extends DeliveryStreamBase {
   readonly grantPrincipal: iam.IPrincipal;
 
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.deliveryStreamName,
+    });
+
+    if (props.destinations.length !== 1) {
+      throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
+    }
 
     const role = props.role ?? new iam.Role(this, 'Service Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
     this.grantPrincipal = role;
 
-    if (props.destinations.length !== 1) {
-      throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
-    }
-    const destinationConfig = props.destinations[0].bind(this, { deliveryStream: this });
+    const destinationConfig = props.destinations[0].bind(this, { deliveryStream: this, role: role });
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamName: props.deliveryStreamName,
