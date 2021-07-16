@@ -56,7 +56,7 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
         ACTION_NAME: { value: approveActionName },
         ...this.props.notificationTopic ? {
           NOTIFICATION_ARN: { value: this.props.notificationTopic.topicArn },
-          NOTIFICATION_SUBJECT: { value: `Confirm Broadening IAM Permissions in ${this.props.stage.stageName}` },
+          NOTIFICATION_SUBJECT: { value: `Confirm permission broadening in ${this.props.stage.stageName}` },
         } : {},
       },
     }));

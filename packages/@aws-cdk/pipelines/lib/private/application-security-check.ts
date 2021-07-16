@@ -85,15 +85,15 @@ export class ApplicationSecurityCheck extends CoreConstruct {
       ' lambda.out';
 
     const message = [
-      'Broadening IAM Permssions detected in $PIPELINE_NAME: $STAGE_NAME.',
-      'You must manually approve the changes in CodePipeline to unblock the pipeline.',
+      'An upcoming change would broaden security changes in $PIPELINE_NAME.',
+      'Review and approve the changes in CodePipeline to proceed with the deployment.',
       '',
-      'See the security changes in the CodeBuild Logs',
-      '===',
+      'Review the changes in CodeBuild:',
+      '',
       '$LINK',
       '',
-      'Approve changes in CodePipline',
-      '===',
+      'Approve the changes in CodePipeline (stage $STAGE_NAME, action $ACTION_NAME):',
+      '',
       '$PIPELINE_LINK',
     ];
     const publishNotification =
@@ -128,11 +128,11 @@ export class ApplicationSecurityCheck extends CoreConstruct {
                 condition: 'cdk diff -a . --security-only --fail $STAGE_PATH/\\*',
                 thenStatements: [
                   invokeLambda,
-                  'export MESSAGE="No changes detected."',
+                  'export MESSAGE="No security-impacting changes detected."',
                 ],
                 elseStatements: [
                   `[ -z "\${NOTIFICATION_ARN}" ] || ${publishNotification}`,
-                  'export MESSAGE="Changes detected! Requires Manual Approval"',
+                  'export MESSAGE="Deployment would make security-impacting changes. Click the link below to inspect them, then click Approve if all changes are expected."',
                 ],
               }),
             ],

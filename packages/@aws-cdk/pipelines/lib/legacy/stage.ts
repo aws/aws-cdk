@@ -328,7 +328,7 @@ export class CdkStage extends CoreConstruct {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
           },
           NOTIFICATION_SUBJECT: {
-            value: `Confirm Broadening IAM Permissions in ${appStageName}`,
+            value: `Confirm permission broadening in ${appStageName}`,
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
           },
         } : {},
