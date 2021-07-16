@@ -431,7 +431,7 @@
                     "Fn::Join": [
                       "",
                       [
-                        "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"UnattachedStage\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SingleStageManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
+                        "[{\"name\":\"PIPELINE_STACK\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"UnattachedStage\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SingleStageManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
                         {
                           "Ref": "SecurityChangesTopic9762A9B3"
                         },
@@ -568,7 +568,7 @@
                     "Fn::Join": [
                       "",
                       [
-                        "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProductionManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
+                        "[{\"name\":\"PIPELINE_STACK\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProductionManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
                         {
                           "Ref": "SecurityChangesTopic9762A9B3"
                         },
@@ -627,7 +627,7 @@
                     "Fn::Join": [
                       "",
                       [
-                        "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SafeProductionManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
+                        "[{\"name\":\"PIPELINE_STACK\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SafeProductionManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
                         {
                           "Ref": "SecurityChangesTopic9762A9B3"
                         },
@@ -906,7 +906,7 @@
                   "ProjectName": {
                     "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckBEE4547C"
                   },
-                  "EnvironmentVariables": "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"NoSecurityCheck\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"EnableSecurityCheckManualApproval\"}]"
+                  "EnvironmentVariables": "[{\"name\":\"PIPELINE_STACK\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"NoSecurityCheck\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"EnableSecurityCheckManualApproval\"}]"
                 },
                 "InputArtifacts": [
                   {
@@ -2019,7 +2019,7 @@
             "Fn::Join": [
               "",
               [
-                "{\n  \"version\": 0.2,\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"npm install -g aws-cdk\",\n        \"export PIPELINE_NAME=\\\"$(node -pe '`${process.env.CODEBUILD_INITIATOR}`.split(\\\"/\\\")[1]')\\\"\",\n        \"payload=\\\"$(node -pe 'JSON.stringify({ \\\"PipelineName\\\": process.env.PIPELINE_NAME, \\\"StageName\\\": process.env.STAGE_NAME, \\\"ActionName\\\": process.env.ACTION_NAME })' )\\\"\",\n        \"ARN=$CODEBUILD_BUILD_ARN\",\n        \"REGION=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[3]')\\\"\",\n        \"ACCOUNT_ID=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[4]')\\\"\",\n        \"PROJECT_NAME=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[5].split(\\\"/\\\")[1]')\\\"\",\n        \"PROJECT_ID=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[6]')\\\"\",\n        \"export LINK=\\\"https://$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION\\\"\",\n        \"export PIPELINE_LINK=\\\"https://$REGION.console.aws.amazon.com/codesuite/codepipeline/pipelines/$PIPELINE_NAME/view?region=$REGION\\\"\",\n        \"if cdk diff -a . --security-only --fail $STAGE_PATH/\\\\*; then aws lambda invoke --function-name ",
+                "{\n  \"version\": 0.2,\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"npm install -g aws-cdk\",\n        \"export PIPELINE_NAME=\\\"$(node -pe '`${process.env.CODEBUILD_INITIATOR}`.split(\\\"/\\\")[1]')\\\"\",\n        \"payload=\\\"$(node -pe 'JSON.stringify({ \\\"PipelineName\\\": process.env.PIPELINE_NAME, \\\"StageName\\\": process.env.STAGE_NAME, \\\"ActionName\\\": process.env.ACTION_NAME })' )\\\"\",\n        \"ARN=$CODEBUILD_BUILD_ARN\",\n        \"REGION=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[3]')\\\"\",\n        \"ACCOUNT_ID=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[4]')\\\"\",\n        \"PROJECT_NAME=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[5].split(\\\"/\\\")[1]')\\\"\",\n        \"PROJECT_ID=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[6]')\\\"\",\n        \"export LINK=\\\"https://$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION\\\"\",\n        \"export PIPELINE_LINK=\\\"https://$REGION.console.aws.amazon.com/codesuite/codepipeline/pipelines/$PIPELINE_NAME/view?region=$REGION\\\"\",\n        \"if cdk diff -a \\\"assembly-$PIPELINE_STACK-$STAGE_NAME\\\" --security-only --fail; then aws lambda invoke --function-name ",
                 {
                   "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApprove1EE0AA81"
                 },
@@ -2330,7 +2330,7 @@
             "Fn::Join": [
               "",
               [
-                "{\n  \"version\": 0.2,\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"npm install -g aws-cdk\",\n        \"export PIPELINE_NAME=\\\"$(node -pe '`${process.env.CODEBUILD_INITIATOR}`.split(\\\"/\\\")[1]')\\\"\",\n        \"payload=\\\"$(node -pe 'JSON.stringify({ \\\"PipelineName\\\": process.env.PIPELINE_NAME, \\\"StageName\\\": process.env.STAGE_NAME, \\\"ActionName\\\": process.env.ACTION_NAME })' )\\\"\",\n        \"ARN=$CODEBUILD_BUILD_ARN\",\n        \"REGION=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[3]')\\\"\",\n        \"ACCOUNT_ID=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[4]')\\\"\",\n        \"PROJECT_NAME=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[5].split(\\\"/\\\")[1]')\\\"\",\n        \"PROJECT_ID=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[6]')\\\"\",\n        \"export LINK=\\\"https://$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION\\\"\",\n        \"export PIPELINE_LINK=\\\"https://$REGION.console.aws.amazon.com/codesuite/codepipeline/pipelines/$PIPELINE_NAME/view?region=$REGION\\\"\",\n        \"if cdk diff -a . --security-only --fail $STAGE_PATH/\\\\*; then aws lambda invoke --function-name ",
+                "{\n  \"version\": 0.2,\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"npm install -g aws-cdk\",\n        \"export PIPELINE_NAME=\\\"$(node -pe '`${process.env.CODEBUILD_INITIATOR}`.split(\\\"/\\\")[1]')\\\"\",\n        \"payload=\\\"$(node -pe 'JSON.stringify({ \\\"PipelineName\\\": process.env.PIPELINE_NAME, \\\"StageName\\\": process.env.STAGE_NAME, \\\"ActionName\\\": process.env.ACTION_NAME })' )\\\"\",\n        \"ARN=$CODEBUILD_BUILD_ARN\",\n        \"REGION=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[3]')\\\"\",\n        \"ACCOUNT_ID=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[4]')\\\"\",\n        \"PROJECT_NAME=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[5].split(\\\"/\\\")[1]')\\\"\",\n        \"PROJECT_ID=\\\"$(node -pe '`${process.env.ARN}`.split(\\\":\\\")[6]')\\\"\",\n        \"export LINK=\\\"https://$REGION.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT_ID/projects/$PROJECT_NAME/build/$PROJECT_NAME:$PROJECT_ID/?region=$REGION\\\"\",\n        \"export PIPELINE_LINK=\\\"https://$REGION.console.aws.amazon.com/codesuite/codepipeline/pipelines/$PIPELINE_NAME/view?region=$REGION\\\"\",\n        \"if cdk diff -a \\\"assembly-$PIPELINE_STACK-$STAGE_NAME\\\" --security-only --fail; then aws lambda invoke --function-name ",
                 {
                   "Ref": "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApprove249F82F9"
                 },

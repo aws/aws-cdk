@@ -125,7 +125,7 @@ export class ApplicationSecurityCheck extends CoreConstruct {
               // Run invoke only if cdk diff passes (returns exit code 0)
               // 0 -> true, 1 -> false
               ifElse({
-                condition: 'cdk diff -a . --security-only --fail $STAGE_PATH/\\*',
+                condition: 'cdk diff -a "assembly-$PIPELINE_STACK-$STAGE_NAME" --security-only --fail',
                 thenStatements: [
                   invokeLambda,
                   'export MESSAGE="No security-impacting changes detected."',

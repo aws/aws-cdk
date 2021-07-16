@@ -51,7 +51,7 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
       project: sec.cdkDiffProject,
       variablesNamespace,
       environmentVariables: {
-        STAGE_PATH: { value: Node.of(this.props.stage).path },
+        PIPELINE_STACK: { value: stage.pipeline.stack.stackName },
         STAGE_NAME: { value: stage.stageName },
         ACTION_NAME: { value: approveActionName },
         ...this.props.notificationTopic ? {
