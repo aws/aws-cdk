@@ -156,7 +156,7 @@ export class CloudAssembly {
           return new StackCollection(this, topLevelStacks);
         } else {
           throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
-          `Stacks: ${stacks.map(x => x.id).join(' ')}`);
+          `Stacks: ${stacks.map(x => x.hierarchicalId).join(' · ')}`);
         }
       default:
         throw new Error(`invalid default behavior: ${defaultSelection}`);
