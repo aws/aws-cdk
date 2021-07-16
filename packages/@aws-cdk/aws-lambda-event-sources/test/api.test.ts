@@ -1,11 +1,10 @@
 import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as events from '../lib';
 
-export = {
-  'minimal example'(test: Test) {
+describe('ApiEventSource', () => {
+  test('minimal example', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const handler = new lambda.Function(stack, 'MyFunc', {
@@ -28,10 +27,10 @@ export = {
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FfooCA6F87E4' },
     }));
 
-    test.done();
-  },
 
-  'disjoint routes'(test: Test) {
+  });
+
+  test('disjoint routes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const handler = new lambda.Function(stack, 'MyFunc', {
@@ -65,10 +64,10 @@ export = {
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FbarDFB0F21B' },
     }));
 
-    test.done();
-  },
 
-  'tree of routes'(test: Test) {
+  });
+
+  test('tree of routes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const handler = new lambda.Function(stack, 'MyFunc', {
@@ -103,6 +102,6 @@ export = {
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4Ffoobar028FFFDE' },
     }));
 
-    test.done();
-  },
-};
+
+  });
+});

@@ -1,15 +1,15 @@
-import { arrayWith, expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { arrayWith } from '@aws-cdk/assert-internal';
 import { SecurityGroup, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
-export = {
-  'msk': {
-    'default'(test: Test) {
+describe('KafkaEventSource', () => {
+  describe('msk', () => {
+    test('default', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -25,7 +25,7 @@ export = {
         }));
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -46,9 +46,9 @@ export = {
             Ref: 'FnServiceRoleB9001A96',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
         EventSourceArn: clusterArn,
         FunctionName: {
           Ref: 'Fn9270CBC0',
@@ -58,11 +58,11 @@ export = {
         Topics: [
           kafkaTopic,
         ],
-      }));
+      });
 
-      test.done();
-    },
-    'with secret'(test: Test) {
+
+    });
+    test('with secret', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -80,7 +80,7 @@ export = {
         }));
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -111,9 +111,9 @@ export = {
             Ref: 'FnServiceRoleB9001A96',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
         EventSourceArn: clusterArn,
         FunctionName: {
           Ref: 'Fn9270CBC0',
@@ -131,14 +131,14 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'self-managed kafka': {
-    'default'(test: Test) {
+    });
+  });
+
+  describe('self-managed kafka', () => {
+    test('default', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -156,7 +156,7 @@ export = {
         }));
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -178,9 +178,9 @@ export = {
             Ref: 'FnServiceRoleB9001A96',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
         FunctionName: {
           Ref: 'Fn9270CBC0',
         },
@@ -202,30 +202,30 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-    'without vpc, secret must be set'(test: Test) {
+
+    });
+    test('without vpc, secret must be set', () => {
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
       const kafkaTopic = 'some-topic';
       const bootstrapServers = ['kafka-broker:9092'];
 
-      test.throws(() => {
+      expect(() => {
         fn.addEventSource(new sources.SelfManagedKafkaEventSource(
           {
             bootstrapServers: bootstrapServers,
             topic: kafkaTopic,
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           }));
-      }, /secret must be set/);
+      }).toThrow(/secret must be set/);
 
-      test.done();
-    },
 
-    VPC: {
-      'correctly rendered in the stack'(test: Test) {
+    });
+
+    describe('vpc', () => {
+      test('correctly rendered in the stack', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const fn = new TestFunction(stack, 'Fn');
@@ -246,8 +246,8 @@ export = {
           }));
 
         // THEN
-        expect(stack).notTo(haveResource('AWS::IAM::Policy'));
-        expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+        expect(stack).not.toHaveResource('AWS::IAM::Policy');
+        expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
           FunctionName: {
             Ref: 'Fn9270CBC0',
           },
@@ -279,11 +279,11 @@ export = {
               },
             },
           ],
-        }));
+        });
 
-        test.done();
-      },
-      'with secret'(test: Test) {
+
+      });
+      test('with secret', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const fn = new TestFunction(stack, 'Fn');
@@ -306,7 +306,7 @@ export = {
           }));
 
         // THEN
-        expect(stack).to(haveResource('AWS::IAM::Policy', {
+        expect(stack).toHaveResource('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
@@ -328,9 +328,9 @@ export = {
               Ref: 'FnServiceRoleB9001A96',
             },
           ],
-        }));
+        });
 
-        expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+        expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
           FunctionName: {
             Ref: 'Fn9270CBC0',
           },
@@ -368,11 +368,11 @@ export = {
               },
             },
           ],
-        }));
+        });
 
-        test.done();
-      },
-      'setting vpc requires vpcSubnets to be set'(test: Test) {
+
+      });
+      test('setting vpc requires vpcSubnets to be set', () => {
         const stack = new cdk.Stack();
         const fn = new TestFunction(stack, 'Fn');
         const kafkaTopic = 'some-topic';
@@ -380,7 +380,7 @@ export = {
         const bootstrapServers = ['kafka-broker:9092'];
         const vpc = new Vpc(stack, 'Vpc');
 
-        test.throws(() => {
+        expect(() => {
           fn.addEventSource(new sources.SelfManagedKafkaEventSource(
             {
               bootstrapServers: bootstrapServers,
@@ -391,12 +391,12 @@ export = {
               securityGroup: SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789'),
 
             }));
-        }, /vpcSubnets must be set/);
+        }).toThrow(/vpcSubnets must be set/);
 
-        test.done();
-      },
 
-      'setting vpc requires securityGroup to be set'(test: Test) {
+      });
+
+      test('setting vpc requires securityGroup to be set', () => {
         const stack = new cdk.Stack();
         const fn = new TestFunction(stack, 'Fn');
         const kafkaTopic = 'some-topic';
@@ -404,7 +404,7 @@ export = {
         const bootstrapServers = ['kafka-broker:9092'];
         const vpc = new Vpc(stack, 'Vpc');
 
-        test.throws(() => {
+        expect(() => {
           fn.addEventSource(new sources.SelfManagedKafkaEventSource(
             {
               bootstrapServers: bootstrapServers,
@@ -414,13 +414,13 @@ export = {
               vpc: vpc,
               vpcSubnets: { subnetType: SubnetType.PRIVATE },
             }));
-        }, /securityGroup must be set/);
+        }).toThrow(/securityGroup must be set/);
 
-        test.done();
-      },
-    },
 
-    'using SCRAM-SHA-256'(test: Test) {
+      });
+    });
+
+    test('using SCRAM-SHA-256', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -443,7 +443,7 @@ export = {
           authenticationMethod: sources.AuthenticationMethod.SASL_SCRAM_256_AUTH,
         }));
 
-      expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      expect(stack).toHaveResource('AWS::Lambda::EventSourceMapping', {
         SourceAccessConfigurations: arrayWith(
           {
             Type: 'SASL_SCRAM_256_AUTH',
@@ -452,10 +452,10 @@ export = {
             },
           },
         ),
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-}
+    });
+  });
+
+});
