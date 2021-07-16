@@ -1,16 +1,18 @@
 import '@aws-cdk/assert-internal/jest';
 import { HttpApi, HttpRoute, HttpRouteKey, IntegrationCredentials } from '@aws-cdk/aws-apigatewayv2';
-import { Role } from '@aws-cdk/aws-iam';
-import { Queue } from '@aws-cdk/aws-sqs';
+import { IRole, Role } from '@aws-cdk/aws-iam';
+import { IQueue, Queue } from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
 import { SQSAttribute, SQSDeleteMessageIntegration, SQSPurgeQueueIntegration, SQSReceiveMessageIntegration, SQSSendMessageIntegration } from '../../lib/http/aws-proxy';
 
 describe('SQS Integrations', () => {
   describe('SendMessage', () => {
     test('basic integration', () => {
-      const stack = new Stack();
-      const api = new HttpApi(stack, 'API');
-      const queue = Queue.fromQueueArn(stack, 'Queue', 'arn:aws:sqs:eu-west-2:123456789012:queue');
+      const {
+        stack,
+        api,
+        queue,
+      } = setupTestFixtures('arn:aws:sqs:eu-west-2:123456789012:queue');
       new HttpRoute(stack, 'Route', {
         httpApi: api,
         integration: new SQSSendMessageIntegration({
@@ -31,10 +33,12 @@ describe('SQS Integrations', () => {
       });
     });
     test('full integration', () => {
-      const stack = new Stack();
-      const api = new HttpApi(stack, 'API');
-      const queue = Queue.fromQueueArn(stack, 'Queue', 'arn:aws:sqs:us-east-1:123456789012:queue');
-      const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/sqs-role');
+      const {
+        stack,
+        api,
+        queue,
+        role,
+      } = setupTestFixtures('arn:aws:sqs:us-east-1:123456789012:queue', 'arn:aws:iam::123456789012:role/sqs-role');
       new HttpRoute(stack, 'Full', {
         httpApi: api,
         integration: new SQSSendMessageIntegration({
@@ -71,10 +75,12 @@ describe('SQS Integrations', () => {
   });
 
   test('ReceiveMessage', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'API');
-    const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/sqs-receive');
-    const queue = Queue.fromQueueArn(stack, 'Queue', 'arn:aws:sqs:us-west-1:123456789012:receive-queue.fifo');
+    const {
+      stack,
+      api,
+      role,
+      queue,
+    } = setupTestFixtures('arn:aws:sqs:us-west-1:123456789012:receive-queue.fifo', 'arn:aws:iam::123456789012:role/sqs-receive');
 
     new HttpRoute(stack, 'Route', {
       httpApi: api,
@@ -110,10 +116,12 @@ describe('SQS Integrations', () => {
     });
   });
   test('DeleteMessage', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'API');
-    const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/sqs-delete');
-    const queue = Queue.fromQueueArn(stack, 'Queue', 'arn:aws:sqs:eu-west-2:123456789012:queue');
+    const {
+      stack,
+      api,
+      role,
+      queue,
+    } = setupTestFixtures('arn:aws:sqs:eu-west-2:123456789012:queue', 'arn:aws:iam::123456789012:role/sqs-delete');
     new HttpRoute(stack, 'Route', {
       httpApi: api,
       integration: new SQSDeleteMessageIntegration({
@@ -138,10 +146,12 @@ describe('SQS Integrations', () => {
     });
   });
   test('PurgeQueue', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'API');
-    const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/purge');
-    const queue = Queue.fromQueueArn(stack, 'Queue', 'arn:aws:sqs:eu-west-1:123456789012:queue');
+    const {
+      stack,
+      api,
+      queue,
+      role,
+    } = setupTestFixtures('arn:aws:sqs:eu-west-1:123456789012:queue', 'arn:aws:iam::123456789012:role/purge');
     new HttpRoute(stack, 'Route', {
       httpApi: api,
       integration: new SQSPurgeQueueIntegration({
@@ -164,6 +174,20 @@ describe('SQS Integrations', () => {
     });
   });
 });
+
+function setupTestFixtures(queueArn: string): { stack: Stack, api: HttpApi, queue: IQueue };
+function setupTestFixtures(queueArn: string, roleArn: string): { stack: Stack, api: HttpApi, queue: IQueue, role: IRole };
+function setupTestFixtures(queueArn: string, roleArn?: string) {
+  const stack = new Stack();
+  const api = new HttpApi(stack, 'API');
+  const queue = Queue.fromQueueArn(stack, 'Queue', queueArn);
+  return {
+    stack,
+    api,
+    queue,
+    role: roleArn ? Role.fromRoleArn(stack, 'Role', roleArn) : undefined,
+  };
+}
 
 function makeQueueUrl(region: string, account: string, queueName: string) {
   return {
