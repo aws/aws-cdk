@@ -218,7 +218,7 @@ export class DeliveryStream extends DeliveryStreamBase {
     });
     this.grantPrincipal = role;
 
-    const destinationConfig = props.destinations[0].bind(this, { deliveryStream: this, role: role });
+    const destinationConfig = props.destinations[0].bind(this, { role: role });
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamName: props.deliveryStreamName,

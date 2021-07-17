@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import { Construct, Node } from 'constructs';
-import { IDeliveryStream } from './delivery-stream';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 /**
@@ -18,10 +17,6 @@ export interface DestinationConfig {
  * Options when binding a destination to a delivery stream.
  */
 export interface DestinationBindOptions {
-  /**
-   * The delivery stream.
-   */
-  readonly deliveryStream: IDeliveryStream;
 
   /**
    * The IAM service Role of the delivery stream.
@@ -73,7 +68,7 @@ export abstract class DestinationBase implements IDestination {
 
   protected createLoggingOptions(
     scope: Construct,
-    deliveryStream: IDeliveryStream,
+    serviceRole: iam.IRole,
     streamId: string,
   ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
     if (this.props.logging === false && this.props.logGroup) {
@@ -81,7 +76,7 @@ export abstract class DestinationBase implements IDestination {
     }
     if (this.props.logging !== false || this.props.logGroup) {
       const logGroup = Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? this.props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
-      logGroup.grantWrite(deliveryStream);
+      logGroup.grantWrite(serviceRole);
       return {
         enabled: true,
         logGroupName: logGroup.logGroupName,
