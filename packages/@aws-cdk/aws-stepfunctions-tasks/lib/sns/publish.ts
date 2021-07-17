@@ -166,7 +166,7 @@ function renderPrimitiveValue(attributeValue: any): MessageAttributeValue {
     case 'boolean':
       return { DataType: STRING, StringValue: attributeValue.toString() };
     default:
-      throw new Error(`sns message attributes does not support this type: ${attributeValue}`);
+      throw new Error(`Unsupported SNS message attribute type: ${typeof attributeValue}`);
   }
 }
 
