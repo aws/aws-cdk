@@ -70,6 +70,41 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
   return proc;
 }
 
+export function tryGetTsConfig(customLocation?: string, entryToResolveFrom: string = ''): {
+  awsCdkCompilerOptions?: {
+    enableTscCompilation?: boolean;
+    outDir?: string
+  }
+} | undefined {
+  const relativeTsConfigPath = customLocation
+    ? path.resolve(customLocation)
+    : path.resolve(findUp('tsconfig.json', path.dirname(entryToResolveFrom)) || '');
+
+  if (!relativeTsConfigPath) {
+    return;
+  }
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const relativeTsConfig = require(relativeTsConfigPath);
+
+    if (relativeTsConfig.extends) {
+      // recursively merge all extended tsConfig paths
+      const tsConfigBasePath = path.resolve(relativeTsConfigPath, relativeTsConfig.extends);
+      const baseTsConfig = tryGetTsConfig(tsConfigBasePath);
+
+      return {
+        ...baseTsConfig,
+        ...relativeTsConfig,
+      };
+    } else {
+      return relativeTsConfig;
+    }
+  } catch (err) {
+    return;
+  }
+}
+
 /**
  * Returns a module version by requiring its package.json file
  */

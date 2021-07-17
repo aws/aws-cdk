@@ -4,10 +4,16 @@ import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { EsbuildInstallation } from './esbuild-installation';
 import { PackageManager } from './package-manager';
-import { BundlingOptions } from './types';
-import { exec, extractDependencies, findUp } from './util';
+import { BundlingOptions, PreBundlingCompilation } from './types';
+import { exec, extractDependencies, findUp, tryGetTsConfig } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
+
+/**
+ * Default path to where the tsc outputs will be emitted
+ */
+const PRE_BUNDLING_TSC_COMPILATION_DIR = 'cdk.out/tsc-compile';
+
 
 /**
  * Bundling properties
@@ -32,6 +38,12 @@ export interface BundlingProps extends BundlingOptions {
    * Path to project root
    */
   readonly projectRoot: string;
+
+  /**
+   * Force pre-transpilation using TSC before bundling
+   */
+  readonly preBundlingCompilation?: PreBundlingCompilation
+
 }
 
 /**
@@ -62,7 +74,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly local?: cdk.ILocalBundling;
 
   private readonly projectRoot: string;
-  private readonly relativeEntryPath: string;
+  private relativeEntryPath: string;
   private readonly relativeTsconfigPath?: string;
   private readonly relativeDepsLockFilePath: string;
   private readonly externals: string[];
@@ -122,6 +134,17 @@ export class Bundling implements cdk.BundlingOptions {
 
   private createBundlingCommand(options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
+    const npx = options.osPlatform === 'win32' ? 'npx.cmd' : 'npx';
+
+    let compileCommand = '';
+    const cdkCompilerOptions = this.getCdkCompilerOptions();
+
+    if (cdkCompilerOptions.requiresPreCompilation) {
+      const tscOutDir = path.resolve(PRE_BUNDLING_TSC_COMPILATION_DIR);
+      this.relativeEntryPath = pathJoin(tscOutDir, this.relativeEntryPath)
+        .replace(/\.(tsx)$/, '.jsx').replace(/\.(ts)$/, '.js');
+      compileCommand = `${npx} tsc`;
+    }
 
     const loaders = Object.entries(this.props.loader ?? {});
     const defines = Object.entries(this.props.define ?? {});
@@ -170,6 +193,7 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     return chain([
+      compileCommand,
       ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
       esbuildCommand.join(' '),
       ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
@@ -223,6 +247,28 @@ export class Bundling implements cdk.BundlingOptions {
       },
     };
   }
+
+  /**
+   * Check if the tsc source is used, and if need to run the code through tsc compiler before attempting to bundle
+   */
+  private getCdkCompilerOptions() {
+    if (this.props.preBundlingCompilation === PreBundlingCompilation.DISABLED || !isTypescriptEntry(this.props.entry)) {
+      return { requiresPreCompilation: false };
+    }
+
+    if (this.props.preBundlingCompilation === PreBundlingCompilation.ENABLED) {
+      return { requiresPreCompilation: true };
+    }
+
+    // when compilation is set to auto
+    const tsConfig = tryGetTsConfig(this.props.tsconfig, this.props.entry);
+
+    if (!tsConfig) {
+      throw new Error('Expected to find a typescript config but none was found.');
+    }
+
+    return { requiresPreCompilation: tsConfig.awsCdkCompilerOptions?.enableTscCompilation === true };
+  }
 }
 
 interface BundlingCommandOptions {
@@ -236,7 +282,7 @@ interface BundlingCommandOptions {
  * OS agnostic command
  */
 class OsCommand {
-  constructor(private readonly osPlatform: NodeJS.Platform) {}
+  constructor(private readonly osPlatform: NodeJS.Platform) { }
 
   public writeJson(filePath: string, data: any): string {
     const stringifiedData = JSON.stringify(data);
@@ -260,6 +306,13 @@ class OsCommand {
   }
 }
 
+function isTypescriptEntry(entryFile: string) {
+  if (/\.(tsx?)$/.test(entryFile)) {
+    return true;
+  }
+  return false;
+}
+
 /**
  * Chain commands
  */
@@ -271,7 +324,7 @@ function chain(commands: string[]): string {
  * Platform specific path join
  */
 function osPathJoin(platform: NodeJS.Platform) {
-  return function(...paths: string[]): string {
+  return function (...paths: string[]): string {
     const joined = path.join(...paths);
     // If we are on win32 but need posix style paths
     if (os.platform() === 'win32' && platform !== 'win32') {

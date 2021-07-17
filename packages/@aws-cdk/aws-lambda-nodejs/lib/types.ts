@@ -79,7 +79,7 @@ export interface BundlingOptions {
    *
    * @default - automatically discovered by `esbuild`
    */
-  readonly tsconfig? : string
+  readonly tsconfig?: string
 
   /**
    * This option tells esbuild to write out a JSON file relative to output directory with metadata about the build.
@@ -118,7 +118,7 @@ export interface BundlingOptions {
    *
    * @default -  no comments are passed
    */
-  readonly banner? : string
+  readonly banner?: string
 
   /**
    * Use this to insert an arbitrary string at the end of generated JavaScript files.
@@ -129,7 +129,7 @@ export interface BundlingOptions {
    *
    * @default -  no comments are passed
    */
-  readonly footer? : string
+  readonly footer?: string
 
   /**
    * Environment variables defined when bundling runs.
@@ -177,7 +177,7 @@ export interface BundlingOptions {
    *
    * @default - no build arguments are passed
    */
-  readonly buildArgs?: { [key:string] : string };
+  readonly buildArgs?: { [key: string]: string };
 
   /**
    * Force bundling in a Docker container even if local bundling is
@@ -188,6 +188,23 @@ export interface BundlingOptions {
    * @default false
    */
   readonly forceDockerBundling?: boolean;
+
+  /**
+  * Force pre-transpilation using TSC before running file through bundling step.
+  * This usually is not required unless you are using new experimental features that
+  * are only supported by typescript's`tsc` compiler.
+  * One example of such feature is `experimentalDecorators`.
+  *
+  * Here are a few supported value for this option.
+  * PreBundlingCompilation.ENABLED - always run the tsc compilation before bundling
+  * PreBundlingCompilation.DISABLED - do not run tsc compilation even if awsCdkCompilerOptions?.enableTscCompilation is set to true in relevant tsconfig
+  * PreBundlingCompilation.AUTO - tries to resolves awsCdkCompilerOptions?.enableTscCompilation from relevant tsconfig file
+  *
+  * @default PreBundlingCompilation.AUTO
+  *
+  */
+  readonly preBundlingCompilation?: PreBundlingCompilation
+
 
   /**
    * A custom bundling Docker image.
@@ -265,4 +282,11 @@ export enum LogLevel {
   ERROR = 'error',
   /** Show nothing */
   SILENT = 'silent',
+}
+
+
+export enum PreBundlingCompilation {
+  ENABLED = 'enabled',
+  DISABLED = 'disabled',
+  AUTO = 'auto'
 }
