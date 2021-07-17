@@ -91,13 +91,6 @@ export interface InstanceProps {
    * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
-
-  /**
-   * Indicates whether to copy tags from the DB instance to snapshots of the DB instance.
-   *
-   * @default: false
-   */
-  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
