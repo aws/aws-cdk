@@ -225,7 +225,6 @@ export class DeliveryStream extends DeliveryStreamBase {
       deliveryStreamType: 'DirectPut',
       ...destinationConfig.properties,
     });
-    resource.node.addDependency(this.grantPrincipal);
 
     this.deliveryStreamArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'kinesis',
