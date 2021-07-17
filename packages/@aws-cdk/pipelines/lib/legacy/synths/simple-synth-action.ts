@@ -365,7 +365,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),
     };
 
-    const mergedBuildSpec = codebuild.mergeBuildSpecs(this.props.buildSpec ?? codebuild.BuildSpec.fromObject({}), buildSpec);
+    const mergedBuildSpec = this.props.buildSpec ? codebuild.mergeBuildSpecs(this.props.buildSpec, buildSpec) : buildSpec;
 
     // A hash over the values that make the CodeBuild Project unique (and necessary
     // to restart the pipeline if one of them changes). projectName is not necessary to include

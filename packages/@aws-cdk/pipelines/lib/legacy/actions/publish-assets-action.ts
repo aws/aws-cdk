@@ -124,7 +124,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
     const installCommand = `npm install -g cdk-assets${installSuffix}`;
 
-    this.buildSpec = codebuild.mergeBuildSpecs(props.buildSpec ?? codebuild.BuildSpec.fromObject({}), codebuild.BuildSpec.fromObject({
+    const buildSpec = codebuild.BuildSpec.fromObject({
       version: '0.2',
       phases: {
         install: {
@@ -134,7 +134,8 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
           commands: Lazy.list({ produce: () => this.commands }),
         },
       },
-    }));
+    });
+    this.buildSpec = props.buildSpec ? codebuild.mergeBuildSpecs(props.buildSpec, buildSpec) : buildSpec;
 
     const project = new codebuild.PipelineProject(this, 'Default', {
       projectName: this.props.projectName,
