@@ -1,7 +1,7 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
-import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 
 /**
  * Props for defining an S3 destination of a Kinesis Data Firehose delivery stream.
@@ -16,13 +16,17 @@ export class S3Bucket extends firehose.DestinationBase {
     super(s3Props);
   }
 
-  bind(scope: Construct, options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+  bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+    const role = this.props.role ?? new iam.Role(scope, 'S3 Destination Role', {
+      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+    });
 
-    this.bucket.grantReadWrite(options.role);
+    const bucketGrant = this.bucket.grantReadWrite(role);
+    Node.of(scope).addDependency(bucketGrant);
 
-    const s3ExtendedConfig: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty = {
-      cloudWatchLoggingOptions: this.createLoggingOptions(scope, options.role, 'S3Destination'),
-      roleArn: options.role.roleArn,
+    const s3ExtendedConfig: firehose.CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty = {
+      cloudWatchLoggingOptions: this.createLoggingOptions(scope, role, 'S3Destination'),
+      roleArn: role.roleArn,
       bucketArn: this.bucket.bucketArn,
     };
     return {

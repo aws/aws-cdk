@@ -7,22 +7,20 @@ import * as firehose from '../lib';
 
 describe('destination', () => {
   let stack: cdk.Stack;
-  let deliveryStreamRole: iam.IRole;
-
-  const deliveryStreamRoleArn = 'arn:aws:iam::111122223333:role/DeliveryStreamRole';
+  let destinationRole: iam.IRole;
 
   beforeEach(() => {
     stack = new cdk.Stack();
-    deliveryStreamRole = iam.Role.fromRoleArn(stack, 'Delivery Stream Role', deliveryStreamRoleArn);
+    destinationRole = iam.Role.fromRoleArn(stack, 'Delivery Stream Role', 'arn:aws:iam::111122223333:role/DestinationRole');
   });
 
   describe('createLoggingOptions', () => {
     class LoggingDestination extends firehose.DestinationBase {
-      public bind(scope: Construct, options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+      public bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
         return {
           properties: {
             testDestinationConfig: {
-              loggingConfig: this.createLoggingOptions(scope, options.role, 'streamId'),
+              loggingConfig: this.createLoggingOptions(scope, destinationRole, 'streamId'),
             },
           },
         };
@@ -32,7 +30,7 @@ describe('destination', () => {
     test('creates resources and configuration by default', () => {
       const testDestination = new LoggingDestination();
 
-      const testDestinationConfig = testDestination.bind(stack, { role: deliveryStreamRole });
+      const testDestinationConfig = testDestination.bind(stack, { role: destinationRole });
 
       expect(stack).toHaveResource('AWS::Logs::LogGroup');
       expect(stack).toHaveResource('AWS::Logs::LogStream');
@@ -55,7 +53,7 @@ describe('destination', () => {
     test('does not create resources or configuration if disabled', () => {
       const testDestination = new LoggingDestination({ logging: false });
 
-      const testDestinationConfig = testDestination.bind(stack, { role: deliveryStreamRole });
+      const testDestinationConfig = testDestination.bind(stack, { role: destinationRole });
 
       expect(stack.resolve(testDestinationConfig)).toStrictEqual({
         properties: {
@@ -67,7 +65,7 @@ describe('destination', () => {
     test('creates configuration if log group provided', () => {
       const testDestination = new LoggingDestination({ logGroup: new logs.LogGroup(stack, 'Log Group') });
 
-      const testDestinationConfig = testDestination.bind(stack, { role: deliveryStreamRole });
+      const testDestinationConfig = testDestination.bind(stack, { role: destinationRole });
 
       expect(stack.resolve(testDestinationConfig)).toMatchObject({
         properties: {
@@ -83,13 +81,13 @@ describe('destination', () => {
     test('throws error if logging disabled but log group provided', () => {
       const testDestination = new LoggingDestination({ logging: false, logGroup: new logs.LogGroup(stack, 'Log Group') });
 
-      expect(() => testDestination.bind(stack, { role: deliveryStreamRole })).toThrowError('logging cannot be set to false when logGroup is provided');
+      expect(() => testDestination.bind(stack, { role: destinationRole })).toThrowError('logging cannot be set to false when logGroup is provided');
     });
 
     test('uses provided log group', () => {
       const testDestination = new LoggingDestination({ logGroup: new logs.LogGroup(stack, 'Log Group') });
 
-      const testDestinationConfig = testDestination.bind(stack, { role: deliveryStreamRole });
+      const testDestinationConfig = testDestination.bind(stack, { role: destinationRole });
 
       expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
       expect(stack.resolve(testDestinationConfig)).toMatchObject({
@@ -111,19 +109,19 @@ describe('destination', () => {
 
     test('re-uses log group if called multiple times', () => {
       const testDestination = new class extends firehose.DestinationBase {
-        public bind(scope: Construct, options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+        public bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
           return {
             properties: {
               testDestinationConfig: {
-                loggingConfig: this.createLoggingOptions(scope, options.role, 'streamId'),
-                anotherLoggingConfig: this.createLoggingOptions(scope, options.role, 'anotherStreamId'),
+                loggingConfig: this.createLoggingOptions(scope, destinationRole, 'streamId'),
+                anotherLoggingConfig: this.createLoggingOptions(scope, destinationRole, 'anotherStreamId'),
               },
             },
           };
         }
       }();
 
-      const testDestinationConfig = testDestination.bind(stack, { role: deliveryStreamRole });
+      const testDestinationConfig = testDestination.bind(stack, { role: destinationRole });
 
       expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
       expect(stack.resolve(testDestinationConfig)).toMatchObject({

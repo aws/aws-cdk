@@ -111,7 +111,9 @@ export interface DeliveryStreamProps {
   readonly deliveryStreamName?: string;
 
   /**
-   * The IAM role assumed by Kinesis Data Firehose to read from sources, invoke processors, and write to destinations.
+   * The IAM role associated with this delivery stream.
+   *
+   * Assumed by Kinesis Data Firehose to read from sources and encrypt data server-side.
    *
    * @default - a role will be created with default permissions.
    */
@@ -140,11 +142,10 @@ export interface DeliveryStreamAttributes {
    */
   readonly deliveryStreamName?: string;
 
-
   /**
    * The IAM role associated with this delivery stream.
    *
-   * Assumed by Kinesis Data Firehose to read from sources, invoke processors, and write to destinations.
+   * Assumed by Kinesis Data Firehose to read from sources and encrypt data server-side.
    *
    * @default - the imported stream cannot be granted access to other resources as an `iam.IGrantable`.
    */
@@ -225,7 +226,6 @@ export class DeliveryStream extends DeliveryStreamBase {
       deliveryStreamType: 'DirectPut',
       ...destinationConfig.properties,
     });
-    resource.node.addDependency(this.grantPrincipal);
 
     this.deliveryStreamArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'kinesis',

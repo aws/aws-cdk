@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { ABSENT, anything } from '@aws-cdk/assert-internal';
+import { ABSENT, Capture, anything, MatchStyle } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as logs from '@aws-cdk/aws-logs';
@@ -10,20 +10,19 @@ import * as firehosedestinations from '../lib';
 describe('S3 destination', () => {
   let stack: cdk.Stack;
   let bucket: s3.IBucket;
-  let deliveryStreamRole: iam.IRole;
+  let destinationRole: iam.IRole;
 
   beforeEach(() => {
     stack = new cdk.Stack();
     bucket = new s3.Bucket(stack, 'Bucket');
-    deliveryStreamRole = new iam.Role(stack, 'Delivery Stream Role', {
+    destinationRole = new iam.Role(stack, 'Destination Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
   });
 
   it('provides defaults when no configuration is provided', () => {
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destinations: [new firehosedestinations.S3Bucket(bucket)],
-      role: deliveryStreamRole,
+      destinations: [new firehosedestinations.S3Bucket(bucket, { role: destinationRole })],
     });
 
     expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
@@ -34,7 +33,7 @@ describe('S3 destination', () => {
           LogGroupName: anything(),
           LogStreamName: anything(),
         },
-        RoleARN: stack.resolve(deliveryStreamRole.roleArn),
+        RoleARN: stack.resolve(destinationRole.roleArn),
       },
     });
     expect(stack).toHaveResource('AWS::Logs::LogGroup');
@@ -46,7 +45,6 @@ describe('S3 destination', () => {
       destinations: [new firehosedestinations.S3Bucket(bucket, {
         logging: false,
       })],
-      role: deliveryStreamRole,
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
@@ -63,7 +61,6 @@ describe('S3 destination', () => {
       destinations: [new firehosedestinations.S3Bucket(bucket, {
         logGroup,
       })],
-      role: deliveryStreamRole,
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
@@ -75,16 +72,39 @@ describe('S3 destination', () => {
     });
   });
 
+  it('creates a role when none is provided', () => {
+    const capturedRoleArn = Capture.aString();
+
+    new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destinations: [new firehosedestinations.S3Bucket(bucket)],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      ExtendedS3DestinationConfiguration: {
+        RoleARN: {
+          'Fn::GetAtt': [
+            capturedRoleArn.capture(),
+            'Arn',
+          ],
+        },
+      },
+    });
+    expect(stack).toMatchTemplate({
+      [capturedRoleArn.capturedValue]: {
+        Type: 'AWS::IAM::Role',
+      },
+    }, MatchStyle.SUPERSET);
+  });
+
   it('grants read/write access to the bucket', () => {
-    const destination = new firehosedestinations.S3Bucket(bucket);
+    const destination = new firehosedestinations.S3Bucket(bucket, { role: destinationRole });
 
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destinations: [destination],
-      role: deliveryStreamRole,
     });
 
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      Roles: [stack.resolve(deliveryStreamRole.roleName)],
+      Roles: [stack.resolve(destinationRole.roleName)],
       PolicyDocument: {
         Statement: [
           {

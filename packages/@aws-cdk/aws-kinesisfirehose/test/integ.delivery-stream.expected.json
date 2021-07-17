@@ -57,10 +57,7 @@
             ]
           }
         }
-      },
-      "DependsOn": [
-        "DeliveryStreamServiceRole964EEBCC"
-      ]
+      }
     }
   },
   "Mappings": {
