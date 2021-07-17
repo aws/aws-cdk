@@ -120,11 +120,11 @@ export class SnsPublish extends sfn.TaskStateBase {
 
 function renderMessageAttributes(attributes?: { [key: string]: any }): any {
   if (attributes === undefined) { return undefined; }
-  const attrs: { [key: string]: messageAttributeValue } = {};
-  for (const name of Object.keys(attributes)) {
-    const value = handleMessageAttributeValue(attributes[name]);
-    attrs[name] = value;
-  };
+  const renderedAttributes =  Object.fromEntries(
+    Object.entries(attributes).map(([key, val]) => {
+      [key, handleMessageAttributeValue(value)]
+    })
+  );
   return sfn.TaskInput.fromObject(attrs).value;
 }
 
