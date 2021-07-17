@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { IDeliveryStream } from './delivery-stream';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
@@ -66,7 +66,6 @@ export interface DestinationProps {
  * Abstract base class that destination types can extend to benefit from methods that create generic configuration.
  */
 export abstract class DestinationBase implements IDestination {
-  private logGroup?: logs.ILogGroup;
 
   constructor(protected readonly props: DestinationProps = {}) { }
 
@@ -81,12 +80,12 @@ export abstract class DestinationBase implements IDestination {
       throw new Error('logging cannot be set to false when logGroup is provided');
     }
     if (this.props.logging !== false || this.props.logGroup) {
-      this.logGroup = this.logGroup ?? this.props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
-      this.logGroup.grantWrite(deliveryStream);
+      const logGroup = Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? this.props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
+      logGroup.grantWrite(deliveryStream);
       return {
         enabled: true,
-        logGroupName: this.logGroup.logGroupName,
-        logStreamName: this.logGroup.addStream(streamId).logStreamName,
+        logGroupName: logGroup.logGroupName,
+        logStreamName: logGroup.addStream(streamId).logStreamName,
       };
     }
     return undefined;
