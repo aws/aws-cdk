@@ -49,9 +49,8 @@ describe('Publish', () => {
       message: sfn.TaskInput.fromText('Publish this message'),
       messageAttributes: {
         cake: 'chocolate',
-        cakePic: new Uint8Array(16),
         cakeCount: 2,
-        vendors: ['Great Cakes', 'Cakes R Us', 'Local Cakes'],
+        vendors: ['Great Cakes', true, false, null, 3, 'Local Cakes'],
       },
     });
 
@@ -79,17 +78,13 @@ describe('Publish', () => {
             DataType: 'String',
             StringValue: 'chocolate',
           },
-          cakePic: {
-            DataType: 'Binary',
-            BinaryValue: '',
-          },
           cakeCount: {
             DataType: 'Number',
             StringValue: '2',
           },
           vendors: {
             DataType: 'String.Array',
-            StringValue: '["Great Cakes","Cakes R Us","Local Cakes"]',
+            StringValue: '["Great Cakes",true,false,null,3,"Local Cakes"]',
           },
         },
       },
