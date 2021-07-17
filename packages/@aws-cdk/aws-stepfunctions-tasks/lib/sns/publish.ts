@@ -119,12 +119,12 @@ export class SnsPublish extends sfn.TaskStateBase {
 
 function renderMessageAttributes(attributes?: { [key: string]: any }): any {
   if (attributes === undefined) { return undefined; }
-  const renderedAttributes =  Object.fromEntries(
+  const renderedAttributes = Object.fromEntries(
     Object.entries(attributes).map(([key, val]) => {
-      [key, handleMessageAttributeValue(value)]
+      [key, renderMessageAttributeValue(val)]
     })
   );
-  return sfn.TaskInput.fromObject(attrs).value;
+  return sfn.TaskInput.fromObject(renderedAttributes).value;
 }
 
 interface MessageAttributeValue {
@@ -147,10 +147,10 @@ function renderMessageAttributeValue(attributeValue: any): MessageAttributeValue
   }
   if (Array.isArray(attributeValue)) {
     // validates the primitives
-    attributeValue.forEach(v => handlePrimitiveValues(v));
+    attributeValue.forEach(v => renderPrimitiveValue(v));
     return { DataType: STRING_ARRAY, StringValue: JSON.stringify(attributeValue) };
   }
-  return handlePrimitiveValues(attributeValue);
+  return renderPrimitiveValue(attributeValue);
 }
 
 function renderPrimitiveValue(attributeValue: any): MessageAttributeValue {
