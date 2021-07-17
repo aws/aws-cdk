@@ -4,7 +4,6 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-
 /**
  * Properties for publishing a message to an SNS topic
  */
