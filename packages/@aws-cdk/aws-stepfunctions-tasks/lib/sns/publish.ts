@@ -128,7 +128,7 @@ function renderMessageAttributes(attributes?: { [key: string]: any }): any {
   return sfn.TaskInput.fromObject(attrs).value;
 }
 
-interface messageAttributeValue {
+interface MessageAttributeValue {
   DataType: string;
   StringValue?: string;
   BinaryValue?: string;
