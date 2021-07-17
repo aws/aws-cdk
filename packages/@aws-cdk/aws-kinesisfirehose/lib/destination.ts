@@ -1,5 +1,6 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { IDeliveryStream } from './delivery-stream';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
@@ -21,6 +22,11 @@ export interface DestinationBindOptions {
    * The delivery stream.
    */
   readonly deliveryStream: IDeliveryStream;
+
+  /**
+   * The IAM service Role of the delivery stream.
+   */
+  readonly role: iam.IRole;
 }
 
 /**
@@ -60,7 +66,6 @@ export interface DestinationProps {
  * Abstract base class that destination types can extend to benefit from methods that create generic configuration.
  */
 export abstract class DestinationBase implements IDestination {
-  private logGroups: { [logGroupId: string]: logs.ILogGroup } = {};
 
   constructor(protected readonly props: DestinationProps = {}) { }
 
@@ -71,27 +76,16 @@ export abstract class DestinationBase implements IDestination {
     deliveryStream: IDeliveryStream,
     streamId: string,
   ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    return this._createLoggingOptions(scope, deliveryStream, streamId, 'LogGroup', this.props.logging, this.props.logGroup);
-  }
-
-  private _createLoggingOptions(
-    scope: Construct,
-    deliveryStream: IDeliveryStream,
-    streamId: string,
-    logGroupId: string,
-    logging?: boolean,
-    propsLogGroup?: logs.ILogGroup,
-  ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    if (logging === false && propsLogGroup) {
+    if (this.props.logging === false && this.props.logGroup) {
       throw new Error('logging cannot be set to false when logGroup is provided');
     }
-    if (logging !== false || propsLogGroup) {
-      this.logGroups[logGroupId] = this.logGroups[logGroupId] ?? propsLogGroup ?? new logs.LogGroup(scope, logGroupId);
-      this.logGroups[logGroupId].grantWrite(deliveryStream);
+    if (this.props.logging !== false || this.props.logGroup) {
+      const logGroup = Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? this.props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
+      logGroup.grantWrite(deliveryStream);
       return {
         enabled: true,
-        logGroupName: this.logGroups[logGroupId].logGroupName,
-        logStreamName: this.logGroups[logGroupId].addStream(streamId).logStreamName,
+        logGroupName: logGroup.logGroupName,
+        logStreamName: logGroup.addStream(streamId).logStreamName,
       };
     }
     return undefined;

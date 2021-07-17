@@ -49,7 +49,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 
 const bucket = new s3.Bucket(this, 'Bucket');
 new DeliveryStream(this, 'Delivery Stream', {
-  destinations: [new destinations.S3(bucket)],
+  destinations: [new destinations.S3Bucket(bucket)],
 });
 ```
 
@@ -102,7 +102,7 @@ import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
 
 const bucket = new s3.Bucket(this, 'Bucket');
 
-const s3Destination = new destinations.S3(bucket);
+const s3Destination = new destinations.S3Bucket(bucket);
 
 new DeliveryStream(this, 'Delivery Stream', {
   destinations: [s3Destination],
@@ -199,7 +199,7 @@ const role = new iam.Role(this, 'Role', {
 }
 bucket.grantWrite(role);
 new DeliveryStream(stack, 'Delivery Stream', {
-  destinations: [new destinations.S3(bucket)],
+  destinations: [new destinations.S3Bucket(bucket)],
   role: role,
 });
 ```
@@ -246,16 +246,13 @@ permissions automatically. However, custom or third-party destinations may requi
 permissions. In this case, use the delivery stream as an `IGrantable`, as follows:
 
 ```ts fixture=with-delivery-stream
-/// !hide
-const myDestinationResource = {
-  grantWrite(grantee: IGrantable) {}
-}
-/// !show
-myDestinationResource.grantWrite(deliveryStream);
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const function = new lambda.Function(...);
+function.grantInvoke(deliveryStream);
 ```
 
 ## Multiple destinations
 
 Though the delivery stream allows specifying an array of destinations, only one
-destination per delivery stream is currently allowed. This limitation is enforced at
-compile time and will throw an error.
+destination per delivery stream is currently allowed.
