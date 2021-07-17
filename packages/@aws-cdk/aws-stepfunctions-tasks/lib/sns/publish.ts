@@ -139,7 +139,7 @@ const STRING_ARRAY = 'String.Array';
 const NUMBER = 'Number';
 const BINARY = 'Binary';
 
-function handleMessageAttributeValue(attributeValue: any): messageAttributeValue {
+function renderMessageAttributeValue(attributeValue: any): MessageAttributeValue {
   if (attributeValue instanceof sfn.TaskInput) {
     return { DataType: STRING, StringValue: attributeValue.value };
   }
