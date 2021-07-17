@@ -4,7 +4,7 @@ import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { EsbuildInstallation } from './esbuild-installation';
 import { PackageManager } from './package-manager';
-import { BundlingOptions } from './types';
+import { BundlingOptions, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -126,6 +126,12 @@ export class Bundling implements cdk.BundlingOptions {
     const loaders = Object.entries(this.props.loader ?? {});
     const defines = Object.entries(this.props.define ?? {});
 
+    if (!this.props.sourceMap && this.props.sourceMapMode) {
+      throw new Error('sourceMapMode can be used only when sourceMap is true');
+    }
+    const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
+    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
+
     const esbuildCommand: string[] = [
       options.esbuildRunner,
       '--bundle', `"${pathJoin(options.inputDir, this.relativeEntryPath)}"`,
@@ -133,7 +139,7 @@ export class Bundling implements cdk.BundlingOptions {
       '--platform=node',
       `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
       ...this.props.minify ? ['--minify'] : [],
-      ...this.props.sourceMap ? ['--sourcemap'] : [],
+      ...this.props.sourceMap ? [`--sourcemap${sourceMapValue}`] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),

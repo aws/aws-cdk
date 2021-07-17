@@ -19,6 +19,13 @@ export interface BundlingOptions {
   readonly sourceMap?: boolean;
 
   /**
+   * Whether to include source maps when bundling.
+   *
+   * @default DEFAULT
+   */
+  readonly sourceMapMode?: SourceMapMode;
+
+  /**
    * Target environment for the generated JavaScript code.
    *
    * @see https://esbuild.github.io/api/#target
@@ -265,4 +272,20 @@ export enum LogLevel {
   ERROR = 'error',
   /** Show nothing */
   SILENT = 'silent',
+}
+
+
+/**
+ * SourceMap mode for esbuild
+ * @see https://esbuild.github.io/api/#sourcemap
+ */
+export enum SourceMapMode {
+  /** Default sourceMap mode */
+  DEFAULT = '',
+  /** External sourceMap mode */
+  EXTERNAL = 'external',
+  /** Inline sourceMap mode */
+  INLINE = 'inline',
+  /** Both sourceMap mode */
+  BOTH = 'both'
 }
