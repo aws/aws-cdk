@@ -303,11 +303,7 @@ describe('portfolio associations and product constraints', () => {
       key2: ['value1'],
     });
 
-    portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolioWithTag', {
-      displayName: 'testPortfolio',
-      providerName: 'testProvider',
-      tagOptions: tagOptions,
-    });
+    portfolio.associateTagOptions(tagOptions);
 
     expect(stack).toCountResources('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
     expect(stack).toHaveResource('AWS::ServiceCatalog::TagOptionAssociation');
@@ -319,7 +315,11 @@ describe('portfolio associations and product constraints', () => {
       key2: ['value1'],
     });
 
-    portfolio.associateTagOptions(tagOptions);
+    portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolioWithTag', {
+      displayName: 'testPortfolio',
+      providerName: 'testProvider',
+      tagOptions: tagOptions,
+    });
 
     expect(stack).toCountResources('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
     expect(stack).toHaveResource('AWS::ServiceCatalog::TagOptionAssociation');
