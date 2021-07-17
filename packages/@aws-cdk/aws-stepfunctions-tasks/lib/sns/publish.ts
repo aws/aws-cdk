@@ -27,8 +27,8 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
   /**
    * Add message attributes when publishing.
    *
-   * For example, these attributes can carry additional metadata and may be used
-   * for SNS Filter Subscriptions.
+   * These attributes carry additional metadata about the message and may be used
+   * for subscription filters.
    *
    * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
    * @default []
