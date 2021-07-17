@@ -158,19 +158,19 @@ A product can be added to multiple portfolios depending on your resource and org
 portfolio.addProduct(product);
 ```
 
-### TagOptions
+### Tag Options
 
 TagOptions allow administrators to easily manage tags on provisioned products by creating a selection of tags for end users to choose from.
 For example, an end user can choose an `ec2` for the instance type size.
 TagOptions are created by specifying a key with a selection of values.
-At the moment, TagOptions can only be disabled on the console.
+At the moment, TagOptions can only be disabled in the console.
 
 ```ts fixture=basic-portfolio
 const tagOptions = new servicecatalog.TagOptions({
   key1: ['value1', 'value2'],
   key2: ['value1'],
 });
-portfolio.addTagOptions(tagOptions);
+portfolio.associateTagOptions(tagOptions);
 ```
 
 ## Constraints

@@ -2,8 +2,8 @@ import * as cdk from '@aws-cdk/core';
 import { TagUpdateConstraintOptions } from '../constraints';
 import { IPortfolio } from '../portfolio';
 import { IProduct } from '../product';
-import { CfnPortfolioProductAssociation, CfnResourceUpdateConstraint, CfnTagOptionAssociation } from '../servicecatalog.generated';
-import { TagOptions } from '../tagoptions';
+import { CfnPortfolioProductAssociation, CfnResourceUpdateConstraint, CfnTagOption, CfnTagOptionAssociation } from '../servicecatalog.generated';
+import { TagOptions } from '../tag-options';
 import { hashValues } from './util';
 import { InputValidator } from './validation';
 
@@ -49,16 +49,31 @@ export class AssociationManager {
     }
   }
 
-  public static associateTagOptions(portfolio: IPortfolio, resourceId: string, tagOptions: TagOptions) {
-    tagOptions.cfnTagOptions.forEach(cfnTagOption => {
-      const tagOptionKey = hashValues(cfnTagOption.key, cfnTagOption.value, portfolio.node.addr);
-      const constructId = `TagOptionAssociation${tagOptionKey}`;
-      if (!portfolio.node.tryFindChild(constructId)) {
-        new CfnTagOptionAssociation(portfolio as unknown as cdk.Resource, constructId, {
-          resourceId: resourceId,
-          tagOptionId: cfnTagOption.ref,
-        });
-      }
+  public static associateTagOptions(portfolio: IPortfolio, tagOptions: TagOptions): void {
+    Object.keys(tagOptions.tagOptionsMap).forEach(key => {
+      InputValidator.validateLength(portfolio.node.addr, 'TagOption key', 1, 128, key);
+      tagOptions.tagOptionsMap[key].forEach((value: string) => {
+        InputValidator.validateLength(portfolio.node.addr, 'TagOption value', 1, 256, value);
+        const stack = cdk.Stack.of(portfolio);
+        const tagOptionKey = hashValues(key, value, stack.node.addr);
+        const tagOptionConstructId = `TagOption${tagOptionKey}`;
+        var cfnTagOption = stack.node.tryFindChild(tagOptionConstructId) as CfnTagOption;
+        if (!cfnTagOption) {
+          cfnTagOption = new CfnTagOption(stack, tagOptionConstructId, {
+            key: key,
+            value: value,
+            active: true,
+          });
+        }
+        const tagAssocationKey = hashValues(key, value, portfolio.node.addr);
+        const tagAssocationConstructId = `TagOptionAssociation${tagAssocationKey}`;
+        if (!portfolio.node.tryFindChild(tagAssocationConstructId)) {
+          new CfnTagOptionAssociation(portfolio as unknown as cdk.Resource, tagAssocationConstructId, {
+            resourceId: portfolio.portfolioId,
+            tagOptionId: cfnTagOption.ref,
+          });
+        }
+      });
     });
   }
 
