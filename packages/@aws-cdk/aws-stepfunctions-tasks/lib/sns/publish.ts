@@ -139,7 +139,7 @@ const NUMBER = 'Number';
 const BINARY = 'Binary';
 
 function renderMessageAttributeValue(attributeValue: any): MessageAttributeValue {
-  if (attributeValue instanceof sfn.TaskInput) {
+  if (sfn.TaskInput.isEncodedJsonPath(attributeValue)) {
     return { DataType: STRING, StringValue: attributeValue.value };
   }
   if (isByteArray(attributeValue)) {
