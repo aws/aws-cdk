@@ -154,7 +154,7 @@ function handleMessageAttributeValue(attributeValue: any): messageAttributeValue
   return handlePrimitiveValues(attributeValue);
 }
 
-function handlePrimitiveValues(attributeValue: any): messageAttributeValue {
+function renderPrimitiveValue(attributeValue: any): MessageAttributeValue {
   if (attributeValue === null) {
     return { DataType: STRING, StringValue: attributeValue.value };
   }
