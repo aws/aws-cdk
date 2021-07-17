@@ -263,11 +263,7 @@ export class Bundling implements cdk.BundlingOptions {
     // when compilation is set to auto
     const tsConfig = tryGetTsConfig(this.props.tsconfig, this.props.entry);
 
-    if (!tsConfig) {
-      throw new Error('Expected to find a typescript config but none was found.');
-    }
-
-    return { requiresPreCompilation: tsConfig.awsCdkCompilerOptions?.enableTscCompilation === true };
+    return { requiresPreCompilation: tsConfig?.awsCdkCompilerOptions?.enableTscCompilation === true };
   }
 }
 
