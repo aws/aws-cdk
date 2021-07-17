@@ -30,7 +30,7 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
    * These attributes carry additional metadata about the message and may be used
    * for subscription filters.
    *
-   * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html
    * @default []
    */
   readonly messageAttributes?: { [key: string]: any };
