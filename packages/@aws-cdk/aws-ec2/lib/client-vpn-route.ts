@@ -81,15 +81,27 @@ export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
  */
 export class ClientVpnRoute extends Resource {
   constructor(scope: Construct, id: string, props: ClientVpnRouteProps) {
+    if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
+      throw new Error(
+        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
+      );
+    }
+    if (props.clientVpnEndoint && props.clientVpnEndpoint) {
+      throw new Error(
+        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
+          ', but not both',
+      );
+    }
+    const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;
     super(scope, id);
     const route = new CfnClientVpnRoute(this, 'Resource', {
-      clientVpnEndpointId: props.clientVpnEndpoint!.endpointId,
+      clientVpnEndpointId: clientVpnEndpoint!.endpointId,
       description: props.description,
       destinationCidrBlock: props.cidr,
       targetVpcSubnetId: props.target.subnetId,
     });
 
     // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-clientvpnroute.html
-    route.node.addDependency(props.clientVpnEndpoint!.targetNetworksAssociated);
+    route.node.addDependency(clientVpnEndpoint!.targetNetworksAssociated);
   }
 }
