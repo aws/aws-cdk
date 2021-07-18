@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
 import { ListenerTlsOptions } from './listener-tls-options';
@@ -6,8 +7,6 @@ import {
   GrpcConnectionPool, GrpcTimeout, Http2ConnectionPool, HttpConnectionPool,
   HttpTimeout, OutlierDetection, Protocol, TcpConnectionPool, TcpTimeout,
 } from './shared-interfaces';
-
-import { Construct } from 'constructs';
 
 /**
  * Properties for a VirtualNode listener
