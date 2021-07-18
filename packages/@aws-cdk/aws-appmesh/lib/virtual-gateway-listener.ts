@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
 import { ListenerTlsOptions } from './listener-tls-options';
@@ -8,8 +9,6 @@ import {
   HttpConnectionPool,
   Protocol,
 } from './shared-interfaces';
-
-import { Construct } from 'constructs';
 
 /**
  * Represents the properties needed to define a Listeners for a VirtualGateway

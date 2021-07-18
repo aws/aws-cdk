@@ -311,6 +311,15 @@ new WebSocketStage(stack, 'mystage', {
 });
 ```
 
+To retrieve a websocket URL and a callback URL:
+
+```ts
+const webSocketURL = webSocketStage.url;
+// wss://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}
+const callbackURL = webSocketURL.callbackUrl;
+// https://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}
+```
+
 To add any other route:
 
 ```ts

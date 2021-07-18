@@ -273,6 +273,26 @@ nodeunitShim({
     test.done();
   },
 
+  'customize deploy role externalId'(test: Test) {
+    // GIVEN
+    const myapp = new App();
+
+    // WHEN
+    const mystack = new Stack(myapp, 'mystack', {
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleExternalId: 'deploy-external-id',
+      }),
+    });
+
+    // THEN
+    const asm = myapp.synth();
+
+    const stackArtifact = asm.getStack(mystack.stackName);
+    expect(stackArtifact.assumeRoleExternalId).toEqual('deploy-external-id');
+
+    test.done();
+  },
+
   'synthesis with bucketPrefix'(test: Test) {
     // GIVEN
     const myapp = new App();

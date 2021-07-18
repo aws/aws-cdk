@@ -201,7 +201,7 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
     const grantPrincipal = grantee.grantPrincipal;
-    if (!(grantPrincipal instanceof Construct)) {
+    if (!isConstruct(grantPrincipal)) {
       return undefined;
     }
     // this logic should only apply to newly created
@@ -229,7 +229,7 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
-    if (!(grantee instanceof Construct)) {
+    if (!isConstruct(grantee)) {
       return false;
     }
     const bucketStack = Stack.of(this);
@@ -238,7 +238,7 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(grantee instanceof Construct)) {
+    if (!isConstruct(grantee)) {
       return false;
     }
     const bucketStack = Stack.of(this);
@@ -674,4 +674,21 @@ export class Key extends KeyBase {
       principals: [new iam.AccountRootPrincipal()],
     }));
   }
+}
+
+/**
+ * Whether the given object is a Construct
+ *
+ * Normally we'd do `x instanceof Construct`, but that is not robust against
+ * multiple copies of the `constructs` library on disk. This can happen
+ * when upgrading and downgrading between v2 and v1, and in the use of CDK
+ * Pipelines is going to an error that says "Can't use Pipeline/Pipeline/Role in
+ * a cross-environment fashion", which is very confusing.
+ */
+function isConstruct(x: any): x is Construct {
+  const sym = Symbol.for('constructs.Construct.node');
+  return (typeof x === 'object' && x &&
+    (x instanceof Construct // happy fast case
+    || !!(x as any).node // constructs v10
+    || !!(x as any)[sym])); // constructs v3
 }
