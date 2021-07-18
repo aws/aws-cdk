@@ -489,7 +489,7 @@ export class Pipeline extends PipelineBase {
     // // CodePipeline Variables
     validateNamespaceName(richAction.actionProperties.variablesNamespace);
 
-    // bind the Action
+    // bind the Action (type h4x)
     const actionConfig = richAction.bind(actionScope, stage, {
       role: actionRole ? actionRole : this.role,
       bucket: crossRegionInfo.artifactBucket,
