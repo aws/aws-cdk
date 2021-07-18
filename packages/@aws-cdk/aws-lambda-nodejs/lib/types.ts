@@ -19,7 +19,8 @@ export interface BundlingOptions {
   readonly sourceMap?: boolean;
 
   /**
-   * Whether to include source maps when bundling.
+   * Source map mode to be used when bundling.
+   * @see https://esbuild.github.io/api/#sourcemap
    *
    * @default DEFAULT
    */
@@ -280,12 +281,22 @@ export enum LogLevel {
  * @see https://esbuild.github.io/api/#sourcemap
  */
 export enum SourceMapMode {
-  /** Default sourceMap mode */
+  /**
+   * Default sourceMap mode - will generate a .js.map file alongside any generated .js file and add a special //# sourceMappingURL=
+   * comment to the bottom of the .js file pointing to the .js.map file
+   */
   DEFAULT = '',
-  /** External sourceMap mode */
+  /**
+   *  External sourceMap mode - If you want to omit the special //# sourceMappingURL= comment from the generated .js file but you still
+   *  want to generate the .js.map files
+   */
   EXTERNAL = 'external',
-  /** Inline sourceMap mode */
+  /**
+   * Inline sourceMap mode - If you want to insert the entire source map into the .js file instead of generating a separate .js.map file
+   */
   INLINE = 'inline',
-  /** Both sourceMap mode */
+  /**
+   * Both sourceMap mode - If you want to have the effect of both inline and external simultaneously
+   */
   BOTH = 'both'
 }
