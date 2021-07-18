@@ -164,8 +164,6 @@ export class Bundling implements cdk.BundlingOptions {
         `${npx} tsc --project ${pathJoin(options.inputDir, this.relativeTsconfigPath || 'tsconfig.json')} --outDir ${pathJoin(options.inputDir, tscOutDir)}`,
         osCommand.writeJson(esBuildTsConfig, tsConfigContent),
       ]);
-      // eslint-disable-next-line no-console
-      console.log(`Compile Command: ${compileCommand}`);
     }
 
     const loaders = Object.entries(this.props.loader ?? {});
