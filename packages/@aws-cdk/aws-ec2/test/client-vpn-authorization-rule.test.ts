@@ -18,13 +18,18 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
     };
-    new ClientVpnAuthorizationRule(stack, 'Rule', { cidr: '10.0.10.0/32', clientVpnEndpoint });
+    new ClientVpnAuthorizationRule(stack, 'NormalRule', {
+      cidr: '10.0.10.0/32',
+      clientVpnEndpoint,
+    });
     expect(stack).toCountResources('AWS::EC2::ClientVpnAuthorizationRule', 1);
     expect(stack.node.children.length).toBe(1);
   });
   test('either clientVpnEndoint (deprecated, typo) or clientVpnEndpoint is required', () => {
     expect(() => {
-      new ClientVpnAuthorizationRule(stack, 'Rule', { cidr: '10.0.10.0/32' });
+      new ClientVpnAuthorizationRule(stack, 'RuleNoEndointNoEndpoint', {
+        cidr: '10.0.10.0/32',
+      });
     }).toThrow(
       new Error(
         'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
@@ -49,7 +54,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       node: stack.node,
     };
     expect(() => {
-      new ClientVpnAuthorizationRule(stack, 'Rule', {
+      new ClientVpnAuthorizationRule(stack, 'RuleBothEndointAndEndpoint', {
         cidr: '10.0.10.0/32',
         clientVpnEndoint,
         clientVpnEndpoint,
@@ -63,7 +68,9 @@ describe('ClientVpnAuthorizationRule constructor', () => {
   });
   test('invalid constructor calls should not add anything to the stack', () => {
     expect(() => {
-      new ClientVpnAuthorizationRule(stack, 'InvalidRule', { cidr: '10.0.10.0/32' });
+      new ClientVpnAuthorizationRule(stack, 'RuleNoEndointNoEndpoint', {
+        cidr: '10.0.10.0/32',
+      });
     }).toThrow();
     expect(stack.node.children.length).toBe(0);
   });
@@ -76,7 +83,10 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
     };
-    new ClientVpnAuthorizationRule(stack, 'Rule', { cidr: '10.0.10.0/32', clientVpnEndoint });
+    new ClientVpnAuthorizationRule(stack, 'RuleWithEndointTypo', {
+      cidr: '10.0.10.0/32',
+      clientVpnEndoint,
+    });
     expect(stack).toCountResources('AWS::EC2::ClientVpnAuthorizationRule', 1);
     expect(stack.node.children.length).toBe(1);
   });
