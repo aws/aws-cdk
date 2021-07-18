@@ -42,6 +42,7 @@ describe('Publish', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
+    const token = cdk.Token.asString('cakes can be resolved');
 
     // WHEN
     const task = new SnsPublish(stack, 'Publish', {
@@ -50,6 +51,9 @@ describe('Publish', () => {
       messageAttributes: {
         cake: 'chocolate',
         cakeCount: 2,
+        resolvable: token,
+        taskInput: sfn.TaskInput.fromJsonPathAt('$$.StateMachine.Name'),
+        executionId: sfn.JsonPath.stringAt('$$.Execution.Id'),
         vendors: ['Great Cakes', true, false, null, 3, 'Local Cakes'],
       },
     });
@@ -81,6 +85,18 @@ describe('Publish', () => {
           cakeCount: {
             DataType: 'Number',
             StringValue: '2',
+          },
+          resolvable: {
+            DataType: 'String',
+            StringValue: 'cakes can be resolved',
+          },
+          executionId: {
+            'DataType': 'String',
+            'StringValue.$': '$$.Execution.Id',
+          },
+          taskInput: {
+            'DataType': 'String',
+            'StringValue.$': '$$.StateMachine.Name',
           },
           vendors: {
             DataType: 'String.Array',
