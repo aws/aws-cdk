@@ -422,7 +422,7 @@ export class Rule extends Resource implements IRule {
     const existing = scope.node.tryFindChild(id) as IRole;
     if (existing) { return existing; }
 
-    const role = new Role(scope as CoreConstruct, id, {
+    const role = new Role(scope as Construct, id, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new ServicePrincipal('events.amazonaws.com'),
     });
