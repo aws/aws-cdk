@@ -3,26 +3,6 @@ import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 
 /**
- * Represents the properties needed to define CloudMap Service Discovery
- */
-export interface CloudMapServiceDiscoveryOptions {
-  /**
-   * The AWS Cloud Map Service to use for service discovery
-   */
-  readonly service: cloudmap.IService;
-
-  /**
-   * A string map that contains attributes with values that you can use to
-   * filter instances by any custom attribute that you specified when you
-   * registered the instance. Only instances that match all of the specified
-   * key/value pairs will be returned.
-   *
-   * @default - no instance attributes
-   */
-  readonly instanceAttributes?: {[key: string]: string};
-}
-
-/**
  * Properties for VirtualNode Service Discovery
  */
 export interface ServiceDiscoveryConfig {
