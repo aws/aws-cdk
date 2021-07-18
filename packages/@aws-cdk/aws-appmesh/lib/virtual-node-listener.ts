@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
 import { ListenerTlsOptions } from './listener-tls-options';
@@ -6,10 +7,6 @@ import {
   GrpcConnectionPool, GrpcTimeout, Http2ConnectionPool, HttpConnectionPool,
   HttpTimeout, OutlierDetection, Protocol, TcpConnectionPool, TcpTimeout,
 } from './shared-interfaces';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a VirtualNode listener

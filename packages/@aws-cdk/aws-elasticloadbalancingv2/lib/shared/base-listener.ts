@@ -112,12 +112,13 @@ export abstract class BaseListener extends Resource {
     });
 
     this.listenerArn = resource.ref;
+    this.node.addValidation({ validate: () => this.validateListener() });
   }
 
   /**
    * Validate this listener
    */
-  protected validate(): string[] {
+  protected validateListener(): string[] {
     if (!this.defaultAction) {
       return ['Listener needs at least one default action or target group (call addTargetGroups or addAction)'];
     }
