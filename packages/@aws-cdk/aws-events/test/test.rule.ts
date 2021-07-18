@@ -509,22 +509,6 @@ export = {
     test.done();
   },
 
-  'rule and target must be in the same region'(test: Test) {
-    const app = new cdk.App();
-
-    const sourceStack = new cdk.Stack(app, 'SourceStack');
-    const rule = new Rule(sourceStack, 'Rule');
-
-    const targetStack = new cdk.Stack(app, 'TargetStack', { env: { region: 'us-west-2' } });
-    const resource = new Construct(targetStack, 'Resource');
-
-    test.throws(() => {
-      rule.addTarget(new SomeTarget('T', resource));
-    }, /Rule and target must be in the same region/);
-
-    test.done();
-  },
-
   'sqsParameters are generated when they are specified in target props'(test: Test) {
     const stack = new cdk.Stack();
     const t1: IRuleTarget = {
