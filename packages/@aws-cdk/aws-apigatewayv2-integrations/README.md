@@ -21,6 +21,7 @@
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
   - [Private Integration](#private-integration)
+  - [Request Parameter mapping](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
 
@@ -148,6 +149,56 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
   }),
 });
 ```
+
+### Request parameter mapping
+
+### Request Parameters
+
+Request parameter mapping is supported through a set of helper methods.
+The following example renames a request header from header1 to header2 by generating mappings
+`append:header.header2: $request.header.header1` and `remove:header.header1: ''`:
+
+```ts
+const vpc = new ec2.Vpc(stack, 'VPC');
+const lb = new elbv2.ALB(stack, 'lb', { vpc });
+const listener = lb.addListener('listener', { port: 80 });
+listener.addTargets('target', {
+  port: 80,
+});
+
+const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
+  defaultIntegration: new HttpAlbIntegration({
+    listener,
+    requestParameters: new RequestParameters()
+      .addParameter({
+        mappingKey: HttpMappingKey.appendHeader('header2'),
+        mappingValue: MappingValue.requestHeader('header1'),
+      })
+      .addParameter({
+        mappingKey: HttpMappingKey.removeHeader(),
+        mappingValue: MappingValue.NONE,
+    }),
+  }),
+});
+```
+
+
+
+To use values which does not yet have any helper functions, you can use the custom methods:
+
+```ts
+const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
+  defaultIntegration: new HttpAlbIntegration({
+    listener,
+    requestParameters: new RequestParameters()
+      .addParameter({
+        mappingKey: MappingKey.custom('new.header'),
+        mappingValue: MappingValue.custom('new.value'),
+    }),
+  }),
+});
+```
+
 
 ## WebSocket APIs
 
