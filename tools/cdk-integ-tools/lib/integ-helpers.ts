@@ -8,6 +8,7 @@ const CDK_OUTDIR = 'cdk-integ.out';
 
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
 const PRAGMA_PREFIX = 'pragma:';
+const SET_CONTEXT_PRAGMA_PREFIX = 'pragma:set-context:';
 
 export class IntegrationTests {
   constructor(private readonly directory: string) {
@@ -95,9 +96,22 @@ export class IntegrationTest {
    * Return the "main" template or a concatenation of all listed templates in the pragma
    */
   public async cdkSynthFast(options: SynthOptions = {}): Promise<any> {
-    const context = {
+    const context: Record<string, string> = {
       ...options.context,
     };
+
+    // apply context from set-context pragma
+    // usage: pragma:set-context:key=value
+    const ctxPragmas = (await this.pragmas()).filter(p => p.startsWith(SET_CONTEXT_PRAGMA_PREFIX));
+    for (const p of ctxPragmas) {
+      const instruction = p.substring(SET_CONTEXT_PRAGMA_PREFIX.length);
+      const [key, value] = instruction.split('=');
+      if (key == null || value == null) {
+        throw new Error(`invalid "set-context" pragma syntax. example: "pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true" got: ${p}`);
+      }
+
+      context[key] = value;
+    }
 
     try {
       await exec(['node', `${this.name}`], {
