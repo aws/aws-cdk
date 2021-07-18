@@ -74,7 +74,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly local?: cdk.ILocalBundling;
 
   private readonly projectRoot: string;
-  private relativeEntryPath: string;
+  private readonly relativeEntryPath: string;
   private readonly relativeTsconfigPath?: string;
   private readonly relativeDepsLockFilePath: string;
   private readonly externals: string[];
@@ -137,13 +137,35 @@ export class Bundling implements cdk.BundlingOptions {
     const npx = options.osPlatform === 'win32' ? 'npx.cmd' : 'npx';
 
     let compileCommand = '';
+    let esBuildTsConfig = '';
+    let preCompiledJsOutputEntry = '';
     const cdkCompilerOptions = this.getCdkCompilerOptions();
+    const osCommand = new OsCommand(options.osPlatform);
 
     if (cdkCompilerOptions.requiresPreCompilation) {
-      const tscOutDir = path.resolve(PRE_BUNDLING_TSC_COMPILATION_DIR);
-      this.relativeEntryPath = pathJoin(tscOutDir, this.relativeEntryPath)
+      const tscOutDir = PRE_BUNDLING_TSC_COMPILATION_DIR;
+      preCompiledJsOutputEntry = pathJoin(options.inputDir, tscOutDir, this.relativeEntryPath)
         .replace(/\.(tsx)$/, '.jsx').replace(/\.(ts)$/, '.js');
-      compileCommand = `${npx} tsc`;
+
+      const tsConfigContent = {
+        ...cdkCompilerOptions.tsConfig || {},
+      };
+
+      if (!tsConfigContent.compilerOptions?.baseUrl) {
+        tsConfigContent.compilerOptions = {
+          ...tsConfigContent.compilerOptions || {},
+          baseUrl: '.',
+        };
+      }
+
+      esBuildTsConfig = pathJoin(options.inputDir, tscOutDir, 'tsconfig-esbuild.json');
+
+      compileCommand = chain([
+        `${npx} tsc --project ${pathJoin(options.inputDir, this.relativeTsconfigPath || 'tsconfig.json')} --outDir ${pathJoin(options.inputDir, tscOutDir)}`,
+        osCommand.writeJson(esBuildTsConfig, tsConfigContent),
+      ]);
+      // eslint-disable-next-line no-console
+      console.log(`Compile Command: ${compileCommand}`);
     }
 
     const loaders = Object.entries(this.props.loader ?? {});
@@ -151,7 +173,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     const esbuildCommand: string[] = [
       options.esbuildRunner,
-      '--bundle', `"${pathJoin(options.inputDir, this.relativeEntryPath)}"`,
+      '--bundle', `"${preCompiledJsOutputEntry ? preCompiledJsOutputEntry : pathJoin(options.inputDir, this.relativeEntryPath)}"`,
       `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
       `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
@@ -162,7 +184,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(options.inputDir, this.relativeTsconfigPath)}`] : [],
+      ...esBuildTsConfig ? [`--tsconfig=${esBuildTsConfig}`] : this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(options.inputDir, this.relativeTsconfigPath)}`] : [],
       ...this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : [],
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
@@ -179,7 +201,6 @@ export class Bundling implements cdk.BundlingOptions {
 
       // Determine dependencies versions, lock file and installer
       const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
-      const osCommand = new OsCommand(options.osPlatform);
 
       const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
 
@@ -255,15 +276,14 @@ export class Bundling implements cdk.BundlingOptions {
     if (this.props.preBundlingCompilation === PreBundlingCompilation.DISABLED || !isTypescriptEntry(this.props.entry)) {
       return { requiresPreCompilation: false };
     }
+    const tsConfig = tryGetTsConfig(this.relativeTsconfigPath, this.props.entry);
 
     if (this.props.preBundlingCompilation === PreBundlingCompilation.ENABLED) {
-      return { requiresPreCompilation: true };
+      return { requiresPreCompilation: true, tsConfig };
     }
 
     // when compilation is set to auto
-    const tsConfig = tryGetTsConfig(this.props.tsconfig, this.props.entry);
-
-    return { requiresPreCompilation: tsConfig?.awsCdkCompilerOptions?.enableTscCompilation === true };
+    return { requiresPreCompilation: tsConfig?.awsCdkCompilerOptions?.enableTscCompilation === true, tsConfig };
   }
 }
 

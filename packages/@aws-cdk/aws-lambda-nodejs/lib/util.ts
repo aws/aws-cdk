@@ -70,27 +70,30 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
   return proc;
 }
 
-export function tryGetTsConfig(customLocation?: string, entryToResolveFrom: string = ''): {
+export function tryGetTsConfig(tsConfigRelativePath?: string, entryToResolveFrom: string = ''): {
+  compilerOptions?: {
+    baseUrl?: string
+  }
   awsCdkCompilerOptions?: {
     enableTscCompilation?: boolean;
     outDir?: string
   }
 } | undefined {
-  const relativeTsConfigPath = customLocation
-    ? path.resolve(customLocation)
+  const tsConfigPath = tsConfigRelativePath
+    ? path.resolve(tsConfigRelativePath)
     : path.resolve(findUp('tsconfig.json', path.dirname(entryToResolveFrom)) || '');
 
-  if (!relativeTsConfigPath) {
+  if (!tsConfigPath) {
     return;
   }
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const relativeTsConfig = require(relativeTsConfigPath);
+    const relativeTsConfig = require(tsConfigPath);
 
     if (relativeTsConfig.extends) {
       // recursively merge all extended tsConfig paths
-      const tsConfigBasePath = path.resolve(relativeTsConfigPath, relativeTsConfig.extends);
+      const tsConfigBasePath = path.resolve(tsConfigPath, relativeTsConfig.extends);
       const baseTsConfig = tryGetTsConfig(tsConfigBasePath);
 
       return {

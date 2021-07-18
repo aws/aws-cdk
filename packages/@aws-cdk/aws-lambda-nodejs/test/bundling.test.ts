@@ -6,7 +6,7 @@ import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import { EsbuildInstallation } from '../lib/esbuild-installation';
-import { LogLevel } from '../lib/types';
+import { LogLevel, PreBundlingCompilation } from '../lib/types';
 import * as util from '../lib/util';
 
 jest.mock('@aws-cdk/aws-lambda');
@@ -28,7 +28,7 @@ beforeEach(() => {
   fromBuildMock = jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
     cp: () => 'dest-path',
-    run: () => {},
+    run: () => { },
     toJSON: () => 'built-image',
   });
 });
@@ -63,6 +63,31 @@ test('esbuild bundling in Docker', () => {
       command: [
         'bash', '-c',
         'esbuild --bundle "/asset-input/lib/handler.ts" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --loader:.png=dataurl',
+      ],
+      workingDirectory: '/',
+    }),
+  });
+});
+
+test('esbuild bundling in docker with preCompilation enabled', () => {
+  const getTsConfigSpy = jest.spyOn(util, 'tryGetTsConfig').mockReturnValue(undefined);
+
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_12_X,
+    forceDockerBundling: true,
+    preBundlingCompilation: PreBundlingCompilation.ENABLED,
+  });
+
+  expect(getTsConfigSpy).toHaveBeenCalledTimes(1);
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        "npx tsc --outDir /asset-input/cdk.out/tsc-compile && echo '{\"compilerOptions\":{\"baseUrl\":\"cdk.out/tsc-compile\"}}' > /asset-input/cdk.out/tsc-compile/tsconfig-esbuild.json && esbuild --bundle \"/asset-input/cdk.out/tsc-compile/lib/handler.js\" --target=node12 --platform=node --outfile=\"/asset-output/index.js\" --external:aws-sdk --tsconfig=/asset-input/cdk.out/tsc-compile/tsconfig-esbuild.json",
       ],
       workingDirectory: '/',
     }),
