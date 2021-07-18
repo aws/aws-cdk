@@ -125,10 +125,15 @@ export class CloudAssembly {
   private selectMatchingStacks(stacks: cxapi.CloudFormationStackArtifact[],
     patterns: string[],
     extend: ExtendedStackSelection = ExtendedStackSelection.None): StackCollection {
+
+    // cli tests use this to ensure tests do not depend on legacy behavior
+    // (otherwise they will fail in v2)
+    const disableLegacy = process.env.CXAPI_DISABLE_SELECT_BY_ID === '1';
+
     const matchingPattern = (pattern: string) => (stack: cxapi.CloudFormationStackArtifact) => {
       if (minimatch(stack.hierarchicalId, pattern)) {
         return true;
-      } else if (stack.id === pattern && semver.major(versionNumber()) < 2) {
+      } else if (!disableLegacy && stack.id === pattern && semver.major(versionNumber()) < 2) {
         warning('Selecting stack by identifier "%s". This identifier is deprecated and will be removed in v2. Please use "%s" instead.', colors.bold(stack.id), colors.bold(stack.hierarchicalId));
         warning('Run "cdk ls" to see a list of all stack identifiers');
         return true;
