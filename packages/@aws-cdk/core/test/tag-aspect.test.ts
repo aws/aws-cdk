@@ -1,5 +1,6 @@
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { CfnResource, CfnResourceProps, Construct, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags } from '../lib';
+import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
 class TaggableResource extends CfnResource {
