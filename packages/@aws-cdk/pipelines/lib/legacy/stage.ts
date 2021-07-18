@@ -1,12 +1,17 @@
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
+import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
+import * as sns from '@aws-cdk/aws-sns';
 import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
+import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { topologicalSort } from '../private/toposort';
 import { DeployCdkStackAction } from './actions';
+import { CdkPipeline } from './pipeline';
 
 /**
  * Construction properties for a CdkStage
@@ -31,7 +36,29 @@ export interface CdkStageProps {
    * Features the Stage needs from its environment
    */
   readonly host: IStageHost;
+
+  /**
+   * Run a security check before every application prepare/deploy actions.
+   *
+   * Note: Stage level security check can be overriden per application as follows:
+   *   `stage.addApplication(app, { confirmBroadeningPermissions: false })`
+   *
+   * @default false
+   */
+  readonly confirmBroadeningPermissions?: boolean;
+
+  /**
+   * Optional SNS topic to send notifications to when any security check registers
+   * changes within a application.
+   *
+   * Note: The Stage Notification Topic can be overriden per application as follows:
+   *   `stage.addApplication(app, { securityNotificationTopic: newTopic })`
+   *
+   * @default undefined no stage level notification topic
+   */
+  readonly securityNotificationTopic?: sns.ITopic;
 }
+
 
 /**
  * Stage in a CdkPipeline
@@ -47,15 +74,25 @@ export class CdkStage extends Construct {
   private readonly stacksToDeploy = new Array<DeployStackCommand>();
   private readonly stageName: string;
   private readonly host: IStageHost;
+  private readonly confirmBroadeningPermissions: boolean;
+  private readonly pipeline?: CdkPipeline;
+  private readonly securityNotificationTopic?: sns.ITopic;
+  private _applicationSecurityCheck?: ApplicationSecurityCheck;
   private _prepared = false;
 
   constructor(scope: Construct, id: string, props: CdkStageProps) {
     super(scope, id);
 
+    if (scope instanceof CdkPipeline) {
+      this.pipeline = scope;
+    }
+
     this.stageName = props.stageName;
     this.pipelineStage = props.pipelineStage;
     this.cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     this.host = props.host;
+    this.confirmBroadeningPermissions = props.confirmBroadeningPermissions ?? false;
+    this.securityNotificationTopic = props.securityNotificationTopic;
 
     Aspects.of(this).add({ visit: () => this.prepareStage() });
   }
@@ -74,6 +111,10 @@ export class CdkStage extends Construct {
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
     const asm = appStage.synth({ validateOnSynthesis: true });
     const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
+
+    if (options.confirmBroadeningPermissions ?? this.confirmBroadeningPermissions) {
+      this.addSecurityCheck(appStage, options);
+    }
 
     if (asm.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
@@ -102,6 +143,30 @@ export class CdkStage extends Construct {
         this.addStackArtifactDeployment(stack, { runOrder, executeRunOrder });
       }
     }
+  }
+
+  /**
+   * Get a cached version of an ApplicationSecurityCheck, which consists of:
+   *  - CodeBuild Project to check for security changes in a stage
+   *  - Lambda Function that approves the manual approval if no security changes are detected
+   *
+   * The ApplicationSecurityCheck is cached from the pipeline **if** this stage is scoped
+   * to a CDK Pipeline. If this stage **is not** scoped to a pipeline, create an ApplicationSecurityCheck
+   * scoped to the stage itself.
+   *
+   * @internal
+   */
+  private getApplicationSecurityCheck(): ApplicationSecurityCheck {
+    if (this._applicationSecurityCheck) {
+      return this._applicationSecurityCheck;
+    }
+
+    this._applicationSecurityCheck = this.pipeline
+      ? this.pipeline._getApplicationSecurityCheck()
+      : new ApplicationSecurityCheck(this, 'StageApplicationSecurityCheck', {
+        codePipeline: this.pipelineStage.pipeline as codepipeline.Pipeline,
+      });
+    return this._applicationSecurityCheck;
   }
 
   /**
@@ -219,6 +284,61 @@ export class CdkStage extends Construct {
    */
   private simplifyStackName(s: string) {
     return stripPrefix(s, `${this.stageName}-`);
+  }
+
+  /**
+   * Add a security check before the prepare/deploy actions of an CDK stage.
+   * The security check consists of two actions:
+   *  - CodeBuild Action to check for security changes in a stage
+   *  - Manual Approval Action that is auto approved via a Lambda if no security changes detected
+   */
+  private addSecurityCheck(appStage: Stage, options?: BaseStageOptions) {
+    const { cdkDiffProject } = this.getApplicationSecurityCheck();
+    const notificationTopic: sns.ITopic | undefined = options?.securityNotificationTopic ?? this.securityNotificationTopic;
+    notificationTopic?.grantPublish(cdkDiffProject);
+
+    const appStageName = appStage.stageName;
+    const approveActionName = `${appStageName}ManualApproval`;
+    const diffAction = new CodeBuildAction({
+      runOrder: this.nextSequentialRunOrder(),
+      actionName: `${appStageName}SecurityCheck`,
+      input: this.cloudAssemblyArtifact,
+      project: cdkDiffProject,
+      variablesNamespace: `${appStageName}SecurityCheck`,
+      environmentVariables: {
+        STAGE_PATH: {
+          value: this.pipelineStage.pipeline.stack.stackName,
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+        },
+        STAGE_NAME: {
+          value: this.stageName,
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+        },
+        ACTION_NAME: {
+          value: approveActionName,
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+        },
+        ...notificationTopic ? {
+          NOTIFICATION_ARN: {
+            value: notificationTopic.topicArn,
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          },
+          NOTIFICATION_SUBJECT: {
+            value: `Confirm permission broadening in ${appStageName}`,
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          },
+        } : {},
+      },
+    });
+
+    const approve = new cpactions.ManualApprovalAction({
+      actionName: approveActionName,
+      runOrder: this.nextSequentialRunOrder(),
+      additionalInformation: `#{${appStageName}SecurityCheck.MESSAGE}`,
+      externalEntityLink: `#{${appStageName}SecurityCheck.LINK}`,
+    });
+
+    this.addActions(diffAction, approve);
   }
 
   /**
@@ -367,9 +487,38 @@ export interface AssetPublishingCommand {
 }
 
 /**
+ * Base options for a pipelines stage
+ */
+export interface BaseStageOptions {
+  /**
+   * Runs a `cdk diff --security-only --fail` to pause the pipeline if there
+   * are any security changes.
+   *
+   * If the stage is configured with `confirmBroadeningPermissions` enabled, you can use this
+   * property to override the stage configuration. For example, Pipeline Stage
+   * "Prod" has confirmBroadeningPermissions enabled, with applications "A", "B", "C". All three
+   * applications will run a security check, but if we want to disable the one for "C",
+   * we run `stage.addApplication(C, { confirmBroadeningPermissions: false })` to override the pipeline
+   * stage behavior.
+   *
+   * Adds 1 to the run order space.
+   *
+   * @default false
+   */
+  readonly confirmBroadeningPermissions?: boolean;
+  /**
+   * Optional SNS topic to send notifications to when the security check registers
+   * changes within the application.
+   *
+   * @default undefined no notification topic for security check manual approval action
+   */
+  readonly securityNotificationTopic?: sns.ITopic;
+}
+
+/**
  * Options for adding an application stage to a pipeline
  */
-export interface AddStageOptions {
+export interface AddStageOptions extends BaseStageOptions {
   /**
    * Add manual approvals before executing change sets
    *
