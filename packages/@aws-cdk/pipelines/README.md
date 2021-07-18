@@ -840,7 +840,7 @@ and orphan the old bucket. You should manually delete the orphaned bucket
 after you are sure you have redeployed all CDK applications and there are no
 more references to the old asset bucket.
 
-## Security Tips
+## Security Considerations
 
 It's important to stay safe while employing Continuous Delivery. The CDK Pipelines
 library comes with secure defaults to the best of our ability, but by its
@@ -861,6 +861,68 @@ We therefore expect you to mind the following:
   developers to have access to any of the account credentials; all further
   changes can be deployed through git. Avoid the chances of credentials leaking
   by not having them in the first place!
+
+### Confirm permissions broadening
+
+To keep tabs on the security impact of changes going out through your pipeline,
+you can insert a security check before any stage deployment. This security check
+will check if the upcoming deployment would add any new IAM permissions or
+security group rules, and if so pause the pipeline and require you to confirm
+the changes.
+
+The security check will appear as two distinct actions in your pipeline: first
+a CodeBuild project that runs `cdk diff` on the stage that's about to be deployed,
+followed by a Manual Approval action that pauses the pipeline. If it so happens
+that there no new IAM permissions or security group rules will be added by the deployment,
+the manual approval step is automatically satisfied. The pipeline will look like this:
+
+```txt
+Pipeline
+├── ...
+├── MyApplicationStage
+│    ├── MyApplicationSecurityCheck       // Security Diff Action
+│    ├── MyApplicationManualApproval      // Manual Approval Action
+│    ├── Stack.Prepare
+│    └── Stack.Deploy
+└── ...
+```
+
+You can insert the security check by using a `ConfirmPermissionsBroadening` step:
+
+```ts
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
+  pre: [
+    new ConfirmPermissionsBroadening('Check', { stage }),
+  ],
+});
+```
+
+To get notified when there is a change that needs your manual approval,
+create an SNS Topic, subscribe your own email address, and pass it in as
+as the `notificationTopic` property:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
+import * as pipelines from '@aws-cdk/pipelines';
+
+const topic = new sns.Topic(this, 'SecurityChangesTopic');
+topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
+
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
+  pre: [
+    new ConfirmPermissionsBroadening('Check', {
+      stage,
+      notificationTopic: topic,
+    }),
+  ],
+});
+```
+
+**Note**: Manual Approvals notifications only apply when an application has security
+check enabled.
 
 ## Troubleshooting
 
