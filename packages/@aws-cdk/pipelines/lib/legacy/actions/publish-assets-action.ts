@@ -6,8 +6,8 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { IDependable, ISynthesisSession, Lazy, Stack, attachCustomSynthesis } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { ISynthesisSession, Lazy, Stack, attachCustomSynthesis } from '@aws-cdk/core';
+import { IDependable, Construct } from 'constructs';
 import { AssetType } from '../../blueprint/asset-type';
 import { toPosixPath } from '../../private/fs';
 
