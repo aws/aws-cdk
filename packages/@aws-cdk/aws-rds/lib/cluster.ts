@@ -595,10 +595,10 @@ export class DatabaseCluster extends DatabaseClusterNew {
   /**
    * Gets the value of copyTagsToSnapshot
    * @returns value of copyTagsToSnapshot
+   */
   public returnCopyTagsToSnapshot() : boolean | undefined {
     return this.copyTagsToSnapshot;
   }
-   */
 }
 
 /**
