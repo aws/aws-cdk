@@ -113,22 +113,22 @@ export interface CodeBuildFactoryProps {
 }
 
 /**
- * Produce a CodeBuild project from a RunScript step and some CodeBuild-specific customizations
+ * Produce a CodeBuild project from a ShellStep and some CodeBuild-specific customizations
  *
  * The functionality here is shared between the `CodePipeline` translating a `ShellStep` into
  * a CodeBuild project, as well as the `CodeBuildStep` straight up.
  */
 export class CodeBuildFactory implements ICodePipelineActionFactory {
   // eslint-disable-next-line max-len
-  public static fromShellStep(constructId: string, scriptStep: ShellStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
+  public static fromShellStep(constructId: string, shellStep: ShellStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
     return new CodeBuildFactory(constructId, {
-      commands: scriptStep.commands,
-      env: scriptStep.env,
-      envFromCfnOutputs: scriptStep.envFromCfnOutputs,
-      inputs: scriptStep.inputs,
-      outputs: scriptStep.outputs,
-      stepId: scriptStep.id,
-      installCommands: scriptStep.installCommands,
+      commands: shellStep.commands,
+      env: shellStep.env,
+      envFromCfnOutputs: shellStep.envFromCfnOutputs,
+      inputs: shellStep.inputs,
+      outputs: shellStep.outputs,
+      stepId: shellStep.id,
+      installCommands: shellStep.installCommands,
       ...additional,
     });
   }

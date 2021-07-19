@@ -11,7 +11,7 @@ import { Construct } from 'constructs';
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
- * Properteis for an ApplicationSecurityCheck
+ * Properties for an ApplicationSecurityCheck
  */
 export interface ApplicationSecurityCheckProps {
   /**
