@@ -30,6 +30,7 @@ export interface ISDK {
   ecr(): AWS.ECR;
   elbv2(): AWS.ELBv2;
   secretsManager(): AWS.SecretsManager;
+  kms(): AWS.KMS;
 }
 
 /**
@@ -116,6 +117,10 @@ export class SDK implements ISDK {
 
   public secretsManager(): AWS.SecretsManager {
     return this.wrapServiceErrorHandling(new AWS.SecretsManager(this.config));
+  }
+
+  public kms(): AWS.KMS {
+    return this.wrapServiceErrorHandling(new AWS.KMS(this.config));
   }
 
   public async currentAccount(): Promise<Account> {
