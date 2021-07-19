@@ -244,11 +244,7 @@ behavior('self-update project role uses tagged bootstrap-role permissions', (sui
 
 behavior('self-mutation stage can be customized with BuildSpec', (suite) => {
   suite.legacy(() => {
-    // GIVEN
-    const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
-
-    // WHEN
-    new LegacyTestGitHubNpmPipeline(stack2, 'Cdk', {
+    new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       selfMutationBuildSpec: cb.BuildSpec.fromObject({
         phases: {
           install: {
@@ -260,8 +256,31 @@ behavior('self-mutation stage can be customized with BuildSpec', (suite) => {
         },
       }),
     });
-    // THEN
-    expect(stack2).toHaveResourceLike('AWS::CodeBuild::Project', {
+
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      selfMutationCodeBuildDefaults: {
+        partialBuildSpec: cb.BuildSpec.fromObject({
+          phases: {
+            install: {
+              commands: ['npm config set registry example.com'],
+            },
+          },
+          cache: {
+            paths: ['node_modules'],
+          },
+        }),
+      },
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
         PrivilegedMode: false,
@@ -273,7 +292,7 @@ behavior('self-mutation stage can be customized with BuildSpec', (suite) => {
               commands: ['npm config set registry example.com', 'npm install -g aws-cdk'],
             },
             build: {
-              commands: arrayWith('cdk -a . deploy Stack2 --require-approval=never --verbose'),
+              commands: arrayWith('cdk -a . deploy PipelineStack --require-approval=never --verbose'),
             },
           },
           cache: {
@@ -283,5 +302,5 @@ behavior('self-mutation stage can be customized with BuildSpec', (suite) => {
         Type: 'CODEPIPELINE',
       },
     });
-  });
+  }
 });

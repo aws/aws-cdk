@@ -983,7 +983,6 @@ behavior('Can easily switch on privileged mode for synth', (suite) => {
 
 behavior('can provide custom BuildSpec that is merged with generated one', (suite) => {
   suite.legacy(() => {
-    // WHEN
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       sourceArtifact,
       cloudAssemblyArtifact,
@@ -1022,17 +1021,60 @@ behavior('can provide custom BuildSpec that is merged with generated one', (suit
       }),
     });
 
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synth: new cdkp.CodeBuildStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+        env: {
+          SOME_ENV_VAR: 'SomeValue',
+        },
+        buildEnvironment: {
+          environmentVariables: {
+            INNER_VAR: { value: 'InnerValue' },
+          },
+          privileged: true,
+        },
+        installCommands: [
+          'install1',
+          'install2',
+        ],
+        commands: ['synth'],
+        partialBuildSpec: cbuild.BuildSpec.fromObject({
+          env: {
+            variables: {
+              FOO: 'bar',
+            },
+          },
+          phases: {
+            pre_build: {
+              commands: ['installCustom'],
+            },
+          },
+          cache: {
+            paths: ['node_modules'],
+          },
+        }),
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: objectLike({
         PrivilegedMode: true,
-        EnvironmentVariables: [
+        EnvironmentVariables: arrayWith(
           {
             Name: 'INNER_VAR',
             Type: 'PLAINTEXT',
             Value: 'InnerValue',
           },
-        ],
+        ),
       }),
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
@@ -1043,7 +1085,7 @@ behavior('can provide custom BuildSpec that is merged with generated one', (suit
           },
           phases: {
             pre_build: {
-              commands: ['installCustom', 'install1', 'install2'],
+              commands: arrayWith('installCustom'),
             },
             build: {
               commands: ['synth'],
@@ -1055,5 +1097,5 @@ behavior('can provide custom BuildSpec that is merged with generated one', (suit
         })),
       },
     });
-  });
+  }
 });
