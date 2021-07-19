@@ -22,7 +22,7 @@ export interface BundlingOptions {
    * Source map mode to be used when bundling.
    * @see https://esbuild.github.io/api/#sourcemap
    *
-   * @default DEFAULT
+   * @default SourceMapMode.DEFAULT
    */
   readonly sourceMapMode?: SourceMapMode;
 
