@@ -224,7 +224,7 @@ export class DeliveryStream extends DeliveryStreamBase {
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamName: props.deliveryStreamName,
       deliveryStreamType: 'DirectPut',
-      ...destinationConfig.properties,
+      ...destinationConfig,
     });
 
     this.deliveryStreamArn = this.getResourceArnAttribute(resource.attrArn, {

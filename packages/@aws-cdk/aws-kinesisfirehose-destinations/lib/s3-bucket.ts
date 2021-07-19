@@ -24,14 +24,11 @@ export class S3Bucket extends firehose.DestinationBase {
     const bucketGrant = this.bucket.grantReadWrite(role);
     Node.of(scope).addDependency(bucketGrant);
 
-    const s3ExtendedConfig: firehose.CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty = {
-      cloudWatchLoggingOptions: this.createLoggingOptions(scope, role, 'S3Destination'),
-      roleArn: role.roleArn,
-      bucketArn: this.bucket.bucketArn,
-    };
     return {
-      properties: {
-        extendedS3DestinationConfiguration: s3ExtendedConfig,
+      extendedS3DestinationConfiguration: {
+        cloudWatchLoggingOptions: this.createLoggingOptions(scope, role, 'S3Destination'),
+        roleArn: role.roleArn,
+        bucketArn: this.bucket.bucketArn,
       },
     };
   }

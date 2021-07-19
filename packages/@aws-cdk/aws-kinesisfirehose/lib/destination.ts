@@ -8,9 +8,11 @@ import { CfnDeliveryStream } from './kinesisfirehose.generated';
  */
 export interface DestinationConfig {
   /**
-   * Schema-less properties that will be injected directly into `CfnDeliveryStream`.
+   * S3 destination configuration properties.
+   *
+   * @default - S3 destination is not used.
    */
-  readonly properties: object;
+  readonly extendedS3DestinationConfiguration?: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty;
 }
 
 /**

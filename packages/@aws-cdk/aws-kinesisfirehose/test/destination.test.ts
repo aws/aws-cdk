@@ -1,3 +1,4 @@
+import { anything } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -11,69 +12,77 @@ describe('destination', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
-    destinationRole = iam.Role.fromRoleArn(stack, 'Delivery Stream Role', 'arn:aws:iam::111122223333:role/DestinationRole');
+    destinationRole = new iam.Role(stack, 'DeliveryStreamRole', {
+      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+    });
   });
 
   describe('createLoggingOptions', () => {
     class LoggingDestination extends firehose.DestinationBase {
       public bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
         return {
-          properties: {
-            testDestinationConfig: {
-              loggingConfig: this.createLoggingOptions(scope, destinationRole, 'streamId'),
-            },
+          extendedS3DestinationConfiguration: {
+            bucketArn: 'arn:aws:s3:::destination-bucket',
+            roleArn: destinationRole.roleArn,
+            cloudWatchLoggingOptions: this.createLoggingOptions(scope, destinationRole, 'streamId'),
           },
+
         };
       }
     }
 
     test('creates resources and configuration by default', () => {
-      const testDestination = new LoggingDestination();
-
-      const testDestinationConfig = testDestination.bind(stack, { role: destinationRole });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new LoggingDestination()],
+      });
 
       expect(stack).toHaveResource('AWS::Logs::LogGroup');
       expect(stack).toHaveResource('AWS::Logs::LogStream');
-      expect(stack.resolve(testDestinationConfig)).toStrictEqual({
-        properties: {
-          testDestinationConfig: {
-            loggingConfig: {
-              enabled: true,
-              logGroupName: {
-                Ref: 'LogGroupF5B46931',
-              },
-              logStreamName: {
-                Ref: 'LogGroupstreamId3B940622',
-              },
-            },
+      expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          BucketARN: 'arn:aws:s3:::destination-bucket',
+          CloudWatchLoggingOptions: {
+            Enabled: true,
+            LogGroupName: anything(),
+            LogStreamName: anything(),
           },
+          RoleARN: stack.resolve(destinationRole.roleArn),
         },
       });
     });
+
     test('does not create resources or configuration if disabled', () => {
-      const testDestination = new LoggingDestination({ logging: false });
-
-      const testDestinationConfig = testDestination.bind(stack, { role: destinationRole });
-
-      expect(stack.resolve(testDestinationConfig)).toStrictEqual({
-        properties: {
-          testDestinationConfig: {},
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new LoggingDestination({
+          logging: false,
+        })],
+      });
+      expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          BucketARN: 'arn:aws:s3:::destination-bucket',
+          RoleARN: stack.resolve(destinationRole.roleArn),
         },
       });
     });
 
     test('creates configuration if log group provided', () => {
-      const testDestination = new LoggingDestination({ logGroup: new logs.LogGroup(stack, 'Log Group') });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new LoggingDestination({
+          logGroup: new logs.LogGroup(stack, 'LogGroup'),
+        })],
+      });
 
-      const testDestinationConfig = testDestination.bind(stack, { role: destinationRole });
-
-      expect(stack.resolve(testDestinationConfig)).toMatchObject({
-        properties: {
-          testDestinationConfig: {
-            loggingConfig: {
-              enabled: true,
-            },
+      expect(stack).toHaveResource('AWS::Logs::LogGroup');
+      expect(stack).toHaveResource('AWS::Logs::LogStream');
+      expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          BucketARN: 'arn:aws:s3:::destination-bucket',
+          CloudWatchLoggingOptions: {
+            Enabled: true,
+            LogGroupName: anything(),
+            LogStreamName: anything(),
           },
+          RoleARN: stack.resolve(destinationRole.roleArn),
         },
       });
     });
@@ -85,67 +94,48 @@ describe('destination', () => {
     });
 
     test('uses provided log group', () => {
-      const testDestination = new LoggingDestination({ logGroup: new logs.LogGroup(stack, 'Log Group') });
+      const providedLogGroup = new logs.LogGroup(stack, 'LogGroup');
 
-      const testDestinationConfig = testDestination.bind(stack, { role: destinationRole });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new LoggingDestination({
+          logGroup: providedLogGroup,
+        })],
+      });
 
-      expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
-      expect(stack.resolve(testDestinationConfig)).toMatchObject({
-        properties: {
-          testDestinationConfig: {
-            loggingConfig: {
-              enabled: true,
-              logGroupName: {
-                Ref: 'LogGroupD9735569',
-              },
-              logStreamName: {
-                Ref: 'LogGroupstreamIdA1293DC2',
-              },
-            },
+      expect(stack).toHaveResource('AWS::Logs::LogGroup');
+      expect(stack).toHaveResource('AWS::Logs::LogStream');
+      expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          BucketARN: 'arn:aws:s3:::destination-bucket',
+          CloudWatchLoggingOptions: {
+            Enabled: true,
+            LogGroupName: stack.resolve(providedLogGroup.logGroupName),
+            LogStreamName: anything(),
           },
+          RoleARN: stack.resolve(destinationRole.roleArn),
         },
       });
     });
 
     test('re-uses log group if called multiple times', () => {
-      const testDestination = new class extends firehose.DestinationBase {
+      class TestDestination extends firehose.DestinationBase {
         public bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+          let loggingOptions = this.createLoggingOptions(scope, destinationRole, 'streamId');
+          loggingOptions = this.createLoggingOptions(scope, destinationRole, 'anotherStreamId');
           return {
-            properties: {
-              testDestinationConfig: {
-                loggingConfig: this.createLoggingOptions(scope, destinationRole, 'streamId'),
-                anotherLoggingConfig: this.createLoggingOptions(scope, destinationRole, 'anotherStreamId'),
-              },
+            extendedS3DestinationConfiguration: {
+              bucketArn: 'arn:aws:s3:::destination-bucket',
+              roleArn: destinationRole.roleArn,
+              cloudWatchLoggingOptions: loggingOptions,
             },
           };
         }
-      }();
+      };
 
-      const testDestinationConfig = testDestination.bind(stack, { role: destinationRole });
-
-      expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
-      expect(stack.resolve(testDestinationConfig)).toMatchObject({
-        properties: {
-          testDestinationConfig: {
-            loggingConfig: {
-              logGroupName: {
-                Ref: 'LogGroupF5B46931',
-              },
-              logStreamName: {
-                Ref: 'LogGroupstreamId3B940622',
-              },
-            },
-            anotherLoggingConfig: {
-              logGroupName: {
-                Ref: 'LogGroupF5B46931',
-              },
-              logStreamName: {
-                Ref: 'LogGroupanotherStreamIdF2754481',
-              },
-            },
-          },
-        },
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new TestDestination()],
       });
+      expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
     });
   });
 });

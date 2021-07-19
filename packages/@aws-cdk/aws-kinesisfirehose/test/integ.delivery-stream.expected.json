@@ -43,7 +43,7 @@
       "Type": "AWS::KinesisFirehose::DeliveryStream",
       "Properties": {
         "DeliveryStreamType": "DirectPut",
-        "S3DestinationConfiguration": {
+        "ExtendedS3DestinationConfiguration": {
           "BucketARN": {
             "Fn::GetAtt": [
               "Bucket83908E77",
