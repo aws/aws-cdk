@@ -15,11 +15,9 @@ describe('delivery stream', () => {
   const mockS3Destination: firehose.IDestination = {
     bind(_scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
       return {
-        properties: {
-          s3DestinationConfiguration: {
-            bucketArn: bucketArn,
-            roleArn: roleArn,
-          },
+        extendedS3DestinationConfiguration: {
+          bucketArn: bucketArn,
+          roleArn: roleArn,
         },
       };
     },
@@ -39,7 +37,7 @@ describe('delivery stream', () => {
       DeliveryStreamName: ABSENT,
       DeliveryStreamType: 'DirectPut',
       KinesisStreamSourceConfiguration: ABSENT,
-      S3DestinationConfiguration: {
+      ExtendedS3DestinationConfiguration: {
         BucketARN: bucketArn,
         RoleARN: roleArn,
       },

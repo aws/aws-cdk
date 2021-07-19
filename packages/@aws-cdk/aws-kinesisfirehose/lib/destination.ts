@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import { Construct, Node } from 'constructs';
-import { IDeliveryStream } from './delivery-stream';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 /**
@@ -9,24 +8,17 @@ import { CfnDeliveryStream } from './kinesisfirehose.generated';
  */
 export interface DestinationConfig {
   /**
-   * Schema-less properties that will be injected directly into `CfnDeliveryStream`.
+   * S3 destination configuration properties.
+   *
+   * @default - S3 destination is not used.
    */
-  readonly properties: object;
+  readonly extendedS3DestinationConfiguration?: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty;
 }
 
 /**
  * Options when binding a destination to a delivery stream.
  */
 export interface DestinationBindOptions {
-  /**
-   * The delivery stream.
-   */
-  readonly deliveryStream: IDeliveryStream;
-
-  /**
-   * The IAM service Role of the delivery stream.
-   */
-  readonly role: iam.IRole;
 }
 
 /**
@@ -60,6 +52,15 @@ export interface DestinationProps {
    * @default - if `logging` is set to `true`, a log group will be created for you.
    */
   readonly logGroup?: logs.ILogGroup;
+
+  /**
+   * The IAM role associated with this destination.
+   *
+   * Assumed by Kinesis Data Firehose to invoke processors and write to destinations
+   *
+   * @default - a role will be created with default permissions.
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -73,7 +74,7 @@ export abstract class DestinationBase implements IDestination {
 
   protected createLoggingOptions(
     scope: Construct,
-    deliveryStream: IDeliveryStream,
+    role: iam.IRole,
     streamId: string,
   ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
     if (this.props.logging === false && this.props.logGroup) {
@@ -81,7 +82,8 @@ export abstract class DestinationBase implements IDestination {
     }
     if (this.props.logging !== false || this.props.logGroup) {
       const logGroup = Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? this.props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
-      logGroup.grantWrite(deliveryStream);
+      const logGroupGrant = logGroup.grantWrite(role);
+      Node.of(scope).addDependency(logGroupGrant);
       return {
         enabled: true,
         logGroupName: logGroup.logGroupName,

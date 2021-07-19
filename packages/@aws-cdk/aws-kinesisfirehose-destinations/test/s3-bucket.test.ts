@@ -1,6 +1,8 @@
 import '@aws-cdk/assert-internal/jest';
+import { ABSENT, Capture, anything, MatchStyle } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as firehosedestinations from '../lib';
@@ -8,72 +10,101 @@ import * as firehosedestinations from '../lib';
 describe('S3 destination', () => {
   let stack: cdk.Stack;
   let bucket: s3.IBucket;
-  let deliveryStreamRole: iam.IRole;
-  let deliveryStream: firehose.IDeliveryStream;
+  let destinationRole: iam.IRole;
 
   beforeEach(() => {
     stack = new cdk.Stack();
-    bucket = new s3.Bucket(stack, 'destination');
-    deliveryStreamRole = iam.Role.fromRoleArn(stack, 'Delivery Stream Role', 'arn:aws:iam::111122223333:role/DeliveryStreamRole');
-    deliveryStream = firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'Delivery Stream', {
-      deliveryStreamName: 'mydeliverystream',
-      role: deliveryStreamRole,
+    bucket = new s3.Bucket(stack, 'Bucket');
+    destinationRole = new iam.Role(stack, 'Destination Role', {
+      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
   });
 
   it('provides defaults when no configuration is provided', () => {
-    const destination = new firehosedestinations.S3Bucket(bucket);
+    new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destinations: [new firehosedestinations.S3Bucket(bucket, { role: destinationRole })],
+    });
 
-    const destinationProperties = destination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole }).properties;
-
-    expect(stack.resolve(destinationProperties)).toStrictEqual({
-      extendedS3DestinationConfiguration: {
-        bucketArn: stack.resolve(bucket.bucketArn),
-        cloudWatchLoggingOptions: {
-          enabled: true,
-          logGroupName: {
-            Ref: 'LogGroupF5B46931',
-          },
-          logStreamName: {
-            Ref: 'LogGroupS3Destination70CE1003',
-          },
+    expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+      ExtendedS3DestinationConfiguration: {
+        BucketARN: stack.resolve(bucket.bucketArn),
+        CloudWatchLoggingOptions: {
+          Enabled: true,
+          LogGroupName: anything(),
+          LogStreamName: anything(),
         },
-        roleArn: stack.resolve(deliveryStreamRole.roleArn),
+        RoleARN: stack.resolve(destinationRole.roleArn),
+      },
+    });
+    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+    expect(stack).toHaveResource('AWS::Logs::LogStream');
+  });
+
+  it('allows disabling logging', () => {
+    new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destinations: [new firehosedestinations.S3Bucket(bucket, {
+        logging: false,
+      })],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      ExtendedS3DestinationConfiguration: {
+        CloudWatchLoggingOptions: ABSENT,
       },
     });
   });
 
-  it('allows full configuration', () => {
-    const destination = new firehosedestinations.S3Bucket(bucket, {
-      logging: true,
+  it('allows providing a log group', () => {
+    const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Log Group', 'evergreen');
+
+    new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destinations: [new firehosedestinations.S3Bucket(bucket, {
+        logGroup,
+      })],
     });
 
-    const destinationProperties = destination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole }).properties;
-
-    expect(stack.resolve(destinationProperties)).toStrictEqual({
-      extendedS3DestinationConfiguration: {
-        bucketArn: stack.resolve(bucket.bucketArn),
-        cloudWatchLoggingOptions: {
-          enabled: true,
-          logGroupName: {
-            Ref: 'LogGroupF5B46931',
-          },
-          logStreamName: {
-            Ref: 'LogGroupS3Destination70CE1003',
-          },
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      ExtendedS3DestinationConfiguration: {
+        CloudWatchLoggingOptions: {
+          LogGroupName: 'evergreen',
         },
-        roleArn: deliveryStreamRole.roleArn,
       },
     });
+  });
+
+  it('creates a role when none is provided', () => {
+    const capturedRoleArn = Capture.aString();
+
+    new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destinations: [new firehosedestinations.S3Bucket(bucket)],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      ExtendedS3DestinationConfiguration: {
+        RoleARN: {
+          'Fn::GetAtt': [
+            capturedRoleArn.capture(),
+            'Arn',
+          ],
+        },
+      },
+    });
+    expect(stack).toMatchTemplate({
+      [capturedRoleArn.capturedValue]: {
+        Type: 'AWS::IAM::Role',
+      },
+    }, MatchStyle.SUPERSET);
   });
 
   it('grants read/write access to the bucket', () => {
-    const destination = new firehosedestinations.S3Bucket(bucket);
+    const destination = new firehosedestinations.S3Bucket(bucket, { role: destinationRole });
 
-    destination.bind(stack, { deliveryStream: deliveryStream, role: deliveryStreamRole }).properties;
+    new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destinations: [destination],
+    });
 
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      Roles: ['DeliveryStreamRole'],
+      Roles: [stack.resolve(destinationRole.roleName)],
       PolicyDocument: {
         Statement: [
           {
@@ -87,22 +118,12 @@ describe('S3 destination', () => {
             ],
             Effect: 'Allow',
             Resource: [
-              {
-                'Fn::GetAtt': [
-                  'destinationDB878FB5',
-                  'Arn',
-                ],
-              },
+              stack.resolve(bucket.bucketArn),
               {
                 'Fn::Join': [
                   '',
                   [
-                    {
-                      'Fn::GetAtt': [
-                        'destinationDB878FB5',
-                        'Arn',
-                      ],
-                    },
+                    stack.resolve(bucket.bucketArn),
                     '/*',
                   ],
                 ],

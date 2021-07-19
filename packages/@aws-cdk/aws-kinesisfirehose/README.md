@@ -123,21 +123,28 @@ and LogStream for your Delivery Stream.
 You can provide a specific log group to specify where the CDK will create the log streams
 where log events will be sent:
 
-```ts fixture=with-destination
+```ts fixture=with-bucket
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
 import * as logs from '@aws-cdk/aws-logs';
 
 const logGroup = new logs.LogGroup(this, 'Log Group');
-new DeliveryStream(this, 'Delivery Stream', {
+const destination = new destinations.S3Bucket(bucket, {
   logGroup: logGroup,
+});
+new DeliveryStream(this, 'Delivery Stream', {
   destinations: [destination],
 });
 ```
 
 Logging can also be disabled:
 
-```ts fixture=with-destination
+```ts fixture=with-bucket
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
+
+const destination = new destinations.S3Bucket(bucket, {
+  logging: false,
+});
 new DeliveryStream(this, 'Delivery Stream', {
-  loggingEnabled: false,
   destinations: [destination],
 });
 ```
@@ -192,13 +199,14 @@ specify your own IAM role. It must have the correct permissions, or delivery str
 creation or data delivery may fail.
 
 ```ts fixture=with-bucket
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
 import * as iam from '@aws-cdk/aws-iam';
 
 const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-}
+});
 bucket.grantWrite(role);
-new DeliveryStream(stack, 'Delivery Stream', {
+new DeliveryStream(this, 'Delivery Stream', {
   destinations: [new destinations.S3Bucket(bucket)],
   role: role,
 });
@@ -224,7 +232,7 @@ can be granted permissions to a delivery stream by calling:
 import * as iam from '@aws-cdk/aws-iam';
 const lambdaRole = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-}
+});
 
 // Give the role permissions to write data to the delivery stream
 deliveryStream.grantPutRecords(lambdaRole);
@@ -248,11 +256,17 @@ permissions. In this case, use the delivery stream as an `IGrantable`, as follow
 ```ts fixture=with-delivery-stream
 import * as lambda from '@aws-cdk/aws-lambda';
 
-const function = new lambda.Function(...);
-function.grantInvoke(deliveryStream);
+const fn = new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromInline('exports.handler = (event) => {}'),
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+});
+
+fn.grantInvoke(deliveryStream);
 ```
 
 ## Multiple destinations
 
 Though the delivery stream allows specifying an array of destinations, only one
-destination per delivery stream is currently allowed.
+destination per delivery stream is currently allowed. This limitation is enforced at CDK
+synthesis time and will throw an error.

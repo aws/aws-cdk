@@ -20,11 +20,9 @@ const role = new iam.Role(stack, 'Role', {
 const mockS3Destination: firehose.IDestination = {
   bind(_scope: constructs.Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
     return {
-      properties: {
-        s3DestinationConfiguration: {
-          bucketArn: bucket.bucketArn,
-          roleArn: role.roleArn,
-        },
+      extendedS3DestinationConfiguration: {
+        bucketArn: bucket.bucketArn,
+        roleArn: role.roleArn,
       },
     };
   },
