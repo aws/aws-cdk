@@ -1,0 +1,26 @@
+{
+  "name": "aws-cdk-lib-separate-packages",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "gen": "node gen.js phase1 && lerna bootstrap && node gen.js phase2",
+    "pkglint": "lerna run pkglint",
+    "prebuild": "yarn gen",
+    "build": "lerna run --stream build",
+    "test": "lerna run --stream test",
+    "package": "lerna run --stream package",
+    "rosetta:extract": "lerna exec --stream jsii-rosetta extract",
+    "build+test": "yarn build && yarn test",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract",
+    "build+test+package": "yarn build+test && yarn package"
+  },
+  "devDependencies": {
+    "aws-cdk-lib": "0.0.0",
+    "@aws-cdk/assert": "0.0.0",
+    "aws-cdk-migration": "0.0.0",
+    "@types/fs-extra": "^8.1.1",
+    "fs-extra": "^9.1.0",
+    "@lerna/project": "4.0.0",
+    "lerna": "^4.0.0"
+  }
+}
