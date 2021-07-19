@@ -78,7 +78,7 @@ nodeunitShim({
     const expected = { 'Fn::FindInMap': ['mapping', 'instanceCount', { Ref: 'AWS::Region' }] };
     test.deepEqual(stack.resolve(v1), expected);
     test.deepEqual(stack.resolve(v2), expected);
-    test.deepEqual(toCloudFormation(stack)['Mappings'], {
+    test.deepEqual(toCloudFormation(stack).Mappings, {
       mapping: {
         instanceCount: {
           'us-east-1': 12,
@@ -106,7 +106,7 @@ nodeunitShim({
     test.deepEqual(stack.resolve(v), {
       'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'size'],
     });
-    test.deepEqual(toCloudFormation(stack)['Mappings'], {
+    test.deepEqual(toCloudFormation(stack).Mappings, {
       mapping: {
         'us-east-1': {
           size: 12,
@@ -133,7 +133,7 @@ nodeunitShim({
     // THEN
     test.throws(() => mapping.findInMap('not-found', Aws.REGION), /Mapping doesn't contain top-level key 'not-found'/);
     test.deepEqual(stack.resolve(v), { 'Fn::FindInMap': ['mapping', 'size', { Ref: 'AWS::Region' }] });
-    test.deepEqual(toCloudFormation(stack)['Mappings'], {
+    test.deepEqual(toCloudFormation(stack).Mappings, {
       mapping: {
         size: {
           'us-east-1': 12,
