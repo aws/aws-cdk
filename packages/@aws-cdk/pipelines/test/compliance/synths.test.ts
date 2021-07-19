@@ -985,3 +985,123 @@ behavior('Can easily switch on privileged mode for synth', (suite) => {
     });
   });
 });
+
+
+behavior('can provide custom BuildSpec that is merged with generated one', (suite) => {
+  suite.legacy(() => {
+    new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: new cdkp.SimpleSynthAction({
+        sourceArtifact,
+        cloudAssemblyArtifact,
+        environmentVariables: {
+          SOME_ENV_VAR: { value: 'SomeValue' },
+        },
+        environment: {
+          environmentVariables: {
+            INNER_VAR: { value: 'InnerValue' },
+          },
+          privileged: true,
+        },
+        installCommands: [
+          'install1',
+          'install2',
+        ],
+        synthCommand: 'synth',
+        buildSpec: cbuild.BuildSpec.fromObject({
+          env: {
+            variables: {
+              FOO: 'bar',
+            },
+          },
+          phases: {
+            pre_build: {
+              commands: 'installCustom',
+            },
+          },
+          cache: {
+            paths: ['node_modules'],
+          },
+        }),
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synth: new cdkp.CodeBuildStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+        env: {
+          SOME_ENV_VAR: 'SomeValue',
+        },
+        buildEnvironment: {
+          environmentVariables: {
+            INNER_VAR: { value: 'InnerValue' },
+          },
+          privileged: true,
+        },
+        installCommands: [
+          'install1',
+          'install2',
+        ],
+        commands: ['synth'],
+        partialBuildSpec: cbuild.BuildSpec.fromObject({
+          env: {
+            variables: {
+              FOO: 'bar',
+            },
+          },
+          phases: {
+            pre_build: {
+              commands: ['installCustom'],
+            },
+          },
+          cache: {
+            paths: ['node_modules'],
+          },
+        }),
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: objectLike({
+        PrivilegedMode: true,
+        EnvironmentVariables: arrayWith(
+          {
+            Name: 'INNER_VAR',
+            Type: 'PLAINTEXT',
+            Value: 'InnerValue',
+          },
+        ),
+      }),
+      Source: {
+        BuildSpec: encodedJson(deepObjectLike({
+          env: {
+            variables: {
+              FOO: 'bar',
+            },
+          },
+          phases: {
+            pre_build: {
+              commands: arrayWith('installCustom'),
+            },
+            build: {
+              commands: ['synth'],
+            },
+          },
+          cache: {
+            paths: ['node_modules'],
+          },
+        })),
+      },
+    });
+  }
+});
