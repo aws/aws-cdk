@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -126,6 +127,13 @@ export interface CdkPipelineProps {
   readonly selfMutating?: boolean;
 
   /**
+   * Custom BuildSpec that is merged with generated one (for self-mutation stage)
+   *
+   * @default - none
+   */
+  readonly selfMutationBuildSpec?: codebuild.BuildSpec;
+
+  /**
    * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
    *
    * @default false
@@ -139,6 +147,13 @@ export interface CdkPipelineProps {
    * @default -
    */
   readonly assetPreInstallCommands?: string[];
+
+  /**
+   * Custom BuildSpec that is merged with generated one (for asset publishing actions)
+   *
+   * @default - none
+   */
+  readonly assetBuildSpec?: codebuild.BuildSpec;
 
   /**
    * Whether the pipeline needs to build Docker images in the UpdatePipeline stage.
@@ -254,6 +269,7 @@ export class CdkPipeline extends CoreConstruct {
           projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
           privileged: props.supportDockerAssets,
           dockerCredentials: this._dockerCredentials,
+          buildSpec: props.selfMutationBuildSpec,
         })],
       });
     }
@@ -267,6 +283,7 @@ export class CdkPipeline extends CoreConstruct {
       subnetSelection: props.subnetSelection,
       singlePublisherPerType: props.singlePublisherPerType,
       preInstallCommands: props.assetPreInstallCommands,
+      buildSpec: props.assetBuildSpec,
       dockerCredentials: this._dockerCredentials,
     });
   }
@@ -436,6 +453,7 @@ interface AssetPublishingProps {
   readonly subnetSelection?: ec2.SubnetSelection;
   readonly singlePublisherPerType?: boolean;
   readonly preInstallCommands?: string[];
+  readonly buildSpec?: codebuild.BuildSpec;
   readonly dockerCredentials: DockerCredential[];
 }
 
@@ -542,6 +560,7 @@ class AssetPublishing extends CoreConstruct {
         dependable: this.assetAttachedPolicies[command.assetType],
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
+        buildSpec: this.props.buildSpec,
         createBuildspecFile: this.props.singlePublisherPerType,
         preInstallCommands: [...(this.props.preInstallCommands ?? []), ...credsInstallCommands],
       });
