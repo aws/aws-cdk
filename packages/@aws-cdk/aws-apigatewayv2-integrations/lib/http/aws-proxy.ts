@@ -79,7 +79,7 @@ export class EventBridgePutEventsIntegration implements IHttpRouteIntegration {
         DetailType: this.props.detailType,
         Source: this.props.source,
         Time: this.props.time,
-        EventBus: this.props.eventBus?.eventBusArn,
+        EventBusName: this.props.eventBus?.eventBusName,
         Region: this.props.region,
         Resources: this.props.resources,
         TraceHeader: this.props.traceHeader,
