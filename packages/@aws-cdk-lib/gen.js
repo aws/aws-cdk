@@ -101,7 +101,7 @@ function copyOrTransformFiles(pkg, srcDir, destDir, unstablePackages) {
                     // a pair of devDependency on '0.0.0' and peerDependency on '^0.0.0',
                     // and the package will have no regular dependencies anymore
                     if (unstablePackages[dependency]) {
-                        unstableDependencies[unstablePackages[dependency]] = '0.0.0';
+                        unstableDependencies[unstablePackages[dependency]] = pkg.version;
                     }
                 }
                 srcPackageJson.dependencies = undefined;
@@ -114,11 +114,11 @@ function copyOrTransformFiles(pkg, srcDir, destDir, unstablePackages) {
                         delete devDependencies[devDependency];
                     }
                     if (unstablePackages[devDependency]) {
-                        unstableDevDependencies[unstablePackages[devDependency]] = '0.0.0';
+                        unstableDevDependencies[unstablePackages[devDependency]] = pkg.version;
                     }
                 }
-                devDependencies['@aws-cdk/assert'] = '0.0.0';
-                devDependencies['aws-cdk-lib'] = '0.0.0';
+                devDependencies['@aws-cdk/assert'] = pkg.version;
+                devDependencies['aws-cdk-lib'] = pkg.version;
                 devDependencies['constructs'] = '^10.0.0';
                 // we save the devDependencies in a temporary key in package.json
                 srcPackageJson.tmp_devDependencies = {
@@ -133,11 +133,11 @@ function copyOrTransformFiles(pkg, srcDir, destDir, unstablePackages) {
 
                 // peer dependencies
                 srcPackageJson.tmp_peerDependencies = {
-                    'aws-cdk-lib': '^0.0.0',
+                    'aws-cdk-lib': `^${pkg.version}`,
                     'constructs': '^10.0.0',
                     ...(Object.keys(unstableDependencies)
                         .reduce((acc, unstableDependency) => {
-                            acc[unstableDependency] = '^0.0.0';
+                            acc[unstableDependency] = `^${pkg.version}`;
                             return acc;
                         }, {})),
                 };
