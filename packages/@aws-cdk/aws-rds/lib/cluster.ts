@@ -465,7 +465,7 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
   /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
-   * @default: false
+   * @default: true
    */
   readonly copyTagsToSnapshot?: boolean;
 }
@@ -521,7 +521,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
-      copyTagsToSnapshot: props.copyTagsToSnapshot,
+      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     });
 
     this.clusterIdentifier = cluster.ref;
