@@ -334,7 +334,7 @@ export class DeliveryStream extends DeliveryStreamBase {
     if (props.destinations.length !== 1) {
       throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
     }
-    const destinationConfig = props.destinations[0].bind(this, { role: role });
+    const destinationConfig = props.destinations[0].bind(this, {});
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamEncryptionConfigurationInput: encryptionConfig,
