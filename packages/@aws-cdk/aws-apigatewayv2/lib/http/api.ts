@@ -422,6 +422,8 @@ export class HttpApi extends HttpApiBase {
         httpApi: this,
         routeKey: HttpRouteKey.DEFAULT,
         integration: props.defaultIntegration,
+        authorizer: props.defaultAuthorizer,
+        authorizationScopes: props.defaultAuthorizationScopes,
       });
     }
 

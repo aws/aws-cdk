@@ -15,7 +15,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "build+test+extract": "yarn build+test",
+    "build+extract": "yarn build"
   },
   "cdk-build": {
     "jest": true
@@ -33,11 +35,11 @@
   "license": "Apache-2.0",
   "dependencies": {
     "glob": "^7.1.7",
-    "typescript": "~3.9.9"
+    "typescript": "~3.9.10"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.3",
-    "@types/jest": "^26.0.23",
+    "@types/glob": "^7.1.4",
+    "@types/jest": "^26.0.24",
     "@types/node": "^10.17.60",
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0"

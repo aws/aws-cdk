@@ -7,7 +7,7 @@ import { testFixture } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_20;
 
 export = {
 
@@ -534,6 +534,42 @@ export = {
         MaxSize: 2,
         MinSize: 1,
       },
+    },
+    ));
+    test.done();
+  },
+  'add node group with taints'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+
+    // WHEN
+    cluster.addNodegroupCapacity('ng', {
+      taints: [
+        {
+          effect: eks.TaintEffect.NO_SCHEDULE,
+          key: 'foo',
+          value: 'bar',
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      Taints: [
+        {
+          Effect: 'NO_SCHEDULE',
+          Key: 'foo',
+          Value: 'bar',
+        },
+      ],
     },
     ));
     test.done();
