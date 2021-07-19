@@ -230,7 +230,6 @@ interface DatabaseClusterBaseProps {
    * @default false
    */
   readonly iamAuthentication?: boolean;
-
 }
 
 /**
