@@ -17,7 +17,7 @@ const PUT_RECORD_ACTIONS = [
 /**
  * Represents a Kinesis Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable, cdk.ITaggable {
+export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of the delivery stream.
    *
@@ -88,7 +88,7 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
 /**
  * Base class for new and imported Kinesis Data Firehose delivery streams.
  */
-export abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStream {
+abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStream {
 
   public abstract readonly deliveryStreamName: string;
 
@@ -101,10 +101,8 @@ export abstract class DeliveryStreamBase extends cdk.Resource implements IDelive
    */
   public readonly connections: ec2.Connections;
 
-  public readonly tags = new cdk.TagManager(cdk.TagType.STANDARD, 'AWS::KinesisFirehose::DeliveryStream');
-
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: cdk.ResourceProps = {}) {
+    super(scope, id, props);
 
     this.connections = setConnections(this);
   }
@@ -199,7 +197,9 @@ export interface DeliveryStreamProps {
   readonly deliveryStreamName?: string;
 
   /**
-   * The IAM role assumed by Kinesis Data Firehose to read from sources, invoke processors, and write to destinations.
+   * The IAM role associated with this delivery stream.
+   *
+   * Assumed by Kinesis Data Firehose to read from sources and encrypt data server-side.
    *
    * @default - a role will be created with default permissions.
    */
@@ -244,11 +244,10 @@ export interface DeliveryStreamAttributes {
    */
   readonly deliveryStreamName?: string;
 
-
   /**
    * The IAM role associated with this delivery stream.
    *
-   * Assumed by Kinesis Data Firehose to read from sources, invoke processors, and write to destinations.
+   * Assumed by Kinesis Data Firehose to read from sources and encrypt data server-side.
    *
    * @default - the imported stream cannot be granted access to other resources as an `iam.IGrantable`.
    */
@@ -282,14 +281,17 @@ export class DeliveryStream extends DeliveryStreamBase {
     if (!attrs.deliveryStreamName && !attrs.deliveryStreamArn) {
       throw new Error('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes');
     }
-    const deliveryStreamName = attrs.deliveryStreamName ?? cdk.Stack.of(scope).parseArn(attrs.deliveryStreamArn!).resourceName;
+    const deliveryStreamName = attrs.deliveryStreamName ??
+      cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+
     if (!deliveryStreamName) {
-      throw new Error(`Could not import delivery stream from malformatted ARN ${attrs.deliveryStreamArn}: could not determine resource name`);
+      throw new Error(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`);
     }
     const deliveryStreamArn = attrs.deliveryStreamArn ?? cdk.Stack.of(scope).formatArn({
       service: 'firehose',
       resource: 'deliverystream',
       resourceName: attrs.deliveryStreamName,
+      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
     class Import extends DeliveryStreamBase {
       public readonly deliveryStreamName = deliveryStreamName!;
@@ -306,7 +308,13 @@ export class DeliveryStream extends DeliveryStreamBase {
   readonly grantPrincipal: iam.IPrincipal;
 
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.deliveryStreamName,
+    });
+
+    if (props.destinations.length !== 1) {
+      throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
+    }
 
     const role = props.role ?? new iam.Role(this, 'Service Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
@@ -326,15 +334,14 @@ export class DeliveryStream extends DeliveryStreamBase {
     if (props.destinations.length !== 1) {
       throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
     }
-    const destinationConfig = props.destinations[0].bind(this, { deliveryStream: this });
+    const destinationConfig = props.destinations[0].bind(this, { role: role });
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamEncryptionConfigurationInput: encryptionConfig,
       deliveryStreamName: props.deliveryStreamName,
       deliveryStreamType: 'DirectPut',
-      ...destinationConfig.properties,
+      ...destinationConfig,
     });
-    resource.node.addDependency(this.grantPrincipal);
 
     this.deliveryStreamArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'kinesis',

@@ -16,11 +16,9 @@ describe('delivery stream', () => {
   const mockS3Destination: firehose.IDestination = {
     bind(_scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
       return {
-        properties: {
-          s3DestinationConfiguration: {
-            bucketArn: bucketArn,
-            roleArn: roleArn,
-          },
+        extendedS3DestinationConfiguration: {
+          bucketArn: bucketArn,
+          roleArn: roleArn,
         },
       };
     },
@@ -40,7 +38,7 @@ describe('delivery stream', () => {
       DeliveryStreamName: ABSENT,
       DeliveryStreamType: 'DirectPut',
       KinesisStreamSourceConfiguration: ABSENT,
-      S3DestinationConfiguration: {
+      ExtendedS3DestinationConfiguration: {
         BucketARN: bucketArn,
         RoleARN: roleArn,
       },
@@ -518,7 +516,7 @@ describe('delivery stream', () => {
 
     test('throws when malformatted ARN', () => {
       expect(() => firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', { deliveryStreamArn: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/' }))
-        .toThrowError(/Could not import delivery stream from malformatted ARN/);
+        .toThrowError("No delivery stream name found in ARN: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/'");
     });
 
     test('throws when without name or ARN', () => {

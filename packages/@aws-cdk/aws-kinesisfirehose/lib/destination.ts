@@ -1,6 +1,6 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct } from 'constructs';
-import { IDeliveryStream } from './delivery-stream';
+import { Construct, Node } from 'constructs';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 /**
@@ -8,19 +8,17 @@ import { CfnDeliveryStream } from './kinesisfirehose.generated';
  */
 export interface DestinationConfig {
   /**
-   * Schema-less properties that will be injected directly into `CfnDeliveryStream`.
+   * S3 destination configuration properties.
+   *
+   * @default - S3 destination is not used.
    */
-  readonly properties: object;
+  readonly extendedS3DestinationConfiguration?: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty;
 }
 
 /**
  * Options when binding a destination to a delivery stream.
  */
 export interface DestinationBindOptions {
-  /**
-   * The delivery stream.
-   */
-  readonly deliveryStream: IDeliveryStream;
 }
 
 /**
@@ -54,13 +52,21 @@ export interface DestinationProps {
    * @default - if `logging` is set to `true`, a log group will be created for you.
    */
   readonly logGroup?: logs.ILogGroup;
+
+  /**
+   * The IAM role associated with this destination.
+   *
+   * Assumed by Kinesis Data Firehose to invoke processors and write to destinations
+   *
+   * @default - a role will be created with default permissions.
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
  * Abstract base class that destination types can extend to benefit from methods that create generic configuration.
  */
 export abstract class DestinationBase implements IDestination {
-  private logGroups: { [logGroupId: string]: logs.ILogGroup } = {};
 
   constructor(protected readonly props: DestinationProps = {}) { }
 
@@ -68,30 +74,20 @@ export abstract class DestinationBase implements IDestination {
 
   protected createLoggingOptions(
     scope: Construct,
-    deliveryStream: IDeliveryStream,
+    role: iam.IRole,
     streamId: string,
   ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    return this._createLoggingOptions(scope, deliveryStream, streamId, 'LogGroup', this.props.logging, this.props.logGroup);
-  }
-
-  private _createLoggingOptions(
-    scope: Construct,
-    deliveryStream: IDeliveryStream,
-    streamId: string,
-    logGroupId: string,
-    logging?: boolean,
-    propsLogGroup?: logs.ILogGroup,
-  ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    if (logging === false && propsLogGroup) {
+    if (this.props.logging === false && this.props.logGroup) {
       throw new Error('logging cannot be set to false when logGroup is provided');
     }
-    if (logging !== false || propsLogGroup) {
-      this.logGroups[logGroupId] = this.logGroups[logGroupId] ?? propsLogGroup ?? new logs.LogGroup(scope, logGroupId);
-      this.logGroups[logGroupId].grantWrite(deliveryStream);
+    if (this.props.logging !== false || this.props.logGroup) {
+      const logGroup = Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? this.props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
+      const logGroupGrant = logGroup.grantWrite(role);
+      Node.of(scope).addDependency(logGroupGrant);
       return {
         enabled: true,
-        logGroupName: this.logGroups[logGroupId].logGroupName,
-        logStreamName: this.logGroups[logGroupId].addStream(streamId).logStreamName,
+        logGroupName: logGroup.logGroupName,
+        logStreamName: logGroup.addStream(streamId).logStreamName,
       };
     }
     return undefined;
