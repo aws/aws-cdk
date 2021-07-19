@@ -953,6 +953,20 @@ One of the target (account, region) environments has not been bootstrapped
 with the new bootstrap stack. Check your target environments and make sure
 they are all bootstrapped.
 
+### Message: no matching base directory path found for cdk.out
+
+If you see this error during the **Synth** step, it means that CodeBuild
+is expecting to find a `cdk.out` directory in the root of your CodeBuild project,
+but the directory wasn't there. There are two common causes for this:
+
+* `cdk synth` is not being executed: `cdk synth` used to be run
+  implicitly for you, but you now have to explicitly include the command.
+  For NPM-based projects, add `npx cdk synth` to the end of the `commands`
+  property, for other languages add `npm install -g aws-cdk` and `cdk synth`.
+* Your CDK project lives in a subdirectory: you added a `cd <somedirectory>` command
+  to the list of commands: don't forget to tell the `ScriptStep` about the
+  different location of `cdk.out`, by passing `primaryOutputDirectory: '<somedirectory>/cdk.out'`.
+
 ### <Stack> is in ROLLBACK_COMPLETE state and can not be updated
 
 If  you see the following error during execution of your pipeline:
