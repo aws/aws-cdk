@@ -74,7 +74,6 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   credentials: rds.Credentials.fromGeneratedSecret('syscdk'), // Optional - will default to 'admin' username and generated password
   vpc,
-  copyTagsToSnapshot: true, // Optional - will default to 'false'
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
   }
@@ -158,6 +157,7 @@ new rds.DatabaseCluster(stack, 'DatabaseCluster', {
       subnetType: ec2.SubnetType.PRIVATE,
     },
     publiclyAccessible: true,
+    copyTagsToSnapshot: true, // whether to save the cluster tags when creating the snapshot. Default is 'false'
   },
 });
 ```
