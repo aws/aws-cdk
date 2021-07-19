@@ -460,6 +460,7 @@
       "Type": "AWS::RDS::DBCluster",
       "Properties": {
         "Engine": "aurora",
+        "CopyTagsToSnapshot": true,
         "DBClusterParameterGroupName": {
           "Ref": "ParamsA8366201"
         },

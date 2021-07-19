@@ -157,6 +157,7 @@ new rds.DatabaseCluster(stack, 'DatabaseCluster', {
       subnetType: ec2.SubnetType.PRIVATE,
     },
     publiclyAccessible: true,
+    copyTagsToSnapshot: true, // whether to save the cluster tags when creating the snapshot. Default is 'true'
   },
 });
 ```
