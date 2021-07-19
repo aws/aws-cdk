@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { anything, arrayWith, deepObjectLike, encodedJson, notMatching, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
+import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Stack, Stage } from '@aws-cdk/core';
 import { behavior, LegacyTestGitHubNpmPipeline, PIPELINE_ENV, stackTemplate, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';
@@ -235,6 +236,70 @@ behavior('self-update project role uses tagged bootstrap-role permissions', (sui
             Resource: '*',
           },
         ),
+      },
+    });
+  }
+});
+
+
+behavior('self-mutation stage can be customized with BuildSpec', (suite) => {
+  suite.legacy(() => {
+    new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      selfMutationBuildSpec: cb.BuildSpec.fromObject({
+        phases: {
+          install: {
+            commands: 'npm config set registry example.com',
+          },
+        },
+        cache: {
+          paths: 'node_modules',
+        },
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      selfMutationCodeBuildDefaults: {
+        partialBuildSpec: cb.BuildSpec.fromObject({
+          phases: {
+            install: {
+              commands: ['npm config set registry example.com'],
+            },
+          },
+          cache: {
+            paths: ['node_modules'],
+          },
+        }),
+      },
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: {
+        Image: 'aws/codebuild/standard:5.0',
+        PrivilegedMode: false,
+      },
+      Source: {
+        BuildSpec: encodedJson(deepObjectLike({
+          phases: {
+            install: {
+              commands: ['npm config set registry example.com', 'npm install -g aws-cdk'],
+            },
+            build: {
+              commands: arrayWith('cdk -a . deploy PipelineStack --require-approval=never --verbose'),
+            },
+          },
+          cache: {
+            paths: ['node_modules'],
+          },
+        })),
+        Type: 'CODEPIPELINE',
       },
     });
   }
