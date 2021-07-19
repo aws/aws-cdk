@@ -1,6 +1,6 @@
 import { HttpIntegrationSubtype, HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, IntegrationCredentials, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
-import { IEventBus } from '@aws-cdk/aws-events';
-import { IRole } from '@aws-cdk/aws-iam';
+import { EventBus, IEventBus } from '@aws-cdk/aws-events';
+import { IRole, PolicyStatement } from '@aws-cdk/aws-iam';
 import { IStream } from '@aws-cdk/aws-kinesis';
 import { IQueue } from '@aws-cdk/aws-sqs';
 import { IStateMachine } from '@aws-cdk/aws-stepfunctions';
@@ -68,7 +68,14 @@ export interface EventBridgePutEventsIntegrationProps extends AwsServiceIntegrat
 export class EventBridgePutEventsIntegration implements IHttpRouteIntegration {
   constructor(private readonly props: EventBridgePutEventsIntegrationProps) {
   }
-  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    const eventBusArn = (
+      this.props.eventBus ?? EventBus.fromEventBusName(options.scope, 'DefaultEventBus', 'default')
+    ).eventBusArn;
+    this.props.role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['events:PutEvents'],
+      resources: [eventBusArn],
+    }));
     return {
       type: HttpIntegrationType.LAMBDA_PROXY,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
