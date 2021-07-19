@@ -231,12 +231,6 @@ interface DatabaseClusterBaseProps {
    */
   readonly iamAuthentication?: boolean;
 
-  /**
-   * Whether to copy tags to the snapshot when a snapshot is created.
-   *
-   * @default: false
-   */
-  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -467,6 +461,13 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
   readonly storageEncryptionKey?: kms.IKey;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default: false
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
