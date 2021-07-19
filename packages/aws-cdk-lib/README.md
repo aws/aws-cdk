@@ -827,7 +827,7 @@ const regionTable = new CfnMapping(this, 'RegionTable', {
   lazy: true,
 });
 
-regionTable.findInMap('regionName', 'us-east-1');
+regionTable.findInMap('regionName', 'us-east-2');
 ```
 
 On the other hand, the following code will produce the "Mappings" section shown above,
