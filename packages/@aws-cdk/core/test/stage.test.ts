@@ -1,7 +1,8 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, IConstruct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage, Aspects } from '../lib';
+import { App, CfnResource, IAspect, Stack, Stage, Aspects } from '../lib';
 
 nodeunitShim({
   'Stack inherits unspecified part of the env from Stage'(test: Test) {
@@ -119,28 +120,6 @@ nodeunitShim({
     test.done();
   },
 
-  'When we synth() a stage, prepare must be called on constructs in the stage'(test: Test) {
-    // GIVEN
-    const app = new App();
-    let prepared = false;
-    const stage = new Stage(app, 'MyStage');
-    const stack = new BogusStack(stage, 'Stack');
-    class HazPrepare extends Construct {
-      protected prepare() {
-        prepared = true;
-      }
-    }
-    new HazPrepare(stack, 'Preparable');
-
-    // WHEN
-    stage.synth();
-
-    // THEN
-    test.equals(prepared, true);
-
-    test.done();
-  },
-
   'When we synth() a stage, aspects inside it must have been applied'(test: Test) {
     // GIVEN
     const app = new App();
@@ -182,7 +161,7 @@ nodeunitShim({
 
   'Automatic dependencies inside a stage are available immediately after synth'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stage = new Stage(app, 'MyStage');
     const stack1 = new Stack(stage, 'Stack1');
     const stack2 = new Stack(stage, 'Stack2');
@@ -340,6 +319,7 @@ test('missing context in Stages is propagated up to root assembly', () => {
       provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
       props: {
         account: 'account',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::account:role/cdk-hnb659fds-lookup-role-account-region',
         region: 'region',
       },
     },

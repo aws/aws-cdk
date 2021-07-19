@@ -1,4 +1,4 @@
-import { CfnResource, Stack } from '@aws-cdk/core';
+import { App, CfnResource, LegacyStackSynthesizer, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Match, TemplateAssertions } from '../lib';
 
@@ -6,11 +6,11 @@ describe('TemplateAssertions', () => {
   describe('fromString', () => {
     test('default', () => {
       const assertions = TemplateAssertions.fromString(`{
-        "Resources": { 
-          "Foo": { 
+        "Resources": {
+          "Foo": {
             "Type": "Baz::Qux",
             "Properties": { "Fred": "Waldo" }
-          } 
+          }
         }
       }`);
       assertions.resourceCountIs('Baz::Qux', 1);
@@ -53,7 +53,10 @@ describe('TemplateAssertions', () => {
 
   describe('templateMatches', () => {
     test('matches', () => {
-      const stack = new Stack();
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        synthesizer: new LegacyStackSynthesizer(),
+      });
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
         properties: { baz: 'qux' },

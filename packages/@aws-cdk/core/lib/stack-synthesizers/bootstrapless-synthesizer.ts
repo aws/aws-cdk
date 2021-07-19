@@ -1,7 +1,7 @@
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../construct-compat';
 import { assertBound } from './_shared';
 import { DefaultStackSynthesizer } from './default-synthesizer';
+import { ISynthesisSession } from './types';
 
 /**
  * Construction properties of {@link BootstraplessSynthesizer}.
