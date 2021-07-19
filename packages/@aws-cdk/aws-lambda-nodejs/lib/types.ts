@@ -285,7 +285,7 @@ export enum SourceMapMode {
    * Default sourceMap mode - will generate a .js.map file alongside any generated .js file and add a special //# sourceMappingURL=
    * comment to the bottom of the .js file pointing to the .js.map file
    */
-  DEFAULT = '',
+  DEFAULT = 'default',
   /**
    *  External sourceMap mode - If you want to omit the special //# sourceMappingURL= comment from the generated .js file but you still
    *  want to generate the .js.map files
