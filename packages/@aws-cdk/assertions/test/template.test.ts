@@ -221,6 +221,68 @@ describe('TemplateAssertions', () => {
       })).toThrow(/No resource/);
     });
   });
+
+  describe('getResources', () => {
+    test('matching resource type', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+      expect(inspect.getResources('Foo::Bar')).toEqual([{
+        Type: 'Foo::Bar',
+        Properties: { baz: 'qux', fred: 'waldo' },
+      }]);
+    });
+
+    test('no matching resource type', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+      expect(inspect.getResources('Foo::Baz')).toEqual([]);
+    });
+
+    test('matching resource props', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+      expect(inspect.getResources('Foo::Bar', {
+        Properties: { baz: 'qux' },
+      }).length).toEqual(1);
+    });
+
+    test('no matching resource props', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+      expect(inspect.getResources('Foo::Bar', {
+        Properties: { baz: 'waldo' },
+      })).toEqual([]);
+    });
+
+    test('multiple matching resources', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', { type: 'Foo::Bar' });
+      new CfnResource(stack, 'Bar', { type: 'Foo::Bar' });
+
+      const inspect = TemplateAssertions.fromStack(stack);
+      expect(inspect.getResources('Foo::Bar').length).toEqual(2);
+    });
+  });
 });
 
 function expectToThrow(fn: () => void, msgs: (RegExp | string)[], done: jest.DoneCallback): void {

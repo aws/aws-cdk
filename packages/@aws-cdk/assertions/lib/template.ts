@@ -1,7 +1,7 @@
 import { Stack, Stage } from '@aws-cdk/core';
-import { hasResource } from './has-resource';
 import { Match } from './match';
 import { Matcher } from './matcher';
+import { getResources, hasResource } from './private/resource';
 import * as assert from './vendored/assert';
 
 /**
@@ -80,6 +80,17 @@ export class TemplateAssertions {
     if (matchError) {
       throw new Error(matchError);
     }
+  }
+
+  /**
+   * Get the set of matching resources of a given type and properties in the CloudFormation template.
+   * @param type the type to match in the CloudFormation template
+   * @param props by default, matches all resources with the given type.
+   * When a literal is provided, performs a partial match via `Match.objectLike()`.
+   * Use the `Match` APIs to configure a different behaviour.
+   */
+  public getResources(type: string, props: any = {}): { [key: string]: any }[] {
+    return getResources(this.inspector, type, props);
   }
 
   /**
