@@ -46,15 +46,12 @@ portfolio.addProduct(product);
 
 portfolio.constrainTagUpdates(product);
 
-const topics = [
-  new sns.Topic(stack, 'Topic1'),
-  new sns.Topic(stack, 'Topic2'),
-  new sns.Topic(stack, 'Topic3'),
-];
+const topic = new sns.Topic(stack, 'Topic1');
+
 const specialTopic = new sns.Topic(stack, 'specialTopic');
 
-portfolio.addEventNotifications(product, topics);
-portfolio.addEventNotifications(product, [specialTopic], {
+portfolio.notifyOnStackEvents(product, topic);
+portfolio.notifyOnStackEvents(product, specialTopic, {
   description: 'special topic description',
   messageLanguage: servicecatalog.MessageLanguage.EN,
 });

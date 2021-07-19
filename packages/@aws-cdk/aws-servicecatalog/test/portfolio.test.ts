@@ -417,7 +417,7 @@ describe('portfolio associations and product constraints', () => {
     const topic = new sns.Topic(stack, 'Topic');
     const description = 'event notification constraint description';
 
-    portfolio.addEventNotifications(product, [topic], {
+    portfolio.notifyOnStackEvents(product, topic, {
       description: description,
     });
 
@@ -430,34 +430,32 @@ describe('portfolio associations and product constraints', () => {
   }),
 
   test('event notification constraint will still add without explicit association', () => {
-    const topics = [
-      new sns.Topic(stack, 'Topic1'),
-      new sns.Topic(stack, 'Topic2'),
-      new sns.Topic(stack, 'Topic3'),
-    ];
+    const topic = new sns.Topic(stack, 'Topic1');
 
-    portfolio.addEventNotifications(product, topics);
+    portfolio.notifyOnStackEvents(product, topic);
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::LaunchNotificationConstraint', 1);
+  }),
+
+  test('can add multiple notifications', () => {
+    const topic1 = new sns.Topic(stack, 'Topic1');
+    const topic2 = new sns.Topic(stack, 'Topic2');
+    const topic3 = new sns.Topic(stack, 'Topic3');
+
+    portfolio.notifyOnStackEvents(product, topic1);
+    portfolio.notifyOnStackEvents(product, topic2);
+    portfolio.notifyOnStackEvents(product, topic3);
 
     expect(stack).toCountResources('AWS::ServiceCatalog::LaunchNotificationConstraint', 3);
   }),
 
-  test('fails to create event notification constraint with empty topic list', () => {
-    expect(() => {
-      portfolio.addEventNotifications(product, []);
-    }).toThrowError(/No topics provided for launch notifications for association/);
-  }),
-
   test('fails to add same topic multiple times in event notification constraint', () => {
-    const topics = [
-      new sns.Topic(stack, 'Topic1'),
-      new sns.Topic(stack, 'Topic2'),
-      new sns.Topic(stack, 'Topic3'),
-    ];
+    const topic = new sns.Topic(stack, 'Topic1');
 
-    portfolio.addEventNotifications(product, topics);
+    portfolio.notifyOnStackEvents(product, topic);
 
     expect(() => {
-      portfolio.addEventNotifications(product, [topics[2]]);
-    }).toThrowError(`Topic ${topics[2]} is already subscribed to association`);
+      portfolio.notifyOnStackEvents(product, topic);
+    }).toThrowError(`Topic ${topic} is already subscribed to association`);
   });
 });

@@ -91,9 +91,9 @@ export interface IPortfolio extends cdk.IResource {
   /**
    * Add notifications for supplied topics on the provisioned product.
    * @param product A service catalog product.
-   * @param topics A list of SNS Topics to receive notifications on events related to the provisioned product.
+   * @param topic A SNS Topic to receive notifications on events related to the provisioned product.
    */
-  addEventNotifications(product: IProduct, topics: sns.ITopic[], options?: CommonConstraintOptions): void;
+  notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options?: CommonConstraintOptions): void;
 
   /**
    * Add a Resource Update Constraint.
@@ -136,8 +136,8 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     AssociationManager.associateTagOptions(this, tagOptions);
   }
 
-  public addEventNotifications(product: IProduct, topics: sns.ITopic[], options: CommonConstraintOptions = {}): void {
-    AssociationManager.addEventNotifications(this, product, topics, options);
+  public notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions = {}): void {
+    AssociationManager.notifyOnStackEvents(this, product, topic, options);
   }
 
   public constrainTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}): void {
