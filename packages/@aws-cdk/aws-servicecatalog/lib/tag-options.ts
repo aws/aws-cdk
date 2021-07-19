@@ -6,9 +6,9 @@ export class TagOptions {
   /**
   * List of CfnTagOption
   */
-  public readonly tagOptionsMap: {[key: string]: string[]};
+  public readonly tagOptionsMap: { [key: string]: string[] };
 
-  constructor(tagOptionsMap: {[key: string]: string[]}) {
-    this.tagOptionsMap = tagOptionsMap;
+  constructor(tagOptionsMap: { [key: string]: string[]} ) {
+    this.tagOptionsMap = { ...tagOptionsMap };
   }
 }

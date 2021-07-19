@@ -50,16 +50,16 @@ export class AssociationManager {
   }
 
   public static associateTagOptions(portfolio: IPortfolio, tagOptions: TagOptions): void {
-    Object.keys(tagOptions.tagOptionsMap).forEach(key => {
+    const portfolioStack = cdk.Stack.of(portfolio);
+    for (const [key, tagOptionsList] of Object.entries(tagOptions.tagOptionsMap)) {
       InputValidator.validateLength(portfolio.node.addr, 'TagOption key', 1, 128, key);
-      tagOptions.tagOptionsMap[key].forEach((value: string) => {
+      tagOptionsList.forEach((value: string) => {
         InputValidator.validateLength(portfolio.node.addr, 'TagOption value', 1, 256, value);
-        const stack = cdk.Stack.of(portfolio);
-        const tagOptionKey = hashValues(key, value, stack.node.addr);
+        const tagOptionKey = hashValues(key, value, portfolioStack.node.addr);
         const tagOptionConstructId = `TagOption${tagOptionKey}`;
-        var cfnTagOption = stack.node.tryFindChild(tagOptionConstructId) as CfnTagOption;
+        let cfnTagOption = portfolioStack.node.tryFindChild(tagOptionConstructId) as CfnTagOption;
         if (!cfnTagOption) {
-          cfnTagOption = new CfnTagOption(stack, tagOptionConstructId, {
+          cfnTagOption = new CfnTagOption(portfolioStack, tagOptionConstructId, {
             key: key,
             value: value,
             active: true,
@@ -74,7 +74,7 @@ export class AssociationManager {
           });
         }
       });
-    });
+    };
   }
 
   private static prettyPrintAssociation(portfolio: IPortfolio, product: IProduct): string {

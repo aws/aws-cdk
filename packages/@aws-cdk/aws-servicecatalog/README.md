@@ -167,8 +167,8 @@ At the moment, TagOptions can only be disabled in the console.
 
 ```ts fixture=basic-portfolio
 const tagOptions = new servicecatalog.TagOptions({
-  key1: ['value1', 'value2'],
-  key2: ['value1'],
+  ec2InstanceType: ['A1', 'M4'],
+  ec2InstanceSize: ['medium', 'large'],
 });
 portfolio.associateTagOptions(tagOptions);
 ```
