@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { HttpApi, HttpRoute, HttpRouteKey, IntegrationCredentials } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { Role } from '@aws-cdk/aws-iam';
 import { Stream } from '@aws-cdk/aws-kinesis';
 import { Stack } from '@aws-cdk/core';
@@ -20,7 +20,7 @@ describe('Kinesis Integration', () => {
         partitionKey: 'key',
         sequenceNumberForOrdering: 'sequence',
         explicitHashKey: 'hashKey',
-        credentials: IntegrationCredentials.fromRole(role),
+        role,
         region: 'eu-north-1',
       }),
     });

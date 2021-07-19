@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { HttpApi, HttpRoute, HttpRouteKey, IntegrationCredentials } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { EventBus } from '@aws-cdk/aws-events';
 import { Role } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
@@ -9,12 +9,14 @@ describe('EventBridge PutEvents Integration', () => {
   test('basic integration', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'API');
+    const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/event');
     new HttpRoute(stack, 'Route', {
       httpApi: api,
       integration: new EventBridgePutEventsIntegration({
         detail: 'detail',
         detailType: 'type',
         source: 'source',
+        role,
       }),
       routeKey: HttpRouteKey.with('/event'),
     });
@@ -41,7 +43,7 @@ describe('EventBridge PutEvents Integration', () => {
     new HttpRoute(stack, 'Route', {
       httpApi: api,
       integration: new EventBridgePutEventsIntegration({
-        credentials: IntegrationCredentials.fromRole(role),
+        role,
         detail: 'detail',
         detailType: 'detail-type',
         source: 'source',
@@ -69,24 +71,6 @@ describe('EventBridge PutEvents Integration', () => {
         Time: '2021-07-14T20:18:15Z',
         TraceHeader: 'x-trace-header',
       },
-    });
-  });
-  test('using caller identity', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'API');
-    new HttpRoute(stack, 'Route', {
-      httpApi: api,
-      integration: new EventBridgePutEventsIntegration({
-        credentials: IntegrationCredentials.useCallerIdentity(),
-        detail: 'd',
-        detailType: 'dt',
-        source: 's',
-      }),
-      routeKey: HttpRouteKey.with('/event'),
-    });
-
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      CredentialsArn: 'arn:aws:iam::*:user/*',
     });
   });
 });

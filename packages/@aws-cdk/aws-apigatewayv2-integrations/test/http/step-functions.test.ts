@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { HttpApi, HttpRoute, HttpRouteKey, IntegrationCredentials } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { Role } from '@aws-cdk/aws-iam';
 import { StateMachine } from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
@@ -7,11 +7,7 @@ import { StepFunctionsStartExecutionIntegration, StepFunctionsStartSyncExecution
 
 describe('Step Functions integrations', () => {
   test('StartExecution', () => {
-    const {
-      stack,
-      httpApi,
-      role,
-    } = createTestFixtures('arn:aws:iam::123456789012:role/start');
+    const { stack, httpApi, role } = createTestFixtures('arn:aws:iam::123456789012:role/start');
     const stateMachine = StateMachine.fromStateMachineArn(
       stack,
       'StateMachine',
@@ -21,7 +17,7 @@ describe('Step Functions integrations', () => {
       httpApi,
       routeKey: HttpRouteKey.DEFAULT,
       integration: new StepFunctionsStartExecutionIntegration({
-        credentials: IntegrationCredentials.fromRole(role),
+        role,
         stateMachine,
         name: 'execution-name',
         input: '$request.body',
@@ -56,7 +52,7 @@ describe('Step Functions integrations', () => {
       httpApi,
       routeKey: HttpRouteKey.DEFAULT,
       integration: new StepFunctionsStartSyncExecutionIntegration({
-        credentials: IntegrationCredentials.fromRole(role),
+        role,
         stateMachine,
         name: 'execution',
         input: '{}',
@@ -91,7 +87,7 @@ describe('Step Functions integrations', () => {
         executionArn: 'arn:aws:states:us-east-2:123456789012:executions:state:my-execution',
         error: '$request.body.error',
         cause: '$request.body.cause',
-        credentials: IntegrationCredentials.fromRole(role),
+        role,
         region: 'eu-west-2',
       }),
     });

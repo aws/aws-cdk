@@ -1,5 +1,6 @@
 import { HttpIntegrationSubtype, HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, IntegrationCredentials, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { IEventBus } from '@aws-cdk/aws-events';
+import { IRole } from '@aws-cdk/aws-iam';
 import { IStream } from '@aws-cdk/aws-kinesis';
 import { IQueue } from '@aws-cdk/aws-sqs';
 import { IStateMachine } from '@aws-cdk/aws-stepfunctions';
@@ -11,7 +12,7 @@ interface AwsServiceIntegrationProps {
    *
    * @default - none; use resource-based permissions.
    */
-  readonly credentials?: IntegrationCredentials;
+  readonly role: IRole;
   /**
    * The region of the integration
    * @default - undefined
@@ -72,7 +73,7 @@ export class EventBridgePutEventsIntegration implements IHttpRouteIntegration {
       type: HttpIntegrationType.LAMBDA_PROXY,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
       subtype: HttpIntegrationSubtype.EVENTBRIDGE_PUTEVENTS,
-      credentials: this.props.credentials,
+      credentials: IntegrationCredentials.fromRole(this.props.role),
       requestParameters: {
         Detail: this.props.detail,
         DetailType: this.props.detailType,
@@ -140,7 +141,7 @@ export class SQSSendMessageIntegration implements IHttpRouteIntegration {
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.SQS_SENDMESSAGE,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: this.props.credentials,
+      credentials: IntegrationCredentials.fromRole(this.props.role),
       requestParameters: {
         QueueUrl: this.props.queue.queueUrl,
         MessageBody: this.props.body,
@@ -225,7 +226,7 @@ export class SQSReceiveMessageIntegration implements IHttpRouteIntegration {
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.SQS_RECEIVEMESSAGE,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: this.props.credentials,
+      credentials: IntegrationCredentials.fromRole(this.props.role),
       requestParameters: {
         QueueUrl: this.props.queue.queueUrl,
         AttributeNames: this.props.attributeNames,
@@ -254,7 +255,7 @@ export class SQSDeleteMessageIntegration implements IHttpRouteIntegration {
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.SQS_DELETEMESSAGE,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: this.props.credentials,
+      credentials: IntegrationCredentials.fromRole(this.props.role),
       requestParameters: {
         QueueUrl: this.props.queue.queueUrl,
         ReceiptHandle: this.props.receiptHandle,
@@ -274,7 +275,7 @@ export class SQSPurgeQueueIntegration implements IHttpRouteIntegration {
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.SQS_PURGEQUEUE,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: this.props.credentials,
+      credentials: IntegrationCredentials.fromRole(this.props.role),
       requestParameters: {
         QueueUrl: this.props.queue.queueUrl,
         Region: this.props.region,
@@ -317,7 +318,7 @@ export class KinesisPutRecordIntegration implements IHttpRouteIntegration {
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.KINESIS_PUTRECORD,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: this.props.credentials,
+      credentials: IntegrationCredentials.fromRole(this.props.role),
       requestParameters: {
         StreamName: this.props.stream.streamName,
         Data: this.props.data,
@@ -358,7 +359,7 @@ export class StepFunctionsStartExecutionIntegration implements IHttpRouteIntegra
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STARTEXECUTION,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: this.props.credentials,
+      credentials: IntegrationCredentials.fromRole(this.props.role),
       requestParameters: {
         StateMachineArn: this.props.stateMachine.stateMachineArn,
         Name: this.props.name,
@@ -376,7 +377,7 @@ export class StepFunctionsStartSyncExecutionIntegration implements IHttpRouteInt
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STARTSYNCEXECUTION,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: this.props.credentials,
+      credentials: IntegrationCredentials.fromRole(this.props.role),
       requestParameters: {
         StateMachineArn: this.props.stateMachine.stateMachineArn,
         Name: this.props.name,
@@ -412,7 +413,7 @@ export class StepFunctionsStopExecutionIntegration implements IHttpRouteIntegrat
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STOPEXECUTION,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: this.props.credentials,
+      credentials: IntegrationCredentials.fromRole(this.props.role),
       requestParameters: {
         ExecutionArn: this.props.executionArn,
         Cause: this.props.cause,

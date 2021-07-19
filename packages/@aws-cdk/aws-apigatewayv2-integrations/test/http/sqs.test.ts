@@ -1,7 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
-import { HttpApi, HttpRoute, HttpRouteKey, IntegrationCredentials } from '@aws-cdk/aws-apigatewayv2';
-import { IRole, Role } from '@aws-cdk/aws-iam';
-import { IQueue, Queue } from '@aws-cdk/aws-sqs';
+import { HttpApi, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
+import { Role } from '@aws-cdk/aws-iam';
+import { Queue } from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
   SQSAttribute,
@@ -14,14 +14,14 @@ import {
 describe('SQS Integrations', () => {
   describe('SendMessage', () => {
     test('basic integration', () => {
-      const {
-        stack,
-        api,
-        queue,
-      } = setupTestFixtures('arn:aws:sqs:eu-west-2:123456789012:queue');
+      const { stack, api, queue, role } = setupTestFixtures(
+        'arn:aws:sqs:eu-west-2:123456789012:queue',
+        'arn:aws:iam::123456789012:role/sqs',
+      );
       new HttpRoute(stack, 'Route', {
         httpApi: api,
         integration: new SQSSendMessageIntegration({
+          role,
           queue,
           body: 'message',
         }),
@@ -32,6 +32,7 @@ describe('SQS Integrations', () => {
         IntegrationType: 'AWS_PROXY',
         IntegrationSubtype: 'SQS-SendMessage',
         PayloadFormatVersion: '1.0',
+        CredentialsArn: 'arn:aws:iam::123456789012:role/sqs',
         RequestParameters: {
           QueueUrl: makeQueueUrl('eu-west-2', '123456789012', 'queue'),
           MessageBody: 'message',
@@ -39,12 +40,7 @@ describe('SQS Integrations', () => {
       });
     });
     test('full integration', () => {
-      const {
-        stack,
-        api,
-        queue,
-        role,
-      } = setupTestFixtures(
+      const { stack, api, queue, role } = setupTestFixtures(
         'arn:aws:sqs:us-east-1:123456789012:queue',
         'arn:aws:iam::123456789012:role/sqs-role',
       );
@@ -53,8 +49,8 @@ describe('SQS Integrations', () => {
         integration: new SQSSendMessageIntegration({
           body: 'message-body',
           queue,
+          role,
           attributes: 'some-attributes',
-          credentials: IntegrationCredentials.fromRole(role),
           deduplicationId: '$request.id',
           delay: Duration.seconds(4),
           groupId: 'the-group',
@@ -84,12 +80,7 @@ describe('SQS Integrations', () => {
   });
 
   test('ReceiveMessage', () => {
-    const {
-      stack,
-      api,
-      role,
-      queue,
-    } = setupTestFixtures(
+    const { stack, api, role, queue } = setupTestFixtures(
       'arn:aws:sqs:us-west-1:123456789012:receive-queue.fifo',
       'arn:aws:iam::123456789012:role/sqs-receive',
     );
@@ -97,7 +88,7 @@ describe('SQS Integrations', () => {
     new HttpRoute(stack, 'Route', {
       httpApi: api,
       integration: new SQSReceiveMessageIntegration({
-        credentials: IntegrationCredentials.fromRole(role),
+        role,
         queue,
         attributeNames: [SQSAttribute.ALL],
         maxNumberOfMessages: 2,
@@ -128,12 +119,7 @@ describe('SQS Integrations', () => {
     });
   });
   test('DeleteMessage', () => {
-    const {
-      stack,
-      api,
-      role,
-      queue,
-    } = setupTestFixtures(
+    const { stack, api, role, queue } = setupTestFixtures(
       'arn:aws:sqs:eu-west-2:123456789012:queue',
       'arn:aws:iam::123456789012:role/sqs-delete',
     );
@@ -142,7 +128,7 @@ describe('SQS Integrations', () => {
       integration: new SQSDeleteMessageIntegration({
         queue,
         receiptHandle: 'MbZj6wDWli%2BJvwwJaBV%2B3dcjk2YW2vA3%2BSTFFljT',
-        credentials: IntegrationCredentials.fromRole(role),
+        role,
         region: 'eu-west-1',
       }),
       routeKey: HttpRouteKey.DEFAULT,
@@ -161,12 +147,7 @@ describe('SQS Integrations', () => {
     });
   });
   test('PurgeQueue', () => {
-    const {
-      stack,
-      api,
-      queue,
-      role,
-    } = setupTestFixtures(
+    const { stack, api, queue, role } = setupTestFixtures(
       'arn:aws:sqs:eu-west-1:123456789012:queue',
       'arn:aws:iam::123456789012:role/purge',
     );
@@ -174,7 +155,7 @@ describe('SQS Integrations', () => {
       httpApi: api,
       integration: new SQSPurgeQueueIntegration({
         queue,
-        credentials: IntegrationCredentials.fromRole(role),
+        role,
         region: 'us-east-2',
       }),
       routeKey: HttpRouteKey.DEFAULT,
@@ -193,22 +174,16 @@ describe('SQS Integrations', () => {
   });
 });
 
-function setupTestFixtures(queueArn: string): { stack: Stack, api: HttpApi, queue: IQueue };
-function setupTestFixtures(queueArn: string, roleArn: string): {
-  stack: Stack,
-  api: HttpApi,
-  queue: IQueue,
-  role: IRole,
-};
-function setupTestFixtures(queueArn: string, roleArn?: string) {
+function setupTestFixtures(queueArn: string, roleArn: string) {
   const stack = new Stack();
   const api = new HttpApi(stack, 'API');
   const queue = Queue.fromQueueArn(stack, 'Queue', queueArn);
+  const role = Role.fromRoleArn(stack, 'Role', roleArn);
   return {
     stack,
     api,
     queue,
-    role: roleArn ? Role.fromRoleArn(stack, 'Role', roleArn) : undefined,
+    role,
   };
 }
 
