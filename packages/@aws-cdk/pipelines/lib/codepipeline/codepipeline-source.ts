@@ -131,7 +131,7 @@ export interface GitHubSourceOptions {
    *
    * ```ts
    * const oauth = cdk.SecretValue.secretsManager('my-github-token');
-   * new GitHubSource(this, 'GitHubSource', { oauthToken: oauth, ... });
+   * new GitHubSource(this, 'GitHubSource', { authentication: oauth, ... });
    * ```
    *
    * The GitHub Personal Access Token should have these scopes:
