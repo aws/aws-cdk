@@ -268,17 +268,31 @@ test('esbuild bundling source map inline', () => {
   });
 });
 
-test('esbuild bundling throws when sourceMapMode used with falsy sourceMap', () => {
-  expect(() => {
-    Bundling.bundle({
-      entry,
-      projectRoot,
-      depsLockFilePath,
-      runtime: Runtime.NODEJS_14_X,
-      sourceMapMode: SourceMapMode.INLINE,
-    });
-  }).toThrow('sourceMapMode can be used only when sourceMap is true');
+test('esbuild bundling source map enabled when only source map mode exists', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    sourceMapMode: SourceMapMode.INLINE,
+  });
 
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
+          '--sourcemap=inline --external:aws-sdk',
+        ].join(' '),
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling throws when sourceMapMode used with false sourceMap', () => {
   expect(() => {
     Bundling.bundle({
       entry,
@@ -288,7 +302,7 @@ test('esbuild bundling throws when sourceMapMode used with falsy sourceMap', () 
       sourceMap: false,
       sourceMapMode: SourceMapMode.INLINE,
     });
-  }).toThrow('sourceMapMode can be used only when sourceMap is true');
+  }).toThrow('sourceMapMode cannot be used when sourceMap is false');
 });
 
 test('Detects yarn.lock', () => {
