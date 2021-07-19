@@ -231,4 +231,5 @@ fn.grantInvoke(deliveryStream);
 ## Multiple destinations
 
 Though the delivery stream allows specifying an array of destinations, only one
-destination per delivery stream is currently allowed.
+destination per delivery stream is currently allowed. This limitation is enforced at CDK
+synthesis time and will throw an error.
