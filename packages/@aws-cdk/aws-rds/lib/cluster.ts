@@ -500,8 +500,6 @@ export class DatabaseCluster extends DatabaseClusterNew {
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  private readonly copyTagsToSnapshot?: boolean;
-
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
 
@@ -546,7 +544,6 @@ export class DatabaseCluster extends DatabaseClusterNew {
     const createdInstances = createInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
-    this.copyTagsToSnapshot = props.copyTagsToSnapshot || false;
   }
 
   /**
@@ -590,14 +587,6 @@ export class DatabaseCluster extends DatabaseClusterNew {
       vpcSubnets: this.vpcSubnets,
       target: this,
     });
-  }
-
-  /**
-   * Gets the value of copyTagsToSnapshot
-   * @returns value of copyTagsToSnapshot
-   */
-  public returnCopyTagsToSnapshot() : boolean | undefined {
-    return this.copyTagsToSnapshot;
   }
 }
 
