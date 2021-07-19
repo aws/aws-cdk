@@ -1,7 +1,6 @@
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { CfnRefElement } from './cfn-element';
 import { Fn } from './cfn-fn';
-import { Stack } from './stack';
 import { Token } from './token';
 
 type Mapping = { [k1: string]: { [k2: string]: any } };
@@ -18,70 +17,33 @@ export interface CfnMappingProps {
    * @default - No mapping.
    */
   readonly mapping?: Mapping;
+
+  /*
+   * Synthesize this map in a lazy fashion.
+   *
+   * Lazy maps will only synthesize a mapping if a `findInMap` operation is unable to
+   * immediately return a value because one or both of the requested keys are unresolved
+   * tokens. In this case, `findInMap` will return a `Fn::FindInMap` CloudFormation
+   * intrinsic.
+   *
+   * @default false
+   */
+  readonly lazy?: boolean;
 }
 
 /**
  * Represents a CloudFormation mapping.
  */
 export class CfnMapping extends CfnRefElement {
-  /**
-   * Register a lazy map so it can be used in future `findInLazyMap` operations.
-   *
-   * Lazy maps will only synthesize a mapping if a `findInLazyMap` operation is unable to
-   * immediately return a value because one or both of the requested keys are unresolved
-   * tokens. In this case, `findInLazyMap` will return a `Fn::FindInMap` CloudFormation
-   * intrinsic.
-   */
-  static registerLazyMap(mappingId: string, mapping: Mapping) {
-    if (mappingId in this.lazyMaps) {
-      if (mapping !== this.lazyMaps[mappingId]) {
-        throw new Error(`Attempted to register mapping ${mappingId} but a different mapping has already been registered with this ID`);
-      }
-    } else {
-      this.lazyMaps[mappingId] = mapping;
-    }
-  }
-
-  /**
-   * Locate a value in a registered lazy map using the provided keys.
-   *
-   * Lazy maps will only synthesize a mapping if a `findInLazyMap` operation is unable to
-   * immediately return a value because one or both of the requested keys are unresolved
-   * tokens. In this case, `findInLazyMap` will return a `Fn::FindInMap` CloudFormation
-   * intrinsic.
-   */
-  static findInLazyMap(scope: Construct, mappingId: string, key1: string, key2: string): any {
-    if (!(mappingId in this.lazyMaps)) {
-      throw new Error(`Mapping ${mappingId} is not registered as a lazy map`);
-    }
-    const mapping = this.lazyMaps[mappingId];
-    if (!Token.isUnresolved(key1) && !Token.isUnresolved(key2)) {
-      if (!(key1 in mapping)) {
-        throw new Error(`Mapping ${mappingId} does not contain top-level key '${key1}'`);
-      }
-      if (!(key2 in mapping[key1])) {
-        throw new Error(`Mapping ${mappingId} does not contain second-level key '${key2}'`);
-      }
-      return mapping[key1][key2];
-    } else {
-      const stack = Stack.of(scope);
-      const cfnMapping = Node.of(stack).tryFindChild(mappingId) as CfnMapping ?? new CfnMapping(stack, mappingId, {
-        mapping: mapping,
-      });
-      return cfnMapping.findInMap(key1, key2);
-    }
-  }
-
-  /**
-   * Internal registry of lazy maps
-   */
-  private static lazyMaps: { [mappingId: string]: Mapping } = {};
-
   private mapping: Mapping;
+  private lazy: boolean;
+  private render: boolean;
 
   constructor(scope: Construct, id: string, props: CfnMappingProps = {}) {
     super(scope, id);
-    this.mapping = props.mapping || { };
+    this.mapping = props.mapping ?? { };
+    this.lazy = props.lazy ?? false;
+    this.render = !props.lazy;
   }
 
   /**
@@ -99,16 +61,22 @@ export class CfnMapping extends CfnRefElement {
    * @returns A reference to a value in the map based on the two keys.
    */
   public findInMap(key1: string, key2: string): string {
-    // opportunistically check that the key exists (if the key does not contain tokens)
-    if (!Token.isUnresolved(key1) && !(key1 in this.mapping)) {
-      throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
+    if (!Token.isUnresolved(key1)) {
+      if (!(key1 in this.mapping)) {
+        throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
+      }
+      if (!Token.isUnresolved(key2)) {
+        if (!(key2 in this.mapping[key1])) {
+          throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
+        }
+        if (this.lazy) {
+          return this.mapping[key1][key2];
+        }
+      }
     }
-
-    // opportunistically check that the second key exists (if the key does not contain tokens)
-    if (!Token.isUnresolved(key1) && !Token.isUnresolved(key2) && !(key2 in this.mapping[key1])) {
-      throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
+    if (this.lazy) {
+      this.render = true;
     }
-
     return Fn.findInMap(this.logicalId, key1, key2);
   }
 
@@ -116,10 +84,14 @@ export class CfnMapping extends CfnRefElement {
    * @internal
    */
   public _toCloudFormation(): object {
-    return {
-      Mappings: {
-        [this.logicalId]: this.mapping,
-      },
-    };
+    if (this.render) {
+      return {
+        Mappings: {
+          [this.logicalId]: this.mapping,
+        },
+      };
+    } else {
+      return {};
+    }
   }
 }

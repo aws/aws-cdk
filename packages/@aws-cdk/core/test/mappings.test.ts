@@ -78,6 +78,13 @@ nodeunitShim({
     const expected = { 'Fn::FindInMap': ['mapping', 'instanceCount', { Ref: 'AWS::Region' }] };
     test.deepEqual(stack.resolve(v1), expected);
     test.deepEqual(stack.resolve(v2), expected);
+    test.deepEqual(toCloudFormation(stack)['Mappings'], {
+      mapping: {
+        instanceCount: {
+          'us-east-1': 12,
+        },
+      },
+    });
     test.done();
   },
 
@@ -99,6 +106,13 @@ nodeunitShim({
     test.deepEqual(stack.resolve(v), {
       'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'size'],
     });
+    test.deepEqual(toCloudFormation(stack)['Mappings'], {
+      mapping: {
+        'us-east-1': {
+          size: 12,
+        },
+      },
+    });
     test.done();
   },
 
@@ -119,104 +133,72 @@ nodeunitShim({
     // THEN
     test.throws(() => mapping.findInMap('not-found', Aws.REGION), /Mapping doesn't contain top-level key 'not-found'/);
     test.deepEqual(stack.resolve(v), { 'Fn::FindInMap': ['mapping', 'size', { Ref: 'AWS::Region' }] });
+    test.deepEqual(toCloudFormation(stack)['Mappings'], {
+      mapping: {
+        size: {
+          'us-east-1': 12,
+        },
+      },
+    });
     test.done();
   },
 });
 
 describe('lazy mapping', () => {
   let stack: Stack;
+  let mapping: CfnMapping;
   const backing = {
     TopLevelKey1: {
       SecondLevelKey1: [1, 2, 3],
       SecondLevelKey2: { Hello: 'World' },
     },
   };
-  const mappingId = '@aws-cdk/core.TestLazyMapping';
-
-  beforeAll(() => {
-    CfnMapping.registerLazyMap(mappingId, backing);
-  });
 
   beforeEach(() => {
     stack = new Stack();
+    mapping = new CfnMapping(stack, 'Lazy Mapping', {
+      mapping: backing,
+      lazy: true,
+    });
   });
 
-  it('does not create CfnMapping if keys can be resolved', () => {
-    const retrievedValue = CfnMapping.findInLazyMap(stack, mappingId, 'TopLevelKey1', 'SecondLevelKey1');
+  it('does not create CfnMapping if findInMap keys can be resolved', () => {
+    const retrievedValue = mapping.findInMap('TopLevelKey1', 'SecondLevelKey1');
 
     expect(stack.resolve(retrievedValue)).toStrictEqual([1, 2, 3]);
     expect(toCloudFormation(stack)).toStrictEqual({});
   });
 
-  it('creates CfnMapping if top level key cannot be resolved', () => {
-    const retrievedValue = CfnMapping.findInLazyMap(stack, mappingId, Aws.REGION, 'SecondLevelKey1');
+  it('does not create CfnMapping if findInMap is not called', () => {
+    expect(toCloudFormation(stack)).toStrictEqual({});
+  });
 
-    expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['awscdkcoreTestLazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1'] });
+  it('creates CfnMapping if top level key cannot be resolved', () => {
+    const retrievedValue = mapping.findInMap(Aws.REGION, 'SecondLevelKey1');
+
+    expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1'] });
     expect(toCloudFormation(stack)).toStrictEqual({
       Mappings: {
-        awscdkcoreTestLazyMapping: {
-          TopLevelKey1: {
-            SecondLevelKey1: [1, 2, 3],
-            SecondLevelKey2: { Hello: 'World' },
-          },
-        },
+        LazyMapping: backing,
       },
     });
   });
 
   it('creates CfnMapping if second level key cannot be resolved', () => {
-    const retrievedValue = CfnMapping.findInLazyMap(stack, mappingId, 'TopLevelKey1', Aws.REGION);
+    const retrievedValue = mapping.findInMap('TopLevelKey1', Aws.REGION);
 
-    expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['awscdkcoreTestLazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }] });
+    expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }] });
     expect(toCloudFormation(stack)).toStrictEqual({
       Mappings: {
-        awscdkcoreTestLazyMapping: {
-          TopLevelKey1: {
-            SecondLevelKey1: [1, 2, 3],
-            SecondLevelKey2: { Hello: 'World' },
-          },
-        },
+        LazyMapping: backing,
       },
     });
-  });
-
-  it('only creates CfnMapping once if key cannot be resolved', () => {
-    CfnMapping.findInLazyMap(stack, mappingId, Aws.REGION, 'SecondLevelKey1');
-
-    expect(() => CfnMapping.findInLazyMap(stack, mappingId, Aws.REGION, 'SecondLevelKey2')).not.toThrow();
-    expect(toCloudFormation(stack)).toStrictEqual({
-      Mappings: {
-        awscdkcoreTestLazyMapping: {
-          TopLevelKey1: {
-            SecondLevelKey1: [1, 2, 3],
-            SecondLevelKey2: { Hello: 'World' },
-          },
-        },
-      },
-    });
-  });
-
-  it('does not throw if mapping has already been registered with the same backing', () => {
-    expect(() => CfnMapping.registerLazyMap(mappingId, backing)).not.toThrow();
-  });
-
-  it('throws if mapping has already been registered with a different backing', () => {
-    expect(() => CfnMapping.registerLazyMap(mappingId, {
-      TopLevelKey2: {
-        SecondLevelKey3: 'somevalue',
-      },
-    })).toThrowError(/Attempted to register mapping .* but a different mapping has already been registered with this ID/);
-  });
-
-  it('throws if mapping has not been registered', () => {
-    expect(() => CfnMapping.findInLazyMap(stack, 'NonExistentMappingId', 'TopLevelKey1', 'SecondLevelKey1'))
-      .toThrowError(/Mapping .* is not registered as a lazy map/);
   });
 
   it('throws if keys can be resolved but are not found in backing', () => {
-    expect(() => CfnMapping.findInLazyMap(stack, mappingId, 'NonExistentKey', 'SecondLevelKey1'))
-      .toThrowError(/Mapping .* does not contain top-level key .*/);
-    expect(() => CfnMapping.findInLazyMap(stack, mappingId, 'TopLevelKey1', 'NonExistentKey'))
-      .toThrowError(/Mapping .* does not contain second-level key .*/);
+    expect(() => mapping.findInMap('NonExistentKey', 'SecondLevelKey1'))
+      .toThrowError(/Mapping doesn't contain top-level key .*/);
+    expect(() => mapping.findInMap('TopLevelKey1', 'NonExistentKey'))
+      .toThrowError(/Mapping doesn't contain second-level key .*/);
   });
 });
