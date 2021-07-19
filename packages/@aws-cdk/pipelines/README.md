@@ -964,7 +964,7 @@ but the directory wasn't there. There are two common causes for this:
   For NPM-based projects, add `npx cdk synth` to the end of the `commands`
   property, for other languages add `npm install -g aws-cdk` and `cdk synth`.
 * Your CDK project lives in a subdirectory: you added a `cd <somedirectory>` command
-  to the list of commands: don't forget to tell the `ScriptStep` about the
+  to the list of commands; don't forget to tell the `ScriptStep` about the
   different location of `cdk.out`, by passing `primaryOutputDirectory: '<somedirectory>/cdk.out'`.
 
 ### <Stack> is in ROLLBACK_COMPLETE state and can not be updated
