@@ -1,7 +1,7 @@
 import * as sns from '@aws-cdk/aws-sns';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { SnsPublish } from '../../lib/sns/publish';
+import { SnsPublish, MessageAttributeDataType } from '../../lib/sns/publish';
 
 describe('Publish', () => {
 
@@ -49,12 +49,28 @@ describe('Publish', () => {
       topic,
       message: sfn.TaskInput.fromText('Publish this message'),
       messageAttributes: {
-        cake: 'chocolate',
-        cakeCount: 2,
-        resolvable: token,
-        taskInput: sfn.TaskInput.fromJsonPathAt('$$.StateMachine.Name'),
-        executionId: sfn.JsonPath.stringAt('$$.Execution.Id'),
-        vendors: ['Great Cakes', true, false, null, 3, 'Local Cakes'],
+        cake: {
+          value: 'chocolate',
+        },
+        cakeCount: {
+          value: 2,
+        },
+        resolvable: {
+          value: token,
+        },
+        binary: {
+          value: 'a2345',
+          dataType: MessageAttributeDataType.BINARY,
+        },
+        taskInput: {
+          value: sfn.TaskInput.fromJsonPathAt('$$.StateMachine.Name'),
+        },
+        executionId: {
+          value: sfn.JsonPath.stringAt('$$.Execution.Id'),
+        },
+        vendors: {
+          value: ['Great Cakes', true, false, null, 3, 'Local Cakes'],
+        },
       },
     });
 
@@ -78,6 +94,10 @@ describe('Publish', () => {
         TopicArn: { Ref: 'TopicBFC7AF6E' },
         Message: 'Publish this message',
         MessageAttributes: {
+          binary: {
+            DataType: 'Binary',
+            BinaryValue: 'a2345',
+          },
           cake: {
             DataType: 'String',
             StringValue: 'chocolate',

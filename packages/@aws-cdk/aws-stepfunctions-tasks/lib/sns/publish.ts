@@ -5,6 +5,59 @@ import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
+ * The data type set for the SNS message attributes
+ *
+ * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
+ */
+export enum MessageAttributeDataType {
+  /**
+   * Strings are Unicode with UTF-8 binary encoding
+   */
+  STRING = 'String',
+
+  /**
+   * An array, formatted as a string
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
+   */
+  STRING_ARRAY = 'String.Array',
+
+  /**
+   * Numbers are positive or negative integers or floating-point numbers
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
+   */
+  NUMBER = 'Number',
+
+  /**
+   * Binary type attributes can store any binary data
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
+   */
+  BINARY = 'Binary'
+}
+
+/**
+ * A message attribute to add to the SNS message
+ *
+ * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html
+ */
+export interface MessageAttribute {
+  /**
+   * The value of the attribute
+   */
+  readonly value: any;
+
+  /**
+   * The data type for the attribute
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
+   * @default determined by type inspection if possible, fallback is String
+   */
+  readonly dataType?: MessageAttributeDataType
+}
+
+/**
  * Properties for publishing a message to an SNS topic
  */
 export interface SnsPublishProps extends sfn.TaskStateBaseProps {
@@ -32,7 +85,7 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html
    * @default []
    */
-  readonly messageAttributes?: { [key: string]: any };
+  readonly messageAttributes?: { [key: string]: MessageAttribute };
 
   /**
    * Send different messages for each transport protocol.
@@ -119,15 +172,10 @@ export class SnsPublish extends sfn.TaskStateBase {
 interface MessageAttributeValue {
   DataType: string;
   StringValue?: string | null;
-};
+  BinaryValue?: string;
+}
 
-enum SnsDataTypes {
-  String = 'String',
-  StringArray = 'String.Array',
-  Number = 'Number',
-};
-
-function renderMessageAttributes(attributes?: { [key: string]: any }): any {
+function renderMessageAttributes(attributes?: { [key: string]: MessageAttribute }): any {
   if (attributes === undefined) { return undefined; }
   const renderedAttributes: { [key: string]: MessageAttributeValue } = {};
   Object.entries(attributes).map(([key, val]) => {
@@ -136,30 +184,38 @@ function renderMessageAttributes(attributes?: { [key: string]: any }): any {
   return sfn.TaskInput.fromObject(renderedAttributes).value;
 }
 
-function renderMessageAttributeValue(attributeValue: any): MessageAttributeValue {
-  if (attributeValue instanceof sfn.TaskInput) {
-    return { DataType: SnsDataTypes.String, StringValue: attributeValue.value };
+function renderMessageAttributeValue(attribute: MessageAttribute): MessageAttributeValue {
+  if (attribute.dataType === MessageAttributeDataType.BINARY) {
+    return { DataType: MessageAttributeDataType.BINARY, BinaryValue: `${attribute.value}` };
   }
-  if (Array.isArray(attributeValue)) {
+  const dataType = attribute.dataType;
+  if (attribute.value instanceof sfn.TaskInput) {
+    return { DataType: dataType ?? MessageAttributeDataType.STRING, StringValue: attribute.value.value };
+  }
+  if (Array.isArray(attribute.value)) {
     // validates the primitives
-    attributeValue.forEach(v => renderPrimitiveValue(v));
-    return { DataType: SnsDataTypes.StringArray, StringValue: JSON.stringify(attributeValue) };
+    attribute.value.forEach(v => {
+      // null can be skipped and is valid in an array
+      if (v !== null) {
+        console.log("found a null");
+        renderPrimitiveValue(v);
+      }
+    });
+    return { DataType: dataType ?? MessageAttributeDataType.STRING_ARRAY, StringValue: JSON.stringify(attribute.value) };
   }
-  return renderPrimitiveValue(attributeValue);
+  return renderPrimitiveValue(attribute.value);
 }
 
-function renderPrimitiveValue(attributeValue: any): MessageAttributeValue {
-  if (attributeValue === null) {
-    return { DataType: SnsDataTypes.String, StringValue: null };
-  }
-  switch (typeof attributeValue) {
+function renderPrimitiveValue(attribute: any): MessageAttributeValue {
+  const dataType = attribute.dataType;
+  switch (typeof attribute) {
     case 'string':
-      return { DataType: SnsDataTypes.String, StringValue: attributeValue };
+      return { DataType: dataType ?? MessageAttributeDataType.STRING, StringValue: attribute };
     case 'number':
-      return { DataType: SnsDataTypes.Number, StringValue: attributeValue.toString() };
+      return { DataType: dataType ?? MessageAttributeDataType.NUMBER, StringValue: `${attribute}` };
     case 'boolean':
-      return { DataType: SnsDataTypes.String, StringValue: attributeValue.toString() };
+      return { DataType: dataType ?? MessageAttributeDataType.STRING, StringValue: `${attribute}` };
     default:
-      throw new Error(`Unsupported SNS message attribute type: ${typeof attributeValue}`);
+      throw new Error(`Unsupported SNS message attribute type: ${JSON.stringify(attribute)}`);
   }
 }
