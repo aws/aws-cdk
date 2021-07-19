@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { ShellStep, ShellStepProps } from '../blueprint';
 
 /**
- * Construction props for SimpleSynthAction
+ * Construction props for a CodeBuildStep
  */
 export interface CodeBuildStepProps extends ShellStepProps {
   /**
@@ -160,7 +160,7 @@ export class CodeBuildStep extends ShellStep {
   }
 
   /**
-   * CodeBiuld Project generated for the pipeline
+   * CodeBuild Project generated for the pipeline
    *
    * Will only be available after the pipeline has been built.
    */
