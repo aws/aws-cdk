@@ -224,8 +224,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         environmentVariables: noEmptyObject(mapValues(mkdict(projectEnvs), value => ({ value }))),
       });
 
-    const fullBuildSpec = options.codeBuildDefaults?.partialBuildSpec
-      ? codebuild.mergeBuildSpecs(options.codeBuildDefaults?.partialBuildSpec, buildSpecHere)
+    const fullBuildSpec = projectOptions?.partialBuildSpec
+      ? codebuild.mergeBuildSpecs(projectOptions.partialBuildSpec, buildSpecHere)
       : buildSpecHere;
 
     const osFromEnvironment = environment.buildImage && environment.buildImage instanceof codebuild.WindowsBuildImage
