@@ -189,7 +189,7 @@ Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/serviceca
 ### Notify on stack events
 
 Allows users to subscribe an AWS `SNS` topic to the stack events of the product.
-When an end user provisions a product it creates a stack that will notify topic on creation, edit , and delete events.
+When an end user provisions a product it creates a product stack that notifies the subscribed topic on creation, edit, and delete events.
 An individual `SNS` topic may only be subscribed once to a portfolio-product association.
 
 ```ts fixture=portfolio-product
