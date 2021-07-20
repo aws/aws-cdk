@@ -190,7 +190,7 @@ Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/serviceca
 
 ### Deploy with StackSets
 
-A stack set constraint allows you to configure product deployment options using 
+A StackSets deployment constraint allows you to configure product deployment options using 
 [AWS CloudFormation StackSets](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/using-stacksets.html). 
 You can specify multiple accounts and regions for the product launch following StackSets conventions.
 There is an additional field `allowStackControl` that configures ability for end users to create, edit, or delete the stacks. 
@@ -235,11 +235,10 @@ portfolio.notifyOnStackEvents(product, topic2, {
 
 ### Set launch role
 
-Set a specific AWS `IAM` role that a user must assume when launching a product.
-Allows you to attach proper permissions for end users when provisioning the product stack.
+Allows you to configure a specific AWS `IAM` role that a user must assume when launching a product.
+By setting this launch role, you can control what policies and privileges end users can have.
 The launch role must be assumed by the service catalog principal.
-You can only have one launch role set for a portfolio-product association,
-and you cannot set a launch role if a StackSets deployment has been configured.
+You can only have one launch role set for a portfolio-product association, and you cannot set a launch role if a StackSets deployment has been configured.
 
 ```ts fixture=portfolio-product
 const launchRole = new iam.Role(this, 'LaunchRole', {
