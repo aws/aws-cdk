@@ -5,7 +5,7 @@ import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
 import * as sns from '@aws-cdk/aws-sns';
 import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
@@ -311,7 +311,7 @@ export class CdkStage extends CoreConstruct {
       variablesNamespace: `${appStageName}SecurityCheck`,
       environmentVariables: {
         STAGE_PATH: {
-          value: this.pipelineStage.pipeline.stack.stackName,
+          value: Node.of(appStage).path,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         STAGE_NAME: {
