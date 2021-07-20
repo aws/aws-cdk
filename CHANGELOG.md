@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.114.0](https://github.com/aws/aws-cdk/compare/v1.113.0...v1.114.0) (2021-07-15)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **appmesh:** `prefixPath` property in `HttpGatewayRouteMatch` has been renamed to `path`, and its type changed from `string` to `HttpGatewayRoutePathMatch`
+* **servicecatalog:** `AcceptLanguage` enum has been renamed to `MessageLanguage`, and fields that accepted this enum have been updated to reflect this change.
+* **servicecatalog:** property `acceptLanguage` in `PortfolioShareOptions` has been renamed to `messageLanguage`.
+* **servicecatalog:** property `acceptLanguage` in `PortfolioProps` has been renamed to `messageLanguage`.
+* **servicecatalog:**  property `acceptLanguage` in `CloudFormationProductProps` has been renamed `messageLanguage`.
+* **appmesh:** `prefixPath` property in `HttpRouteMatch` has been renamed to `path`, and its type changed from `string` to `HttpRoutePathMatch`
+
+### Features
+
+* **appmesh:** add Route matching on path, query parameters, metadata, and method name ([#15470](https://github.com/aws/aws-cdk/issues/15470)) ([eeeec5d](https://github.com/aws/aws-cdk/commit/eeeec5d14aa03dbaeeb08fc664c26e82a447f7da))
+* **appmesh:** add support for Gateway Route request matching and path rewriting ([#15527](https://github.com/aws/aws-cdk/issues/15527)) ([1589ff8](https://github.com/aws/aws-cdk/commit/1589ff859e3816e1326b25e4fc855be86f76ffc8)), closes [#15305](https://github.com/aws/aws-cdk/issues/15305)
+* **appmesh:** the App Mesh Construct Library is now Generally Available (stable) ([#15560](https://github.com/aws/aws-cdk/issues/15560)) ([718d143](https://github.com/aws/aws-cdk/commit/718d143a376893fb168121b0ff9b57f8a057281e)), closes [#9489](https://github.com/aws/aws-cdk/issues/9489)
+* **aws-ecs:** New CDK constructs for ECS Anywhere task and service definitions ([#14931](https://github.com/aws/aws-cdk/issues/14931)) ([3592b26](https://github.com/aws/aws-cdk/commit/3592b26c5806cc31cd6ad0ebba32cbf4d09b9abf))
+* **bootstrap:** widen lookup role permissions for future extension ([#15423](https://github.com/aws/aws-cdk/issues/15423)) ([cafdd3c](https://github.com/aws/aws-cdk/commit/cafdd3c0a619be69c9b6af08664af8e641d4c69b))
+* **cfnspec:** cloudformation spec v39.5.0 ([#15536](https://github.com/aws/aws-cdk/issues/15536)) ([c98e40e](https://github.com/aws/aws-cdk/commit/c98e40e963964ae01b6ad15898a6809687d6a5e3))
+* **pipelines:** revised version of the API ([#12326](https://github.com/aws/aws-cdk/issues/12326)) ([165ee3a](https://github.com/aws/aws-cdk/commit/165ee3aa89bda7c18fcb4820c0bf2f6905adc4ed)), closes [#10872](https://github.com/aws/aws-cdk/issues/10872)
+* **servicecatalog:** Add portfolio-product association and tag update constraint ([#15452](https://github.com/aws/aws-cdk/issues/15452)) ([b06f7bf](https://github.com/aws/aws-cdk/commit/b06f7bf8ee59379a3478e4200b941635174c777e))
+
+
+### Bug Fixes
+
+* **ecr-assets:** There is already a Construct with name 'Staging' when using tarball image ([#15540](https://github.com/aws/aws-cdk/issues/15540)) ([594d7c6](https://github.com/aws/aws-cdk/commit/594d7c664abed631163ec6b5cfede0a61acb0602))
+
+## [1.113.0](https://github.com/aws/aws-cdk/compare/v1.112.0...v1.113.0) (2021-07-12)
+
+
+### Features
+
+* **assets:** docker images from tar file ([#15438](https://github.com/aws/aws-cdk/issues/15438)) ([76f06fc](https://github.com/aws/aws-cdk/commit/76f06fc2ae4404242e5854d2eeaf4f11b98f98f0)), closes [#15419](https://github.com/aws/aws-cdk/issues/15419)
+* **codepipeline-actions:** support combining batch build artifacts in CodeBuildAction ([#15457](https://github.com/aws/aws-cdk/issues/15457)) ([0952f1f](https://github.com/aws/aws-cdk/commit/0952f1f2045f2dbdffeb840c4737522d12ea7df6)), closes [#15455](https://github.com/aws/aws-cdk/issues/15455)
+* **events:** cross-region event rules ([#14731](https://github.com/aws/aws-cdk/issues/14731)) ([c62afe9](https://github.com/aws/aws-cdk/commit/c62afe905c0414d2feb38271b0b3df4907ac3caf))
+
+
+### Bug Fixes
+
+* **aws-ecs:** token is added to Options instead of SecretOptions in SplunkLogDriver ([#15408](https://github.com/aws/aws-cdk/issues/15408)) ([23abe22](https://github.com/aws/aws-cdk/commit/23abe22a173281361855efc8671529e4bae30ae5))
+
 ## [1.112.0](https://github.com/aws/aws-cdk/compare/v1.111.0...v1.112.0) (2021-07-09)
 
 
