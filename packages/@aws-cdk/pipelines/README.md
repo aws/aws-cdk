@@ -844,6 +844,67 @@ and orphan the old bucket. You should manually delete the orphaned bucket
 after you are sure you have redeployed all CDK applications and there are no
 more references to the old asset bucket.
 
+## Context Lookups
+
+You might be using CDK constructs that need to look up [runtime
+context](https://docs.aws.amazon.com/cdk/latest/guide/context.html#context_methods),
+which is information from the target AWS Account and Region the CDK needs to
+synthesize CloudFormation templates appropriate for that environment. Examples
+of this kind of context lookups are the number of Availability Zones available
+to you, a Route53 Hosted Zone ID, or the ID of an AMI in a given region. This
+information is automatically looked up when you run `cdk synth`.
+
+By default, a `cdk synth` performed in a pipeline will not have permissions
+to perform these lookups, and the lookups will fail. This is by design.
+
+**Our recommended way of using lookups** is by running `cdk synth` on the
+developer workstation and checking in the `cdk.context.json` file, which
+contains the results of the context lookups. This will make sure your
+synthesized infrastructure is consistent and repeatable. If you do not commit
+`cdk.context.json`, the results of the lookups may suddenly be different in
+unexpected ways, and even produce results that cannot be deployed or will cause
+data loss.  To give an account permissions to perform lookups against an
+environment, without being able to deploy to it and make changes, run
+`cdk bootstrap --trust-for-lookup=<account>`.
+
+If you want to use lookups directly from the pipeline, you either need to accept
+the risk of nondeterminism, or make sure you save and load the
+`cdk.context.json` file somewhere between synth runs. Finally, you should
+give the synth CodeBuild execution role permissions to assume the bootstrapped
+lookup roles. As an example, doing so would look like this:
+
+```ts
+new CodePipeline(this, 'Pipeline', {
+  synth: new CodeBuildStep('Synth', {
+    input: // ...input...
+    commands: [
+      // Commands to load cdk.context.json from somewhere here
+      '...',
+      'npm ci',
+      'npm run build',
+      'npx cdk synth',
+      // Commands to store cdk.context.json back here
+      '...',
+    ],
+    rolePolicyStatements: [
+      new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        resources: ['*'],
+        conditions: {
+          StringEquals: {
+            'iam:ResourceTag/aws-cdk:bootstrap-role': 'deploy',
+          },
+        },
+      }),
+    ],
+  }),
+});
+```
+
+The above example requires that the target environments have all
+been bootstrapped with bootstrap stack version `8`, released with
+CDK CLI `1.114.0`.
+
 ## Security Considerations
 
 It's important to stay safe while employing Continuous Delivery. The CDK Pipelines
