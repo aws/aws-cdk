@@ -3,14 +3,12 @@ import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import * as firehose from '../lib';
-
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 describe('delivery stream', () => {
   let stack: cdk.Stack;
-  let dependable: CoreConstruct;
+  let dependable: Construct;
   let mockS3Destination: firehose.IDestination;
 
   const bucketArn = 'arn:aws:s3:::my-bucket';
@@ -20,7 +18,7 @@ describe('delivery stream', () => {
     stack = new cdk.Stack();
     mockS3Destination = {
       bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
-        dependable = new class extends CoreConstruct {
+        dependable = new class extends cdk.Construct {
           constructor(depScope: Construct, id: string) {
             super(depScope, id);
             new cdk.CfnResource(this, 'Resource', { type: 'CDK::Dummy' });
@@ -135,7 +133,7 @@ describe('delivery stream', () => {
   });
 
   test('dependables supplied from destination are depended on by just the CFN resource', () => {
-    const dependableId = stack.resolve((dependable.node.defaultChild as cdk.CfnResource).logicalId);
+    const dependableId = stack.resolve((Node.of(dependable).defaultChild as cdk.CfnResource).logicalId);
 
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
