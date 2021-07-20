@@ -155,22 +155,9 @@ export class FactName {
   /**
    * The ARN of CloudWatch Lambda Insights for version 1.0.98.0.
    */
-  public static readonly CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_1_0_98_0 = 'cloudwatch-lambda-insights-versions:1.0.98.0';
-
-  /**
-   * The ARN of CloudWatch Lambda Insights for version 1.0.89.0.
-   */
-  public static readonly CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_1_0_89_0 = 'cloudwatch-lambda-insights-versions:1.0.89.0';
-
-  /**
-   * The ARN of CloudWatch Lambda Insights for version 1.0.86.0.
-   */
-  public static readonly CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_1_0_86_0 = 'cloudwatch-lambda-insights-versions:1.0.86.0';
-
-  /**
-   * The ARN of CloudWatch Lambda Insights for version 1.0.54.0.
-   */
-  public static readonly CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_1_0_54_0 = 'cloudwatch-lambda-insights-versions:1.0.54.0';
+  public static cloudwatchLambdaInsightsVersion(version: string) {
+    return `cloudwatch-lambda-insights-version:${version.split('.').join('_')}`;
+  }
 
   /**
    * The name of the regional service principal for a given service.

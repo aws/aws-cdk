@@ -111,12 +111,11 @@ export class RegionInfo {
   }
 
   /**
-   * The ID of the AWS account that owns the public ECR repository containing the
-   * AWS Deep Learning Containers images in this region.
+   * The ARN of the CloudWatch Lambda Insights extension, for the given version.
+   * @param insightsVersion the version (e.g. 1.0.98.0)
    */
   public cloudwatchLambdaInsightsArn(insightsVersion: string): string | undefined {
-    const factName = 'CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_' + insightsVersion.split('.').join('_');
-    return Fact.find(this.name, factName);
+    return Fact.find(this.name, FactName.cloudwatchLambdaInsightsVersion(insightsVersion));
   }
 
   /**
