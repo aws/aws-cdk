@@ -21,3 +21,5 @@ export * from './tls-validation';
 export * from './tls-client-policy';
 export * from './http-route-method';
 export * from './header-match';
+export * from './query-parameter-match';
+export * from './http-route-path-match';
