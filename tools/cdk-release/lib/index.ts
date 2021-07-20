@@ -23,7 +23,7 @@ module.exports = async function main(opts: ReleaseOptions): Promise<void> {
   const currentVersion = packageInfo.version;
   debug(args, 'Current version is: ' + currentVersion);
 
-  const commits = await getConventionalCommitsFromGitHistory(`v${currentVersion}`);
+  const commits = await getConventionalCommitsFromGitHistory(args, `v${currentVersion}`);
   const filteredCommits = filterCommits(args, commits);
   debugObject(args, 'Found and filtered commits', filteredCommits);
 
