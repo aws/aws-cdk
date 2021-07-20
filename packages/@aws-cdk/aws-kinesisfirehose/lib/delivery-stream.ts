@@ -329,11 +329,9 @@ export class DeliveryStream extends DeliveryStreamBase {
       keyArn: encryptionKey?.keyArn,
       keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
     } : undefined;
-    encryptionKey?.grantEncryptDecrypt(role);
+    const keyGrant = encryptionKey?.grantEncryptDecrypt(role);
+    keyGrant?.applyBefore(this);
 
-    if (props.destinations.length !== 1) {
-      throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
-    }
     const destinationConfig = props.destinations[0].bind(this, {});
 
     const resource = new CfnDeliveryStream(this, 'Resource', {

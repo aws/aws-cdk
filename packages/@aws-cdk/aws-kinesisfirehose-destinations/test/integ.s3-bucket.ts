@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
-import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -19,16 +18,11 @@ const logGroup = new logs.LogGroup(stack, 'LogGroup', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const key = new kms.Key(stack, 'Key', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-});
-
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
   destinations: [new destinations.S3Bucket(bucket, {
     logging: true,
     logGroup: logGroup,
   })],
-  encryptionKey: key,
 });
 
 app.synth();
