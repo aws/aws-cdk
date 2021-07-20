@@ -16,6 +16,7 @@ import { CdkPipeline } from './pipeline';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { pipelineSynth } from '../private/construct-internals';
 
 /**
  * Construction properties for a CdkStage
@@ -113,7 +114,7 @@ export class CdkStage extends CoreConstruct {
    * publishing stage.
    */
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
-    const asm = appStage.synth({ validateOnSynthesis: true });
+    const asm = pipelineSynth(appStage);
     const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
 
     if (options.confirmBroadeningPermissions ?? this.confirmBroadeningPermissions) {
