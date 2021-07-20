@@ -30,6 +30,10 @@ enables organizations to create and manage catalogs of products for their end us
   - [Granting access to a portfolio](#granting-access-to-a-portfolio)
   - [Sharing a portfolio with another AWS account](#sharing-a-portfolio-with-another-aws-account)
 - [Product](#product)
+  - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
+- [TagOptions](#tag-options)
+- [Constraints](#constraints)
+  - [Tag update constraint](#tag-update-constraint)
 
 The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
@@ -57,7 +61,7 @@ new servicecatalog.Portfolio(this, 'MyFirstPortfolio', {
   displayName: 'MyFirstPortfolio',
   providerName: 'MyTeam',
   description: 'Portfolio for a project',
-  acceptLanguage: servicecatalog.AcceptLanguage.EN,
+  messageLanguage: servicecatalog.MessageLanguage.EN,
 });
 ```
 
@@ -125,6 +129,8 @@ Assets are files that are uploaded to an S3 Bucket before deployment.
 `CloudFormationTemplate.fromAsset` can be utilized to create a Product by passing the path to a local template file on your disk:
 
 ```ts
+import * as path from 'path';
+
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
   productName: "My Product",
   owner: "Product Owner",
@@ -139,5 +145,63 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
     },
   ]
+});
+```
+
+### Adding a product to a portfolio
+
+You add products to a portfolio to manage your resources at scale.  After adding a product to a portfolio,
+it creates a portfolio-product association, and will become visible from the portfolio side in both the console and service catalog CLI.
+A product can be added to multiple portfolios depending on your resource and organizational needs.
+
+```ts fixture=portfolio-product
+portfolio.addProduct(product);
+```
+
+### Tag Options
+
+TagOptions allow administrators to easily manage tags on provisioned products by creating a selection of tags for end users to choose from.
+For example, an end user can choose an `ec2` for the instance type size.
+TagOptions are created by specifying a key with a selection of values.
+At the moment, TagOptions can only be disabled in the console.
+
+```ts fixture=basic-portfolio
+const tagOptions = new servicecatalog.TagOptions({
+  ec2InstanceType: ['A1', 'M4'],
+  ec2InstanceSize: ['medium', 'large'],
+});
+portfolio.associateTagOptions(tagOptions);
+```
+
+## Constraints
+
+Constraints define governance mechanisms that allow you to manage permissions, notifications, and options related to actions end users can perform on products,
+Constraints are applied on a portfolio-product association.
+Using the CDK, if you do not explicitly associate a product to a portfolio and add a constraint, it will automatically add an association for you.
+
+There are rules around plurariliites of constraints for a portfolio and product.
+For example, you can only have a single "tag update" constraint applied to a portfolio-product association. 
+If a misconfigured constraint is added, `synth` will fail with an error message.
+
+Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints.html).
+
+### Tag update constraint
+
+Tag update constraints allow or disallow end users to update tags on resources associated with an AWS Service Catalog product upon provisioning.
+By default, tag updating is not permitted.
+If tag updating is allowed, then new tags associated with the product or portfolio will be applied to provisioned resources during a provisioned product update.
+
+```ts fixture=portfolio-product
+portfolio.addProduct(product);
+
+portfolio.constrainTagUpdates(product);
+```
+
+If you want to disable this feature later on, you can update it by setting the "allow" parameter to `false`:
+
+```ts fixture=portfolio-product
+// to disable tag updates:
+portfolio.constrainTagUpdates(product, {
+  allow: false,
 });
 ```

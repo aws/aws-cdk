@@ -16,7 +16,7 @@ describe('image asset', () => {
   testFutureBehavior('test instantiating Asset Image', flags, App, (app) => {
     // GIVEN
     const stack = new Stack(app);
-    const assset = new TarballImageAsset(stack, 'Image', {
+    const asset = new TarballImageAsset(stack, 'Image', {
       tarballFile: __dirname + '/demo-tarball/empty.tar',
     });
 
@@ -30,23 +30,26 @@ describe('image asset', () => {
     expect(Object.keys(manifest.files ?? {}).length).toBe(1);
     expect(Object.keys(manifest.dockerImages ?? {}).length).toBe(1);
 
-    expect(manifest.dockerImages?.[assset.assetHash]?.destinations?.['current_account-current_region']).toStrictEqual(
+    expect(manifest.dockerImages?.[asset.assetHash]?.destinations?.['current_account-current_region']).toStrictEqual(
       {
         assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}',
-        imageTag: assset.assetHash,
+        imageTag: asset.assetHash,
         repositoryName: 'cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}',
       },
     );
 
-    expect(manifest.dockerImages?.[assset.assetHash]?.source).toStrictEqual(
+    expect(manifest.dockerImages?.[asset.assetHash]?.source).toStrictEqual(
       {
         executable: [
           'sh',
           '-c',
-          `docker load -i asset.${assset.assetHash}.tar | sed "s/Loaded image: //g"`,
+          `docker load -i asset.${asset.assetHash}.tar | sed "s/Loaded image: //g"`,
         ],
       },
     );
+
+    // AssetStaging in TarballImageAsset uses `this` as scope'
+    expect(asset.node.tryFindChild('Staging')).toBeDefined();
   });
 
   testFutureBehavior('asset.repository.grantPull can be used to grant a principal permissions to use the image', flags, App, (app) => {
