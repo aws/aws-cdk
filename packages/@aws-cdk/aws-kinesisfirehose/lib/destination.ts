@@ -1,3 +1,4 @@
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
@@ -11,6 +12,13 @@ export interface DestinationConfig {
    * @default - S3 destination is not used.
    */
   readonly extendedS3DestinationConfiguration?: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty;
+
+  /**
+   * Any resources that were created by the destination when binding it to the stack that must be deployed before the delivery stream is deployed.
+   *
+   * @default []
+   */
+  readonly dependables?: cdk.IDependable[];
 }
 
 /**

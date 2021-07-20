@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { DestinationProps } from './common';
 import { createLoggingOptions } from './private/helpers';
 
@@ -22,14 +22,16 @@ export class S3Bucket implements firehose.IDestination {
     });
 
     const bucketGrant = this.bucket.grantReadWrite(role);
-    Node.of(scope).addDependency(bucketGrant);
+
+    const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, { logging: this.props.logging, logGroup: this.props.logGroup, role, streamId: 'S3Destination' }) ?? {};
 
     return {
       extendedS3DestinationConfiguration: {
-        cloudWatchLoggingOptions: createLoggingOptions(scope, { logging: this.props.logging, logGroup: this.props.logGroup, role, streamId: 'S3Destination' }),
+        cloudWatchLoggingOptions: loggingOptions,
         roleArn: role.roleArn,
         bucketArn: this.bucket.bucketArn,
       },
+      dependables: [bucketGrant, ...(loggingDependables ?? [])],
     };
   }
 }

@@ -1,29 +1,40 @@
 import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as firehose from '../lib';
 
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 describe('delivery stream', () => {
   let stack: cdk.Stack;
+  let dependable: CoreConstruct;
+  let mockS3Destination: firehose.IDestination;
 
   const bucketArn = 'arn:aws:s3:::my-bucket';
   const roleArn = 'arn:aws:iam::111122223333:role/my-role';
-  const mockS3Destination: firehose.IDestination = {
-    bind(_scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
-      return {
-        extendedS3DestinationConfiguration: {
-          bucketArn: bucketArn,
-          roleArn: roleArn,
-        },
-      };
-    },
-  };
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    mockS3Destination = {
+      bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+        dependable = new class extends CoreConstruct {
+          constructor(depScope: Construct, id: string) {
+            super(depScope, id);
+            new cdk.CfnResource(this, 'Resource', { type: 'CDK::Dummy' });
+          }
+        }(scope, 'Dummy Dep');
+        return {
+          extendedS3DestinationConfiguration: {
+            bucketArn: bucketArn,
+            roleArn: roleArn,
+          },
+          dependables: [dependable],
+        };
+      },
+    };
   });
 
   test('creates stream with default values', () => {
@@ -121,6 +132,21 @@ describe('delivery stream', () => {
       },
       Roles: [stack.resolve(role.roleName)],
     });
+  });
+
+  test('dependables supplied from destination are depended on by just the CFN resource', () => {
+    const dependableId = stack.resolve((dependable.node.defaultChild as cdk.CfnResource).logicalId);
+
+    new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      DependsOn: [dependableId],
+    }, ResourcePart.CompleteDefinition);
+    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+      DependsOn: ABSENT,
+    }, ResourcePart.CompleteDefinition);
   });
 
   test('supplying 0 or multiple destinations throws', () => {

@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as logs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 
 export interface DestinationLoggingProps {
@@ -36,18 +37,20 @@ export interface DestinationLoggingProps {
 export function createLoggingOptions(
   scope: Construct,
   props: DestinationLoggingProps,
-): firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
+): { loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty, dependables: cdk.IDependable[] } | undefined {
   if (props.logging === false && props.logGroup) {
     throw new Error('logging cannot be set to false when logGroup is provided');
   }
   if (props.logging !== false || props.logGroup) {
     const logGroup = Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
     const logGroupGrant = logGroup.grantWrite(props.role);
-    Node.of(scope).addDependency(logGroupGrant);
     return {
-      enabled: true,
-      logGroupName: logGroup.logGroupName,
-      logStreamName: logGroup.addStream(props.streamId).logStreamName,
+      loggingOptions: {
+        enabled: true,
+        logGroupName: logGroup.logGroupName,
+        logStreamName: logGroup.addStream(props.streamId).logStreamName,
+      },
+      dependables: [logGroupGrant],
     };
   }
   return undefined;

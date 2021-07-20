@@ -226,6 +226,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       deliveryStreamType: 'DirectPut',
       ...destinationConfig,
     });
+    destinationConfig.dependables?.forEach(dependable => resource.node.addDependency(dependable));
 
     this.deliveryStreamArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'kinesis',
