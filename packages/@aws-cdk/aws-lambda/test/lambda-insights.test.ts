@@ -35,27 +35,39 @@ describe('lambda-insights', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
-  test('unsupported version/region throws error', () => {
+  test('nonexistent version/region throws error', () => {
     const stack = new cdk.Stack();
 
     expect(() => new lambda.Function(stack, 'BadVersion', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion({
-        insightsVersion: 'UNSUPPORTED_VERSION' as lambda.LambdaInsightsVersion,
-        region: 'us-west-2',
-      }),
+      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion(
+        'NONEXISTENT_VERSION' as lambda.LambdaInsightsVersion,
+        'us-west-2'),
     })).toThrow();
 
     expect(() => new lambda.Function(stack, 'BadRegion', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion({
-        insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
-        region: 'UNSUPPORTED_REGION',
-      }),
+      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion(
+        lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
+        'NONEXISTENT_REGION'),
+    })).toThrow();
+  });
+
+  test('existing region with existing but unsupported version throws error', () => {
+    const stack = new cdk.Stack();
+
+    // AF-SOUTH-1 exists, 1.0.54.0 exists, but 1.0.54.0 isn't supported in AF-SOUTH-1
+    expect(() => new lambda.Function(stack, 'BadVersion', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion(
+        lambda.LambdaInsightsVersion.VERSION_1_0_54_0,
+        'af-south-1'),
     })).toThrow();
   });
 });
