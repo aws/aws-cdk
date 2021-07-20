@@ -1,8 +1,4 @@
-import * as kms from '@aws-cdk/aws-kms';
-import * as logs from '@aws-cdk/aws-logs';
-import { Duration, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { IDeliveryStream } from './delivery-stream';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 /**
@@ -10,19 +6,17 @@ import { CfnDeliveryStream } from './kinesisfirehose.generated';
  */
 export interface DestinationConfig {
   /**
-   * Schema-less properties that will be injected directly into `CfnDeliveryStream`.
+   * S3 destination configuration properties.
+   *
+   * @default - S3 destination is not used.
    */
-  readonly properties: object;
+  readonly extendedS3DestinationConfiguration?: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty;
 }
 
 /**
  * Options when binding a destination to a delivery stream.
  */
 export interface DestinationBindOptions {
-  /**
-   * The delivery stream.
-   */
-  readonly deliveryStream: IDeliveryStream;
 }
 
 /**
@@ -35,131 +29,4 @@ export interface IDestination {
    * Implementers should use this method to bind resources to the stack and initialize values using the provided stream.
    */
   bind(scope: Construct, options: DestinationBindOptions): DestinationConfig;
-}
-
-/**
- * Possible compression options Kinesis Data Firehose can use to compress data on delivery.
- */
-export class Compression {
-  /**
-   * gzip
-   */
-  public static readonly GZIP = new Compression('GZIP');
-
-  /**
-   * Hadoop-compatible Snappy
-   */
-  public static readonly HADOOP_SNAPPY = new Compression('HADOOP_SNAPPY');
-
-  /**
-   * Snappy
-   */
-  public static readonly SNAPPY = new Compression('Snappy');
-
-  /**
-   * Uncompressed
-   */
-  public static readonly UNCOMPRESSED = new Compression('UNCOMPRESSED');
-
-  /**
-   * ZIP
-   */
-  public static readonly ZIP = new Compression('ZIP');
-
-  constructor(
-    /**
-     * String value of the Compression.
-     */
-    public readonly value: string,
-  ) { }
-}
-
-/**
- * Generic properties for defining a delivery stream destination.
- */
-export interface DestinationProps {
-  /**
-   * If true, log errors when data transformation or data delivery fails.
-   *
-   * If `logGroup` is provided, this will be implicitly set to `true`.
-   *
-   * @default true - errors are logged.
-   */
-  readonly logging?: boolean;
-
-  /**
-   * The CloudWatch log group where log streams will be created to hold error logs.
-   *
-   * @default - if `logging` is set to `true`, a log group will be created for you.
-   */
-  readonly logGroup?: logs.ILogGroup;
-}
-
-/**
- * Abstract base class that destination types can extend to benefit from methods that create generic configuration.
- */
-export abstract class DestinationBase implements IDestination {
-  private logGroups: { [logGroupId: string]: logs.ILogGroup } = {};
-
-  constructor(protected readonly props: DestinationProps = {}) { }
-
-  abstract bind(scope: Construct, options: DestinationBindOptions): DestinationConfig;
-
-  protected createLoggingOptions(
-    scope: Construct,
-    deliveryStream: IDeliveryStream,
-    streamId: string,
-  ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    return this._createLoggingOptions(scope, deliveryStream, streamId, 'LogGroup', this.props.logging, this.props.logGroup);
-  }
-
-  protected createBufferingHints(bufferingInterval?: Duration, bufferingSize?: Size): CfnDeliveryStream.BufferingHintsProperty | undefined {
-    if (bufferingInterval && bufferingSize) {
-      if (bufferingInterval.toSeconds() < 60 || bufferingInterval.toSeconds() > 900) {
-        throw new Error('Buffering interval must be between 60 and 900 seconds');
-      }
-      if (bufferingSize.toMebibytes() < 1 || bufferingSize.toMebibytes() > 128) {
-        throw new Error('Buffering size must be between 1 and 128 MBs');
-      }
-      return {
-        intervalInSeconds: bufferingInterval.toSeconds(),
-        sizeInMBs: bufferingSize.toMebibytes(),
-      };
-    } else if (!bufferingInterval && bufferingSize) {
-      throw new Error('If bufferingSize is specified, bufferingInterval must also be specified');
-    } else if (bufferingInterval && !bufferingSize) {
-      throw new Error('If bufferingInterval is specified, bufferingSize must also be specified');
-    }
-    return undefined;
-  }
-
-  protected createEncryptionConfig(deliveryStream: IDeliveryStream, encryptionKey?: kms.IKey): CfnDeliveryStream.EncryptionConfigurationProperty {
-    encryptionKey?.grantEncryptDecrypt(deliveryStream);
-    return encryptionKey != null
-      ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
-      : { noEncryptionConfig: 'NoEncryption' };
-  }
-
-  private _createLoggingOptions(
-    scope: Construct,
-    deliveryStream: IDeliveryStream,
-    streamId: string,
-    logGroupId: string,
-    logging?: boolean,
-    propsLogGroup?: logs.ILogGroup,
-  ): CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
-    if (logging === false && propsLogGroup) {
-      throw new Error('logging cannot be set to false when logGroup is provided');
-    }
-    if (logging !== false || propsLogGroup) {
-      this.logGroups[logGroupId] = this.logGroups[logGroupId] ?? propsLogGroup ?? new logs.LogGroup(scope, logGroupId);
-      this.logGroups[logGroupId].grantWrite(deliveryStream);
-      return {
-        enabled: true,
-        logGroupName: this.logGroups[logGroupId].logGroupName,
-        logStreamName: this.logGroups[logGroupId].addStream(streamId).logStreamName,
-      };
-    }
-    return undefined;
-  }
 }
