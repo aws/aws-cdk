@@ -2,6 +2,93 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.114.0](https://github.com/aws/aws-cdk/compare/v1.113.0...v1.114.0) (2021-07-15)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **appmesh:** `prefixPath` property in `HttpGatewayRouteMatch` has been renamed to `path`, and its type changed from `string` to `HttpGatewayRoutePathMatch`
+* **servicecatalog:** `AcceptLanguage` enum has been renamed to `MessageLanguage`, and fields that accepted this enum have been updated to reflect this change.
+* **servicecatalog:** property `acceptLanguage` in `PortfolioShareOptions` has been renamed to `messageLanguage`.
+* **servicecatalog:** property `acceptLanguage` in `PortfolioProps` has been renamed to `messageLanguage`.
+* **servicecatalog:**  property `acceptLanguage` in `CloudFormationProductProps` has been renamed `messageLanguage`.
+* **appmesh:** `prefixPath` property in `HttpRouteMatch` has been renamed to `path`, and its type changed from `string` to `HttpRoutePathMatch`
+
+### Features
+
+* **appmesh:** add Route matching on path, query parameters, metadata, and method name ([#15470](https://github.com/aws/aws-cdk/issues/15470)) ([eeeec5d](https://github.com/aws/aws-cdk/commit/eeeec5d14aa03dbaeeb08fc664c26e82a447f7da))
+* **appmesh:** add support for Gateway Route request matching and path rewriting ([#15527](https://github.com/aws/aws-cdk/issues/15527)) ([1589ff8](https://github.com/aws/aws-cdk/commit/1589ff859e3816e1326b25e4fc855be86f76ffc8)), closes [#15305](https://github.com/aws/aws-cdk/issues/15305)
+* **appmesh:** the App Mesh Construct Library is now Generally Available (stable) ([#15560](https://github.com/aws/aws-cdk/issues/15560)) ([718d143](https://github.com/aws/aws-cdk/commit/718d143a376893fb168121b0ff9b57f8a057281e)), closes [#9489](https://github.com/aws/aws-cdk/issues/9489)
+* **aws-ecs:** New CDK constructs for ECS Anywhere task and service definitions ([#14931](https://github.com/aws/aws-cdk/issues/14931)) ([3592b26](https://github.com/aws/aws-cdk/commit/3592b26c5806cc31cd6ad0ebba32cbf4d09b9abf))
+* **bootstrap:** widen lookup role permissions for future extension ([#15423](https://github.com/aws/aws-cdk/issues/15423)) ([cafdd3c](https://github.com/aws/aws-cdk/commit/cafdd3c0a619be69c9b6af08664af8e641d4c69b))
+* **cfnspec:** cloudformation spec v39.5.0 ([#15536](https://github.com/aws/aws-cdk/issues/15536)) ([c98e40e](https://github.com/aws/aws-cdk/commit/c98e40e963964ae01b6ad15898a6809687d6a5e3))
+* **pipelines:** revised version of the API ([#12326](https://github.com/aws/aws-cdk/issues/12326)) ([165ee3a](https://github.com/aws/aws-cdk/commit/165ee3aa89bda7c18fcb4820c0bf2f6905adc4ed)), closes [#10872](https://github.com/aws/aws-cdk/issues/10872)
+* **servicecatalog:** Add portfolio-product association and tag update constraint ([#15452](https://github.com/aws/aws-cdk/issues/15452)) ([b06f7bf](https://github.com/aws/aws-cdk/commit/b06f7bf8ee59379a3478e4200b941635174c777e))
+
+
+### Bug Fixes
+
+* **ecr-assets:** There is already a Construct with name 'Staging' when using tarball image ([#15540](https://github.com/aws/aws-cdk/issues/15540)) ([594d7c6](https://github.com/aws/aws-cdk/commit/594d7c664abed631163ec6b5cfede0a61acb0602))
+
+## [1.113.0](https://github.com/aws/aws-cdk/compare/v1.112.0...v1.113.0) (2021-07-12)
+
+
+### Features
+
+* **assets:** docker images from tar file ([#15438](https://github.com/aws/aws-cdk/issues/15438)) ([76f06fc](https://github.com/aws/aws-cdk/commit/76f06fc2ae4404242e5854d2eeaf4f11b98f98f0)), closes [#15419](https://github.com/aws/aws-cdk/issues/15419)
+* **codepipeline-actions:** support combining batch build artifacts in CodeBuildAction ([#15457](https://github.com/aws/aws-cdk/issues/15457)) ([0952f1f](https://github.com/aws/aws-cdk/commit/0952f1f2045f2dbdffeb840c4737522d12ea7df6)), closes [#15455](https://github.com/aws/aws-cdk/issues/15455)
+* **events:** cross-region event rules ([#14731](https://github.com/aws/aws-cdk/issues/14731)) ([c62afe9](https://github.com/aws/aws-cdk/commit/c62afe905c0414d2feb38271b0b3df4907ac3caf))
+
+
+### Bug Fixes
+
+* **aws-ecs:** token is added to Options instead of SecretOptions in SplunkLogDriver ([#15408](https://github.com/aws/aws-cdk/issues/15408)) ([23abe22](https://github.com/aws/aws-cdk/commit/23abe22a173281361855efc8671529e4bae30ae5))
+
+## [1.112.0](https://github.com/aws/aws-cdk/compare/v1.111.0...v1.112.0) (2021-07-09)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **appmesh:** the class `HttpHeaderMatch` has been renamed to `HeaderMatch`
+* **appmesh:** the class `HttpRouteMatchMethod` has been renamed to `HttpRouteMethod`
+* **appmesh:** `ServiceDiscovery.cloudMap()` method has been changed to accept positional arguments
+
+### Features
+
+* **acm:** DaysToExpiry metric ([#15424](https://github.com/aws/aws-cdk/issues/15424)) ([ff044ed](https://github.com/aws/aws-cdk/commit/ff044eddccfe1e4812e686343ca1a614b73a1a1f))
+* **appmesh:** add support for shared Meshes ([#15353](https://github.com/aws/aws-cdk/issues/15353)) ([6a68873](https://github.com/aws/aws-cdk/commit/6a68873f51545e394efa30cd855aae1fc4484d62))
+* **appmesh:** allow setting the DnsResponseType in DNS ServiceDiscovery ([#15388](https://github.com/aws/aws-cdk/issues/15388)) ([647acfa](https://github.com/aws/aws-cdk/commit/647acfa3fdca6013614dfb9ebf0a2d55ea74e828))
+* **appmesh:** rename the class HttpHeaderMatch to HeaderMatch ([#15468](https://github.com/aws/aws-cdk/issues/15468)) ([d88b45e](https://github.com/aws/aws-cdk/commit/d88b45eb21bcd051146477e3c97de7dd7b8634d3))
+* **appmesh:** rename the class HttpRouteMatchMethod to HttpRouteMethod ([#15466](https://github.com/aws/aws-cdk/issues/15466)) ([fc01d22](https://github.com/aws/aws-cdk/commit/fc01d22d042e34cef391458ffd5a0dd2d290b655))
+* **autoscaling:** ScalingEvents.TERMINATION_EVENTS ([#15302](https://github.com/aws/aws-cdk/issues/15302)) ([af7ad2c](https://github.com/aws/aws-cdk/commit/af7ad2cd279dce2d355e3678433a84eb5c8334e8))
+* **aws-elasticloadbalancingv2:** Allow listing added listeners on application load balancers ([#15259](https://github.com/aws/aws-cdk/issues/15259)) ([a80ad42](https://github.com/aws/aws-cdk/commit/a80ad425a925c7f1b2a550d5605df109ea5a504f)), closes [#11841](https://github.com/aws/aws-cdk/issues/11841)
+* **cfnspec:** cloudformation spec v39.3.0 ([#15446](https://github.com/aws/aws-cdk/issues/15446)) ([71c0a4c](https://github.com/aws/aws-cdk/commit/71c0a4c413e77452f47c797d4e861aa542174ce9))
+* **cloudwatch:** allow arbitrary statistics in Metric and Alarm ([#15387](https://github.com/aws/aws-cdk/issues/15387)) ([86a44f9](https://github.com/aws/aws-cdk/commit/86a44f93bf718e20e32f9968ec75bee28dbc2198))
+* **core:** add docker security option to asset bundling ([#15204](https://github.com/aws/aws-cdk/issues/15204)) ([cbee18a](https://github.com/aws/aws-cdk/commit/cbee18acf750319488238dd926ae7b86392c8356)), closes [#14681](https://github.com/aws/aws-cdk/issues/14681)
+* **ec2:** add rds-data vpc endpoint ([#15240](https://github.com/aws/aws-cdk/issues/15240)) ([e61a5b8](https://github.com/aws/aws-cdk/commit/e61a5b80fb19270a0ed21938b777390ce5d835cc))
+* **events:** DLQ and retry policy support for BatchJob target ([#15308](https://github.com/aws/aws-cdk/issues/15308)) ([5ecf257](https://github.com/aws/aws-cdk/commit/5ecf2577350da2b9ff7115b2868192bcbd56a56e)), closes [#15238](https://github.com/aws/aws-cdk/issues/15238)
+* **pipelines:** Docker registry credentials ([#15364](https://github.com/aws/aws-cdk/issues/15364)) ([e289822](https://github.com/aws/aws-cdk/commit/e289822ebbbdafe3dff7e8822ba2c5cd75ff2d63)), closes [#10999](https://github.com/aws/aws-cdk/issues/10999) [#11774](https://github.com/aws/aws-cdk/issues/11774)
+
+
+### Bug Fixes
+
+* **autoscaling:** scaling intervals are incorrect if the bottom one does not start at 0  ([#15345](https://github.com/aws/aws-cdk/issues/15345)) ([bf6f7ef](https://github.com/aws/aws-cdk/commit/bf6f7efd01ee3a4dc62124baa969eb5e22e58e52)), closes [#10141](https://github.com/aws/aws-cdk/issues/10141)
+* **build:** explicit non-private package not respected in packaging ([#15435](https://github.com/aws/aws-cdk/issues/15435)) ([31e6b1a](https://github.com/aws/aws-cdk/commit/31e6b1a88aaafb28e3916fbba918894435495906)), closes [#15203](https://github.com/aws/aws-cdk/issues/15203)
+* **cfnspec:** .npmignore generated by cfnspec does not pass pkglint ([#15409](https://github.com/aws/aws-cdk/issues/15409)) ([c432d48](https://github.com/aws/aws-cdk/commit/c432d481aa9e26bae9092a3084eca55fdc7038ce)), closes [#15064](https://github.com/aws/aws-cdk/issues/15064)
+* **cli:** prevent 'Failed resources:' message when no failures and report all progress steps ([#15207](https://github.com/aws/aws-cdk/issues/15207)) ([f3c1b6d](https://github.com/aws/aws-cdk/commit/f3c1b6d29416bdb19828cff9a4facd690c416d5f))
+* **codebuild:** merge spec correctly when using strings ([#15429](https://github.com/aws/aws-cdk/issues/15429)) ([3a65b9c](https://github.com/aws/aws-cdk/commit/3a65b9c6117e9b3c038720262ac0eb6c8033af8f))
+* **events:** Archive event pattern fields are not translated correctly ([#15376](https://github.com/aws/aws-cdk/issues/15376)) ([afa5de1](https://github.com/aws/aws-cdk/commit/afa5de108d393950034c8ff6c5e49d2ec5490c7f)), closes [#14905](https://github.com/aws/aws-cdk/issues/14905)
+* **iam:** remove incorrect normalization of principal ([#15248](https://github.com/aws/aws-cdk/issues/15248)) ([850cba0](https://github.com/aws/aws-cdk/commit/850cba0ad206d4e4e47ca48ca50a073880221dcc)), closes [#14274](https://github.com/aws/aws-cdk/issues/14274) [#14274](https://github.com/aws/aws-cdk/issues/14274)
+* **iam:** set principalAccount in AccountPrincipal and PrincipalWithConditions ([#15430](https://github.com/aws/aws-cdk/issues/15430)) ([b95ee44](https://github.com/aws/aws-cdk/commit/b95ee4414a632a5b8622c4d6a11bd2baaab536f2))
+* **lambda-nodejs:** pnpm exec args separator order ([#15410](https://github.com/aws/aws-cdk/issues/15410)) ([1d19b3b](https://github.com/aws/aws-cdk/commit/1d19b3b66e7c91ae8d9b4c49432bd0249e18a366)), closes [#15164](https://github.com/aws/aws-cdk/issues/15164)
+* **pipelines:** singlePublisherPerType overwrites assets buildspec file of other pipelines ([#15356](https://github.com/aws/aws-cdk/issues/15356)) ([48dd771](https://github.com/aws/aws-cdk/commit/48dd7718d94026e29c0fe6b15c162616840fcabe))
+* **pipelines:** unable to add assets stage to existing VPC pipeline ([#15401](https://github.com/aws/aws-cdk/issues/15401)) ([b010239](https://github.com/aws/aws-cdk/commit/b010239ee0a027c25ec90c5ed8784a36315536d2)), closes [#14343](https://github.com/aws/aws-cdk/issues/14343)
+
+
+### Reverts
+
+* **migration:** add constructs migration to rewrite script ([#15461](https://github.com/aws/aws-cdk/issues/15461)) ([adee46c](https://github.com/aws/aws-cdk/commit/adee46c0d3dd128a58b852d9a4c505682423e6b0)), reverts [#14916](https://github.com/aws/aws-cdk/issues/14916)
+
 ## [1.111.0](https://github.com/aws/aws-cdk/compare/v1.110.1...v1.111.0) (2021-07-01)
 
 
