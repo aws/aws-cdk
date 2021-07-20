@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import { Default } from '../lib/default';
 import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 import {
-  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, AWS_OLDER_REGIONS, DLC_REPOSITORY_ACCOUNTS, ELBV2_ACCOUNTS, PARTITION_MAP,
+  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, AWS_OLDER_REGIONS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS, ELBV2_ACCOUNTS, PARTITION_MAP,
   ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
 } from './fact-tables';
 
@@ -60,6 +60,13 @@ async function main(): Promise<void> {
     registerFact(region, 'DLC_REPOSITORY_ACCOUNT', DLC_REPOSITORY_ACCOUNTS[region]);
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
+
+    // Need to register a fact for each version of CW Lambda Insights
+    for (const version in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS) {
+      // Fact name is like CLOUDWATCH_LAMBDA_INSIGHTS_VERSIONS_1_0_98_0
+      const factName = 'CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_' + version.split('.').join('_');
+      registerFact(region, factName, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][region]);
+    }
 
     const vpcEndpointServiceNamePrefix = `${domainSuffix.split('.').reverse().join('.')}.vpce`;
     registerFact(region, 'VPC_ENDPOINT_SERVICE_NAME_PREFIX', vpcEndpointServiceNamePrefix);

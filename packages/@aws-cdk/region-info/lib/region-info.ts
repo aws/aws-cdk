@@ -111,6 +111,15 @@ export class RegionInfo {
   }
 
   /**
+   * The ID of the AWS account that owns the public ECR repository containing the
+   * AWS Deep Learning Containers images in this region.
+   */
+  public cloudwatchLambdaInsightsArn(insightsVersion: string): string | undefined {
+    const factName = 'CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_' + insightsVersion.split('.').join('_');
+    return Fact.find(this.name, factName);
+  }
+
+  /**
    * The ID of the AWS account that owns the public ECR repository that contains the
    * AWS App Mesh Envoy Proxy images in a given region.
    */

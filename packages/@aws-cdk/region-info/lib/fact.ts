@@ -153,6 +153,26 @@ export class FactName {
   public static readonly APPMESH_ECR_ACCOUNT = 'appMeshRepositoryAccount';
 
   /**
+   * The ARN of CloudWatch Lambda Insights for version 1.0.98.0.
+   */
+  public static readonly CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_1_0_98_0 = 'cloudwatch-lambda-insights-versions:1.0.98.0';
+
+  /**
+   * The ARN of CloudWatch Lambda Insights for version 1.0.89.0.
+   */
+  public static readonly CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_1_0_89_0 = 'cloudwatch-lambda-insights-versions:1.0.89.0';
+
+  /**
+   * The ARN of CloudWatch Lambda Insights for version 1.0.86.0.
+   */
+  public static readonly CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_1_0_86_0 = 'cloudwatch-lambda-insights-versions:1.0.86.0';
+
+  /**
+   * The ARN of CloudWatch Lambda Insights for version 1.0.54.0.
+   */
+  public static readonly CLOUDWATCH_LAMBDA_INSIGHTS_VERSION_1_0_54_0 = 'cloudwatch-lambda-insights-versions:1.0.54.0';
+
+  /**
    * The name of the regional service principal for a given service.
    *
    * @param service the service name, either simple (e.g: `s3`, `codedeploy`) or qualified (e.g: `s3.amazonaws.com`).
