@@ -189,8 +189,8 @@
       "no-unused-type:@aws-cdk/aws-appmesh.Protocol"
     ]
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   },
