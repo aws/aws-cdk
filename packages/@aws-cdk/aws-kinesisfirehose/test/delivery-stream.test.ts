@@ -10,6 +10,7 @@ import * as firehose from '../lib';
 
 describe('delivery stream', () => {
   let stack: cdk.Stack;
+  let deliveryStreamRole: iam.IRole;
 
   const bucketArn = 'arn:aws:s3:::my-bucket';
   const roleArn = 'arn:aws:iam::111122223333:role/my-role';
@@ -26,6 +27,9 @@ describe('delivery stream', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    deliveryStreamRole = new iam.Role(stack, 'DeliveryStreamRole', {
+      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+    });
   });
 
   test('creates stream with default values', () => {
@@ -80,6 +84,7 @@ describe('delivery stream', () => {
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
       encryption: firehose.StreamEncryption.CUSTOMER_MANAGED,
+      role: deliveryStreamRole,
     });
 
     expect(stack).toHaveResource('AWS::KMS::Key');
@@ -91,16 +96,10 @@ describe('delivery stream', () => {
               'kms:Encrypt',
               'kms:Decrypt',
             ),
-            Resource: {
-              'Fn::GetAtt': [
-                'DeliveryStreamKey56A6407F',
-                'Arn',
-              ],
-            },
           },
         ],
       },
-      Roles: [{ Ref: 'DeliveryStreamServiceRole964EEBCC' }],
+      Roles: [stack.resolve(deliveryStreamRole.roleName)],
     });
     expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamType: 'DirectPut',
@@ -122,6 +121,7 @@ describe('delivery stream', () => {
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
       encryptionKey: key,
+      role: deliveryStreamRole,
     });
 
     expect(stack).toHaveResource('AWS::KMS::Key');
@@ -133,16 +133,11 @@ describe('delivery stream', () => {
               'kms:Encrypt',
               'kms:Decrypt',
             ),
-            Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
-            },
+            Resource: stack.resolve(key.keyArn),
           },
         ],
       },
-      Roles: [{ Ref: 'DeliveryStreamServiceRole964EEBCC' }],
+      Roles: [stack.resolve(deliveryStreamRole.roleName)],
     });
     expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamType: 'DirectPut',
@@ -157,6 +152,7 @@ describe('delivery stream', () => {
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
       encryption: firehose.StreamEncryption.AWS_OWNED,
+      role: deliveryStreamRole,
     });
 
     expect(stack).not.toHaveResource('AWS::KMS::Key');
@@ -171,7 +167,7 @@ describe('delivery stream', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'DeliveryStreamServiceRole964EEBCC' }],
+      Roles: [stack.resolve(deliveryStreamRole.roleName)],
     });
     expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamType: 'DirectPut',
@@ -186,6 +182,7 @@ describe('delivery stream', () => {
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
       encryption: firehose.StreamEncryption.UNENCRYPTED,
+      role: deliveryStreamRole,
     });
 
     expect(stack).not.toHaveResource('AWS::KMS::Key');
@@ -200,7 +197,7 @@ describe('delivery stream', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'DeliveryStreamServiceRole964EEBCC' }],
+      Roles: [stack.resolve(deliveryStreamRole.roleName)],
     });
     expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamType: 'DirectPut',

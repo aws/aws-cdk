@@ -329,8 +329,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       keyArn: encryptionKey?.keyArn,
       keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
     } : undefined;
-    const keyGrant = encryptionKey?.grantEncryptDecrypt(role);
-    keyGrant?.applyBefore(this);
+    encryptionKey?.grantEncryptDecrypt(role);
 
     const destinationConfig = props.destinations[0].bind(this, {});
 
