@@ -33,7 +33,9 @@ enables organizations to create and manage catalogs of products for their end us
   - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
 - [TagOptions](#tag-options)
 - [Constraints](#constraints)
+  - [Deploy with StackSets](#deploy-with-stacksets)
   - [Notify on stack events](#notify-on-stack-events)
+  - [Set launch role](#set-launch-role)
   - [Tag update constraint](#tag-update-constraint)
 
 The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
@@ -186,6 +188,33 @@ If a misconfigured constraint is added, `synth` will fail with an error message.
 
 Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints.html).
 
+### Deploy with StackSets
+
+A stack set constraint allows you to configure product deployment options using 
+[AWS CloudFormation StackSets](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/using-stacksets.html). 
+You can specify multiple accounts and regions for the product launch following StackSets conventions.
+There is an additional field `allowStackControl` that configures ability for end users to create, edit, or delete the stacks. 
+End users can manage those accounts and determine where products deploy and the order of deployment.
+You can only define one StackSets deployment configuration per portfolio-product association,
+and you cannot both set a launch role and StackSets deployment configuration for an assocation.
+
+```ts fixture=portfolio-product
+const accounts = ['012345678901', '012345678902', '012345678903'];
+
+const regions = ['us-west-1', 'us-east-1', 'us-west-2', 'us-east-1'];
+
+const adminRole = new iam.Role(this, 'AdminRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+const executionRole = new iam.Role(this, 'ExecutionRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+portfolio.deployWithStackSets(product, accounts, regions, adminRole, executionRole, true);
+});
+```
+
 ### Notify on stack events
 
 Allows users to subscribe an AWS `SNS` topic to the stack events of the product.
@@ -203,6 +232,25 @@ portfolio.notifyOnStackEvents(product, topic2, {
   description: 'description for this topic2', // description is an optional field. 
 });
 ```
+
+### Set launch role
+
+Set a specific AWS `IAM` role that a user must assume when launching a product.
+Allows you to attach proper permissions for end users when provisioning the product stack.
+The launch role must be assumed by the service catalog principal.
+You can only have one launch role set for a portfolio-product association,
+and you cannot set a launch role if a StackSets deployment has been configured.
+
+```ts fixture=portfolio-product
+const launchRole = new iam.Role(this, 'LaunchRole', {
+  assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
+});
+
+portfolio.setLaunchRole(product, launchRole);
+```
+
+See [Launch Constraint](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html) documentation
+to understand permissions roles need.
 
 ### Tag update constraint
 
