@@ -4,7 +4,7 @@ import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
 describe('lambda-insights', () => {
-  test('can enable insights on function', () => {
+  test('can provide arn to enable insights', () => {
     const stack = new cdk.Stack();
     const layerArn = 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14';
     new lambda.Function(stack, 'MyLambda', {
@@ -30,6 +30,36 @@ describe('lambda-insights', () => {
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
         Runtime: 'nodejs10.x',
         Layers: [layerArn],
+      },
+      DependsOn: ['MyLambdaServiceRole4539ECB6'],
+    }, ResourcePart.CompleteDefinition);
+  });
+
+  test('can provide a version to enable insights', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion(lambda.LambdaInsightsVersion.VERSION_1_0_54_0, 'us-east-1'),
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      ManagedPolicyArns:
+        [
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] },
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy']] },
+        ],
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Properties:
+      {
+        Code: { ZipFile: 'foo' },
+        Handler: 'index.handler',
+        Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
+        Runtime: 'nodejs10.x',
+        Layers: ['arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:2'],
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
     }, ResourcePart.CompleteDefinition);
