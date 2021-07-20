@@ -198,10 +198,7 @@
           ],
           "Version": "2012-10-17"
         }
-      },
-      "DependsOn": [
-        "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7"
-      ]
+      }
     },
     "DeliveryStreamS3DestinationRole500FC089": {
       "Type": "AWS::IAM::Role",
@@ -218,10 +215,7 @@
           ],
           "Version": "2012-10-17"
         }
-      },
-      "DependsOn": [
-        "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7"
-      ]
+      }
     },
     "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7": {
       "Type": "AWS::IAM::Policy",
