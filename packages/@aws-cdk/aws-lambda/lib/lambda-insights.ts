@@ -1,4 +1,4 @@
-import { Fact, RegionInfo } from '@aws-cdk/region-info';
+import { RegionInfo } from '@aws-cdk/region-info';
 
 /**
  * Version of Lambda Insights.
