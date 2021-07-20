@@ -20,7 +20,7 @@ export interface HttpPrivateIntegrationOptions {
   /**
   * Specifies the server name to verified by HTTPS when calling the backend integration
   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
-  * @default - undefined - HTTP will be used to call the backend integration
+  * @default undefined private integration traffic will use HTTP protocol
   */
 
   readonly secureServerName?: string;
