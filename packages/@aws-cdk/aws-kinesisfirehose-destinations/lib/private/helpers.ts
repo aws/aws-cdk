@@ -34,10 +34,21 @@ export interface DestinationLoggingProps {
   readonly streamId: string;
 }
 
-export function createLoggingOptions(
-  scope: Construct,
-  props: DestinationLoggingProps,
-): { loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty, dependables: cdk.IDependable[] } | undefined {
+export interface DestinationSubConfig {
+  /**
+   * Resources that were created by the sub-config creator that must be deployed before the delivery stream is deployed.
+   */
+  readonly dependables: cdk.IDependable[];
+}
+
+export interface DestinationLoggingOutput extends DestinationSubConfig {
+  /**
+   * Logging options that will be injected into the destination configuration.
+   */
+  readonly loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
+}
+
+export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingOutput | undefined {
   if (props.logging === false && props.logGroup) {
     throw new Error('logging cannot be set to false when logGroup is provided');
   }
