@@ -474,10 +474,14 @@ step and runs tests from there:
 const synth = new ShellStep('Synth', { /* ... */ });
 const pipeline = new CodePipeline(this, 'Pipeline', { synth });
 
-new ShellStep('Approve', {
-  // Use the contents of the 'integ' directory from the synth step as the input
-  input: synth.addOutputDirectory('integ'),
-  commands: ['cd integ && ./run.sh'],
+pipeline.addStage(/* ... */, {
+  post: [
+    new ShellStep('Approve', {
+      // Use the contents of the 'integ' directory from the synth step as the input
+      input: synth.addOutputDirectory('integ'),
+      commands: ['cd integ && ./run.sh'],
+    }),
+  ],
 });
 ```
 
