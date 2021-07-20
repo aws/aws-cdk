@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
@@ -30,17 +31,17 @@ describe('Portfolio', () => {
       });
     }),
 
-    test('portfolio with explicit acceptLanguage and description', () => {
+    test('portfolio with explicit message language and description', () => {
       new servicecatalog.Portfolio(stack, 'MyPortfolio', {
         displayName: 'testPortfolio',
         providerName: 'testProvider',
         description: 'test portfolio description',
-        acceptLanguage: servicecatalog.AcceptLanguage.ZH,
+        messageLanguage: servicecatalog.MessageLanguage.ZH,
       });
 
       expect(stack).toHaveResourceLike('AWS::ServiceCatalog::Portfolio', {
         Description: 'test portfolio description',
-        AcceptLanguage: servicecatalog.AcceptLanguage.ZH,
+        AcceptLanguage: servicecatalog.MessageLanguage.ZH,
       });
     }),
 
@@ -185,7 +186,7 @@ describe('Portfolio', () => {
 
       portfolio.shareWithAccount(shareAccountId, {
         shareTagOptions: true,
-        acceptLanguage: servicecatalog.AcceptLanguage.EN,
+        messageLanguage: servicecatalog.MessageLanguage.EN,
       });
 
       expect(stack).toHaveResourceLike('AWS::ServiceCatalog::PortfolioShare', {
@@ -257,5 +258,204 @@ describe('Portfolio', () => {
       portfolio.giveAccessToRole(role);
       portfolio.giveAccessToRole(role);
     });
+  });
+});
+
+describe('portfolio associations and product constraints', () => {
+  let stack: cdk.Stack;
+  let portfolio: servicecatalog.Portfolio;
+  let product: servicecatalog.CloudFormationProduct;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+
+    portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+      displayName: 'testPortfolio',
+      providerName: 'testProvider',
+    });
+
+    product = new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+        },
+      ],
+    });
+  }),
+
+  test('basic portfolio product association', () => {
+    portfolio.addProduct(product);
+
+    expect(stack).toHaveResource('AWS::ServiceCatalog::PortfolioProductAssociation');
+  });
+
+  test('portfolio product associations are idempotent', () => {
+    portfolio.addProduct(product);
+    portfolio.addProduct(product); // If not idempotent these calls should fail
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::PortfolioProductAssociation', 1); //check anyway
+  }),
+
+  test('add tag options to portfolio', () => {
+    const tagOptions = new servicecatalog.TagOptions({
+      key1: ['value1', 'value2'],
+      key2: ['value1'],
+    });
+
+    portfolio.associateTagOptions(tagOptions);
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+    expect(stack).toHaveResource('AWS::ServiceCatalog::TagOptionAssociation');
+  }),
+
+  test('add tag options to portfolio as prop', () => {
+    const tagOptions = new servicecatalog.TagOptions({
+      key1: ['value1', 'value2'],
+      key2: ['value1'],
+    });
+
+    portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolioWithTag', {
+      displayName: 'testPortfolio',
+      providerName: 'testProvider',
+      tagOptions: tagOptions,
+    });
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+    expect(stack).toHaveResource('AWS::ServiceCatalog::TagOptionAssociation');
+  }),
+
+  test('adding identical tag options to portfolio is idempotent', () => {
+    const tagOptions1 = new servicecatalog.TagOptions({
+      key1: ['value1', 'value2'],
+      key2: ['value1'],
+    });
+
+    const tagOptions2 = new servicecatalog.TagOptions({
+      key1: ['value1', 'value2'],
+    });
+
+    portfolio.associateTagOptions(tagOptions1);
+    portfolio.associateTagOptions(tagOptions2); // If not idempotent this would fail
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+    expect(stack).toHaveResource('AWS::ServiceCatalog::TagOptionAssociation');
+  }),
+
+  test('fails to add tag options with invalid minimum key length', () => {
+    const tagOptions = new servicecatalog.TagOptions({
+      '': ['value1', 'value2'],
+      'key2': ['value1'],
+    });
+    expect(() => {
+      portfolio.associateTagOptions(tagOptions);
+    }).toThrowError(/Invalid TagOption key for resource/);
+  });
+
+  test('fails to add tag options with invalid maxium key length', () => {
+    const tagOptions = new servicecatalog.TagOptions({
+      ['key1'.repeat(1000)]: ['value1', 'value2'],
+      key2: ['value1'],
+    });
+    expect(() => {
+      portfolio.associateTagOptions(tagOptions);
+    }).toThrowError(/Invalid TagOption key for resource/);
+  }),
+
+  test('fails to add tag options with invalid value length', () => {
+    const tagOptions = new servicecatalog.TagOptions({
+      key1: ['value1'.repeat(1000), 'value2'],
+      key2: ['value1'],
+    });
+    expect(() => {
+      portfolio.associateTagOptions(tagOptions);
+    }).toThrowError(/Invalid TagOption value for resource/);
+  }),
+
+  test('add tag update constraint', () => {
+    portfolio.addProduct(product);
+    portfolio.constrainTagUpdates(product, {
+      allow: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::ResourceUpdateConstraint', {
+      TagUpdateOnProvisionedProduct: 'ALLOWED',
+    });
+  });
+
+  test('tag update constraint still adds without explicit association', () => {
+    portfolio.constrainTagUpdates(product, {
+      messageLanguage: servicecatalog.MessageLanguage.EN,
+      description: 'test constraint description',
+      allow: false,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::ResourceUpdateConstraint', {
+      AcceptLanguage: servicecatalog.MessageLanguage.EN,
+      Description: 'test constraint description',
+      TagUpdateOnProvisionedProduct: 'NOT_ALLOWED',
+    });
+  }),
+
+  test('fails to add multiple tag update constraints', () => {
+    portfolio.constrainTagUpdates(product, {
+      description: 'test constraint description',
+    });
+
+    expect(() => {
+      portfolio.constrainTagUpdates(product, {
+        allow: false,
+        description: 'another test constraint description',
+      });
+    }).toThrowError(/Cannot have multiple tag update constraints for association/);
+  }),
+
+  test('add event notification constraint', () => {
+    portfolio.addProduct(product);
+
+    const topic = new sns.Topic(stack, 'Topic');
+    const description = 'event notification constraint description';
+
+    portfolio.notifyOnStackEvents(product, topic, {
+      description: description,
+    });
+
+    expect(stack).toHaveResource('AWS::ServiceCatalog::LaunchNotificationConstraint', {
+      NotificationArns: [{ Ref: 'TopicBFC7AF6E' }],
+      Description: description,
+      PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
+      ProductId: { Ref: 'MyProduct49A3C587' },
+    });
+  }),
+
+  test('event notification constraint will still add without explicit association', () => {
+    const topic = new sns.Topic(stack, 'Topic1');
+
+    portfolio.notifyOnStackEvents(product, topic);
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::LaunchNotificationConstraint', 1);
+  }),
+
+  test('can add multiple notifications', () => {
+    const topic1 = new sns.Topic(stack, 'Topic1');
+    const topic2 = new sns.Topic(stack, 'Topic2');
+    const topic3 = new sns.Topic(stack, 'Topic3');
+
+    portfolio.notifyOnStackEvents(product, topic1);
+    portfolio.notifyOnStackEvents(product, topic2);
+    portfolio.notifyOnStackEvents(product, topic3);
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::LaunchNotificationConstraint', 3);
+  }),
+
+  test('fails to add same topic multiple times in event notification constraint', () => {
+    const topic = new sns.Topic(stack, 'Topic1');
+
+    portfolio.notifyOnStackEvents(product, topic);
+
+    expect(() => {
+      portfolio.notifyOnStackEvents(product, topic);
+    }).toThrowError(`Topic ${topic} is already subscribed to association`);
   });
 });

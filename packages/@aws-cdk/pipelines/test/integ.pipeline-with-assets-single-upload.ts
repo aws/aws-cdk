@@ -14,10 +14,10 @@ class MyStage extends Stage {
     const stack = new Stack(this, 'Stack', props);
 
     new s3_assets.Asset(stack, 'Asset', {
-      path: path.join(__dirname, 'test-file-asset.txt'),
+      path: path.join(__dirname, 'testhelpers/assets/test-file-asset.txt'),
     });
     new s3_assets.Asset(stack, 'Asset2', {
-      path: path.join(__dirname, 'test-file-asset-two.txt'),
+      path: path.join(__dirname, 'testhelpers/assets/test-file-asset-two.txt'),
     });
 
     new CfnResource(stack, 'Resource', {
