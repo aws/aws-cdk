@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { DestinationProps } from './common';
 import { createLoggingOptions } from './private/helpers';
 
@@ -21,8 +21,7 @@ export class S3Bucket implements firehose.IDestination {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
 
-    const bucketGrant = this.bucket.grantReadWrite(role);
-    Node.of(scope).addDependency(bucketGrant);
+    this.bucket.grantReadWrite(role);
 
     return {
       extendedS3DestinationConfiguration: {

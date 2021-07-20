@@ -42,8 +42,7 @@ export function createLoggingOptions(
   }
   if (props.logging !== false || props.logGroup) {
     const logGroup = Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
-    const logGroupGrant = logGroup.grantWrite(props.role);
-    Node.of(scope).addDependency(logGroupGrant);
+    logGroup.grantWrite(props.role);
     return {
       enabled: true,
       logGroupName: logGroup.logGroupName,
