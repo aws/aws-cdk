@@ -2,7 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { createLoggingOptions } from '../lib/private';
+import { createBufferingHints, createLoggingOptions } from '../lib/private';
 
 describe('createLoggingOptions', () => {
   let stack: cdk.Stack;
@@ -82,5 +82,49 @@ describe('createLoggingOptions', () => {
         Ref: 'LogGroupanotherStreamIdF2754481',
       },
     });
+  });
+});
+
+describe('createBufferingHints', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test('does not create configuration by default', () => {
+    const bufferingHints = createBufferingHints();
+
+    expect(stack.resolve(bufferingHints)).toBeUndefined();
+  });
+
+  test('creates configuration when interval and size provided', () => {
+    const bufferingHints = createBufferingHints(cdk.Duration.minutes(1), cdk.Size.kibibytes(1024));
+
+    expect(stack.resolve(bufferingHints)).toMatchObject({
+      intervalInSeconds: 60,
+      sizeInMBs: 1,
+    });
+  });
+
+  test('throws when only one of interval and size provided', () => {
+    expect(() => createBufferingHints(cdk.Duration.minutes(1)))
+      .toThrowError('If bufferingInterval is specified, bufferingSize must also be specified');
+    expect(() => createBufferingHints(undefined, cdk.Size.kibibytes(1024)))
+      .toThrowError('If bufferingSize is specified, bufferingInterval must also be specified');
+  });
+
+  test('validates bufferingInterval', () => {
+    expect(() => createBufferingHints(cdk.Duration.seconds(30), cdk.Size.mebibytes(1)))
+      .toThrowError('Buffering interval must be between 60 and 900 seconds');
+    expect(() => createBufferingHints(cdk.Duration.minutes(16), cdk.Size.mebibytes(1)))
+      .toThrowError('Buffering interval must be between 60 and 900 seconds');
+  });
+
+  test('validates bufferingSize', () => {
+    expect(() => createBufferingHints(cdk.Duration.minutes(1), cdk.Size.mebibytes(0)))
+      .toThrowError('Buffering size must be between 1 and 128 MBs');
+    expect(() => createBufferingHints(cdk.Duration.minutes(1), cdk.Size.mebibytes(256)))
+      .toThrowError('Buffering size must be between 1 and 128 MBs');
   });
 });
