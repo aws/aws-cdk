@@ -215,7 +215,7 @@ export interface DistributionProps {
     * CloudFront serves your objects only to browsers or devices that support at
     * least the SSL version that you specify.
     *
-    * @default SecurityPolicyProtocol.TLS_V1_2_2019
+    * @default SecurityPolicyProtocol.TLS_V1_2_2021
     */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 }
@@ -446,7 +446,7 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderViewerCertificate(certificate: acm.ICertificate,
-    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019): CfnDistribution.ViewerCertificateProperty {
+    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2021): CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
