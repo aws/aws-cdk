@@ -40,6 +40,7 @@ export class S3Bucket implements firehose.IDestination {
         cloudWatchLoggingOptions: createLoggingOptions(scope, { logging: this.props.logging, logGroup: this.props.logGroup, role, streamId: 'S3Destination' }),
         roleArn: role.roleArn,
         bucketArn: this.bucket.bucketArn,
+        compressionFormat: this.props.compression?.value,
       },
     };
   }
