@@ -945,7 +945,7 @@ export interface CloudMapOptions {
   /**
    * The amount of time that you want DNS resolvers to cache the settings for this record.
    *
-   * @default 60
+   * @default Duration.minutes(1)
    */
   readonly dnsTtl?: Duration;
 
