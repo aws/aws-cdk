@@ -9,7 +9,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { CodeBuildStep } from '../../lib';
-import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps } from '../testhelpers';
+import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps, OneStackApp } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -984,4 +984,168 @@ behavior('Can easily switch on privileged mode for synth', (suite) => {
       },
     });
   });
+});
+
+
+behavior('can provide custom BuildSpec that is merged with generated one', (suite) => {
+  suite.legacy(() => {
+    new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: new cdkp.SimpleSynthAction({
+        sourceArtifact,
+        cloudAssemblyArtifact,
+        environmentVariables: {
+          SOME_ENV_VAR: { value: 'SomeValue' },
+        },
+        environment: {
+          environmentVariables: {
+            INNER_VAR: { value: 'InnerValue' },
+          },
+          privileged: true,
+        },
+        installCommands: [
+          'install1',
+          'install2',
+        ],
+        synthCommand: 'synth',
+        buildSpec: cbuild.BuildSpec.fromObject({
+          env: {
+            variables: {
+              FOO: 'bar',
+            },
+          },
+          phases: {
+            pre_build: {
+              commands: 'installCustom',
+            },
+          },
+          cache: {
+            paths: ['node_modules'],
+          },
+        }),
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synth: new cdkp.CodeBuildStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+        env: {
+          SOME_ENV_VAR: 'SomeValue',
+        },
+        buildEnvironment: {
+          environmentVariables: {
+            INNER_VAR: { value: 'InnerValue' },
+          },
+          privileged: true,
+        },
+        installCommands: [
+          'install1',
+          'install2',
+        ],
+        commands: ['synth'],
+        partialBuildSpec: cbuild.BuildSpec.fromObject({
+          env: {
+            variables: {
+              FOO: 'bar',
+            },
+          },
+          phases: {
+            pre_build: {
+              commands: ['installCustom'],
+            },
+          },
+          cache: {
+            paths: ['node_modules'],
+          },
+        }),
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: objectLike({
+        PrivilegedMode: true,
+        EnvironmentVariables: arrayWith(
+          {
+            Name: 'INNER_VAR',
+            Type: 'PLAINTEXT',
+            Value: 'InnerValue',
+          },
+        ),
+      }),
+      Source: {
+        BuildSpec: encodedJson(deepObjectLike({
+          env: {
+            variables: {
+              FOO: 'bar',
+            },
+          },
+          phases: {
+            pre_build: {
+              commands: arrayWith('installCustom'),
+            },
+            build: {
+              commands: ['synth'],
+            },
+          },
+          cache: {
+            paths: ['node_modules'],
+          },
+        })),
+      },
+    });
+  }
+});
+
+behavior('stacks synthesized for pipeline will be checked during synth', (suite) => {
+  let stage: OneStackApp;
+  beforeEach(() => {
+    stage = new OneStackApp(pipelineStack, 'MyApp');
+  });
+
+  suite.legacy(() => {
+    // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: new cdkp.SimpleSynthAction({
+        sourceArtifact,
+        cloudAssemblyArtifact,
+        installCommands: ['install1', 'install2'],
+        buildCommands: ['build1', 'build2'],
+        testCommands: ['test1', 'test2'],
+        synthCommand: 'cdk synth',
+      }),
+    });
+    pipeline.addApplicationStage(stage);
+
+    THEN();
+  });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      installCommands: ['install1', 'install2'],
+      commands: ['build1', 'build2', 'test1', 'test2', 'cdk synth'],
+    });
+    pipeline.addStage(stage);
+
+    THEN();
+  });
+
+  function THEN() {
+    // All stacks in the ASM have been synthesized with 'validateOnSynth: true'
+    const asm = stage.synth();
+    for (const stack of asm.stacks) {
+      expect(stack.validateOnSynth).toEqual(true);
+    }
+  }
 });
