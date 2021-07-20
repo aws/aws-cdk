@@ -142,6 +142,46 @@
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
+    "TestPortfolioLaunchNotificationConstraintf2572fdcecadB6DD8541": {
+      "Type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
+      "Properties": {
+        "NotificationArns": [
+          {
+            "Ref": "Topic198E71B3E"
+          }
+        ],
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "ProductId": {
+          "Ref": "TestProduct7606930B"
+        }
+      },
+      "DependsOn": [
+        "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+      ]
+    },
+    "TestPortfolioLaunchNotificationConstrainta9675fc4d6aa995BF1B9": {
+      "Type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
+      "Properties": {
+        "NotificationArns": [
+          {
+            "Ref": "specialTopic7664DE4C"
+          }
+        ],
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "ProductId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "AcceptLanguage": "en",
+        "Description": "special topic description"
+      },
+      "DependsOn": [
+        "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+      ]
+    },
     "TagOptionc0d88a3c4b8b": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
@@ -180,6 +220,12 @@
           }
         ]
       }
+    },
+    "Topic198E71B3E": {
+      "Type": "AWS::SNS::Topic"
+    },
+    "specialTopic7664DE4C": {
+      "Type": "AWS::SNS::Topic"
     }
   }
 }

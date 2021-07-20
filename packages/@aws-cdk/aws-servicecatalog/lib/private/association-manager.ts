@@ -1,8 +1,9 @@
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
-import { TagUpdateConstraintOptions } from '../constraints';
+import { CommonConstraintOptions, TagUpdateConstraintOptions } from '../constraints';
 import { IPortfolio } from '../portfolio';
 import { IProduct } from '../product';
-import { CfnPortfolioProductAssociation, CfnResourceUpdateConstraint, CfnTagOption, CfnTagOptionAssociation } from '../servicecatalog.generated';
+import { CfnLaunchNotificationConstraint, CfnPortfolioProductAssociation, CfnResourceUpdateConstraint, CfnTagOption, CfnTagOptionAssociation } from '../servicecatalog.generated';
 import { TagOptions } from '../tag-options';
 import { hashValues } from './util';
 import { InputValidator } from './validation';
@@ -27,6 +28,26 @@ export class AssociationManager {
     };
   }
 
+  public static notifyOnStackEvents(portfolio: IPortfolio, product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions): void {
+    InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options.description);
+    const association = this.associateProductWithPortfolio(portfolio, product);
+    const constructId = `LaunchNotificationConstraint${hashValues(topic.node.addr, topic.stack.node.addr, association.associationKey)}`;
+
+    if (!portfolio.node.tryFindChild(constructId)) {
+      const constraint = new CfnLaunchNotificationConstraint(portfolio as unknown as cdk.Resource, constructId, {
+        acceptLanguage: options.messageLanguage,
+        description: options.description,
+        portfolioId: portfolio.portfolioId,
+        productId: product.productId,
+        notificationArns: [topic.topicArn],
+      });
+
+      // Add dependsOn to force proper order in deployment.
+      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
+    } else {
+      throw new Error(`Topic ${topic.node.path} is already subscribed to association ${this.prettyPrintAssociation(portfolio, product)}`);
+    }
+  }
 
   public static constrainTagUpdates(portfolio: IPortfolio, product: IProduct, options: TagUpdateConstraintOptions): void {
     InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options.description);

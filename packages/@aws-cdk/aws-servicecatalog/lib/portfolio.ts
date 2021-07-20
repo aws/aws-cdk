@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { MessageLanguage } from './common';
-import { TagUpdateConstraintOptions } from './constraints';
+import { CommonConstraintOptions, TagUpdateConstraintOptions } from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -88,6 +89,13 @@ export interface IPortfolio extends cdk.IResource {
   associateTagOptions(tagOptions: TagOptions): void;
 
   /**
+   * Add notifications for supplied topics on the provisioned product.
+   * @param product A service catalog product.
+   * @param topic A SNS Topic to receive notifications on events related to the provisioned product.
+   */
+  notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options?: CommonConstraintOptions): void;
+
+  /**
    * Add a Resource Update Constraint.
    */
   constrainTagUpdates(product: IProduct, options?: TagUpdateConstraintOptions): void;
@@ -126,6 +134,10 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
 
   public associateTagOptions(tagOptions: TagOptions) {
     AssociationManager.associateTagOptions(this, tagOptions);
+  }
+
+  public notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions = {}): void {
+    AssociationManager.notifyOnStackEvents(this, product, topic, options);
   }
 
   public constrainTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}): void {
