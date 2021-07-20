@@ -159,6 +159,7 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'us-west-2': '840364872350',
 };
 
+// https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
 export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
   '1.0.98.0': {
     'us-east-1': 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14',
