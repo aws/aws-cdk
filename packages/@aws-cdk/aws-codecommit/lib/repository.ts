@@ -9,7 +9,11 @@ import { CfnRepository } from './codecommit.generated';
  * Additional options to pass to the notification rule
  */
 export interface RepositoryNotifyOnOptions extends notifications.NotificationRuleOptions {
-  //@TODO add reference link
+  /**
+   * A list of event types associated with this notification rule for CodeCommit repositories.
+   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
+   */
   readonly events: RepositoryNotificationEvents[];
 }
 
@@ -120,13 +124,19 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
 
+
   /**
    * 
-   * @TODO description here
+   * Defines a CodeStar Notification rule triggered when the project
+   * events specified by you are emitted. Similar to `onEvent` API.
+   * 
+   * You can also use the methods to define rules for the specific event emitted.
+   * eg: `notifyOnPullRequstCreated`
    * 
    * @param id 
    * @param target 
    * @param options 
+   * @returns CodeStar Notifications rule associated with this repository
    */
   notifyOn(
     id: string,
@@ -134,14 +144,100 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
     options: RepositoryNotifyOnOptions,
   ): notifications.INotificationRule;
 
-  // @TODO rest of events need to be added
+  /**
+   * Defines a CodeStar Notification rule which triggers when a comment is made on a commit.
+   */
+  notifyOnCommentOnCommits(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar Notification rule which triggers when a comment is made on a pull request
+   */
+  notifyOnCommentOnPullRequests(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+   /**
+   * Defines a CodeStar Notification rule which triggers when an approval status is changed
+   */
+  notifyOnApprovalsStatusChanged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar Notification rule which triggers when an approval rule is overridden
+   */
+  notifyOnApprovalsRuleOverride(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar Notification rule which triggers when a pull request is created
+   */
   notifyOnPullRequestCreated(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule;
 
+  /**
+   * Defines a CodeStar Notification rule which triggers when a pull request source is updated
+   */
+  notifyOnPullRequestSourceUpdated(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar Notification rule which triggers when a pull request status has changed
+   */
+  notifyOnPullRequestStatusChanged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar Notification rule which triggers when a pull request is merged
+   */
   notifiyOnPullRequestMerged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar Notification rule which triggers when a new branch or tag are created
+   */
+  notifyOnBranchesAndTagsCreated(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar Notification rule which triggers when a branch or tag is deleted
+   */
+  notifyOnBranchesAndTagsDeleted(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar Notification rule which triggers when a branch or tag is updated
+   */
+  notifyOnBranchesAndTagsUpdated(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,

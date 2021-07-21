@@ -55,3 +55,16 @@ const rule = repo.onCommentOnPullRequest('CommentOnPullRequest', {
     target: new targets.SnsTopic(myTopic),
 });
 ```
+
+## CodeStar Notifications
+
+To define CodeStar Notification rules for Repositories, use one of the `notifyOnXxx()` methods.
+They are very similar to `onXxx()` methods for CloudWatch events:
+
+```ts
+const target = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+});
+const rule = repository.notifyOnPullRequestCreated('NotifyOnPullRequestCreated', target);
