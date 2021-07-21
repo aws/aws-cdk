@@ -165,8 +165,8 @@ export class PrincipalWithConditions implements IPrincipal {
    * Add a condition to the principal
    */
   public addCondition(key: string, value: Condition) {
-    const existingValue = this.conditions[key];
-    this.conditions[key] = existingValue ? { ...existingValue, ...value } : value;
+    const existingValue = this.additionalConditions[key];
+    this.additionalConditions[key] = existingValue ? { ...existingValue, ...value } : value;
   }
 
   /**
@@ -191,6 +191,10 @@ export class PrincipalWithConditions implements IPrincipal {
 
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment(this.principal.policyFragment.principalJson, this.conditions);
+  }
+
+  public get principalAccount(): string | undefined {
+    return this.principal.principalAccount;
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -294,12 +298,15 @@ export class ArnPrincipal extends PrincipalBase {
  * Specify AWS account ID as the principal entity in a policy to delegate authority to the account.
  */
 export class AccountPrincipal extends ArnPrincipal {
+  public readonly principalAccount: string | undefined;
+
   /**
    *
    * @param accountId AWS account ID (i.e. 123456789012)
    */
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
+    this.principalAccount = accountId;
   }
 
   public toString() {
