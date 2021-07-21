@@ -209,7 +209,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       if (this.props.releaseLabel) {
         const [major, minor] = this.props.releaseLabel.substr(4).split('.');
         if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
-          throw new Error('Step concurrency is only supported in EMR release version 5.28.0 and above);
+          throw new Error('Step concurrency is only supported in EMR release version 5.28.0 and above');
         }
       }
     }
