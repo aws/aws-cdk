@@ -67,9 +67,6 @@ const secondPortfolio = new servicecatalog.Portfolio(stack, 'SecondTestPortfolio
   providerName: 'TestProvider',
 });
 
-const accounts = ['000000000000', '111111111111', '222222222222'];
-const regions = ['us-east-1', 'us-west-2', 'eu-west-1'];
-
 const adminRole = new iam.Role(stack, 'AdminRole', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
@@ -78,6 +75,12 @@ const executionRole = new iam.Role(stack, 'ExceutionRole', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
 
-secondPortfolio.deployWithStackSets(product, accounts, regions, adminRole, executionRole, true);
+secondPortfolio.deployWithStackSets(product, {
+  accounts: ['000000000000', '111111111111', '222222222222'],
+  regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+  adminRole: adminRole,
+  executionRole: executionRole,
+  allowStackSetInstanceOperations: true,
+});
 
 app.synth();

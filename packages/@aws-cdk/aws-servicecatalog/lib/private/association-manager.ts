@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
-import { CommonConstraintOptions, TagUpdateConstraintOptions } from '../constraints';
+import { CommonConstraintOptions, StackSetsConstraintOptions, TagUpdateConstraintOptions } from '../constraints';
 import { IPortfolio } from '../portfolio';
 import { IProduct } from '../product';
 import { CfnLaunchNotificationConstraint, CfnLaunchRoleConstraint, CfnPortfolioProductAssociation, CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOption, CfnTagOptionAssociation } from '../servicecatalog.generated';
@@ -50,37 +50,6 @@ export class AssociationManager {
     }
   }
 
-  public static deployWithStackSets(portfolio: IPortfolio, product: IProduct, accounts: string[], regions: string[], adminRole: iam.IRole,
-    executionRole: iam.IRole, allowInstanceControl: boolean, options: CommonConstraintOptions) {
-
-    this.validateConstraintDescription(this.prettyPrintAssociation(portfolio, product), options);
-    const association = this.associateProductWithPortfolio(portfolio, product);
-    // Check if a launch role has already been set.
-    if (portfolio.node.tryFindChild(`LaunchRoleConstraint${association.associationKey}`)) {
-      throw new Error(`Cannot configure stackset deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
-    }
-
-    const constructId = `StackSetConstraint${association.associationKey}`;
-    if (!portfolio.node.tryFindChild(constructId)) {
-      const constraint = new CfnStackSetConstraint(portfolio as unknown as cdk.Resource, constructId, {
-        acceptLanguage: options.messageLanguage,
-        description: options.description ?? '',
-        portfolioId: portfolio.portfolioId,
-        productId: product.productId,
-        accountList: accounts,
-        regionList: regions,
-        adminRole: adminRole.roleArn,
-        executionRole: executionRole.roleName,
-        stackInstanceControl: allowInstanceControl ? 'ALLOWED' : 'NOT_ALLOWED',
-      });
-
-      // Add dependsOn to force proper order in deployment.
-      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
-    } else {
-      throw new Error(`Cannot configure multiple stackset deployment constraints for association ${this.prettyPrintAssociation(portfolio, product)}`);
-    }
-  }
-
   public static notifyOnStackEvents(portfolio: IPortfolio, product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions): void {
     this.validateConstraintDescription(this.prettyPrintAssociation(portfolio, product), options);
     const association = this.associateProductWithPortfolio(portfolio, product);
@@ -124,6 +93,35 @@ export class AssociationManager {
       constraint.addDependsOn(association.cfnPortfolioProductAssociation);
     } else {
       throw new Error(`Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`);
+    }
+  }
+
+  public static deployWithStackSets(portfolio: IPortfolio, product: IProduct, options: StackSetsConstraintOptions) {
+    this.validateConstraintDescription(this.prettyPrintAssociation(portfolio, product), options);
+    const association = this.associateProductWithPortfolio(portfolio, product);
+    // Check if a launch role has already been set.
+    if (portfolio.node.tryFindChild(`LaunchRoleConstraint${association.associationKey}`)) {
+      throw new Error(`Cannot configure stackset deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
+    }
+
+    const constructId = `StackSetConstraint${association.associationKey}`;
+    if (!portfolio.node.tryFindChild(constructId)) {
+      const constraint = new CfnStackSetConstraint(portfolio as unknown as cdk.Resource, constructId, {
+        acceptLanguage: options.messageLanguage,
+        description: options.description ?? '',
+        portfolioId: portfolio.portfolioId,
+        productId: product.productId,
+        accountList: options.accounts,
+        regionList: options.regions,
+        adminRole: options.adminRole.roleArn,
+        executionRole: options.executionRole.roleName,
+        stackInstanceControl: options.allowStackSetInstanceOperations ? 'ALLOWED' : 'NOT_ALLOWED',
+      });
+
+      // Add dependsOn to force proper order in deployment.
+      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
+    } else {
+      throw new Error(`Cannot configure multiple stackset deployment constraints for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
   }
 

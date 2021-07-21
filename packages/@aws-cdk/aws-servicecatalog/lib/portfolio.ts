@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { MessageLanguage } from './common';
-import { CommonConstraintOptions, TagUpdateConstraintOptions } from './constraints';
+import { CommonConstraintOptions, StackSetsConstraintOptions, TagUpdateConstraintOptions } from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -94,20 +94,6 @@ export interface IPortfolio extends cdk.IResource {
   constrainTagUpdates(product: IProduct, options?: TagUpdateConstraintOptions): void;
 
   /**
-   * Configure deployment options using AWS Cloudformaiton StackSets
-   *
-   * @param product A service catalog product.
-   * @param accounts A list of accounts to deploy stacks to.
-   * @param regions A list of AWS regions(e.g. us-east-1) where stacks can be deployed
-   * @param adminRole The role used to administer the stacksets
-   * @param executionRole The role used to provision the created product stacks
-   * @param allowInstanceControl Whether to allow end users to create, update, and delete stack instances.
-   * @param options options for the constraint.
-   */
-  deployWithStackSets(product: IProduct, accounts: string[], regions: string[], adminRole: iam.IRole,
-    executionRole: iam.IRole, allowInstanceControl: boolean, options?: CommonConstraintOptions): void;
-
-  /**
    * Add notifications for supplied topics on the provisioned product.
    * @param product A service catalog product.
    * @param topic A SNS Topic to receive notifications on events related to the provisioned product.
@@ -122,6 +108,14 @@ export interface IPortfolio extends cdk.IResource {
    * @param options options for the constraint.
    */
   setLaunchRole(product: IProduct, launchRole: iam.IRole, options?: CommonConstraintOptions): void;
+
+  /**
+   * Configure deployment options using AWS Cloudformaiton StackSets
+   *
+   * @param product A service catalog product.
+   * @param options Configuration options for the constraint.
+   */
+  deployWithStackSets(product: IProduct, options: StackSetsConstraintOptions): void;
 }
 
 abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
@@ -163,16 +157,16 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     AssociationManager.constrainTagUpdates(this, product, options);
   }
 
-  public deployWithStackSets(product: IProduct, accounts: string[], regions: string[], adminRole: iam.IRole,
-    executionRole: iam.IRole, allowInstanceControl: boolean, options: CommonConstraintOptions= {}) {
-    AssociationManager.deployWithStackSets(this, product, accounts, regions, adminRole, executionRole, allowInstanceControl, options);
-  }
-
   public notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions = {}): void {
     AssociationManager.notifyOnStackEvents(this, product, topic, options);
   }
+
   public setLaunchRole(product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions = {}): void {
     AssociationManager.setLaunchRole(this, product, launchRole, options);
+  }
+
+  public deployWithStackSets(product: IProduct, options: StackSetsConstraintOptions) {
+    AssociationManager.deployWithStackSets(this, product, options);
   }
 
   /**

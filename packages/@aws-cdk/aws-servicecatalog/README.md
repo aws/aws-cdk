@@ -33,10 +33,11 @@ enables organizations to create and manage catalogs of products for their end us
   - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
 - [TagOptions](#tag-options)
 - [Constraints](#constraints)
-  - [Deploy with StackSets](#deploy-with-stacksets)
+  - [Tag update constraint](#tag-update-constraint)
   - [Notify on stack events](#notify-on-stack-events)
   - [Set launch role](#set-launch-role)
-  - [Tag update constraint](#tag-update-constraint)
+  - [Deploy with StackSets](#deploy-with-stacksets)
+
 
 The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
@@ -188,30 +189,24 @@ If a misconfigured constraint is added, `synth` will fail with an error message.
 
 Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints.html).
 
-### Deploy with StackSets
+### Tag update constraint
 
-A StackSets deployment constraint allows you to configure product deployment options using 
-[AWS CloudFormation StackSets](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/using-stacksets.html). 
-You can specify multiple accounts and regions for the product launch following StackSets conventions.
-There is an additional field `allowStackControl` that configures ability for end users to create, edit, or delete the stacks. 
-End users can manage those accounts and determine where products deploy and the order of deployment.
-You can only define one StackSets deployment configuration per portfolio-product association,
-and you cannot both set a launch role and StackSets deployment configuration for an assocation.
+Tag update constraints allow or disallow end users to update tags on resources associated with an AWS Service Catalog product upon provisioning.
+By default, tag updating is not permitted.
+If tag updating is allowed, then new tags associated with the product or portfolio will be applied to provisioned resources during a provisioned product update.
 
 ```ts fixture=portfolio-product
-const accounts = ['012345678901', '012345678902', '012345678903'];
+portfolio.addProduct(product);
 
-const regions = ['us-west-1', 'us-east-1', 'us-west-2', 'us-east-1'];
+portfolio.constrainTagUpdates(product);
+```
 
-const adminRole = new iam.Role(this, 'AdminRole', {
-  assumedBy: new iam.AccountRootPrincipal(),
-});
+If you want to disable this feature later on, you can update it by setting the "allow" parameter to `false`:
 
-const executionRole = new iam.Role(this, 'ExecutionRole', {
-  assumedBy: new iam.AccountRootPrincipal(),
-});
-
-portfolio.deployWithStackSets(product, accounts, regions, adminRole, executionRole, true);
+```ts fixture=portfolio-product
+// to disable tag updates:
+portfolio.constrainTagUpdates(product, {
+  allow: false,
 });
 ```
 
@@ -251,23 +246,30 @@ portfolio.setLaunchRole(product, launchRole);
 See [Launch Constraint](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html) documentation
 to understand permissions roles need.
 
-### Tag update constraint
+### Deploy with StackSets
 
-Tag update constraints allow or disallow end users to update tags on resources associated with an AWS Service Catalog product upon provisioning.
-By default, tag updating is not permitted.
-If tag updating is allowed, then new tags associated with the product or portfolio will be applied to provisioned resources during a provisioned product update.
-
-```ts fixture=portfolio-product
-portfolio.addProduct(product);
-
-portfolio.constrainTagUpdates(product);
-```
-
-If you want to disable this feature later on, you can update it by setting the "allow" parameter to `false`:
+A StackSets deployment constraint allows you to configure product deployment options using 
+[AWS CloudFormation StackSets](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/using-stacksets.html). 
+You can specify multiple accounts and regions for the product launch following StackSets conventions.
+There is an additional field `allowStackControl` that configures ability for end users to create, edit, or delete the stacks. 
+End users can manage those accounts and determine where products deploy and the order of deployment.
+You can only define one StackSets deployment configuration per portfolio-product association,
+and you cannot both set a launch role and StackSets deployment configuration for an assocation.
 
 ```ts fixture=portfolio-product
-// to disable tag updates:
-portfolio.constrainTagUpdates(product, {
-  allow: false,
+const adminRole = new iam.Role(this, 'AdminRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+const executionRole = new iam.Role(this, 'ExecutionRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+portfolio.deployWithStackSets(product, {
+  accounts: ['012345678901', '012345678902', '012345678903'],
+  regions: ['us-west-1', 'us-east-1', 'us-west-2', 'us-east-1'],
+  adminRole: adminRole,
+  executionRole: executionRole,
+  allowStackSetInstanceOperations: true
 });
 ```

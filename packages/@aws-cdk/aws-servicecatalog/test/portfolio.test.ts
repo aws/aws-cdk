@@ -512,8 +512,6 @@ describe('portfolio associations and product constraints', () => {
     const launchRole = new iam.Role(stack, 'LaunchRole', {
       assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
     });
-    const accounts = ['012345678901', '012345678901'];
-    const regions = ['us-east-1', 'us-west-2', 'eu-west-1'];
 
     const adminRole = new iam.Role(stack, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal(),
@@ -522,7 +520,14 @@ describe('portfolio associations and product constraints', () => {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    portfolio.deployWithStackSets(product, accounts, regions, adminRole, executionRole, false);
+    portfolio.deployWithStackSets(product, {
+      accounts: ['012345678901', '012345678901'],
+      regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+      adminRole: adminRole,
+      executionRole: executionRole,
+      allowStackSetInstanceOperations: false,
+    },
+    );
 
     expect(() => {
       portfolio.setLaunchRole(product, launchRole);
@@ -530,9 +535,6 @@ describe('portfolio associations and product constraints', () => {
   }),
 
   test('deploy with stacksets constraint', () => {
-    const accounts = ['012345678901', '012345678901'];
-    const regions = ['us-east-1', 'us-west-2', 'eu-west-1'];
-
     const adminRole = new iam.Role(stack, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal(),
     });
@@ -542,7 +544,12 @@ describe('portfolio associations and product constraints', () => {
 
     portfolio.addProduct(product);
 
-    portfolio.deployWithStackSets(product, accounts, regions, adminRole, executionRole, true, {
+    portfolio.deployWithStackSets(product, {
+      accounts: ['012345678901', '012345678901'],
+      regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+      adminRole: adminRole,
+      executionRole: executionRole,
+      allowStackSetInstanceOperations: true,
       description: 'stackset description',
       messageLanguage: servicecatalog.MessageLanguage.JP,
     });
@@ -558,17 +565,14 @@ describe('portfolio associations and product constraints', () => {
       },
       ExecutionRole: { Ref: 'ExecutionRole605A040B' },
       Description: 'stackset description',
-      AccountList: accounts,
-      RegionList: regions,
+      AccountList: ['012345678901', '012345678901'],
+      RegionList: ['us-east-1', 'us-west-2', 'eu-west-1'],
       StackInstanceControl: 'ALLOWED',
       AcceptLanguage: 'jp',
     });
   }),
 
   test('deployment with stacksets still adds without explicit association', () => {
-    const accounts = ['012345678901', '012345678901'];
-    const regions = ['us-east-1', 'us-west-2', 'eu-west-1'];
-
     const adminRole = new iam.Role(stack, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal(),
     });
@@ -576,15 +580,18 @@ describe('portfolio associations and product constraints', () => {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    portfolio.deployWithStackSets(product, accounts, regions, adminRole, executionRole, false);
+    portfolio.deployWithStackSets(product, {
+      accounts: ['012345678901', '012345678901'],
+      regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+      adminRole: adminRole,
+      executionRole: executionRole,
+      allowStackSetInstanceOperations: false,
+    });
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::StackSetConstraint');
   }),
 
   test('fails to add multiple deploy with stackset constraints', () => {
-    const accounts = ['012345678901', '012345678901'];
-    const regions = ['us-east-1', 'us-west-2', 'eu-west-1'];
-
     const adminRole = new iam.Role(stack, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal(),
     });
@@ -592,10 +599,22 @@ describe('portfolio associations and product constraints', () => {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    portfolio.deployWithStackSets(product, accounts, regions, adminRole, executionRole, true);
+    portfolio.deployWithStackSets(product, {
+      accounts: ['012345678901', '012345678901'],
+      regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+      adminRole: adminRole,
+      executionRole: executionRole,
+      allowStackSetInstanceOperations: true,
+    });
 
     expect(() => {
-      portfolio.deployWithStackSets(product, accounts, regions, adminRole, executionRole, true);
+      portfolio.deployWithStackSets(product, {
+        accounts: ['012345678901', '012345678901'],
+        regions: ['ap-east-1', 'ap-northeast-2', 'eu-west-1'],
+        adminRole: adminRole,
+        executionRole: executionRole,
+        allowStackSetInstanceOperations: false,
+      });
     }).toThrowError(/Cannot configure multiple stackset deployment constraints for association/);
   }),
 
@@ -603,9 +622,6 @@ describe('portfolio associations and product constraints', () => {
     const launchRole = new iam.Role(stack, 'LaunchRole', {
       assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
     });
-
-    const accounts = ['012345678901', '012345678901'];
-    const regions = ['us-east-1', 'us-west-2', 'eu-west-1'];
 
     const adminRole = new iam.Role(stack, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal(),
@@ -617,7 +633,14 @@ describe('portfolio associations and product constraints', () => {
     portfolio.setLaunchRole(product, launchRole);
 
     expect(() => {
-      portfolio.deployWithStackSets(product, accounts, regions, adminRole, executionRole, false);
+      portfolio.deployWithStackSets(product, {
+        accounts: ['012345678901', '012345678901'],
+        regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+        adminRole: adminRole,
+        executionRole: executionRole,
+        allowStackSetInstanceOperations: true,
+      });
+
     }).toThrowError(/Cannot configure stackset deployment when a launch role is already defined for association/);
   });
 });
