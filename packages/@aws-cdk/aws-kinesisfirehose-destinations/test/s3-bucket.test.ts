@@ -258,19 +258,26 @@ describe('S3 destination', () => {
 
   describe('processing configuration', () => {
 
-    it('correctly creates configuration for LambdaDataProcessor', () => {
-      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+    let lambdaFunction: lambda.IFunction;
+    let basicLambdaProcessor: firehosedestinations.LambdaFunctionProcessor;
+    let destinationWithBasicLambdaProcessor: firehosedestinations.S3Bucket;
+
+    beforeEach(() => {
+      lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromInline('foo'),
         handler: 'bar',
       });
-      const processor = new firehosedestinations.LambdaFunctionProcessor(lambdaFunction);
-      const destination = new firehosedestinations.S3Bucket(bucket, {
+      basicLambdaProcessor = new firehosedestinations.LambdaFunctionProcessor(lambdaFunction);
+      destinationWithBasicLambdaProcessor = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
-        processors: [processor],
+        processors: [basicLambdaProcessor],
       });
+    });
+
+    it('creates configuration for LambdaFunctionProcessor', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
+        destinations: [destinationWithBasicLambdaProcessor],
       });
 
       expect(stack).toHaveResource('AWS::Lambda::Function');
@@ -297,11 +304,6 @@ describe('S3 destination', () => {
     });
 
     it('set all optional parameters', () => {
-      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
-        code: lambda.Code.fromInline('foo'),
-        handler: 'bar',
-      });
       const processor = new firehosedestinations.LambdaFunctionProcessor(lambdaFunction, {
         bufferInterval: cdk.Duration.minutes(1),
         bufferSize: cdk.Size.mebibytes(1),
@@ -352,18 +354,8 @@ describe('S3 destination', () => {
 
     it('grants invoke access to the lambda function and delivery stream depends on grant', () => {
       const capturedPolicyId = Capture.aString();
-      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
-        code: lambda.Code.fromInline('foo'),
-        handler: 'bar',
-      });
-      const processor = new firehosedestinations.LambdaFunctionProcessor(lambdaFunction);
-      const destination = new firehosedestinations.S3Bucket(bucket, {
-        role: destinationRole,
-        processors: [processor],
-      });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
+        destinations: [destinationWithBasicLambdaProcessor],
       });
 
       expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -385,15 +377,9 @@ describe('S3 destination', () => {
     });
 
     it('throws error if more than one processor is provided', () => {
-      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
-        runtime: lambda.Runtime.NODEJS_12_X,
-        code: lambda.Code.fromInline('foo'),
-        handler: 'bar',
-      });
-      const processor = new firehosedestinations.LambdaFunctionProcessor(lambdaFunction);
       const destination = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
-        processors: [processor, processor],
+        processors: [basicLambdaProcessor, basicLambdaProcessor],
       });
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
