@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -185,37 +186,67 @@ function renderMessageAttributes(attributes?: { [key: string]: MessageAttribute 
 }
 
 function renderMessageAttributeValue(attribute: MessageAttribute): MessageAttributeValue {
-  if (attribute.dataType === MessageAttributeDataType.BINARY) {
-    return { DataType: MessageAttributeDataType.BINARY, BinaryValue: `${attribute.value}` };
-  }
   const dataType = attribute.dataType;
   if (attribute.value instanceof sfn.TaskInput) {
     return { DataType: dataType ?? MessageAttributeDataType.STRING, StringValue: attribute.value.value };
   }
+
+  if (dataType === MessageAttributeDataType.BINARY) {
+    return { DataType: dataType, BinaryValue: `${attribute.value}` };
+  }
+
+  if (Token.isUnresolved(attribute.value)) {
+    return { DataType: dataType ?? MessageAttributeDataType.STRING, StringValue: attribute.value };
+  }
+
+  validateMessageAttribute(attribute);
   if (Array.isArray(attribute.value)) {
-    // validates the primitives
-    attribute.value.forEach(v => {
-      // null can be skipped and is valid in an array
-      if (v !== null) {
-        console.log("found a null");
-        renderPrimitiveValue(v);
-      }
-    });
     return { DataType: dataType ?? MessageAttributeDataType.STRING_ARRAY, StringValue: JSON.stringify(attribute.value) };
   }
-  return renderPrimitiveValue(attribute.value);
+  const value = attribute.value;
+  if (typeof value === 'number') {
+    return { DataType: MessageAttributeDataType.NUMBER, StringValue: `${value}` };
+  } else {
+    return { DataType: MessageAttributeDataType.STRING, StringValue: `${value}` };
+  }
 }
 
-function renderPrimitiveValue(attribute: any): MessageAttributeValue {
+function validateMessageAttribute(attribute: MessageAttribute): void {
   const dataType = attribute.dataType;
-  switch (typeof attribute) {
+  const value = attribute.value;
+  if (dataType === undefined) {
+    return;
+  }
+  if (Array.isArray(value)) {
+    if (dataType !== MessageAttributeDataType.STRING_ARRAY) {
+      throw new Error(`Unsupported SNS message attribute type: ${JSON.stringify(value)}`);
+    }
+    const validArrayTypes = ['string', 'boolean', 'number'];
+    value.forEach((v) => {
+      if (v !== null || !validArrayTypes.includes(typeof v)) {
+        throw new Error(`Unsupported SNS message attribute in array: ${v}`);
+      }
+    });
+    return;
+  }
+  switch (typeof value) {
     case 'string':
-      return { DataType: dataType ?? MessageAttributeDataType.STRING, StringValue: attribute };
+      // trust the user or will default to string
+      if (sfn.JsonPath.isEncodedJsonPath(attribute.value)) {
+        return;
+      }
+      if (dataType === MessageAttributeDataType.STRING ||
+        dataType === MessageAttributeDataType.BINARY) {
+        return;
+      }
+      throw new Error(`Unsupported SNS message attribute: ${JSON.stringify(value)}`);
     case 'number':
-      return { DataType: dataType ?? MessageAttributeDataType.NUMBER, StringValue: `${attribute}` };
+      if (dataType === MessageAttributeDataType.NUMBER) { return; }
+      throw new Error(`Unsupported SNS message attribute: ${JSON.stringify(value)}`);
     case 'boolean':
-      return { DataType: dataType ?? MessageAttributeDataType.STRING, StringValue: `${attribute}` };
+      if (dataType === MessageAttributeDataType.STRING) { return; }
+      throw new Error(`Unsupported SNS message attribute: ${JSON.stringify(value)}`);
     default:
-      throw new Error(`Unsupported SNS message attribute type: ${JSON.stringify(attribute)}`);
+      throw new Error(`Unsupported SNS message attribute: ${JSON.stringify(value)}`);
   }
 }
