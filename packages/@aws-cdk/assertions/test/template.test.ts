@@ -231,7 +231,7 @@ describe('TemplateAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      expect(inspect.getResources('Foo::Bar')).toEqual([{
+      expect(inspect.findResources('Foo::Bar')).toEqual([{
         Type: 'Foo::Bar',
         Properties: { baz: 'qux', fred: 'waldo' },
       }]);
@@ -245,7 +245,7 @@ describe('TemplateAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      expect(inspect.getResources('Foo::Baz')).toEqual([]);
+      expect(inspect.findResources('Foo::Baz')).toEqual([]);
     });
 
     test('matching resource props', () => {
@@ -256,7 +256,7 @@ describe('TemplateAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      expect(inspect.getResources('Foo::Bar', {
+      expect(inspect.findResources('Foo::Bar', {
         Properties: { baz: 'qux' },
       }).length).toEqual(1);
     });
@@ -269,7 +269,7 @@ describe('TemplateAssertions', () => {
       });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      expect(inspect.getResources('Foo::Bar', {
+      expect(inspect.findResources('Foo::Bar', {
         Properties: { baz: 'waldo' },
       })).toEqual([]);
     });
@@ -280,7 +280,7 @@ describe('TemplateAssertions', () => {
       new CfnResource(stack, 'Bar', { type: 'Foo::Bar' });
 
       const inspect = TemplateAssertions.fromStack(stack);
-      expect(inspect.getResources('Foo::Bar').length).toEqual(2);
+      expect(inspect.findResources('Foo::Bar').length).toEqual(2);
     });
   });
 });

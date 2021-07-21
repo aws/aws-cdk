@@ -26,7 +26,7 @@ describe('Dashboard', () => {
     }));
 
     // THEN
-    const resources = TemplateAssertions.fromStack(stack).getResources('AWS::CloudWatch::Dashboard');
+    const resources = TemplateAssertions.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
     expect(resources.length).toEqual(1);
     hasWidgets(resources[0].Properties, [
       { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: { markdown: 'first' } },
@@ -62,7 +62,7 @@ describe('Dashboard', () => {
     );
 
     // THEN
-    const resources = TemplateAssertions.fromStack(stack).getResources('AWS::CloudWatch::Dashboard');
+    const resources = TemplateAssertions.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
     expect(resources.length).toEqual(1);
     hasWidgets(resources[0].Properties, [
       { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: { markdown: 'first' } },

@@ -1,7 +1,7 @@
 import { Stack, Stage } from '@aws-cdk/core';
 import { Match } from './match';
 import { Matcher } from './matcher';
-import { getResources, hasResource } from './private/resource';
+import { findResources, hasResource } from './private/resource';
 import * as assert from './vendored/assert';
 
 /**
@@ -89,8 +89,8 @@ export class TemplateAssertions {
    * When a literal is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public getResources(type: string, props: any = {}): { [key: string]: any }[] {
-    return getResources(this.inspector, type, props);
+  public findResources(type: string, props: any = {}): { [key: string]: any }[] {
+    return findResources(this.inspector, type, props);
   }
 
   /**

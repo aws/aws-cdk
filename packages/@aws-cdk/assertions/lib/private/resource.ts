@@ -2,7 +2,7 @@ import { Match } from '../match';
 import { Matcher, MatchResult } from '../matcher';
 import { StackInspector } from '../vendored/assert';
 
-export function getResources(inspector: StackInspector, type: string, props: any = {}): { [key: string]: any }[] {
+export function findResources(inspector: StackInspector, type: string, props: any = {}): { [key: string]: any }[] {
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
   let results: { [key: string]: any }[] = [];
 

@@ -89,7 +89,7 @@ assert.hasResource('Foo::Bar', {
 ```
 
 Beyond assertions, the module provides APIs to retrieve matching resources.
-The `getResources()` API is complementary to the `hasResource()` API, except,
+The `findResources()` API is complementary to the `hasResource()` API, except,
 instead of asserting its presence, it returns the set of matching resources.
 
 By default, the `hasResource()` and `hasResourceProperties()` APIs perform deep
