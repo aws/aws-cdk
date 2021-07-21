@@ -51,7 +51,7 @@ export function createLoggingOptions(scope: Construct, props: DestinationLogging
     throw new Error('logging cannot be set to false when logGroup is provided');
   }
   if (props.logging !== false || props.logGroup) {
-    const logGroup = Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
+    const logGroup = props.logGroup ?? Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? new logs.LogGroup(scope, 'LogGroup');
     const logGroupGrant = logGroup.grantWrite(props.role);
     return {
       loggingOptions: {

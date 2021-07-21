@@ -85,6 +85,29 @@ describe('createLoggingOptions', () => {
     });
   });
 
+  it('does not re-use log group if log group provided', () => {
+    const loggingOutput = createLoggingOptions(stack, { streamId: 'streamId', role: destinationRole });
+    const anotherLoggingOutput = createLoggingOptions(stack, { logGroup: new logs.LogGroup(stack, 'Another Log Group'), streamId: 'streamId', role: destinationRole });
+
+    expect(stack).toCountResources('AWS::Logs::LogGroup', 2);
+    expect(stack.resolve(loggingOutput?.loggingOptions)).toMatchObject({
+      logGroupName: {
+        Ref: 'LogGroupF5B46931',
+      },
+      logStreamName: {
+        Ref: 'LogGroupstreamId3B940622',
+      },
+    });
+    expect(stack.resolve(anotherLoggingOutput?.loggingOptions)).toMatchObject({
+      logGroupName: {
+        Ref: 'AnotherLogGroup561B0F7C',
+      },
+      logStreamName: {
+        Ref: 'AnotherLogGroupstreamId15DC3997',
+      },
+    });
+  });
+
   it('grants log group write permissions to destination role', () => {
     const logGroup = new logs.LogGroup(stack, 'Log Group');
 
