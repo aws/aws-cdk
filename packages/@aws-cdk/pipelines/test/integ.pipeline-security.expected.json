@@ -431,7 +431,7 @@
                     "Fn::Join": [
                       "",
                       [
-                        "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"UnattachedStage\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SingleStageManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
+                        "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack/SingleStage\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"UnattachedStage\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SingleStageManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
                         {
                           "Ref": "SecurityChangesTopic9762A9B3"
                         },
@@ -568,7 +568,7 @@
                     "Fn::Join": [
                       "",
                       [
-                        "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProductionManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
+                        "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack/PreProduction\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProductionManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
                         {
                           "Ref": "SecurityChangesTopic9762A9B3"
                         },
@@ -627,7 +627,7 @@
                     "Fn::Join": [
                       "",
                       [
-                        "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SafeProductionManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
+                        "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack/SafeProduction\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"PreProduction\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"SafeProductionManualApproval\"},{\"name\":\"NOTIFICATION_ARN\",\"type\":\"PLAINTEXT\",\"value\":\"",
                         {
                           "Ref": "SecurityChangesTopic9762A9B3"
                         },
@@ -906,7 +906,7 @@
                   "ProjectName": {
                     "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckBEE4547C"
                   },
-                  "EnvironmentVariables": "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"NoSecurityCheck\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"EnableSecurityCheckManualApproval\"}]"
+                  "EnvironmentVariables": "[{\"name\":\"STAGE_PATH\",\"type\":\"PLAINTEXT\",\"value\":\"PipelineSecurityStack/EnableSecurityCheck\"},{\"name\":\"STAGE_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"NoSecurityCheck\"},{\"name\":\"ACTION_NAME\",\"type\":\"PLAINTEXT\",\"value\":\"EnableSecurityCheckManualApproval\"}]"
                 },
                 "InputArtifacts": [
                   {
