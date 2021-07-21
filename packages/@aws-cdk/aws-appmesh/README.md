@@ -393,7 +393,7 @@ A _route_ matches requests with an associated virtual router and distributes tra
 The route distributes matching requests to one or more target virtual nodes with relative weighting.
 
 The `RouteSpec` class lets you define protocol-specific route specifications.
-The `tcp()`, `http()` and `http2()` methods methods create a specification for the named protocols.
+The `tcp()`, `http()`, `http2()`, and grpc() methods create a specification for the named protocols.
 
 For HTTP-based routes, the match field can match on path (prefix, exact, or regex), HTTP method, scheme, 
 HTTP headers, and query parameters. By default, HTTP-based routes match all requests. 
