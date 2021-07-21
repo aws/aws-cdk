@@ -301,7 +301,7 @@ Using Server-Side Encryption with AWS KMS–Managed Keys (SSE-KMS)](https://docs
 import * as cdk from '@aws-cdk/core';
 import * as kms from '@aws-cdk/aws-kms';
 
-const s3Destination = new destinations.S3(bucket, {
+const s3Destination = new destinations.S3Bucket(bucket, {
   encryptionKey: new kms.Key(this, 'MyKey'),
 });
 new DeliveryStream(this, 'Delivery Stream', {
