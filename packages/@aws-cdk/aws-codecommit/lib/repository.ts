@@ -13,7 +13,7 @@ export interface RepositoryNotifyOnOptions extends notifications.NotificationRul
   readonly events: RepositoryNotificationEvents[];
 }
 
-export interface IRepository extends IResource, notifications.InotificationRuleSource {
+export interface IRepository extends IResource, notifications.INotificationRuleSource {
   /**
    * The ARN of this Repository.
    * @attribute
@@ -319,6 +319,50 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
+  public notifyOnCommentOnCommits(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.COMMENT_ON_COMMITS],
+    });
+  }
+
+  public notifyOnCommentOnPullRequests(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.COMMENT_ON_PULL_REQUESTS],
+    });
+  }
+
+  public notifyOnApprovalsStatusChanged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.APPROVALS_STATUS_CHANGED],
+    });
+  }
+
+  public notifyOnApprovalsRuleOverride(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.APPROVALS_RULE_OVERRIDE],
+    });
+  }
+
   public notifyOnPullRequestCreated(
     id: string,
     target: notifications.INotificationRuleTarget,
@@ -330,6 +374,28 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
+  public notifyOnPullRequestSourceUpdated(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.PULL_REQUEST_SOURCE_UPDATED],
+    });
+  }
+
+  public notifyOnPullRequestStatusChanged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.PULL_REQUEST_STATUS_CHANGED],
+    });
+  }
+
   public notifiyOnPullRequestMerged(
     id: string,
     target: notifications.INotificationRuleTarget,
@@ -338,6 +404,39 @@ abstract class RepositoryBase extends Resource implements IRepository {
     return this.notifyOn(id, target, {
       ...options,
       events: [RepositoryNotificationEvents.PULL_REQUEST_MERGED],
+    });
+  }
+
+  public notifyOnBranchesAndTagsCreated(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.BRANCHES_AND_TAGS_CREATED],
+    });
+  }
+
+  public notifyOnBranchesAndTagsDeleted(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.BRANCHES_AND_TAGS_DELETED],
+    });
+  }
+
+  public notifyOnBranchesAndTagsUpdated(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.BRANCHES_AND_TAGS_UPDATED],
     });
   }
 
@@ -527,9 +626,63 @@ function makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 
   }
 }
 
-//@TODO rest of events here plus documentation
+/**
+ * List of event types for AWS CodeCommit
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-repositories
+ */
 export enum RepositoryNotificationEvents {
-  PULL_REQUEST_CREATED = 'codecommit-repository-pull-request-created',
+  /**
+   * Trigger notication when comment made on commit
+   */
+  COMMENT_ON_COMMITS = 'codecommit-repository-comments-on-commits',
   
+  /**
+   * Trigger notification when comment made on pull request
+   */
+  COMMENT_ON_PULL_REQUESTS = 'codecommit-repository-comments-on-pull-requests',
+
+  /**
+   * Trigger notification when approval status changed
+   */
+  APPROVALS_STATUS_CHANGED = 'codecommit-repository-approvals-status-changed',
+
+  /**
+   * Trigger notifications when approval rule is overridden
+   */
+  APPROVALS_RULE_OVERRIDE = 'codecommit-repository-approvals-rule-override',
+
+  /**
+   * Trigger notification when pull request created
+   */
+  PULL_REQUEST_CREATED = 'codecommit-repository-pull-request-created',
+
+  /**
+   * Trigger notification when pull request source updated
+   */
+  PULL_REQUEST_SOURCE_UPDATED = 'codecommit-repository-pull-request-source-updated',
+
+  /**
+   * Trigger notification when pull request status is changed
+   */
+  PULL_REQUEST_STATUS_CHANGED = 'codecommit-repository-pull-request-status-changed',
+  
+  /**
+   * Trigger notification when pull requset is merged
+   */
   PULL_REQUEST_MERGED = 'codecommit-repository-pull-request-merged',
+
+  /**
+   * Trigger notification when a branch or tag is created
+   */
+  BRANCHES_AND_TAGS_CREATED = 'codecommit-repository-branches-and-tags-created',
+
+  /**
+   * Trigger notification when a branch or tag is deleted
+   */
+  BRANCHES_AND_TAGS_DELETED = 'codecommit-repository-branches-and-tags-deleted',
+
+  /**
+   * Trigger notification when a branch or tag is updated
+   */
+  BRANCHES_AND_TAGS_UPDATED = 'codecommit-repository-branches-and-tags-updated',
 }
