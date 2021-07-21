@@ -1,4 +1,4 @@
-import { arrayWith, objectLike, stringLike } from '@aws-cdk/assert-internal';
+import { anything, arrayWith, encodedJson, objectLike, stringLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { Topic } from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
@@ -52,6 +52,51 @@ behavior('security check option generates lambda/codebuild at pipeline scope', (
     });
     // 1 for github build, 1 for synth stage, and 1 for the application security check
     expect(pipelineStack).toCountResources('AWS::CodeBuild::Project', 3);
+  }
+});
+
+behavior('security check option passes correct environment variables to check project', (suite) => {
+  suite.legacy(() => {
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    pipeline.addApplicationStage(new OneStackApp(pipelineStack, 'App'), { confirmBroadeningPermissions: true });
+
+    THEN_codePipelineExpectation();
+  });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    const stage = new OneStackApp(pipelineStack, 'App');
+    pipeline.addStage(stage, {
+      pre: [
+        new cdkp.ConfirmPermissionsBroadening('Check', {
+          stage,
+        }),
+      ],
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: arrayWith(
+        {
+          Name: 'App',
+          Actions: arrayWith(
+            objectLike({
+              Name: stringLike('*Check'),
+              Configuration: objectLike({
+                EnvironmentVariables: encodedJson([
+                  { name: 'STAGE_PATH', type: 'PLAINTEXT', value: 'PipelineSecurityStack/App' },
+                  { name: 'STAGE_NAME', type: 'PLAINTEXT', value: 'App' },
+                  { name: 'ACTION_NAME', type: 'PLAINTEXT', value: anything() },
+                ]),
+              }),
+            }),
+          ),
+        },
+      ),
+    });
   }
 });
 
