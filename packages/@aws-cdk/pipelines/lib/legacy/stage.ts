@@ -5,7 +5,7 @@ import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
 import * as sns from '@aws-cdk/aws-sns';
 import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
@@ -16,6 +16,7 @@ import { CdkPipeline } from './pipeline';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { pipelineSynth } from '../private/construct-internals';
 
 /**
  * Construction properties for a CdkStage
@@ -113,7 +114,7 @@ export class CdkStage extends CoreConstruct {
    * publishing stage.
    */
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
-    const asm = appStage.synth({ validateOnSynthesis: true });
+    const asm = pipelineSynth(appStage);
     const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
 
     if (options.confirmBroadeningPermissions ?? this.confirmBroadeningPermissions) {
@@ -311,7 +312,7 @@ export class CdkStage extends CoreConstruct {
       variablesNamespace: `${appStageName}SecurityCheck`,
       environmentVariables: {
         STAGE_PATH: {
-          value: this.pipelineStage.pipeline.stack.stackName,
+          value: Node.of(appStage).path,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         STAGE_NAME: {
