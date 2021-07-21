@@ -1,12 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { MessageLanguage } from './common';
-import { TagUpdateConstraintOptions } from './constraints';
+import { CommonConstraintOptions, TagUpdateConstraintOptions } from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
+import { TagOptions } from './tag-options';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -80,6 +82,20 @@ export interface IPortfolio extends cdk.IResource {
   addProduct(product: IProduct): void;
 
   /**
+   * Associate Tag Options.
+   * A TagOption is a key-value pair managed in AWS Service Catalog.
+   * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
+   */
+  associateTagOptions(tagOptions: TagOptions): void;
+
+  /**
+   * Add notifications for supplied topics on the provisioned product.
+   * @param product A service catalog product.
+   * @param topic A SNS Topic to receive notifications on events related to the provisioned product.
+   */
+  notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options?: CommonConstraintOptions): void;
+
+  /**
    * Add a Resource Update Constraint.
    */
   constrainTagUpdates(product: IProduct, options?: TagUpdateConstraintOptions): void;
@@ -114,6 +130,14 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
       shareTagOptions: options.shareTagOptions,
       acceptLanguage: options.messageLanguage,
     });
+  }
+
+  public associateTagOptions(tagOptions: TagOptions) {
+    AssociationManager.associateTagOptions(this, tagOptions);
+  }
+
+  public notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions = {}): void {
+    AssociationManager.notifyOnStackEvents(this, product, topic, options);
   }
 
   public constrainTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}): void {
@@ -170,6 +194,13 @@ export interface PortfolioProps {
    * @default - No description provided
    */
   readonly description?: string;
+
+  /**
+   * TagOptions associated directly on portfolio
+   *
+   * @default - No tagOptions provided
+   */
+  readonly tagOptions?: TagOptions
 }
 
 /**
@@ -226,6 +257,9 @@ export class Portfolio extends PortfolioBase {
       resource: 'portfolio',
       resourceName: this.portfolioId,
     });
+    if (props.tagOptions !== undefined) {
+      this.associateTagOptions(props.tagOptions);
+    }
   }
 
   protected generateUniqueHash(value: string): string {

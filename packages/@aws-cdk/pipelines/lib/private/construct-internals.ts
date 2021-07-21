@@ -23,6 +23,10 @@ export function assemblyBuilderOf(stage: Stage): cxapi.CloudAssemblyBuilder {
   return (stage as any)._assemblyBuilder;
 }
 
+export function pipelineSynth(stage: Stage) {
+  return stage.synth({ validateOnSynthesis: true });
+}
+
 /**
  * Return the relative path from the app assembly to the scope's (nested) assembly
  */

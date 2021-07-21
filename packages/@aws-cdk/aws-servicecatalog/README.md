@@ -31,7 +31,9 @@ enables organizations to create and manage catalogs of products for their end us
   - [Sharing a portfolio with another AWS account](#sharing-a-portfolio-with-another-aws-account)
 - [Product](#product)
   - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
+- [TagOptions](#tag-options)
 - [Constraints](#constraints)
+  - [Notify on stack events](#notify-on-stack-events)
   - [Tag update constraint](#tag-update-constraint)
 
 The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
@@ -157,6 +159,21 @@ A product can be added to multiple portfolios depending on your resource and org
 portfolio.addProduct(product);
 ```
 
+### Tag Options
+
+TagOptions allow administrators to easily manage tags on provisioned products by creating a selection of tags for end users to choose from.
+For example, an end user can choose an `ec2` for the instance type size.
+TagOptions are created by specifying a key with a selection of values.
+At the moment, TagOptions can only be disabled in the console.
+
+```ts fixture=basic-portfolio
+const tagOptions = new servicecatalog.TagOptions({
+  ec2InstanceType: ['A1', 'M4'],
+  ec2InstanceSize: ['medium', 'large'],
+});
+portfolio.associateTagOptions(tagOptions);
+```
+
 ## Constraints
 
 Constraints define governance mechanisms that allow you to manage permissions, notifications, and options related to actions end users can perform on products,
@@ -168,6 +185,24 @@ For example, you can only have a single "tag update" constraint applied to a por
 If a misconfigured constraint is added, `synth` will fail with an error message.
 
 Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints.html).
+
+### Notify on stack events
+
+Allows users to subscribe an AWS `SNS` topic to the stack events of the product.
+When an end user provisions a product it creates a product stack that notifies the subscribed topic on creation, edit, and delete events.
+An individual `SNS` topic may only be subscribed once to a portfolio-product association.
+
+```ts fixture=portfolio-product
+import * as sns from '@aws-cdk/aws-sns';
+
+const topic1 = new sns.Topic(this, 'MyTopic1');
+portfolio.notifyOnStackEvents(product, topic1);
+
+const topic2 = new sns.Topic(this, 'MyTopic2');
+portfolio.notifyOnStackEvents(product, topic2, {
+  description: 'description for this topic2', // description is an optional field. 
+});
+```
 
 ### Tag update constraint
 

@@ -474,10 +474,14 @@ step and runs tests from there:
 const synth = new ShellStep('Synth', { /* ... */ });
 const pipeline = new CodePipeline(this, 'Pipeline', { synth });
 
-new ShellStep('Approve', {
-  // Use the contents of the 'integ' directory from the synth step as the input
-  input: synth.addOutputDirectory('integ'),
-  commands: ['cd integ && ./run.sh'],
+pipeline.addStage(/* ... */, {
+  post: [
+    new ShellStep('Approve', {
+      // Use the contents of the 'integ' directory from the synth step as the input
+      input: synth.addOutputDirectory('integ'),
+      commands: ['cd integ && ./run.sh'],
+    }),
+  ],
 });
 ```
 
@@ -735,9 +739,9 @@ to it, it's important that you don't delete the stack or change its *Qualifier*,
 or future deployments to this environment will fail. If you want to upgrade
 the bootstrap stack to a newer version, do that by updating it in-place.
 
-> This library requires a newer version of the bootstrapping stack which has
-> been updated specifically to support cross-account continuous delivery. In the future,
-> this new bootstrapping stack will become the default, but for now it is still
+> This library requires the *modern* bootstrapping stack which has
+> been updated specifically to support cross-account continuous delivery. Starting,
+> in CDK v2 this new bootstrapping stack will become the default, but for now it is still
 > opt-in.
 >
 > The commands below assume you are running `cdk bootstrap` in a directory
@@ -788,17 +792,27 @@ These command lines explained:
   flag out if either the AWS default credentials or the `AWS_*` environment
   variables confer these permissions.
 * `--cloudformation-execution-policies`: ARN of the managed policy that future CDK
-  deployments should execute with. You can tailor this to the needs of your organization
-  and give more constrained permissions than `AdministratorAccess`.
+  deployments should execute with. By default this is `AdministratorAccess`, but
+  if you also specify the `--trust` flag to give another Account permissions to
+  deploy into the current account, you must specify a value here.
 * `--trust`: indicates which other account(s) should have permissions to deploy
   CDK applications into this account. In this case we indicate the Pipeline's account,
   but you could also use this for developer accounts (don't do that for production
   application accounts though!).
-* `--trust-for-lookup`: similar to `--trust`, but gives a more limited set of permissions to the
-  trusted account, allowing it to only look up values, such as availability zones, EC2 images and
-  VPCs. Note that if you provide an account using `--trust`, that account can also do lookups.
-  So you only need to pass `--trust-for-lookup` if you need to use a different account.
+* `--trust-for-lookup`: gives a more limited set of permissions to the
+  trusted account, only allowing it to look up values such as availability zones, EC2 images and
+  VPCs. `--trust-for-lookup` does not give permissions to modify anything in the account.
+  Note that `--trust` implies `--trust-for-lookup`, so you don't need to specify
+  the same acocunt twice.
 * `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
+
+> Be aware that anyone who has access to the trusted Accounts **effectively has all
+> permissions conferred by the configured CloudFormation execution policies**,
+> allowing them to do things like read arbitrary S3 buckets and create arbitrary
+> infrastructure in the bootstrapped account.  Restrict the list of `--trust`ed Accounts,
+> or restrict the policies configured by `--cloudformation-execution-policies`.
+
+<br>
 
 > **Security tip**: we recommend that you use administrative credentials to an
 > account only to bootstrap it and provision the initial pipeline. Otherwise,
@@ -840,7 +854,68 @@ and orphan the old bucket. You should manually delete the orphaned bucket
 after you are sure you have redeployed all CDK applications and there are no
 more references to the old asset bucket.
 
-## Security Tips
+## Context Lookups
+
+You might be using CDK constructs that need to look up [runtime
+context](https://docs.aws.amazon.com/cdk/latest/guide/context.html#context_methods),
+which is information from the target AWS Account and Region the CDK needs to
+synthesize CloudFormation templates appropriate for that environment. Examples
+of this kind of context lookups are the number of Availability Zones available
+to you, a Route53 Hosted Zone ID, or the ID of an AMI in a given region. This
+information is automatically looked up when you run `cdk synth`.
+
+By default, a `cdk synth` performed in a pipeline will not have permissions
+to perform these lookups, and the lookups will fail. This is by design.
+
+**Our recommended way of using lookups** is by running `cdk synth` on the
+developer workstation and checking in the `cdk.context.json` file, which
+contains the results of the context lookups. This will make sure your
+synthesized infrastructure is consistent and repeatable. If you do not commit
+`cdk.context.json`, the results of the lookups may suddenly be different in
+unexpected ways, and even produce results that cannot be deployed or will cause
+data loss.  To give an account permissions to perform lookups against an
+environment, without being able to deploy to it and make changes, run
+`cdk bootstrap --trust-for-lookup=<account>`.
+
+If you want to use lookups directly from the pipeline, you either need to accept
+the risk of nondeterminism, or make sure you save and load the
+`cdk.context.json` file somewhere between synth runs. Finally, you should
+give the synth CodeBuild execution role permissions to assume the bootstrapped
+lookup roles. As an example, doing so would look like this:
+
+```ts
+new CodePipeline(this, 'Pipeline', {
+  synth: new CodeBuildStep('Synth', {
+    input: // ...input...
+    commands: [
+      // Commands to load cdk.context.json from somewhere here
+      '...',
+      'npm ci',
+      'npm run build',
+      'npx cdk synth',
+      // Commands to store cdk.context.json back here
+      '...',
+    ],
+    rolePolicyStatements: [
+      new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        resources: ['*'],
+        conditions: {
+          StringEquals: {
+            'iam:ResourceTag/aws-cdk:bootstrap-role': 'deploy',
+          },
+        },
+      }),
+    ],
+  }),
+});
+```
+
+The above example requires that the target environments have all
+been bootstrapped with bootstrap stack version `8`, released with
+CDK CLI `1.114.0`.
+
+## Security Considerations
 
 It's important to stay safe while employing Continuous Delivery. The CDK Pipelines
 library comes with secure defaults to the best of our ability, but by its
@@ -861,6 +936,68 @@ We therefore expect you to mind the following:
   developers to have access to any of the account credentials; all further
   changes can be deployed through git. Avoid the chances of credentials leaking
   by not having them in the first place!
+
+### Confirm permissions broadening
+
+To keep tabs on the security impact of changes going out through your pipeline,
+you can insert a security check before any stage deployment. This security check
+will check if the upcoming deployment would add any new IAM permissions or
+security group rules, and if so pause the pipeline and require you to confirm
+the changes.
+
+The security check will appear as two distinct actions in your pipeline: first
+a CodeBuild project that runs `cdk diff` on the stage that's about to be deployed,
+followed by a Manual Approval action that pauses the pipeline. If it so happens
+that there no new IAM permissions or security group rules will be added by the deployment,
+the manual approval step is automatically satisfied. The pipeline will look like this:
+
+```txt
+Pipeline
+├── ...
+├── MyApplicationStage
+│    ├── MyApplicationSecurityCheck       // Security Diff Action
+│    ├── MyApplicationManualApproval      // Manual Approval Action
+│    ├── Stack.Prepare
+│    └── Stack.Deploy
+└── ...
+```
+
+You can insert the security check by using a `ConfirmPermissionsBroadening` step:
+
+```ts
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
+  pre: [
+    new ConfirmPermissionsBroadening('Check', { stage }),
+  ],
+});
+```
+
+To get notified when there is a change that needs your manual approval,
+create an SNS Topic, subscribe your own email address, and pass it in as
+as the `notificationTopic` property:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
+import * as pipelines from '@aws-cdk/pipelines';
+
+const topic = new sns.Topic(this, 'SecurityChangesTopic');
+topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
+
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
+  pre: [
+    new ConfirmPermissionsBroadening('Check', {
+      stage,
+      notificationTopic: topic,
+    }),
+  ],
+});
+```
+
+**Note**: Manual Approvals notifications only apply when an application has security
+check enabled.
 
 ## Troubleshooting
 
@@ -890,6 +1027,20 @@ Policy contains a statement with one or more invalid principals.
 One of the target (account, region) environments has not been bootstrapped
 with the new bootstrap stack. Check your target environments and make sure
 they are all bootstrapped.
+
+### Message: no matching base directory path found for cdk.out
+
+If you see this error during the **Synth** step, it means that CodeBuild
+is expecting to find a `cdk.out` directory in the root of your CodeBuild project,
+but the directory wasn't there. There are two common causes for this:
+
+* `cdk synth` is not being executed: `cdk synth` used to be run
+  implicitly for you, but you now have to explicitly include the command.
+  For NPM-based projects, add `npx cdk synth` to the end of the `commands`
+  property, for other languages add `npm install -g aws-cdk` and `cdk synth`.
+* Your CDK project lives in a subdirectory: you added a `cd <somedirectory>` command
+  to the list of commands; don't forget to tell the `ScriptStep` about the
+  different location of `cdk.out`, by passing `primaryOutputDirectory: '<somedirectory>/cdk.out'`.
 
 ### <Stack> is in ROLLBACK_COMPLETE state and can not be updated
 

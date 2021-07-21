@@ -27,7 +27,7 @@ export interface PipelineGraphProps {
 
   /**
    * Add a "prepare" step for each stack which can be used to create the change
-   * set. If this is disbled, only the "execute" step will be included.
+   * set. If this is disabled, only the "execute" step will be included.
    *
    * @default true
    */
@@ -43,7 +43,7 @@ export class PipelineGraph {
   /**
    * A Step object that may be used as the producer of FileSets that should not be represented in the graph
    */
-  public static readonly NO_STEP: Step = new class extends Step { } ('NO_STEP');
+  public static readonly NO_STEP: Step = new class extends Step { }('NO_STEP');
 
   public readonly graph: AGraph = Graph.of('', { type: 'group' });
   public readonly cloudAssemblyFileSet: FileSet;
@@ -244,7 +244,7 @@ export class PipelineGraph {
       node.dependOn(producerNode);
     }
 
-    // Add stack dependencies (by use of the dependencybuilder this also works
+    // Add stack dependencies (by use of the dependency builder this also works
     // if we encounter the Step before the Stack has been properly added yet)
     if (step instanceof ShellStep) {
       for (const output of Object.values(step.envFromCfnOutputs)) {
@@ -261,7 +261,7 @@ export class PipelineGraph {
 
     let assetNode = this.assetNodes.get(stackAsset.assetId);
     if (assetNode) {
-      // If there's already a node pubishing this asset, add as a new publishing
+      // If there's already a node publishing this asset, add as a new publishing
       // destination to the same node.
     } else if (this.singlePublisher && this.assetNodesByType.has(stackAsset.assetType)) {
       // If we're doing a single node per type, lookup by that

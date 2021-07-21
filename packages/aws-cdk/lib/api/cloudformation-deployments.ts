@@ -251,6 +251,7 @@ export class CloudFormationDeployments {
 
     const stackSdk = await this.sdkProvider.forEnvironment(resolvedEnvironment, mode, {
       assumeRoleArn: arns.assumeRoleArn,
+      assumeRoleExternalId: stack.assumeRoleExternalId,
     });
 
     return {

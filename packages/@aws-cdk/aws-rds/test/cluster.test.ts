@@ -42,6 +42,7 @@ describe('cluster', () => {
         MasterUserPassword: 'tooshort',
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         EnableIAMDatabaseAuthentication: true,
+        CopyTagsToSnapshot: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
@@ -1946,6 +1947,65 @@ describe('cluster', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
       DBClusterIdentifier: clusterIdentifier,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot default', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: true,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot disabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+      },
+      copyTagsToSnapshot: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: false,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot enabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      copyTagsToSnapshot: true,
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: true,
     });
   });
 });
