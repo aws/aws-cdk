@@ -1031,11 +1031,12 @@ const task1 = new tasks.SnsPublish(this, 'Publish1', {
   message: sfn.TaskInput.fromDataAt('$.state.message'),
   messageAttributes: {
     place: {
-      value: sfn.TaskInput.fromText('dessert point'),
+      value: sfn.JsonPath.stringAt('$.place'),
     },
     pic: {
+      // BINARY must be explicitly set
       type: MessageAttributeDataType.BINARY,
-      value: sfn.TaskInput.fromDataAt('$.pic'),
+      value: sfn.JsonPath.stringAt('$.pic'),
     },
     people: {
       value: 4,
