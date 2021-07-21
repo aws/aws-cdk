@@ -1,6 +1,9 @@
-import { Lazy, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnMapping, Fn, Lazy, Stack, Token } from '@aws-cdk/core';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '@aws-cdk/region-info/build-tools/fact-tables';
+
+// This is the name of the mapping that will be added to the CloudFormation template, if a stack is region agnostic
+const defaultMappingName = 'CloudWatchLambdaInsightsVersions';
 
 // To add new versions, update fact-tables.ts `CLOUDWATCH_LAMBDA_INSIGHTS_ARNS` and create a new `public static readonly VERSION_A_B_C_D`
 
@@ -83,6 +86,14 @@ export class LambdaInsightsVersion {
       return arn;
     }
     // Otherwise, need to add a mapping to be looked up at deployment time
-    return '';
+    const scopeStack = Stack.of(context.scope);
+    // Only create the mapping once
+    if (!scopeStack.node.tryFindChild(defaultMappingName)) {
+      new CfnMapping(scopeStack, defaultMappingName, {
+        mapping: CLOUDWATCH_LAMBDA_INSIGHTS_ARNS,
+      });
+    }
+    // The ARN will be looked up at deployment time from the mapping we created
+    return Fn.findInMap(defaultMappingName, insightsVersion, Aws.REGION);
   }
 }

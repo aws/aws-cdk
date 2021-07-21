@@ -88,4 +88,41 @@ describe('lambda-insights', () => {
     // On synthesis it should throw an error
     expect(() => app.synth()).toThrow();
   });
+
+  test('using a specific version without providing a region', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+
+    // AF-SOUTH-1 exists, 1.0.54.0 exists, but 1.0.54.0 isn't supported in AF-SOUTH-1
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_54_0,
+    });
+
+    // Should be looking up a mapping
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Properties:
+      {
+        Code: { ZipFile: 'foo' },
+        Handler: 'index.handler',
+        Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
+        Runtime: 'nodejs10.x',
+        Layers: [{
+          'Fn::FindInMap': [
+            'CloudWatchLambdaInsightsVersions',
+            '1.0.54.0',
+            {
+              Ref: 'AWS::Region',
+            },
+          ],
+        }],
+      },
+      DependsOn: ['MyLambdaServiceRole4539ECB6'],
+    }, ResourcePart.CompleteDefinition);
+
+    // On synthesis it should not throw an error
+    expect(() => app.synth()).not.toThrow();
+  });
 });
