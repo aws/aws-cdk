@@ -11,7 +11,7 @@ describe('lambda-insights', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      insightsVersion: lambda.LambdaInsightsLayerVersion.fromInsightVersionArn(layerArn),
+      insightsVersion: lambda.LambdaInsightsVersion.fromInsightVersionArn(layerArn),
     });
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
@@ -36,12 +36,15 @@ describe('lambda-insights', () => {
   });
 
   test('can provide a version to enable insights', () => {
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion(lambda.LambdaInsightsVersion.VERSION_1_0_54_0, 'us-east-1'),
+      insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_54_0,
     });
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
@@ -63,41 +66,26 @@ describe('lambda-insights', () => {
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
     }, ResourcePart.CompleteDefinition);
-  });
 
-  test('nonexistent version/region throws error', () => {
-    const stack = new cdk.Stack();
-
-    expect(() => new lambda.Function(stack, 'BadVersion', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion(
-        'NONEXISTENT_VERSION' as lambda.LambdaInsightsVersion,
-        'us-west-2'),
-    })).toThrow();
-
-    expect(() => new lambda.Function(stack, 'BadRegion', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion(
-        lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
-        'NONEXISTENT_REGION'),
-    })).toThrow();
+    // On synthesis it should not throw an error
+    expect(() => app.synth()).not.toThrow();
   });
 
   test('existing region with existing but unsupported version throws error', () => {
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'af-south-1' },
+    });
 
     // AF-SOUTH-1 exists, 1.0.54.0 exists, but 1.0.54.0 isn't supported in AF-SOUTH-1
-    expect(() => new lambda.Function(stack, 'BadVersion', {
+    new lambda.Function(stack, 'BadVersion', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion(
-        lambda.LambdaInsightsVersion.VERSION_1_0_54_0,
-        'af-south-1'),
-    })).toThrow();
+      insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_54_0,
+    });
+
+    // On synthesis it should throw an error
+    expect(() => app.synth()).toThrow();
   });
 });
