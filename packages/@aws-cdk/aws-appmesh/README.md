@@ -617,7 +617,7 @@ A _gateway route_ is attached to a virtual gateway and routes matching traffic t
 
 For HTTP-based gateway routes, the `match` field can be used to match on 
 path (prefix, exact, or regex), HTTP method, host name, HTTP headers, and query parameters.
-By default, HTTP-based routes match all requests.
+By default, HTTP-based gateway routes match all requests.
 
 ```ts
 gateway.addGatewayRoute('gateway-route-http', {
