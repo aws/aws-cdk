@@ -71,15 +71,11 @@ const adminRole = new iam.Role(stack, 'AdminRole', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
 
-const executionRole = new iam.Role(stack, 'ExceutionRole', {
-  assumedBy: new iam.AccountRootPrincipal(),
-});
-
 secondPortfolio.deployWithStackSets(product, {
   accounts: ['000000000000', '111111111111', '222222222222'],
   regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
   adminRole: adminRole,
-  executionRole: executionRole,
+  executionRoleName: 'StackSetExecutionRole',
   allowStackSetInstanceOperations: true,
 });
 

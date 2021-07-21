@@ -236,6 +236,8 @@ The launch role must be assumed by the service catalog principal.
 You can only have one launch role set for a portfolio-product association, and you cannot set a launch role if a StackSets deployment has been configured.
 
 ```ts fixture=portfolio-product
+import * as iam from '@aws-cdk/aws-iam';
+
 const launchRole = new iam.Role(this, 'LaunchRole', {
   assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
 });
@@ -251,24 +253,24 @@ to understand permissions roles need.
 A StackSets deployment constraint allows you to configure product deployment options using 
 [AWS CloudFormation StackSets](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/using-stacksets.html). 
 You can specify multiple accounts and regions for the product launch following StackSets conventions.
-There is an additional field `allowStackControl` that configures ability for end users to create, edit, or delete the stacks. 
+There is an additional field `allowStackSetInstanceOperations` that configures ability for end users to create, edit, or delete the stacks.
+By default, this field is set to `false`.
 End users can manage those accounts and determine where products deploy and the order of deployment.
 You can only define one StackSets deployment configuration per portfolio-product association,
 and you cannot both set a launch role and StackSets deployment configuration for an assocation.
 
 ```ts fixture=portfolio-product
+import * as iam from '@aws-cdk/aws-iam';
+
 const adminRole = new iam.Role(this, 'AdminRole', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
-
-// The execution role deployed in target accounts
-const executionRole = iam.Role.fromRoleArn(this, 'ImportedExecutionRole', 'arn:aws:iam::account:role/StackSetExecutionRole');
 
 portfolio.deployWithStackSets(product, {
   accounts: ['012345678901', '012345678902', '012345678903'],
   regions: ['us-west-1', 'us-east-1', 'us-west-2', 'us-east-1'],
   adminRole: adminRole,
-  executionRole: executionRole,
-  allowStackSetInstanceOperations: true
+  executionRoleName: 'SCStackSetExecutionRole', // Name of role deployed in end users accounts.
+  allowStackSetInstanceOperations: true,
 });
 ```

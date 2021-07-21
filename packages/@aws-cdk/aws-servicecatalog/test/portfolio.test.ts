@@ -460,13 +460,9 @@ describe('portfolio associations and product constraints', () => {
   });
 
   describe('portfolio constraints that have roles', () => {
-    let launchRole: iam.IRole, adminRole: iam.IRole, executionRole: iam.IRole;
-
+    let launchRole: iam.IRole, adminRole: iam.IRole;
     beforeEach(() => {
       adminRole = new iam.Role(stack, 'AdminRole', {
-        assumedBy: new iam.AccountRootPrincipal(),
-      });
-      executionRole = new iam.Role(stack, 'ExecutionRole', {
         assumedBy: new iam.AccountRootPrincipal(),
       });
       launchRole = new iam.Role(stack, 'LaunchRole', {
@@ -516,14 +512,14 @@ describe('portfolio associations and product constraints', () => {
         accounts: ['012345678901', '012345678901'],
         regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
         adminRole: adminRole,
-        executionRole: executionRole,
+        executionRoleName: 'StackSetExecutionRole',
         allowStackSetInstanceOperations: false,
       },
       );
 
       expect(() => {
         portfolio.setLaunchRole(product, launchRole);
-      }).toThrowError(/Cannot set launch role when a stackset rule is already defined for association/);
+      }).toThrowError(/Cannot set launch role when a StackSet rule is already defined for association/);
     }),
 
     test('deploy with stacksets constraint', () => {
@@ -533,8 +529,7 @@ describe('portfolio associations and product constraints', () => {
         accounts: ['012345678901', '012345678901'],
         regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
         adminRole: adminRole,
-        executionRole: executionRole,
-        allowStackSetInstanceOperations: true,
+        executionRoleName: 'StackSetExecutionRole',
         description: 'stackset description',
         messageLanguage: servicecatalog.MessageLanguage.JP,
       });
@@ -548,11 +543,11 @@ describe('portfolio associations and product constraints', () => {
             'Arn',
           ],
         },
-        ExecutionRole: { Ref: 'ExecutionRole605A040B' },
+        ExecutionRole: 'StackSetExecutionRole',
         Description: 'stackset description',
         AccountList: ['012345678901', '012345678901'],
         RegionList: ['us-east-1', 'us-west-2', 'eu-west-1'],
-        StackInstanceControl: 'ALLOWED',
+        StackInstanceControl: 'NOT_ALLOWED',
         AcceptLanguage: 'jp',
       });
     }),
@@ -562,8 +557,8 @@ describe('portfolio associations and product constraints', () => {
         accounts: ['012345678901', '012345678901'],
         regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
         adminRole: adminRole,
-        executionRole: executionRole,
-        allowStackSetInstanceOperations: false,
+        executionRoleName: 'StackSetExecutionRole',
+        allowStackSetInstanceOperations: true,
       });
 
       expect(stack).toHaveResourceLike('AWS::ServiceCatalog::StackSetConstraint');
@@ -574,8 +569,7 @@ describe('portfolio associations and product constraints', () => {
         accounts: ['012345678901', '012345678901'],
         regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
         adminRole: adminRole,
-        executionRole: executionRole,
-        allowStackSetInstanceOperations: true,
+        executionRoleName: 'StackSetsExecutionRole',
       });
 
       expect(() => {
@@ -583,10 +577,9 @@ describe('portfolio associations and product constraints', () => {
           accounts: ['012345678901', '012345678901'],
           regions: ['ap-east-1', 'ap-northeast-2', 'eu-west-1'],
           adminRole: adminRole,
-          executionRole: executionRole,
-          allowStackSetInstanceOperations: false,
+          executionRoleName: 'StackSetExecutionRole',
         });
-      }).toThrowError(/Cannot configure multiple stackset deployment constraints for association/);
+      }).toThrowError(/Cannot configure multiple StackSet deployment constraints for association/);
     }),
 
     test('fails to configure deployment with stacksets if a launch role has been set', () => {
@@ -597,10 +590,10 @@ describe('portfolio associations and product constraints', () => {
           accounts: ['012345678901', '012345678901'],
           regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
           adminRole: adminRole,
-          executionRole: executionRole,
+          executionRoleName: 'StackSetExecutionRole',
           allowStackSetInstanceOperations: true,
         });
-      }).toThrowError(/Cannot configure stackset deployment when a launch role is already defined for association/);
+      }).toThrowError(/Cannot configure StackSet deployment when a launch role is already defined for association/);
     });
   });
 });

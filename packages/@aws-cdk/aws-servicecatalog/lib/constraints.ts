@@ -43,12 +43,14 @@ export interface StackSetsConstraintOptions extends CommonConstraintOptions {
   /**
    * IAM role used to provision the products in the Stacks.
    */
-  readonly executionRole: iam.IRole;
+  readonly executionRoleName: string;
 
   /**
    * Wether to allow end users to create, update, and delete stacks.
+   *
+   * @default false
    */
-  readonly allowStackSetInstanceOperations: boolean;
+  readonly allowStackSetInstanceOperations?: boolean;
 }
 
 /**

@@ -297,9 +297,7 @@
           ]
         },
         "Description": "",
-        "ExecutionRole": {
-          "Ref": "ExceutionRole1B150DE3"
-        },
+        "ExecutionRole": "StackSetExecutionRole",
         "PortfolioId": {
           "Ref": "SecondTestPortfolio96C8F4BA"
         },
@@ -318,38 +316,6 @@
       ]
     },
     "AdminRole38563C57": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
-                    ]
-                  ]
-                }
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "ExceutionRole1B150DE3": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {

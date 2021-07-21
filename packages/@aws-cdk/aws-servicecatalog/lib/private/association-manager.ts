@@ -4,7 +4,10 @@ import * as cdk from '@aws-cdk/core';
 import { CommonConstraintOptions, StackSetsConstraintOptions, TagUpdateConstraintOptions } from '../constraints';
 import { IPortfolio } from '../portfolio';
 import { IProduct } from '../product';
-import { CfnLaunchNotificationConstraint, CfnLaunchRoleConstraint, CfnPortfolioProductAssociation, CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOption, CfnTagOptionAssociation } from '../servicecatalog.generated';
+import {
+  CfnLaunchNotificationConstraint, CfnLaunchRoleConstraint, CfnPortfolioProductAssociation,
+  CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOption, CfnTagOptionAssociation,
+} from '../servicecatalog.generated';
 import { TagOptions } from '../tag-options';
 import { hashValues } from './util';
 import { InputValidator } from './validation';
@@ -30,7 +33,7 @@ export class AssociationManager {
   }
 
   public static constrainTagUpdates(portfolio: IPortfolio, product: IProduct, options: TagUpdateConstraintOptions): void {
-    this.validateConstraintDescription(this.prettyPrintAssociation(portfolio, product), options);
+    this.validateCommonConstraintOptions(portfolio, product, options);
     const association = this.associateProductWithPortfolio(portfolio, product);
     const constructId = `ResourceUpdateConstraint${association.associationKey}`;
 
@@ -51,7 +54,7 @@ export class AssociationManager {
   }
 
   public static notifyOnStackEvents(portfolio: IPortfolio, product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions): void {
-    this.validateConstraintDescription(this.prettyPrintAssociation(portfolio, product), options);
+    this.validateCommonConstraintOptions(portfolio, product, options);
     const association = this.associateProductWithPortfolio(portfolio, product);
     const constructId = `LaunchNotificationConstraint${hashValues(topic.node.addr, topic.stack.node.addr, association.associationKey)}`;
 
@@ -72,11 +75,11 @@ export class AssociationManager {
   }
 
   public static setLaunchRole(portfolio: IPortfolio, product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions): void {
-    this.validateConstraintDescription(this.prettyPrintAssociation(portfolio, product), options);
+    this.validateCommonConstraintOptions(portfolio, product, options);
     const association = this.associateProductWithPortfolio(portfolio, product);
     // Check if a stackset deployment constraint has already been configured.
     if (portfolio.node.tryFindChild(this.stackSetConstraintLogicalId(association.associationKey))) {
-      throw new Error(`Cannot set launch role when a stackset rule is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
+      throw new Error(`Cannot set launch role when a StackSet rule is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
 
     const constructId = this.launchRoleConstraintLogicalId(association.associationKey);
@@ -97,11 +100,11 @@ export class AssociationManager {
   }
 
   public static deployWithStackSets(portfolio: IPortfolio, product: IProduct, options: StackSetsConstraintOptions) {
-    this.validateConstraintDescription(this.prettyPrintAssociation(portfolio, product), options);
+    this.validateCommonConstraintOptions(portfolio, product, options);
     const association = this.associateProductWithPortfolio(portfolio, product);
     // Check if a launch role has already been set.
     if (portfolio.node.tryFindChild(this.launchRoleConstraintLogicalId(association.associationKey))) {
-      throw new Error(`Cannot configure stackset deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
+      throw new Error(`Cannot configure StackSet deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
 
     const constructId = this.stackSetConstraintLogicalId(association.associationKey);
@@ -114,14 +117,14 @@ export class AssociationManager {
         accountList: options.accounts,
         regionList: options.regions,
         adminRole: options.adminRole.roleArn,
-        executionRole: options.executionRole.roleName,
+        executionRole: options.executionRoleName,
         stackInstanceControl: options.allowStackSetInstanceOperations ? 'ALLOWED' : 'NOT_ALLOWED',
       });
 
       // Add dependsOn to force proper order in deployment.
       constraint.addDependsOn(association.cfnPortfolioProductAssociation);
     } else {
-      throw new Error(`Cannot configure multiple stackset deployment constraints for association ${this.prettyPrintAssociation(portfolio, product)}`);
+      throw new Error(`Cannot configure multiple StackSet deployment constraints for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
   }
 
@@ -165,7 +168,7 @@ export class AssociationManager {
     return `- Portfolio: ${portfolio.node.path} | Product: ${product.node.path}`;
   }
 
-  private static validateConstraintDescription(association: string, options: CommonConstraintOptions): void {
-    InputValidator.validateLength(association, 'description', 0, 2000, options.description);
+  private static validateCommonConstraintOptions(portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions): void {
+    InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options.description);
   }
 }
