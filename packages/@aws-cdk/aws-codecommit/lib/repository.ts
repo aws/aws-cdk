@@ -1,10 +1,19 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
 
-export interface IRepository extends IResource {
+/**
+ * Additional options to pass to the notification rule
+ */
+export interface RepositoryNotifyOnOptions extends notifications.NotificationRuleOptions {
+  //@TODO add reference link
+  readonly events: RepositoryNotificationEvents[];
+}
+
+export interface IRepository extends IResource, notifications.InotificationRuleSource {
   /**
    * The ARN of this Repository.
    * @attribute
@@ -110,7 +119,36 @@ export interface IRepository extends IResource {
    * Grant the given identity permissions to read this repository.
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * 
+   * @TODO description here
+   * 
+   * @param id 
+   * @param target 
+   * @param options 
+   */
+  notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: RepositoryNotifyOnOptions,
+  ): notifications.INotificationRule;
+
+  // @TODO rest of events need to be added
+  notifyOnPullRequestCreated(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  notifiyOnPullRequestMerged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
 }
+
+
 
 /**
  * Options for the onCommit() method
@@ -267,6 +305,46 @@ abstract class RepositoryBase extends Resource implements IRepository {
       'codecommit:Get*',
       'codecommit:Describe*',
     );
+  }
+
+  public notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: RepositoryNotifyOnOptions,
+  ): notifications.INotificationRule {
+    return new notifications.NotificationRule(this, id, {
+      ...options,
+      source: this,
+      targets: [target],
+    });
+  }
+
+  public notifyOnPullRequestCreated(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.PULL_REQUEST_CREATED],
+    });
+  }
+
+  public notifiyOnPullRequestMerged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.PULL_REQUEST_MERGED],
+    });
+  }
+
+  public bindAsNotificationRuleSource(_scope: Construct): notifications.NotificationRuleSourceConfig {
+    return {
+      sourceArn: this.repositoryArn,
+    };
   }
 }
 
@@ -447,4 +525,11 @@ function makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 
     case 'grc':
       return `codecommit::${region ?? stack.region}://${repositoryName}`;
   }
+}
+
+//@TODO rest of events here plus documentation
+export enum RepositoryNotificationEvents {
+  PULL_REQUEST_CREATED = 'codecommit-repository-pull-request-created',
+  
+  PULL_REQUEST_MERGED = 'codecommit-repository-pull-request-merged',
 }
