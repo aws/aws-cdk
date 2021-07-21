@@ -214,7 +214,7 @@ const virtualService = new appmesh.VirtualService(stack, 'service-1', {
 node.addBackend(appmesh.Backend.virtualService(virtualService));
 ```
 
-The `listeners` property can be left blank and added later with the `node.addListener()` method. The `serviceDiscovery ` must be specified when specifying a listener.
+The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional, but the `port` must be specified when specifying a listener.
 
 The `backends` property can be added with `node.addBackend()`. In the example, we define a virtual service and add it to the virtual node to allow egress traffic to other nodes.
 
@@ -393,15 +393,13 @@ A _route_ matches requests with an associated virtual router and distributes tra
 The route distributes matching requests to one or more target virtual nodes with relative weighting.
 
 The `RouteSpec` class lets you define protocol-specific route specifications.
-The `tcp()`, `http()`, `http2()`, and grpc() methods create a specification for the named protocols.
+The `tcp()`, `http()`, `http2()`, and `grpc()` methods create a specification for the named protocols.
 
 For HTTP-based routes, the match field can match on path (prefix, exact, or regex), HTTP method, scheme, 
 HTTP headers, and query parameters. By default, HTTP-based routes match all requests. 
 
 For gRPC-based routes, the match field can  match on service name, method name, and metadata.
 When specifying the method name, the service name must also be specified.
-
-All types of routes support two different types of timeouts via `idle` and `perRequest`.
 
 For example, here's how to add an HTTP route that matches based on a prefix of the URL path:
 
@@ -563,7 +561,7 @@ The virtual gateway represents an Envoy proxy running in an Amazon ECS task, in 
 Unlike a virtual node, which represents Envoy running with an application, a virtual gateway represents Envoy deployed by itself.
 
 A virtual gateway is similar to a virtual node in that it has a listener that accepts traffic for a particular port and protocol (HTTP, HTTP2, GRPC).
-Traffic received by the virtual gateway is directed to other services in your mesh
+Traffic recieved by the virtual gateway is directed to other services in your mesh
 using rules defined in gateway routes which can be added to your virtual gateway.
 
 Create a virtual gateway with the constructor:
@@ -619,7 +617,7 @@ A _gateway route_ is attached to a virtual gateway and routes matching traffic t
 
 For HTTP-based gateway routes, the `match` field can be used to match on 
 path (prefix, exact, or regex), HTTP method, host name, HTTP headers, and query parameters.
-By default, HTTP-based gateway routes match all requests.
+By default, HTTP-based routes match all requests.
 
 ```ts
 gateway.addGatewayRoute('gateway-route-http', {
