@@ -561,7 +561,7 @@ The virtual gateway represents an Envoy proxy running in an Amazon ECS task, in 
 Unlike a virtual node, which represents Envoy running with an application, a virtual gateway represents Envoy deployed by itself.
 
 A virtual gateway is similar to a virtual node in that it has a listener that accepts traffic for a particular port and protocol (HTTP, HTTP2, GRPC).
-Traffic recieved by the virtual gateway is directed to other services in your mesh
+Traffic received by the virtual gateway is directed to other services in your mesh
 using rules defined in gateway routes which can be added to your virtual gateway.
 
 Create a virtual gateway with the constructor:
