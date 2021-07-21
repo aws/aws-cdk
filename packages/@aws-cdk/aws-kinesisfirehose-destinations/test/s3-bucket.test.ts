@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { ABSENT, Capture, anything, MatchStyle, arrayWith } from '@aws-cdk/assert-internal';
+import { ABSENT, Capture, MatchStyle, ResourcePart, anything, arrayWith } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
@@ -42,38 +42,6 @@ describe('S3 destination', () => {
     });
     expect(stack).toHaveResource('AWS::Logs::LogGroup');
     expect(stack).toHaveResource('AWS::Logs::LogStream');
-  });
-
-  it('allows disabling logging', () => {
-    new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destinations: [new firehosedestinations.S3Bucket(bucket, {
-        logging: false,
-      })],
-    });
-
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
-      ExtendedS3DestinationConfiguration: {
-        CloudWatchLoggingOptions: ABSENT,
-      },
-    });
-  });
-
-  it('allows providing a log group', () => {
-    const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Log Group', 'evergreen');
-
-    new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destinations: [new firehosedestinations.S3Bucket(bucket, {
-        logGroup,
-      })],
-    });
-
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
-      ExtendedS3DestinationConfiguration: {
-        CloudWatchLoggingOptions: {
-          LogGroupName: 'evergreen',
-        },
-      },
-    });
   });
 
   it('creates a role when none is provided', () => {
@@ -150,19 +118,140 @@ describe('S3 destination', () => {
             Effect: 'Allow',
             Resource: [
               stack.resolve(bucket.bucketArn),
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    stack.resolve(bucket.bucketArn),
-                    '/*',
-                  ],
-                ],
-              },
+              { 'Fn::Join': ['', [stack.resolve(bucket.bucketArn), '/*']] },
             ],
           },
         ],
       },
+    });
+  });
+
+  it('bucket and log group grants are depended on by delivery stream', () => {
+    const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Log Group', 'evergreen');
+    const capturedPolicyId = Capture.aString();
+    const destination = new firehosedestinations.S3Bucket(bucket, { role: destinationRole, logGroup });
+
+    new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destinations: [destination],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyName: capturedPolicyId.capture(),
+      Roles: [stack.resolve(destinationRole.roleName)],
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+              's3:PutObject*',
+              's3:Abort*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              stack.resolve(bucket.bucketArn),
+              { 'Fn::Join': ['', [stack.resolve(bucket.bucketArn), '/*']] },
+            ],
+          },
+          {
+            Action: [
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: stack.resolve(logGroup.logGroupArn),
+          },
+        ],
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      DependsOn: [capturedPolicyId.capturedValue],
+    }, ResourcePart.CompleteDefinition);
+  });
+
+  describe('logging', () => {
+    it('creates resources and configuration by default', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket)],
+      });
+
+      expect(stack).toHaveResource('AWS::Logs::LogGroup');
+      expect(stack).toHaveResource('AWS::Logs::LogStream');
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CloudWatchLoggingOptions: {
+            Enabled: true,
+            LogGroupName: anything(),
+            LogStreamName: anything(),
+          },
+        },
+      });
+    });
+
+    it('does not create resources or configuration if disabled', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, { logging: false })],
+      });
+
+      expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CloudWatchLoggingOptions: ABSENT,
+        },
+      });
+    });
+
+    it('uses provided log group', () => {
+      const logGroup = new logs.LogGroup(stack, 'Log Group');
+
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, { logGroup })],
+      });
+
+      expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CloudWatchLoggingOptions: {
+            Enabled: true,
+            LogGroupName: stack.resolve(logGroup.logGroupName),
+            LogStreamName: anything(),
+          },
+        },
+      });
+    });
+
+    it('throws error if logging disabled but log group provided', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, { logging: false, logGroup: new logs.LogGroup(stack, 'Log Group') });
+
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      })).toThrowError('logging cannot be set to false when logGroup is provided');
+    });
+
+    it('grants log group write permissions to destination role', () => {
+      const logGroup = new logs.LogGroup(stack, 'Log Group');
+
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, { logGroup, role: destinationRole })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        Roles: [stack.resolve(destinationRole.roleName)],
+        PolicyDocument: {
+          Statement: arrayWith(
+            {
+              Action: [
+                'logs:CreateLogStream',
+                'logs:PutLogEvents',
+              ],
+              Effect: 'Allow',
+              Resource: stack.resolve(logGroup.logGroupArn),
+            },
+          ),
+        },
+      });
     });
   });
 });

@@ -35,20 +35,32 @@ export interface DestinationLoggingProps {
   readonly streamId: string;
 }
 
-export function createLoggingOptions(
-  scope: Construct,
-  props: DestinationLoggingProps,
-): firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty | undefined {
+export interface DestinationLoggingOutput {
+  /**
+   * Logging options that will be injected into the destination configuration.
+   */
+  readonly loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
+
+  /**
+   * Resources that were created by the sub-config creator that must be deployed before the delivery stream is deployed.
+   */
+  readonly dependables: cdk.IDependable[];
+}
+
+export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingOutput | undefined {
   if (props.logging === false && props.logGroup) {
     throw new Error('logging cannot be set to false when logGroup is provided');
   }
   if (props.logging !== false || props.logGroup) {
-    const logGroup = Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? props.logGroup ?? new logs.LogGroup(scope, 'LogGroup');
-    logGroup.grantWrite(props.role);
+    const logGroup = props.logGroup ?? Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? new logs.LogGroup(scope, 'LogGroup');
+    const logGroupGrant = logGroup.grantWrite(props.role);
     return {
-      enabled: true,
-      logGroupName: logGroup.logGroupName,
-      logStreamName: logGroup.addStream(props.streamId).logStreamName,
+      loggingOptions: {
+        enabled: true,
+        logGroupName: logGroup.logGroupName,
+        logStreamName: logGroup.addStream(props.streamId).logStreamName,
+      },
+      dependables: [logGroupGrant],
     };
   }
   return undefined;

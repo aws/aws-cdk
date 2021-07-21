@@ -373,7 +373,10 @@
             ]
           }
         }
-      }
+      },
+      "DependsOn": [
+        "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7"
+      ]
     }
   },
   "Parameters": {
