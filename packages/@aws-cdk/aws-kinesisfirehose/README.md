@@ -164,7 +164,8 @@ as well as the ability to invoke data transformers and read schemas for record f
 conversion. If you wish, you may specify your own IAM role for either the delivery stream
 or the destination service role, or both. It must have the correct trust policy (it must
 allow Kinesis Data Firehose to assume it) or delivery stream creation or data delivery
-will fail.
+will fail. Other required permissions to destination resources, encryption keys, etc.,
+will be provided automatically.
 
 ```ts fixture=with-bucket
 import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
