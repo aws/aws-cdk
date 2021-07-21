@@ -1,3 +1,37 @@
+# CloudFormation Resource Specification v39.6.0
+
+## New Resource Types
+
+* AWS::Logs::ResourcePolicy
+
+## Attribute Changes
+
+* AWS::S3::AccessPoint Arn (__added__)
+* AWS::S3::AccessPoint Name (__added__)
+
+## Property Changes
+
+* AWS::Glue::Crawler RecrawlPolicy (__added__)
+* AWS::ImageBuilder::ImageRecipe AdditionalInstanceConfiguration (__added__)
+* AWS::S3::AccessPoint Name (__deleted__)
+* AWS::S3::AccessPoint PolicyStatus (__added__)
+
+## Property Type Changes
+
+* AWS::Glue::Crawler.RecrawlPolicy (__added__)
+* AWS::Glue::Database.DataLakePrincipal (__added__)
+* AWS::Glue::Database.PrincipalPrivileges (__added__)
+* AWS::ImageBuilder::ImageRecipe.AdditionalInstanceConfiguration (__added__)
+* AWS::ImageBuilder::ImageRecipe.ComponentParameter (__added__)
+* AWS::ImageBuilder::ImageRecipe.SystemsManagerAgent (__added__)
+* AWS::Glue::Database.DatabaseInput CreateTableDefaultPermissions (__added__)
+* AWS::Glue::Partition.SchemaReference SchameVersionId (__deleted__)
+* AWS::Glue::Partition.SchemaReference SchemaVersionId (__added__)
+* AWS::Glue::Table.SchemaReference SchameVersionId (__deleted__)
+* AWS::Glue::Table.SchemaReference SchemaVersionId (__added__)
+* AWS::ImageBuilder::ImageRecipe.ComponentConfiguration Parameters (__added__)
+
+
 # CloudFormation Resource Specification v39.5.0
 
 ## New Resource Types
