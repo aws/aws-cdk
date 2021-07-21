@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.115.0](https://github.com/aws/aws-cdk/compare/v1.114.0...v1.115.0) (2021-07-21)
+
+
+### Features
+
+* **apigatewayv2:** websocket - callback url ([#15227](https://github.com/aws/aws-cdk/issues/15227)) ([349de7c](https://github.com/aws/aws-cdk/commit/349de7c2abff97e10a6e76dd6b7856ecbfd0c441)), closes [#14836](https://github.com/aws/aws-cdk/issues/14836)
+* **apigatewayv2-integrations:** http private integrations - tls config ([#15469](https://github.com/aws/aws-cdk/issues/15469)) ([6453769](https://github.com/aws/aws-cdk/commit/645376958a699ee89e3cc805546c293c93d99613)), closes [#14036](https://github.com/aws/aws-cdk/issues/14036)
+* **appsync:** optional operation parameter for lambdaRequest mapping template ([#15283](https://github.com/aws/aws-cdk/issues/15283)) ([efd2e68](https://github.com/aws/aws-cdk/commit/efd2e68d9799f0827c542a562f3c17a5a0dbdee1)), closes [#15274](https://github.com/aws/aws-cdk/issues/15274) [#14079](https://github.com/aws/aws-cdk/issues/14079)
+* **aws-efs:** grant support on FileSystem ([#14999](https://github.com/aws/aws-cdk/issues/14999)) ([09591c6](https://github.com/aws/aws-cdk/commit/09591c6268d0e03937741e4f7cad9b97e21b131b)), closes [#14998](https://github.com/aws/aws-cdk/issues/14998)
+* **cli:** add ability to specify an external id for the deploy-role ([#15604](https://github.com/aws/aws-cdk/issues/15604)) ([2647cf3](https://github.com/aws/aws-cdk/commit/2647cf300ae0f9053104e3a545e2fd94dd7249e1))
+* **lambda-nodejs:** source map mode ([#15621](https://github.com/aws/aws-cdk/issues/15621)) ([b934976](https://github.com/aws/aws-cdk/commit/b934976f057cd395de660dc4099e2303415cdc78)), closes [#14857](https://github.com/aws/aws-cdk/issues/14857)
+* **pipelines:** confirm IAM changes before starting the deployment ([#15441](https://github.com/aws/aws-cdk/issues/15441)) ([ebba618](https://github.com/aws/aws-cdk/commit/ebba61830ea7ee73e168099d1cd8e8f4003d595c)), closes [#12748](https://github.com/aws/aws-cdk/issues/12748)
+* **rds:** allow setting copyTagsToSnapshot on Clusters ([#15553](https://github.com/aws/aws-cdk/issues/15553)) ([f7c6289](https://github.com/aws/aws-cdk/commit/f7c628948e7f71df7a95cb00cdc2746e2e46dc03)), closes [#15521](https://github.com/aws/aws-cdk/issues/15521)
+* **servicecatalog:** Add stack event notification constraint ([#15610](https://github.com/aws/aws-cdk/issues/15610)) ([4e40db3](https://github.com/aws/aws-cdk/commit/4e40db3e5577c575aa5e25093e1b82eae6e7cb31))
+* **servicecatalog:** Add TagOptions for portfolio ([#15612](https://github.com/aws/aws-cdk/issues/15612)) ([e7760ee](https://github.com/aws/aws-cdk/commit/e7760ee9da19d7d006cdf1836ce6f71bf9f31327))
+
+
+### Bug Fixes
+
+* **appsync:** update timestamp for apikey test ([#15624](https://github.com/aws/aws-cdk/issues/15624)) ([9c4e51c](https://github.com/aws/aws-cdk/commit/9c4e51ca1719b89bcdd9d4032f50063876fac69a)), closes [#15623](https://github.com/aws/aws-cdk/issues/15623)
+* **cfnspec:** make EndpointConfiguration of AWS::Serverless::Api a union type ([#15526](https://github.com/aws/aws-cdk/issues/15526)) ([dd38eff](https://github.com/aws/aws-cdk/commit/dd38eff318c31bf2c5308f6b3daae0fd433b4370))
+* **cli:** `cdk deploy` is listing deprecated ids ([#15603](https://github.com/aws/aws-cdk/issues/15603)) ([22f2499](https://github.com/aws/aws-cdk/commit/22f2499508bccd3f44733705bbfa3c4e2b0b0d63))
+* **iam:** `PrincipalWithConditions.addCondition` does not work ([#15414](https://github.com/aws/aws-cdk/issues/15414)) ([fdce08c](https://github.com/aws/aws-cdk/commit/fdce08cee6f0eb58aad93572641a1dd4b59e8d37))
+* **pipelines:** `CodeBuildStep.partialBuildSpec` not used, buildspec control for legacy API ([#15625](https://github.com/aws/aws-cdk/issues/15625)) ([d8dc818](https://github.com/aws/aws-cdk/commit/d8dc8185203e73172786024eea90eeb60153ce0e)), closes [#15169](https://github.com/aws/aws-cdk/issues/15169)
+* **pipelines:** new pipeline stages aren't validated ([#15665](https://github.com/aws/aws-cdk/issues/15665)) ([309b9b4](https://github.com/aws/aws-cdk/commit/309b9b4cf554474c87fe3d833a5205498e200ecf))
+* **pipelines:** permissions check in legacy API does not work ([#15660](https://github.com/aws/aws-cdk/issues/15660)) ([5e3cf2b](https://github.com/aws/aws-cdk/commit/5e3cf2b0558401fab25f75da319fac587df1bcfb))
+* **pipelines:** unresolved source names aren't handled properly ([#15600](https://github.com/aws/aws-cdk/issues/15600)) ([4b7116d](https://github.com/aws/aws-cdk/commit/4b7116d8a252a6768ae50d736d5cab0f0cef22f4)), closes [#15592](https://github.com/aws/aws-cdk/issues/15592)
+
 ## [1.114.0](https://github.com/aws/aws-cdk/compare/v1.113.0...v1.114.0) (2021-07-15)
 
 
