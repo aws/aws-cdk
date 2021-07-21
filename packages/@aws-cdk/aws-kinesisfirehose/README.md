@@ -275,7 +275,7 @@ buffer size is 3 MiB and the buffer interval is 1 minute.
 ```ts fixture=with-bucket
 // Increase the buffer interval and size to 5 minutes and 3 MiB, respectively
 import * as cdk from '@aws-cdk/core';
-const s3Destination = new destinations.S3(bucket, {
+const s3Destination = new destinations.S3Bucket(bucket, {
   bufferingInterval: cdk.Duration.minutes(5),
   bufferingSize: cdk.Size.mebibytes(8),
 });
