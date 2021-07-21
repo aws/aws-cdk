@@ -2,8 +2,187 @@
 
 This document describes the API the CDK Pipelines library originally went into
 Developer Preview with. The API has since been reworked, but the original one
-left in place because of popular uptake. The original API still works and is
-still supported, but the revised one is preferred for future projects.
+left in place because of popular adoption. The original API still works and is
+still supported, but the revised one is preferred for future projects as it
+is more flexible and abstracts more unnecessary details from the user.
+
+## Migrating from the original to the modern API
+
+It's possible to migrate a pipeline in-place from the original to the modern API.
+The changes necessary are the following:
+
+### The Pipeline
+
+Replace `new CdkPipeline` with `new CodePipeline`. Some
+configuration properties have been renamed or moved:
+
+| Old property | New property
+|--------------|----------------------
+| `cloudAssemblyArtifact` | remove
+| `sourceAction` | remove
+| `synthAction` | ⟹ `synth`
+| `crossAccountKeys` | new default is `false`, so be sure to specify `crossAccountKeys: true` if you are doing cross-account deployments |
+| `cdkCliVersion` | ⟹ `cliVersion`
+| `selfMutating` | ⟹ `selfMutation`
+| `vpc`, `subnetSelection` | have moved to `codeBuildDefaults: { vpc, subnetSelection }` |
+| `selfMutationBuildSpec` | has moved to `selfMutationCodeBuildDefaults: { partialBuildSpec }`
+| `assetBuildSpec` | has moved to `assetPublishingCodeBuildDefaults: { partialBuildSpec }`
+| `assetPreinstallCommands` | use  `assetPublishingCodeBuildDefaults: { partialBuildSpec }` instead
+| `singlePublisherPerType: true` | ⟹ `publishAssetsInParallel: false` |
+| `supportDockerAssets` | ⟹ `dockerEnabledForSelfMutation`
+
+### The synth
+
+As the argument to `synth`, use `new ShellStep` or `new CodeBuildStep`,
+depending on whether or not you want to customize the AWS CodeBuild Project that gets generated.
+
+Contrary to `SimpleSynthAction.standardNpmSynth`, you do need to specify
+all commands necessary to do a full CDK build and synth, so do include
+installing dependencies and running the CDK CLI. Example:
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ShellStep('Synth', {
+    input: /* source */,
+
+    // For NPM-based projects
+    commands: [
+      'npm ci',
+      'npm run build',
+      'npx cdk synth',
+    ],
+
+    // For Yarn-based projects
+    commands: [
+      'yarn install --frozen-lockfile',
+      'yarn build',
+      'npx cdk synth',
+    ],
+
+    // For Python-based projects
+    commands: [
+      'pip install -r requirements.txt',
+      'npm install -g aws-cdk',
+      'cdk synth',
+    ],
+
+    // etc...
+  }),
+})
+```
+
+Instead of specifying the pipeline source with the `sourceAction` property to
+the pipeline, specify it as the `input` property to the `ShellStep` instead.
+You can use any of the factory functions on `CodePipelineSource`.
+
+For example, for a GitHub source, the following:
+
+```ts
+sourceAction: new codepipeline_actions.GitHubSourceAction({
+  actionName: 'GitHub',
+  output: sourceArtifact,
+  // Replace these with your actual GitHub project name
+  owner: 'OWNER',
+  repo: 'REPO',
+  branch: 'main', // default: 'master'
+}),
+```
+
+Translates into:
+
+```ts
+input: CodePipelineSource.gitHub('OWNER/REPO', 'main', {
+  authentication: SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
+}),
+```
+
+### Deployments
+
+Adding CDK Stages to deploy is done by calling `addStage()`, or
+potentially `addWave().addStage()`. All stages inside a wave are
+deployed in parallel, which was not a capability of the original API.
+
+ Old method | New method
+------------|------------------
+`addApplicationStage()` | ⟹ `addStage()`
+`addStage().addApplication()` | ⟹ `addStage()`. Adding multiple CDK Stages into a single Pipeline stage is not supported, add multiple Pipeline stages instead.
+
+### Approvals
+
+Approvals are added by adding `pre` and `post` options to `addStage()`, with
+steps to execute before and after the deployments, respectively. We recommend
+putting manual approvals in `pre` steps, and automated approvals in `post` steps.
+
+#### Manual approvals
+
+```ts
+const stage = pipeline.addApplicationStage(...);
+stage.addAction(new ManualApprovalAction({
+  actionName: 'ManualApproval',
+  runOrder: testingStage.nextSequentialRunOrder(),
+}));
+```
+
+Becomes:
+
+```ts
+pipeline.addStage(..., {
+  pre: [
+    new ManualApprovalStep('ManualApproval'),
+  ],
+});
+```
+
+#### Automated approvals
+
+```ts
+const stage = pipeline.addApplicationStage(...);
+stage.addActions(new ShellScriptAction({
+  actionName: 'MyValidation',
+  commands: ['curl -Ssf $VAR'],
+  useOutputs: {
+    VAR: pipeline.stackOutput(stage.cfnOutput),
+  },
+  // Optionally specify a BuildEnvironment
+  environment: { ... },
+}));
+```
+
+Becomes:
+
+```ts
+const stage = new MyStage(...);
+pipeline.addStage(stage, {
+  post: [
+    new CodeBuildStep('MyValidation', {
+      commands: ['curl -Ssf $VAR'],
+      envFromCfnOutput: {
+        VAR: stage.cfnOutput,
+      },
+      // Optionally specify a BuildEnvironment
+      buildEnvironment: { ... },
+    }),
+  ],
+});
+```
+
+#### Change set approvals
+
+There are two properties that were used to add actions to the pipeline
+in between the `CreateChangeSet` and `ExecuteChangeSet` actions:
+
+```ts
+    manualApprovals: true,
+    extraRunOrderSpace: 1,
+```
+
+These are not supported in the new API.
+
+### Custom CodePipeline Actions
+
+See the section [**Arbitrary CodePipeline actions** in the
+main `README`](README.md) for an example of how to inject arbitrary
+CodeBuild Actions.
 
 ## Definining the pipeline
 

@@ -28,7 +28,7 @@ to the new version if possible.
 > allows more control of CodeBuild project generation; supports deployment
 > engines other than CodePipeline.
 >
-> The README for the original API can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
+> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
 
 ## At a glance
 
@@ -405,7 +405,8 @@ const pipeline = new CodePipeline(this, 'Pipeline', {
 Every `addStage()` and `addWave()` command takes additional options. As part of these options,
 you can specify `pre` and `post` steps, which are arbitrary steps that run before or after
 the contents of the stage or wave, respectively. You can use these to add validations like
-manual or automated gates to your pipeline.
+manual or automated gates to your pipeline. We recommend putting manual approval gates in the set of `pre` steps, and automated approval gates in
+the set of `post` steps.
 
 The following example shows both an automated approval in the form of a `ShellStep`, and
 a manual approvel in the form of a `ManualApprovalStep` added to the pipeline. Both must
@@ -572,7 +573,7 @@ If you want to add a type of CodePipeline action to the CDK Pipeline that
 doesn't have a matching class yet, you can define your own step class that extends
 `Step` and implements `ICodePipelineActionFactory`.
 
-Here's a simple example that adds a Jenkins step:
+Here's an example that adds a Jenkins step:
 
 ```ts
 class MyJenkinsStep extends Step implements ICodePipelineActionFactory {
