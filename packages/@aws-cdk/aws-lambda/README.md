@@ -333,7 +333,6 @@ import * as lambda from '@aws-cdk/lambda';
 
 new Function(this, 'MyFunction', {
   insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0
-  })
 })
 
 // Can also provide your own arn if a new version comes out
