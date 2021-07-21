@@ -119,15 +119,7 @@ describe('S3 destination', () => {
             Effect: 'Allow',
             Resource: [
               stack.resolve(bucket.bucketArn),
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    stack.resolve(bucket.bucketArn),
-                    '/*',
-                  ],
-                ],
-              },
+              { 'Fn::Join': ['', [stack.resolve(bucket.bucketArn), '/*']] },
             ],
           },
         ],
@@ -161,15 +153,7 @@ describe('S3 destination', () => {
             Effect: 'Allow',
             Resource: [
               stack.resolve(bucket.bucketArn),
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    stack.resolve(bucket.bucketArn),
-                    '/*',
-                  ],
-                ],
-              },
+              { 'Fn::Join': ['', [stack.resolve(bucket.bucketArn), '/*']] },
             ],
           },
           {
