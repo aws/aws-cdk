@@ -5,7 +5,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CommonDestinationProps, Compression } from './common';
-import { createBufferingHints, createEncryptionConfig, createLoggingOptions } from './private/helpers';
+import { createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
 
 /**
  * Props for defining an S3 destination of a Kinesis Data Firehose delivery stream.
@@ -101,6 +101,7 @@ export class S3Bucket implements firehose.IDestination {
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
+        processingConfiguration: createProcessingConfig(scope, role, this.props.processors),
         roleArn: role.roleArn,
         bufferingHints: createBufferingHints(this.props.bufferingInterval, this.props.bufferingSize),
         bucketArn: this.bucket.bucketArn,

@@ -4,6 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import { IDataProcessor } from '../processor';
 
 export interface DestinationLoggingProps {
   /**
@@ -94,4 +95,40 @@ export function createEncryptionConfig(role: iam.IRole, encryptionKey?: kms.IKey
   return encryptionKey != null
     ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
     : { noEncryptionConfig: 'NoEncryption' };
+}
+
+export function createProcessingConfig(
+  scope: Construct,
+  role: iam.IRole,
+  dataProcessors?: IDataProcessor[],
+): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
+  if (dataProcessors && dataProcessors.length > 1) {
+    throw new Error('Only one processor is allowed per delivery stream destination');
+  }
+  if (dataProcessors && dataProcessors.length > 0) {
+    const processors = dataProcessors.map((processor) => {
+      const processorConfig = processor.bind(scope, { role });
+      const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
+      parameters.push(processorConfig.processorIdentifier);
+      if (processorConfig.bufferInterval) {
+        parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processorConfig.bufferInterval.toSeconds().toString() });
+      }
+      if (processorConfig.bufferSize) {
+        parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processorConfig.bufferSize.toMebibytes().toString() });
+      }
+      if (processorConfig.retries) {
+        parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processorConfig.retries.toString() });
+      }
+      return {
+        type: processorConfig.processorType,
+        parameters: parameters,
+      };
+    });
+
+    return {
+      enabled: true,
+      processors: processors,
+    };
+  }
+  return undefined;
 }

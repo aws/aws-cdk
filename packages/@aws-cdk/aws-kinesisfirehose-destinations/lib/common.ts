@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
+import { IDataProcessor } from './processor';
 
 /**
  * Possible compression options Kinesis Data Firehose can use to compress data on delivery.
@@ -66,4 +67,11 @@ export interface CommonDestinationProps {
    * @default - a role will be created with default permissions.
    */
   readonly role?: iam.IRole;
+
+  /**
+   * The series of data transformations that should be performed on the data before writing to the destination.
+   *
+   * @default [] - no data transformation will occur.
+   */
+  readonly processors?: IDataProcessor[];
 }

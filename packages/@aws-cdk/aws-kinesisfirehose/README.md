@@ -114,7 +114,7 @@ successfully delivered to S3. `errorOutputPrefix` will be added to failed record
 writing them to S3.
 
 ```ts fixture=with-bucket
-const s3Destination = new destinations.S3(bucket, {
+const s3Destination = new destinations.S3Bucket(bucket, {
   prefix: 'myFirehose/DeliveredYear=!{timestamp:yyyy}/anyMonth/rand=!{firehose:random-string}',
   errorOutputPrefix: 'myFirehoseFailures/!{firehose:error-output-type}/!{timestamp:yyyy}/anyMonth/!{timestamp:dd}',
 });
@@ -255,7 +255,7 @@ delivered to S3 without compression.
 
 ```ts fixture=with-bucket
 // Compress data delivered to S3 using Snappy
-const s3Destination = new destinations.S3(bucket, {
+const s3Destination = new destinations.S3Bucket(bucket, {
   compression: Compression.SNAPPY,
 });
 new DeliveryStream(this, 'Delivery Stream', {
@@ -275,7 +275,7 @@ buffer size is 3 MiB and the buffer interval is 1 minute.
 ```ts fixture=with-bucket
 // Increase the buffer interval and size to 5 minutes and 3 MiB, respectively
 import * as cdk from '@aws-cdk/core';
-const s3Destination = new destinations.S3(bucket, {
+const s3Destination = new destinations.S3Bucket(bucket, {
   bufferingInterval: cdk.Duration.minutes(5),
   bufferingSize: cdk.Size.mebibytes(8),
 });
@@ -301,13 +301,66 @@ Using Server-Side Encryption with AWS KMS–Managed Keys (SSE-KMS)](https://docs
 import * as cdk from '@aws-cdk/core';
 import * as kms from '@aws-cdk/aws-kms';
 
-const s3Destination = new destinations.S3(bucket, {
+const s3Destination = new destinations.S3Bucket(bucket, {
   encryptionKey: new kms.Key(this, 'MyKey'),
 });
 new DeliveryStream(this, 'Delivery Stream', {
   destinations: [destination],
 });
 ```
+
+## Data Processing/Transformation
+
+Data can be transformed before being delivered to destinations. There are two types of
+data processing for delivery streams: record transformation with AWS Lambda, and record
+format conversion using a schema stored in an AWS Glue table. If both types of data
+processing are configured, then the Lambda transformation is performed first. By default,
+no data processing occurs. This construct library currently only support data
+transformation with AWS Lambda. See [#15501](https://github.com/aws/aws-cdk/issues/15501)
+to track the status of adding support for record format conversion.
+
+### Data transformation with AWS Lambda
+
+To transform the data, Kinesis Data Firehose will call a Lambda function that you provide
+and deliver the data returned in lieu of the source record. The function must return a
+result that contains records in a specific format, including the following fields:
+
+- `recordId` -- the ID of the input record that corresponds the results.
+- `result` -- the status of the transformation of the record: "Ok" (success), "Dropped"
+  (not processed intentionally), or "ProcessingFailed" (not processed due to an error).
+- `data` -- the transformed data, Base64-encoded.
+
+The data is buffered up to 1 minute and up to 3 MiB by default before being sent to the
+function, but can be configured using `bufferInterval` and `bufferSize` in the processor
+configuration (see: [Buffering](#buffering)). If the function invocation fails due to a
+network timeout or because of hitting an invocation limit, the invocation is retried 3
+times by default, but can be configured using `retries` in the processor configuration.
+
+```ts fixture=with-bucket
+// Provide a Lambda function that will transform records before delivery, with custom
+// buffering and retry configuration
+import * as cdk from '@aws-cdk/core';
+import * as lambda from '@aws-cdk/aws-lambda';
+const lambdaFunction = new lambda.Function(this, 'Processor', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'process-records')),
+});
+const lambdaProcessor = new LambdaFunctionProcessor(lambdaFunction, {
+  bufferingInterval: cdk.Duration.minutes(5),
+  bufferingSize: cdk.Size.mebibytes(5),
+  retries: 5,
+});
+const s3Destination = new destinations.S3Bucket(bucket, {
+  processors: [lambdaProcessor],
+});
+new DeliveryStream(this, 'Delivery Stream', {
+  destinations: [destination],
+});
+```
+
+See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
+in the *Kinesis Data Firehose Developer Guide*.
 
 ## Specifying an IAM role
 
