@@ -22,40 +22,54 @@
         }
       }
     },
-    "Key961B73FD": {
-      "Type": "AWS::KMS::Key",
+    "RoleDefaultPolicy5FFB7DAB": {
+      "Type": "AWS::IAM::Policy",
       "Properties": {
-        "KeyPolicy": {
+        "PolicyDocument": {
           "Statement": [
             {
-              "Action": "kms:*",
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:Abort*"
+              ],
               "Effect": "Allow",
-              "Principal": {
-                "AWS": {
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "Bucket83908E77",
+                    "Arn"
+                  ]
+                },
+                {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
                       {
-                        "Ref": "AWS::Partition"
+                        "Fn::GetAtt": [
+                          "Bucket83908E77",
+                          "Arn"
+                        ]
                       },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
+                      "/*"
                     ]
                   ]
                 }
-              },
-              "Resource": "*"
+              ]
             }
           ],
           "Version": "2012-10-17"
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+        },
+        "PolicyName": "RoleDefaultPolicy5FFB7DAB",
+        "Roles": [
+          {
+            "Ref": "Role1ABCC5F0"
+          }
+        ]
+      }
     },
     "DeliveryStreamServiceRole964EEBCC": {
       "Type": "AWS::IAM::Role",
@@ -132,7 +146,10 @@
             ]
           }
         }
-      }
+      },
+      "DependsOn": [
+        "RoleDefaultPolicy5FFB7DAB"
+      ]
     }
   },
   "Mappings": {
