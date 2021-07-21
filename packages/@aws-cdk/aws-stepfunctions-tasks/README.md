@@ -1031,13 +1031,19 @@ const task1 = new tasks.SnsPublish(this, 'Publish1', {
   message: sfn.TaskInput.fromDataAt('$.state.message'),
   messageAttributes: {
     place: {
-      type: SnsMessageAttributeType.STRING,
       value: sfn.TaskInput.fromText('dessert point'),
     },
     pic: {
-      type: SnsMessageAttributeType.BINARY,
+      type: MessageAttributeDataType.BINARY,
       value: sfn.TaskInput.fromDataAt('$.pic'),
     },
+    people: {
+      value: 4,
+    },
+    handles: {
+      value: ['@kslater', '@jjf', null, '@mfanning'],
+    },
+
 });
 
 // Combine a field from the execution data with
