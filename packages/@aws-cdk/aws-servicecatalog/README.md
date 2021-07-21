@@ -261,9 +261,8 @@ const adminRole = new iam.Role(this, 'AdminRole', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
 
-const executionRole = new iam.Role(this, 'ExecutionRole', {
-  assumedBy: new iam.AccountRootPrincipal(),
-});
+// The execution role deployed in target accounts
+const executionRole = iam.Role.fromRoleArn(this, 'ImportedExecutionRole', 'arn:aws:iam::account:role/StackSetExecutionRole');
 
 portfolio.deployWithStackSets(product, {
   accounts: ['012345678901', '012345678902', '012345678903'],

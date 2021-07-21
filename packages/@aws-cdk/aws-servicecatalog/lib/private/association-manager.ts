@@ -75,11 +75,11 @@ export class AssociationManager {
     this.validateConstraintDescription(this.prettyPrintAssociation(portfolio, product), options);
     const association = this.associateProductWithPortfolio(portfolio, product);
     // Check if a stackset deployment constraint has already been configured.
-    if (portfolio.node.tryFindChild(`StackSetConstraint${association.associationKey}`)) {
+    if (portfolio.node.tryFindChild(this.stackSetConstraintLogicalId(association.associationKey))) {
       throw new Error(`Cannot set launch role when a stackset rule is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
 
-    const constructId = `LaunchRoleConstraint${association.associationKey}`;
+    const constructId = this.launchRoleConstraintLogicalId(association.associationKey);
     if (!portfolio.node.tryFindChild(constructId)) {
       const constraint = new CfnLaunchRoleConstraint(portfolio as unknown as cdk.Resource, constructId, {
         acceptLanguage: options.messageLanguage,
@@ -100,11 +100,11 @@ export class AssociationManager {
     this.validateConstraintDescription(this.prettyPrintAssociation(portfolio, product), options);
     const association = this.associateProductWithPortfolio(portfolio, product);
     // Check if a launch role has already been set.
-    if (portfolio.node.tryFindChild(`LaunchRoleConstraint${association.associationKey}`)) {
+    if (portfolio.node.tryFindChild(this.launchRoleConstraintLogicalId(association.associationKey))) {
       throw new Error(`Cannot configure stackset deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
 
-    const constructId = `StackSetConstraint${association.associationKey}`;
+    const constructId = this.stackSetConstraintLogicalId(association.associationKey);
     if (!portfolio.node.tryFindChild(constructId)) {
       const constraint = new CfnStackSetConstraint(portfolio as unknown as cdk.Resource, constructId, {
         acceptLanguage: options.messageLanguage,
@@ -151,6 +151,14 @@ export class AssociationManager {
         }
       });
     };
+  }
+
+  private static stackSetConstraintLogicalId(associationKey: string): string {
+    return `StackSetConstraint${associationKey}`;
+  }
+
+  private static launchRoleConstraintLogicalId(associationKey:string): string {
+    return `LaunchRoleConstraint${associationKey}`;
   }
 
   private static prettyPrintAssociation(portfolio: IPortfolio, product: IProduct): string {

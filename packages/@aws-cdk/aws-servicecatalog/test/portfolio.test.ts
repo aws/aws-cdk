@@ -459,180 +459,117 @@ describe('portfolio associations and product constraints', () => {
     }).toThrowError(`Topic ${topic} is already subscribed to association`);
   });
 
-  test('set a launch role constraint', () => {
-    const launchRole = new iam.Role(stack, 'LaunchRole', {
-      assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
-    });
+  describe('portfolio constraints that have roles', () => {
+    let launchRole: iam.IRole, adminRole: iam.IRole, executionRole: iam.IRole;
 
-    portfolio.addProduct(product);
+    beforeEach(() => {
+      adminRole = new iam.Role(stack, 'AdminRole', {
+        assumedBy: new iam.AccountRootPrincipal(),
+      });
+      executionRole = new iam.Role(stack, 'ExecutionRole', {
+        assumedBy: new iam.AccountRootPrincipal(),
+      });
+      launchRole = new iam.Role(stack, 'LaunchRole', {
+        assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
+      });
+    }),
 
-    portfolio.setLaunchRole(product, launchRole, {
-      description: 'set launch role description',
-      messageLanguage: servicecatalog.MessageLanguage.EN,
-    });
+    test('set a launch role constraint', () => {
+      portfolio.addProduct(product);
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchRoleConstraint', {
-      PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
-      ProductId: { Ref: 'MyProduct49A3C587' },
-      Description: 'set launch role description',
-      AcceptLanguage: 'en',
-      RoleArn: {
-        'Fn::GetAtt': ['LaunchRole2CFB2E44', 'Arn'],
-      },
-    });
-  }),
+      portfolio.setLaunchRole(product, launchRole, {
+        description: 'set launch role description',
+        messageLanguage: servicecatalog.MessageLanguage.EN,
+      });
 
-  test('set launch role constraint still adds without explicit association', () => {
-    const launchRole = new iam.Role(stack, 'LaunchRole', {
-      assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
-    });
+      expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchRoleConstraint', {
+        PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
+        ProductId: { Ref: 'MyProduct49A3C587' },
+        Description: 'set launch role description',
+        AcceptLanguage: 'en',
+        RoleArn: {
+          'Fn::GetAtt': ['LaunchRole2CFB2E44', 'Arn'],
+        },
+      });
+    }),
 
-    portfolio.setLaunchRole(product, launchRole);
-
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchRoleConstraint');
-  }),
-
-  test('fails to add multiple set launch roles', () => {
-    const launchRole1 = new iam.Role(stack, 'LaunchRole1', {
-      assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
-    });
-
-    const launchRole2 = new iam.Role(stack, 'LaunchRole2', {
-      assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
-    });
-
-    portfolio.setLaunchRole(product, launchRole1);
-
-    expect(() => {
-      portfolio.setLaunchRole(product, launchRole2);
-    }).toThrowError(/Cannot set multiple launch roles for association/);
-  }),
-
-  test('fails to set launch role if stackset rule is already defined', () => {
-    const launchRole = new iam.Role(stack, 'LaunchRole', {
-      assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
-    });
-
-    const adminRole = new iam.Role(stack, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-    const executionRole = new iam.Role(stack, 'ExecutionRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-
-    portfolio.deployWithStackSets(product, {
-      accounts: ['012345678901', '012345678901'],
-      regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
-      adminRole: adminRole,
-      executionRole: executionRole,
-      allowStackSetInstanceOperations: false,
-    },
-    );
-
-    expect(() => {
+    test('set launch role constraint still adds without explicit association', () => {
       portfolio.setLaunchRole(product, launchRole);
-    }).toThrowError(/Cannot set launch role when a stackset rule is already defined for association/);
-  }),
 
-  test('deploy with stacksets constraint', () => {
-    const adminRole = new iam.Role(stack, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-    const executionRole = new iam.Role(stack, 'ExecutionRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
+      expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchRoleConstraint');
+    }),
 
-    portfolio.addProduct(product);
+    test('fails to add multiple set launch roles', () => {
+      const otherLaunchRole = new iam.Role(stack, 'otherLaunchRole', {
+        assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
+      });
 
-    portfolio.deployWithStackSets(product, {
-      accounts: ['012345678901', '012345678901'],
-      regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
-      adminRole: adminRole,
-      executionRole: executionRole,
-      allowStackSetInstanceOperations: true,
-      description: 'stackset description',
-      messageLanguage: servicecatalog.MessageLanguage.JP,
-    });
+      portfolio.setLaunchRole(product, launchRole);
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::StackSetConstraint', {
-      PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
-      ProductId: { Ref: 'MyProduct49A3C587' },
-      AdminRole: {
-        'Fn::GetAtt': [
-          'AdminRole38563C57',
-          'Arn',
-        ],
-      },
-      ExecutionRole: { Ref: 'ExecutionRole605A040B' },
-      Description: 'stackset description',
-      AccountList: ['012345678901', '012345678901'],
-      RegionList: ['us-east-1', 'us-west-2', 'eu-west-1'],
-      StackInstanceControl: 'ALLOWED',
-      AcceptLanguage: 'jp',
-    });
-  }),
+      expect(() => {
+        portfolio.setLaunchRole(product, otherLaunchRole);
+      }).toThrowError(/Cannot set multiple launch roles for association/);
+    }),
 
-  test('deployment with stacksets still adds without explicit association', () => {
-    const adminRole = new iam.Role(stack, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-    const executionRole = new iam.Role(stack, 'ExecutionRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-
-    portfolio.deployWithStackSets(product, {
-      accounts: ['012345678901', '012345678901'],
-      regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
-      adminRole: adminRole,
-      executionRole: executionRole,
-      allowStackSetInstanceOperations: false,
-    });
-
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::StackSetConstraint');
-  }),
-
-  test('fails to add multiple deploy with stackset constraints', () => {
-    const adminRole = new iam.Role(stack, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-    const executionRole = new iam.Role(stack, 'ExecutionRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-
-    portfolio.deployWithStackSets(product, {
-      accounts: ['012345678901', '012345678901'],
-      regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
-      adminRole: adminRole,
-      executionRole: executionRole,
-      allowStackSetInstanceOperations: true,
-    });
-
-    expect(() => {
+    test('fails to set launch role if stackset rule is already defined', () => {
       portfolio.deployWithStackSets(product, {
         accounts: ['012345678901', '012345678901'],
-        regions: ['ap-east-1', 'ap-northeast-2', 'eu-west-1'],
+        regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+        adminRole: adminRole,
+        executionRole: executionRole,
+        allowStackSetInstanceOperations: false,
+      },
+      );
+
+      expect(() => {
+        portfolio.setLaunchRole(product, launchRole);
+      }).toThrowError(/Cannot set launch role when a stackset rule is already defined for association/);
+    }),
+
+    test('deploy with stacksets constraint', () => {
+      portfolio.addProduct(product);
+
+      portfolio.deployWithStackSets(product, {
+        accounts: ['012345678901', '012345678901'],
+        regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+        adminRole: adminRole,
+        executionRole: executionRole,
+        allowStackSetInstanceOperations: true,
+        description: 'stackset description',
+        messageLanguage: servicecatalog.MessageLanguage.JP,
+      });
+
+      expect(stack).toHaveResourceLike('AWS::ServiceCatalog::StackSetConstraint', {
+        PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
+        ProductId: { Ref: 'MyProduct49A3C587' },
+        AdminRole: {
+          'Fn::GetAtt': [
+            'AdminRole38563C57',
+            'Arn',
+          ],
+        },
+        ExecutionRole: { Ref: 'ExecutionRole605A040B' },
+        Description: 'stackset description',
+        AccountList: ['012345678901', '012345678901'],
+        RegionList: ['us-east-1', 'us-west-2', 'eu-west-1'],
+        StackInstanceControl: 'ALLOWED',
+        AcceptLanguage: 'jp',
+      });
+    }),
+
+    test('deployment with stacksets still adds without explicit association', () => {
+      portfolio.deployWithStackSets(product, {
+        accounts: ['012345678901', '012345678901'],
+        regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
         adminRole: adminRole,
         executionRole: executionRole,
         allowStackSetInstanceOperations: false,
       });
-    }).toThrowError(/Cannot configure multiple stackset deployment constraints for association/);
-  }),
 
-  test('fails to configure deployment with stacksets if a launch role has been set', () => {
-    const launchRole = new iam.Role(stack, 'LaunchRole', {
-      assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
-    });
+      expect(stack).toHaveResourceLike('AWS::ServiceCatalog::StackSetConstraint');
+    }),
 
-    const adminRole = new iam.Role(stack, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-    const executionRole = new iam.Role(stack, 'ExecutionRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-
-    portfolio.setLaunchRole(product, launchRole);
-
-    expect(() => {
+    test('fails to add multiple deploy with stackset constraints', () => {
       portfolio.deployWithStackSets(product, {
         accounts: ['012345678901', '012345678901'],
         regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
@@ -641,6 +578,29 @@ describe('portfolio associations and product constraints', () => {
         allowStackSetInstanceOperations: true,
       });
 
-    }).toThrowError(/Cannot configure stackset deployment when a launch role is already defined for association/);
+      expect(() => {
+        portfolio.deployWithStackSets(product, {
+          accounts: ['012345678901', '012345678901'],
+          regions: ['ap-east-1', 'ap-northeast-2', 'eu-west-1'],
+          adminRole: adminRole,
+          executionRole: executionRole,
+          allowStackSetInstanceOperations: false,
+        });
+      }).toThrowError(/Cannot configure multiple stackset deployment constraints for association/);
+    }),
+
+    test('fails to configure deployment with stacksets if a launch role has been set', () => {
+      portfolio.setLaunchRole(product, launchRole);
+
+      expect(() => {
+        portfolio.deployWithStackSets(product, {
+          accounts: ['012345678901', '012345678901'],
+          regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+          adminRole: adminRole,
+          executionRole: executionRole,
+          allowStackSetInstanceOperations: true,
+        });
+      }).toThrowError(/Cannot configure stackset deployment when a launch role is already defined for association/);
+    });
   });
 });
