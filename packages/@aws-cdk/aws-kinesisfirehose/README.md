@@ -242,7 +242,7 @@ delivered to S3 without compression.
 
 ```ts fixture=with-bucket
 // Compress data delivered to S3 using Snappy
-const s3Destination = new destinations.S3(bucket, {
+const s3Destination = new destinations.S3Bucket(bucket, {
   compression: Compression.SNAPPY,
 });
 new DeliveryStream(this, 'Delivery Stream', {
