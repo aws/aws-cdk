@@ -289,24 +289,39 @@ in the *Kinesis Data Firehose Developer Guide*.
 
 ## Specifying an IAM role
 
-The DeliveryStream class automatically creates an IAM role with all the minimum necessary
-permissions for Kinesis Data Firehose to access the resources referenced by your delivery
-stream. For example: an Elasticsearch domain, a Redshift cluster, a backup or destination
-S3 bucket, a Lambda data transformer, an AWS Glue table schema, etc. If you wish, you may
-specify your own IAM role. It must have the correct permissions, or delivery stream
-creation or data delivery may fail.
+The DeliveryStream class automatically creates IAM service roles with all the minimum
+necessary permissions for Kinesis Data Firehose to access the resources referenced by your
+delivery stream. One service role is created for the delivery stream that allows Kinesis
+Data Firehose to read from a Kinesis data stream (if one is configured as the delivery
+stream source) and for server-side encryption. Another service role is created for each
+destination, which gives Kinesis Data Firehose write access to the destination resource,
+as well as the ability to invoke data transformers and read schemas for record format
+conversion. If you wish, you may specify your own IAM role for either the delivery stream
+or the destination service role, or both. It must have the correct trust policy (it must
+allow Kinesis Data Firehose to assume it) or delivery stream creation or data delivery
+will fail. Other required permissions to destination resources, encryption keys, etc.,
+will be provided automatically.
 
 ```ts fixture=with-bucket
 import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
 import * as iam from '@aws-cdk/aws-iam';
 
-const role = new iam.Role(this, 'Role', {
-  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+// Create service roles for the delivery stream and destination.
+// These can be used for other purposes and granted access to different resources.
+// They must include the Kinesis Data Firehose service principal in their trust policies.
+// Two separate roles are shown below, but the same role can be used for both purposes.
+const deliveryStreamRole = new iam.Role(this, 'Delivery Stream Role', {
+  assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
 });
-bucket.grantWrite(role);
+const destinationRole = new iam.Role(this, 'Destination Role', {
+  assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+});
+
+// Specify the roles created above when defining the destination and delivery stream.
+const destination = new destinations.S3Bucket(bucket, { role: destinationRole });
 new DeliveryStream(this, 'Delivery Stream', {
-  destinations: [new destinations.S3Bucket(bucket)],
-  role: role,
+  destinations: [destination],
+  role: deliveryStreamRole,
 });
 ```
 

@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import { App, Stack } from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
@@ -21,6 +22,12 @@ const portfolio = new servicecatalog.Portfolio(stack, 'TestPortfolio', {
 portfolio.giveAccessToRole(role);
 portfolio.giveAccessToGroup(group);
 
+const tagOptions = new servicecatalog.TagOptions({
+  key1: ['value1', 'value2'],
+  key2: ['value1'],
+});
+portfolio.associateTagOptions(tagOptions);
+
 portfolio.shareWithAccount('123456789012');
 
 const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
@@ -38,5 +45,15 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
 portfolio.addProduct(product);
 
 portfolio.constrainTagUpdates(product);
+
+const topic = new sns.Topic(stack, 'Topic1');
+
+const specialTopic = new sns.Topic(stack, 'specialTopic');
+
+portfolio.notifyOnStackEvents(product, topic);
+portfolio.notifyOnStackEvents(product, specialTopic, {
+  description: 'special topic description',
+  messageLanguage: servicecatalog.MessageLanguage.EN,
+});
 
 app.synth();

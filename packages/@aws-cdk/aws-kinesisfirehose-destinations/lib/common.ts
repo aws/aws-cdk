@@ -41,7 +41,7 @@ export class Compression {
 /**
  * Generic properties for defining a delivery stream destination.
  */
-export interface DestinationProps {
+export interface CommonDestinationProps {
   /**
    * If true, log errors when data transformation or data delivery fails.
    *
