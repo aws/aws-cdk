@@ -6,6 +6,7 @@ import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 import { AmiContextProviderPlugin } from './ami';
 import { AZContextProviderPlugin } from './availability-zones';
+import { ECRContextProviderPlugin } from './ecr';
 import { EndpointServiceAZContextProviderPlugin } from './endpoint-service-availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { LoadBalancerContextProviderPlugin, LoadBalancerListenerContextProviderPlugin } from './load-balancers';
@@ -74,4 +75,5 @@ const availableContextProviders: ProviderMap = {
   [cxschema.ContextProvider.SECURITY_GROUP_PROVIDER]: SecurityGroupContextProviderPlugin,
   [cxschema.ContextProvider.LOAD_BALANCER_PROVIDER]: LoadBalancerContextProviderPlugin,
   [cxschema.ContextProvider.LOAD_BALANCER_LISTENER_PROVIDER]: LoadBalancerListenerContextProviderPlugin,
+  [cxschema.ContextProvider.ECR_PROVIDER]: ECRContextProviderPlugin,
 };

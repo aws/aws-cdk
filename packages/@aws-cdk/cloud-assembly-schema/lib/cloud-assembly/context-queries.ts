@@ -8,8 +8,8 @@ export enum ContextProvider {
    * AMI provider
    */
   AMI_PROVIDER = 'ami',
-
   /**
+
    * AZ provider
    */
   AVAILABILITY_ZONE_PROVIDER = 'availability-zones',
@@ -48,6 +48,12 @@ export enum ContextProvider {
    * Security group provider
    */
   SECURITY_GROUP_PROVIDER = 'security-group',
+
+  /**
+   * ECR provider
+   */
+  ECR_PROVIDER = 'ecr',
+
 }
 
 /**
@@ -415,6 +421,33 @@ export interface SecurityGroupContextQuery {
   readonly securityGroupId: string;
 }
 
+/**
+ * Query input for looking up a ECR Repository
+ */
+export interface ECRContextQuery {
+  /**
+   * Query account
+   */
+  readonly account: string;
+
+  /**
+   * Query region
+   */
+  readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
+     * Repository name
+   */
+  readonly repositoryName: string;
+}
+
 export type ContextQueryProperties = AmiContextQuery
 | AvailabilityZonesContextQuery
 | HostedZoneContextQuery
@@ -423,4 +456,5 @@ export type ContextQueryProperties = AmiContextQuery
 | EndpointServiceAvailabilityZonesContextQuery
 | LoadBalancerContextQuery
 | LoadBalancerListenerContextQuery
-| SecurityGroupContextQuery;
+| SecurityGroupContextQuery
+| ECRContextQuery;

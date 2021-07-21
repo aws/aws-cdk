@@ -330,6 +330,25 @@ describe('repository', () => {
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
   });
 
+  test('repository lookup returns dummy value', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-west-2',
+      },
+    });
+
+    // WHEN
+    const repo = ecr.Repository.fromLookup(stack, 'Repo', {
+      repositoryName: 'myrepo',
+    });
+
+    // THEN
+    expect(stack.resolve(repo.repositoryName)).toBe('dummyrepo');
+  });
+
   describe('events', () => {
     test('onImagePushed without imageTag creates the correct event', () => {
       const stack = new cdk.Stack();

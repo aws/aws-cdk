@@ -1,7 +1,9 @@
 import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ContextProvider, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
@@ -364,9 +366,55 @@ export interface RepositoryProps {
   readonly imageTagMutability?: TagMutability;
 }
 
+class LookedUpRepository extends RepositoryBase {
+  public readonly repositoryName: string;
+  public readonly repositoryArn: string;
+  public readonly createdAt: Date;
+  public readonly imageTagMutability: TagMutability;
+  public readonly imageScanningConfiguration?: cxapi.ImageScanningConfiguration;
+
+  constructor(scope: Construct, id: string, props: cxapi.ECRContextResponse) {
+    super(scope, id, {
+      physicalName: props.repositoryName,
+    });
+    this.repositoryName = props.repositoryName;
+    this.repositoryArn = props.repositoryArn;
+    this.createdAt = props.createdAt;
+    if (props.imageTagMutability === cxapi.ImageTagMutability.IMMUTABLE) {
+      this.imageTagMutability = TagMutability.IMMUTABLE;
+    } else {
+      this.imageTagMutability = TagMutability.MUTABLE;
+    }
+    this.imageScanningConfiguration = props.imageScanningConfiguration;
+  }
+
+  public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    // dropped
+    return { statementAdded: false };
+  }
+}
+
 export interface RepositoryAttributes {
   readonly repositoryName: string;
   readonly repositoryArn: string;
+}
+
+/**
+ * Options for looking up repository.
+ * One of the attributes is required to lookup the repository.
+ */
+export interface RepositoryLookupAttributes {
+  /**
+   * Find by repository name
+   * @default - uses repositoryArn to extract repositoryName to describe repository
+   */
+  readonly repositoryName?: string;
+
+  /**
+   * Find by repository arn
+   * @default - uses repositoryName to describe repository
+   */
+  readonly repositoryArn?: string;
 }
 
 /**
@@ -441,6 +489,36 @@ export class Repository extends RepositoryBase {
     });
   }
 
+  /**
+   * Import an existing repository by querying the AWS environment this stack is deployed to.
+   */
+  public static fromLookup(scope: Construct, id: string, attrs: RepositoryLookupAttributes): IRepository {
+    let repositoryName = attrs.repositoryName;
+    const repositoryArn = attrs.repositoryArn;
+    if (Token.isUnresolved(repositoryName)
+      || Token.isUnresolved(repositoryArn)) {
+      throw new Error('All arguments to Repository.fromLookup() must be concrete (no Tokens)');
+    }
+
+    if (repositoryName === undefined && repositoryArn === undefined) {
+      throw new Error('Either of repositoryName or repositoryArn are required');
+    }
+
+    if (repositoryName === undefined && repositoryArn !== undefined) {
+      repositoryName = repositoryArn.split('/').slice(1).join('/');
+    }
+
+    const attributes: cxapi.ECRContextResponse = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.ECR_PROVIDER,
+      props: {
+        repositoryName,
+      } as cxschema.ECRContextQuery,
+      dummyValue: {
+        repositoryName: 'dummyrepo',
+      },
+    }).value;
+    return new LookedUpRepository(scope, id, attributes);
+  }
 
   private static validateRepositoryName(physicalName: string) {
     const repositoryName = physicalName;

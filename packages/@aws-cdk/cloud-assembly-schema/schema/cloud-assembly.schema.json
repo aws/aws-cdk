@@ -441,7 +441,8 @@
                 "load-balancer-listener",
                 "security-group",
                 "ssm",
-                "vpc-provider"
+                "vpc-provider",
+                "ecr"
             ],
             "type": "string"
         },

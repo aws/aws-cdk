@@ -94,3 +94,14 @@ is important here):
 repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
 repository.addLifecycleRule({ maxImageAge: cdk.Duration.days(30) });
 ```
+
+## Importing an existing repository
+
+You can import an existing repository created outside the CDK app using the `Repository.fromLookup` method.
+
+```ts
+const repository = ecr.Repository.fromLookup(stack, 'Repository', {
+  repositoryName: 'MyRepo',
+  repositoryArn: 'arn:aws:ecr:region:012345678910:repository/MyRepo'
+});
+```
