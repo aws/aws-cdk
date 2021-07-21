@@ -2,13 +2,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct } from 'constructs';
-import { DestinationProps } from './common';
+import { CommonDestinationProps } from './common';
 import { createLoggingOptions } from './private/helpers';
 
 /**
  * Props for defining an S3 destination of a Kinesis Data Firehose delivery stream.
  */
-export interface S3BucketProps extends DestinationProps { }
+export interface S3BucketProps extends CommonDestinationProps { }
 
 /**
  * An S3 bucket destination for data from a Kinesis Data Firehose delivery stream.
