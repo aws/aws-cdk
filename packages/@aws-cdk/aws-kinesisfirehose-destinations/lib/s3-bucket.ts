@@ -14,7 +14,7 @@ export interface S3BucketProps extends DestinationProps { }
  * An S3 bucket destination for data from a Kinesis Data Firehose delivery stream.
  */
 export class S3Bucket implements firehose.IDestination {
-  constructor(private readonly bucket: s3.IBucket, private props: S3BucketProps = {}) { }
+  constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) { }
 
   bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
     const role = this.props.role ?? new iam.Role(scope, 'S3 Destination Role', {
