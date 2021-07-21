@@ -111,11 +111,11 @@ describe('lambda-insights', () => {
         Runtime: 'nodejs10.x',
         Layers: [{
           'Fn::FindInMap': [
-            'CloudWatchLambdaInsightsVersions',
-            '1.0.54.0',
+            'CloudWatchLambdaInsightsVersions10540',
             {
               Ref: 'AWS::Region',
             },
+            'arn',
           ],
         }],
       },
