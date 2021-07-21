@@ -332,15 +332,14 @@ which provides low-level runtime metrics for a Lambda functions.
 import * as lambda from '@aws-cdk/lambda';
 
 new Function(this, 'MyFunction', {
-  insightsVersion: lambda.LambdaInsightsLayerVersion.fromVersionAndRegion({
-    insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
-    region: 'us-west-2',
+  insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0
   })
 })
 
 // Can also provide your own arn if a new version comes out
+const layerArn = 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14';
 new Function(this, 'MyFunction', {
-  insightsVersion: lambda.LambdaInsightsLayerVersion.fromInsightVersionArn(<your ARN here>)
+  insightsVersion: lambda.LambdaInsightsVersion.fromInsightVersionArn(layerArn)
 })
 ```
 
