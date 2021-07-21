@@ -114,7 +114,7 @@ successfully delivered to S3. `errorOutputPrefix` will be added to failed record
 writing them to S3.
 
 ```ts fixture=with-bucket
-const s3Destination = new destinations.S3(bucket, {
+const s3Destination = new destinations.S3Bucket(bucket, {
   prefix: 'myFirehose/DeliveredYear=!{timestamp:yyyy}/anyMonth/rand=!{firehose:random-string}',
   errorOutputPrefix: 'myFirehoseFailures/!{firehose:error-output-type}/!{timestamp:yyyy}/anyMonth/!{timestamp:dd}',
 });
@@ -255,7 +255,7 @@ delivered to S3 without compression.
 
 ```ts fixture=with-bucket
 // Compress data delivered to S3 using Snappy
-const s3Destination = new destinations.S3(bucket, {
+const s3Destination = new destinations.S3Bucket(bucket, {
   compression: Compression.SNAPPY,
 });
 new DeliveryStream(this, 'Delivery Stream', {
