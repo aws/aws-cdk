@@ -1,6 +1,6 @@
 import { HttpIntegrationSubtype, HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, IntegrationCredentials, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
-import { EventBus, IEventBus } from '@aws-cdk/aws-events';
-import { IRole, PolicyStatement } from '@aws-cdk/aws-iam';
+import { IEventBus } from '@aws-cdk/aws-events';
+import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IStream } from '@aws-cdk/aws-kinesis';
 import { IQueue } from '@aws-cdk/aws-sqs';
 import { IStateMachine } from '@aws-cdk/aws-stepfunctions';
@@ -9,8 +9,6 @@ import { Duration } from '@aws-cdk/core';
 interface AwsServiceIntegrationProps {
   /**
    * The credentials to use for the integration
-   *
-   * @default - none; use resource-based permissions.
    */
   readonly role: IRole;
   /**
@@ -18,6 +16,14 @@ interface AwsServiceIntegrationProps {
    * @default - undefined
    */
   region?: string;
+}
+
+abstract class AwsServiceIntegration<T extends AwsServiceIntegrationProps> implements
+  IHttpRouteIntegration {
+  protected payloadFormatVersion = PayloadFormatVersion.VERSION_1_0;
+  protected integrationType = HttpIntegrationType.LAMBDA_PROXY;
+  constructor(protected readonly props: T) { }
+  abstract bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig;
 }
 
 /**
@@ -65,22 +71,20 @@ export interface EventBridgePutEventsIntegrationProps extends AwsServiceIntegrat
   traceHeader?: string;
 }
 
-export class EventBridgePutEventsIntegration implements IHttpRouteIntegration {
-  constructor(private readonly props: EventBridgePutEventsIntegrationProps) {
+export class EventBridgePutEventsIntegration
+  extends AwsServiceIntegration<EventBridgePutEventsIntegrationProps> {
+  constructor(props: EventBridgePutEventsIntegrationProps) {
+    super(props);
   }
   bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
-    const eventBusArn = (
-      this.props.eventBus ?? EventBus.fromEventBusName(options.scope, 'DefaultEventBus', 'default')
-    ).eventBusArn;
-    this.props.role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['events:PutEvents'],
-      resources: [eventBusArn],
-    }));
+    const role = this.props.role ?? new Role(options.scope, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
     return {
-      type: HttpIntegrationType.LAMBDA_PROXY,
-      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+      type: this.integrationType,
       subtype: HttpIntegrationSubtype.EVENTBRIDGE_PUTEVENTS,
-      credentials: IntegrationCredentials.fromRole(this.props.role),
+      payloadFormatVersion: this.payloadFormatVersion,
+      credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
         Detail: this.props.detail,
         DetailType: this.props.detailType,
@@ -141,14 +145,24 @@ export interface SQSSendMessageIntegrationProps extends SQSIntegrationProps {
   readonly systemAttributes?: string;
 }
 
-export class SQSSendMessageIntegration implements IHttpRouteIntegration {
-  constructor(private readonly props: SQSSendMessageIntegrationProps) { }
-  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+export class SQSSendMessageIntegration
+  extends AwsServiceIntegration<SQSSendMessageIntegrationProps> {
+  constructor(props: SQSSendMessageIntegrationProps) {
+    super(props);
+  }
+  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    const role = this.props.role ?? new Role(options.scope, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
+    role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [this.props.queue.queueArn],
+    }));
     return {
-      type: HttpIntegrationType.LAMBDA_PROXY,
+      type: this.integrationType,
       subtype: HttpIntegrationSubtype.SQS_SENDMESSAGE,
-      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: IntegrationCredentials.fromRole(this.props.role),
+      payloadFormatVersion: this.payloadFormatVersion,
+      credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
         QueueUrl: this.props.queue.queueUrl,
         MessageBody: this.props.body,
@@ -226,14 +240,24 @@ export interface SQSReceiveMessageIntegrationProps extends SQSIntegrationProps {
   readonly waitTime?: Duration;
 }
 
-export class SQSReceiveMessageIntegration implements IHttpRouteIntegration {
-  constructor(private readonly props: SQSReceiveMessageIntegrationProps) { }
-  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+export class SQSReceiveMessageIntegration
+  extends AwsServiceIntegration<SQSReceiveMessageIntegrationProps> {
+  constructor(props: SQSReceiveMessageIntegrationProps) {
+    super(props);
+  }
+  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    const role = this.props.role ?? new Role(options.scope, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
+    role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['sqs:ReceiveMessage'],
+      resources: [this.props.queue.queueArn],
+    }));
     return {
-      type: HttpIntegrationType.LAMBDA_PROXY,
+      type: this.integrationType,
       subtype: HttpIntegrationSubtype.SQS_RECEIVEMESSAGE,
-      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: IntegrationCredentials.fromRole(this.props.role),
+      payloadFormatVersion: this.payloadFormatVersion,
+      credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
         QueueUrl: this.props.queue.queueUrl,
         AttributeNames: this.props.attributeNames,
@@ -255,14 +279,19 @@ export interface SQSDeleteMessageIntegrationProps extends SQSIntegrationProps {
   readonly receiptHandle: string;
 }
 
-export class SQSDeleteMessageIntegration implements IHttpRouteIntegration {
-  constructor(private readonly props: SQSDeleteMessageIntegrationProps) { }
-  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+export class SQSDeleteMessageIntegration extends AwsServiceIntegration<SQSDeleteMessageIntegrationProps> {
+  constructor(props: SQSDeleteMessageIntegrationProps) {
+    super(props);
+  }
+  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    const role = this.props.role ?? new Role(options.scope, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
     return {
-      type: HttpIntegrationType.LAMBDA_PROXY,
+      type: this.integrationType,
       subtype: HttpIntegrationSubtype.SQS_DELETEMESSAGE,
-      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: IntegrationCredentials.fromRole(this.props.role),
+      payloadFormatVersion: this.payloadFormatVersion,
+      credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
         QueueUrl: this.props.queue.queueUrl,
         ReceiptHandle: this.props.receiptHandle,
@@ -275,14 +304,20 @@ export class SQSDeleteMessageIntegration implements IHttpRouteIntegration {
 export interface SQSPurgeQueueIntegrationProps extends SQSIntegrationProps {
 }
 
-export class SQSPurgeQueueIntegration implements IHttpRouteIntegration {
-  constructor(private readonly props: SQSPurgeQueueIntegrationProps) { }
-  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+export class SQSPurgeQueueIntegration
+  extends AwsServiceIntegration<SQSPurgeQueueIntegrationProps> {
+  constructor(props: SQSPurgeQueueIntegrationProps) {
+    super(props);
+  }
+  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    const role = this.props.role ?? new Role(options.scope, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
     return {
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.SQS_PURGEQUEUE,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: IntegrationCredentials.fromRole(this.props.role),
+      credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
         QueueUrl: this.props.queue.queueUrl,
         Region: this.props.region,
@@ -318,14 +353,20 @@ export interface KinesisPutRecordIntegrationProps extends AwsServiceIntegrationP
   readonly explicitHashKey?: string;
 }
 
-export class KinesisPutRecordIntegration implements IHttpRouteIntegration {
-  constructor(private readonly props: KinesisPutRecordIntegrationProps) { }
-  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+export class KinesisPutRecordIntegration
+  extends AwsServiceIntegration<KinesisPutRecordIntegrationProps> {
+  constructor(props: KinesisPutRecordIntegrationProps) {
+    super(props);
+  }
+  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    const role = this.props.role ?? new Role(options.scope, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
     return {
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.KINESIS_PUTRECORD,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: IntegrationCredentials.fromRole(this.props.role),
+      credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
         StreamName: this.props.stream.streamName,
         Data: this.props.data,
@@ -359,14 +400,20 @@ export interface StepFunctionsStartExecutionIntegrationProps extends AwsServiceI
   readonly traceHeader?: string;
 }
 
-export class StepFunctionsStartExecutionIntegration implements IHttpRouteIntegration {
-  constructor(private readonly props: StepFunctionsStartExecutionIntegrationProps) { }
-  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+export class StepFunctionsStartExecutionIntegration
+  extends AwsServiceIntegration<StepFunctionsStartExecutionIntegrationProps> {
+  constructor(props: StepFunctionsStartExecutionIntegrationProps) {
+    super(props);
+  }
+  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    const role = this.props.role ?? new Role(options.scope, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
     return {
       type: HttpIntegrationType.LAMBDA_PROXY,
       subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STARTEXECUTION,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: IntegrationCredentials.fromRole(this.props.role),
+      credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
         StateMachineArn: this.props.stateMachine.stateMachineArn,
         Name: this.props.name,
@@ -377,14 +424,24 @@ export class StepFunctionsStartExecutionIntegration implements IHttpRouteIntegra
   }
 }
 
-export class StepFunctionsStartSyncExecutionIntegration implements IHttpRouteIntegration {
-  constructor(private readonly props: StepFunctionsStartExecutionIntegrationProps) { }
-  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+export class StepFunctionsStartSyncExecutionIntegration
+  extends AwsServiceIntegration<StepFunctionsStartExecutionIntegrationProps> {
+  constructor(props: StepFunctionsStartExecutionIntegrationProps) {
+    super(props);
+  }
+  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    const role = this.props.role ?? new Role(options.scope, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
+    role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['states:StartSyncExecution'],
+      resources: [this.props.stateMachine.stateMachineArn],
+    }));
     return {
-      type: HttpIntegrationType.LAMBDA_PROXY,
+      type: this.integrationType,
       subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STARTSYNCEXECUTION,
-      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: IntegrationCredentials.fromRole(this.props.role),
+      payloadFormatVersion: this.payloadFormatVersion,
+      credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
         StateMachineArn: this.props.stateMachine.stateMachineArn,
         Name: this.props.name,
@@ -413,14 +470,20 @@ export interface StepFunctionsStopExecutionIntegrationProps extends AwsServiceIn
   error?: string;
 }
 
-export class StepFunctionsStopExecutionIntegration implements IHttpRouteIntegration {
-  constructor(private readonly props: StepFunctionsStopExecutionIntegrationProps) { }
-  bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+export class StepFunctionsStopExecutionIntegration
+  extends AwsServiceIntegration<StepFunctionsStopExecutionIntegrationProps> {
+  constructor(props: StepFunctionsStopExecutionIntegrationProps) {
+    super(props);
+  }
+  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    const role = this.props.role ?? new Role(options.scope, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
     return {
-      type: HttpIntegrationType.LAMBDA_PROXY,
+      type: this.integrationType,
       subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STOPEXECUTION,
-      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
-      credentials: IntegrationCredentials.fromRole(this.props.role),
+      payloadFormatVersion: this.payloadFormatVersion,
+      credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
         ExecutionArn: this.props.executionArn,
         Cause: this.props.cause,

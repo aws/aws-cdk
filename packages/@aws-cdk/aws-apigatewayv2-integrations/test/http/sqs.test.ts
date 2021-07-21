@@ -1,3 +1,4 @@
+import { Capture, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { HttpApi, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { Role } from '@aws-cdk/aws-iam';
@@ -8,7 +9,7 @@ import {
   SQSDeleteMessageIntegration,
   SQSPurgeQueueIntegration,
   SQSReceiveMessageIntegration,
-  SQSSendMessageIntegration,
+  SQSSendMessageIntegration
 } from '../../lib/http/aws-proxy';
 
 describe('SQS Integrations', () => {
@@ -16,27 +17,41 @@ describe('SQS Integrations', () => {
     test('basic integration', () => {
       const { stack, api, queue, role } = setupTestFixtures(
         'arn:aws:sqs:eu-west-2:123456789012:queue',
-        'arn:aws:iam::123456789012:role/sqs',
+        'arn:aws:iam::123456789012:role/send'
       );
       new HttpRoute(stack, 'Route', {
         httpApi: api,
         integration: new SQSSendMessageIntegration({
-          role,
           queue,
           body: 'message',
+          role,
         }),
         routeKey: HttpRouteKey.with('/sendMessage'),
       });
+
+      const roleId = Capture.aString();
 
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
         IntegrationType: 'AWS_PROXY',
         IntegrationSubtype: 'SQS-SendMessage',
         PayloadFormatVersion: '1.0',
-        CredentialsArn: 'arn:aws:iam::123456789012:role/sqs',
+        CredentialsArn: 'arn:aws:iam::123456789012:role/send',
         RequestParameters: {
           QueueUrl: makeQueueUrl('eu-west-2', '123456789012', 'queue'),
           MessageBody: 'message',
         },
+      });
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
+        PolicyDocument: objectLike({
+          Statement: [{
+            Effect: 'Allow',
+            Action: 'sqs:SendMessage',
+            Resource: queue.queueArn,
+          }],
+        }),
+        Roles: [{
+          Ref: roleId.capturedValue,
+        }],
       });
     });
     test('full integration', () => {
@@ -79,111 +94,186 @@ describe('SQS Integrations', () => {
     });
   });
 
-  test('ReceiveMessage', () => {
-    const { stack, api, role, queue } = setupTestFixtures(
-      'arn:aws:sqs:us-west-1:123456789012:receive-queue.fifo',
-      'arn:aws:iam::123456789012:role/sqs-receive',
-    );
+  describe('ReceiveMessage', () => {
+    test('minimum integration', () => {
+      const { stack, api, queue, role } = setupTestFixtures(
+        'arn:aws:sqs:us-east-1:123456789012:receive-queue',
+        'arn:aws:iam::123456789012:role/receive',
+      );
+      new HttpRoute(stack, 'Route', {
+        httpApi: api,
+        routeKey: HttpRouteKey.with('/messages'),
+        integration: new SQSReceiveMessageIntegration({
+          queue,
+          role,
+        }),
+      });
 
-    new HttpRoute(stack, 'Route', {
-      httpApi: api,
-      integration: new SQSReceiveMessageIntegration({
-        role,
-        queue,
-        attributeNames: [SQSAttribute.ALL],
-        maxNumberOfMessages: 2,
-        messageAttributeNames: ['Attribute1'],
-        receiveRequestAttemptId: 'rra-id',
-        visibilityTimeout: Duration.seconds(30),
-        waitTime: Duration.seconds(4),
-        region: 'eu-central-1',
-      }),
-      routeKey: HttpRouteKey.DEFAULT,
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+        IntegrationType: 'AWS_PROXY',
+        IntegrationSubtype: 'SQS-ReceiveMessage',
+        PayloadFormatVersion: '1.0',
+        CredentialsArn: 'arn:aws:iam::123456789012:role/receive',
+        RequestParameters: {
+          QueueUrl: makeQueueUrl('us-east-1', '123456789012', 'receive-queue'),
+        },
+      });
     });
+    test('full integration', () => {
+      const { stack, api, role, queue } = setupTestFixtures(
+        'arn:aws:sqs:us-west-1:123456789012:receive-queue.fifo',
+        'arn:aws:iam::123456789012:role/sqs-receive',
+      );
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      IntegrationType: 'AWS_PROXY',
-      IntegrationSubtype: 'SQS-ReceiveMessage',
-      PayloadFormatVersion: '1.0',
-      CredentialsArn: 'arn:aws:iam::123456789012:role/sqs-receive',
-      RequestParameters: {
-        QueueUrl: makeQueueUrl('us-west-1', '123456789012', 'receive-queue.fifo'),
-        AttributeNames: ['All'],
-        MaxNumberOfMessages: 2,
-        MessageAttributeNames: ['Attribute1'],
-        ReceiveRequestAttemptId: 'rra-id',
-        VisibilityTimeout: 30,
-        WaitTimeSeconds: 4,
-        Region: 'eu-central-1',
-      },
+      new HttpRoute(stack, 'Route', {
+        httpApi: api,
+        integration: new SQSReceiveMessageIntegration({
+          role,
+          queue,
+          attributeNames: [SQSAttribute.ALL],
+          maxNumberOfMessages: 2,
+          messageAttributeNames: ['Attribute1'],
+          receiveRequestAttemptId: 'rra-id',
+          visibilityTimeout: Duration.seconds(30),
+          waitTime: Duration.seconds(4),
+          region: 'eu-central-1',
+        }),
+        routeKey: HttpRouteKey.DEFAULT,
+      });
+
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+        IntegrationType: 'AWS_PROXY',
+        IntegrationSubtype: 'SQS-ReceiveMessage',
+        PayloadFormatVersion: '1.0',
+        CredentialsArn: 'arn:aws:iam::123456789012:role/sqs-receive',
+        RequestParameters: {
+          QueueUrl: makeQueueUrl('us-west-1', '123456789012', 'receive-queue.fifo'),
+          AttributeNames: ['All'],
+          MaxNumberOfMessages: 2,
+          MessageAttributeNames: ['Attribute1'],
+          ReceiveRequestAttemptId: 'rra-id',
+          VisibilityTimeout: 30,
+          WaitTimeSeconds: 4,
+          Region: 'eu-central-1',
+        },
+      });
     });
   });
-  test('DeleteMessage', () => {
-    const { stack, api, role, queue } = setupTestFixtures(
-      'arn:aws:sqs:eu-west-2:123456789012:queue',
-      'arn:aws:iam::123456789012:role/sqs-delete',
-    );
-    new HttpRoute(stack, 'Route', {
-      httpApi: api,
-      integration: new SQSDeleteMessageIntegration({
-        queue,
-        receiptHandle: 'MbZj6wDWli%2BJvwwJaBV%2B3dcjk2YW2vA3%2BSTFFljT',
-        role,
-        region: 'eu-west-1',
-      }),
-      routeKey: HttpRouteKey.DEFAULT,
+  describe('DeleteMessage', () => {
+    test('minimum integration', () => {
+      const { stack, api, queue, role } = setupTestFixtures(
+        'arn:aws:sqs:eu-central-1:123456789012:delete',
+        'arn:aws:iam::123456789012:role/delete',
+      );
+      new HttpRoute(stack, 'Route', {
+        httpApi: api,
+        routeKey: HttpRouteKey.with('/delete'),
+        integration: new SQSDeleteMessageIntegration({
+          queue,
+          receiptHandle: '$request.body',
+          role,
+        }),
+      });
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+        IntegrationType: 'AWS_PROXY',
+        IntegrationSubtype: 'SQS-DeleteMessage',
+        PayloadFormatVersion: '1.0',
+        CredentialsArn: 'arn:aws:iam::123456789012:role/delete',
+        RequestParameters: {
+          QueueUrl: makeQueueUrl('eu-central-1', '123456789012', 'delete'),
+          ReceiptHandle: '$request.body',
+        },
+      });
     });
+    test('full integration', () => {
+      const { stack, api, role, queue } = setupTestFixtures(
+        'arn:aws:sqs:eu-west-2:123456789012:queue',
+        'arn:aws:iam::123456789012:role/sqs-delete',
+      );
+      new HttpRoute(stack, 'Route', {
+        httpApi: api,
+        integration: new SQSDeleteMessageIntegration({
+          queue,
+          receiptHandle: 'MbZj6wDWli%2BJvwwJaBV%2B3dcjk2YW2vA3%2BSTFFljT',
+          role,
+          region: 'eu-west-1',
+        }),
+        routeKey: HttpRouteKey.DEFAULT,
+      });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      IntegrationType: 'AWS_PROXY',
-      IntegrationSubtype: 'SQS-DeleteMessage',
-      PayloadFormatVersion: '1.0',
-      CredentialsArn: 'arn:aws:iam::123456789012:role/sqs-delete',
-      RequestParameters: {
-        QueueUrl: makeQueueUrl('eu-west-2', '123456789012', 'queue'),
-        ReceiptHandle: 'MbZj6wDWli%2BJvwwJaBV%2B3dcjk2YW2vA3%2BSTFFljT',
-        Region: 'eu-west-1',
-      },
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+        IntegrationType: 'AWS_PROXY',
+        IntegrationSubtype: 'SQS-DeleteMessage',
+        PayloadFormatVersion: '1.0',
+        CredentialsArn: 'arn:aws:iam::123456789012:role/sqs-delete',
+        RequestParameters: {
+          QueueUrl: makeQueueUrl('eu-west-2', '123456789012', 'queue'),
+          ReceiptHandle: 'MbZj6wDWli%2BJvwwJaBV%2B3dcjk2YW2vA3%2BSTFFljT',
+          Region: 'eu-west-1',
+        },
+      });
     });
   });
-  test('PurgeQueue', () => {
-    const { stack, api, queue, role } = setupTestFixtures(
-      'arn:aws:sqs:eu-west-1:123456789012:queue',
-      'arn:aws:iam::123456789012:role/purge',
-    );
-    new HttpRoute(stack, 'Route', {
-      httpApi: api,
-      integration: new SQSPurgeQueueIntegration({
-        queue,
-        role,
-        region: 'us-east-2',
-      }),
-      routeKey: HttpRouteKey.DEFAULT,
+  describe('PurgeQueue', () => {
+    test('minimum integration', () => {
+      const { stack, api, queue, role } = setupTestFixtures(
+        'arn:aws:sqs:eu-west-1:123456789012:queue',
+        'arn:aws:iam::123456789012:role/purge',
+      );
+      new HttpRoute(stack, 'Route', {
+        httpApi: api,
+        routeKey: HttpRouteKey.with('/purge'),
+        integration: new SQSPurgeQueueIntegration({
+          queue,
+          role,
+        }),
+      });
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+        IntegrationType: 'AWS_PROXY',
+        IntegrationSubtype: 'SQS-PurgeQueue',
+        PayloadFormatVersion: '1.0',
+        CredentialsArn: 'arn:aws:iam::123456789012:role/purge',
+        RequestParameters: {
+          QueueUrl: makeQueueUrl('eu-west-1', '123456789012', 'queue'),
+        },
+      });
     });
+    test('full integration', () => {
+      const { stack, api, queue, role } = setupTestFixtures(
+        'arn:aws:sqs:eu-west-1:123456789012:queue',
+        'arn:aws:iam::123456789012:role/purge',
+      );
+      new HttpRoute(stack, 'Route', {
+        httpApi: api,
+        integration: new SQSPurgeQueueIntegration({
+          queue,
+          role,
+          region: 'us-east-2',
+        }),
+        routeKey: HttpRouteKey.DEFAULT,
+      });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      IntegrationType: 'AWS_PROXY',
-      IntegrationSubtype: 'SQS-PurgeQueue',
-      PayloadFormatVersion: '1.0',
-      CredentialsArn: 'arn:aws:iam::123456789012:role/purge',
-      RequestParameters: {
-        QueueUrl: makeQueueUrl('eu-west-1', '123456789012', 'queue'),
-        Region: 'us-east-2',
-      },
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+        IntegrationType: 'AWS_PROXY',
+        IntegrationSubtype: 'SQS-PurgeQueue',
+        PayloadFormatVersion: '1.0',
+        CredentialsArn: 'arn:aws:iam::123456789012:role/purge',
+        RequestParameters: {
+          QueueUrl: makeQueueUrl('eu-west-1', '123456789012', 'queue'),
+          Region: 'us-east-2',
+        },
+      });
     });
   });
 });
 
 function setupTestFixtures(queueArn: string, roleArn: string) {
   const stack = new Stack();
-  const api = new HttpApi(stack, 'API');
-  const queue = Queue.fromQueueArn(stack, 'Queue', queueArn);
-  const role = Role.fromRoleArn(stack, 'Role', roleArn);
   return {
     stack,
-    api,
-    queue,
-    role,
+    api: new HttpApi(stack, 'API'),
+    queue: Queue.fromQueueArn(stack, 'Queue', queueArn),
+    role: Role.fromRoleArn(stack, 'Role', roleArn),
   };
 }
 
