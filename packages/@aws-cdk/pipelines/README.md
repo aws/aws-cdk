@@ -739,9 +739,9 @@ to it, it's important that you don't delete the stack or change its *Qualifier*,
 or future deployments to this environment will fail. If you want to upgrade
 the bootstrap stack to a newer version, do that by updating it in-place.
 
-> This library requires a newer version of the bootstrapping stack which has
-> been updated specifically to support cross-account continuous delivery. In the future,
-> this new bootstrapping stack will become the default, but for now it is still
+> This library requires the *modern* bootstrapping stack which has
+> been updated specifically to support cross-account continuous delivery. Starting,
+> in CDK v2 this new bootstrapping stack will become the default, but for now it is still
 > opt-in.
 >
 > The commands below assume you are running `cdk bootstrap` in a directory
@@ -792,17 +792,27 @@ These command lines explained:
   flag out if either the AWS default credentials or the `AWS_*` environment
   variables confer these permissions.
 * `--cloudformation-execution-policies`: ARN of the managed policy that future CDK
-  deployments should execute with. You can tailor this to the needs of your organization
-  and give more constrained permissions than `AdministratorAccess`.
+  deployments should execute with. By default this is `AdministratorAccess`, but
+  if you also specify the `--trust` flag to give another Account permissions to
+  deploy into the current account, you must specify a value here.
 * `--trust`: indicates which other account(s) should have permissions to deploy
   CDK applications into this account. In this case we indicate the Pipeline's account,
   but you could also use this for developer accounts (don't do that for production
   application accounts though!).
-* `--trust-for-lookup`: similar to `--trust`, but gives a more limited set of permissions to the
-  trusted account, allowing it to only look up values, such as availability zones, EC2 images and
-  VPCs. Note that if you provide an account using `--trust`, that account can also do lookups.
-  So you only need to pass `--trust-for-lookup` if you need to use a different account.
+* `--trust-for-lookup`: gives a more limited set of permissions to the
+  trusted account, only allowing it to look up values such as availability zones, EC2 images and
+  VPCs. `--trust-for-lookup` does not give permissions to modify anything in the account.
+  Note that `--trust` implies `--trust-for-lookup`, so you don't need to specify
+  the same acocunt twice.
 * `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
+
+> Be aware that anyone who has access to the trusted Accounts **effectively has all
+> permissions conferred by the configured CloudFormation execution policies**,
+> allowing them to do things like read arbitrary S3 buckets and create arbitrary
+> infrastructure in the bootstrapped account.  Restrict the list of `--trust`ed Accounts,
+> or restrict the policies configured by `--cloudformation-execution-policies`.
+
+<br>
 
 > **Security tip**: we recommend that you use administrative credentials to an
 > account only to bootstrap it and provision the initial pipeline. Otherwise,
