@@ -618,7 +618,7 @@ export = {
 
       test.throws(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /You need to provide a concrete account for the source stack when using cross-account or cross-region events/);
+      }, /You need to provide a concrete region/);
 
       test.done();
     },
@@ -843,7 +843,7 @@ export = {
       const resource = EventBus.fromEventBusArn(sourceStack, 'TargetEventBus', `arn:aws:events:${targetRegion}:${targetAccount}:event-bus/default`);
       test.throws(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /Cannot create a cross-account or cross-region rule with an imported resource/);
+      }, /Cannot create a cross-account or cross-region rule for an imported resource/);
 
       test.done();
     },
