@@ -327,7 +327,7 @@
     }
   },
   "Mappings": {
-    "DeliveryStreamFirehoseCIDRMappingE9233479": {
+    "awscdkawskinesisfirehoseCidrBlocks": {
       "af-south-1": {
         "FirehoseCidrBlock": "13.244.121.224/27"
       },

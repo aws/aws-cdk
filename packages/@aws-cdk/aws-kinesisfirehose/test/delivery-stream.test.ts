@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
+import { ABSENT, ResourcePart, SynthUtils, anything } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -289,7 +289,7 @@ describe('delivery stream', () => {
         {
           CidrIp: {
             'Fn::FindInMap': [
-              'DeliveryStreamFirehoseCIDRMappingE9233479',
+              anything(),
               {
                 Ref: 'AWS::Region',
               },
@@ -318,6 +318,17 @@ describe('delivery stream', () => {
         },
       ],
     });
+  });
+
+  test('only adds one Firehose IP address mapping to stack even if multiple delivery streams defined', () => {
+    new firehose.DeliveryStream(stack, 'Delivery Stream 1', {
+      destinations: [mockS3Destination],
+    });
+    new firehose.DeliveryStream(stack, 'Delivery Stream 2', {
+      destinations: [mockS3Destination],
+    });
+
+    expect(Object.keys(SynthUtils.toCloudFormation(stack).Mappings).length).toBe(1);
   });
 
   test('can add tags', () => {
