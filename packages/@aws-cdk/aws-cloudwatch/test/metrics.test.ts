@@ -232,12 +232,13 @@ describe('Metrics', () => {
   });
 
   test('metric accepts a variety of statistics', () => {
-    new Metric({
+    const customStat = 'myCustomStatistic';
+    const metric = new Metric({
       namespace: 'Test',
       metricName: 'Metric',
-      statistic: 'myCustomStatistic',
+      statistic: customStat,
     });
 
-
+    expect(metric.statistic).toEqual(customStat);
   });
 });
