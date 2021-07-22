@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { isStackArtifact } from '../private/cloud-assembly-internals';
+import { pipelineSynth } from '../private/construct-internals';
 import { StackDeployment } from './stack-deployment';
 import { Step } from './step';
 
@@ -44,7 +45,7 @@ export class StageDeployment {
    * in dependency order.
    */
   public static fromStage(stage: cdk.Stage, props: StageDeploymentProps = {}) {
-    const assembly = stage.synth();
+    const assembly = pipelineSynth(stage);
     if (assembly.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
       // error will be thrown come deployment time.
