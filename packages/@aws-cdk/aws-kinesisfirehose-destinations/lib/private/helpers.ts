@@ -2,8 +2,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import { BackupMode, S3BackupDestinationProps } from '../common';
 import { IDataProcessor } from '../processor';
 
 export interface DestinationLoggingProps {
@@ -36,16 +38,25 @@ export interface DestinationLoggingProps {
   readonly streamId: string;
 }
 
-export interface DestinationLoggingOutput {
-  /**
-   * Logging options that will be injected into the destination configuration.
-   */
-  readonly loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
-
+export interface OutputWithDependables {
   /**
    * Resources that were created by the sub-config creator that must be deployed before the delivery stream is deployed.
    */
   readonly dependables: cdk.IDependable[];
+}
+
+export interface DestinationLoggingOutput extends OutputWithDependables {
+  /**
+   * Logging options that will be injected into the destination configuration.
+   */
+  readonly loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
+}
+
+export interface DestinationBackupOutput extends OutputWithDependables {
+  /**
+   * S3 backup configuration that will be injected into the destination configuration.
+   */
+  readonly backupConfig: firehose.CfnDeliveryStream.S3DestinationConfigurationProperty;
 }
 
 export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingOutput | undefined {
@@ -131,4 +142,46 @@ export function createProcessingConfig(
     };
   }
   return undefined;
+}
+
+export function createBackupConfig(scope: Construct, role: iam.IRole, props?: S3BackupDestinationProps): DestinationBackupOutput | undefined {
+  if (!props) {
+    return undefined;
+  }
+  if (props.backupMode === undefined && !props.backupBucket) {
+    return undefined;
+  }
+  if (props.backupMode === BackupMode.DISABLED && props.backupBucket) {
+    throw new Error('Destination backup cannot be set to DISABLED when backupBucket is provided');
+  }
+  if (props.backupMode === BackupMode.DISABLED) {
+    return undefined;
+  }
+
+  const bucket = props.backupBucket ?? new s3.Bucket(scope, 'BackupBucket');
+  const bucketGrant = bucket.grantReadWrite(role);
+
+  const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(
+    scope,
+    {
+      logging: props.logging,
+      logGroup: props.logGroup,
+      role,
+      streamId: 'S3Backup',
+    },
+  ) ?? {};
+
+  return {
+    backupConfig: {
+      bucketArn: bucket.bucketArn,
+      roleArn: role.roleArn,
+      prefix: props.prefix,
+      errorOutputPrefix: props.errorOutputPrefix,
+      bufferingHints: createBufferingHints(props.bufferingInterval, props.bufferingSize),
+      compressionFormat: props.compression?.value,
+      encryptionConfiguration: createEncryptionConfig(role, props.encryptionKey),
+      cloudWatchLoggingOptions: loggingOptions,
+    },
+    dependables: [bucketGrant, ...(loggingDependables ?? [])],
+  };
 }

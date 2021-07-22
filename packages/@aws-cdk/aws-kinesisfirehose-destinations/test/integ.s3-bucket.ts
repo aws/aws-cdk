@@ -17,6 +17,10 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
   autoDeleteObjects: true,
 });
 
+const backupBucket = new s3.Bucket(stack, 'BackupBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
 const logGroup = new logs.LogGroup(stack, 'LogGroup', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
@@ -34,6 +38,10 @@ const key = new kms.Key(stack, 'Key', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
+const backupKey = new kms.Key(stack, 'BackupKey', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
   destinations: [new destinations.S3Bucket(bucket, {
     logging: true,
@@ -45,6 +53,16 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
     bufferingInterval: cdk.Duration.seconds(60),
     bufferingSize: cdk.Size.mebibytes(1),
     encryptionKey: key,
+    backupConfiguration: {
+      backupMode: destinations.BackupMode.ALL,
+      backupBucket: backupBucket,
+      compression: destinations.Compression.ZIP,
+      prefix: 'backupPrefix',
+      errorOutputPrefix: 'backupErrorPrefix',
+      bufferingInterval: cdk.Duration.seconds(60),
+      bufferingSize: cdk.Size.mebibytes(1),
+      encryptionKey: backupKey,
+    },
   })],
 });
 

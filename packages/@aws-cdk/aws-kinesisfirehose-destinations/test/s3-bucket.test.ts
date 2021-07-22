@@ -387,4 +387,162 @@ describe('S3 destination', () => {
       })).toThrowError('Only one processor is allowed per delivery stream destination');
     });
   });
+
+  describe('s3 backup configuration', () => {
+
+    it('set backupMode to ALL creates resources', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        role: destinationRole,
+        backupConfiguration: {
+          backupMode: firehosedestinations.BackupMode.ALL,
+        },
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          S3BackupConfiguration: {
+            BucketARN: anything(),
+            CloudWatchLoggingOptions: {
+              Enabled: true,
+              LogGroupName: anything(),
+              LogStreamName: anything(),
+            },
+            RoleARN: stack.resolve(destinationRole.roleArn),
+            EncryptionConfiguration: {
+              NoEncryptionConfig: 'NoEncryption',
+            },
+          },
+          S3BackupMode: 'Enabled',
+        },
+      });
+    });
+
+    it('sets backup configuration if backup bucket provided', () => {
+      const backupBucket = new s3.Bucket(stack, 'MyBackupBucket');
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        role: destinationRole,
+        backupConfiguration: {
+          backupBucket: backupBucket,
+        },
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          S3BackupConfiguration: {
+            BucketARN: stack.resolve(backupBucket.bucketArn),
+            CloudWatchLoggingOptions: {
+              Enabled: true,
+              LogGroupName: anything(),
+              LogStreamName: anything(),
+            },
+            RoleARN: stack.resolve(destinationRole.roleArn),
+            EncryptionConfiguration: {
+              NoEncryptionConfig: 'NoEncryption',
+            },
+          },
+          S3BackupMode: 'Enabled',
+        },
+      });
+    });
+
+    it('throws error if backupMode set FAILED', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        role: destinationRole,
+        backupConfiguration: {
+          backupMode: firehosedestinations.BackupMode.FAILED,
+        },
+      });
+
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      })).toThrowError('S3 destinations do not support BackupMode.FAILED');
+    });
+
+    it('set backupMode to DISABLED does not create resources', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        role: destinationRole,
+        backupConfiguration: {
+          backupMode: firehosedestinations.BackupMode.DISABLED,
+        },
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResource('AWS::S3::Bucket', 1);
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          S3BackupConfiguration: ABSENT,
+        },
+      });
+    });
+
+    it('throws error if backupMode set to DISABLED and backupBucket is provided', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        role: destinationRole,
+        backupConfiguration: {
+          backupMode: firehosedestinations.BackupMode.DISABLED,
+          backupBucket: new s3.Bucket(stack, 'MyBackupBucket'),
+        },
+      });
+
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      })).toThrowError('Destination backup cannot be set to DISABLED when backupBucket is provided');
+    });
+
+    it('sets full backup configuration', () => {
+      const backupBucket = new s3.Bucket(stack, 'MyBackupBucket');
+      const key = new kms.Key(stack, 'Key');
+      const logGroup = new logs.LogGroup(stack, 'BackupLogGroup');
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        role: destinationRole,
+        backupConfiguration: {
+          backupMode: firehosedestinations.BackupMode.ALL,
+          backupBucket: backupBucket,
+          prefix: 'myBackupPrefix',
+          errorOutputPrefix: 'myBackupErrorPrefix',
+          bufferingSize: cdk.Size.mebibytes(1),
+          bufferingInterval: cdk.Duration.minutes(1),
+          compression: firehosedestinations.Compression.ZIP,
+          encryptionKey: key,
+          logging: true,
+          logGroup: logGroup,
+        },
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          S3BackupConfiguration: {
+            BucketARN: stack.resolve(backupBucket.bucketArn),
+            CloudWatchLoggingOptions: {
+              Enabled: true,
+              LogGroupName: stack.resolve(logGroup.logGroupName),
+              LogStreamName: anything(),
+            },
+            RoleARN: stack.resolve(destinationRole.roleArn),
+            EncryptionConfiguration: {
+              KMSEncryptionConfig: {
+                AWSKMSKeyARN: stack.resolve(key.keyArn),
+              },
+            },
+            Prefix: 'myBackupPrefix',
+            ErrorOutputPrefix: 'myBackupErrorPrefix',
+            BufferingHints: {},
+            CompressionFormat: 'ZIP',
+          },
+          S3BackupMode: 'Enabled',
+        },
+      });
+    });
+  });
 });
