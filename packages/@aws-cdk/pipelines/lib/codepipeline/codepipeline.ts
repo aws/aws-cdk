@@ -19,6 +19,7 @@ import { CodeBuildFactory, mergeCodeBuildOptions, stackVariableNamespace } from 
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { AssetSingletonRole } from '../private/asset-singleton-role';
 
 
 /**
@@ -253,11 +254,6 @@ export class CodePipeline extends PipelineBase {
    * Asset roles shared for publishing
    */
   private readonly assetCodeBuildRoles: Record<string, iam.IRole> = {};
-
-  /**
-   * Policies created for the build projects that they have to depend on
-   */
-  private readonly assetAttachedPolicies: Record<string, iam.Policy> = {};
 
   /**
    * Per asset type, the target role ARNs that need to be assumed
@@ -779,59 +775,19 @@ export class CodePipeline extends PipelineBase {
     if (this.assetCodeBuildRoles[assetType]) {
       return {
         role: this.assetCodeBuildRoles[assetType],
-        dependable: this.assetAttachedPolicies[assetType],
       };
     }
 
     const stack = Stack.of(this);
 
     const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
-    const assetRole = new iam.Role(this.assetsScope, `${rolePrefix}Role`, {
+    const assetRole = new AssetSingletonRole(this.assetsScope, `${rolePrefix}Role`, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('codebuild.amazonaws.com'),
         new iam.AccountPrincipal(stack.account),
       ),
     });
-
-    // Logging permissions
-    const logGroupArn = stack.formatArn({
-      service: 'logs',
-      resource: 'log-group',
-      sep: ':',
-      resourceName: '/aws/codebuild/*',
-    });
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      resources: [logGroupArn],
-      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-    }));
-
-    // CodeBuild report groups
-    const codeBuildArn = stack.formatArn({
-      service: 'codebuild',
-      resource: 'report-group',
-      resourceName: '*',
-    });
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'codebuild:CreateReportGroup',
-        'codebuild:CreateReport',
-        'codebuild:UpdateReport',
-        'codebuild:BatchPutTestCases',
-        'codebuild:BatchPutCodeCoverages',
-      ],
-      resources: [codeBuildArn],
-    }));
-
-    // CodeBuild start/stop
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'codebuild:BatchGetBuilds',
-        'codebuild:StartBuild',
-        'codebuild:StopBuild',
-      ],
-    }));
 
     // Publishing role access
     // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
@@ -846,50 +802,9 @@ export class CodePipeline extends PipelineBase {
       this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
-    // Artifact access
-    this.pipeline.artifactBucket.grantRead(assetRole);
-
-    // VPC permissions required for CodeBuild
-    // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
-    // we need to do this.
-    const assetCodeBuildOptions = this.codeBuildDefaultsFor(CodeBuildProjectType.ASSETS);
-    if (assetCodeBuildOptions?.vpc) {
-      const vpcPolicy = new iam.Policy(assetRole, 'VpcPolicy', {
-        statements: [
-          new iam.PolicyStatement({
-            resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
-            actions: ['ec2:CreateNetworkInterfacePermission'],
-            conditions: {
-              StringEquals: {
-                'ec2:Subnet': assetCodeBuildOptions.vpc
-                  .selectSubnets(assetCodeBuildOptions.subnetSelection).subnetIds
-                  .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
-                'ec2:AuthorizedService': 'codebuild.amazonaws.com',
-              },
-            },
-          }),
-          new iam.PolicyStatement({
-            resources: ['*'],
-            actions: [
-              'ec2:CreateNetworkInterface',
-              'ec2:DescribeNetworkInterfaces',
-              'ec2:DeleteNetworkInterface',
-              'ec2:DescribeSubnets',
-              'ec2:DescribeSecurityGroups',
-              'ec2:DescribeDhcpOptions',
-              'ec2:DescribeVpcs',
-            ],
-          }),
-        ],
-      });
-      assetRole.attachInlinePolicy(vpcPolicy);
-      this.assetAttachedPolicies[assetType] = vpcPolicy;
-    }
-
-    this.assetCodeBuildRoles[assetType] = assetRole.withoutPolicyUpdates();
+    this.assetCodeBuildRoles[assetType] = assetRole;
     return {
       role: this.assetCodeBuildRoles[assetType],
-      dependable: this.assetAttachedPolicies[assetType],
     };
   }
 }
