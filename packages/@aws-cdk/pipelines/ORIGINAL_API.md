@@ -14,29 +14,29 @@ The changes necessary are the following:
 ### The Pipeline
 
 Replace `new CdkPipeline` with `new CodePipeline`. Some
-configuration properties have been renamed or moved:
+configuration properties have been changed:
 
-| Old property | New property
-|--------------|----------------------
-| `cloudAssemblyArtifact` | remove
-| `sourceAction` | remove
-| `synthAction` | ⟹ `synth`
-| `crossAccountKeys` | new default is `false`, so be sure to specify `crossAccountKeys: true` if you are doing cross-account deployments |
-| `cdkCliVersion` | ⟹ `cliVersion`
-| `selfMutating` | ⟹ `selfMutation`
-| `vpc`, `subnetSelection` | have moved to `codeBuildDefaults: { vpc, subnetSelection }` |
-| `selfMutationBuildSpec` | has moved to `selfMutationCodeBuildDefaults: { partialBuildSpec }`
-| `assetBuildSpec` | has moved to `assetPublishingCodeBuildDefaults: { partialBuildSpec }`
-| `assetPreinstallCommands` | use  `assetPublishingCodeBuildDefaults: { partialBuildSpec }` instead
-| `singlePublisherPerType: true` | ⟹ `publishAssetsInParallel: false` |
-| `supportDockerAssets` | ⟹ `dockerEnabledForSelfMutation`
+| Old API                        | New API                                                                                        |
+|--------------------------------+------------------------------------------------------------------------------------------------|
+| `cloudAssemblyArtifact`        | removed                                                                                        |
+| `sourceAction`                 | removed                                                                                        |
+| `synthAction`                  | `synth`                                                                                        |
+| `crossAccountKeys`             | new default is `false`; specify `crossAccountKeys: true` if you need cross-account deployments |
+| `cdkCliVersion`                | `cliVersion`                                                                                   |
+| `selfMutating`                 | `selfMutation`                                                                                 |
+| `vpc`, `subnetSelection`       | `codeBuildDefaults.vpc`, codeBuildDefaults.subnetSelection`                                    |
+| `selfMutationBuildSpec`        | `selfMutationCodeBuildDefaults.partialBuildSpec`                                               |
+| `assetBuildSpec`               | `assetPublishingCodeBuildDefaults.partialBuildSpec`                                            |
+| `assetPreinstallCommands`      | use `assetPublishingCodeBuildDefaults.partialBuildSpec` instead                                |
+| `singlePublisherPerType: true` | `publishAssetsInParallel: false`                                                               |
+| `supportDockerAssets`          | `dockerEnabledForSelfMutation`                                                                 |
 
 ### The synth
 
 As the argument to `synth`, use `new ShellStep` or `new CodeBuildStep`,
 depending on whether or not you want to customize the AWS CodeBuild Project that gets generated.
 
-Contrary to `SimpleSynthAction.standardNpmSynth`, you do need to specify
+Contrary to `SimpleSynthAction.standardNpmSynth`, you need to specify
 all commands necessary to do a full CDK build and synth, so do include
 installing dependencies and running the CDK CLI. Example:
 
@@ -75,7 +75,7 @@ Instead of specifying the pipeline source with the `sourceAction` property to
 the pipeline, specify it as the `input` property to the `ShellStep` instead.
 You can use any of the factory functions on `CodePipelineSource`.
 
-For example, for a GitHub source, the following:
+For example, for a GitHub source, the following old API:
 
 ```ts
 sourceAction: new codepipeline_actions.GitHubSourceAction({
@@ -102,10 +102,10 @@ Adding CDK Stages to deploy is done by calling `addStage()`, or
 potentially `addWave().addStage()`. All stages inside a wave are
 deployed in parallel, which was not a capability of the original API.
 
- Old method | New method
-------------|------------------
-`addApplicationStage()` | ⟹ `addStage()`
-`addStage().addApplication()` | ⟹ `addStage()`. Adding multiple CDK Stages into a single Pipeline stage is not supported, add multiple Pipeline stages instead.
+| Old API                       | New API                                                                                                                       |
+|-------------------------------+-------------------------------------------------------------------------------------------------------------------------------|
+| `addApplicationStage()`       | `addStage()`                                                                                                                  |
+| `addStage().addApplication()` | `addStage()`. Adding multiple CDK Stages into a single Pipeline stage is not supported, add multiple Pipeline stages instead. |
 
 ### Approvals
 
@@ -115,6 +115,7 @@ putting manual approvals in `pre` steps, and automated approvals in `post` steps
 
 #### Manual approvals
 
+For example, specifying a manual approval before a stage can deploy in the following old API:
 ```ts
 const stage = pipeline.addApplicationStage(...);
 stage.addAction(new ManualApprovalAction({
@@ -135,6 +136,7 @@ pipeline.addStage(..., {
 
 #### Automated approvals
 
+For example, specifying an automated approval after a stage is deployed in the following old API:
 ```ts
 const stage = pipeline.addApplicationStage(...);
 stage.addActions(new ShellScriptAction({
@@ -168,15 +170,8 @@ pipeline.addStage(stage, {
 
 #### Change set approvals
 
-There are two properties that were used to add actions to the pipeline
-in between the `CreateChangeSet` and `ExecuteChangeSet` actions:
-
-```ts
-    manualApprovals: true,
-    extraRunOrderSpace: 1,
-```
-
-These are not supported in the new API.
+In the old API, there were two properties that were used to add actions to the pipeline
+in between the `CreateChangeSet` and `ExecuteChangeSet` actions: `manualApprovals` and `extraRunOrderSpace`. These are not supported in the new API.
 
 ### Custom CodePipeline Actions
 
