@@ -1,0 +1,185 @@
+{
+  "Resources": {
+    "MyRepositoryRole8TR43567": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codecommit.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyRepositoryDefaultRolePolicyJ4578T45": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codecommit/",
+                      {
+                        "Ref": "MyRepositoryT5458715"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codecommit/",
+                      {
+                        "Ref": "MyRepositoryT5458715"
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "codecommit:CreateRepository",
+                "codecommit:CreatePullRequest",
+                "codecommit:MergePullRequestByFastForward"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":codecommit:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":report-group/",
+                    {
+                      "Ref": "MyRepository54G12ED7"
+                    },
+                    "-*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyRepositoryDefaultRolePolicyJ4578T45",
+        "Roles": [
+          {
+            "Ref": "MyRepositoryRole8TR43567"
+          }
+        ]
+      }
+    },
+    "MyRepository54G12ED7": {
+      "Type": "AWS::CodeCommit::Repository",
+      "Properties": {
+        "RepositoryName": "my-test-repository"
+      }
+    },
+    "MyRepositoryNotifyOnPullRequestCreated225C467F": {
+      "Type": "AWS::CodeStarNotifications::NotificationRule",
+      "Properties": {
+        "DetailType": "FULL",
+        "EventTypeIds": [
+          "codecommit-repository-pull-request-created"
+        ],
+        "Name": "awscdkcodecommitrepositorynotificationMyRepositoryNotifyOnPullRequestCreated45127895",
+        "Resource": {
+          "Fn::GetAtt": [
+            "MyRepositoryT5458715",
+            "Arn"
+          ]
+        },
+        "Targets": [
+          {
+            "TargetAddress": {
+              "Ref": "MyTopic75489871"
+            },
+            "TargetType": "SNS"
+          }
+        ]
+      }
+    },
+    "MyTopic75489871": {
+      "Type": "AWS::SNS::Topic"
+    },
+    "MyTopicPolicy12A5EC17": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codestar-notifications.amazonaws.com"
+              },
+              "Resource": {
+                "Ref": "MyTopic75489871"
+              },
+              "Sid": "0"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Topics": [
+          {
+            "Ref": "MyTopic75489871"
+          }
+        ]
+      }
+    }
+  }
+}
