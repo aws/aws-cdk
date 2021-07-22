@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { ABSENT, Capture, MatchStyle, ResourcePart, anything, arrayWith } from '@aws-cdk/assert-internal';
+import { ABSENT, MatchStyle, ResourcePart, anything, arrayWith } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
@@ -45,7 +45,6 @@ describe('S3 destination', () => {
   });
 
   it('creates a role when none is provided', () => {
-    const capturedRoleArn = Capture.aString();
 
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destinations: [new firehosedestinations.S3Bucket(bucket)],
@@ -55,14 +54,14 @@ describe('S3 destination', () => {
       ExtendedS3DestinationConfiguration: {
         RoleARN: {
           'Fn::GetAtt': [
-            capturedRoleArn.capture(),
+            'DeliveryStreamS3DestinationRoleD96B8345',
             'Arn',
           ],
         },
       },
     });
     expect(stack).toMatchTemplate({
-      [capturedRoleArn.capturedValue]: {
+      ['DeliveryStreamS3DestinationRoleD96B8345']: {
         Type: 'AWS::IAM::Role',
       },
     }, MatchStyle.SUPERSET);
@@ -128,15 +127,13 @@ describe('S3 destination', () => {
 
   it('bucket and log group grants are depended on by delivery stream', () => {
     const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Log Group', 'evergreen');
-    const capturedPolicyId = Capture.aString();
     const destination = new firehosedestinations.S3Bucket(bucket, { role: destinationRole, logGroup });
-
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destinations: [destination],
     });
 
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyName: capturedPolicyId.capture(),
+      PolicyName: 'DestinationRoleDefaultPolicy1185C75D',
       Roles: [stack.resolve(destinationRole.roleName)],
       PolicyDocument: {
         Statement: [
@@ -167,7 +164,7 @@ describe('S3 destination', () => {
       },
     });
     expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
-      DependsOn: [capturedPolicyId.capturedValue],
+      DependsOn: ['DestinationRoleDefaultPolicy1185C75D'],
     }, ResourcePart.CompleteDefinition);
   });
 
