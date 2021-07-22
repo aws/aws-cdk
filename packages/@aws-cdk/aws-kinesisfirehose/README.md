@@ -336,7 +336,7 @@ const deliveryStream = new DeliveryStream(this, 'Delivery Stream Backup All', {
 const backupBucket = new s3.Bucket(this, 'Bucket');
 const deliveryStream = new DeliveryStream(this, 'Delivery Stream Backup All Explicit Bucket', {
   destinations: [
-    new destinations.S3(bucket, {
+    new destinations.S3Bucket(bucket, {
       backupConfiguration: {
         backupBucket: backupBucket,
       }
