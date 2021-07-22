@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { Annotations } from './annotations';
 import { CfnRefElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Token } from './token';
@@ -36,14 +37,14 @@ export interface CfnMappingProps {
  */
 export class CfnMapping extends CfnRefElement {
   private mapping: Mapping;
-  private lazy: boolean;
-  private render: boolean;
+  private readonly lazy?: boolean;
+  private lazyRender = false;
+  private lazyInformed = false;
 
   constructor(scope: Construct, id: string, props: CfnMappingProps = {}) {
     super(scope, id);
     this.mapping = props.mapping ?? { };
-    this.lazy = props.lazy ?? false;
-    this.render = !props.lazy;
+    this.lazy = props.lazy;
   }
 
   /**
@@ -61,6 +62,7 @@ export class CfnMapping extends CfnRefElement {
    * @returns A reference to a value in the map based on the two keys.
    */
   public findInMap(key1: string, key2: string): string {
+    let fullyResolved = false;
     if (!Token.isUnresolved(key1)) {
       if (!(key1 in this.mapping)) {
         throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
@@ -69,13 +71,15 @@ export class CfnMapping extends CfnRefElement {
         if (!(key2 in this.mapping[key1])) {
           throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
         }
-        if (this.lazy) {
-          return this.mapping[key1][key2];
-        }
+        fullyResolved = true;
       }
     }
-    if (this.lazy) {
-      this.render = true;
+    if (fullyResolved) {
+      if (this.lazy) {
+        return this.mapping[key1][key2];
+      }
+    } else {
+      this.lazyRender = true;
     }
     return Fn.findInMap(this.logicalId, key1, key2);
   }
@@ -84,7 +88,10 @@ export class CfnMapping extends CfnRefElement {
    * @internal
    */
   public _toCloudFormation(): object {
-    if (this.render) {
+    if (this.lazy === undefined && !this.lazyRender) {
+      this.informLazyUse();
+    }
+    if (!this.lazy || (this.lazy && this.lazyRender)) {
       return {
         Mappings: {
           [this.logicalId]: this.mapping,
@@ -93,5 +100,12 @@ export class CfnMapping extends CfnRefElement {
     } else {
       return {};
     }
+  }
+
+  private informLazyUse() {
+    if (!this.lazyInformed) {
+      Annotations.of(this).addInfo('Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap');
+    }
+    this.lazyInformed = true;
   }
 }

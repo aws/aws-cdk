@@ -1,5 +1,7 @@
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
+import { CloudAssembly } from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
+import { App, Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 nodeunitShim({
@@ -202,3 +204,66 @@ describe('lazy mapping', () => {
       .toThrowError(/Mapping doesn't contain second-level key .*/);
   });
 });
+
+describe('eager by default', () => {
+  const backing = {
+    TopLevelKey1: {
+      SecondLevelKey1: [1, 2, 3],
+      SecondLevelKey2: { Hello: 'World' },
+    },
+  };
+
+  let app: App;
+  let stack: Stack;
+  let mapping: CfnMapping;
+
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app, 'Stack');
+    mapping = new CfnMapping(stack, 'Lazy Mapping', {
+      mapping: backing,
+    });
+  });
+
+  it('emits warning if no findInMap called', () => {
+    const assembly = app.synth();
+
+    expect(getInfoAnnotations(assembly)).toStrictEqual([{
+      path: '/Stack/Lazy Mapping',
+      message: 'Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap',
+    }]);
+  });
+
+  it('emits warning if every findInMap resolves immediately', () => {
+    mapping.findInMap('TopLevelKey1', 'SecondLevelKey1');
+
+    const assembly = app.synth();
+
+    expect(getInfoAnnotations(assembly)).toStrictEqual([{
+      path: '/Stack/Lazy Mapping',
+      message: 'Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap',
+    }]);
+  });
+
+  it('does not emit warning if a findInMap could not resolve immediately', () => {
+    mapping.findInMap('TopLevelKey1', Aws.REGION);
+
+    const assembly = app.synth();
+
+    expect(getInfoAnnotations(assembly)).toStrictEqual([]);
+  });
+});
+
+function getInfoAnnotations(casm: CloudAssembly) {
+  const result = new Array<{ path: string, message: string }>();
+  for (const stack of Object.values(casm.manifest.artifacts ?? {})) {
+    for (const [path, md] of Object.entries(stack.metadata ?? {})) {
+      for (const x of md) {
+        if (x.type === ArtifactMetadataEntryType.INFO) {
+          result.push({ path, message: x.data as string });
+        }
+      }
+    }
+  }
+  return result;
+}
