@@ -284,6 +284,33 @@ describe('instance', () => {
 
   });
 
+  test('instance with engine version and if no autoMinorVersionUpgrade in props disable automatic upgrade of minor version', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+    });
+
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      AutoMinorVersionUpgrade: false,
+    });
+  });
+
+  test('instance with engine version and if autoMinorVersionUpgrade enable automatic upgrade of minor version', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      autoMinorVersionUpgrade: true,
+    });
+
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      AutoMinorVersionUpgrade: true,
+    });
+  });
+
   describe('DatabaseInstanceFromSnapshot', () => {
     test('create an instance from snapshot', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
@@ -400,6 +427,31 @@ describe('instance', () => {
       });
 
 
+    });
+
+    test('instance from snapshot with engine version and if no autoMinorVersionUpgrade in props disable automatic upgrade of minor version', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+      });
+
+      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+        AutoMinorVersionUpgrade: false,
+      });
+    });
+
+    test('instance from snapshot with engine version and autoMinorVersionUpgrade enable automatic upgrade of minor version', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        autoMinorVersionUpgrade: true,
+      });
+
+      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+        AutoMinorVersionUpgrade: true,
+      });
     });
   });
 

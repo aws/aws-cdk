@@ -432,6 +432,47 @@ describe('cluster', () => {
     });
   });
 
+  test('cluster with engine version and if no autoMinorVersionUpgrade in props disable automatic upgrade of minor version', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_10_7,
+      }),
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      AutoMinorVersionUpgrade: false,
+    });
+  });
+
+  test('cluster with engine version and if autoMinorVersionUpgrade allow automatic upgrade of minor version', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_10_7,
+      }),
+      instanceProps: {
+        autoMinorVersionUpgrade: true,
+        vpc,
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      AutoMinorVersionUpgrade: true,
+    });
+  });
+
   test('cluster with disallow remove backups', () => {
     // GIVEN
     const stack = testStack();
@@ -1703,6 +1744,45 @@ describe('cluster', () => {
           { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
         ]],
       },
+    });
+  });
+
+  test('cluster from snapshot with engine version and if no autoMinorVersionUpgrade in props disable automatic upgrade of minor version', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+      AutoMinorVersionUpgrade: false,
+    });
+  });
+
+  test('cluster from snapshot with engine version and if autoMinorVersionUpgrade in props enable automatic upgrade of minor version', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+        autoMinorVersionUpgrade: true,
+      },
+      snapshotIdentifier: 'mySnapshot',
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+      AutoMinorVersionUpgrade: true,
     });
   });
 
