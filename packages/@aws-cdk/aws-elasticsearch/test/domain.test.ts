@@ -1317,24 +1317,12 @@ describe('custom error responses', () => {
     })).toThrow(/Unknown Elasticsearch version: 5\.4/);
   });
 
-  test('error when log publishing is enabled for elasticsearch version < 5.1', () => {
-    const error = /logs publishing requires Elasticsearch version 5.1 or later/;
+  test('error when error log publishing is enabled for elasticsearch version < 5.1', () => {
+    const error = /Error logs publishing requires Elasticsearch version 5.1 or later/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
       logging: {
         appLogEnabled: true,
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: ElasticsearchVersion.V1_5,
-      logging: {
-        slowSearchLogEnabled: true,
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain3', {
-      version: ElasticsearchVersion.V1_5,
-      logging: {
-        slowIndexLogEnabled: true,
       },
     })).toThrow(error);
   });

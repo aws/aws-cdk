@@ -1415,12 +1415,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // Validate feature support for the given Elasticsearch version, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
     if (elasticsearchVersionNum < 5.1) {
-      if (
-        props.logging?.slowIndexLogEnabled
-        || props.logging?.appLogEnabled
-        || props.logging?.slowSearchLogEnabled
-      ) {
-        throw new Error('Error and slow logs publishing requires Elasticsearch version 5.1 or later.');
+      if (props.logging?.appLogEnabled) {
+        throw new Error('Error logs publishing requires Elasticsearch version 5.1 or later.');
       }
       if (props.encryptionAtRest?.enabled) {
         throw new Error('Encryption of data at rest requires Elasticsearch version 5.1 or later.');
