@@ -1033,6 +1033,19 @@ Make sure you set the `privileged` environment variable to `true` in the synth d
     });
 ```
 
+```python
+    pipeline = CdkPipeline(self, "PyPipeline",
+      ...
+            synth_action=SimpleSynthAction(
+              source_artifact=...,
+              cloud_assembly_artifact=...,
+              environment={
+                'privileged': True,
+              }
+            )
+    )
+```
+
 After turning on `privilegedMode: true`, you will need to do a one-time manual cdk deploy of your
 pipeline to get it going again (as with a broken 'synth' the pipeline will not be able to self
 update to the right state).
