@@ -350,13 +350,12 @@ describe('S3 destination', () => {
     });
 
     it('grants invoke access to the lambda function and delivery stream depends on grant', () => {
-      const capturedPolicyId = Capture.aString();
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destinations: [destinationWithBasicLambdaProcessor],
       });
 
       expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-        PolicyName: capturedPolicyId.capture(),
+        PolicyName: 'DestinationRoleDefaultPolicy1185C75D',
         Roles: [stack.resolve(destinationRole.roleName)],
         PolicyDocument: {
           Statement: arrayWith(
@@ -369,7 +368,7 @@ describe('S3 destination', () => {
         },
       });
       expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
-        DependsOn: [capturedPolicyId.capturedValue],
+        DependsOn: ['DestinationRoleDefaultPolicy1185C75D'],
       }, ResourcePart.CompleteDefinition);
     });
 
