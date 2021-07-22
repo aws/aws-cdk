@@ -204,10 +204,10 @@ expected to produce the CDK Cloud Assembly as its single output (the contents of
 the `cdk.out` directory after running `cdk synth`). "Steps" are arbitrary
 actions in the pipeline, typically used to run scripts or commands.
 
-For the synth, use a `ShellStep` and specify the commands necessary to build
-your project and run `cdk synth`; the specific commands required will depend on
-the programming language you are using. For a typical NPM-based project, the synth
-will look like this:
+For the synth, use a `ShellStep` and specify the commands necessary to install
+dependencies, the CDK CLI, build your project and run `cdk synth`; the specific
+commands required will depend on the programming language you are using. For a
+typical NPM-based project, the synth will look like this:
 
 ```ts
 const source = /* the repository source */;
@@ -249,6 +249,63 @@ when `app.synth()` is called. You can also force it to be produced
 earlier by calling `pipeline.buildPipeline()`. After you've called
 that method, you can inspect the constructs that were produced by
 accessing the properties of the `pipeline` object.
+
+#### Commands for other languages and package managers
+
+The commands you pass to `new ShellStep` will be very similar to the commands
+you run on your own workstation to install dependencies and synth your CDK
+project. Here are some (non-exhaustive) examples for what those commands might
+look like in a number of different situations.
+
+For Yarn, the install commands are different:
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ShellStep('Synth', {
+    input: source,
+    commands: [
+      'yarn install --frozen-lockfile',
+      'yarn build',
+      'npx cdk synth',
+    ],
+  })
+});
+```
+
+For Python projects, remember to install the CDK CLI globally (as
+there is no `package.json` to automatically install it for you):
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ShellStep('Synth', {
+    input: source,
+    commands: [
+      'pip install -r requirements.txt',
+      'npm install -g aws-cdk',
+      'cdk synth',
+    ],
+  })
+});
+```
+
+For Java projects, remember to install the CDK CLI globally (as
+there is no `package.json` to automatically install it for you),
+and the Maven compilation step is automatically executed for you
+as you run `cdk synth`:
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ShellStep('Synth', {
+    input: source,
+    commands: [
+      'npm install -g aws-cdk',
+      'cdk synth',
+    ],
+  })
+});
+```
+
+You can adapt these examples to your own situation.
 
 #### CodePipeline Sources
 

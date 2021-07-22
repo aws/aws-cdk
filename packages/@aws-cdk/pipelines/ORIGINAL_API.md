@@ -38,37 +38,30 @@ depending on whether or not you want to customize the AWS CodeBuild Project that
 
 Contrary to `SimpleSynthAction.standardNpmSynth`, you need to specify
 all commands necessary to do a full CDK build and synth, so do include
-installing dependencies and running the CDK CLI. Example:
+installing dependencies and running the CDK CLI. For example, the old API:
 
 ```ts
-const pipeline = new CodePipeline(this, 'Pipeline', {
-  synth: new ShellStep('Synth', {
-    input: /* source */,
+SimpleSynthAction.standardNpmSynth({
+  sourceArtifact,
+  cloudAssemblyArtifact,
 
-    // For NPM-based projects
-    commands: [
-      'npm ci',
-      'npm run build',
-      'npx cdk synth',
-    ],
+  // Use this if you need a build step (if you're not using ts-node
+  // or if you have TypeScript Lambdas that need to be compiled).
+  buildCommand: 'npm run build',
+}),
+```
 
-    // For Yarn-based projects
-    commands: [
-      'yarn install --frozen-lockfile',
-      'yarn build',
-      'npx cdk synth',
-    ],
+Becomes:
 
-    // For Python-based projects
-    commands: [
-      'pip install -r requirements.txt',
-      'npm install -g aws-cdk',
-      'cdk synth',
-    ],
-
-    // etc...
-  }),
-})
+```ts
+new ShellStep('Synth', {
+  input: /* source */,
+  commands: [
+    'npm ci',
+    'npm run build',
+    'npx cdk synth',
+  ],
+});
 ```
 
 Instead of specifying the pipeline source with the `sourceAction` property to
@@ -115,7 +108,8 @@ putting manual approvals in `pre` steps, and automated approvals in `post` steps
 
 #### Manual approvals
 
-For example, specifying a manual approval before a stage can deploy in the following old API:
+For example, specifying a manual approval on a stage deployment in old API:
+
 ```ts
 const stage = pipeline.addApplicationStage(...);
 stage.addAction(new ManualApprovalAction({
@@ -134,9 +128,15 @@ pipeline.addStage(..., {
 });
 ```
 
+Note that this we've used `pre` to put the manual approval *before* a Stage
+deployment (this was not possible in the old API). Be sure to put the manual
+approval in the `pre` steps list of the *next* Stage to keep
+it in the same location in the pipeline.
+
 #### Automated approvals
 
 For example, specifying an automated approval after a stage is deployed in the following old API:
+
 ```ts
 const stage = pipeline.addApplicationStage(...);
 stage.addActions(new ShellScriptAction({
@@ -168,6 +168,9 @@ pipeline.addStage(stage, {
 });
 ```
 
+You can also use `ShellStep` if you don't need any of the CodeBuild Project
+customizations (like `buildEnvironment`).
+
 #### Change set approvals
 
 In the old API, there were two properties that were used to add actions to the pipeline
@@ -176,7 +179,7 @@ in between the `CreateChangeSet` and `ExecuteChangeSet` actions: `manualApproval
 ### Custom CodePipeline Actions
 
 See the section [**Arbitrary CodePipeline actions** in the
-main `README`](README.md) for an example of how to inject arbitrary
+main `README`](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/README.md#arbitrary-codepipeline-actions) for an example of how to inject arbitrary
 CodeBuild Actions.
 
 ## Definining the pipeline
