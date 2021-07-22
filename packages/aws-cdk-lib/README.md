@@ -814,7 +814,8 @@ immediately return a concrete value due to one or both of the keys being unresol
 (some value only available at deploy-time).
 
 For example, the following code will not produce anything in the "Mappings" section. The
-call to `findInMap` will directly return `'US East (Ohio)'`.
+call to `findInMap` will be able to resolve the value during synthesis and simply return
+`'US East (Ohio)'`.
 
 ```ts
 const regionTable = new CfnMapping(this, 'RegionTable', {
@@ -836,16 +837,6 @@ token that resolves to `{ Fn::FindInMap: [ 'RegionTable', 'regionName', { Ref: A
 } ] }`.
 
 ```ts
-const regionTable = new CfnMapping(this, 'RegionTable', {
-  mapping: {
-    regionName: {
-      'us-east-1': 'US East (N. Virginia)',
-      'us-east-2': 'US East (Ohio)',
-    },
-  },
-  lazy: true,
-});
-
 regionTable.findInMap('regionName', Aws.REGION);
 ```
 
