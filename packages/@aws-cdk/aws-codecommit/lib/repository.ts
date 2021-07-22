@@ -126,16 +126,16 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
 
 
   /**
-   * 
+   *
    * Defines a CodeStar Notification rule triggered when the project
    * events specified by you are emitted. Similar to `onEvent` API.
-   * 
+   *
    * You can also use the methods to define rules for the specific event emitted.
    * eg: `notifyOnPullRequstCreated`
-   * 
-   * @param id 
-   * @param target 
-   * @param options 
+   *
+   * @param id
+   * @param target
+   * @param options
    * @returns CodeStar Notifications rule associated with this repository
    */
   notifyOn(
@@ -162,7 +162,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule;
 
-   /**
+  /**
    * Defines a CodeStar Notification rule which triggers when an approval status is changed
    */
   notifyOnApprovalsStatusChanged(
@@ -243,7 +243,6 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule;
 }
-
 
 
 /**
@@ -403,6 +402,13 @@ abstract class RepositoryBase extends Resource implements IRepository {
     );
   }
 
+  /**
+   * Defines a CodeStar Notification rule
+   *
+   * @param id
+   * @param target
+   * @param options
+   */
   public notifyOn(
     id: string,
     target: notifications.INotificationRuleTarget,
@@ -731,7 +737,7 @@ export enum RepositoryNotificationEvents {
    * Trigger notication when comment made on commit
    */
   COMMENT_ON_COMMITS = 'codecommit-repository-comments-on-commits',
-  
+
   /**
    * Trigger notification when comment made on pull request
    */
@@ -761,7 +767,7 @@ export enum RepositoryNotificationEvents {
    * Trigger notification when pull request status is changed
    */
   PULL_REQUEST_STATUS_CHANGED = 'codecommit-repository-pull-request-status-changed',
-  
+
   /**
    * Trigger notification when pull requset is merged
    */
