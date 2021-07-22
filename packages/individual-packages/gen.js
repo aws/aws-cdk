@@ -1,5 +1,5 @@
 /**
- * This file is executed as part of the 'prebuild' script for this package,
+ * This file is executed by the scripts/individual-package.sh script,
  * and is responsible for copying the modules from the main monorepo,
  * and performing any required changes (there are many!)
  * so that they can be released as individual V2 modules.
@@ -31,6 +31,7 @@ function copyFilesRemovingDependencies() {
     const project = new lerna_project.Project('..'); // there is a lerna.json in this directory
     const packages = project.getPackagesSync();
     const unstablePackages = getUnstablePackages(packages);
+    const jsiiRosettaVersion = project.manifest.devDependencies['jsii-rosetta'];
     for (const pkg of packages) {
         if (!packageIsUnstable(pkg)) {
             continue;
@@ -41,11 +42,11 @@ function copyFilesRemovingDependencies() {
         const destDir = path.join(__dirname, packageUnscopedName);
         fs.mkdirp(destDir);
 
-        copyOrTransformFiles(pkg, srcDir, destDir, unstablePackages);
+        copyOrTransformFiles(pkg, srcDir, destDir, jsiiRosettaVersion, unstablePackages);
     }
 }
 
-function copyOrTransformFiles(pkg, srcDir, destDir, unstablePackages) {
+function copyOrTransformFiles(pkg, srcDir, destDir, jsiiRosettaVersion, unstablePackages) {
     const sourceFiles = fs.readdirSync(srcDir);
     for (const sourceFileName of sourceFiles) {
         if (shouldIgnoreFile(sourceFileName)) {
@@ -63,7 +64,7 @@ function copyOrTransformFiles(pkg, srcDir, destDir, unstablePackages) {
 
                 const destPkgName = `@aws-cdk-lib-alpha/${pkgUnscopedName}`;
                 srcPackageJson.name = destPkgName;
-                srcPackageJson.repository.directory = `packages/@aws-cdk-lib/${pkgUnscopedName}`;
+                srcPackageJson.repository.directory = `packages/individual-packages/${pkgUnscopedName}`;
 
                 // JSII targets
                 const jsiiTargets = srcPackageJson.jsii.targets;
@@ -107,7 +108,11 @@ function copyOrTransformFiles(pkg, srcDir, destDir, unstablePackages) {
                 srcPackageJson.dependencies = undefined;
 
                 // devDependencies
-                const unstableDevDependencies = {};
+                const unstableDevDependencies = {
+                    // we need jsii-rosetta in the dependencies,
+                    // otherwise the binary cannot be found when running the 'extract' script
+                    'jsii-rosetta': jsiiRosettaVersion,
+                };
                 const devDependencies = srcPackageJson.devDependencies || {};
                 for (const devDependency of Object.keys(devDependencies)) {
                     if (devDependency.startsWith('@aws-cdk/')) {
@@ -178,7 +183,7 @@ function copyOrTransformFiles(pkg, srcDir, destDir, unstablePackages) {
 
         const stat = fs.statSync(source);
         if (stat.isDirectory()) {
-            copyOrTransformFiles(pkg, source, destination, unstablePackages);
+            copyOrTransformFiles(pkg, source, destination, jsiiRosettaVersion, unstablePackages);
         } else {
             fs.copy(source, destination);
         }

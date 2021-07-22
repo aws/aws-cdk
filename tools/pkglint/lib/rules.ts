@@ -788,6 +788,12 @@ export class NoJsiiDep extends ValidationRule {
   public readonly name = 'dependencies/no-jsii';
 
   public validate(pkg: PackageJson): void {
+    // don't do this check for the separately-vended modules,
+    // which need to depend on jsii-rosetta
+    if (pkg.packageName.startsWith('@aws-cdk-lib-alpha/')) {
+      return;
+    }
+
     const predicate = (s: string) => s.startsWith('jsii');
 
     if (pkg.getDevDependency(predicate)) {
