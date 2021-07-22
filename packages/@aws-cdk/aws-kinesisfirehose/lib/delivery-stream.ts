@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { RegionInfo } from '@aws-cdk/region-info';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { IDestination } from './destination';
 import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
@@ -351,9 +351,12 @@ export class DeliveryStream extends DeliveryStreamBase {
 }
 
 function setConnections(scope: Construct) {
-  const region = cdk.Stack.of(scope).region;
-  let cidrBlock = RegionInfo.get(region).firehoseCidrBlock;
-  if (!cidrBlock) {
+  const stack = cdk.Stack.of(scope);
+
+  const mappingId = '@aws-cdk/aws-kinesisfirehose.CidrBlocks';
+  let cfnMapping = Node.of(stack).tryFindChild(mappingId) as cdk.CfnMapping;
+
+  if (!cfnMapping) {
     const mapping: {[region: string]: { FirehoseCidrBlock: string }} = {};
     RegionInfo.regions.forEach((regionInfo) => {
       if (regionInfo.firehoseCidrBlock) {
@@ -362,11 +365,13 @@ function setConnections(scope: Construct) {
         };
       }
     });
-    const cfnMapping = new cdk.CfnMapping(scope, 'Firehose CIDR Mapping', {
+    cfnMapping = new cdk.CfnMapping(stack, mappingId, {
       mapping,
+      lazy: true,
     });
-    cidrBlock = cdk.Fn.findInMap(cfnMapping.logicalId, region, 'FirehoseCidrBlock');
   }
+
+  const cidrBlock = cfnMapping.findInMap(stack.region, 'FirehoseCidrBlock');
 
   return new ec2.Connections({
     peer: ec2.Peer.ipv4(cidrBlock),
