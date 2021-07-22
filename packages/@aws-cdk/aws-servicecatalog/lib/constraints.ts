@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { MessageLanguage } from './common';
 
 /**
@@ -18,6 +19,38 @@ export interface CommonConstraintOptions {
    * @default - No description provided
    */
   readonly description?: string;
+}
+
+/**
+ * Properties for deploying with Stackset, which creates a StackSet constraint.
+ */
+export interface StackSetsConstraintOptions extends CommonConstraintOptions {
+  /**
+   * List of accounts to deploy stacks to.
+   */
+  readonly accounts: string[];
+
+  /**
+   * List of regions to deploy stacks to.
+   */
+  readonly regions: string[];
+
+  /**
+   * IAM role used to administer the StackSets configuration.
+   */
+  readonly adminRole: iam.IRole;
+
+  /**
+   * IAM role used to provision the products in the Stacks.
+   */
+  readonly executionRoleName: string;
+
+  /**
+   * Wether to allow end users to create, update, and delete stacks.
+   *
+   * @default false
+   */
+  readonly allowStackSetInstanceOperations?: boolean;
 }
 
 /**
