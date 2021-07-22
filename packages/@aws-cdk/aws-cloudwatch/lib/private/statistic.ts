@@ -53,13 +53,13 @@ export function parseStatistic(stat: string): SimpleStatistic | PercentileStatis
 
   return {
     type: 'generic',
-    statistic: lowerStat,
+    statistic: stat,
   };
 }
 
 export function normalizeStatistic(stat: string): string {
   const parsed = parseStatistic(stat);
-  if (parsed.type === 'simple') {
+  if (parsed.type === 'simple' || parsed.type === 'generic') {
     return parsed.statistic;
   } else {
     // Already percentile. Avoid parsing because we might get into
