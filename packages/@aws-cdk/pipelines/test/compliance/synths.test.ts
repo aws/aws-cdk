@@ -248,6 +248,78 @@ behavior('synth assumes a JavaScript project by default (no build, yes synth)', 
   suite.doesNotApply.modern();
 });
 
+behavior('pip synth sets UNSAFE_PERM=true', (suite) => {
+  suite.legacy(() => {
+    // WHEN
+    new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: cdkp.SimpleSynthAction.standardPipSynth({
+        sourceArtifact,
+        cloudAssemblyArtifact,
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: {
+        EnvironmentVariables: [
+          {
+            Name: 'NPM_CONFIG_UNSAFE_PERM',
+            Type: 'PLAINTEXT',
+            Value: 'true',
+          },
+        ],
+      },
+    });
+  }
+});
+
+behavior('pip synth correctly sets install and build commands', (suite) => {
+  suite.legacy(() => {
+    // WHEN
+    new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: cdkp.SimpleSynthAction.standardPipSynth({
+        sourceArtifact,
+        cloudAssemblyArtifact,
+      }),
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Environment: {
+        Image: 'aws/codebuild/standard:5.0',
+      },
+      Source: {
+        BuildSpec: encodedJson(deepObjectLike({
+          phases: {
+            ['pre_build']: {
+              commands: arrayWith('pip install -r requirements.txt'),
+
+            },
+            ['build']: {
+              commands: arrayWith('npx cdk synth'),
+            },
+          },
+          artifacts: {
+            'base-directory': 'cdk.out',
+          },
+        })),
+      },
+    });
+  }
+});
+
 behavior('Magic CodePipeline variables passed to synth envvars must be rendered in the action', (suite) => {
   suite.legacy(() => {
     // WHEN

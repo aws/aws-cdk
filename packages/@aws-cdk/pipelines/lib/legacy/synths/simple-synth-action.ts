@@ -264,6 +264,32 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     });
   }
 
+  /**
+   * Create a standard Pip synth action
+   *
+   * Uses `pip install -r requirements.txt` to install dependencies and `npx cdk synth` to synthesize.
+   */
+  public static standardPipSynth(options: StandardPipSynthOptions) {
+    return new SimpleSynthAction({
+      ...options,
+      installCommand: options.installCommand ?? 'pip install -r requirements.txt',
+      synthCommand: options.synthCommand ?? 'npx cdk synth',
+      vpc: options.vpc,
+      subnetSelection: options.subnetSelection,
+      environment: {
+        ...options.environment,
+        environmentVariables: {
+          // Need this in case the CDK CLI is not in the 'package.json' of the project,
+          // and 'npx' is going to download it; without this setting, 'npx' will not properly
+          // install the package into the root user's home directory
+          NPM_CONFIG_UNSAFE_PERM: { value: 'true' },
+          ...options.environment?.environmentVariables,
+        },
+      },
+    });
+  }
+
+
   private _action?: codepipeline_actions.CodeBuildAction;
   private _actionProperties: codepipeline.ActionProperties;
   private _project?: codebuild.IProject;
@@ -558,6 +584,36 @@ export interface StandardYarnSynthOptions extends SimpleSynthOptions {
    */
   readonly testCommands?: string[];
 }
+
+/**
+ * Options for a convention-based synth using Pip
+ */
+export interface StandardPipSynthOptions extends SimpleSynthOptions {
+  /**
+   * The install command
+   *
+   * @default 'pip install -r requirements.txt'
+   */
+  readonly installCommand?: string;
+
+  /**
+   * The synth command
+   *
+   * @default 'npx cdk synth'
+   */
+  readonly synthCommand?: string;
+
+  /**
+   * Test commands
+   *
+   * These commands are run after the build commands but before the
+   * synth command.
+   *
+   * @default - No test commands
+   */
+  readonly testCommands?: string[];
+}
+
 
 function hash<A>(obj: A) {
   const d = crypto.createHash('sha256');
