@@ -289,7 +289,6 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     });
   }
 
-
   private _action?: codepipeline_actions.CodeBuildAction;
   private _actionProperties: codepipeline.ActionProperties;
   private _project?: codebuild.IProject;
@@ -613,7 +612,6 @@ export interface StandardPipSynthOptions extends SimpleSynthOptions {
    */
   readonly testCommands?: string[];
 }
-
 
 function hash<A>(obj: A) {
   const d = crypto.createHash('sha256');
