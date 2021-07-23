@@ -8,6 +8,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as firehosedestinations from '../lib';
+import { S3Bucket } from '../lib';
 
 describe('S3 destination', () => {
   let stack: cdk.Stack;
@@ -381,6 +382,138 @@ describe('S3 destination', () => {
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destinations: [destination],
       })).toThrowError('Only one processor is allowed per delivery stream destination');
+    });
+  });
+
+  describe('buffering', () => {
+    it('does not create configuration by default', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new S3Bucket(bucket)],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CloudWatchLoggingOptions: {
+            BufferingHints: ABSENT,
+          },
+        },
+      });
+    });
+
+    it('creates configuration when interval and size provided', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(1),
+          bufferingSize: cdk.Size.mebibytes(1),
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          BufferingHints: {
+            IntervalInSeconds: 60,
+            SizeInMBs: 1,
+          },
+        },
+      });
+    });
+
+    it('throws when only one of interval and size provided', () => {
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(1),
+        })],
+      })).toThrowError('If bufferingInterval is specified, bufferingSize must also be specified');
+
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
+        destinations: [new S3Bucket(bucket, {
+          bufferingSize: cdk.Size.mebibytes(1),
+        })],
+      })).toThrowError('If bufferingSize is specified, bufferingInterval must also be specified');
+    });
+
+    it('validates bufferingInterval', () => {
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.seconds(30),
+          bufferingSize: cdk.Size.mebibytes(1),
+        })],
+      })).toThrowError('Buffering interval must be between 60 and 900 seconds');
+
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
+        destinations: [new S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(16),
+          bufferingSize: cdk.Size.mebibytes(1),
+        })],
+      })).toThrowError('Buffering interval must be between 60 and 900 seconds');
+    });
+
+    it('validates bufferingSize', () => {
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(1),
+          bufferingSize: cdk.Size.mebibytes(0),
+
+        })],
+      })).toThrowError('Buffering size must be between 1 and 128 MBs');
+
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
+        destinations: [new S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(1),
+          bufferingSize: cdk.Size.mebibytes(256),
+        })],
+      })).toThrowError('Buffering size must be between 1 and 128 MBs');
+    });
+  });
+
+  describe('destination encryption', () => {
+    it('creates configuration', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          encryptionKey: key,
+          role: destinationRole,
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          EncryptionConfiguration: {
+            KMSEncryptionConfig: {
+              AWSKMSKeyARN: stack.resolve(key.keyArn),
+            },
+          },
+        },
+      });
+    });
+
+
+    it('grants encrypt/decrypt access to the destination encryptionKey', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          encryptionKey: key,
+          role: destinationRole,
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        Roles: [stack.resolve(destinationRole.roleName)],
+        PolicyDocument: {
+          Statement: arrayWith({
+            Action: [
+              'kms:Decrypt',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: stack.resolve(key.keyArn),
+          }),
+        },
+      });
     });
   });
 });
