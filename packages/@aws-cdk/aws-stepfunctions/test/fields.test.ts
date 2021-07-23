@@ -78,7 +78,7 @@ describe('Fields', () => {
 
     expect(() => JsonPath.stringAt('$hello')).toThrowError(jsonPathValidationErrorMsg);
     expect(() => JsonPath.stringAt('hello')).toThrowError(jsonPathValidationErrorMsg);
-    expect(JsonPath.stringAt('States.FooBar')).toThrowError(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('States.FooBar')).toThrowError(jsonPathValidationErrorMsg);
   }),
   test('context path must be correct', () => {
     expect(JsonPath.stringAt('$$')).toBeDefined();
