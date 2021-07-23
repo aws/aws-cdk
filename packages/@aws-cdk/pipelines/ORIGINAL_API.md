@@ -17,7 +17,7 @@ Replace `new CdkPipeline` with `new CodePipeline`. Some
 configuration properties have been changed:
 
 | Old API                        | New API                                                                                        |
-|--------------------------------+------------------------------------------------------------------------------------------------|
+|--------------------------------|------------------------------------------------------------------------------------------------|
 | `cloudAssemblyArtifact`        | removed                                                                                        |
 | `sourceAction`                 | removed                                                                                        |
 | `synthAction`                  | `synth`                                                                                        |
@@ -96,7 +96,7 @@ potentially `addWave().addStage()`. All stages inside a wave are
 deployed in parallel, which was not a capability of the original API.
 
 | Old API                       | New API                                                                                                                       |
-|-------------------------------+-------------------------------------------------------------------------------------------------------------------------------|
+|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
 | `addApplicationStage()`       | `addStage()`                                                                                                                  |
 | `addStage().addApplication()` | `addStage()`. Adding multiple CDK Stages into a single Pipeline stage is not supported, add multiple Pipeline stages instead. |
 
