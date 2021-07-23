@@ -179,7 +179,7 @@ const incomingBytesPercentOfLimit = new cloudwatch.MathExpression({
     bytePerSecLimit: deliveryStream.metric('BytesPerSecondLimit'),
   },
 });
-new Alarm(this, 'Alarm', {
+new cloudwatch.Alarm(this, 'Alarm', {
   metric: incomingBytesPercentOfLimit,
   threshold: 0.9,
   evaluationPeriods: 3,
