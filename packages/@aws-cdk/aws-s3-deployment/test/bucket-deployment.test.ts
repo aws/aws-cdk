@@ -325,6 +325,7 @@ test('system metadata is correctly transformed', () => {
     websiteRedirectLocation: 'example',
     cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
     expires: expiration,
+    accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
   });
 
   // THEN
@@ -340,6 +341,7 @@ test('system metadata is correctly transformed', () => {
       'expires': expiration.date.toUTCString(),
       'sse-c-copy-source': 'rot13',
       'website-redirect': 'example',
+      'acl': 'bucket-owner-full-control',
     },
   });
 });

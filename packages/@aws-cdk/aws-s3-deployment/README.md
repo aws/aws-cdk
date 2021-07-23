@@ -156,8 +156,9 @@ System defined metadata keys include the following:
 - server-side-encryption
 - storage-class
 - website-redirect-location
-- ssekms-key-id
+- sse-kms-key-id
 - sse-customer-algorithm
+- acl
 
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
@@ -177,6 +178,7 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   storageClass: StorageClass.INTELLIGENT_TIERING,
   serverSideEncryption: ServerSideEncryption.AES_256,
   cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
+  accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
 });
 ```
 
