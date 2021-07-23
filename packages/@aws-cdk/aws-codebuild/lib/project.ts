@@ -29,6 +29,8 @@ import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-typ
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
+
 /**
  * The type returned from {@link IProject#enableBatchBuilds}.
  */
@@ -1437,23 +1439,33 @@ export class Project extends ProjectBase {
       },
     }));
 
-    const policy = new iam.Policy(this, 'PolicyDocument', {
-      statements: [
-        new iam.PolicyStatement({
-          resources: ['*'],
-          actions: [
-            'ec2:CreateNetworkInterface',
-            'ec2:DescribeNetworkInterfaces',
-            'ec2:DeleteNetworkInterface',
-            'ec2:DescribeSubnets',
-            'ec2:DescribeSecurityGroups',
-            'ec2:DescribeDhcpOptions',
-            'ec2:DescribeVpcs',
-          ],
-        }),
-      ],
-    });
-    this.role.attachInlinePolicy(policy);
+    // If the same Role is used for multiple Projects, always creating a new `iam.Policy`
+    // will attach the same policy multiple times, probably exceeding the maximum size of the
+    // Role policy. Make sure we only do it once for the same role.
+    //
+    // This deduplication could be a feature of the Role itself, but that feels risky and
+    // is hard to implement (what with Tokens and all). Safer to fix it locally for now.
+    let policy: iam.Policy | undefined = (this.role as any)[VPC_POLICY_SYM];
+    if (!policy) {
+      policy = new iam.Policy(this, 'PolicyDocument', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: [
+              'ec2:CreateNetworkInterface',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeDhcpOptions',
+              'ec2:DescribeVpcs',
+            ],
+          }),
+        ],
+      });
+      this.role.attachInlinePolicy(policy);
+      (this.role as any)[VPC_POLICY_SYM] = policy;
+    }
 
     // add an explicit dependency between the EC2 Policy and this Project -
     // otherwise, creating the Project fails, as it requires these permissions
