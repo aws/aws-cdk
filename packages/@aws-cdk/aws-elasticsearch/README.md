@@ -300,6 +300,8 @@ new Domain(stack, 'Domain', {
     version: ElasticsearchVersion.V7_7,
     advancedOptions: {
         'rest.action.multi.allow_explicit_index': 'false',
+        'indices.fielddata.cache.size': '25',
+        'indices.query.bool.max_clause_count': '2048',
     },
 });
 ```
