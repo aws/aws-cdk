@@ -184,6 +184,7 @@ describe('Fields', () => {
     ).toEqual(
       undefined,
     );
+  });
 
   test('repeated object references at different tree paths should not be considered as recursions', () => {
     const repeatedObject = {
