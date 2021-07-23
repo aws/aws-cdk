@@ -206,12 +206,11 @@ const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
 ```
 
 You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`. 
-Here is an exmaple of starting an Athena query:
+Here is an example of starting an Athena query that is dynamically created using the task input:
 
 ```ts
 const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Athena Start Query', {
   queryString: sfn.JsonPath.stringAt("States.Format('select contacts where year={};', $.year)"),
-),
   queryExecutionContext: {
     databaseName: 'interactions',
   },

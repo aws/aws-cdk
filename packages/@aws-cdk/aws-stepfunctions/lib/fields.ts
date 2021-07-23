@@ -219,10 +219,7 @@ function validateJsonPath(path: string) {
     && path !== '$$'
     && !path.startsWith('$$.')
     && !path.startsWith('$[')
-    && !path.startsWith('States.Format')
-    && !path.startsWith('States.StringToJson')
-    && !path.startsWith('States.JsonToString')
-    && !path.startsWith('States.Array')
+    && ['Format', 'StringToJson', 'JsonToString', 'Array'].every(fn => !path.startsWith(`States.${fn}`))
   ) {
     throw new Error(`JSON path values must be exactly '$', '$$', start with '$.', start with '$$.', start with '$[', or start with an intrinsic function: States.Format, States.StringToJson, States.JsonToString, or States.Array. Received: ${path}`);
   }
