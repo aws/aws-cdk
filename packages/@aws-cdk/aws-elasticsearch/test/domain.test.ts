@@ -1645,7 +1645,7 @@ describe('unsigned basic auth', () => {
   });
 });
 
-describe('advanded options', () => {
+describe('advanced options', () => {
   test('use advanced options', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
