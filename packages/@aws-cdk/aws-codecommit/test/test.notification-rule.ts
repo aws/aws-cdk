@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import * as codecommit from '../lib';
 
 export = {
-  'notifications rule'(test: Test) {
+  'CodeCommit Repositories - can create notification rule'(test: Test) {
     const stack = new cdk.Stack();
     const repository = new codecommit.Repository(stack, 'MyCodecommitRepository', {
       repositoryName: 'my-test-repository',
