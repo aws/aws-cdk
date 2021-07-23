@@ -1001,3 +1001,42 @@ behavior('necessary secrets manager permissions get added to asset roles', suite
     });
   }
 });
+
+behavior('adding environment variable to assets job adds SecretsManager permissions', suite => {
+  // No way to manipulate buildEnvironment in legacy API
+  suite.doesNotApply.legacy();
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+      assetPublishingCodeBuildDefaults: {
+        buildEnvironment: {
+          environmentVariables: {
+            FOOBAR: {
+              value: 'FoobarSecret',
+              type: cb.BuildEnvironmentVariableType.SECRETS_MANAGER,
+            },
+          },
+        },
+      },
+    });
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'MyApp'));
+
+    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: arrayWith(
+          objectLike({
+            Action: 'secretsmanager:GetSecretValue',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+              ]],
+            },
+          }),
+        ),
+      },
+    });
+  });
+});

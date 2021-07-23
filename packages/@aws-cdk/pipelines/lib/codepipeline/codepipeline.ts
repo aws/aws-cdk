@@ -4,7 +4,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Fn, IDependable, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
@@ -631,7 +631,7 @@ export class CodePipeline extends PipelineBase {
       }
     }
 
-    const assetBuildConfig = this.obtainAssetCodeBuildRole(assets[0].assetType);
+    const role = this.obtainAssetCodeBuildRole(assets[0].assetType);
 
     // The base commands that need to be run
     const script = new CodeBuildStep(node.id, {
@@ -643,13 +643,12 @@ export class CodePipeline extends PipelineBase {
       buildEnvironment: {
         privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
       },
-      role: assetBuildConfig.role,
+      role,
     });
 
     // Customizations that are not accessible to regular users
     return CodeBuildFactory.fromCodeBuildStep(node.id, script, {
       additionalConstructLevel: false,
-      additionalDependable: assetBuildConfig.dependable,
 
       // If we use a single publisher, pass buildspec via file otherwise it'll
       // grow too big.
@@ -771,11 +770,9 @@ export class CodePipeline extends PipelineBase {
    * Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
    * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
-  private obtainAssetCodeBuildRole(assetType: AssetType): AssetCodeBuildRole {
+  private obtainAssetCodeBuildRole(assetType: AssetType): iam.IRole {
     if (this.assetCodeBuildRoles[assetType]) {
-      return {
-        role: this.assetCodeBuildRoles[assetType],
-      };
+      return this.assetCodeBuildRoles[assetType];
     }
 
     const stack = Stack.of(this);
@@ -803,9 +800,7 @@ export class CodePipeline extends PipelineBase {
     }
 
     this.assetCodeBuildRoles[assetType] = assetRole;
-    return {
-      role: this.assetCodeBuildRoles[assetType],
-    };
+    return assetRole;
   }
 }
 
@@ -816,11 +811,6 @@ function dockerUsageFromCodeBuild(cbt: CodeBuildProjectType): DockerCredentialUs
     case CodeBuildProjectType.SYNTH: return DockerCredentialUsage.SYNTH;
     case CodeBuildProjectType.STEP: return undefined;
   }
-}
-
-interface AssetCodeBuildRole {
-  readonly role: iam.IRole;
-  readonly dependable?: IDependable;
 }
 
 enum CodeBuildProjectType {
