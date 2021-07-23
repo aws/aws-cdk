@@ -7,7 +7,7 @@ import * as codecommit from '../lib';
 export = {
   'notifications rule'(test: Test) {
     const stack = new cdk.Stack();
-    const repository = new codecommit.Repository(stack, 'MyRepository', {
+    const repository = new codecommit.Repository(stack, 'MyCodecommitRepository', {
       repositoryName: 'my-test-repository',
     });
 
@@ -18,48 +18,48 @@ export = {
     repository.notifiyOnPullRequestMerged('NotifyOnPullRequestMerged', target);
 
     expect(stack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
-      Name: 'MyRepositoryNotifyOnPullRequestCreated45127895',
+      Name: 'MyCodecommitRepositoryNotifyOnPullRequestCreatedBB14EA32',
       DetailType: 'FULL',
       EventTypeIds: [
         'codecommit-repository-pull-request-created',
       ],
       Resource: {
         'Fn::GetAtt': [
-          'MyRepositoryT5458715',
+          'MyCodecommitRepository26DB372B',
           'Arn',
         ],
       },
       Targets: [
         {
           TargetAddress: {
-            Ref: 'MyTopic75489871',
+            Ref: 'MyTopic86869434',
           },
           TargetType: 'SNS',
         },
       ],
     }));
 
-    //  expect(stack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
-    //    Name: 'MyRepositoryNotifyOnPullRequestMerged47215469',
-    //    DetailType: 'FULL',
-    //    EventTypeIds: [
-    //      'codecommit-repository-pull-request-merged',
-    //    ],
-    //    Resource: {
-    //      'Fn::GetAtt': [
-    //        'MyRepositoryT5458715',
-    //        'Arn',
-    //      ],
-    //    },
-    //    Targets: [
-    //      {
-    //        TargetAddress: {
-    //          Ref: 'MyTopic75489871',
-    //        },
-    //        TargetType: 'SNS',
-    //      },
-    //    ],
-    //  }));
+    expect(stack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
+      Name: 'MyCodecommitRepositoryNotifyOnPullRequestMerged34A7EDF1',
+      DetailType: 'FULL',
+      EventTypeIds: [
+        'codecommit-repository-pull-request-merged',
+      ],
+      Resource: {
+        'Fn::GetAtt': [
+          'MyCodecommitRepository26DB372B',
+          'Arn',
+        ],
+      },
+      Targets: [
+        {
+          TargetAddress: {
+            Ref: 'MyTopic86869434',
+          },
+          TargetType: 'SNS',
+        },
+      ],
+    }));
 
     test.done();
   },

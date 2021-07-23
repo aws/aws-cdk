@@ -5,14 +5,15 @@ import * as codecommit from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-codecommit-repository-notification');
+const stack = new cdk.Stack(app, 'aws-cdk-codecommit');
 
-const repository = new codecommit.Repository(stack, 'Repository', {
-  repositoryName: 'aws-cdk-repository-notification',
+const repository = new codecommit.Repository(stack, 'MyCodecommitRepository', {
+  repositoryName: 'my-test-repository',
 });
 
 const target = new sns.Topic(stack, 'MyTopic');
 
 repository.notifyOnPullRequestCreated('NotifyOnPullRequestCreated', target);
+repository.notifiyOnPullRequestMerged('NotifyOnPullRequestMerged', target);
 
 app.synth();
