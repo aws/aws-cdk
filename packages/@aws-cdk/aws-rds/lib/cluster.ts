@@ -460,6 +460,13 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
   readonly storageEncryptionKey?: kms.IKey;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default: true
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -513,6 +520,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     });
 
     this.clusterIdentifier = cluster.ref;

@@ -45,9 +45,9 @@ async function main() {
   }
 
   projects.forEach((p) => {
-    Object.entries(p.devDependencies ?? {}).forEach(([depName, depVersion]) => errorIfNotInYarnLock(p, depName, depVersion));
-    Object.entries(p.peerDependencies ?? {}).forEach(([depName, depVersion]) => errorIfNotInYarnLock(p, depName, depVersion));
-    Object.entries(p.dependencies ?? {}).forEach(([depName, depVersion]) => errorIfNotInYarnLock(p, depName, depVersion));
+    Object.entries(p.devDependencies || {}).forEach(([depName, depVersion]) => errorIfNotInYarnLock(p, depName, depVersion));
+    Object.entries(p.peerDependencies || {}).forEach(([depName, depVersion]) => errorIfNotInYarnLock(p, depName, depVersion));
+    Object.entries(p.dependencies || {}).forEach(([depName, depVersion]) => errorIfNotInYarnLock(p, depName, depVersion));
   });
 }
 

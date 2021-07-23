@@ -1211,7 +1211,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   public static fromDomainAttributes(scope: Construct, id: string, attrs: DomainAttributes): IDomain {
     const { domainArn, domainEndpoint } = attrs;
-    const domainName = extractNameFromEndpoint(domainEndpoint);
+    const domainName = cdk.Stack.of(scope).parseArn(domainArn).resourceName ?? extractNameFromEndpoint(domainEndpoint);
 
     return new class extends DomainBase {
       public readonly domainArn = domainArn;
@@ -1415,12 +1415,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // Validate feature support for the given Elasticsearch version, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
     if (elasticsearchVersionNum < 5.1) {
-      if (
-        props.logging?.slowIndexLogEnabled
-        || props.logging?.appLogEnabled
-        || props.logging?.slowSearchLogEnabled
-      ) {
-        throw new Error('Error and slow logs publishing requires Elasticsearch version 5.1 or later.');
+      if (props.logging?.appLogEnabled) {
+        throw new Error('Error logs publishing requires Elasticsearch version 5.1 or later.');
       }
       if (props.encryptionAtRest?.enabled) {
         throw new Error('Encryption of data at rest requires Elasticsearch version 5.1 or later.');
@@ -1454,8 +1450,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html
-    if (isInstanceType('i3') && ebsEnabled) {
-      throw new Error('I3 instance types do not support EBS storage volumes.');
+    if (isSomeInstanceType('i3', 'r6gd') && ebsEnabled) {
+      throw new Error('I3 and R6GD instance types do not support EBS storage volumes.');
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
@@ -1470,10 +1466,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('T2 and T3 instance types do not support UltraWarm storage.');
     }
 
-    // Only R3 and I3 support instance storage, per
+    // Only R3, I3 and r6gd support instance storage, per
     // https://aws.amazon.com/elasticsearch-service/pricing/
-    if (!ebsEnabled && !isEveryInstanceType('r3', 'i3')) {
-      throw new Error('EBS volumes are required when using instance types other than r3 or i3.');
+    if (!ebsEnabled && !isEveryInstanceType('r3', 'i3', 'r6gd')) {
+      throw new Error('EBS volumes are required when using instance types other than r3, i3 or r6gd.');
     }
 
     // Fine-grained access control requires node-to-node encryption, encryption at rest,

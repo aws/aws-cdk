@@ -1,5 +1,11 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
+// import the AWSLambda package explicitly,
+// which is globally available in the Lambda runtime,
+// as otherwise linking this repository with link-all.sh
+// fails in the CDK app executed with ts-node
+/* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
+import * as AWSLambda from 'aws-lambda';
 import { AwsSdkCall } from '../aws-custom-resource';
 
 /**
@@ -144,9 +150,19 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           region: awsService.config.region, // For test purposes: check if region was correctly passed.
           ...flatten(response),
         };
-        data = call.outputPath
-          ? filterKeys(flatData, k => k.startsWith(call.outputPath!))
-          : flatData;
+
+        let outputPaths: string[] | undefined;
+        if (call.outputPath) {
+          outputPaths = [call.outputPath];
+        } else if (call.outputPaths) {
+          outputPaths = call.outputPaths;
+        }
+
+        if (outputPaths) {
+          data = filterKeys(flatData, startsWithOneOf(outputPaths));
+        } else {
+          data = flatData;
+        }
       } catch (e) {
         if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(e.code)) {
           throw e;
@@ -204,4 +220,15 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 function decodeCall(call: string | undefined) {
   if (!call) { return undefined; }
   return JSON.parse(call);
+}
+
+function startsWithOneOf(searchStrings: string[]): (string: string) => boolean {
+  return function(string: string): boolean {
+    for (const searchString of searchStrings) {
+      if (string.startsWith(searchString)) {
+        return true;
+      }
+    }
+    return false;
+  };
 }

@@ -326,7 +326,7 @@ abstract class StreamBase extends Resource implements IStream {
   public abstract readonly encryptionKey?: kms.IKey;
 
   /**
-   * Grant write permissions for this stream and its contents to an IAM
+   * Grant read permissions for this stream and its contents to an IAM
    * principal (Role/Group/User).
    *
    * If an encryption key is used, permission to ues the key to decrypt the
@@ -343,10 +343,10 @@ abstract class StreamBase extends Resource implements IStream {
   }
 
   /**
-   * Grant read permissions for this stream and its contents to an IAM
+   * Grant write permissions for this stream and its contents to an IAM
    * principal (Role/Group/User).
    *
-   * If an encryption key is used, permission to ues the key to decrypt the
+   * If an encryption key is used, permission to ues the key to encrypt the
    * contents of the stream will also be granted.
    */
   public grantWrite(grantee: iam.IGrantable) {

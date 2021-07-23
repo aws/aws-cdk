@@ -152,6 +152,7 @@ describe('Fields', () => {
     expect(FieldUtils.findReferencedPaths(paths))
       .toStrictEqual(['$.listField', '$.numField', '$.stringField']);
   });
+
   test('rendering a non-object value should just return itself', () => {
     expect(
       FieldUtils.renderObject(TaskInput.fromText('Hello World').value),
@@ -183,5 +184,26 @@ describe('Fields', () => {
     ).toEqual(
       undefined,
     );
+
+  test('repeated object references at different tree paths should not be considered as recursions', () => {
+    const repeatedObject = {
+      field: JsonPath.stringAt('$.stringField'),
+      numField: JsonPath.numberAt('$.numField'),
+    };
+    expect(FieldUtils.renderObject(
+      {
+        reference1: repeatedObject,
+        reference2: repeatedObject,
+      },
+    )).toStrictEqual({
+      reference1: {
+        'field.$': '$.stringField',
+        'numField.$': '$.numField',
+      },
+      reference2: {
+        'field.$': '$.stringField',
+        'numField.$': '$.numField',
+      },
+    });
   });
 });
