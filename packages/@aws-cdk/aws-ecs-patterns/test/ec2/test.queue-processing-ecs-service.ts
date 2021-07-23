@@ -363,12 +363,12 @@ export = {
       instanceType: new ec2.InstanceType('bogus'),
       machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
     });
-
-    // WHEN
     const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
       autoScalingGroup,
     });
     cluster.addAsgCapacityProvider(capacityProvider);
+
+    // WHEN
     new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
