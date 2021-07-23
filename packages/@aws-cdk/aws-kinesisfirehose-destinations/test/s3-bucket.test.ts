@@ -333,4 +333,54 @@ describe('S3 destination', () => {
       })).toThrowError('Buffering size must be between 1 and 128 MBs');
     });
   });
+
+  describe('destination encryption', () => {
+    it('creates configuration', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          encryptionKey: key,
+          role: destinationRole,
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          EncryptionConfiguration: {
+            KMSEncryptionConfig: {
+              AWSKMSKeyARN: stack.resolve(key.keyArn),
+            },
+          },
+        },
+      });
+    });
+
+    it('grants encrypt/decrypt access to the destination encryptionKey', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          encryptionKey: key,
+          role: destinationRole,
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        Roles: [stack.resolve(destinationRole.roleName)],
+        PolicyDocument: {
+          Statement: arrayWith({
+            Action: [
+              'kms:Decrypt',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: stack.resolve(key.keyArn),
+          }),
+        },
+      });
+    });
+  });
 });
