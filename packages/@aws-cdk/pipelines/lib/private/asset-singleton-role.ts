@@ -71,7 +71,10 @@ export class AssetSingletonRole extends iam.Role {
       return { statementAdded: true, policyDependable: new ConcreteDependable() };
     }
 
-    // These have not been added yet but seem to be unnecessary because our previous integ tests were doing fine without them
+    // These are added in duplicate (specifically these come from
+    // Project#bindToCodePipeline) -- the original singleton asset role didn't
+    // have these, and they're not necessary either, so in order to not cause
+    // unnecessary diffs, recognize and drop them there as well.
     if (acts === '["kms:Decrypt","kms:Encrypt","kms:ReEncrypt*","kms:GenerateDataKey*"]') {
       // Pretend we did it
       return { statementAdded: true, policyDependable: new ConcreteDependable() };
