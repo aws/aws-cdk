@@ -257,6 +257,26 @@ describe('Alarm', () => {
 
 
   });
+
+  test('can use a generic string for extended statistic to make alarm', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    testMetric.createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 2,
+      statistic: 'tm99.9999999999',
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+      Statistic: ABSENT,
+      ExtendedStatistic: 'tm99.9999999999',
+    });
+
+  });
+
 });
 
 class TestAlarmAction implements IAlarmAction {
