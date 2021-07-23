@@ -533,9 +533,15 @@ export = {
   'can set capacity provider strategies'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+      vpc,
+    });
+    cluster.enableFargateCapacityProviders();
 
     // WHEN
     new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       capacityProviderStrategies: [
         {
