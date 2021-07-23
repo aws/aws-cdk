@@ -1633,6 +1633,34 @@ describe('unsigned basic auth', () => {
   });
 });
 
+describe('advanced options', () => {
+  test('use advanced options', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+      advancedOptions: {
+        'rest.action.multi.allow_explicit_index': 'true',
+        'indices.fielddata.cache.size': '50',
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      AdvancedOptions: {
+        'rest.action.multi.allow_explicit_index': 'true',
+        'indices.fielddata.cache.size': '50',
+      },
+    });
+  });
+
+  test('advanced options absent by default', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      AdvancedOptions: assert.ABSENT,
+    });
+  });
+});
 
 function testGrant(
   expectedActions: string[],
