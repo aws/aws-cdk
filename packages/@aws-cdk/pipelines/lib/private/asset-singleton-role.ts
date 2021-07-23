@@ -72,7 +72,6 @@ export class AssetSingletonRole extends iam.Role {
     }
 
     // These have not been added yet but seem to be unnecessary because our previous integ tests were doing fine without them
-    console.log(json.Resource);
     if (acts === '["kms:Decrypt","kms:Encrypt","kms:ReEncrypt*","kms:GenerateDataKey*"]') {
       // Pretend we did it
       return { statementAdded: true, policyDependable: new ConcreteDependable() };

@@ -11,6 +11,7 @@ import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, St
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
+import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
@@ -19,7 +20,6 @@ import { CodeBuildFactory, mergeCodeBuildOptions, stackVariableNamespace } from 
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
-import { AssetSingletonRole } from '../private/asset-singleton-role';
 
 
 /**

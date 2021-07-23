@@ -8,6 +8,7 @@ import { Construct } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../docker-credentials';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
+import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
 import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
@@ -16,7 +17,6 @@ import { SimpleSynthAction } from './synths';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-import { AssetSingletonRole } from '../private/asset-singleton-role';
 
 const CODE_BUILD_LENGTH_LIMIT = 100;
 /**
