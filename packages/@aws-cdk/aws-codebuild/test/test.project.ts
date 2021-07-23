@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+// import { CfnBucket } from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -791,6 +792,41 @@ export = {
           S3Logs: {
             Location: 'MyBucketName',
             Status: 'ENABLED',
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
+    'certificate arn'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'path',
+        }),
+        environment: {
+          certificate: {
+            bucket,
+            objectKey: 'path',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Environment: objectLike({
+          Certificate: {
+            'Fn::Join': ['', [
+              'arn:',
+              { 'Ref': 'AWS::Partition' },
+              ':s3:::my-bucket/path',
+            ]],
           },
         }),
       }));
