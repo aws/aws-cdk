@@ -4,7 +4,7 @@ import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { EsbuildInstallation } from './esbuild-installation';
 import { PackageManager } from './package-manager';
-import { BundlingOptions } from './types';
+import { BundlingOptions, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -27,6 +27,11 @@ export interface BundlingProps extends BundlingOptions {
    * The runtime of the lambda function
    */
   readonly runtime: Runtime;
+
+  /**
+   * Path to project root
+   */
+  readonly projectRoot: string;
 }
 
 /**
@@ -37,7 +42,7 @@ export class Bundling implements cdk.BundlingOptions {
    * esbuild bundled Lambda asset code
    */
   public static bundle(options: BundlingProps): AssetCode {
-    return Code.fromAsset(path.dirname(options.depsLockFilePath), {
+    return Code.fromAsset(options.projectRoot, {
       assetHashType: cdk.AssetHashType.OUTPUT,
       bundling: new Bundling(options),
     });
@@ -59,6 +64,7 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
   private readonly relativeTsconfigPath?: string;
+  private readonly relativeDepsLockFilePath: string;
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
 
@@ -67,8 +73,13 @@ export class Bundling implements cdk.BundlingOptions {
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? EsbuildInstallation.detect();
 
-    this.projectRoot = path.dirname(props.depsLockFilePath);
+    this.projectRoot = props.projectRoot;
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
+    this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
+
+    if (this.relativeDepsLockFilePath.includes('..')) {
+      throw new Error(`Expected depsLockFilePath: ${props.depsLockFilePath} to be under projectRoot: ${this.projectRoot} (${this.relativeDepsLockFilePath})`);
+    }
 
     if (props.tsconfig) {
       this.relativeTsconfigPath = path.relative(this.projectRoot, path.resolve(props.tsconfig));
@@ -115,6 +126,14 @@ export class Bundling implements cdk.BundlingOptions {
     const loaders = Object.entries(this.props.loader ?? {});
     const defines = Object.entries(this.props.define ?? {});
 
+    if (this.props.sourceMap === false && this.props.sourceMapMode) {
+      throw new Error('sourceMapMode cannot be used when sourceMap is false');
+    }
+    // eslint-disable-next-line no-console
+    const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
+    const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
+    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
+
     const esbuildCommand: string[] = [
       options.esbuildRunner,
       '--bundle', `"${pathJoin(options.inputDir, this.relativeEntryPath)}"`,
@@ -122,7 +141,7 @@ export class Bundling implements cdk.BundlingOptions {
       '--platform=node',
       `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
       ...this.props.minify ? ['--minify'] : [],
-      ...this.props.sourceMap ? ['--sourcemap'] : [],
+      ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
@@ -147,10 +166,12 @@ export class Bundling implements cdk.BundlingOptions {
       const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
       const osCommand = new OsCommand(options.osPlatform);
 
+      const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
+
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
         osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies }),
-        osCommand.copy(pathJoin(options.inputDir, this.packageManager.lockFile), pathJoin(options.outputDir, this.packageManager.lockFile)),
+        osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
       ]);
@@ -174,7 +195,7 @@ export class Bundling implements cdk.BundlingOptions {
       osPlatform,
     });
     const environment = this.props.environment ?? {};
-    const cwd = path.dirname(this.props.depsLockFilePath);
+    const cwd = this.projectRoot;
 
     return {
       tryBundle(outputDir: string) {
