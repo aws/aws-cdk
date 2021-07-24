@@ -5,7 +5,8 @@ import * as cp_actions from '@aws-cdk/aws-codepipeline-actions';
 import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '@aws-cdk/aws-codepipeline-actions';
 import * as iam from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
-import { SecretValue } from '@aws-cdk/core';
+import { SecretValue, Token } from '@aws-cdk/core';
+import { Node } from 'constructs';
 import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
@@ -130,7 +131,7 @@ export interface GitHubSourceOptions {
    *
    * ```ts
    * const oauth = cdk.SecretValue.secretsManager('my-github-token');
-   * new GitHubSource(this, 'GitHubSource', { oauthToken: oauth, ... });
+   * new GitHubSource(this, 'GitHubSource', { authentication: oauth, ... });
    * ```
    *
    * The GitHub Personal Access Token should have these scopes:
@@ -172,8 +173,8 @@ class GitHubSource extends CodePipelineSource {
     super(repoString);
 
     const parts = repoString.split('/');
-    if (parts.length !== 2) {
-      throw new Error(`GitHub repository name should look like '<owner>/<repo>', got '${repoString}'`);
+    if (Token.isUnresolved(repoString) || parts.length !== 2) {
+      throw new Error(`GitHub repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`);
     }
     this.owner = parts[0];
     this.repo = parts[1];
@@ -208,19 +209,27 @@ export interface S3SourceOptions {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/log-s3-data-events.html
    */
   readonly trigger?: S3Trigger;
+
+  /**
+   * The action name used for this source in the CodePipeline
+   *
+   * @default - The bucket name
+   */
+  readonly actionName?: string;
 }
 
 class S3Source extends CodePipelineSource {
   constructor(readonly bucket: IBucket, private readonly objectKey: string, readonly props: S3SourceOptions) {
-    super(bucket.bucketName);
+    super(Node.of(bucket).addr);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, _actionName: string, runOrder: number) {
     return new cp_actions.S3SourceAction({
       output,
-      actionName,
+      // Bucket names are guaranteed to conform to ActionName restrictions
+      actionName: this.props.actionName ?? this.bucket.bucketName,
       runOrder,
       bucketKey: this.objectKey,
       trigger: this.props.trigger,
@@ -276,8 +285,8 @@ class CodeStarConnectionSource extends CodePipelineSource {
     super(repoString);
 
     const parts = repoString.split('/');
-    if (parts.length !== 2) {
-      throw new Error(`CodeStar repository name should look like '<owner>/<repo>', got '${repoString}'`);
+    if (Token.isUnresolved(repoString) || parts.length !== 2) {
+      throw new Error(`CodeStar repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`);
     }
     this.owner = parts[0];
     this.repo = parts[1];
@@ -333,16 +342,19 @@ export interface CodeCommitSourceOptions {
 }
 
 class CodeCommitSource extends CodePipelineSource {
-  constructor(readonly repository: codecommit.IRepository, readonly branch: string, readonly props: CodeCommitSourceOptions) {
-    super(repository.repositoryName);
+  constructor(private readonly repository: codecommit.IRepository, private readonly branch: string, private readonly props: CodeCommitSourceOptions) {
+    super(Token.isUnresolved(repository.repositoryName)
+      ? Node.of(repository).addr
+      : repository.repositoryName);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, _actionName: string, runOrder: number) {
     return new cp_actions.CodeCommitSourceAction({
       output,
-      actionName,
+      // Guaranteed to be okay as action name
+      actionName: this.repository.repositoryName,
       runOrder,
       branch: this.branch,
       trigger: this.props.trigger,

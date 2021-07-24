@@ -471,7 +471,7 @@ export class CodePipeline extends PipelineBase {
    *
    * There are only 3 types of Steps we need to support:
    *
-   * - RunScript (generic)
+   * - Shell (generic)
    * - ManualApproval (generic)
    * - CodePipelineActionFactory (CodePipeline-specific)
    *
@@ -729,7 +729,7 @@ export class CodePipeline extends PipelineBase {
 
     if (!arn) { return undefined; }
 
-    // Use placeholdered arn as construct ID.
+    // Use placeholder arn as construct ID.
     const id = arn;
 
     // https://github.com/aws/aws-cdk/issues/7255
