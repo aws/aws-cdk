@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install & Build prlint
-        run: cd tools/prlint && npm ci && npm run build+test
+        run: cd tools/prlint && yarn install --frozen-lockfile && yarn build+test
 
       - name: Validate
         uses: ./tools/prlint

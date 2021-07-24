@@ -120,6 +120,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       maxReceiveCount: 42,
       retentionPeriod: cdk.Duration.days(7),
+      visibilityTimeout: cdk.Duration.minutes(5),
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
@@ -138,6 +139,7 @@ export = {
         },
         maxReceiveCount: 42,
       },
+      VisibilityTimeout: 300,
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {
@@ -210,6 +212,7 @@ export = {
       serviceName: 'ecs-test-service',
       family: 'ecs-task-family',
       circuitBreaker: { rollback: true },
+      gpuCount: 256,
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
@@ -263,6 +266,12 @@ export = {
           ],
           Image: 'test',
           Memory: 1024,
+          ResourceRequirements: [
+            {
+              Type: 'GPU',
+              Value: '256',
+            },
+          ],
         },
       ],
       Family: 'ecs-task-family',

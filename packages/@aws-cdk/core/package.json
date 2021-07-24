@@ -28,14 +28,7 @@
         ]
       }
     },
-    "projectReferences": true,
-    "metadata": {
-      "jsii": {
-        "rosetta": {
-          "strict": true
-        }
-      }
-    }
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -141,7 +134,9 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudFormation",
@@ -174,16 +169,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.76",
-    "@types/fs-extra": "^8.1.1",
-    "@types/jest": "^26.0.23",
-    "@types/lodash": "^4.14.170",
-    "@types/minimatch": "^3.0.4",
+    "@types/aws-lambda": "^8.10.79",
+    "@types/fs-extra": "^8.1.2",
+    "@types/jest": "^26.0.24",
+    "@types/lodash": "^4.14.171",
+    "@types/minimatch": "^3.0.5",
     "@types/node": "^10.17.60",
     "@types/sinon": "^9.0.11",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "fast-check": "^2.14.0",
+    "fast-check": "^2.17.0",
     "lodash": "^4.17.21",
     "nodeunit-shim": "0.0.0",
     "pkglint": "0.0.0",
@@ -221,7 +216,18 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["rm", "tar", "grep", "xargs", "head", "cut", "touch", "diff", "echo", "gzip"]
+    "ostools": [
+      "rm",
+      "tar",
+      "grep",
+      "xargs",
+      "head",
+      "cut",
+      "touch",
+      "diff",
+      "echo",
+      "gzip"
+    ]
   },
   "maturity": "stable",
   "publishConfig": {

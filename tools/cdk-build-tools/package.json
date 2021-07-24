@@ -24,7 +24,9 @@
     "pkglint": "pkglint -f",
     "test": "echo success",
     "build+test+package": "yarn build+test",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -33,35 +35,35 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^8.1.1",
-    "@types/jest": "^26.0.23",
-    "@types/yargs": "^15.0.13",
-    "@types/semver": "^7.3.6",
+    "@types/fs-extra": "^8.1.2",
+    "@types/jest": "^26.0.24",
+    "@types/yargs": "^15.0.14",
+    "@types/semver": "^7.3.7",
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.25.0",
-    "@typescript-eslint/parser": "^4.25.0",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
     "awslint": "0.0.0",
     "colors": "^1.4.0",
-    "eslint": "^7.27.0",
+    "eslint": "^7.31.0",
     "eslint-import-resolver-node": "^0.3.4",
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-cdk": "0.0.0",
-    "eslint-plugin-import": "^2.23.3",
-    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jest": "^24.3.7",
     "fs-extra": "^9.1.0",
     "jest": "^26.6.3",
     "jest-junit": "^11.1.0",
-    "jsii": "^1.29.0",
-    "jsii-pacmak": "^1.29.0",
-    "jsii-reflect": "^1.29.0",
+    "jsii": "^1.31.0",
+    "jsii-pacmak": "^1.31.0",
+    "jsii-reflect": "^1.31.0",
     "markdownlint-cli": "^0.27.1",
     "nodeunit": "^0.11.3",
     "nyc": "^15.1.0",
     "semver": "^7.3.5",
     "ts-jest": "^26.5.6",
-    "typescript": "~3.9.9",
+    "typescript": "~3.9.10",
     "yargs": "^16.2.0",
     "yarn-cling": "0.0.0"
   },
@@ -74,7 +76,9 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "nozem": {
-    "ostools": ["chmod"]
+    "ostools": [
+      "chmod"
+    ]
   },
   "ubergen": {
     "exclude": true

@@ -104,6 +104,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
         logging: this.logDriver,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       if (taskImageOptions.containerPorts) {
         for (const containerPort of taskImageOptions.containerPorts) {
