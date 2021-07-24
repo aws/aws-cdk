@@ -16,7 +16,9 @@
     "pkglint": "bin/pkglint"
   },
   "scripts": {
-    "build": "tsc -b && eslint . --ext=.ts && chmod +x bin/pkglint",
+    "build": "run-script-os",
+    "build:default": "tsc -b && eslint . --ext=.ts && chmod +x bin/pkglint",
+    "build:win32": "tsc -b && eslint . --ext=.ts && cp bin/pkglint bin/pkglint.sh",
     "test": "jest",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build && npm test",
@@ -51,10 +53,14 @@
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jest": "^24.3.7",
     "jest": "^26.6.3",
+    "run-script-os": "^1.1.6",
     "typescript": "~3.9.10"
   },
   "nozem": {
-     "ostools": ["chmod", "cp"]
+    "ostools": [
+      "chmod",
+      "cp"
+    ]
   },
   "dependencies": {
     "case": "^1.6.3",

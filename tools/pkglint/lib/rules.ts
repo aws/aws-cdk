@@ -117,7 +117,7 @@ export class RepositoryCorrect extends ValidationRule {
   public validate(pkg: PackageJson): void {
     expectJSON(this.name, pkg, 'repository.type', 'git');
     expectJSON(this.name, pkg, 'repository.url', 'https://github.com/aws/aws-cdk.git');
-    const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot);
+    const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot).replace('\\', '/');
     expectJSON(this.name, pkg, 'repository.directory', pkgDir);
   }
 }
