@@ -48,7 +48,7 @@ new SubscriptionFilter(this, 'Subscription', {
 ### Kinesis Firehose Destination
 
 ```ts
-const deliveryStream = new firehose.CfnDeliveryStream(stack, 'Firehose', { ... });
+const deliveryStream = new firehose.DeliveryStream(stack, 'Firehose', { ... });
 const logGroup = new LogGroup(this, 'LogGroup', { ... });
 
 new SubscriptionFilter(this, 'Subscription', {

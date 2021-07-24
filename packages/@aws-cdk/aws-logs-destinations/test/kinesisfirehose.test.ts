@@ -1,13 +1,18 @@
 import '@aws-cdk/assert-internal/jest';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as firehoseDestinations from '@aws-cdk/aws-kinesisfirehose-destinations';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as dests from '../lib';
 
 test('firehose can be subscription destination', () => {
   // GIVEN
   const stack = new cdk.Stack();
-  const deliveryStream = new firehose.CfnDeliveryStream(stack, 'MyFirehose');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const deliveryStream = new firehose.DeliveryStream(stack, 'MyFirehose', {
+    destinations: [new firehoseDestinations.S3Bucket(bucket)],
+  });
   const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
   // WHEN
@@ -19,7 +24,7 @@ test('firehose can be subscription destination', () => {
 
   // THEN: subscription target is firehose
   expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
-    DestinationArn: { 'Fn::GetAtt': ['MyFirehose', 'Arn'] },
+    DestinationArn: { 'Fn::GetAtt': ['MyFirehoseFCA2F9D3', 'Arn'] },
     RoleArn: { 'Fn::GetAtt': ['MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehose30DECEBA', 'Arn'] },
   });
 
@@ -53,7 +58,7 @@ test('firehose can be subscription destination', () => {
             'firehose:PutRecordBatch',
           ],
           Effect: 'Allow',
-          Resource: { 'Fn::GetAtt': ['MyFirehose', 'Arn'] },
+          Resource: { 'Fn::GetAtt': ['MyFirehoseFCA2F9D3', 'Arn'] },
         },
       ],
     },
@@ -63,7 +68,10 @@ test('firehose can be subscription destination', () => {
 test('firehose can be subscription destination twice, without duplicating permissions', () => {
   // GIVEN
   const stack = new cdk.Stack();
-  const deliveryStream = new firehose.CfnDeliveryStream(stack, 'MyFirehose');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const deliveryStream = new firehose.DeliveryStream(stack, 'MyFirehose', {
+    destinations: [new firehoseDestinations.S3Bucket(bucket)],
+  });
   const firehoseDestination = new dests.KinesisFirehoseDestination(deliveryStream);
   const logGroup1 = new logs.LogGroup(stack, 'LogGroup1');
   const logGroup2 = new logs.LogGroup(stack, 'LogGroup2');
@@ -83,17 +91,20 @@ test('firehose can be subscription destination twice, without duplicating permis
   // THEN: subscription target is firehose
   expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
     LogGroupName: { Ref: 'LogGroup106AAD846' },
-    DestinationArn: { 'Fn::GetAtt': ['MyFirehose', 'Arn'] },
+    DestinationArn: { 'Fn::GetAtt': ['MyFirehoseFCA2F9D3', 'Arn'] },
     RoleArn: { 'Fn::GetAtt': ['MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehose30DECEBA', 'Arn'] },
   });
   expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
     LogGroupName: { Ref: 'LogGroup2477F707C' },
-    DestinationArn: { 'Fn::GetAtt': ['MyFirehose', 'Arn'] },
+    DestinationArn: { 'Fn::GetAtt': ['MyFirehoseFCA2F9D3', 'Arn'] },
     RoleArn: { 'Fn::GetAtt': ['MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehose30DECEBA', 'Arn'] },
   });
 
   // THEN: we have a single role to write to the Firehose
-  expect(stack).toCountResources('AWS::IAM::Role', 1);
+  expect(stack).toCountResources('AWS::IAM::Role', 1
+    + 1 /* for FirehoseServiceRole */
+    + 1, /* for FirehoseS3DestinationRole */
+  );
   expect(stack).toHaveResource('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
@@ -123,7 +134,7 @@ test('firehose can be subscription destination twice, without duplicating permis
             'firehose:PutRecordBatch',
           ],
           Effect: 'Allow',
-          Resource: { 'Fn::GetAtt': ['MyFirehose', 'Arn'] },
+          Resource: { 'Fn::GetAtt': ['MyFirehoseFCA2F9D3', 'Arn'] },
         },
       ],
     },
