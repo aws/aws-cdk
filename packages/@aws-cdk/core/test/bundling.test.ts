@@ -12,6 +12,7 @@ nodeunitShim({
   },
 
   'bundling with image from registry'(test: Test) {
+    sinon.stub(process, 'platform').value('darwin');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -230,6 +231,7 @@ nodeunitShim({
   },
 
   'custom entrypoint is passed through to docker exec'(test: Test) {
+    sinon.stub(process, 'platform').value('darwin');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -345,6 +347,7 @@ nodeunitShim({
 
   'adding user provided security-opt'(test: Test) {
     // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
