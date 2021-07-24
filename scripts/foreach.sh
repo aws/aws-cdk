@@ -33,15 +33,18 @@ commandfile="${statedir}/.foreach.command"
 base=$PWD
 
 function heading {
-  printf "\e[38;5;81m$@\e[0m\n"
+  local prn=${@//\\/\\\\}
+  printf "\e[38;5;81m$prn\e[0m\n"
 }
 
 function error {
-  printf "\e[91;5;81m$@\e[0m\n"
+  local prn=${@//\\/\\\\}
+  printf "\e[91;5;81m$prn\e[0m\n"
 }
 
 function success {
-  printf "\e[32;5;81m$@\e[0m\n"
+  local prn=${@//\\/\\\\}
+  printf "\e[32;5;81m$prn\e[0m\n"
 }
 
 function reset {
