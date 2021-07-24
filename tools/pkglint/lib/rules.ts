@@ -1150,7 +1150,7 @@ export class CompatScript extends ValidationRule {
   public readonly name = 'package-info/scripts/compat';
 
   public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) { return; }
+    if (!isJSII(pkg)) { return ; }
 
     expectJSON(this.name, pkg, 'scripts.compat', 'cdk-compat');
   }
@@ -1216,8 +1216,8 @@ interface VersionCount {
 export class AllVersionsTheSame extends ValidationRule {
   public readonly name = 'dependencies/versions-consistent';
 
-  private readonly ourPackages: { [pkg: string]: string } = {};
-  private readonly usedDeps: { [pkg: string]: VersionCount[] } = {};
+  private readonly ourPackages: {[pkg: string]: string} = {};
+  private readonly usedDeps: {[pkg: string]: VersionCount[]} = {};
 
   public prepare(pkg: PackageJson): void {
     this.ourPackages[pkg.json.name] = pkg.json.version;
@@ -1230,7 +1230,7 @@ export class AllVersionsTheSame extends ValidationRule {
     this.validateDeps(pkg, 'devDependencies');
   }
 
-  private recordDeps(deps: { [pkg: string]: string } | undefined) {
+  private recordDeps(deps: {[pkg: string]: string} | undefined) {
     if (!deps) { return; }
 
     Object.keys(deps).forEach(dep => {
@@ -1472,7 +1472,7 @@ export class DoNotAnnounceInCatalog extends ValidationRule {
         ruleName: this.name,
         message: 'missing "awscdkio.announce: false" in package.json',
         fix: () => {
-          pkg.json.awscdkio = pkg.json.awscdkio ?? {};
+          pkg.json.awscdkio = pkg.json.awscdkio ?? { };
           pkg.json.awscdkio.announce = false;
         },
       });
