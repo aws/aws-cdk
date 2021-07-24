@@ -421,7 +421,7 @@ export interface SecurityGroupContextQuery {
 }
 
 /**
- * Query input for looking up a Key
+ * Query input for looking up a KMS Key
  */
 export interface KeyContextQuery {
   /**

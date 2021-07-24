@@ -109,14 +109,18 @@ as CI build steps, and to ensure your template builds are repeatable.
 Here's how `Key.fromLookup()` can be used:
 
 ```ts
-const myKeyLookup = kms.Key.fromLookup(this, 'myKey', {
-  aliasName: 'alias/KeyLias'
+const myKeyLookup = kms.Key.fromLookup(this, 'MyKeyLookup', {
+  aliasName: 'alias/KeyAlias'
 });
 
-const trail = new cloudtrail.Trail(this, 'myCloudTrail', {
-    sendToCloudWatchLogs: true,
-    kmsKey: myKeyLookup
+const role = new iam.Role(this, 'MyRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
+role.addToPolicy(new iam.PolicyStatement({
+  actions: ['kms:*'],
+  effect: iam.Effect.ALLOW,
+  resources: [myKeyLookup.keyArn],
+}));
 ```
 
 Note that a call to `.addToPolicy(statement)` on `myKeyLookup` will not have
