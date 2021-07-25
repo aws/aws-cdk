@@ -225,7 +225,7 @@ test('honors passed asset options', () => {
       ],
     },
     SourceBucketNames: [{
-      Ref: '"AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3Bucket02009982',
+      Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3Bucket02009982',
     }],
     SourceObjectKeys: [{
       'Fn::Join': [
