@@ -225,7 +225,7 @@ test('honors passed asset options', () => {
       ],
     },
     SourceBucketNames: [{
-      Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3BucketB41AE64D',
+      Ref: '"AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3Bucket02009982',
     }],
     SourceObjectKeys: [{
       'Fn::Join': [
@@ -238,7 +238,7 @@ test('honors passed asset options', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
+                    Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
                   },
                 ],
               },
@@ -251,7 +251,7 @@ test('honors passed asset options', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
+                    Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
                   },
                 ],
               },
