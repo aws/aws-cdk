@@ -1,5 +1,4 @@
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
 import { StageOptions, IStage, StageAttributes } from '../common';
@@ -172,8 +171,7 @@ export class HttpStage extends HttpStageBase {
    * The URL to this stage.
    */
   public get url(): string {
-    const s = Stack.of(this);
     const urlPath = this.stageName === DEFAULT_STAGE_NAME ? '' : this.stageName;
-    return `https://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}`;
+    return `https://${this.api.domainName}/${urlPath}`;
   }
 }

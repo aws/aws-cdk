@@ -1,5 +1,5 @@
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { Duration } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { IApi } from '../common/api';
@@ -455,6 +455,14 @@ export class HttpApi extends HttpApiBase {
       throw new Error('apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.');
     }
     return this._apiEndpoint;
+  }
+
+  /**
+   * Get the domain name to this API.
+   */
+  public get domainName(): string {
+    const s = Stack.of(this);
+    return `${this.apiId}.execute-api.${s.region}.${s.urlSuffix}`;
   }
 
   /**

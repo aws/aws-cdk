@@ -13,6 +13,7 @@ describe('HttpApi', () => {
   test('default', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'api');
+    const apiId = stack.resolve(api.apiId);
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
       Name: 'api',
@@ -20,7 +21,7 @@ describe('HttpApi', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
-      ApiId: stack.resolve(api.apiId),
+      ApiId: apiId,
       StageName: '$default',
       AutoDeploy: true,
     });
@@ -28,6 +29,7 @@ describe('HttpApi', () => {
     expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Route');
     expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Integration');
 
+    expect(api.domainName).toEqual(`${apiId}.execute-api.${stack.region}.${stack.urlSuffix}`);
     expect(api.url).toBeDefined();
   });
 
