@@ -9,7 +9,7 @@ extract_snippets="false"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: individual-packages.sh [--skip-test] [--extract]"
+            echo "Usage: transform.sh [--skip-test] [--extract]"
             exit 1
             ;;
         --skip-test|--skip-tests)

@@ -15,5 +15,5 @@ phases:
   build:
     commands:
       - /bin/bash ./build.sh --extract
-      - /bin/bash ./scripts/individual-packages.sh --extract
+      - /bin/bash ./scripts/transform.sh --extract
       - git diff-index --exit-code --ignore-space-at-eol --stat HEAD
