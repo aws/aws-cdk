@@ -39,4 +39,4 @@ cd ${scriptdir}/../packages/individual-packages
 node ../../tools/individual-packages-gen/gen-phase1.js
 yarn lerna bootstrap
 node ../../tools/individual-packages-gen/gen-phase2.js
-SKIP_GEN=true yarn lerna run --stream $runtarget
+PHASE=transform yarn lerna run --stream $runtarget
