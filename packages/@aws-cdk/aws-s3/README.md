@@ -173,7 +173,7 @@ const bucket = Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 });
 
 // now you can just call methods on the bucket
-bucket.grantReadWrite(user);
+bucket.addEventNotification(EventType.OBJECT_CREATED, ...);
 ```
 
 Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
