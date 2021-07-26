@@ -401,3 +401,4 @@ test('Cannot create a SageMaker train task with both algorithm name and image na
   }))
     .toThrowError(/Must define either an algorithm name or training image URI in the algorithm specification/);
 });
+
