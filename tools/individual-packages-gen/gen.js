@@ -28,7 +28,8 @@ if (phase === 'phase1') {
 }
 
 function copyFilesRemovingDependencies() {
-    const project = new lerna_project.Project('..'); // there is a lerna.json in this directory
+    // there is a lerna.json in the individual-packages directory, where this script executes
+    const project = new lerna_project.Project(__dirname);
     const packages = project.getPackagesSync();
     const unstablePackages = getUnstablePackages(packages);
     const jsiiRosettaVersion = project.manifest.devDependencies['jsii-rosetta'];
@@ -39,7 +40,7 @@ function copyFilesRemovingDependencies() {
 
         const srcDir = pkg.location;
         const packageUnscopedName = `${pkg.name.substring('@aws-cdk/'.length)}`;
-        const destDir = path.join(__dirname, packageUnscopedName);
+        const destDir = path.join('.', packageUnscopedName);
         fs.mkdirp(destDir);
 
         copyOrTransformFiles(pkg, srcDir, destDir, jsiiRosettaVersion, unstablePackages);
