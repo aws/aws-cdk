@@ -35,6 +35,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Constraints](#constraints)
   - [Tag update constraint](#tag-update-constraint)
   - [Notify on stack events](#notify-on-stack-events)
+  - [Constrain provisioning parameters](#constrain-provisioning-parameters)
   - [Set launch role](#set-launch-role)
   - [Deploy with StackSets](#deploy-with-stacksets)
 
@@ -162,7 +163,7 @@ A product can be added to multiple portfolios depending on your resource and org
 portfolio.addProduct(product);
 ```
 
-### Tag Options
+## Tag Options
 
 TagOptions allow administrators to easily manage tags on provisioned products by creating a selection of tags for end users to choose from.
 For example, an end user can choose an `ec2` for the instance type size.
@@ -226,6 +227,30 @@ const topic2 = new sns.Topic(this, 'MyTopic2');
 portfolio.notifyOnStackEvents(product, topic2, {
   description: 'description for this topic2', // description is an optional field. 
 });
+```
+
+### Constrain provisioning parameters
+
+Allows you to configure the options that are available to end users when they launch a product.
+A provisioning rule consists of one or more assertions that narrow the allowable values for parameters in a product.
+You can configure multiple rules to govern the different parameters and parameter options in your products.
+For example, a parameter might define the various instance types that users can choose from when launching a stack that includes EC2 instances.
+A provisoning rule has an optional `ruleCondition` field that allows ability to configure when rules are applied.
+If a `ruleCondition` is specified, all the assertions will be applied if the condition evalutates to true.
+For information on rule-specific intrinsic functions to define rule conditions and assertions,
+see [AWS Rule Functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-rules.html).
+
+```ts fixture=portfolio-product
+import * as cdk from '@aws-cdk/core';
+
+portfolio.constrainProvisioningParameters(product, {
+  ruleName: 'testInstanceType',
+  ruleCondition: cdk.Fn.conditionEquals(cdk.Fn.ref("Environment"), 'test'),
+  assertions: [ {
+    assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
+    assertDescription: 'For test environment, the instance type should be small',
+  }]
+})
 ```
 
 ### Set launch role

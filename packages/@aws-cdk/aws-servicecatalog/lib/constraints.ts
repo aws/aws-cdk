@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { MessageLanguage } from './common';
 
 /**
@@ -62,4 +63,41 @@ export interface TagUpdateConstraintOptions extends CommonConstraintOptions {
    * @default true
    */
   readonly allow?: boolean;
+}
+
+/**
+ * An assertion within a template rule, defined by intrinsic functions.
+ */
+export interface Assertion {
+  /**
+   * The assertion condition.
+   */
+  readonly assert: cdk.ICfnConditionExpression;
+
+  /**
+   * The description for the asssertion
+   * @default - no description provided for the assertion.
+   */
+  readonly assertDescription?: string;
+}
+
+/**
+ * Defines the provisioning template constraints.
+ */
+export interface TemplateRule {
+  /**
+   * Name of the rule.
+   */
+  readonly ruleName: string;
+
+  /**
+   * Specify when to apply rule with a rule-specific intrinsic function.
+   * @default - No rule condition provided.
+   */
+  readonly ruleCondition?: cdk.ICfnConditionExpression;
+
+  /**
+   * A list of assertions that make up the rule.
+   */
+  readonly assertions: Assertion[];
 }

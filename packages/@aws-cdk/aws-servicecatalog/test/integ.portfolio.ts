@@ -1,10 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
-const app = new App();
-const stack = new Stack(app, 'integ-servicecatalog-portfolio');
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'integ-servicecatalog-portfolio');
 
 const role = new iam.Role(stack, 'TestRole', {
   assumedBy: new iam.AccountRootPrincipal(),
@@ -77,6 +77,15 @@ secondPortfolio.deployWithStackSets(product, {
   adminRole: adminRole,
   executionRoleName: 'StackSetExecutionRole',
   allowStackSetInstanceOperations: true,
+});
+
+portfolio.constrainProvisioningParameters(product, {
+  ruleName: 'testInstanceType',
+  ruleCondition: cdk.Fn.conditionEquals(cdk.Fn.ref('Environment'), 'test'),
+  assertions: [{
+    assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
+    assertDescription: 'For test environment, the instance type should be small',
+  }],
 });
 
 app.synth();

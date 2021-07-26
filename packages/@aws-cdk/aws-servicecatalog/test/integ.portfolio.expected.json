@@ -202,6 +202,21 @@
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
+    "TestPortfolioLaunchTemplateConstraint13a8b80248da4E047268": {
+      "Type": "AWS::ServiceCatalog::LaunchTemplateConstraint",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "ProductId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "Rules": "{\"testInstanceType\":{\"Assertions\":[{\"Assert\":{\"Fn::Contains\":[[\"t2.micro\",\"t2.small\"],{\"Ref\":\"InstanceType\"}]},\"AssertDescription\":\"For test environment, the instance type should be small\"}],\"RuleCondition\":{\"Fn::Equals\":[{\"Ref\":\"Environment\"},\"test\"]}}}"
+      },
+      "DependsOn": [
+        "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+      ]
+    },
     "TagOptionc0d88a3c4b8b": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
