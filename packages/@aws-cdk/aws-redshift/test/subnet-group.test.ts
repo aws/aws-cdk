@@ -59,8 +59,19 @@ describe('subnet selection', () => {
   });
 });
 
-test('import group by name', () => {
-  const subnetGroup = ClusterSubnetGroup.fromClusterSubnetGroupName(stack, 'Group', 'my-subnet-group');
+describe('import group', () => {
+  test('from name', () => {
+    const subnetGroup = ClusterSubnetGroup.fromClusterSubnetGroupName(stack, 'Group', 'my-subnet-group');
 
-  expect(subnetGroup.clusterSubnetGroupName).toBe('my-subnet-group');
+    expect(subnetGroup.clusterSubnetGroupName).toBe('my-subnet-group');
+  });
+
+  test('from attributes', () => {
+    const selectedSubnets = vpc.selectSubnets();
+
+    const subnetGroup = ClusterSubnetGroup.fromClusterSubnetGroupAttributes(stack, 'Group', { clusterSubnetGroupName: 'my-subnet-group', selectedSubnets: selectedSubnets });
+
+    expect(subnetGroup.clusterSubnetGroupName).toBe('my-subnet-group');
+    expect(subnetGroup.selectedSubnets).toBe(selectedSubnets);
+  });
 });

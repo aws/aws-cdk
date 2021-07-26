@@ -35,6 +35,7 @@ test('check that instantiation works', () => {
       Encrypted: true,
       NumberOfNodes: 2,
       NodeType: 'dc2.large',
+      IamRoles: [],
       DBName: 'default_db',
       PubliclyAccessible: false,
       ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },

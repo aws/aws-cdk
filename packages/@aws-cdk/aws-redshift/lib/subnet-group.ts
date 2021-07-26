@@ -12,6 +12,28 @@ export interface IClusterSubnetGroup extends IResource {
    * @attribute
    */
   readonly clusterSubnetGroupName: string;
+
+  /**
+   * The subnets in this group.
+   */
+  readonly selectedSubnets?: ec2.SelectedSubnets;
+}
+
+/**
+ * Attributes of a cluster subnet group that allow it to be imported into this application.
+ */
+export interface ClusterSubnetGroupAttributes {
+  /**
+   * The name of the cluster subnet group.
+   */
+  readonly clusterSubnetGroupName: string;
+
+  /**
+   * The subnets in this group.
+   *
+   * @default - the selected subnets for this imported subnet group will be unknown to this application
+   */
+  readonly selectedSubnets?: ec2.SelectedSubnets;
 }
 
 /**
@@ -50,26 +72,34 @@ export interface ClusterSubnetGroupProps {
  * @resource AWS::Redshift::ClusterSubnetGroup
  */
 export class ClusterSubnetGroup extends Resource implements IClusterSubnetGroup {
-
   /**
    * Imports an existing subnet group by name.
    */
   public static fromClusterSubnetGroupName(scope: Construct, id: string, clusterSubnetGroupName: string): IClusterSubnetGroup {
+    return this.fromClusterSubnetGroupAttributes(scope, id, { clusterSubnetGroupName });
+  }
+
+  /**
+   * Imports an existing subnet group by attributes.
+   */
+  public static fromClusterSubnetGroupAttributes(scope: Construct, id: string, attrs: ClusterSubnetGroupAttributes): IClusterSubnetGroup {
     return new class extends Resource implements IClusterSubnetGroup {
-      public readonly clusterSubnetGroupName = clusterSubnetGroupName;
+      public readonly clusterSubnetGroupName = attrs.clusterSubnetGroupName;
+      public readonly selectedSubnets = attrs.selectedSubnets;
     }(scope, id);
   }
 
   public readonly clusterSubnetGroupName: string;
+  public readonly selectedSubnets?: ec2.SelectedSubnets;
 
   constructor(scope: Construct, id: string, props: ClusterSubnetGroupProps) {
     super(scope, id);
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE });
+    this.selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE });
 
     const subnetGroup = new CfnClusterSubnetGroup(this, 'Default', {
       description: props.description,
-      subnetIds,
+      subnetIds: this.selectedSubnets.subnetIds,
     });
     subnetGroup.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.RETAIN, {
       applyToUpdateReplacePolicy: true,

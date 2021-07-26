@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -142,6 +142,16 @@ export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.IS
    * @attribute EndpointAddress,EndpointPort
    */
   readonly clusterEndpoint: Endpoint;
+
+  /**
+   * Whether the cluster can be accessed from a public network.
+   */
+  readonly publiclyAccessible: boolean;
+
+  /**
+   * The cluster subnet group used by this cluster.
+   */
+  readonly subnetGroup?: IClusterSubnetGroup;
 }
 
 /**
@@ -170,6 +180,19 @@ export interface ClusterAttributes {
    */
   readonly clusterEndpointPort: number;
 
+  /**
+   * Whether the cluster can be accessed from a public network.
+   *
+   * @default false
+   */
+  readonly publiclyAccessible?: boolean;
+
+  /**
+   * The cluster subnet group used by this cluster.
+   *
+   * @default - subnet group is unknown
+   */
+  readonly subnetGroup?: IClusterSubnetGroup;
 }
 
 /**
@@ -343,6 +366,10 @@ abstract class ClusterBase extends Resource implements ICluster {
    */
   public abstract readonly connections: ec2.Connections;
 
+  public abstract readonly publiclyAccessible: boolean;
+
+  public abstract readonly subnetGroup?: IClusterSubnetGroup;
+
   /**
    * Renders the secret attachment target specifications.
    */
@@ -372,6 +399,8 @@ export class Cluster extends ClusterBase {
       public readonly clusterName = attrs.clusterName;
       public readonly instanceIdentifiers: string[] = [];
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.clusterEndpointPort);
+      public readonly publiclyAccessible = attrs.publiclyAccessible ?? false;
+      public readonly subnetGroup = attrs.subnetGroup;
     }
 
     return new Import(scope, id);
@@ -386,6 +415,10 @@ export class Cluster extends ClusterBase {
    * The endpoint to use for read/write operations
    */
   public readonly clusterEndpoint: Endpoint;
+
+  public readonly publiclyAccessible: boolean;
+
+  public readonly subnetGroup?: IClusterSubnetGroup;
 
   /**
    * Access to the network connections
@@ -410,6 +443,8 @@ export class Cluster extends ClusterBase {
    */
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
+  private readonly attachedRoles: iam.IRole[];
+
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
@@ -420,7 +455,7 @@ export class Cluster extends ClusterBase {
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
-    const subnetGroup = props.subnetGroup ?? new ClusterSubnetGroup(this, 'Subnets', {
+    this.subnetGroup = props.subnetGroup ?? new ClusterSubnetGroup(this, 'Subnets', {
       description: `Subnets for ${id} Redshift cluster`,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
@@ -460,13 +495,17 @@ export class Cluster extends ClusterBase {
       };
     }
 
+    this.publiclyAccessible = props.publiclyAccessible ?? false;
+
+    this.attachedRoles = props?.roles ?? [];
+
     const cluster = new CfnCluster(this, 'Resource', {
       // Basic
       allowVersionUpgrade: true,
       automatedSnapshotRetentionPeriod: 1,
       clusterType,
       clusterIdentifier: props.clusterName,
-      clusterSubnetGroupName: subnetGroup.clusterSubnetGroupName,
+      clusterSubnetGroupName: this.subnetGroup.clusterSubnetGroupName,
       vpcSecurityGroupIds: securityGroupIds,
       port: props.port,
       clusterParameterGroupName: props.parameterGroup && props.parameterGroup.clusterParameterGroupName,
@@ -479,9 +518,11 @@ export class Cluster extends ClusterBase {
       nodeType: props.nodeType || NodeType.DC2_LARGE,
       numberOfNodes: nodeCount,
       loggingProperties,
-      iamRoles: props?.roles?.map(role => role.roleArn),
+      iamRoles: Lazy.list({
+        produce: () => this.attachedRoles.map(role => role.roleArn),
+      }),
       dbName: props.defaultDatabaseName || 'default_db',
-      publiclyAccessible: props.publiclyAccessible || false,
+      publiclyAccessible: this.publiclyAccessible,
       // Encryption
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
       encrypted: props.encrypted ?? true,
@@ -548,6 +589,15 @@ export class Cluster extends ClusterBase {
       vpcSubnets: this.vpcSubnets,
       target: this,
     });
+  }
+
+  /**
+   * Attach a role to this cluster.
+   *
+   * Permissions granted to attached roles are passed on to the cluster for actions taken on other AWS services.
+   */
+  public attachRole(role: iam.IRole) {
+    this.attachedRoles.push(role);
   }
 
   private validateNodeCount(clusterType: ClusterType, numberOfNodes?: number): number | undefined {

@@ -1,3 +1,4 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
@@ -9,9 +10,17 @@ export interface DestinationConfig {
   /**
    * S3 destination configuration properties.
    *
-   * @default - S3 destination is not used.
+   * @default - S3 destination is not configured.
    */
   readonly extendedS3DestinationConfiguration?: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty;
+
+
+  /**
+   * Redshift destination configuration properties.
+   *
+   * @default - Redshift destination is not configured.
+   */
+  readonly redshiftDestinationConfiguration?: CfnDeliveryStream.RedshiftDestinationConfigurationProperty;
 
   /**
    * Any resources that were created by the destination when binding it to the stack that must be deployed before the delivery stream is deployed.
@@ -25,6 +34,10 @@ export interface DestinationConfig {
  * Options when binding a destination to a delivery stream.
  */
 export interface DestinationBindOptions {
+  /**
+   * Network connections for the Kinesis Data Firehose service.
+   */
+  readonly connections: ec2.Connections;
 }
 
 /**

@@ -362,7 +362,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       readStreamGrant.principalStatement.addActions('kinesis:DescribeStream');
     }
 
-    const destinationConfig = props.destinations[0].bind(this, {});
+    const destinationConfig = props.destinations[0].bind(this, { connections: this.connections });
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamEncryptionConfigurationInput: encryptionConfig,
