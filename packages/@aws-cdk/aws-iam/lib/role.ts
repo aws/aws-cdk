@@ -1,4 +1,4 @@
-import { Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { Annotations, Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
@@ -234,7 +234,7 @@ export class Role extends Resource implements IRole {
       }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
-        // FIXME: Add warning that we're ignoring this
+        Annotations.of(this).addWarning('@aws-cdk/aws-iam.Role.addManagedPolicy() is not supported at this time. Use @aws-cdk/aws-iam.ManagedPolicy.attachToRole()');
       }
 
       /**
