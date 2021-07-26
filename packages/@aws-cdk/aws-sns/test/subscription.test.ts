@@ -176,7 +176,7 @@ describe('Subscription', () => {
 
   });
 
-  test('throws with raw delivery for protocol other than http, https or sqs', () => {
+  test('throws with raw delivery for lambda protocol', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
@@ -231,5 +231,18 @@ describe('Subscription', () => {
       },
     })).toThrow(/\(120\) must not exceed 100/);
 
+  });
+
+  test('throws an error when subscription role arn is not entered with firehose subscription protocol', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    //THEN
+    expect(() => new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      protocol: sns.SubscriptionProtocol.FIREHOSE,
+      topic,
+    })).toThrow(/Subscription role arn is required field for subscriptions with a firehose protocol./);
   });
 });
