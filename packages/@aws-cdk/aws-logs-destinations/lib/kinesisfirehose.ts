@@ -18,11 +18,9 @@ export class KinesisFirehoseDestination implements logs.ILogSubscriptionDestinat
 
     // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#FirehoseExample
     // Create a role to be assumed by CWL that can write to this Firehose.
-    const roleId = 'CloudWatchLogsCanPutRecordsIntoKinesisFirehose';
-    const role = scope.node.tryFindChild(roleId) as iam.IRole ??
-      new iam.Role(scope, roleId, {
-        assumedBy: new iam.ServicePrincipal(`logs.${region}.amazonaws.com`),
-      });
+    const role = new iam.Role(scope, 'CloudWatchLogsCanPutRecordsIntoKinesisFirehose', {
+      assumedBy: new iam.ServicePrincipal(`logs.${region}.amazonaws.com`),
+    });
 
     this.deliveryStream.grantPutRecords(role);
 
