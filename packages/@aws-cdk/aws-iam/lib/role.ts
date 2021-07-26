@@ -234,7 +234,7 @@ export class Role extends Resource implements IRole {
       }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
-        Annotations.of(this).addWarning('@aws-cdk/aws-iam.Role.addManagedPolicy() is not supported at this time. Use @aws-cdk/aws-iam.ManagedPolicy.attachToRole()');
+        Annotations.of(this).addWarning('@aws-cdk/aws-iam.Role.addManagedPolicy() is not supported for imported roles at this time. Use @aws-cdk/aws-iam.ManagedPolicy.attachToRole()');
       }
 
       /**
