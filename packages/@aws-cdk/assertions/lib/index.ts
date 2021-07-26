@@ -1,3 +1,3 @@
-export * from './assertions';
+export * from './template';
 export * from './match';
 export * from './matcher';
