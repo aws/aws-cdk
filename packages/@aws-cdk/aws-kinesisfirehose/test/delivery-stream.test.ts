@@ -147,8 +147,7 @@ describe('delivery stream', () => {
       },
       Roles: [stack.resolve(deliveryStreamRole.roleName)],
     });
-    expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
-      DeliveryStreamType: 'DirectPut',
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamEncryptionConfigurationInput: {
         KeyARN: stack.resolve(key.keyArn),
         KeyType: 'CUSTOMER_MANAGED_CMK',
