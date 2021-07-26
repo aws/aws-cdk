@@ -748,6 +748,9 @@ export abstract class BucketBase extends Resource implements IBucket {
    *     const grant = bucket.grantPublicAccess();
    *     grant.resourceStatement!.addCondition(‘IpAddress’, { “aws:SourceIp”: “54.240.143.0/24” });
    *
+   * Note that if this `IBucket` refers to an existing bucket, possibly not
+   * managed by CloudFormation, this method will have no effect, since it's
+   * impossible to modify the policy of an existing bucket.
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
    * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
