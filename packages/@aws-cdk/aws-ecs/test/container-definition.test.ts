@@ -1948,11 +1948,11 @@ describe('container definition', () => {
     const asm = app.synth();
     expect(asm.getStackArtifact(stack.artifactId).assets[0]).toEqual({
       repositoryName: 'aws-cdk/assets',
-      imageTag: '77b7ee1972500c787b1cd8b4cde3cdd08783c9a8a1305bd4bc0adb53146d7d02',
-      id: '77b7ee1972500c787b1cd8b4cde3cdd08783c9a8a1305bd4bc0adb53146d7d02',
+      imageTag: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
+      id: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
       packaging: 'container-image',
-      path: 'asset.77b7ee1972500c787b1cd8b4cde3cdd08783c9a8a1305bd4bc0adb53146d7d02',
-      sourceHash: '77b7ee1972500c787b1cd8b4cde3cdd08783c9a8a1305bd4bc0adb53146d7d02',
+      path: 'asset.9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
+      sourceHash: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
       target: 'build-target',
       file: 'index.py',
     });
