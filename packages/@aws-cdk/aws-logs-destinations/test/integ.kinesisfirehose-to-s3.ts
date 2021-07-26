@@ -32,7 +32,6 @@ class TestStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    // TODO: For some reason creation of this resource fails: `Subscription (Subscription391C9821) destinationArn for vendor firehose cannot be used with roleArn (Service: AWSLogs; Status Code: 400; Error Code: InvalidParameterException; Request ID: 0e598426-5fcb-4fde-b9d3-11b14c129eb6; Proxy: null)`
     new logs.SubscriptionFilter(this, 'Subscription', {
       logGroup,
       destination: new dests.KinesisFirehoseDestination(deliveryStream),
@@ -42,5 +41,5 @@ class TestStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new TestStack(app, 'cdk-logs-destinations-firehose-to-s3');
+new TestStack(app, 'cdk-logs-dests-firehose-to-s3');
 app.synth();
