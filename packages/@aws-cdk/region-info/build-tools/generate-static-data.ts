@@ -13,6 +13,7 @@ async function main(): Promise<void> {
   checkRegions(ELBV2_ACCOUNTS);
   checkRegions(FIREHOSE_CIDR_BLOCKS);
   checkRegions(ROUTE_53_BUCKET_WEBSITE_ZONE_IDS);
+  checkRegionsSubMap(CLOUDWATCH_LAMBDA_INSIGHTS_ARNS);
 
   const lines = [
     "import { Fact, FactName } from './fact';",
@@ -100,6 +101,21 @@ function checkRegions(map: Record<string, unknown>) {
   for (const region of Object.keys(map)) {
     if (!allRegions.has(region)) {
       throw new Error(`Un-registered region fact found: ${region}. Add to AWS_REGIONS list!`);
+    }
+  }
+}
+
+/**
+ * Verifies that the provided map of <KEY> to region to fact does not contain an entry
+ * for a region that was not registered in `AWS_REGIONS`.
+ */
+function checkRegionsSubMap(map: Record<string, Record<string, unknown>>) {
+  const allRegions = new Set(AWS_REGIONS);
+  for (const key of Object.keys(map)) {
+    for (const region of Object.keys(map[key])) {
+      if (!allRegions.has(region)) {
+        throw new Error(`Un-registered region fact found: ${region}. Add to AWS_REGIONS list!`);
+      }
     }
   }
 }
