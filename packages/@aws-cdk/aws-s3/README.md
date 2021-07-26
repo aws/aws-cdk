@@ -188,7 +188,7 @@ The following example will subscribe an SNS topic to be notified of all `s3:Obje
 ```ts
 import * as s3n from '@aws-cdk/aws-s3-notifications';
 
-const myTopic = new sns.Topic(this, 'MyTopic');
+const topic = new sns.Topic(this, 'MyTopic');
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
 
