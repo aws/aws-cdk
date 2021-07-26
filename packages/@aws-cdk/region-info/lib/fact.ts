@@ -160,6 +160,11 @@ export class FactName {
   }
 
   /**
+   * The CIDR block used by Kinesis Data Firehose servers.
+   */
+  public static readonly FIREHOSE_CIDR_BLOCK = 'firehoseCidrBlock';
+
+  /**
    * The name of the regional service principal for a given service.
    *
    * @param service the service name, either simple (e.g: `s3`, `codedeploy`) or qualified (e.g: `s3.amazonaws.com`).

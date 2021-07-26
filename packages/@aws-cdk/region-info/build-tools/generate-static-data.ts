@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import { Default } from '../lib/default';
 import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 import {
-  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, AWS_OLDER_REGIONS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS, ELBV2_ACCOUNTS, PARTITION_MAP,
+  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, AWS_OLDER_REGIONS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS, ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP,
   ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
 } from './fact-tables';
 
@@ -11,6 +11,7 @@ async function main(): Promise<void> {
   checkRegions(APPMESH_ECR_ACCOUNTS);
   checkRegions(DLC_REPOSITORY_ACCOUNTS);
   checkRegions(ELBV2_ACCOUNTS);
+  checkRegions(FIREHOSE_CIDR_BLOCKS);
   checkRegions(ROUTE_53_BUCKET_WEBSITE_ZONE_IDS);
 
   const lines = [
@@ -60,6 +61,11 @@ async function main(): Promise<void> {
     registerFact(region, 'DLC_REPOSITORY_ACCOUNT', DLC_REPOSITORY_ACCOUNTS[region]);
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
+
+    const firehoseCidrBlock = FIREHOSE_CIDR_BLOCKS[region];
+    if (firehoseCidrBlock) {
+      registerFact(region, 'FIREHOSE_CIDR_BLOCK', `${FIREHOSE_CIDR_BLOCKS[region]}/27`);
+    }
 
     const vpcEndpointServiceNamePrefix = `${domainSuffix.split('.').reverse().join('.')}.vpce`;
     registerFact(region, 'VPC_ENDPOINT_SERVICE_NAME_PREFIX', vpcEndpointServiceNamePrefix);
