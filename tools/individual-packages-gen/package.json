@@ -2,9 +2,11 @@
   "name": "individual-packages-gen",
   "version": "0.0.0",
   "private": true,
+  "devDependencies": {
+    "@types/fs-extra": "^8.1.1"
+  },
   "dependencies": {
     "aws-cdk-migration": "0.0.0",
-    "@types/fs-extra": "^8.1.1",
     "fs-extra": "^9.1.0",
     "@lerna/project": "4.0.0"
   }

@@ -36,7 +36,7 @@ export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTI
 
 # copy & build the packages that are individually released from 'aws-cdk-lib'
 cd ${scriptdir}/../packages/individual-packages
-node ../../tools/individual-packages-gen/gen.js phase1
+node ../../tools/individual-packages-gen/gen-phase1.js
 yarn lerna bootstrap
-node ../../tools/individual-packages-gen/gen.js phase2
+node ../../tools/individual-packages-gen/gen-phase2.js
 SKIP_GEN=true yarn lerna run --stream $runtarget

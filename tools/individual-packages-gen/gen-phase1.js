@@ -1,31 +1,9 @@
-/**
- * This file is executed by the scripts/individual-package.sh script,
- * and is responsible for copying the modules from the main monorepo,
- * and performing any required changes (there are many!)
- * so that they can be released as individual V2 modules.
- */
-
 const lerna_project = require('@lerna/project');
 const path = require('path');
 const fs = require('fs-extra');
 const awsCdkMigration = require('aws-cdk-migration');
 
-const phase = process.argv[2];
-if (phase !== 'phase1' && phase !== 'phase2') {
-    throw new Error('Usage: node gen.js phase1|phase2');
-}
-
-// we do the translation in 2 phases:
-//   1. Copy all of the files, and remove all dependencies from the packages besides other experimental ones.
-//     Save the dependencies in keys like 'tmp_dependencies', 'tmp_devDependencies', etc. in the package.json files of the copied modules.
-//   2. Run 'lerna bootstrap'.
-//   3. In phase 2, bring back the dependencies using the 'tmp_' keys saved in the files.
-// We have to do it this way, because otherwise 'lerna bootstrap' would fail on the main monorepo packages like cdk-build-tools.
-if (phase === 'phase1') {
-    copyFilesRemovingDependencies();
-} else {
-    bringBackDependencies();
-}
+copyFilesRemovingDependencies();
 
 function copyFilesRemovingDependencies() {
     // there is a lerna.json in the individual-packages directory, where this script executes
@@ -228,17 +206,4 @@ function packageIsUnstable(pkg) {
     // we're only interested in '@aws-cdk/' packages,
     // and those that are JSII-enabled (so no @aws-cdk/assert)
     return pkg.name.startsWith('@aws-cdk/') && !!pkg.get('jsii');
-}
-
-function bringBackDependencies() {
-    const project = new lerna_project.Project();
-    const separatePackages = project.getPackagesSync();
-    for (const separatePkg of separatePackages) {
-        const pkgJson = fs.readJsonSync(separatePkg.manifestLocation);
-        pkgJson.devDependencies = pkgJson.tmp_devDependencies;
-        pkgJson.peerDependencies = pkgJson.tmp_peerDependencies;
-        pkgJson.tmp_devDependencies = undefined;
-        pkgJson.tmp_peerDependencies = undefined;
-        fs.writeJsonSync(separatePkg.manifestLocation, pkgJson, {spaces: 2});
-    }
 }
