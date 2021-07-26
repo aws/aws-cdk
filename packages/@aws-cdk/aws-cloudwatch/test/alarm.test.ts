@@ -269,8 +269,8 @@ describe('Alarm', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
-      Statistic: ABSENT,
+    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Statistic: Match.absentProperty(),
       ExtendedStatistic: 'tm99.9999999999',
     });
 
