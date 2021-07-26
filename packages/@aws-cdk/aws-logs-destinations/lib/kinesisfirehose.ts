@@ -10,17 +10,17 @@ import { Construct } from '@aws-cdk/core';
  * Use a Kinesis Firehose as the destination for a log subscription
  */
 export class KinesisFirehoseDestination implements logs.ILogSubscriptionDestination {
-  constructor(private readonly deliveryStream: firehose.DeliveryStream) {
+  constructor(private readonly deliveryStream: firehose.IDeliveryStream) {
   }
 
-  public bind(_scope: Construct, _sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
+  public bind(scope: Construct, _sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
     const region = this.deliveryStream.env.region;
 
     // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#FirehoseExample
     // Create a role to be assumed by CWL that can write to this Firehose.
     const roleId = 'CloudWatchLogsCanPutRecordsIntoKinesisFirehose';
-    const role = this.deliveryStream.node.tryFindChild(roleId) as iam.IRole ??
-      new iam.Role(this.deliveryStream, roleId, {
+    const role = scope.node.tryFindChild(roleId) as iam.IRole ??
+      new iam.Role(scope, roleId, {
         assumedBy: new iam.ServicePrincipal(`logs.${region}.amazonaws.com`),
       });
 

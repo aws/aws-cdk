@@ -151,7 +151,15 @@
         "MyFirehoseS3DestinationRoleDefaultPolicyF2D4C970"
       ]
     },
-    "MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehose30DECEBA": {
+    "LogGroupF5B46931": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "SubscriptionCloudWatchLogsCanPutRecordsIntoKinesisFirehoseC45D3D89": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -179,7 +187,7 @@
         }
       }
     },
-    "MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehoseDefaultPolicyF5730531": {
+    "SubscriptionCloudWatchLogsCanPutRecordsIntoKinesisFirehoseDefaultPolicy8571150D": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -200,21 +208,13 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehoseDefaultPolicyF5730531",
+        "PolicyName": "SubscriptionCloudWatchLogsCanPutRecordsIntoKinesisFirehoseDefaultPolicy8571150D",
         "Roles": [
           {
-            "Ref": "MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehose30DECEBA"
+            "Ref": "SubscriptionCloudWatchLogsCanPutRecordsIntoKinesisFirehoseC45D3D89"
           }
         ]
       }
-    },
-    "LogGroupF5B46931": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 731
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
     },
     "Subscription391C9821": {
       "Type": "AWS::Logs::SubscriptionFilter",
@@ -231,7 +231,7 @@
         },
         "RoleArn": {
           "Fn::GetAtt": [
-            "MyFirehoseCloudWatchLogsCanPutRecordsIntoKinesisFirehose30DECEBA",
+            "SubscriptionCloudWatchLogsCanPutRecordsIntoKinesisFirehoseC45D3D89",
             "Arn"
           ]
         }
