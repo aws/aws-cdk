@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { FieldUtils, JsonPath } from '../lib';
+import { FieldUtils, JsonPath, TaskInput } from '../lib';
 
 describe('Fields', () => {
   const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.', start with '\$\[', or start with an intrinsic function: States.Format, States.StringToJson, States.JsonToString, or States.Array./;
@@ -156,6 +156,39 @@ describe('Fields', () => {
     deepObject.recursiveField = paths;
     expect(FieldUtils.findReferencedPaths(paths))
       .toStrictEqual(['$.listField', '$.numField', '$.stringField']);
+  });
+
+  test('rendering a non-object value should just return itself', () => {
+    expect(
+      FieldUtils.renderObject(TaskInput.fromText('Hello World').value),
+    ).toEqual(
+      'Hello World',
+    );
+    expect(
+      FieldUtils.renderObject('Hello World' as any),
+    ).toEqual(
+      'Hello World',
+    );
+    expect(
+      FieldUtils.renderObject(null as any),
+    ).toEqual(
+      null,
+    );
+    expect(
+      FieldUtils.renderObject(3.14 as any),
+    ).toEqual(
+      3.14,
+    );
+    expect(
+      FieldUtils.renderObject(true as any),
+    ).toEqual(
+      true,
+    );
+    expect(
+      FieldUtils.renderObject(undefined),
+    ).toEqual(
+      undefined,
+    );
   });
 
   test('repeated object references at different tree paths should not be considered as recursions', () => {
