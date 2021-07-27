@@ -51,7 +51,7 @@ export interface DataProcessorIdentifier {
 /**
  * The full configuration of a data processor.
  */
-export interface DataProcessorConfig extends DataProcessorProps {
+export interface DataProcessorConfig {
   /**
    * The type of the underlying processor resource.
    *
@@ -71,7 +71,6 @@ export interface DataProcessorConfig extends DataProcessorProps {
  * Options when binding a DataProcessor to a delivery stream destination.
  */
 export interface DataProcessorBindOptions {
-
   /**
    * The IAM role assumed by Kinesis Data Firehose to write to the destination that this DataProcessor will bind to.
    */
@@ -82,6 +81,11 @@ export interface DataProcessorBindOptions {
  * A data processor that Kinesis Data Firehose will call to transform records before delivering data.
  */
 export interface IDataProcessor {
+  /**
+   * The constructor props of the DataProcessor.
+   */
+  readonly props: DataProcessorProps;
+
   /**
    * Binds this processor to a destination of a delivery stream.
    *
@@ -97,7 +101,8 @@ export interface IDataProcessor {
 export class LambdaFunctionProcessor implements IDataProcessor {
   private readonly processorType = 'Lambda';
   private readonly processorIdentifier: DataProcessorIdentifier;
-  constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: DataProcessorProps = {}) {
+
+  constructor(private readonly lambdaFunction: lambda.IFunction, public readonly props: DataProcessorProps = {}) {
     this.processorIdentifier = {
       parameterName: 'LambdaArn',
       parameterValue: lambdaFunction.functionArn,
@@ -110,7 +115,6 @@ export class LambdaFunctionProcessor implements IDataProcessor {
     return {
       processorType: this.processorType,
       processorIdentifier: this.processorIdentifier,
-      ...this.props,
     };
   }
 }

@@ -110,14 +110,14 @@ export function createProcessingConfig(
       const processorConfig = processor.bind(scope, { role });
       const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
       parameters.push(processorConfig.processorIdentifier);
-      if (processorConfig.bufferInterval) {
-        parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processorConfig.bufferInterval.toSeconds().toString() });
+      if (processor.props.bufferInterval) {
+        parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
       }
-      if (processorConfig.bufferSize) {
-        parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processorConfig.bufferSize.toMebibytes().toString() });
+      if (processor.props.bufferSize) {
+        parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
       }
-      if (processorConfig.retries) {
-        parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processorConfig.retries.toString() });
+      if (processor.props.retries) {
+        parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
       }
       return {
         type: processorConfig.processorType,
