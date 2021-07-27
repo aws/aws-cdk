@@ -1,9 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
-import { AcceptLanguage } from './common';
+import { MessageLanguage } from './common';
+import { CommonConstraintOptions, StackSetsConstraintOptions, TagUpdateConstraintOptions } from './constraints';
+import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
+import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
+import { TagOptions } from './tag-options';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -15,15 +20,18 @@ import { Construct } from 'constructs';
 export interface PortfolioShareOptions {
   /**
    * Whether to share tagOptions as a part of the portfolio share
+   *
    * @default - share not specified
    */
   readonly shareTagOptions?: boolean;
 
   /**
-   * The accept language of the share
-   * @default - accept language not specified
+   * The message language of the share.
+   * Controls status and error message language for share.
+   *
+   * @default - English
    */
-  readonly acceptLanguage?: AcceptLanguage;
+  readonly messageLanguage?: MessageLanguage;
 }
 
 /**
@@ -66,6 +74,48 @@ export interface IPortfolio extends cdk.IResource {
    * @param options Options for the initiate share
    */
   shareWithAccount(accountId: string, options?: PortfolioShareOptions): void;
+
+  /**
+   * Associate portfolio with the given product.
+   * @param product A service catalog produt.
+   */
+  addProduct(product: IProduct): void;
+
+  /**
+   * Associate Tag Options.
+   * A TagOption is a key-value pair managed in AWS Service Catalog.
+   * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
+   */
+  associateTagOptions(tagOptions: TagOptions): void;
+
+  /**
+   * Add a Resource Update Constraint.
+   */
+  constrainTagUpdates(product: IProduct, options?: TagUpdateConstraintOptions): void;
+
+  /**
+   * Add notifications for supplied topics on the provisioned product.
+   * @param product A service catalog product.
+   * @param topic A SNS Topic to receive notifications on events related to the provisioned product.
+   */
+  notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options?: CommonConstraintOptions): void;
+
+  /**
+   * Force users to assume a certain role when launching a product.
+   *
+   * @param product A service catalog product.
+   * @param launchRole The IAM role a user must assume when provisioning the product.
+   * @param options options for the constraint.
+   */
+  setLaunchRole(product: IProduct, launchRole: iam.IRole, options?: CommonConstraintOptions): void;
+
+  /**
+   * Configure deployment options using AWS Cloudformaiton StackSets
+   *
+   * @param product A service catalog product.
+   * @param options Configuration options for the constraint.
+   */
+  deployWithStackSets(product: IProduct, options: StackSetsConstraintOptions): void;
 }
 
 abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
@@ -85,14 +135,38 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     this.associatePrincipal(group.groupArn, group.node.addr);
   }
 
+  public addProduct(product: IProduct): void {
+    AssociationManager.associateProductWithPortfolio(this, product);
+  }
+
   public shareWithAccount(accountId: string, options: PortfolioShareOptions = {}): void {
     const hashId = this.generateUniqueHash(accountId);
     new CfnPortfolioShare(this, `PortfolioShare${hashId}`, {
       portfolioId: this.portfolioId,
       accountId: accountId,
       shareTagOptions: options.shareTagOptions,
-      acceptLanguage: options.acceptLanguage,
+      acceptLanguage: options.messageLanguage,
     });
+  }
+
+  public associateTagOptions(tagOptions: TagOptions) {
+    AssociationManager.associateTagOptions(this, tagOptions);
+  }
+
+  public constrainTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}): void {
+    AssociationManager.constrainTagUpdates(this, product, options);
+  }
+
+  public notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions = {}): void {
+    AssociationManager.notifyOnStackEvents(this, product, topic, options);
+  }
+
+  public setLaunchRole(product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions = {}): void {
+    AssociationManager.setLaunchRole(this, product, launchRole, options);
+  }
+
+  public deployWithStackSets(product: IProduct, options: StackSetsConstraintOptions) {
+    AssociationManager.deployWithStackSets(this, product, options);
   }
 
   /**
@@ -132,16 +206,26 @@ export interface PortfolioProps {
   readonly providerName: string;
 
   /**
-   * The accept language.
-   * @default - No accept language provided
+   * The message language. Controls language for
+   * status logging and errors.
+   *
+   * @default - English
    */
-  readonly acceptLanguage?: AcceptLanguage;
+  readonly messageLanguage?: MessageLanguage;
 
   /**
    * Description for portfolio.
+   *
    * @default - No description provided
    */
   readonly description?: string;
+
+  /**
+   * TagOptions associated directly on portfolio
+   *
+   * @default - No tagOptions provided
+   */
+  readonly tagOptions?: TagOptions
 }
 
 /**
@@ -156,7 +240,7 @@ export class Portfolio extends PortfolioBase {
    * @param portfolioArn the Amazon Resource Name of the existing portfolio.
    */
   public static fromPortfolioArn(scope: Construct, id: string, portfolioArn: string): IPortfolio {
-    const arn = cdk.Stack.of(scope).parseArn(portfolioArn);
+    const arn = cdk.Stack.of(scope).splitArn(portfolioArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
     const portfolioId = arn.resourceName;
 
     if (!portfolioId) {
@@ -190,7 +274,7 @@ export class Portfolio extends PortfolioBase {
       displayName: props.displayName,
       providerName: props.providerName,
       description: props.description,
-      acceptLanguage: props.acceptLanguage,
+      acceptLanguage: props.messageLanguage,
     });
     this.portfolioId = this.portfolio.ref;
     this.portfolioArn = cdk.Stack.of(this).formatArn({
@@ -198,6 +282,9 @@ export class Portfolio extends PortfolioBase {
       resource: 'portfolio',
       resourceName: this.portfolioId,
     });
+    if (props.tagOptions !== undefined) {
+      this.associateTagOptions(props.tagOptions);
+    }
   }
 
   protected generateUniqueHash(value: string): string {
