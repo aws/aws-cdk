@@ -188,7 +188,11 @@ function renderMessageAttributes(attributes?: { [key: string]: MessageAttribute 
 function renderMessageAttributeValue(attribute: MessageAttribute): MessageAttributeValue {
   const dataType = attribute.dataType;
   if (attribute.value instanceof sfn.TaskInput) {
-    return { DataType: dataType ?? MessageAttributeDataType.STRING, StringValue: attribute.value.value };
+    return {
+      DataType: dataType ?? MessageAttributeDataType.STRING,
+      StringValue: dataType !== MessageAttributeDataType.BINARY ? attribute.value.value : undefined,
+      BinaryValue: dataType === MessageAttributeDataType.BINARY ? attribute.value.value : undefined
+    };
   }
 
   if (dataType === MessageAttributeDataType.BINARY) {
