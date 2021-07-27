@@ -228,7 +228,7 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
     const validArrayTypes = ['string', 'boolean', 'number'];
     value.forEach((v) => {
       if (v !== null || !validArrayTypes.includes(typeof v)) {
-        throw new Error(`Unsupported SNS message attribute in array: ${v}`);
+        throw new Error(`Unsupported SNS message attribute type ${typeof v} in array: ${v}`);
       }
     });
     return;
