@@ -2,7 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import { FieldUtils, JsonPath, TaskInput } from '../lib';
 
 describe('Fields', () => {
-  const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.' or start with '\$\['/;
+  const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.', start with '\$\[', or start with an intrinsic function: States.Format, States.StringToJson, States.JsonToString, or States.Array./;
 
   test('deep replace correctly handles fields in arrays', () => {
     expect(
@@ -71,9 +71,14 @@ describe('Fields', () => {
   }),
   test('datafield path must be correct', () => {
     expect(JsonPath.stringAt('$')).toBeDefined();
+    expect(JsonPath.stringAt('States.Format')).toBeDefined();
+    expect(JsonPath.stringAt('States.StringToJson')).toBeDefined();
+    expect(JsonPath.stringAt('States.JsonToString')).toBeDefined();
+    expect(JsonPath.stringAt('States.Array')).toBeDefined();
 
     expect(() => JsonPath.stringAt('$hello')).toThrowError(jsonPathValidationErrorMsg);
     expect(() => JsonPath.stringAt('hello')).toThrowError(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('States.FooBar')).toThrowError(jsonPathValidationErrorMsg);
   }),
   test('context path must be correct', () => {
     expect(JsonPath.stringAt('$$')).toBeDefined();
