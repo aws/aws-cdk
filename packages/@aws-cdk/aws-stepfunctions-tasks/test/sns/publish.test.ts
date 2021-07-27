@@ -182,7 +182,7 @@ describe('Publish', () => {
         // THEN
         expect(() => {
           stack.resolve(task.toStateJson());
-        }).toThrow(/Unsupported SNS message attribute/);
+        }).toThrow(/Requested SNS message attribute type was/);
       });
     });
   });

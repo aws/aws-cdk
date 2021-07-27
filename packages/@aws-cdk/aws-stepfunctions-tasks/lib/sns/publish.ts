@@ -191,7 +191,7 @@ function renderMessageAttributeValue(attribute: MessageAttribute): MessageAttrib
     return {
       DataType: dataType ?? MessageAttributeDataType.STRING,
       StringValue: dataType !== MessageAttributeDataType.BINARY ? attribute.value.value : undefined,
-      BinaryValue: dataType === MessageAttributeDataType.BINARY ? attribute.value.value : undefined
+      BinaryValue: dataType === MessageAttributeDataType.BINARY ? attribute.value.value : undefined,
     };
   }
 
@@ -223,16 +223,17 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
   }
   if (Array.isArray(value)) {
     if (dataType !== MessageAttributeDataType.STRING_ARRAY) {
-      throw new Error(`Unsupported SNS message attribute type: ${JSON.stringify(value)}`);
+      throw new Error(`Requested SNS message attribute type was ${dataType} but value was of type Array`);
     }
     const validArrayTypes = ['string', 'boolean', 'number'];
     value.forEach((v) => {
       if (v !== null || !validArrayTypes.includes(typeof v)) {
-        throw new Error(`Unsupported SNS message attribute type ${typeof v} in array: ${v}`);
+        throw new Error(`Requested SNS message attribute type was ${typeof value} but Array values must be one of ${validArrayTypes}`);
       }
     });
     return;
   }
+  const error = new Error(`Requested SNS message attribute type was ${dataType} but ${value} was of type ${typeof value}`);
   switch (typeof value) {
     case 'string':
       // trust the user or will default to string
@@ -243,14 +244,14 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
         dataType === MessageAttributeDataType.BINARY) {
         return;
       }
-      throw new Error(`Unsupported SNS message attribute: ${JSON.stringify(value)}`);
+      throw error;
     case 'number':
       if (dataType === MessageAttributeDataType.NUMBER) { return; }
-      throw new Error(`Unsupported SNS message attribute: ${JSON.stringify(value)}`);
+      throw error;
     case 'boolean':
       if (dataType === MessageAttributeDataType.STRING) { return; }
-      throw new Error(`Unsupported SNS message attribute: ${JSON.stringify(value)}`);
+      throw error;
     default:
-      throw new Error(`Unsupported SNS message attribute: ${JSON.stringify(value)}`);
+      throw error;
   }
 }
