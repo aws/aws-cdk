@@ -112,6 +112,8 @@ describe('with custom Source stage in existing Pipeline', () => {
           commands: ['true'],
         }),
       });
+
+      THEN_codePipelineExpectation();
     });
 
     function THEN_codePipelineExpectation() {

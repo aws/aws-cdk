@@ -7,7 +7,7 @@ import { Duration, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 /**
- * Properteis for an ApplicationSecurityCheck
+ * Properties for an ApplicationSecurityCheck
  */
 export interface ApplicationSecurityCheckProps {
   /**
