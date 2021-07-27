@@ -84,7 +84,7 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
    * for subscription filters.
    *
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html
-   * @default []
+   * @default {}
    */
   readonly messageAttributes?: { [key: string]: MessageAttribute };
 
