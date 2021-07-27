@@ -82,9 +82,23 @@ export interface IBucket extends IResource {
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
-   * account/role/service) to perform actions on this bucket and/or it's
+   * account/role/service) to perform actions on this bucket and/or its
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
+   *
+   * Note that the policy statement may or may not be added to the policy.
+   * For example, when an `IBucket` is created from an existing bucket,
+   * it's not possible to tell whether the bucket already has a policy
+   * attached, let alone to re-use that policy to add more statements to it.
+   * So it's safest to do nothing in these cases.
+   *
+   * @param permission the policy statement to be added to the bucket's
+   * policy.
+   * @returns metadata about the execution of this method. If the policy
+   * was not added, the value of `statementAdded` will be `false`. You
+   * should always check this value to make sure that the operation was
+   * actually carried out. Otherwise, synthesis and deploy will terminate
+   * silently, which may be confusing.
    */
   addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
@@ -546,9 +560,23 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
-   * account/role/service) to perform actions on this bucket and/or it's
+   * account/role/service) to perform actions on this bucket and/or its
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
+   *
+   * Note that the policy statement may or may not be added to the policy.
+   * For example, when an `IBucket` is created from an existing bucket,
+   * it's not possible to tell whether the bucket already has a policy
+   * attached, let alone to re-use that policy to add more statements to it.
+   * So it's safest to do nothing in these cases.
+   *
+   * @param permission the policy statement to be added to the bucket's
+   * policy.
+   * @returns metadata about the execution of this method. If the policy
+   * was not added, the value of `statementAdded` will be `false`. You
+   * should always check this value to make sure that the operation was
+   * actually carried out. Otherwise, synthesis and deploy will terminate
+   * silently, which may be confusing.
    */
   public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
@@ -720,6 +748,9 @@ export abstract class BucketBase extends Resource implements IBucket {
    *     const grant = bucket.grantPublicAccess();
    *     grant.resourceStatement!.addCondition(‘IpAddress’, { “aws:SourceIp”: “54.240.143.0/24” });
    *
+   * Note that if this `IBucket` refers to an existing bucket, possibly not
+   * managed by CloudFormation, this method will have no effect, since it's
+   * impossible to modify the policy of an existing bucket.
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
    * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
