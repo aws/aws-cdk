@@ -797,6 +797,41 @@ export = {
 
       test.done();
     },
+
+    'certificate arn'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'path',
+        }),
+        environment: {
+          certificate: {
+            bucket,
+            objectKey: 'path',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Environment: objectLike({
+          Certificate: {
+            'Fn::Join': ['', [
+              'arn:',
+              { 'Ref': 'AWS::Partition' },
+              ':s3:::my-bucket/path',
+            ]],
+          },
+        }),
+      }));
+
+      test.done();
+    },
   },
 
   'EnvironmentVariables': {
