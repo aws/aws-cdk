@@ -205,7 +205,7 @@ function renderMessageAttributeValue(attribute: MessageAttribute): MessageAttrib
 
   validateMessageAttribute(attribute);
   if (Array.isArray(attribute.value)) {
-    return { DataType: dataType ?? MessageAttributeDataType.STRING_ARRAY, StringValue: JSON.stringify(attribute.value) };
+    return { DataType: MessageAttributeDataType.STRING_ARRAY, StringValue: JSON.stringify(attribute.value) };
   }
   const value = attribute.value;
   if (typeof value === 'number') {
