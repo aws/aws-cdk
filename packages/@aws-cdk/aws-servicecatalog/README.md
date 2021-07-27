@@ -244,13 +244,15 @@ see [AWS Rule Functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/Us
 import * as cdk from '@aws-cdk/core';
 
 portfolio.constrainCloudFormationParameters(product, {
-  ruleName: 'testInstanceType',
-  ruleCondition: cdk.Fn.conditionEquals(cdk.Fn.ref("Environment"), 'test'),
-  assertions: [ {
-    assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
-    assertDescription: 'For test environment, the instance type should be small',
-  }]
-})
+  assertion: {
+    ruleName: 'testInstanceType',
+    condition: cdk.Fn.conditionEquals(cdk.Fn.ref('Environment'), 'test'),
+    assertions: [{
+      assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
+      description: 'For test environment, the instance type should be small',
+    }],
+  },
+});
 ```
 
 ### Set launch role
