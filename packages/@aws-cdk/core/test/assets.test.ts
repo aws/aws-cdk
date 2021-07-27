@@ -1,13 +1,20 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { FileAssetPackaging, Stack } from '../lib';
+import { App, FileAssetPackaging, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
-nodeunitShim({
-  'addFileAsset correctly sets metadata and creates S3 parameters'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
+let app: App;
+let stack: Stack;
 
+nodeunitShim({
+  'setUp'(cb: () => void) {
+    app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    stack = new Stack(app);
+    cb();
+  },
+
+  'addFileAsset correctly sets metadata and creates S3 parameters'(test: Test) {
     // WHEN
     stack.addFileAsset({
       fileName: 'file-name',
@@ -49,9 +56,6 @@ nodeunitShim({
   },
 
   'addFileAsset correctly sets object urls'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     const assetLocation = stack.addFileAsset({
       fileName: 'file-name',
@@ -72,9 +76,6 @@ nodeunitShim({
   },
 
   'addDockerImageAsset correctly sets metadata'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     stack.addDockerImageAsset({
       sourceHash: 'source-hash',
@@ -101,9 +102,6 @@ nodeunitShim({
   },
 
   'addDockerImageAsset uses the default repository name'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     stack.addDockerImageAsset({
       sourceHash: 'source-hash',
@@ -129,8 +127,6 @@ nodeunitShim({
   },
 
   'addDockerImageAsset supports overriding repository name through a context key as a workaround until we have API for that'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
     stack.node.setContext('assets-ecr-repository-name', 'my-custom-repo-name');
 
     // WHEN
