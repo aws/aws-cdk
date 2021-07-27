@@ -172,7 +172,7 @@ export class SnsPublish extends sfn.TaskStateBase {
 
 interface MessageAttributeValue {
   DataType: string;
-  StringValue?: string | null;
+  StringValue?: string;
   BinaryValue?: string;
 }
 
