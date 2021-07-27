@@ -13,7 +13,7 @@ import { ISecurityConfiguration } from './security-configuration';
  * @see https://docs.aws.amazon.com/glue/latest/dg/add-job.html.
  *
  * If you need to use a GlueVersion that doesn't exist as a static member, you
- * can instantiate a `GlueVersion` object, e.g: `new GlueVersion('1.5')`.
+ * can instantiate a `GlueVersion` object, e.g: `GlueVersion.of('1.5')`.
  */
 export class GlueVersion {
   /**
@@ -60,7 +60,7 @@ export class GlueVersion {
  * The type of predefined worker that is allocated when a job runs.
  *
  * If you need to use a WorkerType that doesn't exist as a static member, you
- * can instantiate a `WorkerType` object, e.g: `new WorkerType('other type')`.
+ * can instantiate a `WorkerType` object, e.g: `WorkerType.of('other type')`.
  */
 export class WorkerType {
   /**
@@ -181,7 +181,7 @@ export enum MetricType {
  * The job command name used for job run.
  *
  * If you need to use a JobCommandName that doesn't exist as a static member, you
- * can instantiate a `WorkerType` object, e.g: `new JobCommandName('other name')`.
+ * can instantiate a `JobCommandName` object, e.g: `JobCommandName.of('other name')`.
  */
 export class JobCommandName {
   /**
@@ -696,6 +696,7 @@ export interface JobProps {
 
   /**
    * The number of AWS Glue data processing units (DPUs) that can be allocated when this job runs.
+   * Should not be used for Glue version 2.0 and later - workerType and numberOfWorkers should be used instead.
    *
    * @default 10 when you specify an Apache Spark ETL or Sreaming job, 0.0625 DPU when you specify a Python shell job.
    */
@@ -738,15 +739,17 @@ export interface JobProps {
 
   /**
    * The type of predefined worker that is allocated when a job runs.
+   * Should not be used for Glue version 1.0 and earlier - maxCapacity should be used instead.
    *
-   * @default ?
+   * @default differs based on specific glueVersion
    */
   readonly workerType?: WorkerType;
 
   /**
    * The number of workers of a defined {@link WorkerType} that are allocated when a job runs.
+   * Should not be used for Glue version 1.0 and earlier - maxCapacity should be used instead.
    *
-   * @default ?
+   * @default differs based on specific glueVersion/workerType
    */
   readonly numberOfWorkers?: number;
 
