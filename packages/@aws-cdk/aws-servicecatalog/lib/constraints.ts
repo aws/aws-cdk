@@ -68,7 +68,7 @@ export interface TagUpdateConstraintOptions extends CommonConstraintOptions {
 /**
  * An assertion within a template rule, defined by intrinsic functions.
  */
-export interface Assertion {
+export interface TemplateRuleAssertion {
   /**
    * The assertion condition.
    */
@@ -78,7 +78,7 @@ export interface Assertion {
    * The description for the asssertion
    * @default - no description provided for the assertion.
    */
-  readonly assertDescription?: string;
+  readonly description?: string;
 }
 
 /**
@@ -94,10 +94,20 @@ export interface TemplateRule {
    * Specify when to apply rule with a rule-specific intrinsic function.
    * @default - No rule condition provided.
    */
-  readonly ruleCondition?: cdk.ICfnConditionExpression;
+  readonly condition?: cdk.ICfnConditionExpression;
 
   /**
    * A list of assertions that make up the rule.
    */
-  readonly assertions: Assertion[];
+  readonly assertions: TemplateRuleAssertion[];
+}
+
+/**
+ * Properties for provisoning rule constraint.
+ */
+export interface ProvisioningRuleOptions extends CommonConstraintOptions {
+  /**
+   * The rule with condition and assertions to apply to template.
+   */
+  readonly assertion: TemplateRule;
 }

@@ -79,13 +79,15 @@ secondPortfolio.deployWithStackSets(product, {
   allowStackSetInstanceOperations: true,
 });
 
-portfolio.constrainProvisioningParameters(product, {
-  ruleName: 'testInstanceType',
-  ruleCondition: cdk.Fn.conditionEquals(cdk.Fn.ref('Environment'), 'test'),
-  assertions: [{
-    assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
-    assertDescription: 'For test environment, the instance type should be small',
-  }],
+portfolio.constrainCloudFormationParameters(product, {
+  assertion: {
+    ruleName: 'testInstanceType',
+    condition: cdk.Fn.conditionEquals(cdk.Fn.ref('Environment'), 'test'),
+    assertions: [{
+      assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
+      description: 'For test environment, the instance type should be small',
+    }],
+  },
 });
 
 app.synth();

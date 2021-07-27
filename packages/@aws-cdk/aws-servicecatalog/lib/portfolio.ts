@@ -2,7 +2,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { MessageLanguage } from './common';
-import { CommonConstraintOptions, TemplateRule, StackSetsConstraintOptions, TagUpdateConstraintOptions } from './constraints';
+import {
+  CommonConstraintOptions, StackSetsConstraintOptions,
+  TagUpdateConstraintOptions, ProvisioningRuleOptions,
+} from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -103,10 +106,9 @@ export interface IPortfolio extends cdk.IResource {
   /**
    * Set provisioning rules for the product.
    * @param product A service catalog product.
-   * @param assertion A list of valid rules to apply.
    * @param options options for the constraint.
    */
-  constrainProvisioningParameters(product:IProduct, assertion: TemplateRule, options?: CommonConstraintOptions): void;
+  constrainCloudFormationParameters(product:IProduct, options: ProvisioningRuleOptions): void;
 
   /**
    * Force users to assume a certain role when launching a product.
@@ -169,8 +171,8 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     AssociationManager.notifyOnStackEvents(this, product, topic, options);
   }
 
-  public constrainProvisioningParameters(product: IProduct, assertion: TemplateRule, options: CommonConstraintOptions = {}): void {
-    AssociationManager.constrainProvisioningParameters(this, product, assertion, options);
+  public constrainCloudFormationParameters(product: IProduct, options: ProvisioningRuleOptions): void {
+    AssociationManager.constrainCloudFormationParameters(this, product, options);
   }
 
   public setLaunchRole(product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions = {}): void {

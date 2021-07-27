@@ -1,7 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
-import { Assertion, CommonConstraintOptions, StackSetsConstraintOptions, TagUpdateConstraintOptions, TemplateRule } from '../constraints';
+import {
+  CommonConstraintOptions, ProvisioningRuleOptions, StackSetsConstraintOptions,
+  TagUpdateConstraintOptions, TemplateRule, TemplateRuleAssertion,
+} from '../constraints';
 import { IPortfolio } from '../portfolio';
 import { IProduct } from '../product';
 import {
@@ -74,11 +77,13 @@ export class AssociationManager {
     }
   }
 
-  public static constrainProvisioningParameters(portfolio: IPortfolio, product: IProduct,
-    assertion: TemplateRule, options: CommonConstraintOptions): void {
+  public static constrainCloudFormationParameters(
+    portfolio: IPortfolio, product: IProduct,
+    options: ProvisioningRuleOptions,
+  ): void {
     this.validateCommonConstraintOptions(portfolio, product, options);
     const association = this.associateProductWithPortfolio(portfolio, product);
-    const constructId = `LaunchTemplateConstraint${hashValues(association.associationKey, assertion.ruleName)}`;
+    const constructId = `LaunchTemplateConstraint${hashValues(association.associationKey, options.assertion.ruleName)}`;
 
     if (!portfolio.node.tryFindChild(constructId)) {
       const constraint = new CfnLaunchTemplateConstraint(portfolio as unknown as cdk.Resource, constructId, {
@@ -86,13 +91,13 @@ export class AssociationManager {
         description: options.description,
         portfolioId: portfolio.portfolioId,
         productId: product.productId,
-        rules: this.formatRule(portfolio as unknown as cdk.Resource, assertion),
+        rules: this.formatTemplateRule(portfolio.stack, options.assertion),
       });
 
       // Add dependsOn to force proper order in deployment.
       constraint.addDependsOn(association.cfnPortfolioProductAssociation);
     } else {
-      throw new Error(`Provisioning rule ${assertion.ruleName} already configured on association ${this.prettyPrintAssociation(portfolio, product)}`);
+      throw new Error(`Provisioning rule ${options.assertion.ruleName} already configured on association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
   }
 
@@ -190,23 +195,27 @@ export class AssociationManager {
     return `- Portfolio: ${portfolio.node.path} | Product: ${product.node.path}`;
   }
 
-  private static formatAssertions(scope: cdk.Resource, assertions : Assertion[]): {[key: string]: string}[] {
-    const formattedAssertions: {[key: string]: string}[] = [];
-    assertions.forEach(assertion => formattedAssertions.push({
-      Assert: scope.stack.resolve(assertion.assert),
-      ...(assertion.assertDescription) && { AssertDescription: assertion.assertDescription },
-    }));
-    return formattedAssertions;
-  }
-
-  private static formatRule(scope: cdk.Resource, rule: TemplateRule): string {
+  private static formatTemplateRule(scope: cdk.Stack, rule: TemplateRule): string {
     return JSON.stringify({
       [rule.ruleName]: {
         Assertions: this.formatAssertions(scope, rule.assertions),
-        ...(rule.ruleCondition) && { RuleCondition: scope.stack.resolve(rule.ruleCondition) },
+        RuleCondition: rule.condition ? scope.resolve(rule.condition) : undefined,
       },
     });
   }
+
+  private static formatAssertions(scope: cdk.Stack, assertions : TemplateRuleAssertion[]): {[key: string]: string | undefined }[] {
+    const formattedAssertions: {[key: string]: string | undefined }[] = [];
+    assertions.reduce((formattedAssertion, assertion) => {
+      formattedAssertion.push( {
+        Assert: scope.resolve(assertion.assert),
+        AssertDescription: assertion.description,
+      });
+      return formattedAssertion;
+    }, formattedAssertions);
+
+    return formattedAssertions;
+  };
 
   private static validateCommonConstraintOptions(portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions): void {
     InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options.description);

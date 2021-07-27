@@ -461,17 +461,18 @@ describe('portfolio associations and product constraints', () => {
 
   test('set provisioning rule', () => {
     portfolio.addProduct(product);
-    portfolio.constrainProvisioningParameters(product,
+    portfolio.constrainCloudFormationParameters(product, {
+      assertion:
       {
         ruleName: 'Rule',
         assertions: [
           {
             assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
-            assertDescription: 'assert description',
+            description: 'assert description',
           },
         ],
       },
-    );
+    });
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchTemplateConstraint', {
       PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
@@ -490,70 +491,74 @@ describe('portfolio associations and product constraints', () => {
   }),
 
   test('set provisioning rule still creates without explicit association', () => {
-    portfolio.constrainProvisioningParameters(product,
-      {
+    portfolio.constrainCloudFormationParameters(product, {
+      assertion: {
         ruleName: 'Rule',
-        ruleCondition: cdk.Fn.conditionContains(['a', 'b'], 'text'),
+        condition: cdk.Fn.conditionContains(['a', 'b'], 'text'),
         assertions: [
           {
             assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
-            assertDescription: 'assert description',
+            description: 'assert description',
           },
           {
             assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('OtherInstanceType')),
-            assertDescription: 'other assert description',
+            description: 'other assert description',
           },
         ],
-      }, {
-        description: 'test description',
-        messageLanguage: servicecatalog.MessageLanguage.EN,
       },
+      description: 'test description',
+      messageLanguage: servicecatalog.MessageLanguage.EN,
+    },
     );
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchTemplateConstraint');
   }),
 
   test('set multiple provisioning rules', () => {
-    portfolio.constrainProvisioningParameters(product,
-      {
+    portfolio.constrainCloudFormationParameters(product, {
+      assertion: {
         ruleName: 'Rule01',
         assertions: [{
           assert: cdk.Fn.conditionContains(['BucketOwnerRead'], cdk.Fn.ref('AccessControl')),
-          assertDescription: 'assert description',
+          description: 'assert description',
         }],
-      });
+      },
+    });
 
-    portfolio.constrainProvisioningParameters(product,
-      {
+    portfolio.constrainCloudFormationParameters(product, {
+      assertion: {
         ruleName: 'Rule02',
         assertions: [{
           assert: cdk.Fn.conditionContains(['BucketOwnerWrite'], cdk.Fn.ref('AccessControl')),
-          assertDescription: 'assert description',
+          description: 'assert description',
         }],
-      });
+      },
+    });
 
     expect(stack).toCountResources('AWS::ServiceCatalog::LaunchTemplateConstraint', 2);
   }),
 
   test('fails to set a duplicate provisioning rule', () => {
-    portfolio.constrainProvisioningParameters(product,
-      {
+    portfolio.constrainCloudFormationParameters(product, {
+      assertion: {
         ruleName: 'Rule01',
         assertions: [{
           assert: cdk.Fn.conditionContains(['BucketOwnerRead'], cdk.Fn.ref('AccessControl')),
-          assertDescription: 'assert description',
+          description: 'assert description',
         }],
-      });
+      },
+    });
 
     expect(() => {
-      portfolio.constrainProvisioningParameters(product,
-        {
+      portfolio.constrainCloudFormationParameters(product, {
+        assertion: {
           ruleName: 'Rule01',
           assertions: [{
             assert: cdk.Fn.conditionContains(['BucketOwnerWrite'], cdk.Fn.ref('AccessControl')),
-            assertDescription: 'assert description',
+            description: 'assert description',
           }],
-        });
+        },
+      });
     }).toThrowError(/Provisioning rule Rule01 already configured on association/);
   }),
 
