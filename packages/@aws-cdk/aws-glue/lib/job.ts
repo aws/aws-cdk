@@ -19,24 +19,32 @@ export class GlueVersion {
   /**
    * Glue version using Spark 2.2.1 and Python 2.7
    */
-  public static readonly ZERO_POINT_NINE = new GlueVersion('0.9');
+  public static readonly V0_9 = new GlueVersion('0.9');
 
   /**
    * Glue version using Spark 2.4.3, Python 2.7 and Python 3.6
    */
-  public static readonly ONE_POINT_ZERO = new GlueVersion('1.0');
+  public static readonly V1_0 = new GlueVersion('1.0');
 
   /**
    * Glue version using Spark 2.4.3 and Python 3.7
    */
-  public static readonly TWO_POINT_ZERO = new GlueVersion('2.0');
+  public static readonly V2_0 = new GlueVersion('2.0');
+
+  /**
+   * Custom Glue version
+   * @param version custom version
+   */
+  public static of(version: string): GlueVersion {
+    return new GlueVersion(version);
+  }
 
   /**
    * The name of this GlueVersion, as expected by Job resource.
    */
   public readonly name: string;
 
-  constructor(name: string) {
+  private constructor(name: string) {
     this.name = name;
   }
 
@@ -71,11 +79,19 @@ export class WorkerType {
   public static readonly G_2X = new WorkerType('G.2X');
 
   /**
+   * Custom worker type
+   * @param workerType custom worker type
+   */
+  public static of(workerType: string): WorkerType {
+    return new WorkerType(workerType);
+  }
+
+  /**
    * The name of this WorkerType, as expected by Job resource.
    */
   public readonly name: string;
 
-  constructor(name: string) {
+  private constructor(name: string) {
     this.name = name;
   }
 
@@ -107,7 +123,7 @@ export enum PythonVersion {
  *
  * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types for more information.
  */
-export enum JobEventState {
+export enum JobState {
   /**
    * State indicating job run succeeded
    */
@@ -184,11 +200,19 @@ export class JobCommandName {
   public static readonly PYTHON_SHELL = new JobCommandName('pythonshell');
 
   /**
+   * Custom command name
+   * @param name command name
+   */
+  public static of(name: string): WorkerType {
+    return new JobCommandName(name);
+  }
+
+  /**
    * The name of this JobCommandName, as expected by Job resource.
    */
   public readonly name: string;
 
-  constructor(name: string) {
+  private constructor(name: string) {
     this.name = name;
   }
 
@@ -211,7 +235,7 @@ export class JobCommand {
    * @param scriptLocation specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job.
    * @param pythonVersion specifies the Python shell version for the ETL job. Versions supported vary depending on GlueVersion.
    */
-  public static glueEtl(scriptLocation: string, pythonVersion?: PythonVersion) {
+  public static etl(scriptLocation: string, pythonVersion?: PythonVersion) {
     return new JobCommand(JobCommandName.GLUE_ETL, scriptLocation, pythonVersion);
   }
 
@@ -221,7 +245,7 @@ export class JobCommand {
    * @param scriptLocation specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job.
    * @param pythonVersion specifies the Python shell version for the streaming job. Versions supported vary depending on GlueVersion.
    */
-  public static glueStreaming(scriptLocation: string, pythonVersion?: PythonVersion) {
+  public static streaming(scriptLocation: string, pythonVersion?: PythonVersion) {
     return new JobCommand(JobCommandName.GLUE_STREAMING, scriptLocation, pythonVersion);
   }
 
@@ -231,7 +255,7 @@ export class JobCommand {
    * @param scriptLocation specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job.
    * @param pythonVersion the Python version being used to execute a Python shell job.
    */
-  public static pythonShell(scriptLocation: string, pythonVersion?: PythonVersion) {
+  public static python(scriptLocation: string, pythonVersion?: PythonVersion) {
     return new JobCommand(JobCommandName.PYTHON_SHELL, scriptLocation, pythonVersion);
   }
 
@@ -394,6 +418,252 @@ export interface IJob extends cdk.IResource {
    * @attribute
    */
   readonly jobArn: string;
+
+  /**
+   * Defines a CloudWatch event rule triggered when something happens with this job.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
+   */
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Defines a CloudWatch event rule triggered when this job moves to the SUCCEEDED state.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
+   */
+  onSuccess(id?: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Defines a CloudWatch event rule triggered when this job moves to the FAILED state.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
+   */
+  onFailure(id?: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Defines a CloudWatch event rule triggered when this job moves to the TIMEOUT state.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
+   */
+  onTimeout(id?: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Create a CloudWatch metric.
+   *
+   * @param metricName name of the metric typically prefixed with `glue.driver.`, `glue.<executorId>.` or `glue.ALL.`.
+   * @param jobRunId a dimension that filters for metrics of a specific JobRun ID, or `ALL`.
+   * @param type the metric type.
+   * @param props metric options.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html
+   */
+  metric(metricName: string, jobRunId: string, type: MetricType, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Create a CloudWatch Metric indicating job success.
+   */
+  metricSuccess(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Create a CloudWatch Metric indicating job failure.
+   */
+  metricFailure(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Create a CloudWatch Metric indicating job timeout.
+   */
+  metricTimeout(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+}
+
+abstract class JobBase extends cdk.Resource implements IJob {
+
+  /**
+   * Create a CloudWatch Metric that's based on Glue Job events
+   * {@see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types}
+   * The metric has namespace = 'AWS/Events', metricName = 'TriggeredRules' and RuleName = rule.ruleName dimension.
+   *
+   * @param rule for use in setting RuleName dimension value
+   * @param props metric properties
+   */
+  public static metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Events',
+      metricName: 'TriggeredRules',
+      dimensions: { RuleName: rule.ruleName },
+      statistic: cloudwatch.Statistic.SUM,
+      ...props,
+    }).attachTo(rule);
+  }
+
+
+  /**
+   * Returns the job arn
+   * @param scope
+   * @param jobName
+   */
+  public static buildJobArn(scope: constructs.Construct, jobName: string) : string {
+    return cdk.Stack.of(scope).formatArn({
+      service: 'glue',
+      resource: 'job',
+      resourceName: jobName,
+    });
+  }
+
+  public abstract readonly jobArn: string;
+  public abstract readonly jobName: string;
+  private cachedRules: Record<string, events.Rule> = {};
+
+  /**
+   * Create a CloudWatch Event Rule for this Glue Job when it's in a given state
+   *
+   * @param id construct id
+   * @param options event options. Note that some values are overridden if provided, these are
+   *  - eventPattern.source = ['aws.glue']
+   *  - eventPattern.detailType = ['Glue Job State Change', 'Glue Job Run Status']
+   *  - eventPattern.detail.jobName = [this.jobName]
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
+   */
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.glue'],
+      detailType: ['Glue Job State Change', 'Glue Job Run Status'],
+      detail: {
+        jobName: [this.jobName],
+      },
+    });
+    return rule;
+  }
+
+  /**
+   * Return a CloudWatch Event Rule matching JobState.SUCCEEDED.
+   *
+   * If no id or options are provided, the created rule is cached. Later no-args calls with retrieves from cache but ones with args.
+   * Later calls with args lead to the creation of a new Rule
+   *
+   * @param id optional construct id. default is SUCCEEDEDRule
+   * @param options optional event options. default is {}
+   */
+  public onSuccess(id?: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.rule(JobState.SUCCEEDED, id, options);
+  }
+
+  /**
+   * Return a CloudWatch Event Rule matching FAILED state.
+   *
+   * If no id or options are provided, the created rule is cached. Later no-args calls with retrieves from cache but ones with args.
+   * Later calls with args lead to the creation of a new Rule
+   *
+   * @param id optional construct id. default is FAILEDRule
+   * @param options optional event options. default is {}
+   */
+  public onFailure(id?: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.rule(JobState.FAILED, id, options);
+  }
+
+  /**
+   * Return a CloudWatch Event Rule matching TIMEOUT state.
+   *
+   * If no id or options are provided, the created rule is cached. Later no-args calls with retrieves from cache but ones with args.
+   * Later calls with args lead to the creation of a new Rule
+   *
+   * @param id optional construct id. default is TIMEOUTRule
+   * @param options optional event options. default is {}
+   */
+  public onTimeout(id?: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.rule(JobState.TIMEOUT, id, options);
+  }
+
+  /**
+   * Create a CloudWatch metric.
+   *
+   * @param metricName name of the metric typically prefixed with `glue.driver.`, `glue.<executorId>.` or `glue.ALL.`.
+   * @param jobRunId a dimension that filters for metrics of a specific JobRun ID, or `ALL`.
+   * @param type the metric type.
+   * @param props metric options.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html
+   */
+  public metric(metricName: string, jobRunId: string, type: MetricType, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      metricName,
+      namespace: 'Glue',
+      dimensions: {
+        JobName: this.jobName,
+        JobRunId: jobRunId,
+        Type: type,
+      },
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * Return a CloudWatch Metric indicating job success.
+   *
+   * This metric is based on the Rule returned by no-args onSuccess() call.
+   */
+  public metricSuccess(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return JobBase.metricRule(this.onSuccess(), props);
+  }
+
+  /**
+   * Return a CloudWatch Metric indicating job failure.
+   *
+   * This metric is based on the Rule returned by no-args onFailure() call.
+   */
+  public metricFailure(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return JobBase.metricRule(this.onFailure(), props);
+  }
+
+  /**
+   * Return a CloudWatch Metric indicating job timeout.
+   *
+   * This metric is based on the Rule returned by no-args onTimeout() call.
+   */
+  public metricTimeout(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return JobBase.metricRule(this.onTimeout(), props);
+  }
+
+  /**
+   * Creates a new rule for a transition into the input jobState or attempt to create-if-necessary and retrieve the default rule
+   * - A new rule is created but not cached if the id parameter is specified
+   * - A create/retrieve from cache scenario happens when no explicit id (and options) are not provided
+   * The reason is that the default rule is used by onSuccess, onFailure and onTimeout methods which are in turn used by metrics methods.
+   *
+   * @param jobState the job state
+   * @param id optional construct id
+   * @param options optional event options
+   * @private
+   */
+  private rule(jobState: JobState, id?: string, options: events.OnEventOptions = {}): events.Rule {
+    // No caching
+    if (id) {
+      const rule = this.onEvent(id, options);
+      rule.addEventPattern({
+        detail: {
+          state: [jobState],
+        },
+      });
+      return rule;
+    }
+    // Caching
+    const ruleId = `${jobState}Rule`;
+    if (!this.cachedRules[ruleId]) {
+      const rule = this.onEvent(ruleId, {
+        description: `Rule triggered when Glue job ${this.jobName} is in ${jobState} state`,
+      });
+      rule.addEventPattern({
+        detail: {
+          state: [jobState],
+        },
+      });
+      this.cachedRules[ruleId] = rule;
+    }
+    return this.cachedRules[ruleId];
+  }
+
 }
 
 /**
@@ -434,7 +704,7 @@ export interface JobProps {
   /**
    * The maximum number of times to retry this job after a JobRun fails.
    *
-   * @default ?
+   * @default 0
    */
   readonly maxRetries?: number;
 
@@ -449,7 +719,7 @@ export interface JobProps {
   /**
    * The number of minutes to wait after a job run starts, before sending a job run delay notification.
    *
-   * @default ?
+   * @default N/A (no delay notifications)
    */
   readonly notifyDelayAfter?: cdk.Duration;
 
@@ -463,9 +733,8 @@ export interface JobProps {
   /**
    * Glue version determines the versions of Apache Spark and Python that AWS Glue supports. The Python version indicates the version supported for jobs of type Spark.
    *
-   * @default 0.9
    */
-  readonly glueVersion?: GlueVersion;
+  readonly glueVersion: GlueVersion;
 
   /**
    * The type of predefined worker that is allocated when a job runs.
@@ -526,7 +795,7 @@ export interface JobProps {
 /**
  * A Glue Job.
  */
-export class Job extends cdk.Resource implements IJob {
+export class Job extends JobBase {
   /**
      * Creates a Glue Job
      *
@@ -535,37 +804,12 @@ export class Job extends cdk.Resource implements IJob {
      * @param attrs Import attributes
      */
   public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobAttributes): IJob {
-    class Import extends cdk.Resource implements IJob {
+    class Import extends JobBase {
       public readonly jobName = attrs.jobName;
-      public readonly jobArn = Job.buildJobArn(scope, attrs.jobName);
+      public readonly jobArn = JobBase.buildJobArn(scope, attrs.jobName);
     }
 
     return new Import(scope, id);
-  }
-
-  /**
-   * Create a CloudWatch Metric with namespace = 'AWS/Events', metricName = 'TriggeredRules' and RuleName = rule.ruleName dimension.
-   * This is used by ruleXXXMetric methods.
-   *
-   * @param rule for use in setting RuleName dimension value
-   * @param props metric properties
-   */
-  public static ruleMetric(rule: events.IRule, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/Events',
-      metricName: 'TriggeredRules',
-      dimensions: { RuleName: rule.ruleName },
-      statistic: cloudwatch.Statistic.SUM,
-      ...props,
-    }).attachTo(rule);
-  }
-
-  private static buildJobArn(scope: constructs.Construct, jobName: string) : string {
-    return cdk.Stack.of(scope).formatArn({
-      service: 'glue',
-      resource: 'job',
-      resourceName: jobName,
-    });
   }
 
   /**
@@ -582,12 +826,6 @@ export class Job extends cdk.Resource implements IJob {
    * The IAM role associated with this job.
    */
   public readonly role: iam.IRole;
-
-  /**
-   * Used to cache results of ._rule calls.
-   * @private
-   */
-  private _rules: Record<string, events.Rule> = {};
 
   constructor(scope: constructs.Construct, id: string, props: JobProps) {
     super(scope, id, {
@@ -625,118 +863,7 @@ export class Job extends cdk.Resource implements IJob {
     });
 
     const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = Job.buildJobArn(this, resourceName);
+    this.jobArn = JobBase.buildJobArn(this, resourceName);
     this.jobName = resourceName;
-  }
-
-
-  /**
-   * Create a CloudWatch Event Rule matching transition into the given `JobEventState`s
-   *
-   * @param state used in matching the CloudWatch Event
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
-   */
-  public rule(state: JobEventState, props?: events.RuleProps): events.Rule {
-    const ruleId = `${state}Rule`;
-    return new events.Rule(this, ruleId, {
-      description: `Event triggered when Glue job ${this.jobName} is in ${state} state`,
-      eventPattern: {
-        source: ['aws.glue'],
-        detailType: ['Glue Job State Change', 'Glue Job Run Status'],
-        detail: {
-          state: [state],
-          jobName: [this.jobName],
-        },
-      },
-      ...props,
-    });
-  }
-
-  /**
-   * Return a CloudWatch Event Rule matching JobEventState.SUCCEEDED.
-   * The rule is cached for later usage.
-   *
-   * @param props rule props for first invocation. If props are passed again they are ignored.
-   */
-  public successRule(props?: events.RuleProps): events.Rule {
-    return this._rule(JobEventState.SUCCEEDED, props);
-  }
-
-  /**
-   * Return a CloudWatch Event Rule matching JobEventState.FAILED.
-   * The rule is cached for later usage.
-   *
-   * @param props rule props for first invocation. If props are passed again they are ignored.
-   */
-  public failureRule(props?: events.RuleProps): events.Rule {
-    return this._rule(JobEventState.FAILED, props);
-  }
-
-  /**
-   * Return a CloudWatch Event Rule matching JobEventState.TIMEOUT.
-   * The rule is cached for later usage.
-   *
-   * @param props rule props for first invocation. If props are passed again they are ignored.
-   */
-  public timeoutRule(props?: events.RuleProps): events.Rule {
-    return this._rule(JobEventState.TIMEOUT, props);
-  }
-
-  /**
-   * Return a CloudWatch Metric indicating job success that's based on successRule()
-   */
-  public successRuleMetric(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return Job.ruleMetric(this.successRule(), props);
-  }
-
-  /**
-   * Return a CloudWatch Metric indicating job success that's based on failureRule()
-   */
-  public failureRuleMetric(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return Job.ruleMetric(this.failureRule(), props);
-  }
-
-  /**
-   * Return a CloudWatch Metric indicating job success that's based on timeoutRule()
-   */
-  public timeoutRuleMetric(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return Job.ruleMetric(this.timeoutRule(), props);
-  }
-
-  /**
-   * Create a CloudWatch metric.
-   *
-   * @param metricName name of the metric typically prefixed with `glue.driver.`, `glue.<executorId>.` or `glue.ALL.`.
-   * @param jobRunId a dimension that filters for metrics of a specific JobRun ID, or `ALL`.
-   * @param type the metric type.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html
-   */
-  public metric(metricName: string, jobRunId: string, type: MetricType, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      metricName,
-      namespace: 'Glue',
-      dimensions: {
-        JobName: this.jobName,
-        JobRunId: jobRunId,
-        Type: type,
-      },
-      ...props,
-    }).attachTo(this);
-  }
-
-  /**
-   * Create a Rule with the given props and caches the resulting rule. Subsequent returns cached value and ignores props
-   *
-   * @param state used in matching the CloudWatch Event
-   * @param props rule properties
-   * @private
-   */
-  private _rule(state: JobEventState, props?: events.RuleProps) {
-    if (!this._rules[state]) {
-      this._rules[state] = this.rule(state, props);
-    }
-    return this._rules[state];
   }
 }

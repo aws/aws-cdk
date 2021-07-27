@@ -7,13 +7,13 @@ import '@aws-cdk/assert-internal/jest';
 import * as glue from '../lib';
 
 describe('GlueVersion', () => {
-  test('.ZERO_POINT_NINE', () => expect(glue.GlueVersion.ZERO_POINT_NINE.name).toEqual('0.9'));
+  test('.V0_9', () => expect(glue.GlueVersion.V0_9.name).toEqual('0.9'));
 
-  test('.ONE_POINT_ZERO', () => expect(glue.GlueVersion.ONE_POINT_ZERO.name).toEqual('1.0'));
+  test('.V1_0', () => expect(glue.GlueVersion.V1_0.name).toEqual('1.0'));
 
-  test('.TWO_POINT_ZERO', () => expect(glue.GlueVersion.TWO_POINT_ZERO.name).toEqual('2.0'));
+  test('.V2_0', () => expect(glue.GlueVersion.V2_0.name).toEqual('2.0'));
 
-  test('new sets name correctly', () => expect(new glue.GlueVersion('CustomVersion').name).toEqual('CustomVersion'));
+  test('of(customVersion) sets name correctly', () => expect(glue.GlueVersion.of('CustomVersion').name).toEqual('CustomVersion'));
 });
 
 describe('WorkerType', () => {
@@ -23,7 +23,7 @@ describe('WorkerType', () => {
 
   test('.G_2X', () => expect(glue.WorkerType.G_2X.name).toEqual('G.2X'));
 
-  test('new sets name correctly', () => expect(new glue.WorkerType('CustomType').name).toEqual('CustomType'));
+  test('of(customType) sets name correctly', () => expect(glue.WorkerType.of('CustomType').name).toEqual('CustomType'));
 });
 
 describe('JobCommandName', () => {
@@ -33,7 +33,7 @@ describe('JobCommandName', () => {
 
   test('.PYTHON_SHELL', () => expect(glue.JobCommandName.PYTHON_SHELL.name).toEqual('pythonshell'));
 
-  test('new sets name correctly', () => expect(new glue.JobCommandName('CustomName').name).toEqual('CustomName'));
+  test('of(customName) sets name correctly', () => expect(glue.JobCommandName.of('CustomName').name).toEqual('CustomName'));
 });
 
 describe('JobCommand', () => {
@@ -48,7 +48,7 @@ describe('JobCommand', () => {
 
     // known command names + custom one
     [glue.JobCommandName.GLUE_STREAMING, glue.JobCommandName.PYTHON_SHELL, glue.JobCommandName.GLUE_ETL,
-      new glue.JobCommandName('CustomName')].forEach((name) => {
+      glue.JobCommandName.of('CustomName')].forEach((name) => {
       describe(`with ${name} JobCommandName`, () => {
 
         beforeEach(() => {
@@ -75,24 +75,24 @@ describe('JobCommand', () => {
     });
   });
 
-  test('.glueEtl() uses GLUE_ETL JobCommandName', () => {
-    const jobCommand = glue.JobCommand.glueEtl(scriptLocation);
+  test('.etl() uses GLUE_ETL JobCommandName', () => {
+    const jobCommand = glue.JobCommand.etl(scriptLocation);
 
     expect(jobCommand.name).toEqual(glue.JobCommandName.GLUE_ETL);
     expect(jobCommand.scriptLocation).toEqual(scriptLocation);
     expect(jobCommand.pythonVersion).toBeUndefined();
   });
 
-  test('.glueStreaming() uses GLUE_STREAMING JobCommandName', () => {
-    const jobCommand = glue.JobCommand.glueStreaming(scriptLocation, glue.PythonVersion.THREE);
+  test('.streaming() uses GLUE_STREAMING JobCommandName', () => {
+    const jobCommand = glue.JobCommand.streaming(scriptLocation, glue.PythonVersion.THREE);
 
     expect(jobCommand.name).toEqual(glue.JobCommandName.GLUE_STREAMING);
     expect(jobCommand.scriptLocation).toEqual(scriptLocation);
     expect(jobCommand.pythonVersion).toEqual(glue.PythonVersion.THREE);
   });
 
-  test('.pythonShell() uses PYTHON_SHELL JobCommandName', () => {
-    const jobCommand = glue.JobCommand.pythonShell(scriptLocation, glue.PythonVersion.TWO);
+  test('.python() uses PYTHON_SHELL JobCommandName', () => {
+    const jobCommand = glue.JobCommand.python(scriptLocation, glue.PythonVersion.TWO);
 
     expect(jobCommand.name).toEqual(glue.JobCommandName.PYTHON_SHELL);
     expect(jobCommand.scriptLocation).toEqual(scriptLocation);
@@ -128,7 +128,7 @@ describe('Job', () => {
     });
 
     test('with no props returns default metric', () => {
-      expect(glue.Job.ruleMetric(rule)).toEqual(new cloudwatch.Metric({
+      expect(glue.Job.metricRule(rule)).toEqual(new cloudwatch.Metric({
         dimensions: {
           RuleName: 'example',
         },
@@ -139,7 +139,7 @@ describe('Job', () => {
     });
 
     test('with props overrides', () => {
-      expect(glue.Job.ruleMetric(rule, { statistic: cloudwatch.Statistic.AVERAGE })).toEqual(new cloudwatch.Metric({
+      expect(glue.Job.metricRule(rule, { statistic: cloudwatch.Statistic.AVERAGE })).toEqual(new cloudwatch.Metric({
         dimensions: {
           RuleName: 'example',
         },
@@ -161,7 +161,8 @@ describe('Job', () => {
     describe('with necessary props only', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
-          jobCommand: glue.JobCommand.glueEtl(scriptLocation),
+          glueVersion: glue.GlueVersion.V2_0,
+          jobCommand: glue.JobCommand.etl(scriptLocation),
         });
       });
 
@@ -226,7 +227,8 @@ describe('Job', () => {
       test('with a custom role should use it and set it in CloudFormation', () => {
         const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
         job = new glue.Job(stack, 'JobWithRole', {
-          jobCommand: glue.JobCommand.glueEtl(scriptLocation),
+          glueVersion: glue.GlueVersion.V2_0,
+          jobCommand: glue.JobCommand.etl(scriptLocation),
           role,
         });
 
@@ -238,7 +240,8 @@ describe('Job', () => {
 
       test('with a custom jobName should set it in CloudFormation', () => {
         job = new glue.Job(stack, 'JobWithName', {
-          jobCommand: glue.JobCommand.glueEtl(scriptLocation),
+          glueVersion: glue.GlueVersion.V2_0,
+          jobCommand: glue.JobCommand.etl(scriptLocation),
           jobName,
         });
 
@@ -253,8 +256,8 @@ describe('Job', () => {
         job = new glue.Job(stack, 'Job', {
           jobName,
           description: 'test job',
-          jobCommand: glue.JobCommand.glueEtl(scriptLocation),
-          glueVersion: glue.GlueVersion.TWO_POINT_ZERO,
+          jobCommand: glue.JobCommand.etl(scriptLocation),
+          glueVersion: glue.GlueVersion.V2_0,
           workerType: glue.WorkerType.G_2X,
           numberOfWorkers: 10,
           maxConcurrentRuns: 2,
@@ -318,26 +321,15 @@ describe('Job', () => {
     describe('event rules and rule-based metrics', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
-          jobCommand: glue.JobCommand.glueEtl(scriptLocation),
+          glueVersion: glue.GlueVersion.V2_0,
+          jobCommand: glue.JobCommand.etl(scriptLocation),
         });
       });
 
-      test('.rule() creates the expected event rule', () => {
-        job.rule(glue.JobEventState.STOPPING);
+      test('.onEvent() creates the expected event rule', () => {
+        job.onEvent('eventId', {});
 
         cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
-          Description: {
-            'Fn::Join': [
-              '',
-              [
-                'Event triggered when Glue job ',
-                {
-                  Ref: 'JobB9D00F9F',
-                },
-                ' is in STOPPING state',
-              ],
-            ],
-          },
           EventPattern: {
             'source': [
               'aws.glue',
@@ -347,9 +339,6 @@ describe('Job', () => {
               'Glue Job Run Status',
             ],
             'detail': {
-              state: [
-                'STOPPING',
-              ],
               jobName: [
                 {
                   Ref: 'JobB9D00F9F',
@@ -361,10 +350,10 @@ describe('Job', () => {
         }));
       });
 
-      describe('.successRule()', () => {
-        test('without props and multiple calls should create one resource and cache it', () => {
-          const firstInvocationRule = job.successRule();
-          const subsequentInvocationRule = job.successRule();
+      describe('.onSuccess()', () => {
+        test('with no-args and multiple calls should create one resource and cache it', () => {
+          const firstInvocationRule = job.onSuccess();
+          const subsequentInvocationRule = job.onSuccess();
 
           expect(subsequentInvocationRule).toEqual(firstInvocationRule);
           cdkassert.countResources('AWS::Events::Rule', 1);
@@ -373,7 +362,7 @@ describe('Job', () => {
               'Fn::Join': [
                 '',
                 [
-                  'Event triggered when Glue job ',
+                  'Rule triggered when Glue job ',
                   {
                     Ref: 'JobB9D00F9F',
                   },
@@ -404,14 +393,47 @@ describe('Job', () => {
           }));
         });
 
-        test('with props and multiple calls should create one resource and cache it and ignore later props', () => {
-          const firstInvocationRule = job.successRule({ description: 'description override' });
-          const subsequentInvocationRuleWithProps = job.successRule({ description: 'description to ignore' });
-          const subsequentInvocationRuleWithoutProps = job.successRule();
+        test('with args should ignore the cached rule and return a new one', () => {
+          const firstInvocationRule = job.onSuccess();
+          const subsequentInvocationRuleWithNoArgs = job.onSuccess();
+          job.onSuccess('noCache', { description: 'description override' });
 
-          expect(subsequentInvocationRuleWithProps).toEqual(firstInvocationRule);
-          expect(subsequentInvocationRuleWithoutProps).toEqual(firstInvocationRule);
-          cdkassert.countResources('AWS::Events::Rule', 1);
+          expect(subsequentInvocationRuleWithNoArgs).toEqual(firstInvocationRule);
+          cdkassert.countResources('AWS::Events::Rule', 2);
+          cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
+            Description: {
+              'Fn::Join': [
+                '',
+                [
+                  'Rule triggered when Glue job ',
+                  {
+                    Ref: 'JobB9D00F9F',
+                  },
+                  ' is in SUCCEEDED state',
+                ],
+              ],
+            },
+            EventPattern: {
+              'source': [
+                'aws.glue',
+              ],
+              'detail-type': [
+                'Glue Job State Change',
+                'Glue Job Run Status',
+              ],
+              'detail': {
+                state: [
+                  'SUCCEEDED',
+                ],
+                jobName: [
+                  {
+                    Ref: 'JobB9D00F9F',
+                  },
+                ],
+              },
+            },
+            State: 'ENABLED',
+          }));
           cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
             Description: 'description override',
             EventPattern: {
@@ -438,10 +460,10 @@ describe('Job', () => {
         });
       });
 
-      describe('.failureRule()', () => {
-        test('without props and multiple calls should create one resource and cache it', () => {
-          const firstInvocationRule = job.failureRule();
-          const subsequentInvocationRule = job.failureRule();
+      describe('.onFailure()', () => {
+        test('with no-args and multiple calls should create one resource and cache it', () => {
+          const firstInvocationRule = job.onFailure();
+          const subsequentInvocationRule = job.onFailure();
 
           expect(subsequentInvocationRule).toEqual(firstInvocationRule);
           cdkassert.countResources('AWS::Events::Rule', 1);
@@ -450,7 +472,7 @@ describe('Job', () => {
               'Fn::Join': [
                 '',
                 [
-                  'Event triggered when Glue job ',
+                  'Rule triggered when Glue job ',
                   {
                     Ref: 'JobB9D00F9F',
                   },
@@ -481,14 +503,47 @@ describe('Job', () => {
           }));
         });
 
-        test('with props and multiple calls should create one resource and cache it and ignore later props', () => {
-          const firstInvocationRule = job.failureRule({ description: 'description override' });
-          const subsequentInvocationRuleWithProps = job.failureRule({ description: 'description to ignore' });
-          const subsequentInvocationRuleWithoutProps = job.failureRule();
+        test('with args should ignore the cached rule and return a new one', () => {
+          const firstInvocationRule = job.onFailure();
+          const subsequentInvocationRuleWithNoArgs = job.onFailure();
+          job.onFailure('noCache', { description: 'description override' });
 
-          expect(subsequentInvocationRuleWithProps).toEqual(firstInvocationRule);
-          expect(subsequentInvocationRuleWithoutProps).toEqual(firstInvocationRule);
-          cdkassert.countResources('AWS::Events::Rule', 1);
+          expect(subsequentInvocationRuleWithNoArgs).toEqual(firstInvocationRule);
+          cdkassert.countResources('AWS::Events::Rule', 2);
+          cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
+            Description: {
+              'Fn::Join': [
+                '',
+                [
+                  'Rule triggered when Glue job ',
+                  {
+                    Ref: 'JobB9D00F9F',
+                  },
+                  ' is in FAILED state',
+                ],
+              ],
+            },
+            EventPattern: {
+              'source': [
+                'aws.glue',
+              ],
+              'detail-type': [
+                'Glue Job State Change',
+                'Glue Job Run Status',
+              ],
+              'detail': {
+                state: [
+                  'FAILED',
+                ],
+                jobName: [
+                  {
+                    Ref: 'JobB9D00F9F',
+                  },
+                ],
+              },
+            },
+            State: 'ENABLED',
+          }));
           cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
             Description: 'description override',
             EventPattern: {
@@ -515,10 +570,10 @@ describe('Job', () => {
         });
       });
 
-      describe('.timeoutRule()', () => {
-        test('without props and multiple calls should create one resource and cache it', () => {
-          const firstInvocationRule = job.timeoutRule();
-          const subsequentInvocationRule = job.timeoutRule();
+      describe('.onTimeout()', () => {
+        test('with no-args and multiple calls should create one resource and cache it', () => {
+          const firstInvocationRule = job.onTimeout();
+          const subsequentInvocationRule = job.onTimeout();
 
           expect(subsequentInvocationRule).toEqual(firstInvocationRule);
           cdkassert.countResources('AWS::Events::Rule', 1);
@@ -527,7 +582,7 @@ describe('Job', () => {
               'Fn::Join': [
                 '',
                 [
-                  'Event triggered when Glue job ',
+                  'Rule triggered when Glue job ',
                   {
                     Ref: 'JobB9D00F9F',
                   },
@@ -558,14 +613,47 @@ describe('Job', () => {
           }));
         });
 
-        test('with props and multiple calls should create one resource and cache it and ignore later props', () => {
-          const firstInvocationRule = job.timeoutRule({ description: 'description override' });
-          const subsequentInvocationRuleWithProps = job.timeoutRule({ description: 'description to ignore' });
-          const subsequentInvocationRuleWithoutProps = job.timeoutRule();
+        test('with args should ignore the cached rule and return a new one', () => {
+          const firstInvocationRule = job.onTimeout();
+          job.onTimeout('noCache', { description: 'description override' });
+          const subsequentInvocationRuleWithNoArgs = job.onTimeout();
 
-          expect(subsequentInvocationRuleWithProps).toEqual(firstInvocationRule);
-          expect(subsequentInvocationRuleWithoutProps).toEqual(firstInvocationRule);
-          cdkassert.countResources('AWS::Events::Rule', 1);
+          expect(subsequentInvocationRuleWithNoArgs).toEqual(firstInvocationRule);
+          cdkassert.countResources('AWS::Events::Rule', 2);
+          cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
+            Description: {
+              'Fn::Join': [
+                '',
+                [
+                  'Rule triggered when Glue job ',
+                  {
+                    Ref: 'JobB9D00F9F',
+                  },
+                  ' is in TIMEOUT state',
+                ],
+              ],
+            },
+            EventPattern: {
+              'source': [
+                'aws.glue',
+              ],
+              'detail-type': [
+                'Glue Job State Change',
+                'Glue Job Run Status',
+              ],
+              'detail': {
+                state: [
+                  'TIMEOUT',
+                ],
+                jobName: [
+                  {
+                    Ref: 'JobB9D00F9F',
+                  },
+                ],
+              },
+            },
+            State: 'ENABLED',
+          }));
           cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
             Description: 'description override',
             EventPattern: {
@@ -592,12 +680,12 @@ describe('Job', () => {
         });
       });
 
-      test('.successRuleMetric() creates the expected event rule and corresponding metric', () => {
-        const metric = job.successRuleMetric();
+      test('.metricSuccess() creates the expected event rule and corresponding metric', () => {
+        const metric = job.metricSuccess();
 
         expect(metric).toEqual(new cloudwatch.Metric({
           dimensions: {
-            RuleName: job.successRule().ruleName,
+            RuleName: job.onSuccess().ruleName,
           },
           metricName: 'TriggeredRules',
           namespace: 'AWS/Events',
@@ -609,7 +697,7 @@ describe('Job', () => {
             'Fn::Join': [
               '',
               [
-                'Event triggered when Glue job ',
+                'Rule triggered when Glue job ',
                 {
                   Ref: 'JobB9D00F9F',
                 },
@@ -640,12 +728,12 @@ describe('Job', () => {
         }));
       });
 
-      test('.failureRuleMetric() creates the expected event rule and corresponding metric', () => {
-        const metric = job.failureRuleMetric();
+      test('.metricFailure() creates the expected event rule and corresponding metric', () => {
+        const metric = job.metricFailure();
 
         expect(metric).toEqual(new cloudwatch.Metric({
           dimensions: {
-            RuleName: job.failureRule().ruleName,
+            RuleName: job.onFailure().ruleName,
           },
           metricName: 'TriggeredRules',
           namespace: 'AWS/Events',
@@ -657,7 +745,7 @@ describe('Job', () => {
             'Fn::Join': [
               '',
               [
-                'Event triggered when Glue job ',
+                'Rule triggered when Glue job ',
                 {
                   Ref: 'JobB9D00F9F',
                 },
@@ -688,12 +776,12 @@ describe('Job', () => {
         }));
       });
 
-      test('.timeoutRuleMetric() creates the expected event rule and corresponding metric', () => {
-        const metric = job.timeoutRuleMetric();
+      test('.metricTimeout() creates the expected event rule and corresponding metric', () => {
+        const metric = job.metricTimeout();
 
         expect(metric).toEqual(new cloudwatch.Metric({
           dimensions: {
-            RuleName: job.timeoutRule().ruleName,
+            RuleName: job.onTimeout().ruleName,
           },
           metricName: 'TriggeredRules',
           namespace: 'AWS/Events',
@@ -705,7 +793,7 @@ describe('Job', () => {
             'Fn::Join': [
               '',
               [
-                'Event triggered when Glue job ',
+                'Rule triggered when Glue job ',
                 {
                   Ref: 'JobB9D00F9F',
                 },

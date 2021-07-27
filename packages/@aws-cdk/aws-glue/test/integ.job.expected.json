@@ -151,7 +151,8 @@
             "MinimalGlueEtlJobServiceRole60989380",
             "Arn"
           ]
-        }
+        },
+        "GlueVersion": "2.0"
       }
     },
     "MinimalGlueStreamingJobServiceRole77973DB5": {
@@ -291,7 +292,8 @@
             "MinimalGlueStreamingJobServiceRole77973DB5",
             "Arn"
           ]
-        }
+        },
+        "GlueVersion": "2.0"
       }
     },
     "MinimalPythonShellJobServiceRole4944649D": {
@@ -431,7 +433,8 @@
             "MinimalPythonShellJobServiceRole4944649D",
             "Arn"
           ]
-        }
+        },
+        "GlueVersion": "2.0"
       }
     },
     "JobServiceRole4F432993": {
@@ -599,7 +602,7 @@
           "Fn::Join": [
             "",
             [
-              "Event triggered when Glue job ",
+              "Rule triggered when Glue job ",
               {
                 "Ref": "JobB9D00F9F"
               },
@@ -616,13 +619,13 @@
             "Glue Job Run Status"
           ],
           "detail": {
-            "state": [
-              "SUCCEEDED"
-            ],
             "jobName": [
               {
                 "Ref": "JobB9D00F9F"
               }
+            ],
+            "state": [
+              "SUCCEEDED"
             ]
           }
         },
