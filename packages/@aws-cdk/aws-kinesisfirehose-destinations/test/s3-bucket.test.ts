@@ -256,7 +256,7 @@ describe('S3 destination', () => {
 
   describe('processing configuration', () => {
     let lambdaFunction: lambda.IFunction;
-    let basicLambdaProcessor: firehosedestinations.LambdaFunctionProcessor;
+    let basicLambdaProcessor: firehose.LambdaFunctionProcessor;
     let destinationWithBasicLambdaProcessor: firehosedestinations.S3Bucket;
 
     beforeEach(() => {
@@ -265,7 +265,7 @@ describe('S3 destination', () => {
         code: lambda.Code.fromInline('foo'),
         handler: 'bar',
       });
-      basicLambdaProcessor = new firehosedestinations.LambdaFunctionProcessor(lambdaFunction);
+      basicLambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
       destinationWithBasicLambdaProcessor = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
         processors: [basicLambdaProcessor],
@@ -301,7 +301,7 @@ describe('S3 destination', () => {
     });
 
     it('set all optional parameters', () => {
-      const processor = new firehosedestinations.LambdaFunctionProcessor(lambdaFunction, {
+      const processor = new firehose.LambdaFunctionProcessor(lambdaFunction, {
         bufferInterval: cdk.Duration.minutes(1),
         bufferSize: cdk.Size.mebibytes(1),
         retries: 5,

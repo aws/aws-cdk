@@ -4,7 +4,6 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import { IDataProcessor } from '../processor';
 
 export interface DestinationLoggingProps {
   /**
@@ -100,7 +99,7 @@ export function createEncryptionConfig(role: iam.IRole, encryptionKey?: kms.IKey
 export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
-  dataProcessors?: IDataProcessor[],
+  dataProcessors?: firehose.IDataProcessor[],
 ): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
   if (dataProcessors && dataProcessors.length > 1) {
     throw new Error('Only one processor is allowed per delivery stream destination');

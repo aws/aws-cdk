@@ -26,7 +26,7 @@ const dataProcessorFunction = new lambdanodejs.NodejsFunction(stack, 'DataProces
   timeout: cdk.Duration.minutes(1),
 });
 
-const processor = new destinations.LambdaFunctionProcessor(dataProcessorFunction, {
+const processor = new firehose.LambdaFunctionProcessor(dataProcessorFunction, {
   bufferInterval: cdk.Duration.seconds(60),
   bufferSize: cdk.Size.mebibytes(1),
   retries: 1,
