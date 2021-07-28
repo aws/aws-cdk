@@ -81,7 +81,7 @@ interface DestinationLoggingProps {
 /**
  * Common properties for defining a backup, intermediary, or final S3 destination for a Kinesis Data Firehose delivery stream.
  */
-export interface CommonS3Props {
+export interface CommonDestinationS3Props {
   /**
    * The length of time that Firehose buffers incoming data before delivering
    * it to the S3 bucket.
@@ -151,7 +151,7 @@ export interface CommonS3Props {
  *
  * S3 backup is available for all destinations, regardless of whether the final destination is S3 or not.
  */
-export interface S3BackupDestinationProps extends DestinationLoggingProps, CommonS3Props {
+export interface DestinationS3BackupProps extends DestinationLoggingProps, CommonDestinationS3Props {
   /**
    * The S3 bucket that will store data and failed records.
    *
@@ -195,5 +195,5 @@ export interface CommonDestinationProps extends DestinationLoggingProps {
    *
    * @default - source records will not be backed up to S3.
    */
-  readonly backupConfiguration?: S3BackupDestinationProps;
+  readonly s3Backup?: DestinationS3BackupProps;
 }

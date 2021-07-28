@@ -55,7 +55,7 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
     bufferingInterval: cdk.Duration.seconds(60),
     bufferingSize: cdk.Size.mebibytes(1),
     encryptionKey: key,
-    backupConfiguration: {
+    s3Backup: {
       backupMode: destinations.BackupMode.ALL,
       backupBucket: backupBucket,
       compression: destinations.Compression.ZIP,

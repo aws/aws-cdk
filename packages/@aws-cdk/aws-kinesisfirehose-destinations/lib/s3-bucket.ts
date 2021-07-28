@@ -2,13 +2,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct } from 'constructs';
-import { BackupMode, CommonDestinationProps, CommonS3Props } from './common';
+import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
 
 /**
  * Props for defining an S3 destination of a Kinesis Data Firehose delivery stream.
  */
-export interface S3BucketProps extends CommonS3Props, CommonDestinationProps {
+export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinationProps {
 }
 
 /**
@@ -16,7 +16,7 @@ export interface S3BucketProps extends CommonS3Props, CommonDestinationProps {
  */
 export class S3Bucket implements firehose.IDestination {
   constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
-    if (this.props.backupConfiguration?.backupMode === BackupMode.FAILED) {
+    if (this.props.s3Backup?.backupMode === BackupMode.FAILED) {
       throw new Error('S3 destinations do not support BackupMode.FAILED');
     }
   }
@@ -35,7 +35,7 @@ export class S3Bucket implements firehose.IDestination {
       streamId: 'S3Destination',
     }) ?? {};
 
-    const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.backupConfiguration) ?? {};
+    const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
@@ -55,7 +55,7 @@ export class S3Bucket implements firehose.IDestination {
   }
 
   private getS3BackupMode(): string {
-    if (this.props.backupConfiguration?.backupBucket || this.props.backupConfiguration?.backupMode === BackupMode.ALL) {
+    if (this.props.s3Backup?.backupBucket || this.props.s3Backup?.backupMode === BackupMode.ALL) {
       return 'Enabled';
     }
     return 'Disabled';

@@ -5,7 +5,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import { S3BackupDestinationProps } from '../common';
+import { DestinationS3BackupProps } from '../common';
 
 export interface DestinationLoggingProps {
   /**
@@ -139,7 +139,7 @@ export function createProcessingConfig(
   return undefined;
 }
 
-export function createBackupConfig(scope: Construct, role: iam.IRole, props?: S3BackupDestinationProps): DestinationBackupConfig | undefined {
+export function createBackupConfig(scope: Construct, role: iam.IRole, props?: DestinationS3BackupProps): DestinationBackupConfig | undefined {
   if (!props || (props.backupMode === undefined && !props.backupBucket)) {
     return undefined;
   }

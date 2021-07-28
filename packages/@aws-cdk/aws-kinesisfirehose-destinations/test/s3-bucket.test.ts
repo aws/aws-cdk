@@ -501,7 +501,7 @@ describe('S3 destination', () => {
     it('set backupMode to ALL creates resources', () => {
       const destination = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
-        backupConfiguration: {
+        s3Backup: {
           backupMode: firehosedestinations.BackupMode.ALL,
         },
       });
@@ -532,7 +532,7 @@ describe('S3 destination', () => {
       const backupBucket = new s3.Bucket(stack, 'MyBackupBucket');
       const destination = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
-        backupConfiguration: {
+        s3Backup: {
           backupBucket: backupBucket,
         },
       });
@@ -562,7 +562,7 @@ describe('S3 destination', () => {
     it('throws error if backupMode set to FAILED', () => {
       expect(() => new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
-        backupConfiguration: {
+        s3Backup: {
           backupMode: firehosedestinations.BackupMode.FAILED,
         },
       })).toThrowError('S3 destinations do not support BackupMode.FAILED');
@@ -588,7 +588,7 @@ describe('S3 destination', () => {
       const logGroup = new logs.LogGroup(stack, 'BackupLogGroup');
       const destination = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
-        backupConfiguration: {
+        s3Backup: {
           backupMode: firehosedestinations.BackupMode.ALL,
           backupBucket: backupBucket,
           dataOutputPrefix: 'myBackupPrefix',
