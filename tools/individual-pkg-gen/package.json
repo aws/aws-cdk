@@ -1,12 +1,12 @@
 {
-  "name": "individual-packages-gen",
+  "name": "individual-pkg-gen",
   "version": "0.0.0",
   "private": true,
   "description": "A tool for copying V1 packages to be released separately in V2",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "tools/individual-packages-gen"
+    "directory": "tools/individual-pkg-gen"
   },
   "scripts": {
     "build": "cdk-build",

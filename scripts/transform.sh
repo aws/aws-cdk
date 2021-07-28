@@ -40,7 +40,7 @@ export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTI
 
 # copy & build the packages that are individually released from 'aws-cdk-lib'
 cd ${scriptdir}/../packages/individual-packages
-../../tools/individual-packages-gen/bin/individual-packages-gen.sh
+../../tools/individual-pkg-gen/bin/individual-pkg-gen.sh
 if [ "$skip_build" != "true" ]; then
   PHASE=transform yarn lerna run --stream $runtarget
 fi

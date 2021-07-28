@@ -1,4 +1,4 @@
-# `individual-packages-gen`
+# `individual-pkg-gen`
 
 The tool contains the logic of the copying the packages we release individually,
 instead of vending them inside `aws-cdk-lib`,
@@ -19,4 +19,4 @@ We do the translation in 2 phases:
 We have to do it this way,
 because otherwise `lerna bootstrap` would fail on the main monorepo packages like `cdk-build-tools`.
 
-The entrypoint of the package is the [`bin/individual-packages-gen.sh` file](bin/individual-packages-gen.sh).
+The entrypoint of the package is the [`bin/individual-pkg-gen.sh` file](bin/individual-pkg-gen.sh).
