@@ -171,6 +171,7 @@ are pre-populated with the correct dimensions for the delivery stream.
 
 ```ts fixture=with-delivery-stream
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
 // Alarm that triggers when the per-second average of incoming bytes exceeds 90% of the current service limit
 const incomingBytesPercentOfLimit = new cloudwatch.MathExpression({
   expression: 'incomingBytes / 300 / bytePerSecLimit',
@@ -245,6 +246,7 @@ can be granted permissions to a delivery stream by calling:
 
 ```ts fixture=with-delivery-stream
 import * as iam from '@aws-cdk/aws-iam';
+
 const lambdaRole = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
