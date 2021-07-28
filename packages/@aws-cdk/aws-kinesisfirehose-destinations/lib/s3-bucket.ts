@@ -44,7 +44,7 @@ export class S3Bucket implements firehose.IDestination {
         compressionFormat: this.props.compression?.value,
         encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),
         errorOutputPrefix: this.props.errorOutputPrefix,
-        prefix: this.props.prefix,
+        prefix: this.props.dataOutputPrefix,
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };

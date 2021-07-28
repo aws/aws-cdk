@@ -25,10 +25,12 @@ const logGroup = new logs.LogGroup(stack, 'LogGroup', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const processor = new destinations.LambdaFunctionProcessor(new lambdanodejs.NodejsFunction(stack, 'DataProcessorFunction', {
+const dataProcessorFunction = new lambdanodejs.NodejsFunction(stack, 'DataProcessorFunction', {
   entry: path.join(__dirname, 'lambda-data-processor.js'),
   timeout: cdk.Duration.minutes(1),
-}), {
+});
+
+const processor = new firehose.LambdaFunctionProcessor(dataProcessorFunction, {
   bufferInterval: cdk.Duration.seconds(60),
   bufferSize: cdk.Size.mebibytes(1),
   retries: 1,
@@ -48,7 +50,7 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
     logGroup: logGroup,
     processors: [processor],
     compression: destinations.Compression.GZIP,
-    prefix: 'regularPrefix',
+    dataOutputPrefix: 'regularPrefix',
     errorOutputPrefix: 'errorPrefix',
     bufferingInterval: cdk.Duration.seconds(60),
     bufferingSize: cdk.Size.mebibytes(1),
@@ -57,7 +59,7 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
       backupMode: destinations.BackupMode.ALL,
       backupBucket: backupBucket,
       compression: destinations.Compression.ZIP,
-      prefix: 'backupPrefix',
+      dataOutputPrefix: 'backupPrefix',
       errorOutputPrefix: 'backupErrorPrefix',
       bufferingInterval: cdk.Duration.seconds(60),
       bufferingSize: cdk.Size.mebibytes(1),

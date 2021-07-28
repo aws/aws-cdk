@@ -1,10 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-
-import { IDataProcessor } from './processor';
 
 /**
  * Possible compression options Kinesis Data Firehose can use to compress data on delivery.
@@ -26,21 +25,21 @@ export class Compression {
   public static readonly SNAPPY = new Compression('Snappy');
 
   /**
-   * Uncompressed
-   */
-  public static readonly UNCOMPRESSED = new Compression('UNCOMPRESSED');
-
-  /**
    * ZIP
    */
   public static readonly ZIP = new Compression('ZIP');
 
-  constructor(
-    /**
-     * String value of the Compression.
-     */
-    public readonly value: string,
-  ) { }
+  /**
+   * Creates a new Compression instance with a custom value.
+   */
+  public static of(value: string): Compression {
+    return new Compression(value);
+  }
+
+  /**
+   * @param value the string value of the Compression.
+   */
+  private constructor(public readonly value: string) { }
 }
 
 /**
@@ -149,7 +148,7 @@ export interface CommonS3Props {
    *
    * @default "YYYY/MM/DD/HH"
    */
-  readonly prefix?: string;
+  readonly dataOutputPrefix?: string;
 }
 
 /**
@@ -194,7 +193,7 @@ export interface CommonDestinationProps extends DestinationLoggingProps {
    *
    * @default [] - no data transformation will occur.
    */
-  readonly processors?: IDataProcessor[];
+  readonly processors?: firehose.IDataProcessor[];
 
   /**
    * The configuration for backing up source records to S3.

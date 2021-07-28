@@ -144,6 +144,7 @@ in the *KMS Developer Guide*.
 
 ```ts fixture=with-destination
 import * as kms from '@aws-cdk/aws-kms';
+
 // SSE with an AWS-owned CMK
 new DeliveryStream(this, 'Delivery Stream AWS Owned', {
   encryption: StreamEncryption.AWS_OWNED,
@@ -227,6 +228,7 @@ are pre-populated with the correct dimensions for the delivery stream.
 
 ```ts fixture=with-delivery-stream
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
 // Alarm that triggers when the per-second average of incoming bytes exceeds 90% of the current service limit
 const incomingBytesPercentOfLimit = new cloudwatch.MathExpression({
   expression: 'incomingBytes / 300 / bytePerSecLimit',
@@ -235,7 +237,7 @@ const incomingBytesPercentOfLimit = new cloudwatch.MathExpression({
     bytePerSecLimit: deliveryStream.metric('BytesPerSecondLimit'),
   },
 });
-new Alarm(this, 'Alarm', {
+new cloudwatch.Alarm(this, 'Alarm', {
   metric: incomingBytesPercentOfLimit,
   threshold: 0.9,
   evaluationPeriods: 3,
@@ -270,13 +272,14 @@ delivery stream will wait until the amount of incoming data has exceeded some th
 (the "buffer size") or until the time since the last data delivery occurred exceeds some
 threshold (the "buffer interval"), whichever happens first. You can configure these
 thresholds based on the capabilities of the destination and your use-case. By default, the
-buffer size is 3 MiB and the buffer interval is 1 minute.
+buffer size is 5 MiB and the buffer interval is 5 minutes.
 
 ```ts fixture=with-bucket
-// Increase the buffer interval and size to 5 minutes and 3 MiB, respectively
 import * as cdk from '@aws-cdk/core';
+
+// Increase the buffer interval and size to 10 minutes and 8 MiB, respectively
 const s3Destination = new destinations.S3Bucket(bucket, {
-  bufferingInterval: cdk.Duration.minutes(5),
+  bufferingInterval: cdk.Duration.minutes(10),
   bufferingSize: cdk.Size.mebibytes(8),
 });
 new DeliveryStream(this, 'Delivery Stream', {
@@ -297,7 +300,6 @@ the list of AWS KMS keys that you own. For more information, see [Protecting Dat
 Using Server-Side Encryption with AWS KMS–Managed Keys (SSE-KMS)](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html). Data is not encrypted by default.
 
 ```ts fixture=with-bucket
-// Increase the buffer interval and size to 5 minutes and 3 MiB, respectively
 import * as cdk from '@aws-cdk/core';
 import * as kms from '@aws-cdk/aws-kms';
 
@@ -391,6 +393,7 @@ times by default, but can be configured using `retries` in the processor configu
 // buffering and retry configuration
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '@aws-cdk/aws-lambda';
+
 const lambdaFunction = new lambda.Function(this, 'Processor', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
@@ -408,6 +411,8 @@ new DeliveryStream(this, 'Delivery Stream', {
   destinations: [destination],
 });
 ```
+
+[Example Lambda data processor performing the identity transformation.](test/integ.s3-bucket.ts)
 
 See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
 in the *Kinesis Data Firehose Developer Guide*.
@@ -468,6 +473,7 @@ can be granted permissions to a delivery stream by calling:
 
 ```ts fixture=with-delivery-stream
 import * as iam from '@aws-cdk/aws-iam';
+
 const lambdaRole = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });

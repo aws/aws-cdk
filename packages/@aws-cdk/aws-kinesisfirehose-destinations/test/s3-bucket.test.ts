@@ -31,6 +31,10 @@ describe('S3 destination', () => {
     expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
       ExtendedS3DestinationConfiguration: {
         BucketARN: stack.resolve(bucket.bucketArn),
+        BufferingHints: {
+          IntervalInSeconds: 300,
+          SizeInMBs: 5,
+        },
         CloudWatchLoggingOptions: {
           Enabled: true,
           LogGroupName: anything(),
@@ -67,33 +71,6 @@ describe('S3 destination', () => {
         Type: 'AWS::IAM::Role',
       },
     }, MatchStyle.SUPERSET);
-  });
-
-  it('grants encrypt/decrypt access to the destination encryptionKey', () => {
-    const key = new kms.Key(stack, 'Key');
-
-    new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destinations: [new firehosedestinations.S3Bucket(bucket, {
-        encryptionKey: key,
-        role: destinationRole,
-      })],
-    });
-
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      Roles: [stack.resolve(destinationRole.roleName)],
-      PolicyDocument: {
-        Statement: arrayWith({
-          Action: [
-            'kms:Decrypt',
-            'kms:Encrypt',
-            'kms:ReEncrypt*',
-            'kms:GenerateDataKey*',
-          ],
-          Effect: 'Allow',
-          Resource: stack.resolve(key.keyArn),
-        }),
-      },
-    });
   });
 
   it('grants read/write access to the bucket', () => {
@@ -255,9 +232,8 @@ describe('S3 destination', () => {
   });
 
   describe('processing configuration', () => {
-
     let lambdaFunction: lambda.IFunction;
-    let basicLambdaProcessor: firehosedestinations.LambdaFunctionProcessor;
+    let basicLambdaProcessor: firehose.LambdaFunctionProcessor;
     let destinationWithBasicLambdaProcessor: firehosedestinations.S3Bucket;
 
     beforeEach(() => {
@@ -266,7 +242,7 @@ describe('S3 destination', () => {
         code: lambda.Code.fromInline('foo'),
         handler: 'bar',
       });
-      basicLambdaProcessor = new firehosedestinations.LambdaFunctionProcessor(lambdaFunction);
+      basicLambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
       destinationWithBasicLambdaProcessor = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
         processors: [basicLambdaProcessor],
@@ -302,7 +278,7 @@ describe('S3 destination', () => {
     });
 
     it('set all optional parameters', () => {
-      const processor = new firehosedestinations.LambdaFunctionProcessor(lambdaFunction, {
+      const processor = new firehose.LambdaFunctionProcessor(lambdaFunction, {
         bufferInterval: cdk.Duration.minutes(1),
         bufferSize: cdk.Size.mebibytes(1),
         retries: 5,
@@ -385,21 +361,39 @@ describe('S3 destination', () => {
     });
   });
 
-  describe('buffering', () => {
-    it('does not create configuration by default', () => {
+  describe('compression', () => {
+    it('configures when specified', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        compression: firehosedestinations.Compression.GZIP,
+      });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket)],
+        destinations: [destination],
       });
 
       expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
-          CloudWatchLoggingOptions: {
-            BufferingHints: ABSENT,
-          },
+          CompressionFormat: 'GZIP',
         },
       });
     });
 
+    it('allows custom compression types', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        compression: firehosedestinations.Compression.of('SNAZZY'),
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CompressionFormat: 'SNAZZY',
+        },
+      });
+    });
+  });
+
+  describe('buffering', () => {
     it('creates configuration when interval and size provided', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destinations: [new S3Bucket(bucket, {
@@ -416,20 +410,6 @@ describe('S3 destination', () => {
           },
         },
       });
-    });
-
-    it('throws when only one of interval and size provided', () => {
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket, {
-          bufferingInterval: cdk.Duration.minutes(1),
-        })],
-      })).toThrowError('If bufferingInterval is specified, bufferingSize must also be specified');
-
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destinations: [new S3Bucket(bucket, {
-          bufferingSize: cdk.Size.mebibytes(1),
-        })],
-      })).toThrowError('If bufferingSize is specified, bufferingInterval must also be specified');
     });
 
     it('validates bufferingInterval', () => {
@@ -488,7 +468,6 @@ describe('S3 destination', () => {
       });
     });
 
-
     it('grants encrypt/decrypt access to the destination encryptionKey', () => {
       const key = new kms.Key(stack, 'Key');
 
@@ -518,7 +497,6 @@ describe('S3 destination', () => {
   });
 
   describe('s3 backup configuration', () => {
-
     it('set backupMode to ALL creates resources', () => {
       const destination = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
@@ -635,7 +613,7 @@ describe('S3 destination', () => {
         backupConfiguration: {
           backupMode: firehosedestinations.BackupMode.ALL,
           backupBucket: backupBucket,
-          prefix: 'myBackupPrefix',
+          dataOutputPrefix: 'myBackupPrefix',
           errorOutputPrefix: 'myBackupErrorPrefix',
           bufferingSize: cdk.Size.mebibytes(1),
           bufferingInterval: cdk.Duration.minutes(1),

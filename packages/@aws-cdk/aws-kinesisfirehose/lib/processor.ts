@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Size } from '@aws-cdk/core';
+
 import { Construct } from 'constructs';
 
 /**
@@ -51,7 +51,7 @@ export interface DataProcessorIdentifier {
 /**
  * The full configuration of a data processor.
  */
-export interface DataProcessorConfig extends DataProcessorProps {
+export interface DataProcessorConfig {
   /**
    * The type of the underlying processor resource.
    *
@@ -71,7 +71,6 @@ export interface DataProcessorConfig extends DataProcessorProps {
  * Options when binding a DataProcessor to a delivery stream destination.
  */
 export interface DataProcessorBindOptions {
-
   /**
    * The IAM role assumed by Kinesis Data Firehose to write to the destination that this DataProcessor will bind to.
    */
@@ -83,34 +82,15 @@ export interface DataProcessorBindOptions {
  */
 export interface IDataProcessor {
   /**
+   * The constructor props of the DataProcessor.
+   */
+  readonly props: DataProcessorProps;
+
+  /**
    * Binds this processor to a destination of a delivery stream.
    *
    * Implementers should use this method to grant processor invocation permissions to the provided stream and return the
    * necessary configuration to register as a processor.
    */
-  bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig
-}
-
-/**
- * Use a Lambda function to transform records.
- */
-export class LambdaFunctionProcessor implements IDataProcessor {
-  private readonly processorType = 'Lambda';
-  private readonly processorIdentifier: DataProcessorIdentifier;
-  constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: DataProcessorProps = {}) {
-    this.processorIdentifier = {
-      parameterName: 'LambdaArn',
-      parameterValue: lambdaFunction.functionArn,
-    };
-  }
-
-  public bind(_scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
-    this.lambdaFunction.grantInvoke(options.role);
-
-    return {
-      processorType: this.processorType,
-      processorIdentifier: this.processorIdentifier,
-      ...this.props,
-    };
-  }
+  bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig;
 }

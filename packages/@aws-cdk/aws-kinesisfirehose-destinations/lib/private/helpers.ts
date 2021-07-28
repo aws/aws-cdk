@@ -6,7 +6,6 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { BackupMode, S3BackupDestinationProps } from '../common';
-import { IDataProcessor } from '../processor';
 
 export interface DestinationLoggingProps {
   /**
@@ -79,31 +78,27 @@ export function createLoggingOptions(scope: Construct, props: DestinationLogging
 }
 
 export function createBufferingHints(
-  bufferingInterval?: cdk.Duration,
-  bufferingSize?: cdk.Size,
-):firehose.CfnDeliveryStream.BufferingHintsProperty | undefined {
-  if (bufferingInterval && bufferingSize) {
-    if (bufferingInterval.toSeconds() < 60 || bufferingInterval.toSeconds() > 900) {
-      throw new Error('Buffering interval must be between 60 and 900 seconds');
-    }
-    if (bufferingSize.toMebibytes() < 1 || bufferingSize.toMebibytes() > 128) {
-      throw new Error('Buffering size must be between 1 and 128 MBs');
-    }
-    return {
-      intervalInSeconds: bufferingInterval.toSeconds(),
-      sizeInMBs: bufferingSize.toMebibytes(),
-    };
-  } else if (!bufferingInterval && bufferingSize) {
-    throw new Error('If bufferingSize is specified, bufferingInterval must also be specified');
-  } else if (bufferingInterval && !bufferingSize) {
-    throw new Error('If bufferingInterval is specified, bufferingSize must also be specified');
+  interval?: cdk.Duration,
+  size?: cdk.Size,
+): firehose.CfnDeliveryStream.BufferingHintsProperty | undefined {
+  const intervalInSeconds = interval?.toSeconds() ?? 300;
+  const sizeInMBs = size?.toMebibytes() ?? 5;
+  if (intervalInSeconds < 60 || intervalInSeconds > 900) {
+    throw new Error('Buffering interval must be between 60 and 900 seconds');
   }
+  if (sizeInMBs < 1 || sizeInMBs > 128) {
+    throw new Error('Buffering size must be between 1 and 128 MBs');
+  }
+  return {
+    intervalInSeconds,
+    sizeInMBs,
+  };
   return undefined;
 }
 
 export function createEncryptionConfig(role: iam.IRole, encryptionKey?: kms.IKey): firehose.CfnDeliveryStream.EncryptionConfigurationProperty {
   encryptionKey?.grantEncryptDecrypt(role);
-  return encryptionKey != null
+  return encryptionKey
     ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
     : { noEncryptionConfig: 'NoEncryption' };
 }
@@ -111,7 +106,7 @@ export function createEncryptionConfig(role: iam.IRole, encryptionKey?: kms.IKey
 export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
-  dataProcessors?: IDataProcessor[],
+  dataProcessors?: firehose.IDataProcessor[],
 ): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
   if (dataProcessors && dataProcessors.length > 1) {
     throw new Error('Only one processor is allowed per delivery stream destination');
@@ -121,14 +116,14 @@ export function createProcessingConfig(
       const processorConfig = processor.bind(scope, { role });
       const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
       parameters.push(processorConfig.processorIdentifier);
-      if (processorConfig.bufferInterval) {
-        parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processorConfig.bufferInterval.toSeconds().toString() });
+      if (processor.props.bufferInterval) {
+        parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
       }
-      if (processorConfig.bufferSize) {
-        parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processorConfig.bufferSize.toMebibytes().toString() });
+      if (processor.props.bufferSize) {
+        parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
       }
-      if (processorConfig.retries) {
-        parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processorConfig.retries.toString() });
+      if (processor.props.retries) {
+        parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
       }
       return {
         type: processorConfig.processorType,
@@ -175,7 +170,7 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: S3
     backupConfig: {
       bucketArn: bucket.bucketArn,
       roleArn: role.roleArn,
-      prefix: props.prefix,
+      prefix: props.dataOutputPrefix,
       errorOutputPrefix: props.errorOutputPrefix,
       bufferingHints: createBufferingHints(props.bufferingInterval, props.bufferingSize),
       compressionFormat: props.compression?.value,
