@@ -69,6 +69,9 @@ export function createBufferingHints(
   interval?: cdk.Duration,
   size?: cdk.Size,
 ): firehose.CfnDeliveryStream.BufferingHintsProperty | undefined {
+  if (!interval && !size) {
+    return undefined;
+  }
   const intervalInSeconds = interval?.toSeconds() ?? 300;
   const sizeInMBs = size?.toMebibytes() ?? 5;
   if (intervalInSeconds < 60 || intervalInSeconds > 900) {
@@ -81,5 +84,4 @@ export function createBufferingHints(
     intervalInSeconds,
     sizeInMBs,
   };
-  return undefined;
 }

@@ -29,10 +29,6 @@ describe('S3 destination', () => {
     expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
       ExtendedS3DestinationConfiguration: {
         BucketARN: stack.resolve(bucket.bucketArn),
-        BufferingHints: {
-          IntervalInSeconds: 300,
-          SizeInMBs: 5,
-        },
         CloudWatchLoggingOptions: {
           Enabled: true,
           LogGroupName: anything(),
