@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -102,22 +103,7 @@ export function createProcessingConfig(
   }
   if (dataProcessors && dataProcessors.length > 0) {
     const processors = dataProcessors.map((processor) => {
-      const processorConfig = processor.bind(scope, { role });
-      const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
-      parameters.push(processorConfig.processorIdentifier);
-      if (processor.props.bufferInterval) {
-        parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
-      }
-      if (processor.props.bufferSize) {
-        parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
-      }
-      if (processor.props.retries) {
-        parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
-      }
-      return {
-        type: processorConfig.processorType,
-        parameters: parameters,
-      };
+      return createCfnProcessorProperty(processor, scope, role);
     });
 
     return {
@@ -126,4 +112,27 @@ export function createProcessingConfig(
     };
   }
   return undefined;
+}
+
+function createCfnProcessorProperty(
+  processor: firehose.IDataProcessor,
+  scope: Construct,
+  role: iam.IRole,
+): CfnDeliveryStream.ProcessorProperty {
+  const processorConfig = processor.bind(scope, { role });
+  const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
+  parameters.push(processorConfig.processorIdentifier);
+  if (processor.props.bufferInterval) {
+    parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
+  }
+  if (processor.props.bufferSize) {
+    parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
+  }
+  if (processor.props.retries) {
+    parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
+  }
+  return {
+    type: processorConfig.processorType,
+    parameters: parameters,
+  };
 }
