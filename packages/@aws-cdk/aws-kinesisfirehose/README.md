@@ -329,8 +329,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 new DeliveryStream(this, 'Delivery Stream Backup All', {
   destinations: [
     new destinations.S3Bucket(bucket, {
-      backupConfiguration: {
-        backupMode: BackupMode.ALL,
+      s3Backup: {
+        mode: BackupMode.ALL,
       }
     }),
   ],
@@ -340,8 +340,8 @@ const backupBucket = new s3.Bucket(this, 'Bucket');
 new DeliveryStream(this, 'Delivery Stream Backup All Explicit Bucket', {
   destinations: [
     new destinations.S3Bucket(bucket, {
-      backupConfiguration: {
-        backupBucket: backupBucket,
+      s3Backup: {
+        bucket: backupBucket,
       }
     }),
   ],
@@ -350,10 +350,10 @@ new DeliveryStream(this, 'Delivery Stream Backup All Explicit Bucket', {
 new DeliveryStream(this, 'Delivery Stream Backup All Explicit Prefix', {
   destinations: [
     new destinations.S3Bucket(bucket, {
-      backupConfiguration: {
-        backupMode: BackupMode.ALL,
-        prefix: 'mybackup',
-      }
+      s3Backup: {
+        mode: BackupMode.ALL,
+        dataOutputPrefix: 'mybackup',
+      },
     }),
   ],
 });
