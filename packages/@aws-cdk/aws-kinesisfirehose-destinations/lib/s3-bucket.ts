@@ -20,6 +20,26 @@ export interface S3BucketProps extends CommonDestinationProps {
    * @default - no compression is applied
    */
   readonly compression?: Compression;
+
+  /**
+   * A prefix that Kinesis Data Firehose evaluates and adds to failed records before writing them to S3.
+   *
+   * This prefix appears immediately following the bucket name.
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
+   *
+   * @default "YYYY/MM/DD/HH"
+   */
+  readonly errorOutputPrefix?: string;
+
+  /**
+   * A prefix that Kinesis Data Firehose evaluates and adds to records before writing them to S3.
+   *
+   * This prefix appears immediately following the bucket name.
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html
+   *
+   * @default "YYYY/MM/DD/HH"
+   */
+  readonly dataOutputPrefix?: string;
 }
 
 /**
@@ -48,6 +68,8 @@ export class S3Bucket implements firehose.IDestination {
         roleArn: role.roleArn,
         bucketArn: this.bucket.bucketArn,
         compressionFormat: this.props.compression?.value,
+        errorOutputPrefix: this.props.errorOutputPrefix,
+        prefix: this.props.dataOutputPrefix,
       },
       dependables: [bucketGrant, ...(loggingDependables ?? [])],
     };
