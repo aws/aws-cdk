@@ -92,17 +92,22 @@ export interface IDataProcessor {
    * Implementers should use this method to grant processor invocation permissions to the provided stream and return the
    * necessary configuration to register as a processor.
    */
-  bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig
+  bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig;
 }
 
 /**
  * Use a Lambda function to transform records.
  */
 export class LambdaFunctionProcessor implements IDataProcessor {
-  private readonly processorType = 'Lambda';
+  /**
+   * The constructor props of the LambdaFunctionProcessor.
+   */
+  public readonly props: DataProcessorProps;
+
   private readonly processorIdentifier: DataProcessorIdentifier;
 
-  constructor(private readonly lambdaFunction: lambda.IFunction, public readonly props: DataProcessorProps = {}) {
+  constructor(private readonly lambdaFunction: lambda.IFunction, props: DataProcessorProps = {}) {
+    this.props = props;
     this.processorIdentifier = {
       parameterName: 'LambdaArn',
       parameterValue: lambdaFunction.functionArn,
@@ -113,7 +118,7 @@ export class LambdaFunctionProcessor implements IDataProcessor {
     this.lambdaFunction.grantInvoke(options.role);
 
     return {
-      processorType: this.processorType,
+      processorType: 'Lambda',
       processorIdentifier: this.processorIdentifier,
     };
   }

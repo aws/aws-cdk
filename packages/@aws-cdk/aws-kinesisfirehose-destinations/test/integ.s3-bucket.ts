@@ -21,10 +21,12 @@ const logGroup = new logs.LogGroup(stack, 'LogGroup', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const processor = new destinations.LambdaFunctionProcessor(new lambdanodejs.NodejsFunction(stack, 'DataProcessorFunction', {
+const dataProcessorFunction = new lambdanodejs.NodejsFunction(stack, 'DataProcessorFunction', {
   entry: path.join(__dirname, 'lambda-data-processor.js'),
   timeout: cdk.Duration.minutes(1),
-}), {
+});
+
+const processor = new destinations.LambdaFunctionProcessor(dataProcessorFunction, {
   bufferInterval: cdk.Duration.seconds(60),
   bufferSize: cdk.Size.mebibytes(1),
   retries: 1,

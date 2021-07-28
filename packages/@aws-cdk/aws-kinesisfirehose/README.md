@@ -341,6 +341,7 @@ times by default, but can be configured using `retries` in the processor configu
 // buffering and retry configuration
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '@aws-cdk/aws-lambda';
+
 const lambdaFunction = new lambda.Function(this, 'Processor', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
@@ -358,6 +359,8 @@ new DeliveryStream(this, 'Delivery Stream', {
   destinations: [destination],
 });
 ```
+
+[Example Lambda data processor performing the identity transformation.](test/integ.s3-bucket.ts)
 
 See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
 in the *Kinesis Data Firehose Developer Guide*.

@@ -255,7 +255,6 @@ describe('S3 destination', () => {
   });
 
   describe('processing configuration', () => {
-
     let lambdaFunction: lambda.IFunction;
     let basicLambdaProcessor: firehosedestinations.LambdaFunctionProcessor;
     let destinationWithBasicLambdaProcessor: firehosedestinations.S3Bucket;
@@ -487,7 +486,6 @@ describe('S3 destination', () => {
         },
       });
     });
-
 
     it('grants encrypt/decrypt access to the destination encryptionKey', () => {
       const key = new kms.Key(stack, 'Key');
