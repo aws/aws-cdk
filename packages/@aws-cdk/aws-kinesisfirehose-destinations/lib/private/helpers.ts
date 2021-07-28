@@ -143,7 +143,7 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: S3
   if (!props) {
     return undefined;
   }
-  if (props.backupMode === undefined && !props.backupBucket) {
+  if (props.backupMode == null && !props.backupBucket) {
     return undefined;
   }
   if (props.backupMode === BackupMode.DISABLED && props.backupBucket) {
