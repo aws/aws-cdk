@@ -157,7 +157,7 @@ new DeliveryStream(this, 'Delivery Stream Implicit Customer Managed', {
 });
 // SSE with an customer-managed CMK that is explicitly specified
 const key = new kms.Key(this, 'Key');
-new DeliveryStream(this, 'Delivery Stream Explicit Customer Managed'', {
+new DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
   encryptionKey: key,
   destinations: [destination],
 });
@@ -278,7 +278,7 @@ buffer size is 5 MiB and the buffer interval is 5 minutes.
 import * as cdk from '@aws-cdk/core';
 
 // Increase the buffer interval and size to 10 minutes and 8 MiB, respectively
-const s3Destination = new destinations.S3Bucket(bucket, {
+const destination = new destinations.S3Bucket(bucket, {
   bufferingInterval: cdk.Duration.minutes(10),
   bufferingSize: cdk.Size.mebibytes(8),
 });
