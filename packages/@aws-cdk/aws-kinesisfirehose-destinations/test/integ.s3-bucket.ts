@@ -22,6 +22,9 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
   destinations: [new destinations.S3Bucket(bucket, {
     logging: true,
     logGroup: logGroup,
+    compression: destinations.Compression.GZIP,
+    dataOutputPrefix: 'regularPrefix',
+    errorOutputPrefix: 'errorPrefix',
   })],
 });
 

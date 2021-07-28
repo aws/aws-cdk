@@ -2,6 +2,43 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 
 /**
+ * Possible compression options Kinesis Data Firehose can use to compress data on delivery.
+ */
+export class Compression {
+  /**
+   * gzip
+   */
+  public static readonly GZIP = new Compression('GZIP');
+
+  /**
+   * Hadoop-compatible Snappy
+   */
+  public static readonly HADOOP_SNAPPY = new Compression('HADOOP_SNAPPY');
+
+  /**
+   * Snappy
+   */
+  public static readonly SNAPPY = new Compression('Snappy');
+
+  /**
+   * ZIP
+   */
+  public static readonly ZIP = new Compression('ZIP');
+
+  /**
+   * Creates a new Compression instance with a custom value.
+   */
+  public static of(value: string): Compression {
+    return new Compression(value);
+  }
+
+  /**
+   * @param value the string value of the Compression.
+   */
+  private constructor(public readonly value: string) { }
+}
+
+/**
  * Generic properties for defining a delivery stream destination.
  */
 export interface CommonDestinationProps {

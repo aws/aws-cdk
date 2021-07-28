@@ -299,6 +299,9 @@
               "Ref": "LogGroupS3Destination70CE1003"
             }
           },
+          "CompressionFormat": "GZIP",
+          "ErrorOutputPrefix": "errorPrefix",
+          "Prefix": "regularPrefix",
           "RoleARN": {
             "Fn::GetAtt": [
               "DeliveryStreamS3DestinationRole500FC089",
