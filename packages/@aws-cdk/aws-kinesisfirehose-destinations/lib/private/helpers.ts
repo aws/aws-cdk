@@ -87,7 +87,7 @@ export function createBufferingHints(
 
 export function createEncryptionConfig(role: iam.IRole, encryptionKey?: kms.IKey): firehose.CfnDeliveryStream.EncryptionConfigurationProperty {
   encryptionKey?.grantEncryptDecrypt(role);
-  return encryptionKey != null
+  return encryptionKey
     ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
     : { noEncryptionConfig: 'NoEncryption' };
 }
