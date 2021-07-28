@@ -17,7 +17,7 @@ export interface S3BucketProps extends CommonDestinationProps {
    * destinations because they are not supported by the Amazon Redshift COPY operation
    * that reads from the S3 bucket.
    *
-   * @default - UNCOMPRESSED
+   * @default - no compression is applied
    */
   readonly compression?: Compression;
 }
