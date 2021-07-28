@@ -278,14 +278,14 @@ describe('S3 destination', () => {
           bufferingInterval: cdk.Duration.seconds(30),
           bufferingSize: cdk.Size.mebibytes(1),
         })],
-      })).toThrowError('Buffering interval must be between 60 and 900 seconds');
+      })).toThrowError('Buffering interval must be between 60 and 900 seconds. Buffering interval provided was 30 seconds.');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
         destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(16),
           bufferingSize: cdk.Size.mebibytes(1),
         })],
-      })).toThrowError('Buffering interval must be between 60 and 900 seconds');
+      })).toThrowError('Buffering interval must be between 60 and 900 seconds. Buffering interval provided was 960 seconds.');
     });
 
     it('validates bufferingSize', () => {
@@ -295,14 +295,14 @@ describe('S3 destination', () => {
           bufferingSize: cdk.Size.mebibytes(0),
 
         })],
-      })).toThrowError('Buffering size must be between 1 and 128 MBs');
+      })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
         destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(256),
         })],
-      })).toThrowError('Buffering size must be between 1 and 128 MBs');
+      })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
     });
   });
 });
