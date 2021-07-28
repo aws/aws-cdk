@@ -2,7 +2,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Duration, Size } from '@aws-cdk/core';
 
 import { Construct } from 'constructs';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 /**
  * Configure the data processor.
@@ -31,13 +30,41 @@ export interface DataProcessorProps {
 }
 
 /**
+ * The key-value pair that identifies the underlying processor resource.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
+ */
+export interface DataProcessorIdentifier {
+  /**
+   * The parameter name that corresponds to the processor resource's identifier.
+   *
+   * Must be an accepted value in `CfnDeliveryStream.ProcessoryParameterProperty.ParameterName`.
+   */
+  readonly parameterName: string;
+
+  /**
+   * The identifier of the underlying processor resource.
+   */
+  readonly parameterValue: string;
+}
+
+/**
  * The full configuration of a data processor.
  */
 export interface DataProcessorConfig {
   /**
-   * The CfnDeliveryStream.ProcessorProperty that will be added to the array of Processors.
+   * The type of the underlying processor resource.
+   *
+   * Must be an accepted value in `CfnDeliveryStream.ProcessorProperty.Type`.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processor.html#cfn-kinesisfirehose-deliverystream-processor-type
+   * @example 'Lambda'
    */
-  readonly dataProcessor: CfnDeliveryStream.ProcessorProperty;
+  readonly processorType: string;
+
+  /**
+   * The key-value pair that identifies the underlying processor resource.
+   */
+  readonly processorIdentifier: DataProcessorIdentifier;
 }
 
 /**
@@ -54,6 +81,11 @@ export interface DataProcessorBindOptions {
  * A data processor that Kinesis Data Firehose will call to transform records before delivering data.
  */
 export interface IDataProcessor {
+  /**
+   * The constructor props of the DataProcessor.
+   */
+  readonly props: DataProcessorProps;
+
   /**
    * Binds this processor to a destination of a delivery stream.
    *
