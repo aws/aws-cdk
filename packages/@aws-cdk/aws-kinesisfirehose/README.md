@@ -272,13 +272,14 @@ delivery stream will wait until the amount of incoming data has exceeded some th
 (the "buffer size") or until the time since the last data delivery occurred exceeds some
 threshold (the "buffer interval"), whichever happens first. You can configure these
 thresholds based on the capabilities of the destination and your use-case. By default, the
-buffer size is 3 MiB and the buffer interval is 1 minute.
+buffer size is 5 MiB and the buffer interval is 5 minutes.
 
 ```ts fixture=with-bucket
-// Increase the buffer interval and size to 5 minutes and 3 MiB, respectively
 import * as cdk from '@aws-cdk/core';
+
+// Increase the buffer interval and size to 10 minutes and 8 MiB, respectively
 const s3Destination = new destinations.S3Bucket(bucket, {
-  bufferingInterval: cdk.Duration.minutes(5),
+  bufferingInterval: cdk.Duration.minutes(10),
   bufferingSize: cdk.Size.mebibytes(8),
 });
 new DeliveryStream(this, 'Delivery Stream', {

@@ -14,7 +14,6 @@ export interface S3BucketProps extends CommonDestinationProps {
    * The length of time that Firehose buffers incoming data before delivering
    * it to the S3 bucket.
    *
-   * If bufferingInterval is specified, bufferingSize must also be specified.
    * Minimum: Duration.seconds(60)
    * Maximum: Duration.seconds(900)
    *
@@ -26,7 +25,6 @@ export interface S3BucketProps extends CommonDestinationProps {
    * The size of the buffer that Kinesis Data Firehose uses for incoming data before
    * delivering it to the S3 bucket.
    *
-   * If bufferingSize is specified, bufferingInterval must also be specified.
    * Minimum: Size.mebibytes(1)
    * Maximum: Size.mebibytes(128)
    *

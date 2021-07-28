@@ -29,6 +29,10 @@ describe('S3 destination', () => {
     expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
       ExtendedS3DestinationConfiguration: {
         BucketARN: stack.resolve(bucket.bucketArn),
+        BufferingHints: {
+          IntervalInSeconds: 300,
+          SizeInMBs: 5,
+        },
         CloudWatchLoggingOptions: {
           Enabled: true,
           LogGroupName: anything(),
@@ -255,20 +259,6 @@ describe('S3 destination', () => {
   });
 
   describe('buffering', () => {
-    it('does not create configuration by default', () => {
-      new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket)],
-      });
-
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
-        ExtendedS3DestinationConfiguration: {
-          CloudWatchLoggingOptions: {
-            BufferingHints: ABSENT,
-          },
-        },
-      });
-    });
-
     it('creates configuration when interval and size provided', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destinations: [new S3Bucket(bucket, {
@@ -285,20 +275,6 @@ describe('S3 destination', () => {
           },
         },
       });
-    });
-
-    it('throws when only one of interval and size provided', () => {
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket, {
-          bufferingInterval: cdk.Duration.minutes(1),
-        })],
-      })).toThrowError('If bufferingInterval is specified, bufferingSize must also be specified');
-
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destinations: [new S3Bucket(bucket, {
-          bufferingSize: cdk.Size.mebibytes(1),
-        })],
-      })).toThrowError('If bufferingSize is specified, bufferingInterval must also be specified');
     });
 
     it('validates bufferingInterval', () => {
