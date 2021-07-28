@@ -234,6 +234,24 @@ new cloudwatch.Alarm(this, 'Alarm', {
 See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/firehose/latest/dev/monitoring-with-cloudwatch-metrics.html)
 in the *Kinesis Data Firehose Developer Guide*.
 
+## Compression
+
+Your data can automatically be compressed when it is delivered to S3 as either a final or
+an intermediary/backup destination. Supported compression formats are: gzip, Snappy,
+Hadoop-compatible Snappy, and ZIP, except for Redshift destinations, where Snappy
+(regardless of Hadoop-compatibility) and ZIP are not supported. By default, data is
+delivered to S3 without compression.
+
+```ts fixture=with-bucket
+// Compress data delivered to S3 using Snappy
+const s3Destination = new destinations.S3Bucket(bucket, {
+  compression: Compression.SNAPPY,
+});
+new DeliveryStream(this, 'Delivery Stream', {
+  destinations: [destination],
+});
+```
+
 ## Specifying an IAM role
 
 The DeliveryStream class automatically creates IAM service roles with all the minimum
