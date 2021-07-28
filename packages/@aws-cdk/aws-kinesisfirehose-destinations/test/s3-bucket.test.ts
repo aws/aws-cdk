@@ -502,7 +502,7 @@ describe('S3 destination', () => {
       const destination = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
         s3Backup: {
-          backupMode: firehosedestinations.BackupMode.ALL,
+          mode: firehosedestinations.BackupMode.ALL,
         },
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
@@ -533,7 +533,7 @@ describe('S3 destination', () => {
       const destination = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
         s3Backup: {
-          backupBucket: backupBucket,
+          bucket: backupBucket,
         },
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
@@ -563,7 +563,7 @@ describe('S3 destination', () => {
       expect(() => new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
         s3Backup: {
-          backupMode: firehosedestinations.BackupMode.FAILED,
+          mode: firehosedestinations.BackupMode.FAILED,
         },
       })).toThrowError('S3 destinations do not support BackupMode.FAILED');
     });
@@ -589,8 +589,8 @@ describe('S3 destination', () => {
       const destination = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
         s3Backup: {
-          backupMode: firehosedestinations.BackupMode.ALL,
-          backupBucket: backupBucket,
+          mode: firehosedestinations.BackupMode.ALL,
+          bucket: backupBucket,
           dataOutputPrefix: 'myBackupPrefix',
           errorOutputPrefix: 'myBackupErrorPrefix',
           bufferingSize: cdk.Size.mebibytes(1),

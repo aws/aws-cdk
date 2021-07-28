@@ -140,11 +140,11 @@ export function createProcessingConfig(
 }
 
 export function createBackupConfig(scope: Construct, role: iam.IRole, props?: DestinationS3BackupProps): DestinationBackupConfig | undefined {
-  if (!props || (props.backupMode === undefined && !props.backupBucket)) {
+  if (!props || (props.mode === undefined && !props.bucket)) {
     return undefined;
   }
 
-  const bucket = props.backupBucket ?? new s3.Bucket(scope, 'BackupBucket');
+  const bucket = props.bucket ?? new s3.Bucket(scope, 'BackupBucket');
   const bucketGrant = bucket.grantReadWrite(role);
 
   const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {

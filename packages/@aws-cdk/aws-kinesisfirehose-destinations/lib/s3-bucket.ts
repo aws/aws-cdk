@@ -16,7 +16,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
  */
 export class S3Bucket implements firehose.IDestination {
   constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
-    if (this.props.s3Backup?.backupMode === BackupMode.FAILED) {
+    if (this.props.s3Backup?.mode === BackupMode.FAILED) {
       throw new Error('S3 destinations do not support BackupMode.FAILED');
     }
   }
@@ -55,7 +55,7 @@ export class S3Bucket implements firehose.IDestination {
   }
 
   private getS3BackupMode(): string {
-    if (this.props.s3Backup?.backupBucket || this.props.s3Backup?.backupMode === BackupMode.ALL) {
+    if (this.props.s3Backup?.bucket || this.props.s3Backup?.mode === BackupMode.ALL) {
       return 'Enabled';
     }
     return 'Disabled';
