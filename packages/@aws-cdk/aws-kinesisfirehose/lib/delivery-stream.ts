@@ -327,6 +327,16 @@ export class DeliveryStream extends DeliveryStreamBase {
       keyArn: encryptionKey?.keyArn,
       keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
     } : undefined;
+    /*
+     * In order for the service role to have access to the encryption key before the delivery stream is created, the
+     * CfnDeliveryStream below should have a dependency on the grant returned by the function call below:
+     * > `keyGrant?.applyBefore(resource)`
+     * However, an error during synthesis is thrown if this is added:
+     * > ${Token[PolicyDocument.###]} does not implement DependableTrait
+     * Data will not be lost if the permissions are not granted to the service role immediately; Firehose has a 24 hour
+     * period where data will be buffered and retried if access is denied to the encryption key. For that reason, it is
+     * acceptable to omit the dependency for now. See: https://github.com/aws/aws-cdk/issues/15790
+     */
     encryptionKey?.grantEncryptDecrypt(role);
 
     const destinationConfig = props.destinations[0].bind(this, {});
