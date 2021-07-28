@@ -355,7 +355,7 @@ const lambdaProcessor = new LambdaFunctionProcessor(lambdaFunction, {
   retries: 5,
 });
 const s3Destination = new destinations.S3Bucket(bucket, {
-  processors: [lambdaProcessor],
+  processor: lambdaProcessor,
 });
 new DeliveryStream(this, 'Delivery Stream', {
   destinations: [destination],
