@@ -54,10 +54,9 @@ export class S3Bucket implements firehose.IDestination {
     };
   }
 
-  private getS3BackupMode(): string {
-    if (this.props.s3Backup?.bucket || this.props.s3Backup?.mode === BackupMode.ALL) {
-      return 'Enabled';
-    }
-    return 'Disabled';
+  private getS3BackupMode(): string | undefined {
+    return this.props.s3Backup?.bucket || this.props.s3Backup?.mode === BackupMode.ALL
+      ? 'Enabled'
+      : undefined;
   }
 }

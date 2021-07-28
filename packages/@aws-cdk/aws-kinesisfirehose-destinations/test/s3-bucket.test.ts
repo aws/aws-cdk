@@ -39,7 +39,6 @@ describe('S3 destination', () => {
           NoEncryptionConfig: 'NoEncryption',
         },
         RoleARN: stack.resolve(destinationRole.roleArn),
-        S3BackupMode: 'Disabled',
       },
     });
     expect(stack).toHaveResource('AWS::Logs::LogGroup');
