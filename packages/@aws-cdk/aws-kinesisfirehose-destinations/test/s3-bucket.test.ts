@@ -44,6 +44,7 @@ describe('S3 destination', () => {
           NoEncryptionConfig: 'NoEncryption',
         },
         RoleARN: stack.resolve(destinationRole.roleArn),
+        S3BackupMode: 'Disabled',
       },
     });
     expect(stack).toHaveResource('AWS::Logs::LogGroup');
@@ -571,13 +572,8 @@ describe('S3 destination', () => {
       })).toThrowError('S3 destinations do not support BackupMode.FAILED');
     });
 
-    it('set backupMode to DISABLED does not create resources', () => {
-      const destination = new firehosedestinations.S3Bucket(bucket, {
-        role: destinationRole,
-        backupConfiguration: {
-          backupMode: firehosedestinations.BackupMode.DISABLED,
-        },
-      });
+    it('by default does not create resources', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket);
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destinations: [destination],
       });
@@ -588,20 +584,6 @@ describe('S3 destination', () => {
           S3BackupConfiguration: ABSENT,
         },
       });
-    });
-
-    it('throws error if backupMode set to DISABLED and backupBucket is provided', () => {
-      const destination = new firehosedestinations.S3Bucket(bucket, {
-        role: destinationRole,
-        backupConfiguration: {
-          backupMode: firehosedestinations.BackupMode.DISABLED,
-          backupBucket: new s3.Bucket(stack, 'MyBackupBucket'),
-        },
-      });
-
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
-      })).toThrowError('Destination backup cannot be set to DISABLED when backupBucket is provided');
     });
 
     it('sets full backup configuration', () => {

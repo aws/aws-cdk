@@ -55,11 +55,6 @@ export enum BackupMode {
    * Only records that failed to deliver or transform are backed up.
    */
   FAILED,
-
-  /**
-   * No records are backed up.
-   */
-  DISABLED,
 }
 
 /**
@@ -169,8 +164,8 @@ export interface S3BackupDestinationProps extends DestinationLoggingProps, Commo
    *
    * If `backupBucket ` is provided, this will be implicitly set to `BackupMode.ALL`.
    *
-   * @default - If `backupBucket` is provided, the default will be `BackupMode.ALL`. Otherwise, the default is
-   * `BackupMode.DISABLED` and source records are not backed up to S3.
+   * @default - If `backupBucket` is provided, the default will be `BackupMode.ALL`. Otherwise,
+   * source records are not backed up to S3.
   */
   readonly backupMode?: BackupMode;
 }

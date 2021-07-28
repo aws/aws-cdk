@@ -318,14 +318,15 @@ the configured destination. Backed up data can be all the data that the delivery
 attempted to deliver or just data that it failed to deliver (Redshift and S3 destinations
 can only backup all data). CDK can create a new S3 bucket where it will back up data or
 you can provide a bucket where data will be backed up. You can also provide a prefix under
-which your backed-up data will placed within the bucket. By default, source data is not
+which your backed-up data will be placed within the bucket. By default, source data is not
 backed up to S3.
 
 ```ts fixture=with-bucket
 import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
 import * as s3 from '@aws-cdk/aws-s3';
+
 // Enable backup of all source records (to an S3 bucket created by CDK).
-const deliveryStream = new DeliveryStream(this, 'Delivery Stream Backup All', {
+new DeliveryStream(this, 'Delivery Stream Backup All', {
   destinations: [
     new destinations.S3Bucket(bucket, {
       backupConfiguration: {
@@ -336,7 +337,7 @@ const deliveryStream = new DeliveryStream(this, 'Delivery Stream Backup All', {
 });
 // Explicitly provide an S3 bucket to which all source records will be backed up.
 const backupBucket = new s3.Bucket(this, 'Bucket');
-const deliveryStream = new DeliveryStream(this, 'Delivery Stream Backup All Explicit Bucket', {
+new DeliveryStream(this, 'Delivery Stream Backup All Explicit Bucket', {
   destinations: [
     new destinations.S3Bucket(bucket, {
       backupConfiguration: {
@@ -346,7 +347,7 @@ const deliveryStream = new DeliveryStream(this, 'Delivery Stream Backup All Expl
   ],
 });
 // Explicitly provide an S3 prefix under which all source records will be backed up.
-const deliveryStream = new DeliveryStream(this, 'Delivery Stream Backup All Explicit Prefix', {
+new DeliveryStream(this, 'Delivery Stream Backup All Explicit Prefix', {
   destinations: [
     new destinations.S3Bucket(bucket, {
       backupConfiguration: {

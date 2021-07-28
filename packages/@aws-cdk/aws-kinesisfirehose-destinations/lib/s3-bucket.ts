@@ -50,20 +50,13 @@ export class S3Bucket implements firehose.IDestination {
     };
   }
 
-  private getS3BackupMode(): string | undefined {
-    if (this.props.backupConfiguration?.backupBucket && !this.props.backupConfiguration.backupMode) {
+  private getS3BackupMode(): string {
+    if (this.props.backupConfiguration?.backupMode === BackupMode.FAILED) {
+      throw new Error('S3 destinations do not support BackupMode.FAILED');
+    }
+    if (this.props.backupConfiguration?.backupBucket || this.props.backupConfiguration?.backupMode === BackupMode.ALL) {
       return 'Enabled';
     }
-
-    switch (this.props.backupConfiguration?.backupMode) {
-      case BackupMode.ALL:
-        return 'Enabled';
-      case BackupMode.DISABLED:
-        return 'Disabled';
-      case BackupMode.FAILED:
-        throw new Error('S3 destinations do not support BackupMode.FAILED');
-      default:
-        return undefined;
-    }
+    return 'Disabled';
   }
 }
