@@ -34,9 +34,6 @@ describe('S3 destination', () => {
           LogGroupName: anything(),
           LogStreamName: anything(),
         },
-        EncryptionConfiguration: {
-          NoEncryptionConfig: 'NoEncryption',
-        },
         RoleARN: stack.resolve(destinationRole.roleArn),
       },
     });
