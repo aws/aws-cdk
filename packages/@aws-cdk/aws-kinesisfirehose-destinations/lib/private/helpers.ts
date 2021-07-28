@@ -69,19 +69,24 @@ export function createBufferingHints(
   interval?: cdk.Duration,
   size?: cdk.Size,
 ): firehose.CfnDeliveryStream.BufferingHintsProperty | undefined {
-  if (!interval && !size) {
-    return undefined;
+  if (interval && size) {
+    const intervalInSeconds = interval?.toSeconds() ?? 300;
+    const sizeInMBs = size?.toMebibytes() ?? 5;
+    if (intervalInSeconds < 60 || intervalInSeconds > 900) {
+      throw new Error('Buffering interval must be between 60 and 900 seconds');
+    }
+    if (sizeInMBs < 1 || sizeInMBs > 128) {
+      throw new Error('Buffering size must be between 1 and 128 MBs');
+    }
+    return {
+      intervalInSeconds,
+      sizeInMBs,
+    };
+
+  } else if (!interval && size) {
+    throw new Error('If bufferingSize is specified, bufferingInterval must also be specified');
+  } else if (interval && !size) {
+    throw new Error('If bufferingInterval is specified, bufferingSize must also be specified');
   }
-  const intervalInSeconds = interval?.toSeconds() ?? 300;
-  const sizeInMBs = size?.toMebibytes() ?? 5;
-  if (intervalInSeconds < 60 || intervalInSeconds > 900) {
-    throw new Error('Buffering interval must be between 60 and 900 seconds');
-  }
-  if (sizeInMBs < 1 || sizeInMBs > 128) {
-    throw new Error('Buffering size must be between 1 and 128 MBs');
-  }
-  return {
-    intervalInSeconds,
-    sizeInMBs,
-  };
+  return undefined;
 }
