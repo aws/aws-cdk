@@ -1,14 +1,16 @@
 import '@aws-cdk/assert-internal/jest';
-import { ABSENT, ResourcePart, SynthUtils, anything } from '@aws-cdk/assert-internal';
+import { ABSENT, ResourcePart, SynthUtils, anything, arrayWith } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import * as firehose from '../lib';
 
 describe('delivery stream', () => {
   let stack: cdk.Stack;
+  let deliveryStreamRole: iam.IRole;
   let dependable: Construct;
   let mockS3Destination: firehose.IDestination;
 
@@ -17,6 +19,9 @@ describe('delivery stream', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    deliveryStreamRole = new iam.Role(stack, 'DeliveryStreamRole', {
+      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+    });
     mockS3Destination = {
       bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
         dependable = new class extends cdk.Construct {
@@ -82,6 +87,149 @@ describe('delivery stream', () => {
         ],
       },
     });
+  });
+
+  test('requesting customer-owned encryption creates key and configuration', () => {
+    new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+      encryption: firehose.StreamEncryption.CUSTOMER_MANAGED,
+      role: deliveryStreamRole,
+    });
+
+    expect(stack).toHaveResource('AWS::KMS::Key');
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: arrayWith(
+              'kms:Encrypt',
+              'kms:Decrypt',
+            ),
+          },
+        ],
+      },
+      Roles: [stack.resolve(deliveryStreamRole.roleName)],
+    });
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      DeliveryStreamEncryptionConfigurationInput: {
+        KeyARN: {
+          'Fn::GetAtt': [
+            'DeliveryStreamKey56A6407F',
+            'Arn',
+          ],
+        },
+        KeyType: 'CUSTOMER_MANAGED_CMK',
+      },
+    });
+  });
+
+  test('providing encryption key creates configuration', () => {
+    const key = new kms.Key(stack, 'Key');
+
+    new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+      encryptionKey: key,
+      role: deliveryStreamRole,
+    });
+
+    expect(stack).toHaveResource('AWS::KMS::Key');
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: arrayWith(
+              'kms:Encrypt',
+              'kms:Decrypt',
+            ),
+            Resource: stack.resolve(key.keyArn),
+          },
+        ],
+      },
+      Roles: [stack.resolve(deliveryStreamRole.roleName)],
+    });
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      DeliveryStreamEncryptionConfigurationInput: {
+        KeyARN: stack.resolve(key.keyArn),
+        KeyType: 'CUSTOMER_MANAGED_CMK',
+      },
+    });
+  });
+
+  test('requesting AWS-owned key does not create key and creates configuration', () => {
+    new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+      encryption: firehose.StreamEncryption.AWS_OWNED,
+      role: deliveryStreamRole,
+    });
+
+    expect(stack).not.toHaveResource('AWS::KMS::Key');
+    expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: arrayWith(
+              'kms:Encrypt',
+              'kms:Decrypt',
+            ),
+          },
+        ],
+      },
+      Roles: [stack.resolve(deliveryStreamRole.roleName)],
+    });
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      DeliveryStreamType: 'DirectPut',
+      DeliveryStreamEncryptionConfigurationInput: {
+        KeyARN: ABSENT,
+        KeyType: 'AWS_OWNED_CMK',
+      },
+    });
+  });
+
+  test('requesting no encryption creates no configuration', () => {
+    new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+      encryption: firehose.StreamEncryption.UNENCRYPTED,
+      role: deliveryStreamRole,
+    });
+
+    expect(stack).not.toHaveResource('AWS::KMS::Key');
+    expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: arrayWith(
+              'kms:Encrypt',
+              'kms:Decrypt',
+            ),
+          },
+        ],
+      },
+      Roles: [stack.resolve(deliveryStreamRole.roleName)],
+    });
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      DeliveryStreamType: 'DirectPut',
+      DeliveryStreamEncryptionConfigurationInput: ABSENT,
+    });
+  });
+
+  test('requesting AWS-owned key and providing a key throws an error', () => {
+    const key = new kms.Key(stack, 'Key');
+
+    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+      encryption: firehose.StreamEncryption.AWS_OWNED,
+      encryptionKey: key,
+    })).toThrowError('Specified stream encryption as AWS_OWNED but provided a customer-managed key');
+  });
+
+  test('requesting no encryption and providing a key throws an error', () => {
+    const key = new kms.Key(stack, 'Key');
+
+    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+      encryption: firehose.StreamEncryption.UNENCRYPTED,
+      encryptionKey: key,
+    })).toThrowError('Specified stream encryption as UNENCRYPTED but provided a customer-managed key');
   });
 
   test('grant provides access to stream', () => {

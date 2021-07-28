@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { Construct, Node } from 'constructs';
@@ -158,6 +159,26 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
 }
 
 /**
+ * Options for server-side encryption of a delivery stream.
+ */
+export enum StreamEncryption {
+  /**
+   * Data in the stream is stored unencrypted.
+   */
+  UNENCRYPTED,
+
+  /**
+   * Data in the stream is stored encrypted by a KMS key managed by the customer.
+   */
+  CUSTOMER_MANAGED,
+
+  /**
+   * Data in the stream is stored encrypted by a KMS key owned by AWS and managed for use in multiple AWS accounts.
+   */
+  AWS_OWNED,
+}
+
+/**
  * Properties for a new delivery stream.
  */
 export interface DeliveryStreamProps {
@@ -183,6 +204,20 @@ export interface DeliveryStreamProps {
    * @default - a role will be created with default permissions.
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Indicates the type of customer master key (CMK) to use for server-side encryption, if any.
+   *
+   * @default StreamEncryption.UNENCRYPTED - unless `encryptionKey` is provided, in which case this will be implicitly set to `StreamEncryption.CUSTOMER_MANAGED`
+   */
+  readonly encryption?: StreamEncryption;
+
+  /**
+   * Customer managed key to server-side encrypt data in the stream.
+   *
+   * @default - no KMS key will be used; if `encryption` is set to `CUSTOMER_MANAGED`, a KMS key will be created for you
+   */
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -284,9 +319,30 @@ export class DeliveryStream extends DeliveryStreamBase {
     });
     this.grantPrincipal = role;
 
+    if ((props.encryption === StreamEncryption.AWS_OWNED || props.encryption === StreamEncryption.UNENCRYPTED) && props.encryptionKey) {
+      throw new Error(`Specified stream encryption as ${StreamEncryption[props.encryption]} but provided a customer-managed key`);
+    }
+    const encryptionKey = props.encryptionKey ?? (props.encryption === StreamEncryption.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
+    const encryptionConfig = (encryptionKey || (props.encryption === StreamEncryption.AWS_OWNED)) ? {
+      keyArn: encryptionKey?.keyArn,
+      keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
+    } : undefined;
+    /*
+     * In order for the service role to have access to the encryption key before the delivery stream is created, the
+     * CfnDeliveryStream below should have a dependency on the grant returned by the function call below:
+     * > `keyGrant?.applyBefore(resource)`
+     * However, an error during synthesis is thrown if this is added:
+     * > ${Token[PolicyDocument.###]} does not implement DependableTrait
+     * Data will not be lost if the permissions are not granted to the service role immediately; Firehose has a 24 hour
+     * period where data will be buffered and retried if access is denied to the encryption key. For that reason, it is
+     * acceptable to omit the dependency for now. See: https://github.com/aws/aws-cdk/issues/15790
+     */
+    encryptionKey?.grantEncryptDecrypt(role);
+
     const destinationConfig = props.destinations[0].bind(this, {});
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
+      deliveryStreamEncryptionConfigurationInput: encryptionConfig,
       deliveryStreamName: props.deliveryStreamName,
       deliveryStreamType: 'DirectPut',
       ...destinationConfig,
