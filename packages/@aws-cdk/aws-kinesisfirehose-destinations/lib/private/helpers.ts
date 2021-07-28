@@ -140,10 +140,7 @@ export function createProcessingConfig(
 }
 
 export function createBackupConfig(scope: Construct, role: iam.IRole, props?: S3BackupDestinationProps): DestinationBackupConfig | undefined {
-  if (!props) {
-    return undefined;
-  }
-  if (props.backupMode == null && !props.backupBucket) {
+  if (!props || (props.backupMode === undefined && !props.backupBucket)) {
     return undefined;
   }
 
