@@ -17,8 +17,9 @@ import { InputValidator } from './validation';
 
 export class AssociationManager {
   public static associateProductWithPortfolio(
-    portfolio: IPortfolio, product: IProduct,
+    portfolio: IPortfolio, product: IProduct, options?: CommonConstraintOptions,
   ): { associationKey: string, cfnPortfolioProductAssociation: CfnPortfolioProductAssociation } {
+    InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options?.description);
     const associationKey = hashValues(portfolio.node.addr, product.node.addr, product.stack.node.addr);
     const constructId = `PortfolioProductAssociation${associationKey}`;
     const existingAssociation = portfolio.node.tryFindChild(constructId);
@@ -36,7 +37,6 @@ export class AssociationManager {
   }
 
   public static constrainTagUpdates(portfolio: IPortfolio, product: IProduct, options: TagUpdateConstraintOptions): void {
-    this.validateCommonConstraintOptions(portfolio, product, options);
     const association = this.associateProductWithPortfolio(portfolio, product);
     const constructId = `ResourceUpdateConstraint${association.associationKey}`;
 
@@ -57,7 +57,6 @@ export class AssociationManager {
   }
 
   public static notifyOnStackEvents(portfolio: IPortfolio, product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions): void {
-    this.validateCommonConstraintOptions(portfolio, product, options);
     const association = this.associateProductWithPortfolio(portfolio, product);
     const constructId = `LaunchNotificationConstraint${hashValues(topic.node.addr, topic.stack.node.addr, association.associationKey)}`;
 
@@ -81,9 +80,8 @@ export class AssociationManager {
     portfolio: IPortfolio, product: IProduct,
     options: ProvisioningRuleOptions,
   ): void {
-    this.validateCommonConstraintOptions(portfolio, product, options);
     const association = this.associateProductWithPortfolio(portfolio, product);
-    const constructId = `LaunchTemplateConstraint${hashValues(association.associationKey, options.assertion.ruleName)}`;
+    const constructId = `LaunchTemplateConstraint${hashValues(association.associationKey, options.rule.ruleName)}`;
 
     if (!portfolio.node.tryFindChild(constructId)) {
       const constraint = new CfnLaunchTemplateConstraint(portfolio as unknown as cdk.Resource, constructId, {
@@ -91,18 +89,17 @@ export class AssociationManager {
         description: options.description,
         portfolioId: portfolio.portfolioId,
         productId: product.productId,
-        rules: this.formatTemplateRule(portfolio.stack, options.assertion),
+        rules: this.formatTemplateRule(portfolio.stack, options.rule),
       });
 
       // Add dependsOn to force proper order in deployment.
       constraint.addDependsOn(association.cfnPortfolioProductAssociation);
     } else {
-      throw new Error(`Provisioning rule ${options.assertion.ruleName} already configured on association ${this.prettyPrintAssociation(portfolio, product)}`);
+      throw new Error(`Provisioning rule ${options.rule.ruleName} already configured on association ${this.prettyPrintAssociation(portfolio, product)}`);
     }
   }
 
   public static setLaunchRole(portfolio: IPortfolio, product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions): void {
-    this.validateCommonConstraintOptions(portfolio, product, options);
     const association = this.associateProductWithPortfolio(portfolio, product);
     // Check if a stackset deployment constraint has already been configured.
     if (portfolio.node.tryFindChild(this.stackSetConstraintLogicalId(association.associationKey))) {
@@ -127,7 +124,6 @@ export class AssociationManager {
   }
 
   public static deployWithStackSets(portfolio: IPortfolio, product: IProduct, options: StackSetsConstraintOptions) {
-    this.validateCommonConstraintOptions(portfolio, product, options);
     const association = this.associateProductWithPortfolio(portfolio, product);
     // Check if a launch role has already been set.
     if (portfolio.node.tryFindChild(this.launchRoleConstraintLogicalId(association.associationKey))) {
@@ -195,30 +191,25 @@ export class AssociationManager {
     return `- Portfolio: ${portfolio.node.path} | Product: ${product.node.path}`;
   }
 
-  private static formatTemplateRule(scope: cdk.Stack, rule: TemplateRule): string {
+  private static formatTemplateRule(stack: cdk.Stack, rule: TemplateRule): string {
     return JSON.stringify({
       [rule.ruleName]: {
-        Assertions: this.formatAssertions(scope, rule.assertions),
-        RuleCondition: rule.condition ? scope.resolve(rule.condition) : undefined,
+        Assertions: this.formatAssertions(stack, rule.assertions),
+        RuleCondition: rule.condition ? stack.resolve(rule.condition) : undefined,
       },
     });
   }
 
-  private static formatAssertions(scope: cdk.Stack, assertions : TemplateRuleAssertion[]): {[key: string]: string | undefined }[] {
-    const formattedAssertions: {[key: string]: string | undefined }[] = [];
-    assertions.reduce((formattedAssertion, assertion) => {
-      formattedAssertion.push( {
-        Assert: scope.resolve(assertion.assert),
+  private static formatAssertions(
+    stack: cdk.Stack, assertions : TemplateRuleAssertion[],
+  ): { Assert: string, AssertDescription: string | undefined }[] {
+    return assertions.reduce((formattedAssertions, assertion) => {
+      formattedAssertions.push( {
+        Assert: stack.resolve(assertion.assert),
         AssertDescription: assertion.description,
       });
-      return formattedAssertion;
-    }, formattedAssertions);
-
-    return formattedAssertions;
+      return formattedAssertions;
+    }, Array<{ Assert: string, AssertDescription: string | undefined }>());
   };
-
-  private static validateCommonConstraintOptions(portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions): void {
-    InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options.description);
-  }
 }
 

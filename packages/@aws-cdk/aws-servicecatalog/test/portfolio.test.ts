@@ -462,8 +462,7 @@ describe('portfolio associations and product constraints', () => {
   test('set provisioning rule', () => {
     portfolio.addProduct(product);
     portfolio.constrainCloudFormationParameters(product, {
-      assertion:
-      {
+      rule: {
         ruleName: 'Rule',
         assertions: [
           {
@@ -492,7 +491,7 @@ describe('portfolio associations and product constraints', () => {
 
   test('set provisioning rule still creates without explicit association', () => {
     portfolio.constrainCloudFormationParameters(product, {
-      assertion: {
+      rule: {
         ruleName: 'Rule',
         condition: cdk.Fn.conditionContains(['a', 'b'], 'text'),
         assertions: [
@@ -500,23 +499,18 @@ describe('portfolio associations and product constraints', () => {
             assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
             description: 'assert description',
           },
-          {
-            assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('OtherInstanceType')),
-            description: 'other assert description',
-          },
         ],
       },
       description: 'test description',
       messageLanguage: servicecatalog.MessageLanguage.EN,
-    },
-    );
+    });
 
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchTemplateConstraint');
   }),
 
   test('set multiple provisioning rules', () => {
     portfolio.constrainCloudFormationParameters(product, {
-      assertion: {
+      rule: {
         ruleName: 'Rule01',
         assertions: [{
           assert: cdk.Fn.conditionContains(['BucketOwnerRead'], cdk.Fn.ref('AccessControl')),
@@ -526,7 +520,7 @@ describe('portfolio associations and product constraints', () => {
     });
 
     portfolio.constrainCloudFormationParameters(product, {
-      assertion: {
+      rule: {
         ruleName: 'Rule02',
         assertions: [{
           assert: cdk.Fn.conditionContains(['BucketOwnerWrite'], cdk.Fn.ref('AccessControl')),
@@ -540,7 +534,7 @@ describe('portfolio associations and product constraints', () => {
 
   test('fails to set a duplicate provisioning rule', () => {
     portfolio.constrainCloudFormationParameters(product, {
-      assertion: {
+      rule: {
         ruleName: 'Rule01',
         assertions: [{
           assert: cdk.Fn.conditionContains(['BucketOwnerRead'], cdk.Fn.ref('AccessControl')),
@@ -551,7 +545,7 @@ describe('portfolio associations and product constraints', () => {
 
     expect(() => {
       portfolio.constrainCloudFormationParameters(product, {
-        assertion: {
+        rule: {
           ruleName: 'Rule01',
           assertions: [{
             assert: cdk.Fn.conditionContains(['BucketOwnerWrite'], cdk.Fn.ref('AccessControl')),

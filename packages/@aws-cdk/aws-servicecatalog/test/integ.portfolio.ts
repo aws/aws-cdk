@@ -80,7 +80,7 @@ secondPortfolio.deployWithStackSets(product, {
 });
 
 portfolio.constrainCloudFormationParameters(product, {
-  assertion: {
+  rule: {
     ruleName: 'testInstanceType',
     condition: cdk.Fn.conditionEquals(cdk.Fn.ref('Environment'), 'test'),
     assertions: [{

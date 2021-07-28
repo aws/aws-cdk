@@ -87,3 +87,14 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
  * ```
  */
 export interface ICfnConditionExpression extends IResolvable { }
+
+/**
+ * Interface to specify certain functions as rule-specifc.
+ * These functions can only be used in ``Rules`` section of template.
+ */
+ export interface ICfnRuleConditionExpression extends ICfnConditionExpression {
+  /**
+   * Optional field to determine if condition should be used.
+   */
+  readonly disambiguator?: boolean;
+}

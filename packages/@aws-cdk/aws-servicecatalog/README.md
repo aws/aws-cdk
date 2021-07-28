@@ -35,7 +35,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Constraints](#constraints)
   - [Tag update constraint](#tag-update-constraint)
   - [Notify on stack events](#notify-on-stack-events)
-  - [Constrain Cloudformation parameters](#constrain-cloudformation-parameters)
+  - [Cloudformation parameters constraint](#cloudformation-parameters-constraint)
   - [Set launch role](#set-launch-role)
   - [Deploy with StackSets](#deploy-with-stacksets)
 
@@ -229,14 +229,14 @@ portfolio.notifyOnStackEvents(product, topic2, {
 });
 ```
 
-### Constrain Cloudformation parameters
+### Cloudformation parameters constraint
 
 Allows you to configure the options that are available to end users when they launch a product.
 A provisioning rule consists of one or more assertions that narrow the allowable values for parameters in a product.
 You can configure multiple rules to govern the different parameters and parameter options in your products.
 For example, a parameter might define the various instance types that users can choose from when launching a stack that includes EC2 instances.
-A provisoning rule has an optional `ruleCondition` field that allows ability to configure when rules are applied.
-If a `ruleCondition` is specified, all the assertions will be applied if the condition evalutates to true.
+A provisioning rule has an optional `condition` field that allows ability to configure when rules are applied.
+If a `condition` is specified, all the assertions will be applied if the condition evalutates to true.
 For information on rule-specific intrinsic functions to define rule conditions and assertions,
 see [AWS Rule Functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-rules.html).
 

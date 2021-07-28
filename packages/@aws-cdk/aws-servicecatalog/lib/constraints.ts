@@ -72,7 +72,7 @@ export interface TemplateRuleAssertion {
   /**
    * The assertion condition.
    */
-  readonly assert: cdk.ICfnConditionExpression;
+  readonly assert: cdk.ICfnRuleConditionExpression;
 
   /**
    * The description for the asssertion
@@ -94,7 +94,7 @@ export interface TemplateRule {
    * Specify when to apply rule with a rule-specific intrinsic function.
    * @default - No rule condition provided.
    */
-  readonly condition?: cdk.ICfnConditionExpression;
+  readonly condition?: cdk.ICfnRuleConditionExpression;
 
   /**
    * A list of assertions that make up the rule.
@@ -109,5 +109,5 @@ export interface ProvisioningRuleOptions extends CommonConstraintOptions {
   /**
    * The rule with condition and assertions to apply to template.
    */
-  readonly assertion: TemplateRule;
+  readonly rule: TemplateRule;
 }
