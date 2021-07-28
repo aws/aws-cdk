@@ -317,14 +317,14 @@ Data can be transformed before being delivered to destinations. There are two ty
 data processing for delivery streams: record transformation with AWS Lambda, and record
 format conversion using a schema stored in an AWS Glue table. If both types of data
 processing are configured, then the Lambda transformation is performed first. By default,
-no data processing occurs. This construct library currently only support data
+no data processing occurs. This construct library currently only supports data
 transformation with AWS Lambda. See [#15501](https://github.com/aws/aws-cdk/issues/15501)
 to track the status of adding support for record format conversion.
 
 ### Data transformation with AWS Lambda
 
 To transform the data, Kinesis Data Firehose will call a Lambda function that you provide
-and deliver the data returned in lieu of the source record. The function must return a
+and deliver the data returned in place of the source record. The function must return a
 result that contains records in a specific format, including the following fields:
 
 - `recordId` -- the ID of the input record that corresponds the results.

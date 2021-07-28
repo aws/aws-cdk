@@ -71,7 +71,7 @@ export interface CommonDestinationProps {
   /**
    * The data transformation that should be performed on the data before writing to the destination.
    *
-   * @default [] - no data transformation will occur.
+   * @default - no data transformation will occur.
    */
   readonly processor?: firehose.IDataProcessor;
 }

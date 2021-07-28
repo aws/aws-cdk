@@ -98,12 +98,12 @@ export function createProcessingConfig(
   role: iam.IRole,
   dataProcessor?: firehose.IDataProcessor,
 ): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
-
   return dataProcessor
     ? {
       enabled: true,
       processors: [renderDataProcessor(dataProcessor, scope, role)],
-    } : undefined;
+    }
+    : undefined;
 }
 
 function renderDataProcessor(
@@ -125,6 +125,6 @@ function renderDataProcessor(
   }
   return {
     type: processorConfig.processorType,
-    parameters: parameters,
+    parameters,
   };
 }
