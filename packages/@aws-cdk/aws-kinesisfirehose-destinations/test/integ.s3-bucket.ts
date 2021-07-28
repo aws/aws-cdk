@@ -23,6 +23,8 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
     logging: true,
     logGroup: logGroup,
     compression: destinations.Compression.GZIP,
+    dataOutputPrefix: 'regularPrefix',
+    errorOutputPrefix: 'errorPrefix',
   })],
 });
 
