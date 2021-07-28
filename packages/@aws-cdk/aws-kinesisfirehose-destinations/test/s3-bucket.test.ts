@@ -272,20 +272,6 @@ describe('S3 destination', () => {
       });
     });
 
-    test('throws when only one of interval and size provided', () => {
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, {
-          bufferingInterval: cdk.Duration.minutes(1),
-        })],
-      })).toThrowError('If bufferingInterval is specified, bufferingSize must also be specified');
-
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, {
-          bufferingSize: cdk.Size.mebibytes(1),
-        })],
-      })).toThrowError('If bufferingSize is specified, bufferingInterval must also be specified');
-    });
-
     it('validates bufferingInterval', () => {
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destinations: [new firehosedestinations.S3Bucket(bucket, {
