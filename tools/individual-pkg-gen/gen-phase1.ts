@@ -37,15 +37,15 @@ function copyFilesRemovingDependencies(): void {
 
       let fileProcessed = false;
       if (sourceFileName === 'package.json') {
-        const srcPackageJson = fs.readJsonSync(source);
-        if (srcPackageJson.name === pkg.name) {
+        const phase1PackageJson = fs.readJsonSync(source);
+        if (phase1PackageJson.name === pkg.name) {
           const pkgUnscopedName = `${pkg.name.substring('@aws-cdk/'.length)}`;
 
-          srcPackageJson.name = `@aws-cdk-lib-alpha/${pkgUnscopedName}`;
-          srcPackageJson.repository.directory = `packages/individual-packages/${pkgUnscopedName}`;
+          phase1PackageJson.name = `@aws-cdk-lib-alpha/${pkgUnscopedName}`;
+          phase1PackageJson.repository.directory = `packages/individual-packages/${pkgUnscopedName}`;
 
           // JSII targets
-          const jsiiTargets = srcPackageJson.jsii.targets;
+          const jsiiTargets = phase1PackageJson.jsii.targets;
           jsiiTargets.dotnet.namespace = jsiiTargets.dotnet.namespace.replace(
             /^Amazon\.CDK\./, 'Amazon.CDK.Alpha.');
           jsiiTargets.java.package = jsiiTargets.java.package.replace(
@@ -59,23 +59,29 @@ function copyFilesRemovingDependencies(): void {
             /^aws_cdk\./, 'aws_cdk.alpha.');
 
           // disable awslint (some rules are hard-coded to @aws-cdk/core)
-          srcPackageJson.awslint = {
+          phase1PackageJson.awslint = {
             exclude: ['*:*'],
           };
 
           // add a pkglint exemption for the 'package name = dir name' rule
-          const pkglint = srcPackageJson.pkglint || {};
+          const pkglint = phase1PackageJson.pkglint || {};
           pkglint.exclude = [
             ...(pkglint.exclude || []),
             'naming/package-matches-directory',
             // the experimental packages need the "real" assert dependency
             'assert/assert-dependency',
           ];
-          srcPackageJson.pkglint = pkglint;
+          phase1PackageJson.pkglint = pkglint;
+
+          // turn off the L1 generation, which uses @aws-cdk/ modules
+          delete phase1PackageJson.scripts.gen;
+
+          /* ****** handle dependencies ****** */
+          const finalPackageJson = { ...phase1PackageJson };
 
           // regular dependencies
           const alphaDependencies: { [dep: string]: string } = {};
-          for (const dependency of Object.keys(srcPackageJson.dependencies || {})) {
+          for (const dependency of Object.keys(phase1PackageJson.dependencies || {})) {
             // all 'regular' dependencies on alpha modules will be converted to
             // a pair of devDependency on '0.0.0' and peerDependency on '^0.0.0',
             // and the package will have no regular dependencies anymore
@@ -83,7 +89,7 @@ function copyFilesRemovingDependencies(): void {
               alphaDependencies[alphaPackages[dependency]] = pkg.version;
             }
           }
-          srcPackageJson.dependencies = undefined;
+          phase1PackageJson.dependencies = undefined;
 
           // devDependencies
           const alphaDevDependencies: { [dep: string]: string } = {
@@ -91,7 +97,7 @@ function copyFilesRemovingDependencies(): void {
             // otherwise the binary cannot be found when running the 'extract' script
             'jsii-rosetta': jsiiRosettaVersion,
           };
-          const devDependencies = srcPackageJson.devDependencies || {};
+          const devDependencies = phase1PackageJson.devDependencies || {};
           for (const devDependency of Object.keys(devDependencies)) {
             if (devDependency.startsWith('@aws-cdk/')) {
               delete devDependencies[devDependency];
@@ -104,18 +110,18 @@ function copyFilesRemovingDependencies(): void {
           devDependencies['aws-cdk-lib'] = pkg.version;
           devDependencies.constructs = '^10.0.0';
           // we save the devDependencies in a temporary key in package.json
-          srcPackageJson.tmp_devDependencies = {
+          finalPackageJson.devDependencies = {
             ...devDependencies,
             ...alphaDevDependencies,
             ...alphaDependencies,
           };
-          srcPackageJson.devDependencies = {
+          phase1PackageJson.devDependencies = {
             ...alphaDevDependencies,
             ...alphaDependencies,
           };
 
           // peer dependencies
-          srcPackageJson.tmp_peerDependencies = {
+          finalPackageJson.peerDependencies = {
             'aws-cdk-lib': `^${pkg.version}`,
             'constructs': '^10.0.0',
             ...(Object.keys(alphaDependencies)
@@ -124,13 +130,11 @@ function copyFilesRemovingDependencies(): void {
                 return acc;
               }, {} as { [dep: string]: string })),
           };
-          srcPackageJson.peerDependencies = undefined;
-
-          // turn off the L1 generation, which uses @aws-cdk/ modules
-          delete srcPackageJson.scripts.gen;
+          phase1PackageJson.peerDependencies = undefined;
 
           fileProcessed = true;
-          fs.writeJsonSync(destination, srcPackageJson, { spaces: 2 });
+          fs.writeJsonSync(destination, phase1PackageJson, { spaces: 2 });
+          fs.writeJsonSync(path.join(destDir, '_package.json'), finalPackageJson, { spaces: 2 });
         }
       } else if (sourceFileName === '.gitignore') {
         // ignore everything, otherwise there are uncommitted files present in testing,

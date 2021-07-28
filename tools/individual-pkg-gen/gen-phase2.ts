@@ -1,18 +1,20 @@
+import * as path from 'path';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const lerna_project = require('@lerna/project');
 
-bringBackDependencies();
+bringBackDependencies().catch(e => {
+  // eslint-disable-next-line no-console
+  console.error(e);
+  process.exit(1);
+});
 
-function bringBackDependencies() {
+async function bringBackDependencies(): Promise<void[]> {
   const project = new lerna_project.Project();
   const separatePackages = project.getPackagesSync();
+  const promises = new Array<Promise<void>>();
   for (const separatePkg of separatePackages) {
-    const pkgJson = fs.readJsonSync(separatePkg.manifestLocation);
-    pkgJson.devDependencies = pkgJson.tmp_devDependencies;
-    pkgJson.peerDependencies = pkgJson.tmp_peerDependencies;
-    pkgJson.tmp_devDependencies = undefined;
-    pkgJson.tmp_peerDependencies = undefined;
-    fs.writeJsonSync(separatePkg.manifestLocation, pkgJson, { spaces: 2 });
+    promises.push(fs.rename(path.join(separatePkg.location, '_package.json'), separatePkg.manifestLocation));
   }
+  return Promise.all(promises);
 }
