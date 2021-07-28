@@ -208,16 +208,14 @@ export interface DeliveryStreamProps {
   /**
    * Indicates the type of customer master key (CMK) to use for server-side encryption, if any.
    *
-   * If `encryptionKey` is provided, this will be implicitly set to `CUSTOMER_MANAGED`.
-   *
-   * @default StreamEncryption.UNENCRYPTED.
+   * @default StreamEncryption.UNENCRYPTED - unless `encryptionKey` is provided, in which case this will be implicitly set to `StreamEncryption.CUSTOMER_MANAGED`
    */
   readonly encryption?: StreamEncryption;
 
   /**
    * Customer managed key to server-side encrypt data in the stream.
    *
-   * @default - if `encryption` is set to `CUSTOMER_MANAGED`, a KMS key will be created for you.
+   * @default - no KMS key will be used; if `encryption` is set to `CUSTOMER_MANAGED`, a KMS key will be created for you
    */
   readonly encryptionKey?: kms.IKey;
 }
