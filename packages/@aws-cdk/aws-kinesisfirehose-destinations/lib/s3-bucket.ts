@@ -15,7 +15,6 @@ export interface S3BucketProps extends CommonDestinationProps {
    * The length of time that Firehose buffers incoming data before delivering
    * it to the S3 bucket.
    *
-   * If bufferingInterval is specified, bufferingSize must also be specified.
    * Minimum: Duration.seconds(60)
    * Maximum: Duration.seconds(900)
    *
@@ -27,7 +26,6 @@ export interface S3BucketProps extends CommonDestinationProps {
    * The size of the buffer that Kinesis Data Firehose uses for incoming data before
    * delivering it to the S3 bucket.
    *
-   * If bufferingSize is specified, bufferingInterval must also be specified.
    * Minimum: Size.mebibytes(1)
    * Maximum: Size.mebibytes(128)
    *
@@ -43,7 +41,7 @@ export interface S3BucketProps extends CommonDestinationProps {
    * destinations because they are not supported by the Amazon Redshift COPY operation
    * that reads from the S3 bucket.
    *
-   * @default - UNCOMPRESSED
+   * @default - no compression is applied
    */
   readonly compression?: Compression;
 
@@ -72,7 +70,7 @@ export interface S3BucketProps extends CommonDestinationProps {
    *
    * @default "YYYY/MM/DD/HH"
    */
-  readonly prefix?: string;
+  readonly dataOutputPrefix?: string;
 }
 
 /**
@@ -105,7 +103,7 @@ export class S3Bucket implements firehose.IDestination {
         compressionFormat: this.props.compression?.value,
         encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),
         errorOutputPrefix: this.props.errorOutputPrefix,
-        prefix: this.props.prefix,
+        prefix: this.props.dataOutputPrefix,
       },
       dependables: [bucketGrant, ...(loggingDependables ?? [])],
     };

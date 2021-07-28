@@ -22,21 +22,21 @@ export class Compression {
   public static readonly SNAPPY = new Compression('Snappy');
 
   /**
-   * Uncompressed
-   */
-  public static readonly UNCOMPRESSED = new Compression('UNCOMPRESSED');
-
-  /**
    * ZIP
    */
   public static readonly ZIP = new Compression('ZIP');
 
-  constructor(
-    /**
-     * String value of the Compression.
-     */
-    public readonly value: string,
-  ) { }
+  /**
+   * Creates a new Compression instance with a custom value.
+   */
+  public static of(value: string): Compression {
+    return new Compression(value);
+  }
+
+  /**
+   * @param value the string value of the Compression.
+   */
+  private constructor(public readonly value: string) { }
 }
 
 /**

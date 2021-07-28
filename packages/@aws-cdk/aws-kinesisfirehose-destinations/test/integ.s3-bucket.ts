@@ -42,7 +42,7 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
     logGroup: logGroup,
     processors: [processor],
     compression: destinations.Compression.GZIP,
-    prefix: 'regularPrefix',
+    dataOutputPrefix: 'regularPrefix',
     errorOutputPrefix: 'errorPrefix',
     bufferingInterval: cdk.Duration.seconds(60),
     bufferingSize: cdk.Size.mebibytes(1),
