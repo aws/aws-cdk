@@ -39,7 +39,7 @@ export interface S3BucketProps extends CommonDestinationProps {
    *
    * @default "YYYY/MM/DD/HH"
    */
-  readonly prefix?: string;
+  readonly dataOutputPrefix?: string;
 }
 
 /**
@@ -69,7 +69,7 @@ export class S3Bucket implements firehose.IDestination {
         bucketArn: this.bucket.bucketArn,
         compressionFormat: this.props.compression?.value,
         errorOutputPrefix: this.props.errorOutputPrefix,
-        prefix: this.props.prefix,
+        prefix: this.props.dataOutputPrefix,
       },
       dependables: [bucketGrant, ...(loggingDependables ?? [])],
     };
