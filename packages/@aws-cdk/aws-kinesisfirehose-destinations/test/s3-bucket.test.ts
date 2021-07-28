@@ -222,6 +222,38 @@ describe('S3 destination', () => {
     });
   });
 
+  describe('compression', () => {
+    it('configures when specified', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        compression: firehosedestinations.Compression.GZIP,
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CompressionFormat: 'GZIP',
+        },
+      });
+    });
+
+    it('allows custom compression types', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        compression: firehosedestinations.Compression.of('SNAZZY'),
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CompressionFormat: 'SNAZZY',
+        },
+      });
+    });
+  });
+
   describe('buffering', () => {
     it('does not create configuration by default', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {

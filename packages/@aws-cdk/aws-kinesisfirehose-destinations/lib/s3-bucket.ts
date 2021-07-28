@@ -42,7 +42,7 @@ export interface S3BucketProps extends CommonDestinationProps {
    * destinations because they are not supported by the Amazon Redshift COPY operation
    * that reads from the S3 bucket.
    *
-   * @default - UNCOMPRESSED
+   * @default - no compression is applied
    */
   readonly compression?: Compression;
 
@@ -64,7 +64,7 @@ export interface S3BucketProps extends CommonDestinationProps {
    *
    * @default "YYYY/MM/DD/HH"
    */
-  readonly prefix?: string;
+  readonly dataOutputPrefix?: string;
 }
 
 /**
@@ -95,7 +95,7 @@ export class S3Bucket implements firehose.IDestination {
         bucketArn: this.bucket.bucketArn,
         compressionFormat: this.props.compression?.value,
         errorOutputPrefix: this.props.errorOutputPrefix,
-        prefix: this.props.prefix,
+        prefix: this.props.dataOutputPrefix,
       },
       dependables: [bucketGrant, ...(loggingDependables ?? [])],
     };
