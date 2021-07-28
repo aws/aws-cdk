@@ -300,6 +300,8 @@
             }
           },
           "CompressionFormat": "GZIP",
+          "ErrorOutputPrefix": "errorPrefix",
+          "Prefix": "regularPrefix",
           "RoleARN": {
             "Fn::GetAtt": [
               "DeliveryStreamS3DestinationRole500FC089",
