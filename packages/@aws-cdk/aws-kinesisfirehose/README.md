@@ -131,6 +131,7 @@ in the *KMS Developer Guide*.
 
 ```ts fixture=with-destination
 import * as kms from '@aws-cdk/aws-kms';
+
 // SSE with an AWS-owned CMK
 new DeliveryStream(this, 'Delivery Stream AWS Owned', {
   encryption: StreamEncryption.AWS_OWNED,
