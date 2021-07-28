@@ -115,7 +115,7 @@ writing them to S3.
 
 ```ts fixture=with-bucket
 const s3Destination = new destinations.S3Bucket(bucket, {
-  prefix: 'myFirehose/DeliveredYear=!{timestamp:yyyy}/anyMonth/rand=!{firehose:random-string}',
+  dataOutputPrefix: 'myFirehose/DeliveredYear=!{timestamp:yyyy}/anyMonth/rand=!{firehose:random-string}',
   errorOutputPrefix: 'myFirehoseFailures/!{firehose:error-output-type}/!{timestamp:yyyy}/anyMonth/!{timestamp:dd}',
 });
 ```
