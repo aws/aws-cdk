@@ -67,25 +67,21 @@ export function createLoggingOptions(scope: Construct, props: DestinationLogging
 }
 
 export function createBufferingHints(
-  bufferingInterval?: cdk.Duration,
-  bufferingSize?: cdk.Size,
-):firehose.CfnDeliveryStream.BufferingHintsProperty | undefined {
-  if (bufferingInterval && bufferingSize) {
-    if (bufferingInterval.toSeconds() < 60 || bufferingInterval.toSeconds() > 900) {
-      throw new Error('Buffering interval must be between 60 and 900 seconds');
-    }
-    if (bufferingSize.toMebibytes() < 1 || bufferingSize.toMebibytes() > 128) {
-      throw new Error('Buffering size must be between 1 and 128 MBs');
-    }
-    return {
-      intervalInSeconds: bufferingInterval.toSeconds(),
-      sizeInMBs: bufferingSize.toMebibytes(),
-    };
-  } else if (!bufferingInterval && bufferingSize) {
-    throw new Error('If bufferingSize is specified, bufferingInterval must also be specified');
-  } else if (bufferingInterval && !bufferingSize) {
-    throw new Error('If bufferingInterval is specified, bufferingSize must also be specified');
+  interval?: cdk.Duration,
+  size?: cdk.Size,
+): firehose.CfnDeliveryStream.BufferingHintsProperty | undefined {
+  const intervalInSeconds = interval?.toSeconds() ?? 300;
+  const sizeInMBs = size?.toMebibytes() ?? 5;
+  if (intervalInSeconds < 60 || intervalInSeconds > 900) {
+    throw new Error('Buffering interval must be between 60 and 900 seconds');
   }
+  if (sizeInMBs < 1 || sizeInMBs > 128) {
+    throw new Error('Buffering size must be between 1 and 128 MBs');
+  }
+  return {
+    intervalInSeconds,
+    sizeInMBs,
+  };
   return undefined;
 }
 
