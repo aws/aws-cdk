@@ -16,13 +16,13 @@ let virtualClusterId: string;
 
 beforeEach(() => {
   stack = new Stack();
-  virtualClusterId = 'z0yghc9wfddurogzx9ws12qr0';
+  virtualClusterId = 'x01f27i9a7cv1td52keaktr6j';
 });
 
 test('Invoke EMR Containers DeleteVirtualCluster with valid cluster ID', () => {
   // WHEN
   const task = new EmrContainersDeleteVirtualCluster(stack, 'Task', {
-    id: virtualClusterId,
+    virtualClusterId: sfn.TaskInput.fromText(virtualClusterId),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -51,7 +51,7 @@ test('Invoke EMR Containers DeleteVirtualCluster with valid cluster ID', () => {
 test('Invoke EMR Containers DeleteVirtualCluster with a RUN_JOB call', () => {
   // WHEN
   const task = new EmrContainersDeleteVirtualCluster(stack, 'Task', {
-    id: virtualClusterId,
+    virtualClusterId: sfn.TaskInput.fromText(virtualClusterId),
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   });
 
@@ -80,7 +80,7 @@ test('Invoke EMR Containers DeleteVirtualCluster with a RUN_JOB call', () => {
 test('Invoke EMR Containers DeleteVirtualCluster by passing in JSON Path', () => {
   // WHEN
   const task = new EmrContainersDeleteVirtualCluster(stack, 'Task', {
-    id: sfn.JsonPath.stringAt('$.VirtualClusterId'),
+    virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId'),
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   });
 
@@ -109,7 +109,7 @@ test('Invoke EMR Containers DeleteVirtualCluster by passing in JSON Path', () =>
 test('Valid policy statements are passed to the state machine with a REQUEST_RESPONSE call', () => {
   // WHEN
   const task = new EmrContainersDeleteVirtualCluster(stack, 'Task', {
-    id: virtualClusterId,
+    virtualClusterId: sfn.TaskInput.fromText(virtualClusterId),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -132,7 +132,7 @@ test('Valid policy statements are passed to the state machine with a REQUEST_RES
 test('Valid policy statements are passed to the state machine with a RUN_JOB call', () => {
   // WHEN
   const task = new EmrContainersDeleteVirtualCluster(stack, 'Task', {
-    id: virtualClusterId,
+    virtualClusterId: sfn.TaskInput.fromText(virtualClusterId),
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   });
 
@@ -145,7 +145,6 @@ test('Valid policy statements are passed to the state machine with a RUN_JOB cal
     PolicyDocument: {
       Statement: [{
         Action: [
-          'emr-containers:ListVirtualClusters',
           'emr-containers:DescribeVirtualCluster',
           'emr-containers:DeleteVirtualCluster',
         ],
@@ -157,7 +156,7 @@ test('Valid policy statements are passed to the state machine with a RUN_JOB cal
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new EmrContainersDeleteVirtualCluster(stack, 'EMR Containers DeleteVirtualCluster Job', {
-      id: virtualClusterId,
+      virtualClusterId: sfn.TaskInput.fromText(virtualClusterId),
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB,. Received: WAIT_FOR_TASK_TOKEN/);

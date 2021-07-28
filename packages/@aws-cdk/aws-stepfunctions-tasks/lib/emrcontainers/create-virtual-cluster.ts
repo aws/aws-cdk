@@ -1,3 +1,4 @@
+import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -7,70 +8,86 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 /**
  * Class for supported types of EMR Containers' Container Providers
  *
- * @default - EKS()
+ * @default - EKS
  */
 export class ContainerProviderTypes {
-
-  static type: string;
 
   /**
    * Supported container provider type for a EKS Cluster
    *
    * @returns 'EKS'
    */
-  static EKS(): ContainerProviderTypes {
-    return new ContainerProviderTypes('EKS');
-  }
+  static readonly EKS = new ContainerProviderTypes('EKS');
 
+  /**
+   * Use a literal string for a new ContainerProviderType.
+   * Can be extended in case a new ContainerProviderType is needed.
+   *
+   * @param type A new ContainerProvider type ex. 'EKS'
+   */
   constructor(public readonly type: string) {
-    ContainerProviderTypes.type = type;
   }
 }
 
 /**
- * The information about the container provider.
+ * Class that supports methods which return the EKS cluster's id depending on input type.
  */
-export interface ContainerProvider {
+export class EksClusterInput {
 
   /**
-   * The ID of the container cluster.
+   * Use an EKS Cluster for the EKS Cluster name
    *
-   * @default - No cluster id
+   * @param cluster - An EKS cluster
+   * @returns The name of the EKS Cluster
    */
-  readonly id: string;
+  static fromCluster(cluster: eks.ICluster): EksClusterInput {
+    return new EksClusterInput(cluster.clusterName);
+  }
 
   /**
-   * The namespace of an EKS cluster
+   * Use a Task Input for the cluster name.
    *
-   * @default - No namespace
+   * @param taskInput Task Input object that accepts multiple types of payloads, in this case a literal string.
+   * @returns The value of a Task Input object, or a literal string.
    */
-  readonly namespace?: string;
+  static fromTaskInput(taskInput: sfn.TaskInput): EksClusterInput {
+    return new EksClusterInput(taskInput.value);
+  }
 
   /**
-   * The type of the container provider.
+   * Initializes the clusterName
+   *
+   * @param clusterName The name of the EKS Cluster
    */
-  readonly type: ContainerProviderTypes;
+  private constructor(readonly clusterName: string) { }
 }
 
 /**
- * The props for a EMR Containers CreateVirtualCluster Task.
+ * The props for a EMR Containers EKS CreateVirtualCluster Task.
  */
 export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
 
   /**
-   * Name of the specified virtual cluster.
+   * EKS Cluster or TaskInput that contains the id of the cluster
    *
+   * @default - No EKS Cluster
    */
-  readonly name: string;
+  readonly eksCluster: EksClusterInput;
 
   /**
-   * The container provider of the virtual cluster
+   * The namespace of an EKS cluster
    *
-   * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_ContainerProvider.html
-   *
-   * @default - No containerProvider
+   * @default - 'default'
    */
-  readonly containerProvider: ContainerProvider
+  readonly eksNamespace?: string;
+
+  /**
+   * Name of the specified virtual cluster.
+   * If not provided defaults to Names.uniqueId()
+   *
+   * @default - Automatically generated
+   */
+  readonly virtuaClusterName?: string;
 
   /**
    * The tags assigned to the virtual cluster
@@ -111,15 +128,15 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('emr-containers', 'createVirtualCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        Name: this.props.name,
+        Name: this.props.virtuaClusterName ?? cdk.Names.uniqueId(this),
         ContainerProvider: {
-          Id: this.props.containerProvider.id,
+          Id: this.props.eksCluster.clusterName,
           Info: {
             EksInfo: {
-              Namespace: this.props.containerProvider.namespace,
+              Namespace: this.props.eksNamespace ?? 'default',
             },
           },
-          Type: this.props.containerProvider.type,
+          Type: ContainerProviderTypes.EKS.type,
         },
         Tags: this.props.tags,
       }),
@@ -136,15 +153,14 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
         resources: [
           cdk.Stack.of(this).formatArn({
             service: 'iam',
+            region: '',
             resource: 'role/aws-service-role/emr-containers.amazonaws.com',
             resourceName: 'AWSServiceRoleForAmazonEMRContainers',
           }),
         ],
         actions: ['iam:CreateServiceLinkedRole'],
         conditions: {
-          stringLike: {
-            'iam:AWSServiceName': 'emr-containers.amazonaws.com',
-          },
+          StringLike: { 'iam:AWSServiceName': 'emr-containers.amazonaws.com' },
         },
       }),
     ];

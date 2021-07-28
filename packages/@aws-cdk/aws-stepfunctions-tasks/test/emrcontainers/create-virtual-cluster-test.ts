@@ -1,7 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import { EmrContainersCreateVirtualCluster, ContainerProviderTypes, ContainerProvider } from '../../lib/emrcontainers/create-virtual-cluster';
+import { EmrContainersCreateVirtualCluster, ContainerProviderTypes, EksClusterInput } from '../../lib/emrcontainers/create-virtual-cluster';
 
 const emrContainersVirtualClusterName = 'EMR Containers Virtual Cluster';
 let stack: Stack;
@@ -18,14 +18,11 @@ beforeEach(() => {
   clusterId = 'test-eks';
 });
 
-test('Invoke emr-containers CreateVirtualCluster without EksInfo and ContainerInfo properties', () => {
+test('Invoke emr-containers CreateVirtualCluster without required properties', () => {
   // WHEN
   const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
-    name: emrContainersVirtualClusterName,
-    containerProvider: {
-      id: clusterId,
-      type: ContainerProviderTypes.EKS(),
-    },
+    virtuaClusterName: emrContainersVirtualClusterName,
+    eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -53,25 +50,18 @@ test('Invoke emr-containers CreateVirtualCluster without EksInfo and ContainerIn
       Name: emrContainersVirtualClusterName,
       ContainerProvider: {
         Id: clusterId,
-        Type: ContainerProviderTypes.EKS,
+        Type: ContainerProviderTypes.EKS.type,
       },
     },
   });
 });
 
-test('Invoke emr-containers CreateVirtualCluster with all properties', () => {
+test('Invoke emr-containers CreateVirtualCluster with all required/non-required properties', () => {
   // WHEN
   const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
-    name: emrContainersVirtualClusterName,
-    containerProvider: {
-      id: clusterId,
-      info: {
-        eksInfo: {
-          namespace: 'kube-system',
-        },
-      },
-      type: ContainerProviderTypes.EKS,
-    },
+    virtuaClusterName: emrContainersVirtualClusterName,
+    eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+    eksNamespace: 'kube-system',
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -104,20 +94,17 @@ test('Invoke emr-containers CreateVirtualCluster with all properties', () => {
             Namespace: 'kube-system',
           },
         },
-        Type: ContainerProviderTypes.EKS,
+        Type: ContainerProviderTypes.EKS.type,
       },
     },
   });
 });
 
-test('Create virtual cluster with Id from payload', () => {
+test('Create virtual cluster with clusterId from payload', () => {
   // WHEN
   const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
-    name: emrContainersVirtualClusterName,
-    containerProvider: {
-      id: sfn.TaskInput.fromDataAt('$.Id').value,
-      type: ContainerProviderTypes.EKS,
-    },
+    virtuaClusterName: emrContainersVirtualClusterName,
+    eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.ClusterId')),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -140,8 +127,8 @@ test('Create virtual cluster with Id from payload', () => {
     Parameters: {
       Name: emrContainersVirtualClusterName,
       ContainerProvider: {
-        'Id.$': '$.Id',
-        'Type': ContainerProviderTypes.EKS,
+        'Id.$': '$.ClusterId',
+        'Type': ContainerProviderTypes.EKS.type,
       },
     },
   });
@@ -150,16 +137,8 @@ test('Create virtual cluster with Id from payload', () => {
 test('Permitted role actions included for CreateVirtualCluster if service integration pattern is REQUEST_RESPONSE', () => {
   // WHEN
   const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
-    name: emrContainersVirtualClusterName,
-    containerProvider: {
-      id: clusterId,
-      info: {
-        eksInfo: {
-          namespace: 'kube-system',
-        },
-      },
-      type: ContainerProviderTypes.EKS,
-    },
+    virtuaClusterName: emrContainersVirtualClusterName,
+    eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -182,17 +161,9 @@ test('Permitted role actions included for CreateVirtualCluster if service integr
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new EmrContainersCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
-      name: emrContainersVirtualClusterName,
-      containerProvider: {
-        id: clusterId,
-        info: {
-          eksInfo: {
-            namespace: 'kube-system',
-          },
-        },
-        type: ContainerProviderTypes.EKS,
-      },
-      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      virtuaClusterName: emrContainersVirtualClusterName,
+      eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/);
 });
@@ -200,17 +171,9 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
 test('Task throws if RUN_JOB is supplied as service integration pattern', () => {
   expect(() => {
     new EmrContainersCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
-      name: emrContainersVirtualClusterName,
-      containerProvider: {
-        id: clusterId,
-        info: {
-          eksInfo: {
-            namespace: 'kube-system',
-          },
-        },
-        type: ContainerProviderTypes.EKS,
-      },
-      integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+      virtuaClusterName: emrContainersVirtualClusterName,
+      eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: RUN_JOB/);
 });
