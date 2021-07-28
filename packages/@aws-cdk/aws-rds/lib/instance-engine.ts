@@ -1343,6 +1343,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3294_2_V1 = SqlServerEngineVersion.of('14.00.3294.2.v1', '14.00');
   /** Version "14.00.3356.20.v1". */
   public static readonly VER_14_00_3356_20_V1 = SqlServerEngineVersion.of('14.00.3356.20.v1', '14.00');
+  /** Version "14.00.3381.3.v1". */
+  public static readonly VER_14_00_3381_3_V1 = SqlServerEngineVersion.of('14.00.3381.3.v1', '14.00');
 
   /** Version "15.00" (only a major version, without a specific minor version). */
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');

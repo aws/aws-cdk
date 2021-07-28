@@ -24,12 +24,17 @@ class TestStack extends Stack {
       encryptionAtRest: {
         enabled: true,
       },
+      advancedOptions: {
+        'rest.action.multi.allow_explicit_index': 'false',
+        'indices.fielddata.cache.size': '25',
+        'indices.query.bool.max_clause_count': '2048',
+      },
       // test the access policies custom resource works
       accessPolicies: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['es:ESHttp*'],
-          principals: [new iam.AnyPrincipal()],
+          principals: [new iam.AccountRootPrincipal()],
           resources: ['*'],
         }),
       ],

@@ -78,7 +78,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^26.0.24",
-    "@types/aws-lambda": "^8.10.78",
+    "@types/aws-lambda": "^8.10.79",
     "@types/lodash": "^4.14.171",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",

@@ -429,6 +429,41 @@ export = {
     test.done();
   },
 
+  'if a role is shared between projects in a VPC, the VPC Policy is only attached once'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+    });
+    const source = codebuild.Source.gitHubEnterprise({
+      httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+    });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project1', { source, role, vpc, projectName: 'P1' });
+    new codebuild.Project(stack, 'Project2', { source, role, vpc, projectName: 'P2' });
+
+    // THEN
+    // - 1 is for `ec2:CreateNetworkInterfacePermission`, deduplicated as they're part of a single policy
+    // - 1 is for `ec2:CreateNetworkInterface`, this is the separate Policy we're deduplicating
+    // We would have found 3 if the deduplication didn't work.
+    expect(stack).to(countResources('AWS::IAM::Policy', 2));
+
+    // THEN - both Projects have a DependsOn on the same policy
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Properties: { Name: 'P1' },
+      DependsOn: ['Project1PolicyDocumentF9761562'],
+    }, ResourcePart.CompleteDefinition));
+
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Properties: { Name: 'P1' },
+      DependsOn: ['Project1PolicyDocumentF9761562'],
+    }, ResourcePart.CompleteDefinition));
+
+    test.done();
+  },
+
   'can use an imported Role for a Project within a VPC'(test: Test) {
     const stack = new cdk.Stack();
 
@@ -756,6 +791,41 @@ export = {
           S3Logs: {
             Location: 'MyBucketName',
             Status: 'ENABLED',
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
+    'certificate arn'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'path',
+        }),
+        environment: {
+          certificate: {
+            bucket,
+            objectKey: 'path',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Environment: objectLike({
+          Certificate: {
+            'Fn::Join': ['', [
+              'arn:',
+              { 'Ref': 'AWS::Partition' },
+              ':s3:::my-bucket/path',
+            ]],
           },
         }),
       }));

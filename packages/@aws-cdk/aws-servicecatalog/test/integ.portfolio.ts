@@ -56,4 +56,27 @@ portfolio.notifyOnStackEvents(product, specialTopic, {
   messageLanguage: servicecatalog.MessageLanguage.EN,
 });
 
+const launchRole = new iam.Role(stack, 'LaunchRole', {
+  assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
+});
+
+portfolio.setLaunchRole(product, launchRole);
+
+const secondPortfolio = new servicecatalog.Portfolio(stack, 'SecondTestPortfolio', {
+  displayName: 'SecondTestPortfolio',
+  providerName: 'TestProvider',
+});
+
+const adminRole = new iam.Role(stack, 'AdminRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+secondPortfolio.deployWithStackSets(product, {
+  accounts: ['000000000000', '111111111111', '222222222222'],
+  regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+  adminRole: adminRole,
+  executionRoleName: 'StackSetExecutionRole',
+  allowStackSetInstanceOperations: true,
+});
+
 app.synth();
