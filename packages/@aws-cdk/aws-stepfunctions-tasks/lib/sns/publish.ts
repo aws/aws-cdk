@@ -223,7 +223,7 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
   }
   if (Array.isArray(value)) {
     if (dataType !== MessageAttributeDataType.STRING_ARRAY) {
-      throw new Error(`Requested SNS message attribute type was ${dataType} but value was of type Array`);
+      throw new Error(`Requested SNS message attribute type was ${dataType} but ${value} was of type Array`);
     }
     const validArrayTypes = ['string', 'boolean', 'number'];
     value.forEach((v) => {
