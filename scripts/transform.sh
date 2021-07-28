@@ -6,14 +6,18 @@ scriptdir=$(cd $(dirname $0) && pwd)
 runtarget="build"
 run_tests="true"
 extract_snippets="false"
+skip_build=""
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: transform.sh [--skip-test] [--extract]"
+            echo "Usage: transform.sh [--skip-test/build] [--extract]"
             exit 1
             ;;
         --skip-test|--skip-tests)
             run_tests="false"
+            ;;
+        --skip-build)
+            skip_build="true"
             ;;
         --extract)
             extract_snippets="true"
@@ -39,4 +43,6 @@ cd ${scriptdir}/../packages/individual-packages
 node ../../tools/individual-packages-gen/gen-phase1.js
 yarn lerna bootstrap
 node ../../tools/individual-packages-gen/gen-phase2.js
-PHASE=transform yarn lerna run --stream $runtarget
+if [ "$skip_build" != "true" ]; then
+  PHASE=transform yarn lerna run --stream $runtarget
+fi
