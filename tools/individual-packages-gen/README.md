@@ -18,3 +18,5 @@ We do the translation in 2 phases:
 
 We have to do it this way,
 because otherwise `lerna bootstrap` would fail on the main monorepo packages like `cdk-build-tools`.
+
+The entrypoint of the package is the [`bin/individual-packages-gen.sh` file](bin/individual-packages-gen.sh).
