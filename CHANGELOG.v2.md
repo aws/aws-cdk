@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.15](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.14...v2.0.0-rc.15) (2021-07-28)
+
+
+### Features
+
+* **lambda-nodejs:** source map mode ([#15621](https://github.com/aws/aws-cdk/issues/15621)) ([b934976](https://github.com/aws/aws-cdk/commit/b934976f057cd395de660dc4099e2303415cdc78)), closes [#14857](https://github.com/aws/aws-cdk/issues/14857)
+* **rds:** allow setting copyTagsToSnapshot on Clusters ([#15553](https://github.com/aws/aws-cdk/issues/15553)) ([f7c6289](https://github.com/aws/aws-cdk/commit/f7c628948e7f71df7a95cb00cdc2746e2e46dc03)), closes [#15521](https://github.com/aws/aws-cdk/issues/15521)
+
+
+### Bug Fixes
+
+* **iam:** `PrincipalWithConditions.addCondition` does not work ([#15414](https://github.com/aws/aws-cdk/issues/15414)) ([fdce08c](https://github.com/aws/aws-cdk/commit/fdce08cee6f0eb58aad93572641a1dd4b59e8d37))
+
 ## [2.0.0-rc.14](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.13...v2.0.0-rc.14) (2021-07-21)
 
 ## [2.0.0-rc.13](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.12...v2.0.0-rc.13) (2021-07-20)
