@@ -9,6 +9,7 @@ export interface SqsEventSourceProps {
    * event with all the retrieved records.
    *
    * Valid Range: Minimum value of 1. Maximum value of 10.
+   * If `maxBatchingWindow` is configured, this value can go up to 10,000.
    *
    * @default 10
    */
