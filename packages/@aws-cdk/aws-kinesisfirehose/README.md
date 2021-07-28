@@ -115,7 +115,7 @@ writing them to S3.
 
 ```ts fixture=with-bucket
 const s3Destination = new destinations.S3Bucket(bucket, {
-  prefix: 'myFirehose/DeliveredYear=!{timestamp:yyyy}/anyMonth/rand=!{firehose:random-string}',
+  dataOutputPrefix: 'myFirehose/DeliveredYear=!{timestamp:yyyy}/anyMonth/rand=!{firehose:random-string}',
   errorOutputPrefix: 'myFirehoseFailures/!{firehose:error-output-type}/!{timestamp:yyyy}/anyMonth/!{timestamp:dd}',
 });
 ```
@@ -368,14 +368,14 @@ Data can be transformed before being delivered to destinations. There are two ty
 data processing for delivery streams: record transformation with AWS Lambda, and record
 format conversion using a schema stored in an AWS Glue table. If both types of data
 processing are configured, then the Lambda transformation is performed first. By default,
-no data processing occurs. This construct library currently only support data
+no data processing occurs. This construct library currently only supports data
 transformation with AWS Lambda. See [#15501](https://github.com/aws/aws-cdk/issues/15501)
 to track the status of adding support for record format conversion.
 
 ### Data transformation with AWS Lambda
 
 To transform the data, Kinesis Data Firehose will call a Lambda function that you provide
-and deliver the data returned in lieu of the source record. The function must return a
+and deliver the data returned in place of the source record. The function must return a
 result that contains records in a specific format, including the following fields:
 
 - `recordId` -- the ID of the input record that corresponds the results.
@@ -390,11 +390,11 @@ network timeout or because of hitting an invocation limit, the invocation is ret
 times by default, but can be configured using `retries` in the processor configuration.
 
 ```ts fixture=with-bucket
-// Provide a Lambda function that will transform records before delivery, with custom
-// buffering and retry configuration
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '@aws-cdk/aws-lambda';
 
+// Provide a Lambda function that will transform records before delivery, with custom
+// buffering and retry configuration
 const lambdaFunction = new lambda.Function(this, 'Processor', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
@@ -406,14 +406,14 @@ const lambdaProcessor = new LambdaFunctionProcessor(lambdaFunction, {
   retries: 5,
 });
 const s3Destination = new destinations.S3Bucket(bucket, {
-  processors: [lambdaProcessor],
+  processor: lambdaProcessor,
 });
 new DeliveryStream(this, 'Delivery Stream', {
   destinations: [destination],
 });
 ```
 
-[Example Lambda data processor performing the identity transformation.](test/integ.s3-bucket.ts)
+[Example Lambda data processor performing the identity transformation.](test/integ.s3-bucket.lit.ts)
 
 See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
 in the *Kinesis Data Firehose Developer Guide*.

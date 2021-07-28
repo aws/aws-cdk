@@ -8,7 +8,6 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as firehosedestinations from '../lib';
-import { S3Bucket } from '../lib';
 
 describe('S3 destination', () => {
   let stack: cdk.Stack;
@@ -31,10 +30,6 @@ describe('S3 destination', () => {
     expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
       ExtendedS3DestinationConfiguration: {
         BucketARN: stack.resolve(bucket.bucketArn),
-        BufferingHints: {
-          IntervalInSeconds: 300,
-          SizeInMBs: 5,
-        },
         CloudWatchLoggingOptions: {
           Enabled: true,
           LogGroupName: anything(),
@@ -246,7 +241,7 @@ describe('S3 destination', () => {
       basicLambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
       destinationWithBasicLambdaProcessor = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
-        processors: [basicLambdaProcessor],
+        processor: basicLambdaProcessor,
       });
     });
 
@@ -286,7 +281,7 @@ describe('S3 destination', () => {
       });
       const destination = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
-        processors: [processor],
+        processor: processor,
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destinations: [destination],
@@ -349,17 +344,6 @@ describe('S3 destination', () => {
         DependsOn: ['DestinationRoleDefaultPolicy1185C75D'],
       }, ResourcePart.CompleteDefinition);
     });
-
-    it('throws error if more than one processor is provided', () => {
-      const destination = new firehosedestinations.S3Bucket(bucket, {
-        role: destinationRole,
-        processors: [basicLambdaProcessor, basicLambdaProcessor],
-      });
-
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
-      })).toThrowError('Only one processor is allowed per delivery stream destination');
-    });
   });
 
   describe('compression', () => {
@@ -397,7 +381,7 @@ describe('S3 destination', () => {
   describe('buffering', () => {
     it('creates configuration when interval and size provided', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(1),
         })],
@@ -415,14 +399,14 @@ describe('S3 destination', () => {
 
     it('validates bufferingInterval', () => {
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.seconds(30),
           bufferingSize: cdk.Size.mebibytes(1),
         })],
       })).toThrowError('Buffering interval must be between 60 and 900 seconds');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(16),
           bufferingSize: cdk.Size.mebibytes(1),
         })],
@@ -431,7 +415,7 @@ describe('S3 destination', () => {
 
     it('validates bufferingSize', () => {
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(0),
 
@@ -439,7 +423,7 @@ describe('S3 destination', () => {
       })).toThrowError('Buffering size must be between 1 and 128 MBs');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(256),
         })],

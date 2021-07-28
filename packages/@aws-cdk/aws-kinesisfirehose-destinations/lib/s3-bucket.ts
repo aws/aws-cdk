@@ -39,7 +39,7 @@ export class S3Bucket implements firehose.IDestination {
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
-        processingConfiguration: createProcessingConfig(scope, role, this.props.processors),
+        processingConfiguration: createProcessingConfig(scope, role, this.props.processor),
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),

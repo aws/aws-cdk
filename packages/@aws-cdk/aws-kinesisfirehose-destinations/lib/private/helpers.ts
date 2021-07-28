@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -81,6 +82,10 @@ export function createBufferingHints(
   interval?: cdk.Duration,
   size?: cdk.Size,
 ): firehose.CfnDeliveryStream.BufferingHintsProperty | undefined {
+  if (!interval && !size) {
+    return undefined;
+  }
+
   const intervalInSeconds = interval?.toSeconds() ?? 300;
   const sizeInMBs = size?.toMebibytes() ?? 5;
   if (intervalInSeconds < 60 || intervalInSeconds > 900) {
@@ -93,7 +98,6 @@ export function createBufferingHints(
     intervalInSeconds,
     sizeInMBs,
   };
-  return undefined;
 }
 
 export function createEncryptionConfig(role: iam.IRole, encryptionKey?: kms.IKey): firehose.CfnDeliveryStream.EncryptionConfigurationProperty {
@@ -106,37 +110,37 @@ export function createEncryptionConfig(role: iam.IRole, encryptionKey?: kms.IKey
 export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
-  dataProcessors?: firehose.IDataProcessor[],
+  dataProcessor?: firehose.IDataProcessor,
 ): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
-  if (dataProcessors && dataProcessors.length > 1) {
-    throw new Error('Only one processor is allowed per delivery stream destination');
-  }
-  if (dataProcessors && dataProcessors.length > 0) {
-    const processors = dataProcessors.map((processor) => {
-      const processorConfig = processor.bind(scope, { role });
-      const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
-      parameters.push(processorConfig.processorIdentifier);
-      if (processor.props.bufferInterval) {
-        parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
-      }
-      if (processor.props.bufferSize) {
-        parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
-      }
-      if (processor.props.retries) {
-        parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
-      }
-      return {
-        type: processorConfig.processorType,
-        parameters: parameters,
-      };
-    });
-
-    return {
+  return dataProcessor
+    ? {
       enabled: true,
-      processors: processors,
-    };
+      processors: [renderDataProcessor(dataProcessor, scope, role)],
+    }
+    : undefined;
+}
+
+function renderDataProcessor(
+  processor: firehose.IDataProcessor,
+  scope: Construct,
+  role: iam.IRole,
+): CfnDeliveryStream.ProcessorProperty {
+  const processorConfig = processor.bind(scope, { role });
+  const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
+  parameters.push(processorConfig.processorIdentifier);
+  if (processor.props.bufferInterval) {
+    parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
   }
-  return undefined;
+  if (processor.props.bufferSize) {
+    parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
+  }
+  if (processor.props.retries) {
+    parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
+  }
+  return {
+    type: processorConfig.processorType,
+    parameters,
+  };
 }
 
 export function createBackupConfig(scope: Construct, role: iam.IRole, props?: DestinationS3BackupProps): DestinationBackupConfig | undefined {
