@@ -559,16 +559,12 @@ describe('S3 destination', () => {
       });
     });
 
-    it('throws error if backupMode set FAILED', () => {
-      const destination = new firehosedestinations.S3Bucket(bucket, {
+    it('throws error if backupMode set to FAILED', () => {
+      expect(() => new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
         backupConfiguration: {
           backupMode: firehosedestinations.BackupMode.FAILED,
         },
-      });
-
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
       })).toThrowError('S3 destinations do not support BackupMode.FAILED');
     });
 

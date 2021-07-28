@@ -15,7 +15,11 @@ export interface S3BucketProps extends CommonS3Props, CommonDestinationProps {
  * An S3 bucket destination for data from a Kinesis Data Firehose delivery stream.
  */
 export class S3Bucket implements firehose.IDestination {
-  constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) { }
+  constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
+    if (this.props.backupConfiguration?.backupMode === BackupMode.FAILED) {
+      throw new Error('S3 destinations do not support BackupMode.FAILED');
+    }
+  }
 
   bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
     const role = this.props.role ?? new iam.Role(scope, 'S3 Destination Role', {
@@ -51,9 +55,6 @@ export class S3Bucket implements firehose.IDestination {
   }
 
   private getS3BackupMode(): string {
-    if (this.props.backupConfiguration?.backupMode === BackupMode.FAILED) {
-      throw new Error('S3 destinations do not support BackupMode.FAILED');
-    }
     if (this.props.backupConfiguration?.backupBucket || this.props.backupConfiguration?.backupMode === BackupMode.ALL) {
       return 'Enabled';
     }
