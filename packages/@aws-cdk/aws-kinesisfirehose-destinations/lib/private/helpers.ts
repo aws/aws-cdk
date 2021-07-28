@@ -44,7 +44,7 @@ interface ConfigWithDependables {
   readonly dependables: cdk.IDependable[];
 }
 
-export interface DestinationLoggingOutput extends ConfigWithDependables {
+export interface DestinationLoggingConfig extends ConfigWithDependables {
   /**
    * Logging options that will be injected into the destination configuration.
    */
@@ -58,7 +58,7 @@ export interface DestinationBackupConfig extends ConfigWithDependables {
   readonly backupConfig: firehose.CfnDeliveryStream.S3DestinationConfigurationProperty;
 }
 
-export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingOutput | undefined {
+export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingConfig | undefined {
   if (props.logging === false && props.logGroup) {
     throw new Error('logging cannot be set to false when logGroup is provided');
   }
