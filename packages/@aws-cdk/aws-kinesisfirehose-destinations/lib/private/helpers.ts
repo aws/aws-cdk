@@ -98,23 +98,21 @@ export function createProcessingConfig(
   role: iam.IRole,
   dataProcessors?: firehose.IDataProcessor[],
 ): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
+
   if (dataProcessors && dataProcessors.length > 1) {
     throw new Error('Only one processor is allowed per delivery stream destination');
   }
-  if (dataProcessors && dataProcessors.length > 0) {
-    const processors = dataProcessors.map((processor) => {
-      return createCfnProcessorProperty(processor, scope, role);
-    });
 
-    return {
+  return dataProcessors && dataProcessors.length > 0
+    ? {
       enabled: true,
-      processors: processors,
-    };
-  }
-  return undefined;
+      processors: dataProcessors.map((processor) => {
+        return renderDataProcessor(processor, scope, role);
+      }),
+    } : undefined;
 }
 
-function createCfnProcessorProperty(
+function renderDataProcessor(
   processor: firehose.IDataProcessor,
   scope: Construct,
   role: iam.IRole,
