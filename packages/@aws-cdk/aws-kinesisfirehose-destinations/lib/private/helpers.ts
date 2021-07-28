@@ -96,19 +96,13 @@ export function createEncryptionConfig(role: iam.IRole, encryptionKey?: kms.IKey
 export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
-  dataProcessors?: firehose.IDataProcessor[],
+  dataProcessor?: firehose.IDataProcessor,
 ): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
 
-  if (dataProcessors && dataProcessors.length > 1) {
-    throw new Error('Only one processor is allowed per delivery stream destination');
-  }
-
-  return dataProcessors && dataProcessors.length > 0
+  return dataProcessor
     ? {
       enabled: true,
-      processors: dataProcessors.map((processor) => {
-        return renderDataProcessor(processor, scope, role);
-      }),
+      processors: [renderDataProcessor(dataProcessor, scope, role)],
     } : undefined;
 }
 

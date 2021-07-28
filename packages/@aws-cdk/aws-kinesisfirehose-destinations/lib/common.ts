@@ -69,9 +69,9 @@ export interface CommonDestinationProps {
   readonly role?: iam.IRole;
 
   /**
-   * The series of data transformations that should be performed on the data before writing to the destination.
+   * The data transformation that should be performed on the data before writing to the destination.
    *
    * @default [] - no data transformation will occur.
    */
-  readonly processors?: firehose.IDataProcessor[];
+  readonly processor?: firehose.IDataProcessor;
 }

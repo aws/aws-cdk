@@ -245,7 +245,7 @@ describe('S3 destination', () => {
       basicLambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
       destinationWithBasicLambdaProcessor = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
-        processors: [basicLambdaProcessor],
+        processor: basicLambdaProcessor,
       });
     });
 
@@ -285,7 +285,7 @@ describe('S3 destination', () => {
       });
       const destination = new firehosedestinations.S3Bucket(bucket, {
         role: destinationRole,
-        processors: [processor],
+        processor: processor,
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destinations: [destination],
@@ -347,17 +347,6 @@ describe('S3 destination', () => {
       expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
         DependsOn: ['DestinationRoleDefaultPolicy1185C75D'],
       }, ResourcePart.CompleteDefinition);
-    });
-
-    it('throws error if more than one processor is provided', () => {
-      const destination = new firehosedestinations.S3Bucket(bucket, {
-        role: destinationRole,
-        processors: [basicLambdaProcessor, basicLambdaProcessor],
-      });
-
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
-      })).toThrowError('Only one processor is allowed per delivery stream destination');
     });
   });
 
