@@ -74,10 +74,11 @@ function copyFilesRemovingDependencies(): void {
           phase1PackageJson.pkglint = pkglint;
 
           // turn off the L1 generation, which uses @aws-cdk/ modules
-          delete phase1PackageJson.scripts.gen;
+          if (phase1PackageJson.scripts?.gen === 'cfn2ts') {
+            delete phase1PackageJson.scripts.gen;
+          }
 
           /* ****** handle dependencies ****** */
-          const finalPackageJson = { ...phase1PackageJson };
 
           // regular dependencies
           const alphaDependencies: { [dep: string]: string } = {};
@@ -91,6 +92,7 @@ function copyFilesRemovingDependencies(): void {
           }
           phase1PackageJson.dependencies = undefined;
 
+          const finalPackageJson = { ...phase1PackageJson };
           // devDependencies
           const alphaDevDependencies: { [dep: string]: string } = {
             // we need jsii-rosetta in the dependencies,
