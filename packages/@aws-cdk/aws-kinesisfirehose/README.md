@@ -131,6 +131,7 @@ in the *KMS Developer Guide*.
 
 ```ts fixture=with-destination
 import * as kms from '@aws-cdk/aws-kms';
+
 // SSE with an AWS-owned CMK
 new DeliveryStream(this, 'Delivery Stream AWS Owned', {
   encryption: StreamEncryption.AWS_OWNED,
@@ -214,6 +215,7 @@ are pre-populated with the correct dimensions for the delivery stream.
 
 ```ts fixture=with-delivery-stream
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
 // Alarm that triggers when the per-second average of incoming bytes exceeds 90% of the current service limit
 const incomingBytesPercentOfLimit = new cloudwatch.MathExpression({
   expression: 'incomingBytes / 300 / bytePerSecLimit',
@@ -222,7 +224,7 @@ const incomingBytesPercentOfLimit = new cloudwatch.MathExpression({
     bytePerSecLimit: deliveryStream.metric('BytesPerSecondLimit'),
   },
 });
-new Alarm(this, 'Alarm', {
+new cloudwatch.Alarm(this, 'Alarm', {
   metric: incomingBytesPercentOfLimit,
   threshold: 0.9,
   evaluationPeriods: 3,
@@ -306,6 +308,7 @@ can be granted permissions to a delivery stream by calling:
 
 ```ts fixture=with-delivery-stream
 import * as iam from '@aws-cdk/aws-iam';
+
 const lambdaRole = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
