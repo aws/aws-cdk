@@ -158,15 +158,16 @@ describe('delivery stream', () => {
   });
 
   describe('metric methods provide a Metric with configured and attached properties', () => {
+    let deliveryStream: firehose.DeliveryStream;
+
     beforeEach(() => {
       stack = new cdk.Stack(undefined, undefined, { env: { account: '000000000000', region: 'us-west-1' } });
+      deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
+        destinations: [mockS3Destination],
+      });
     });
 
     test('metric', () => {
-      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
-        destinations: [mockS3Destination],
-      });
-
       const metric = deliveryStream.metric('IncomingRecords');
 
       expect(metric).toMatchObject({
@@ -179,11 +180,8 @@ describe('delivery stream', () => {
         },
       });
     });
-    test('metricIncomingBytes', () => {
-      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
-        destinations: [mockS3Destination],
-      });
 
+    test('metricIncomingBytes', () => {
       const metric = deliveryStream.metricIncomingBytes();
 
       expect(metric).toMatchObject({
@@ -199,10 +197,6 @@ describe('delivery stream', () => {
     });
 
     test('metricIncomingRecords', () => {
-      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
-        destinations: [mockS3Destination],
-      });
-
       const metric = deliveryStream.metricIncomingRecords();
 
       expect(metric).toMatchObject({
@@ -218,10 +212,6 @@ describe('delivery stream', () => {
     });
 
     test('metricBackupToS3Bytes', () => {
-      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
-        destinations: [mockS3Destination],
-      });
-
       const metric = deliveryStream.metricBackupToS3Bytes();
 
       expect(metric).toMatchObject({
@@ -237,10 +227,6 @@ describe('delivery stream', () => {
     });
 
     test('metricBackupToS3DataFreshness', () => {
-      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
-        destinations: [mockS3Destination],
-      });
-
       const metric = deliveryStream.metricBackupToS3DataFreshness();
 
       expect(metric).toMatchObject({
@@ -256,10 +242,6 @@ describe('delivery stream', () => {
     });
 
     test('metricBackupToS3Records', () => {
-      const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
-        destinations: [mockS3Destination],
-      });
-
       const metric = deliveryStream.metricBackupToS3Records();
 
       expect(metric).toMatchObject({
