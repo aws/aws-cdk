@@ -6,7 +6,6 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as firehosedestinations from '../lib';
-import { S3Bucket } from '../lib';
 
 describe('S3 destination', () => {
   let stack: cdk.Stack;
@@ -257,7 +256,7 @@ describe('S3 destination', () => {
   describe('buffering', () => {
     it('creates configuration when interval and size provided', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(1),
         })],
@@ -275,13 +274,13 @@ describe('S3 destination', () => {
 
     test('throws when only one of interval and size provided', () => {
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
         })],
       })).toThrowError('If bufferingInterval is specified, bufferingSize must also be specified');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingSize: cdk.Size.mebibytes(1),
         })],
       })).toThrowError('If bufferingSize is specified, bufferingInterval must also be specified');
@@ -289,14 +288,14 @@ describe('S3 destination', () => {
 
     it('validates bufferingInterval', () => {
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.seconds(30),
           bufferingSize: cdk.Size.mebibytes(1),
         })],
       })).toThrowError('Buffering interval must be between 60 and 900 seconds');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(16),
           bufferingSize: cdk.Size.mebibytes(1),
         })],
@@ -305,7 +304,7 @@ describe('S3 destination', () => {
 
     it('validates bufferingSize', () => {
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(0),
 
@@ -313,7 +312,7 @@ describe('S3 destination', () => {
       })).toThrowError('Buffering size must be between 1 and 128 MBs');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destinations: [new S3Bucket(bucket, {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(256),
         })],
