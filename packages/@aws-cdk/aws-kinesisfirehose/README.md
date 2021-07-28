@@ -362,7 +362,7 @@ new DeliveryStream(this, 'Delivery Stream', {
 });
 ```
 
-[Example Lambda data processor performing the identity transformation.](test/integ.s3-bucket.ts)
+[Example Lambda data processor performing the identity transformation.](test/integ.s3-bucket.lit.ts)
 
 See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
 in the *Kinesis Data Firehose Developer Guide*.
