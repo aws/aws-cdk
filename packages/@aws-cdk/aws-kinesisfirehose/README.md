@@ -156,7 +156,7 @@ new DeliveryStream(this, 'Delivery Stream Implicit Customer Managed', {
 });
 // SSE with an customer-managed CMK that is explicitly specified
 const key = new kms.Key(this, 'Key');
-new DeliveryStream(this, 'Delivery Stream Explicit Customer Managed'', {
+new DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
   encryptionKey: key,
   destinations: [destination],
 });

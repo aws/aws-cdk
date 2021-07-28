@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Size } from '@aws-cdk/core';
+
 import { Construct } from 'constructs';
 
 /**
@@ -93,33 +93,4 @@ export interface IDataProcessor {
    * necessary configuration to register as a processor.
    */
   bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig;
-}
-
-/**
- * Use a Lambda function to transform records.
- */
-export class LambdaFunctionProcessor implements IDataProcessor {
-  /**
-   * The constructor props of the LambdaFunctionProcessor.
-   */
-  public readonly props: DataProcessorProps;
-
-  private readonly processorIdentifier: DataProcessorIdentifier;
-
-  constructor(private readonly lambdaFunction: lambda.IFunction, props: DataProcessorProps = {}) {
-    this.props = props;
-    this.processorIdentifier = {
-      parameterName: 'LambdaArn',
-      parameterValue: lambdaFunction.functionArn,
-    };
-  }
-
-  public bind(_scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
-    this.lambdaFunction.grantInvoke(options.role);
-
-    return {
-      processorType: 'Lambda',
-      processorIdentifier: this.processorIdentifier,
-    };
-  }
 }
