@@ -72,33 +72,6 @@ describe('S3 destination', () => {
     }, MatchStyle.SUPERSET);
   });
 
-  it('grants encrypt/decrypt access to the destination encryptionKey', () => {
-    const key = new kms.Key(stack, 'Key');
-
-    new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destinations: [new firehosedestinations.S3Bucket(bucket, {
-        encryptionKey: key,
-        role: destinationRole,
-      })],
-    });
-
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      Roles: [stack.resolve(destinationRole.roleName)],
-      PolicyDocument: {
-        Statement: arrayWith({
-          Action: [
-            'kms:Decrypt',
-            'kms:Encrypt',
-            'kms:ReEncrypt*',
-            'kms:GenerateDataKey*',
-          ],
-          Effect: 'Allow',
-          Resource: stack.resolve(key.keyArn),
-        }),
-      },
-    });
-  });
-
   it('grants read/write access to the bucket', () => {
     const destination = new firehosedestinations.S3Bucket(bucket, { role: destinationRole });
 
