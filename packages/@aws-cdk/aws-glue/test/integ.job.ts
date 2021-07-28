@@ -25,7 +25,7 @@ script.bucket.grantRead(minimalStreamingJob.role);
 
 const minimalPythonShellJob = new glue.Job(stack, 'MinimalPythonShellJob', {
   glueVersion: glue.GlueVersion.V2_0,
-  jobCommand: glue.JobCommand.python(script.s3ObjectUrl),
+  jobCommand: glue.JobCommand.pythonShell(script.s3ObjectUrl),
 });
 script.bucket.grantRead(minimalPythonShellJob.role);
 

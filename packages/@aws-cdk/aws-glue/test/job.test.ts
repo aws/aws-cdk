@@ -27,9 +27,9 @@ describe('WorkerType', () => {
 });
 
 describe('JobCommandName', () => {
-  test('.GLUE_ETL', () => expect(glue.JobCommandName.GLUE_ETL.name).toEqual('glueetl'));
+  test('.ETL', () => expect(glue.JobCommandName.ETL.name).toEqual('glueetl'));
 
-  test('.GLUE_STREAMING', () => expect(glue.JobCommandName.GLUE_STREAMING.name).toEqual('gluestreaming'));
+  test('.STREAMING', () => expect(glue.JobCommandName.STREAMING.name).toEqual('gluestreaming'));
 
   test('.PYTHON_SHELL', () => expect(glue.JobCommandName.PYTHON_SHELL.name).toEqual('pythonshell'));
 
@@ -47,7 +47,7 @@ describe('JobCommand', () => {
     let jobCommandName: glue.JobCommandName;
 
     // known command names + custom one
-    [glue.JobCommandName.GLUE_STREAMING, glue.JobCommandName.PYTHON_SHELL, glue.JobCommandName.GLUE_ETL,
+    [glue.JobCommandName.STREAMING, glue.JobCommandName.PYTHON_SHELL, glue.JobCommandName.ETL,
       glue.JobCommandName.of('CustomName')].forEach((name) => {
       describe(`with ${name} JobCommandName`, () => {
 
@@ -75,24 +75,24 @@ describe('JobCommand', () => {
     });
   });
 
-  test('.etl() uses GLUE_ETL JobCommandName', () => {
+  test('.etl() uses ETL JobCommandName', () => {
     const jobCommand = glue.JobCommand.etl(scriptLocation);
 
-    expect(jobCommand.name).toEqual(glue.JobCommandName.GLUE_ETL);
+    expect(jobCommand.name).toEqual(glue.JobCommandName.ETL);
     expect(jobCommand.scriptLocation).toEqual(scriptLocation);
     expect(jobCommand.pythonVersion).toBeUndefined();
   });
 
-  test('.streaming() uses GLUE_STREAMING JobCommandName', () => {
+  test('.streaming() uses STREAMING JobCommandName', () => {
     const jobCommand = glue.JobCommand.streaming(scriptLocation, glue.PythonVersion.THREE);
 
-    expect(jobCommand.name).toEqual(glue.JobCommandName.GLUE_STREAMING);
+    expect(jobCommand.name).toEqual(glue.JobCommandName.STREAMING);
     expect(jobCommand.scriptLocation).toEqual(scriptLocation);
     expect(jobCommand.pythonVersion).toEqual(glue.PythonVersion.THREE);
   });
 
-  test('.python() uses PYTHON_SHELL JobCommandName', () => {
-    const jobCommand = glue.JobCommand.python(scriptLocation, glue.PythonVersion.TWO);
+  test('.pythonShell() uses PYTHON_SHELL JobCommandName', () => {
+    const jobCommand = glue.JobCommand.pythonShell(scriptLocation, glue.PythonVersion.TWO);
 
     expect(jobCommand.name).toEqual(glue.JobCommandName.PYTHON_SHELL);
     expect(jobCommand.scriptLocation).toEqual(scriptLocation);

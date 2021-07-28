@@ -187,12 +187,12 @@ export class JobCommandName {
   /**
    * Command for running a Glue ETL job.
    */
-  public static readonly GLUE_ETL = new JobCommandName('glueetl');
+  public static readonly ETL = new JobCommandName('glueetl');
 
   /**
    * Command for running a Glue streaming job.
    */
-  public static readonly GLUE_STREAMING = new JobCommandName('gluestreaming');
+  public static readonly STREAMING = new JobCommandName('gluestreaming');
 
   /**
    * Command for running a Glue python shell job.
@@ -236,7 +236,7 @@ export class JobCommand {
    * @param pythonVersion specifies the Python shell version for the ETL job. Versions supported vary depending on GlueVersion.
    */
   public static etl(scriptLocation: string, pythonVersion?: PythonVersion) {
-    return new JobCommand(JobCommandName.GLUE_ETL, scriptLocation, pythonVersion);
+    return new JobCommand(JobCommandName.ETL, scriptLocation, pythonVersion);
   }
 
   /**
@@ -246,7 +246,7 @@ export class JobCommand {
    * @param pythonVersion specifies the Python shell version for the streaming job. Versions supported vary depending on GlueVersion.
    */
   public static streaming(scriptLocation: string, pythonVersion?: PythonVersion) {
-    return new JobCommand(JobCommandName.GLUE_STREAMING, scriptLocation, pythonVersion);
+    return new JobCommand(JobCommandName.STREAMING, scriptLocation, pythonVersion);
   }
 
   /**
@@ -255,7 +255,7 @@ export class JobCommand {
    * @param scriptLocation specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job.
    * @param pythonVersion the Python version being used to execute a Python shell job.
    */
-  public static python(scriptLocation: string, pythonVersion?: PythonVersion) {
+  public static pythonShell(scriptLocation: string, pythonVersion?: PythonVersion) {
     return new JobCommand(JobCommandName.PYTHON_SHELL, scriptLocation, pythonVersion);
   }
 
