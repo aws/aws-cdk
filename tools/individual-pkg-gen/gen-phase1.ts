@@ -44,20 +44,6 @@ function copyFilesRemovingDependencies(): void {
           phase1PackageJson.name = `@aws-cdk-lib-alpha/${pkgUnscopedName}`;
           phase1PackageJson.repository.directory = `packages/individual-packages/${pkgUnscopedName}`;
 
-          // JSII targets
-          const jsiiTargets = phase1PackageJson.jsii.targets;
-          jsiiTargets.dotnet.namespace = jsiiTargets.dotnet.namespace.replace(
-            /^Amazon\.CDK\./, 'Amazon.CDK.Alpha.');
-          jsiiTargets.java.package = jsiiTargets.java.package.replace(
-            /^software\.amazon\.awscdk\./, 'software.amazon.awscdk.alpha.');
-          jsiiTargets.java.maven.artifactId = jsiiTargets.java.maven.artifactId.startsWith('cdk-')
-            ? jsiiTargets.java.maven.artifactId.replace(/cdk-/, 'cdk-alpha.')
-            : 'cdk-alpha.aws-' + jsiiTargets.java.maven.artifactId;
-          jsiiTargets.python.distName = jsiiTargets.python.distName.replace(
-            /^aws-cdk\./, 'aws-cdk.alpha.');
-          jsiiTargets.python.module = jsiiTargets.python.module.replace(
-            /^aws_cdk\./, 'aws_cdk.alpha.');
-
           // disable awslint (some rules are hard-coded to @aws-cdk/core)
           phase1PackageJson.awslint = {
             exclude: ['*:*'],
