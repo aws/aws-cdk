@@ -339,11 +339,11 @@ network timeout or because of hitting an invocation limit, the invocation is ret
 times by default, but can be configured using `retries` in the processor configuration.
 
 ```ts fixture=with-bucket
-// Provide a Lambda function that will transform records before delivery, with custom
-// buffering and retry configuration
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '@aws-cdk/aws-lambda';
 
+// Provide a Lambda function that will transform records before delivery, with custom
+// buffering and retry configuration
 const lambdaFunction = new lambda.Function(this, 'Processor', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
