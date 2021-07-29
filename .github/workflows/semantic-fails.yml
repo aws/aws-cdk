@@ -1,3 +1,5 @@
+name: Semantic PRs Failed
+
 on:
   pull_request:
   check_suite:
