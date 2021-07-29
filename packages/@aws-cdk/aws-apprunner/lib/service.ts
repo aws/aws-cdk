@@ -325,8 +325,9 @@ export class Service extends cdk.Resource {
     class Import extends cdk.Resource {
       public serviceName = serviceName;
       public serviceArn = cdk.Stack.of(this).formatArn({
-        resource: 'apprunner',
-        service: 'service',
+        resource: 'service',
+        service: 'apprunner',
+        resourceName: serviceName,
       })
     }
     return new Import(scope, id);
