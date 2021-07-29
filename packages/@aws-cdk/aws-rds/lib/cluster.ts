@@ -718,11 +718,6 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
         undefined;
 
-    // if engine version is pinned and autoMinorVersionUpgrade is not passed in props, we set this property to false
-    let autoMinorVersionUpgrade = props.instanceProps.autoMinorVersionUpgrade;
-    if (props.engine.engineVersion !== undefined && props.instanceProps.autoMinorVersionUpgrade === undefined) {
-      autoMinorVersionUpgrade = false;
-    }
     const instance = new CfnDBInstance(cluster, `Instance${instanceIndex}`, {
       // Link to cluster
       engine: props.engine.engineType,
@@ -743,7 +738,10 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
       monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
-      autoMinorVersionUpgrade: autoMinorVersionUpgrade,
+      autoMinorVersionUpgrade: props.engine.engineVersion?.fullVersion && props.instanceProps.autoMinorVersionUpgrade === undefined
+        // if engine version is pinned and autoMinorVersionUpgrade is not passed in props, we set this property to false
+        ? false
+        : props.instanceProps.autoMinorVersionUpgrade,
       allowMajorVersionUpgrade: props.instanceProps.allowMajorVersionUpgrade,
       deleteAutomatedBackups: props.instanceProps.deleteAutomatedBackups,
     });

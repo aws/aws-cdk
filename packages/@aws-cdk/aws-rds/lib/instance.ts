@@ -871,18 +871,15 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       }
     }
 
-    // if engine version is pinned and autoMinorVersionUpgrade is not passed in props, we set this property to false
-    let autoMinorVersionUpgrade = props.autoMinorVersionUpgrade;
-    if (props.engine.engineVersion !== undefined && props.autoMinorVersionUpgrade === undefined) {
-      autoMinorVersionUpgrade = false;
-    }
-
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
     const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
     this.sourceCfnProps = {
       ...this.newCfnProps,
-      autoMinorVersionUpgrade,
+      autoMinorVersionUpgrade: props.engine.engineVersion?.fullVersion && props.autoMinorVersionUpgrade === undefined
+        // if engine version is pinned and autoMinorVersionUpgrade is not passed in props, we set this property to false
+        ? false
+        : props.autoMinorVersionUpgrade,
       associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
       optionGroupName: engineConfig.optionGroup?.optionGroupName,
       allocatedStorage: props.allocatedStorage?.toString() ?? '100',
