@@ -10,10 +10,10 @@ We do the translation in 2 phases:
 1. Copy all files from the V1 versions of the modules,
   and remove all dependencies from the packages besides other experimental ones.
   Save the original dependencies in a `_package.json` files of the copied modules.
-  This is done in the [`gen-phase1.js` file](gen-phase1.ts).
+  This is done in the [`copy-files-removing-deps.ts` file](copy-files-removing-deps.ts).
 2. Run `lerna bootstrap`.
 3. In phase 2, bring back the dependencies by renaming the `_package.json` files to `package.json`.
-   This is done in the [`gen-phase2.js` file](gen-phase2.ts).
+   This is done in the [`restore-package-jsons.ts` file](restore-package-jsons.ts).
 
 We have to do it this way,
 because otherwise `lerna bootstrap` would fail on the main monorepo packages like `cdk-build-tools`.
