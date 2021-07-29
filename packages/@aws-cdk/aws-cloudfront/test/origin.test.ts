@@ -58,13 +58,3 @@ test.each(['us-east-1', 'ap-southeast-2', 'eu-west-3', 'me-south-1'])
     originShieldRegion,
   });
 });
-
-test.each(['region', 'nowhere-2', 'place-west-3', 'me-south-one'])
-('throws when originShieldRegion is not a valid aws region', (originShieldRegion) => {
-  const origin = new TestOrigin('www.example.com', {
-    originShieldRegion,
-  });
-  expect(() => {
-    origin.bind(stack, { originId: '0' });
-  }).toThrow(`originShieldRegion ${originShieldRegion} is not a valid AWS region.`);
-});
