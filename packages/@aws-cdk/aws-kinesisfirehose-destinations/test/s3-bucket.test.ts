@@ -499,9 +499,6 @@ describe('S3 destination', () => {
               LogStreamName: anything(),
             },
             RoleARN: stack.resolve(destinationRole.roleArn),
-            EncryptionConfiguration: {
-              NoEncryptionConfig: 'NoEncryption',
-            },
           },
           S3BackupMode: 'Enabled',
         },
@@ -530,9 +527,6 @@ describe('S3 destination', () => {
               LogStreamName: anything(),
             },
             RoleARN: stack.resolve(destinationRole.roleArn),
-            EncryptionConfiguration: {
-              NoEncryptionConfig: 'NoEncryption',
-            },
           },
           S3BackupMode: 'Enabled',
         },
