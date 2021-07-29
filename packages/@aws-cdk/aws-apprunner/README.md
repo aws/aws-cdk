@@ -26,3 +26,57 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ```ts
 import apprunner = require('@aws-cdk/aws-apprunner');
 ```
+
+# Introduction
+
+AWS App Runner is a fully managed service that makes it easy for developers to quickly deploy containerized web applications and APIs, at scale and with no prior infrastructure experience required. Start with your source code or a container image. App Runner automatically builds and deploys the web application and load balances traffic with encryption. App Runner also scales up or down automatically to meet your traffic needs. With App Runner, rather than thinking about servers or scaling, you have more time to focus on your applications.
+
+# Service
+
+The `Service` construct allows you to create AWS App Runner services with `ECR Public`, `ECR` or `Github`. You need specify either `image` or `code` for different scenarios.
+
+## ECR Public
+
+To create a `Service` with ECR Public:
+
+```ts
+new Service(stack, 'Service', {
+  image: ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest'),
+  port: 80,
+});
+```
+
+## ECR
+
+To create a `Service` from local docker image assets being built and pushed to Amazon ECR:
+
+```ts
+const imageAssets = new assets.DockerImageAsset(stack, 'ImageAssets', {
+  directory, // your code assets directory with Dockerfile
+});
+const service2 = new Service(stack, 'Service', {
+  image: ContainerImage.fromDockerImageAssets(imageAssets),
+  port: 80,
+});
+```
+
+## Github
+
+To create a `Service` from the Github repository, you need to specify an existing App Runner Connection.
+
+See [Managing App Runner connections](https://docs.aws.amazon.com/apprunner/latest/dg/manage-connections.html) for more details.
+
+```ts
+new Service(stack, 'Service', {
+  connection: Connection.fromConnectionArn(connectionArn),
+  code: CodeRepository.fromGithubRepository({
+    repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+    branch: 'main',
+    runtime: CodeRuntime.PYTHON_3,
+  }),
+});
+```
+
+## IAM Role
+
+You are allowed to pass an exiting IAM access role for services with `ECR`. If not defined, a new IAM role will be generated. See [App Runner IAM Roles](https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles) for more details.
