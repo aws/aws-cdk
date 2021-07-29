@@ -2,6 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import { ABSENT, MatchStyle, ResourcePart, anything, arrayWith } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -216,6 +217,141 @@ describe('S3 destination', () => {
               Resource: stack.resolve(logGroup.logGroupArn),
             },
           ),
+        },
+      });
+    });
+  });
+
+  describe('compression', () => {
+    it('configures when specified', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        compression: firehosedestinations.Compression.GZIP,
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CompressionFormat: 'GZIP',
+        },
+      });
+    });
+
+    it('allows custom compression types', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        compression: firehosedestinations.Compression.of('SNAZZY'),
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CompressionFormat: 'SNAZZY',
+        },
+      });
+    });
+  });
+
+  describe('buffering', () => {
+    it('creates configuration when interval and size provided', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(1),
+          bufferingSize: cdk.Size.mebibytes(1),
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          BufferingHints: {
+            IntervalInSeconds: 60,
+            SizeInMBs: 1,
+          },
+        },
+      });
+    });
+
+    it('validates bufferingInterval', () => {
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.seconds(30),
+          bufferingSize: cdk.Size.mebibytes(1),
+        })],
+      })).toThrowError('Buffering interval must be between 60 and 900 seconds. Buffering interval provided was 30 seconds.');
+
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(16),
+          bufferingSize: cdk.Size.mebibytes(1),
+        })],
+      })).toThrowError('Buffering interval must be between 60 and 900 seconds. Buffering interval provided was 960 seconds.');
+    });
+
+    it('validates bufferingSize', () => {
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(1),
+          bufferingSize: cdk.Size.mebibytes(0),
+
+        })],
+      })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
+
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(1),
+          bufferingSize: cdk.Size.mebibytes(256),
+        })],
+      })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+    });
+  });
+
+  describe('destination encryption', () => {
+    it('creates configuration', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          encryptionKey: key,
+          role: destinationRole,
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          EncryptionConfiguration: {
+            KMSEncryptionConfig: {
+              AWSKMSKeyARN: stack.resolve(key.keyArn),
+            },
+          },
+        },
+      });
+    });
+
+    it('grants encrypt/decrypt access to the destination encryptionKey', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          encryptionKey: key,
+          role: destinationRole,
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        Roles: [stack.resolve(destinationRole.roleName)],
+        PolicyDocument: {
+          Statement: arrayWith({
+            Action: [
+              'kms:Decrypt',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: stack.resolve(key.keyArn),
+          }),
         },
       });
     });

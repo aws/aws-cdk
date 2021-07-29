@@ -183,6 +183,41 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
+    "Key961B73FD": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "DeliveryStreamServiceRole964EEBCC": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -267,6 +302,21 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Key961B73FD",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -290,6 +340,10 @@
               "Arn"
             ]
           },
+          "BufferingHints": {
+            "IntervalInSeconds": 60,
+            "SizeInMBs": 1
+          },
           "CloudWatchLoggingOptions": {
             "Enabled": true,
             "LogGroupName": {
@@ -299,6 +353,19 @@
               "Ref": "LogGroupS3Destination70CE1003"
             }
           },
+          "CompressionFormat": "GZIP",
+          "EncryptionConfiguration": {
+            "KMSEncryptionConfig": {
+              "AWSKMSKeyARN": {
+                "Fn::GetAtt": [
+                  "Key961B73FD",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          "ErrorOutputPrefix": "errorPrefix",
+          "Prefix": "regularPrefix",
           "RoleARN": {
             "Fn::GetAtt": [
               "DeliveryStreamS3DestinationRole500FC089",
