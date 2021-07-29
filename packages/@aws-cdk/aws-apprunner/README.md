@@ -90,7 +90,7 @@ new Service(stack, 'Service', {
 });
 ```
 
-## IAM Role
+## IAM Roles
 
 You are allowed to define `instanceRole` and `accessRole` for the `Service`.
 
@@ -98,7 +98,8 @@ You are allowed to define `instanceRole` and `accessRole` for the `Service`.
 your code needs when it calls any AWS APIs. 
 
 `accessRole` - The IAM role that grants the App Runner service access to a source repository. It's required for
-ECR image repositories (but not for ECR Public repositories). If not defined, a new access role will be generated.
+ECR image repositories (but not for ECR Public repositories). If not defined, a new access role will be generated
+when required.
 
 See [App Runner IAM Roles](https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles) for more details.
 
