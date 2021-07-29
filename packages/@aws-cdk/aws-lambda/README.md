@@ -338,7 +338,7 @@ new Function(this, 'MyFunction', {
 
 If the version of insights is not yet available in the CDK, you can also provide the ARN directly as so -
 
-```
+```ts
 const layerArn = 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14';
 new Function(this, 'MyFunction', {
   insightsVersion: lambda.LambdaInsightsVersion.fromInsightVersionArn(layerArn)
