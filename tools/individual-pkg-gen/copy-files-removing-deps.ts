@@ -11,7 +11,6 @@ function copyFilesRemovingDependencies(): void {
   const project = new lerna_project.Project(__dirname);
   const packages = project.getPackagesSync();
   const alphaPackages = getAlphaPackages(packages);
-  const jsiiRosettaVersion = project.manifest.devDependencies['jsii-rosetta'];
   for (const pkg of packages) {
     if (!packageIsAlpha(pkg)) {
       continue;
@@ -80,11 +79,7 @@ function copyFilesRemovingDependencies(): void {
 
           const finalPackageJson = { ...phase1PackageJson };
           // devDependencies
-          const alphaDevDependencies: { [dep: string]: string } = {
-            // we need jsii-rosetta in the dependencies,
-            // otherwise the binary cannot be found when running the 'extract' script
-            'jsii-rosetta': jsiiRosettaVersion,
-          };
+          const alphaDevDependencies: { [dep: string]: string } = {};
           const devDependencies = phase1PackageJson.devDependencies || {};
           for (const devDependency of Object.keys(devDependencies)) {
             if (devDependency.startsWith('@aws-cdk/')) {
