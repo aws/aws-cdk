@@ -94,3 +94,39 @@ export function createEncryptionConfig(
     ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
     : undefined;
 }
+
+export function createProcessingConfig(
+  scope: Construct,
+  role: iam.IRole,
+  dataProcessor?: firehose.IDataProcessor,
+): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
+  return dataProcessor
+    ? {
+      enabled: true,
+      processors: [renderDataProcessor(dataProcessor, scope, role)],
+    }
+    : undefined;
+}
+
+function renderDataProcessor(
+  processor: firehose.IDataProcessor,
+  scope: Construct,
+  role: iam.IRole,
+): firehose.CfnDeliveryStream.ProcessorProperty {
+  const processorConfig = processor.bind(scope, { role });
+  const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
+  parameters.push(processorConfig.processorIdentifier);
+  if (processor.props.bufferInterval) {
+    parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
+  }
+  if (processor.props.bufferSize) {
+    parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
+  }
+  if (processor.props.retries) {
+    parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
+  }
+  return {
+    type: processorConfig.processorType,
+    parameters,
+  };
+}

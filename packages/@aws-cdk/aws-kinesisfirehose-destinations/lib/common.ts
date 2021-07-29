@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as logs from '@aws-cdk/aws-logs';
 
 /**
@@ -66,4 +67,11 @@ export interface CommonDestinationProps {
    * @default - a role will be created with default permissions.
    */
   readonly role?: iam.IRole;
+
+  /**
+   * The data transformation that should be performed on the data before writing to the destination.
+   *
+   * @default - no data transformation will occur.
+   */
+  readonly processor?: firehose.IDataProcessor;
 }
