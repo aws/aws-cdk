@@ -1,4 +1,4 @@
-import { Aws, CfnMapping, Fn, Lazy, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnMapping, Fn, IResolveContext, Lazy, Stack, Token } from '@aws-cdk/core';
 import { FactName, RegionInfo } from '@aws-cdk/region-info';
 import { CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '@aws-cdk/region-info/build-tools/fact-tables';
 
@@ -69,7 +69,7 @@ export class LambdaInsightsVersion {
   /**
    * Meant to run at synthesis. It will look up the region in RegionInfo
    */
-  private getVersionArn(context: any, insightsVersion: string): string {
+  private getVersionArn(context: IResolveContext, insightsVersion: string): string {
     const region = Stack.of(context.scope).region;
 
     // Check if insights version is valid. This should only happen if one of the public static readonly versions are set incorrectly
