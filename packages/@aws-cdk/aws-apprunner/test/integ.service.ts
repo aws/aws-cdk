@@ -16,7 +16,7 @@ const service1 = new Service(stack, 'Service1', {
 });
 new cdk.CfnOutput(stack, 'URL1', { value: `https://${service1.serviceUrl}` });
 
-// Create the service from existing ECR repository
+// Create the service from existing ECR repository, make sure you have `nginx` ECR repo in your account.
 const repo = ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx');
 const service2 = new Service(stack, 'Service2', {
   image: ContainerImage.fromEcrRepository(repo),
@@ -34,7 +34,7 @@ const service3 = new Service(stack, 'Service3', {
 });
 new cdk.CfnOutput(stack, 'URL3', { value: `https://${service3.serviceUrl}` });
 
-// Create the service from Github
+// Create the service from Github. Make sure you specify a valid connection ARN.
 const connectionArn = stack.node.tryGetContext('CONNECTION_ARN') || 'MOCK';
 const service4 = new Service(stack, 'Service4', {
   connection: Connection.fromConnectionArn(connectionArn),

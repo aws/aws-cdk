@@ -55,6 +55,7 @@ To create a `Service` from an existing ECR repository, use `fromEcrRepository()`
 const repo = ecr.Repository.fromRepositoryName(stack, 'ExistingRepository', 'existing-repo');
 new Service(stack, 'Service', {
   image: ContainerImage.fromEcrRepository(repo),
+  port: 80,
 });
 ```
 
