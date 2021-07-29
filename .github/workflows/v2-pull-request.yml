@@ -34,13 +34,25 @@ jobs:
           commit_message: 'automatic pkglint fixes'
 
   # Approve automated PRs
-  # Only approve! mergify takes care of the actual merge.
   auto-approve:
     if: >
-      github.event.pull_request.user.login == 'aws-cdk-automation'
+      (github.event.pull_request.user.login == 'aws-cdk-automation'
+      || github.event.pull_request.user.login == 'dependabot-preview')
       && contains(github.event.pull_request.labels.*.name, 'pr/auto-approve')
     runs-on: ubuntu-latest
     steps:
     - uses: hmarr/auto-approve-action@v2.0.0
       with:
+        github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  core-label:
+    env:
+      CORE_MEMBERS: eladb,RomainMuller,garnaat,nija-at,skinny85,rix0rrr,NGL321,Jerry-AWS,MrArnoldPalmer,NetaNir,iliapolo,njlynch,ericzbeard,ccfife,fulghum,pkandasamy91,SoManyHs,uttarasridhar
+    if: contains(env.CORE_MEMBERS.split(','), github.event.pull_request.user.login)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: andymckay/labeler@1.0.2
+      with:
+        add-labels: "core-contributor"
+        ignore-if-labeled: true
         github-token: "${{ secrets.GITHUB_TOKEN }}"

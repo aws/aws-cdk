@@ -1,0 +1,19 @@
+on:
+  pull_request:
+  check_suite:
+    types: [completed]
+
+jobs:
+  failed-cc:
+    name: Failed Conventional Commits
+    if: >
+      github.event.check_suite.app.name == 'Semantic Pull Request' 
+      && github.event.check_suite.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: ${{ github.event.pull_request}}
+        body: |
+          Title does not follow the guidelines of [Conventional Commits](https://www.conventionalcommits.org). 
+          Please adjust title before merge.
