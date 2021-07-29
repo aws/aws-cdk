@@ -290,6 +290,27 @@ new DeliveryStream(this, 'Delivery Stream', {
 See: [Data Delivery Frequency](https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html#frequency)
 in the *Kinesis Data Firehose Developer Guide*.
 
+## Destination Encryption
+
+Your data can be automatically encrypted when it is delivered to S3 as a final or
+an intermediary/backup destination. Kinesis Data Firehose supports Amazon S3 server-side
+encryption with AWS Key Management Service (AWS KMS) for encrypting delivered data
+in Amazon S3. You can choose to not encrypt the data or to encrypt with a key from
+the list of AWS KMS keys that you own. For more information, see [Protecting Data
+Using Server-Side Encryption with AWS KMS–Managed Keys (SSE-KMS)](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html). Data is not encrypted by default.
+
+```ts fixture=with-bucket
+import * as cdk from '@aws-cdk/core';
+import * as kms from '@aws-cdk/aws-kms';
+
+const destination = new destinations.S3Bucket(bucket, {
+  encryptionKey: new kms.Key(this, 'MyKey'),
+});
+new DeliveryStream(this, 'Delivery Stream', {
+  destinations: [destination],
+});
+```
+
 ## Specifying an IAM role
 
 The DeliveryStream class automatically creates IAM service roles with all the minimum

@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
@@ -82,4 +83,14 @@ export function createBufferingHints(
     throw new Error(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`);
   }
   return { intervalInSeconds, sizeInMBs };
+}
+
+export function createEncryptionConfig(
+  role: iam.IRole,
+  encryptionKey?: kms.IKey,
+): firehose.CfnDeliveryStream.EncryptionConfigurationProperty | undefined {
+  encryptionKey?.grantEncryptDecrypt(role);
+  return encryptionKey
+    ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
+    : undefined;
 }
