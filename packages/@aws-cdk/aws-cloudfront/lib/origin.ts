@@ -188,7 +188,7 @@ export abstract class OriginBase implements IOrigin {
   /**
    * Takes origin shield region and converts to CfnDistribution.OriginShieldProperty
    */
-  private getOriginShield(originShieldRegion:string = ''): CfnDistribution.OriginShieldProperty | undefined {
+  private renderOriginShield(originShieldRegion?: string): CfnDistribution.OriginShieldProperty | undefined {
     if (originShieldRegion) {
       if (!(/^\w\w\-[a-z]*\-\d$/).test(originShieldRegion)) throw new Error(`originShieldRegion ${originShieldRegion} is not a valid AWS region.`);
       return {
