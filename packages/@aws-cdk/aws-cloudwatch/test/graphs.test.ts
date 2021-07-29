@@ -1,5 +1,5 @@
 import { Duration, Stack } from '@aws-cdk/core';
-import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget, GaugeWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, CustomWidget, GaugeWidget, GraphWidget, GraphWidgetView, LegendPosition, LogQueryVisualizationType, LogQueryWidget, Metric, Shading, SingleValueWidget, VerticalShading } from '../lib';
 
 describe('Graphs', () => {
   test('add stacked property to graphs', () => {
@@ -413,7 +413,7 @@ describe('Graphs', () => {
     }]);
   });
 
-  test('add annotations to graph', () => {
+  test('add horizontal annotations to graph', () => {
     // WHEN
     const stack = new Stack();
     const widget = new GraphWidget({
@@ -453,8 +453,49 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
+  });
 
+  test('add vertical annotations to graph', () => {
+    const date = new Date('2021-07-29T02:31:09.890Z');
 
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My fancy graph',
+      left: [
+        new Metric({ namespace: 'CDK', metricName: 'Test' }),
+      ],
+      verticalAnnotations: [{
+        date,
+        color: '667788',
+        fill: VerticalShading.AFTER,
+        label: 'this is the annotation',
+      }],
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My fancy graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        annotations: {
+          vertical: [{
+            value: '2021-07-29T02:31:09.890Z',
+            color: '667788',
+            fill: 'after',
+            label: 'this is the annotation',
+          }],
+        },
+        yAxis: {},
+      },
+    }]);
   });
 
   test('convert alarm to annotation', () => {

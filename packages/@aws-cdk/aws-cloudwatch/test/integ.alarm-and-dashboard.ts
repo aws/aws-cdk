@@ -53,6 +53,13 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: 'More messages in queue with alarm annotation',
   left: [numberOfMessagesVisibleMetric],
   leftAnnotations: [alarm.toAnnotation()],
+  verticalAnnotations: [
+    {
+      date: new Date('2022-10-19T00:00:00Z'),
+      label: 'Deployment',
+      color: cloudwatch.Color.RED,
+    },
+  ],
 }));
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Current messages in queue',
