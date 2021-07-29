@@ -1,4 +1,4 @@
-import { CidrBlock, InvalidCidrRangeError, NetworkUtils } from './network-util';
+import { CidrBlock, NetworkUtils } from './network-util';
 import { ISubnet } from './vpc';
 
 /**
@@ -156,9 +156,6 @@ class CidrMaskSubnetFilter extends SubnetFilter {
 
   constructor(mask: number) {
     super();
-    if (mask < 16 || mask > 28 ) {
-      throw new InvalidCidrRangeError(`x.x.x.x/${mask}`);
-    }
     this.mask = mask;
   }
 
@@ -166,13 +163,9 @@ class CidrMaskSubnetFilter extends SubnetFilter {
    * Executes the subnet filtering logic.
    */
   public selectSubnets(subnets: ISubnet[]): ISubnet[] {
-    return this.retainByCidrMask(subnets, this.mask);
-  }
-
-  private retainByCidrMask(subnets: ISubnet[], netmask: number): ISubnet[] {
     return subnets.filter(subnet => {
       const subnetCidr = new CidrBlock(subnet.ipv4CidrBlock);
-      return subnetCidr.mask === netmask;
+      return subnetCidr.mask === this.mask;
     });
   }
 }

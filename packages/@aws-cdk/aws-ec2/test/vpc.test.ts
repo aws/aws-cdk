@@ -1740,14 +1740,6 @@ nodeunitShim({
       test.deepEqual(subnetIds, expected.map(s => s.subnetId));
       test.done();
     },
-
-    'cannot filter by Cidr Netmask with invalid range'(test: Test) {
-      expect(() => SubnetFilter.byCidrMask(15))
-        .toThrow('x.x.x.x/15 is not a valid VPC CIDR range (must be between /16 and /28)');
-      expect(() => SubnetFilter.byCidrMask(29))
-        .toThrow('x.x.x.x/29 is not a valid VPC CIDR range (must be between /16 and /28)');
-      test.done();
-    },
   },
 });
 
