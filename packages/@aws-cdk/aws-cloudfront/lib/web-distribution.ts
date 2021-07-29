@@ -1149,20 +1149,13 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
   /**
    * Takes origin shield region from props and converts to CfnDistribution.OriginShieldProperty
-  */
+   */
   private toOriginShieldProperty(originConfig:SourceConfigurationRender): CfnDistribution.OriginShieldProperty | undefined {
     const originShieldRegion = originConfig.originShieldRegion ??
     originConfig.customOriginSource?.originShieldRegion ??
     originConfig.s3OriginSource?.originShieldRegion;
-    if (originShieldRegion) {
-      if (!(/^\w\w\-[a-z]*\-\d$/).test(originShieldRegion)) {
-        throw new Error(`originShieldRegion ${originShieldRegion} is not a valid AWS region.`);
-      }
-      return {
-        enabled: true,
-        originShieldRegion,
-      };
-    }
-    return undefined;
+    return originShieldRegion 
+      ? { enabled: true, originShieldRegion } 
+      : undefined;
   }
 }
