@@ -3,7 +3,7 @@ import { FactName, RegionInfo } from '@aws-cdk/region-info';
 import { CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '@aws-cdk/region-info/build-tools/fact-tables';
 
 // This is the name of the mapping that will be added to the CloudFormation template, if a stack is region agnostic
-const defaultMappingNamePrefix = 'CloudWatchLambdaInsightsVersions';
+const DEFAULT_MAPPING_PREFIX = 'LambdaInsightsVersions';
 
 // To add new versions, update fact-tables.ts `CLOUDWATCH_LAMBDA_INSIGHTS_ARNS` and create a new `public static readonly VERSION_A_B_C_D`
 
@@ -91,7 +91,7 @@ export class LambdaInsightsVersion {
     // Map name has to include the version, so the primary key becomes the region.
     // Secondary keys must be alphanumberic. This strategy avoids using secondary keys
     // because both the version and region are non-alphanumeric
-    const mapName = defaultMappingNamePrefix + insightsVersion.split('.').join('');
+    const mapName = DEFAULT_MAPPING_PREFIX + insightsVersion.split('.').join('');
     // Only create the part of the mapping that's necessary
     const mapping: { [k1: string]: { [k2: string]: any } } = {};
     const region2arns = RegionInfo.regionMap(FactName.cloudwatchLambdaInsightsVersion(insightsVersion));

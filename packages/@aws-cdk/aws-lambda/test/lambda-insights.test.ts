@@ -115,7 +115,7 @@ describe('lambda-insights', () => {
         Runtime: 'nodejs10.x',
         Layers: [{
           'Fn::FindInMap': [
-            'CloudWatchLambdaInsightsVersions10540',
+            'LambdaInsightsVersions10540',
             {
               Ref: 'AWS::Region',
             },
@@ -158,7 +158,7 @@ describe('lambda-insights', () => {
         Runtime: 'nodejs10.x',
         Layers: [{
           'Fn::FindInMap': [
-            'CloudWatchLambdaInsightsVersions10540',
+            'LambdaInsightsVersions10540',
             {
               Ref: 'AWS::Region',
             },
@@ -178,7 +178,7 @@ describe('lambda-insights', () => {
         Runtime: 'nodejs10.x',
         Layers: [{
           'Fn::FindInMap': [
-            'CloudWatchLambdaInsightsVersions10540',
+            'LambdaInsightsVersions10540',
             {
               Ref: 'AWS::Region',
             },

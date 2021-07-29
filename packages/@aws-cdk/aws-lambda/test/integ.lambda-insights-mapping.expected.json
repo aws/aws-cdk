@@ -59,7 +59,7 @@
         "Layers": [
           {
             "Fn::FindInMap": [
-              "CloudWatchLambdaInsightsVersions10540",
+              "LambdaInsightsVersions10540",
               {
                 "Ref": "AWS::Region"
               },
@@ -132,7 +132,7 @@
         "Layers": [
           {
             "Fn::FindInMap": [
-              "CloudWatchLambdaInsightsVersions10860",
+              "LambdaInsightsVersions10860",
               {
                 "Ref": "AWS::Region"
               },
@@ -205,7 +205,7 @@
         "Layers": [
           {
             "Fn::FindInMap": [
-              "CloudWatchLambdaInsightsVersions10890",
+              "LambdaInsightsVersions10890",
               {
                 "Ref": "AWS::Region"
               },
@@ -278,7 +278,7 @@
         "Layers": [
           {
             "Fn::FindInMap": [
-              "CloudWatchLambdaInsightsVersions10980",
+              "LambdaInsightsVersions10980",
               {
                 "Ref": "AWS::Region"
               },
@@ -294,7 +294,7 @@
     }
   },
   "Mappings": {
-    "CloudWatchLambdaInsightsVersions10540": {
+    "LambdaInsightsVersions10540": {
       "ap-northeast-1": {
         "arn": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:2"
       },
@@ -344,7 +344,7 @@
         "arn": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:2"
       }
     },
-    "CloudWatchLambdaInsightsVersions10860": {
+    "LambdaInsightsVersions10860": {
       "ap-northeast-1": {
         "arn": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:11"
       },
@@ -394,7 +394,7 @@
         "arn": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:11"
       }
     },
-    "CloudWatchLambdaInsightsVersions10890": {
+    "LambdaInsightsVersions10890": {
       "ap-northeast-1": {
         "arn": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:12"
       },
@@ -444,7 +444,7 @@
         "arn": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:12"
       }
     },
-    "CloudWatchLambdaInsightsVersions10980": {
+    "LambdaInsightsVersions10980": {
       "af-south-1": {
         "arn": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:8"
       },
