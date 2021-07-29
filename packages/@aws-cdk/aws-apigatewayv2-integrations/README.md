@@ -150,8 +150,6 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
 });
 ```
 
-### Request parameter mapping
-
 ### Request Parameters
 
 Request parameter mapping is supported through a set of helper methods.
