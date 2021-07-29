@@ -284,7 +284,7 @@ describe('instance', () => {
 
   });
 
-  test('instance with engine version and if no autoMinorVersionUpgrade in props disable automatic upgrade of minor version', () => {
+  test('instance with an engine in a specific version and without autoMinorVersionUpgrade set disables automatic minor version upgrades', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({
         version: rds.MysqlEngineVersion.VER_8_0_19,
@@ -297,7 +297,7 @@ describe('instance', () => {
     });
   });
 
-  test('instance with engine version and if autoMinorVersionUpgrade enable automatic upgrade of minor version', () => {
+  test("instance with an engine version in a specific version with autoMinorVersionUpgrade set to 'true' enables automatic minor version upgrades", () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({
         version: rds.MysqlEngineVersion.VER_8_0_19,

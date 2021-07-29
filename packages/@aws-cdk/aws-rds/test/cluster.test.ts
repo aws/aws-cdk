@@ -432,7 +432,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with engine version and if no autoMinorVersionUpgrade in props disable automatic upgrade of minor version', () => {
+  test('cluster with an engine in a specific version and without autoMinorVersionUpgrade set disables automatic minor version upgrades', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -452,7 +452,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with engine version and if autoMinorVersionUpgrade allow automatic upgrade of minor version', () => {
+  test("cluster with an engine in a specific version and with autoMinorVersionUpgrade set to 'true' enables automatic minor version upgrades", () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1747,7 +1747,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster from snapshot with engine version and if no autoMinorVersionUpgrade in props disable automatic upgrade of minor version', () => {
+  test('cluster from snapshot with an engine in a specific version and without autoMinorVersionUpgrade set disables automatic minor version upgrades', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
@@ -1766,7 +1766,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster from snapshot with engine version and if autoMinorVersionUpgrade in props enable automatic upgrade of minor version', () => {
+  test("cluster from snapshot with an engine in a specific version and with autoMinorVersionUpgrade set to 'true' enables automatic minor version upgrades", () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
