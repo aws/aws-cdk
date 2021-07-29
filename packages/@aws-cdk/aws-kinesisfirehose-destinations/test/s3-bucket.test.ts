@@ -220,4 +220,89 @@ describe('S3 destination', () => {
       });
     });
   });
+
+  describe('compression', () => {
+    it('configures when specified', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        compression: firehosedestinations.Compression.GZIP,
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CompressionFormat: 'GZIP',
+        },
+      });
+    });
+
+    it('allows custom compression types', () => {
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        compression: firehosedestinations.Compression.of('SNAZZY'),
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CompressionFormat: 'SNAZZY',
+        },
+      });
+    });
+  });
+
+  describe('buffering', () => {
+    it('creates configuration when interval and size provided', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(1),
+          bufferingSize: cdk.Size.mebibytes(1),
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          BufferingHints: {
+            IntervalInSeconds: 60,
+            SizeInMBs: 1,
+          },
+        },
+      });
+    });
+
+    it('validates bufferingInterval', () => {
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.seconds(30),
+          bufferingSize: cdk.Size.mebibytes(1),
+        })],
+      })).toThrowError('Buffering interval must be between 60 and 900 seconds. Buffering interval provided was 30 seconds.');
+
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(16),
+          bufferingSize: cdk.Size.mebibytes(1),
+        })],
+      })).toThrowError('Buffering interval must be between 60 and 900 seconds. Buffering interval provided was 960 seconds.');
+    });
+
+    it('validates bufferingSize', () => {
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(1),
+          bufferingSize: cdk.Size.mebibytes(0),
+
+        })],
+      })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
+
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.minutes(1),
+          bufferingSize: cdk.Size.mebibytes(256),
+        })],
+      })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+    });
+  });
 });
