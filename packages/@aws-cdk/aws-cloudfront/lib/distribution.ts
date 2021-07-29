@@ -216,7 +216,7 @@ export interface DistributionProps {
     * CloudFront serves your objects only to browsers or devices that support at
     * least the SSL version that you specify.
     *
-    * @default - If your application has the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag set, the default is SecurityPolicyProtocol.TLS_V1_2_2021, otherwise, the default is SecurityPolicyProtocol.TLS_V1_2_2019.
+    * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
     */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 }
@@ -449,8 +449,9 @@ export class Distribution extends Resource implements IDistribution {
   private renderViewerCertificate(certificate: acm.ICertificate,
     minimumProtocolVersionProp?: SecurityPolicyProtocol): CfnDistribution.ViewerCertificateProperty {
 
-    const minimumProtocolVersion = minimumProtocolVersionProp ?? (FeatureFlags.of(this).isEnabled(
-      CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021) ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019);
+    const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
+      ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019
+    const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;
 
     return {
       acmCertificateArn: certificate.certificateArn,
