@@ -173,6 +173,7 @@
     "@aws-cdk/aws-licensemanager": "0.0.0",
     "@aws-cdk/aws-location": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-lookoutequipment": "0.0.0",
     "@aws-cdk/aws-lookoutmetrics": "0.0.0",
     "@aws-cdk/aws-lookoutvision": "0.0.0",
     "@aws-cdk/aws-macie": "0.0.0",
@@ -340,6 +341,7 @@
     "@aws-cdk/aws-licensemanager": "0.0.0",
     "@aws-cdk/aws-location": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-lookoutequipment": "0.0.0",
     "@aws-cdk/aws-lookoutmetrics": "0.0.0",
     "@aws-cdk/aws-lookoutvision": "0.0.0",
     "@aws-cdk/aws-macie": "0.0.0",
@@ -400,7 +402,7 @@
     "constructs": "^3.3.69"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^26.0.24",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "jest": "^26.6.3",

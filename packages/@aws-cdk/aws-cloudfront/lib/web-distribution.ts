@@ -582,6 +582,13 @@ export interface CloudFrontWebDistributionProps {
   readonly comment?: string;
 
   /**
+   * Enable or disable the distribution.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
    * The default object to serve.
    *
    * @default - "index.html" is served.
@@ -809,7 +816,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
       comment: trimmedComment,
-      enabled: true,
+      enabled: props.enabled ?? true,
       defaultRootObject: props.defaultRootObject ?? 'index.html',
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
