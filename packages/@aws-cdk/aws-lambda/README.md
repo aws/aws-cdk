@@ -334,8 +334,11 @@ import * as lambda from '@aws-cdk/lambda';
 new Function(this, 'MyFunction', {
   insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0
 })
+```
 
-// Can also provide your own arn if a new version comes out
+If the version of insights is not yet available in the CDK, you can also provide the ARN directly as so -
+
+```
 const layerArn = 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14';
 new Function(this, 'MyFunction', {
   insightsVersion: lambda.LambdaInsightsVersion.fromInsightVersionArn(layerArn)
