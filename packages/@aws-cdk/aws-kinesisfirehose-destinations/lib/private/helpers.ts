@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
@@ -63,4 +64,69 @@ export function createLoggingOptions(scope: Construct, props: DestinationLogging
     };
   }
   return undefined;
+}
+
+export function createBufferingHints(
+  interval?: cdk.Duration,
+  size?: cdk.Size,
+): firehose.CfnDeliveryStream.BufferingHintsProperty | undefined {
+  if (!interval && !size) {
+    return undefined;
+  }
+
+  const intervalInSeconds = interval?.toSeconds() ?? 300;
+  if (intervalInSeconds < 60 || intervalInSeconds > 900) {
+    throw new Error(`Buffering interval must be between 60 and 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`);
+  }
+  const sizeInMBs = size?.toMebibytes() ?? 5;
+  if (sizeInMBs < 1 || sizeInMBs > 128) {
+    throw new Error(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`);
+  }
+  return { intervalInSeconds, sizeInMBs };
+}
+
+export function createEncryptionConfig(
+  role: iam.IRole,
+  encryptionKey?: kms.IKey,
+): firehose.CfnDeliveryStream.EncryptionConfigurationProperty | undefined {
+  encryptionKey?.grantEncryptDecrypt(role);
+  return encryptionKey
+    ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
+    : undefined;
+}
+
+export function createProcessingConfig(
+  scope: Construct,
+  role: iam.IRole,
+  dataProcessor?: firehose.IDataProcessor,
+): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
+  return dataProcessor
+    ? {
+      enabled: true,
+      processors: [renderDataProcessor(dataProcessor, scope, role)],
+    }
+    : undefined;
+}
+
+function renderDataProcessor(
+  processor: firehose.IDataProcessor,
+  scope: Construct,
+  role: iam.IRole,
+): firehose.CfnDeliveryStream.ProcessorProperty {
+  const processorConfig = processor.bind(scope, { role });
+  const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
+  parameters.push(processorConfig.processorIdentifier);
+  if (processor.props.bufferInterval) {
+    parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
+  }
+  if (processor.props.bufferSize) {
+    parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
+  }
+  if (processor.props.retries) {
+    parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
+  }
+  return {
+    type: processorConfig.processorType,
+    parameters,
+  };
 }
