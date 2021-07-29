@@ -1,6 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
-import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -124,7 +123,7 @@ function renderDataProcessor(
   processor: firehose.IDataProcessor,
   scope: Construct,
   role: iam.IRole,
-): CfnDeliveryStream.ProcessorProperty {
+): firehose.CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
   const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
   parameters.push(processorConfig.processorIdentifier);
