@@ -23,7 +23,13 @@ export enum ImageRepositoryType {
  * The number of CPU units reserved for each instance of your App Runner service.
  */
 export enum Cpu {
+  /**
+   * 1 vCPU
+   */
   ONE_VCPU = '1 vCPU',
+  /**
+   * 2 vCPU
+   */
   TWO_VCPU = '2 vCPU',
 }
 
@@ -31,8 +37,17 @@ export enum Cpu {
  * The amount of memory reserved for each instance of your App Runner service.
  */
 export enum Memory {
+  /**
+   * 2 GB
+   */
   TWO_GB = '2 GB',
+  /**
+   * 3 GB
+   */
   THREE_GB = '3 GB',
+  /**
+   * 4 GB
+   */
   FOUR_GB = '4 GB',
 }
 
