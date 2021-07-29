@@ -11,6 +11,8 @@
 
 This module allows bundling Docker images as assets.
 
+## Images from Dockerfile
+
 Images are built from a local Docker context directory (with a `Dockerfile`),
 uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
 naturally referenced in your CDK app.
@@ -68,6 +70,23 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
   target: 'a-target'
 })
 ```
+
+## Images from Tarball
+
+Images are loaded from a local tarball, uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
+naturally referenced in your CDK app.
+
+```ts
+import { TarballImageAsset } from '@aws-cdk/aws-ecr-assets';
+
+const asset = new TarballImageAsset(this, 'MyBuildImage', {
+  tarballFile: 'local-image.tar'
+});
+```
+
+This will instruct the toolkit to add the tarball as a file asset. During deployment it will load the container image
+from `local-image.tar`, push it to an AWS ECR repository and wire the name of the repository as CloudFormation parameters
+to your stack.
 
 ## Publishing images to ECR repositories
 
