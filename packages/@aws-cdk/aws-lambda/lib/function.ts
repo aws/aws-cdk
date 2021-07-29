@@ -216,7 +216,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly profilingGroup?: IProfilingGroup;
 
   /**
-   * Enable Lambda Insights
+   * Specify the version of CloudWatch Lambda insights to use for monitoring
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html
    *
    * @default - No Lambda Insights
