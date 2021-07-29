@@ -72,7 +72,7 @@ describe('lambda-insights', () => {
     functionWithInsightsVersion(stack, 'BadVersion', lambda.LambdaInsightsVersion.VERSION_1_0_54_0);
 
     // On synthesis it should throw an error
-    expect(() => app.synth()).toThrow();
+    expect(() => app.synth()).toThrow('Insights version 1.0.54.0 is not supported in region af-south-1');
   });
 
   test('using a specific version without providing a region', () => {
