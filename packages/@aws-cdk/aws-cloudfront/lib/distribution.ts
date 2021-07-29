@@ -216,7 +216,6 @@ export interface DistributionProps {
     * CloudFront serves your objects only to browsers or devices that support at
     * least the SSL version that you specify.
     *
-    * @default SecurityPolicyProtocol.TLS_V1_2_2021
     * @default - If your application has the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag set, the default is SecurityPolicyProtocol.TLS_V1_2_2021, otherwise, the default is SecurityPolicyProtocol.TLS_V1_2_2019.
     */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
