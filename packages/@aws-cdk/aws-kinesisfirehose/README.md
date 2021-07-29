@@ -109,6 +109,63 @@ new DeliveryStream(this, 'Delivery Stream', {
 });
 ```
 
+The S3 destination also supports custom dynamic prefixes. `prefix` will be used for files
+successfully delivered to S3. `errorOutputPrefix` will be added to failed records before
+writing them to S3.
+
+```ts fixture=with-bucket
+const s3Destination = new destinations.S3Bucket(bucket, {
+  dataOutputPrefix: 'myFirehose/DeliveredYear=!{timestamp:yyyy}/anyMonth/rand=!{firehose:random-string}',
+  errorOutputPrefix: 'myFirehoseFailures/!{firehose:error-output-type}/!{timestamp:yyyy}/anyMonth/!{timestamp:dd}',
+});
+```
+
+See: [Custom S3 Prefixes](https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html) in the *Kinesis Data Firehose Developer Guide*.
+
+## Server-side Encryption
+
+Enabling server-side encryption (SSE) requires Kinesis Data Firehose to encrypt all data
+sent to delivery stream when it is stored at rest. This means that data is encrypted
+before being written to the service's internal storage layer and decrypted after it is
+received from the internal storage layer. The service manages keys and cryptographic
+operations so that sources and destinations do not need to, as the data is encrypted and
+decrypted at the boundaries of the service (ie., before the data is delivered to a
+destination). By default, delivery streams do not have SSE enabled.
+
+The Key Management Service (KMS) Customer Managed Key (CMK) used for SSE can either be
+AWS-owned or customer-managed. AWS-owned CMKs are keys that an AWS service (in this case
+Kinesis Data Firehose) owns and manages for use in multiple AWS accounts. As a customer,
+you cannot view, use, track, or manage these keys, and you are not charged for their
+use. On the other hand, customer-managed CMKs are keys that are created and owned within
+your account and managed entirely by you. As a customer, you are responsible for managing
+access, rotation, aliases, and deletion for these keys, and you are changed for their
+use. See: [Customer master keys](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#master_keys)
+in the *KMS Developer Guide*.
+
+```ts fixture=with-destination
+import * as kms from '@aws-cdk/aws-kms';
+
+// SSE with an AWS-owned CMK
+new DeliveryStream(this, 'Delivery Stream AWS Owned', {
+  encryption: StreamEncryption.AWS_OWNED,
+  destinations: [destination],
+});
+// SSE with an customer-managed CMK that is created automatically by the CDK
+new DeliveryStream(this, 'Delivery Stream Implicit Customer Managed', {
+  encryption: StreamEncryption.CUSTOMER_MANAGED,
+  destinations: [destination],
+});
+// SSE with an customer-managed CMK that is explicitly specified
+const key = new kms.Key(this, 'Key');
+new DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
+  encryptionKey: key,
+  destinations: [destination],
+});
+```
+
+See: [Data Protection](https://docs.aws.amazon.com/firehose/latest/dev/encryption.html) in
+the *Kinesis Data Firehose Developer Guide*.
+
 ## Monitoring
 
 Kinesis Data Firehose is integrated with CloudWatch, so you can monitor the performance of
@@ -150,6 +207,87 @@ new DeliveryStream(this, 'Delivery Stream', {
 ```
 
 See: [Monitoring using CloudWatch Logs](https://docs.aws.amazon.com/firehose/latest/dev/monitoring-with-cloudwatch-logs.html)
+in the *Kinesis Data Firehose Developer Guide*.
+
+### Metrics
+
+Kinesis Data Firehose sends metrics to CloudWatch so that you can collect and analyze the
+performance of the delivery stream, including data delivery, data ingestion, data
+transformation, format conversion, API usage, encryption, and resource usage. You can then
+use CloudWatch alarms to alert you, for example, when data freshness (the age of the
+oldest record in the delivery stream) exceeds the buffering limit (indicating that data is
+not being delivered to your destination), or when the rate of incoming records exceeds the
+limit of records per second (indicating data is flowing into your delivery stream faster
+than it is configured to process).
+
+CDK provides methods for accessing delivery stream metrics with default configuration,
+such as `metricIncomingBytes`, and `metricIncomingRecords` (see [`IDeliveryStream`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-kinesisfirehose.IDeliveryStream.html)
+for a full list). CDK also provides a generic `metric` method that can be used to produce
+metric configurations for any metric provided by Kinesis Data Firehose; the configurations
+are pre-populated with the correct dimensions for the delivery stream.
+
+```ts fixture=with-delivery-stream
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+// Alarm that triggers when the per-second average of incoming bytes exceeds 90% of the current service limit
+const incomingBytesPercentOfLimit = new cloudwatch.MathExpression({
+  expression: 'incomingBytes / 300 / bytePerSecLimit',
+  usingMetrics: {
+    incomingBytes: deliveryStream.metricIncomingBytes({ statistic: cloudwatch.Statistic.SUM }),
+    bytePerSecLimit: deliveryStream.metric('BytesPerSecondLimit'),
+  },
+});
+new cloudwatch.Alarm(this, 'Alarm', {
+  metric: incomingBytesPercentOfLimit,
+  threshold: 0.9,
+  evaluationPeriods: 3,
+});
+```
+
+See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/firehose/latest/dev/monitoring-with-cloudwatch-metrics.html)
+in the *Kinesis Data Firehose Developer Guide*.
+
+## Compression
+
+Your data can automatically be compressed when it is delivered to S3 as either a final or
+an intermediary/backup destination. Supported compression formats are: gzip, Snappy,
+Hadoop-compatible Snappy, and ZIP, except for Redshift destinations, where Snappy
+(regardless of Hadoop-compatibility) and ZIP are not supported. By default, data is
+delivered to S3 without compression.
+
+```ts fixture=with-bucket
+// Compress data delivered to S3 using Snappy
+const s3Destination = new destinations.S3Bucket(bucket, {
+  compression: Compression.SNAPPY,
+});
+new DeliveryStream(this, 'Delivery Stream', {
+  destinations: [destination],
+});
+```
+
+## Buffering
+
+Incoming data is buffered before it is delivered to the specified destination. The
+delivery stream will wait until the amount of incoming data has exceeded some threshold
+(the "buffer size") or until the time since the last data delivery occurred exceeds some
+threshold (the "buffer interval"), whichever happens first. You can configure these
+thresholds based on the capabilities of the destination and your use-case. By default, the
+buffer size is 5 MiB and the buffer interval is 5 minutes.
+
+```ts fixture=with-bucket
+import * as cdk from '@aws-cdk/core';
+
+// Increase the buffer interval and size to 10 minutes and 8 MiB, respectively
+const destination = new destinations.S3Bucket(bucket, {
+  bufferingInterval: cdk.Duration.minutes(10),
+  bufferingSize: cdk.Size.mebibytes(8),
+});
+new DeliveryStream(this, 'Delivery Stream', {
+  destinations: [destination],
+});
+```
+
+See: [Data Delivery Frequency](https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html#frequency)
 in the *Kinesis Data Firehose Developer Guide*.
 
 ## Specifying an IAM role
@@ -208,6 +346,7 @@ can be granted permissions to a delivery stream by calling:
 
 ```ts fixture=with-delivery-stream
 import * as iam from '@aws-cdk/aws-iam';
+
 const lambdaRole = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
