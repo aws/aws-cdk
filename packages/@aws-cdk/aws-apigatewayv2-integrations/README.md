@@ -21,7 +21,7 @@
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
   - [Private Integration](#private-integration)
-  - [Request Parameter mapping](#request-parameters)
+  - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
 
