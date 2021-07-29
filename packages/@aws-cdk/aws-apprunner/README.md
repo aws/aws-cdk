@@ -37,7 +37,7 @@ The `Service` construct allows you to create AWS App Runner services with `ECR P
 
 ## ECR Public
 
-To create a `Service` with ECR Public, use `fromEcrPublic()`:
+To create a `Service` with ECR Public, define the `image` property with `ContainerImage.fromEcrPublic()`:
 
 ```ts
 new Service(stack, 'Service', {
@@ -48,7 +48,7 @@ new Service(stack, 'Service', {
 
 ## ECR
 
-To create a `Service` from an existing ECR repository, use `fromEcrRepository()`:
+To create a `Service` from an existing ECR repository, use `ContainerImage.fromEcrRepository()`:
 
 ```ts
 // import the existing ECR repository by name
@@ -61,7 +61,7 @@ new Service(stack, 'Service', {
 
 
 To create a `Service` from local docker image assets being built and pushed to Amazon ECR,
-use `fromDockerImageAssets()`:
+use `ContainerImage.fromDockerImageAssets()`:
 
 ```ts
 const imageAssets = new assets.DockerImageAsset(stack, 'ImageAssets', {
