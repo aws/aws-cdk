@@ -126,13 +126,14 @@ function copyFilesRemovingDependencies(): void {
         const gitIgnoreContents = fs.readFileSync(source);
         fs.outputFileSync(destination, Buffer.concat([gitIgnoreContents, Buffer.from('\n*\n')]));
       } else if (sourceFileName === '.eslintrc.js') {
-        // Our ESLint configuration prevents importing libraries not in 'dependencies',
-        // which is against our philosophy for experimental modules (which use peerDependencies).
-        // Given that, remove that rule from the ESLint configuration of that module
+        // Change the default configuration of the import/no-extraneous-dependencies rule
+        // (as the unstable packages don't use direct dependencies,
+        // but instead a combination of devDependencies + peerDependencies)
         fileProcessed = true;
         const esLintRcContents = fs.readFileSync(source);
         fs.outputFileSync(destination, Buffer.concat([esLintRcContents,
-          Buffer.from("\ndelete baseConfig.rules['import/no-extraneous-dependencies'];\n")]));
+          Buffer.from("\nbaseConfig.rules['import/no-extraneous-dependencies'] = ['error', " +
+              '{ devDependencies: true, peerDependencies: true } ];\n')]));
       } else if (sourceFileName.endsWith('.ts') && !sourceFileName.endsWith('.d.ts')) {
         fileProcessed = true;
         const sourceCode = fs.readFileSync(source).toString();
