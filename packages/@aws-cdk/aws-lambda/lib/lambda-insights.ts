@@ -10,7 +10,7 @@ const DEFAULT_MAPPING_PREFIX = 'LambdaInsightsVersions';
 /**
  * Version of CloudWatch Lambda Insights
  */
-export class LambdaInsightsVersion {
+export abstract class LambdaInsightsVersion {
 
   /**
    * Version 1.0.54.0
@@ -39,71 +39,96 @@ export class LambdaInsightsVersion {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
    */
   public static fromInsightVersionArn(arn: string): LambdaInsightsVersion {
-    return new LambdaInsightsVersion(undefined, arn);
+    class InsightsArn extends LambdaInsightsVersion {
+      public readonly layerVersionArn = arn;
+    }
+    return new InsightsArn();
   }
 
   // Use the verison to build the object. Not meant to be called by the user -- user should use e.g. VERSION_1_0_54_0
-  private static fromInsightsVersion(insightsVersion: string) {
-    return new LambdaInsightsVersion(insightsVersion, undefined);
-  }
-
-  /**
-   * The arn of the Lambda Insights extension
-   */
-  public readonly layerVersionArn: string;
-
-  private constructor(insightsVersion?: string, arn?: string) {
-    if (arn !== undefined) {
-      // Use arn if explicitly provided
-      this.layerVersionArn = arn;
-    } else if (insightsVersion !== undefined) {
-      // Look up the arn (runs at synthesis time)
-      this.layerVersionArn = Lazy.uncachedString({
-        produce: (context) => this.getVersionArn(context, insightsVersion),
-      });
-    } else {
-      throw new Error('Cannot use Lambda Insights without providing a version or an ARN');
-    }
-  }
-
-  /**
-   * Meant to run at synthesis. It will look up the region in RegionInfo
-   */
-  private getVersionArn(context: IResolveContext, insightsVersion: string): string {
-    const region = Stack.of(context.scope).region;
+  private static fromInsightsVersion(insightsVersion: string): LambdaInsightsVersion {
 
     // Check if insights version is valid. This should only happen if one of the public static readonly versions are set incorrectly
     if (!(insightsVersion in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS)) {
       throw new Error(`Insights version ${insightsVersion} does not exist. Available versions are ${CLOUDWATCH_LAMBDA_INSIGHTS_ARNS.keys()}`);
     }
 
-    // Region is defined, look up the arn, or throw an error if the version isn't supported by a region
-    if (region !== undefined && !Token.isUnresolved(region)) {
-      const arn = RegionInfo.get(region).cloudwatchLambdaInsightsArn(insightsVersion);
-      if (arn === undefined) {
-        throw new Error(`Insights version ${insightsVersion} is not supported in region ${region}`);
-      }
-      return arn;
+    class InsightsVersion extends LambdaInsightsVersion {
+      public readonly layerVersionArn = Lazy.uncachedString({
+        produce: (context) => getVersionArn(context, insightsVersion),
+      });
     }
-    // Otherwise, need to add a mapping to be looked up at deployment time
-    const scopeStack = Stack.of(context.scope);
-
-    // Map name has to include the version, so the primary key becomes the region.
-    // Secondary keys must be alphanumberic. This strategy avoids using secondary keys
-    // because both the version and region are non-alphanumeric
-    const mapName = DEFAULT_MAPPING_PREFIX + insightsVersion.split('.').join('');
-    // Only create the part of the mapping that's necessary
-    const mapping: { [k1: string]: { [k2: string]: any } } = {};
-    const region2arns = RegionInfo.regionMap(FactName.cloudwatchLambdaInsightsVersion(insightsVersion));
-    for (const [reg, arn] of Object.entries(region2arns)) {
-      mapping[reg] = { arn };
-    }
-
-    // Only create the mapping once. If another version is used elsewhere, that mapping will also be present
-    if (!scopeStack.node.tryFindChild(mapName)) {
-      new CfnMapping(scopeStack, mapName, { mapping });
-    }
-    // The ARN will be looked up at deployment time from the mapping we created
-    return Fn.findInMap(mapName, Aws.REGION, 'arn');
+    return new InsightsVersion();
   }
+
+  /**
+   * The arn of the Lambda Insights extension
+   */
+  public readonly layerVersionArn: string = '';
+}
+
+/**
+ * Function to retrieve the correct Lambda Insights ARN from RegionInfo,
+ * or create a mapping to look it up at stack deployment time.
+ *
+ * This function is run on CDK synthesis.
+ */
+function getVersionArn(context: IResolveContext, insightsVersion: string): string {
+
+  const scopeStack = Stack.of(context.scope);
+  const region = scopeStack.region;
+
+  // Region is defined, look up the arn, or throw an error if the version isn't supported by a region
+  if (region !== undefined && !Token.isUnresolved(region)) {
+    const arn = RegionInfo.get(region).cloudwatchLambdaInsightsArn(insightsVersion);
+    if (arn === undefined) {
+      throw new Error(`Insights version ${insightsVersion} is not supported in region ${region}`);
+    }
+    return arn;
+  }
+
+  // Otherwise, need to add a mapping to be looked up at deployment time
+
+  /**
+   * See this for the context as to why the mappings are the way they are
+   * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
+   *
+   * Mappings have to have a structure like this, and no functions can be used inside them:
+   * <Alphanumeric only>
+   * - <Can be non-alphanumeric>
+   * -- { <alphanumeric>: "value1"},
+   * -- { <alphanumeric>: "value2"}
+   *
+   * So we cannot have an otherwise ideal mapping like this, because '1.0.98.0' is non-alphanumeric:
+   * LambdaInsightsVersions
+   * - us-east-1
+   * -- {'1.0.98.0': 'arn1'},
+   * -- {'1.0.89.0': 'arn2'}
+   *
+   * To get around this limitation, this is the mapping structure:
+   * LambdaInsightsVersions10980 // for version 1.0.98.0
+   * - us-east-1
+   * -- {'arn': 'arn1'},
+   * - us-east-2
+   * -- {'arn': 'arn2'}
+   * LambdaInsightsVersions10890 // a separate mapping version 1.0.89.0
+   * - us-east-1
+   * -- {'arn': 'arn3'},
+   * - us-east-2
+   * -- {'arn': 'arn4'}
+   */
+
+  const mapName = DEFAULT_MAPPING_PREFIX + insightsVersion.split('.').join('');
+  const mapping: { [k1: string]: { [k2: string]: any } } = {};
+  const region2arns = RegionInfo.regionMap(FactName.cloudwatchLambdaInsightsVersion(insightsVersion));
+  for (const [reg, arn] of Object.entries(region2arns)) {
+    mapping[reg] = { arn };
+  }
+
+  // Only create a given mapping once. If another version of insights is used elsewhere, that mapping will also exist
+  if (!scopeStack.node.tryFindChild(mapName)) {
+    new CfnMapping(scopeStack, mapName, { mapping });
+  }
+  // The ARN will be looked up at deployment time from the mapping we created
+  return Fn.findInMap(mapName, Aws.REGION, 'arn');
 }
