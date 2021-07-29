@@ -67,7 +67,7 @@ use `ContainerImage.fromDockerImageAssets()`:
 const imageAssets = new assets.DockerImageAsset(stack, 'ImageAssets', {
   directory, // your code assets directory with Dockerfile
 });
-const service2 = new Service(stack, 'Service', {
+new Service(stack, 'Service', {
   image: ContainerImage.fromDockerImageAssets(imageAssets),
   port: 80,
 });
