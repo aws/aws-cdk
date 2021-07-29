@@ -1,14 +1,37 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as s3 from '@aws-cdk/aws-s3';
+import { Duration, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CommonDestinationProps, Compression } from './common';
-import { createLoggingOptions } from './private/helpers';
+import { createBufferingHints, createLoggingOptions } from './private/helpers';
 
 /**
  * Props for defining an S3 destination of a Kinesis Data Firehose delivery stream.
  */
 export interface S3BucketProps extends CommonDestinationProps {
+  /**
+   * The length of time that Firehose buffers incoming data before delivering
+   * it to the S3 bucket.
+   *
+   * Minimum: Duration.seconds(60)
+   * Maximum: Duration.seconds(900)
+   *
+   * @default Duration.seconds(300)
+   */
+  readonly bufferingInterval?: Duration;
+
+  /**
+   * The size of the buffer that Kinesis Data Firehose uses for incoming data before
+   * delivering it to the S3 bucket.
+   *
+   * Minimum: Size.mebibytes(1)
+   * Maximum: Size.mebibytes(128)
+   *
+   * @default Size.mebibytes(5)
+   */
+  readonly bufferingSize?: Size;
+
   /**
    * The type of compression that Kinesis Data Firehose uses to compress the data
    * that it delivers to the Amazon S3 bucket.
@@ -66,6 +89,7 @@ export class S3Bucket implements firehose.IDestination {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
         roleArn: role.roleArn,
+        bufferingHints: createBufferingHints(this.props.bufferingInterval, this.props.bufferingSize),
         bucketArn: this.bucket.bucketArn,
         compressionFormat: this.props.compression?.value,
         errorOutputPrefix: this.props.errorOutputPrefix,
