@@ -152,6 +152,9 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
 
 ### Request Parameters
 
+Request parameter mapping allows API requests from clients to be modified before they reach backend integrations.
+To use parameter mapping, you specify API request parameters to modify, and specify how to modify the parameters. 
+
 Request parameter mapping is supported through a set of helper methods.
 The following example renames a request header from header1 to header2 by generating mappings
 `append:header.header2: $request.header.header1` and `remove:header.header1: ''`:
