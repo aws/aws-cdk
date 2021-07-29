@@ -25,6 +25,8 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
     compression: destinations.Compression.GZIP,
     dataOutputPrefix: 'regularPrefix',
     errorOutputPrefix: 'errorPrefix',
+    bufferingInterval: cdk.Duration.seconds(60),
+    bufferingSize: cdk.Size.mebibytes(1),
   })],
 });
 

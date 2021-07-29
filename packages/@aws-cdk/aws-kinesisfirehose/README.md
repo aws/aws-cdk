@@ -157,7 +157,7 @@ new DeliveryStream(this, 'Delivery Stream Implicit Customer Managed', {
 });
 // SSE with an customer-managed CMK that is explicitly specified
 const key = new kms.Key(this, 'Key');
-new DeliveryStream(this, 'Delivery Stream Explicit Customer Managed'', {
+new DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
   encryptionKey: key,
   destinations: [destination],
 });
@@ -264,6 +264,31 @@ new DeliveryStream(this, 'Delivery Stream', {
   destinations: [destination],
 });
 ```
+
+## Buffering
+
+Incoming data is buffered before it is delivered to the specified destination. The
+delivery stream will wait until the amount of incoming data has exceeded some threshold
+(the "buffer size") or until the time since the last data delivery occurred exceeds some
+threshold (the "buffer interval"), whichever happens first. You can configure these
+thresholds based on the capabilities of the destination and your use-case. By default, the
+buffer size is 5 MiB and the buffer interval is 5 minutes.
+
+```ts fixture=with-bucket
+import * as cdk from '@aws-cdk/core';
+
+// Increase the buffer interval and size to 10 minutes and 8 MiB, respectively
+const destination = new destinations.S3Bucket(bucket, {
+  bufferingInterval: cdk.Duration.minutes(10),
+  bufferingSize: cdk.Size.mebibytes(8),
+});
+new DeliveryStream(this, 'Delivery Stream', {
+  destinations: [destination],
+});
+```
+
+See: [Data Delivery Frequency](https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html#frequency)
+in the *Kinesis Data Firehose Developer Guide*.
 
 ## Specifying an IAM role
 
