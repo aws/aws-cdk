@@ -1,7 +1,8 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags } from '@aws-cdk/core';
+import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
@@ -216,6 +217,7 @@ export interface DistributionProps {
     * least the SSL version that you specify.
     *
     * @default SecurityPolicyProtocol.TLS_V1_2_2021
+    * @default - If your application has the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag set, the default is SecurityPolicyProtocol.TLS_V1_2_2021, otherwise, the default is SecurityPolicyProtocol.TLS_V1_2_2019.
     */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 }
@@ -446,7 +448,11 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderViewerCertificate(certificate: acm.ICertificate,
-    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2021): CfnDistribution.ViewerCertificateProperty {
+    minimumProtocolVersionProp?: SecurityPolicyProtocol): CfnDistribution.ViewerCertificateProperty {
+
+    const minimumProtocolVersion = minimumProtocolVersionProp ?? (FeatureFlags.of(this).isEnabled(
+      CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021) ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019);
+
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
