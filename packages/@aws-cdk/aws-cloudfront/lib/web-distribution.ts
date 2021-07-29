@@ -1154,8 +1154,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     const originShieldRegion = originConfig.originShieldRegion ??
     originConfig.customOriginSource?.originShieldRegion ??
     originConfig.s3OriginSource?.originShieldRegion;
-    return originShieldRegion 
-      ? { enabled: true, originShieldRegion } 
+    return originShieldRegion
+      ? { enabled: true, originShieldRegion }
       : undefined;
   }
 }
