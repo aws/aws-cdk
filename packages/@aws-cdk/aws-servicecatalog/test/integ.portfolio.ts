@@ -81,11 +81,10 @@ secondPortfolio.deployWithStackSets(product, {
 
 portfolio.constrainCloudFormationParameters(product, {
   rule: {
-    ruleName: 'testInstanceType',
-    condition: cdk.Fn.conditionEquals(cdk.Fn.ref('Environment'), 'test'),
+    ruleName: 'SubnetsinVPC',
     assertions: [{
-      assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
-      description: 'For test environment, the instance type should be small',
+      assert: cdk.Fn.conditionEachMemberIn(cdk.Fn.valueOfAll('AWs::EC2::Subnet::Id', 'VpcId'), cdk.Fn.refAll('AWS::EC2::VPC::Id')),
+      description: 'for the kids',
     }],
   },
 });

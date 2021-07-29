@@ -202,7 +202,7 @@
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
-    "TestPortfolioLaunchTemplateConstraint13a8b80248da4E047268": {
+    "TestPortfolioLaunchTemplateConstraintfac7b49c426e599F9FFF": {
       "Type": "AWS::ServiceCatalog::LaunchTemplateConstraint",
       "Properties": {
         "PortfolioId": {
@@ -211,7 +211,7 @@
         "ProductId": {
           "Ref": "TestProduct7606930B"
         },
-        "Rules": "{\"testInstanceType\":{\"Assertions\":[{\"Assert\":{\"Fn::Contains\":[[\"t2.micro\",\"t2.small\"],{\"Ref\":\"InstanceType\"}]},\"AssertDescription\":\"For test environment, the instance type should be small\"}],\"RuleCondition\":{\"Fn::Equals\":[{\"Ref\":\"Environment\"},\"test\"]}}}"
+        "Rules": "{\"SubnetsinVPC\":{\"Assertions\":[{\"Assert\":{\"Fn::EachMemberIn\":[{\"Fn::ValueOfAll\":[\"AWs::EC2::Subnet::Id\",\"VpcId\"]},{\"Fn::RefAll\":\"AWS::EC2::VPC::Id\"}]},\"AssertDescription\":\"for the kids\"}]}}"
       },
       "DependsOn": [
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"

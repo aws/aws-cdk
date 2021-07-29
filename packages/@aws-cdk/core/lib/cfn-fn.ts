@@ -272,7 +272,7 @@ export class Fn {
       throw new Error('Fn.conditionAnd() needs at least one argument');
     }
     if (conditions.length === 1) {
-      return conditions[0];
+      return conditions[0] as ICfnRuleConditionExpression;
     }
     return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => new FnAnd(...group)));
   }
@@ -331,7 +331,7 @@ export class Fn {
       throw new Error('Fn.conditionOr() needs at least one argument');
     }
     if (conditions.length === 1) {
-      return conditions[0];
+      return conditions[0] as ICfnRuleConditionExpression;
     }
     return Fn.conditionOr(..._inGroupsOf(conditions, 10).map(group => new FnOr(...group)));
   }
@@ -604,7 +604,8 @@ class FnCidr extends FnBase {
   }
 }
 
-class FnConditionBase extends Intrinsic implements ICfnConditionExpression {
+class FnConditionBase extends Intrinsic implements ICfnRuleConditionExpression {
+  readonly serviceCatalogdisambiguator: boolean = true;
   constructor(type: string, value: any) {
     super({ [type]: value });
   }

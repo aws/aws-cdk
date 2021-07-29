@@ -86,15 +86,15 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
  * });
  * ```
  */
-export interface ICfnConditionExpression extends IResolvable { }
+export interface ICfnConditionExpression extends IResolvable {}
 
 /**
- * Interface to specify certain functions as rule-specifc.
+ * Interface to specify certain functions as Service Catalog rule-specifc.
  * These functions can only be used in ``Rules`` section of template.
  */
- export interface ICfnRuleConditionExpression extends ICfnConditionExpression {
+export interface ICfnRuleConditionExpression extends ICfnConditionExpression {
   /**
-   * Optional field to determine if condition should be used.
+   * This field is here for typing service catalog rule specific intrinsic functions.
    */
-  readonly disambiguator?: boolean;
+  readonly serviceCatalogdisambiguator: boolean;
 }
