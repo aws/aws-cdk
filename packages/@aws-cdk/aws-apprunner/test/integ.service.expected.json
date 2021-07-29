@@ -12,10 +12,11 @@
             "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
             "ImageRepositoryType": "ECR_PUBLIC"
           }
-        }
+        },
+        "InstanceConfiguration": {}
       }
     },
-    "Service2DefaultRole68B4B2E9": {
+    "Service2AccessRole759CA73D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -32,7 +33,7 @@
         }
       }
     },
-    "Service2DefaultRoleDefaultPolicyB5D2F2C0": {
+    "Service2AccessRoleDefaultPolicy08C28479": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -73,10 +74,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "Service2DefaultRoleDefaultPolicyB5D2F2C0",
+        "PolicyName": "Service2AccessRoleDefaultPolicy08C28479",
         "Roles": [
           {
-            "Ref": "Service2DefaultRole68B4B2E9"
+            "Ref": "Service2AccessRole759CA73D"
           }
         ]
       }
@@ -88,7 +89,7 @@
           "AuthenticationConfiguration": {
             "AccessRoleArn": {
               "Fn::GetAtt": [
-                "Service2DefaultRole68B4B2E9",
+                "Service2AccessRole759CA73D",
                 "Arn"
               ]
             }
@@ -118,10 +119,11 @@
             },
             "ImageRepositoryType": "ECR"
           }
-        }
+        },
+        "InstanceConfiguration": {}
       }
     },
-    "Service3DefaultRole85B65BAE": {
+    "Service3AccessRole3ACBAAA0": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -138,7 +140,7 @@
         }
       }
     },
-    "Service3DefaultRoleDefaultPolicy836C4E15": {
+    "Service3AccessRoleDefaultPolicy57B9744E": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -179,10 +181,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "Service3DefaultRoleDefaultPolicy836C4E15",
+        "PolicyName": "Service3AccessRoleDefaultPolicy57B9744E",
         "Roles": [
           {
-            "Ref": "Service3DefaultRole85B65BAE"
+            "Ref": "Service3AccessRole3ACBAAA0"
           }
         ]
       }
@@ -194,7 +196,7 @@
           "AuthenticationConfiguration": {
             "AccessRoleArn": {
               "Fn::GetAtt": [
-                "Service3DefaultRole85B65BAE",
+                "Service3AccessRole3ACBAAA0",
                 "Arn"
               ]
             }
@@ -224,7 +226,8 @@
             },
             "ImageRepositoryType": "ECR"
           }
-        }
+        },
+        "InstanceConfiguration": {}
       }
     },
     "Service429949929": {
@@ -244,7 +247,8 @@
               "Value": "main"
             }
           }
-        }
+        },
+        "InstanceConfiguration": {}
       }
     }
   },

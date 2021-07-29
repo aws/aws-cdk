@@ -75,7 +75,7 @@ test('create a service from existing ECR repository(image repository type: ECR)'
       AuthenticationConfiguration: {
         AccessRoleArn: {
           'Fn::GetAtt': [
-            'ServiceDefaultRole6324EC11',
+            'ServiceAccessRole4763579D',
             'Arn',
           ],
         },
@@ -135,7 +135,7 @@ test('create a service with local assets(image repository type: ECR)', () => {
       AuthenticationConfiguration: {
         AccessRoleArn: {
           'Fn::GetAtt': [
-            'DemoServiceDefaultRole3CE46569',
+            'DemoServiceAccessRoleE7F08742',
             'Arn',
           ],
         },
@@ -321,7 +321,7 @@ test('connection is required with code', () => {
   expect(t).toThrow('connection is required for github repository source.');
 });
 
-test('custom IAM role is allowed', () => {
+test('custom IAM access role and instance role are allowed', () => {
   // WHEN
   // GIVEN
   const dockerAssets = new ecr_assets.DockerImageAsset(stack, 'Assets', {
@@ -330,11 +330,14 @@ test('custom IAM role is allowed', () => {
   // WHEN
   new Service(stack, 'DemoService', {
     image: ContainerImage.fromDockerImageAssets(dockerAssets),
-    role: new iam.Role(stack, 'Role', {
+    accessRole: new iam.Role(stack, 'AccessRole', {
       assumedBy: new iam.ServicePrincipal('build.apprunner.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppRunnerServicePolicyForECRAccess'),
       ],
+    }),
+    instanceRole: new iam.Role(stack, 'InstanceRole', {
+      assumedBy: new iam.ServicePrincipal('tasks.apprunner.amazonaws.com'),
     }),
     port: 80,
   });
@@ -345,7 +348,7 @@ test('custom IAM role is allowed', () => {
       AuthenticationConfiguration: {
         AccessRoleArn: {
           'Fn::GetAtt': [
-            'Role1ABCC5F0',
+            'AccessRoleEC309AE6',
             'Arn',
           ],
         },
@@ -369,7 +372,13 @@ test('custom IAM role is allowed', () => {
         ImageRepositoryType: 'ECR',
       },
     },
+    InstanceConfiguration: {
+      InstanceRoleArn: {
+        'Fn::GetAtt': [
+          'InstanceRole3CCE2F1D',
+          'Arn',
+        ],
+      },
+    },
   });
 });
-
-

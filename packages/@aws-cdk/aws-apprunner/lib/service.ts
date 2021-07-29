@@ -20,6 +20,23 @@ export enum ImageRepositoryType {
 }
 
 /**
+ * The number of CPU units reserved for each instance of your App Runner service.
+ */
+export enum Cpu {
+  ONE_VCPU = '1 vCPU',
+  TWO_VCPU = '2 vCPU',
+}
+
+/**
+ * The amount of memory reserved for each instance of your App Runner service.
+ */
+export enum Memory {
+  TWO_GB = '2 GB',
+  THREE_GB = '3 GB',
+  FOUR_GB = '4 GB',
+}
+
+/**
  * The code runtimes
  */
 export enum CodeRuntime {
@@ -143,17 +160,37 @@ export interface ServiceProps {
    */
   readonly port?: number;
   /**
+   * The number of CPU units reserved for each instance of your App Runner service.
+   *
+   * @default - 1 vCPU
+   */
+  readonly cpu?: Cpu;
+  /**
+   * The amount of memory reserved for each instance of your App Runner service.
+   *
+   * @default - 2 GB
+   */
+  readonly memory?: Memory;
+  /**
    * ARN of the connection to Github. Only required for Github source.
    *
    * @default - no connection
    */
   readonly connection?: Connection;
   /**
-   * The access role
+   * The IAM role that grants the App Runner service access to a source repository.
+   * It's required for ECR image repositories (but not for ECR Public repositories).
    *
-   * @default - generate a new IAM role.
+   * @default - generate a new access role.
    */
-  readonly role?: iam.IRole;
+  readonly accessRole?: iam.IRole;
+  /**
+   * The IAM role that provides permissions to your App Runner service.
+   * These are permissions that your code needs when it calls any AWS APIs.
+   *
+   * @default - no instance role attached.
+   */
+  readonly instanceRole?: iam.IRole;
   /**
    * Name of the service.
    *
@@ -352,7 +389,7 @@ export class Service extends cdk.Resource {
     return new Import(scope, id);
   }
   private readonly props: ServiceProps;
-  private role?: iam.IRole;
+  private accessRole?: iam.IRole;
   private ecrRepository?: ecr.IRepository;
   /**
    * The ARN of the Service.
@@ -392,10 +429,15 @@ export class Service extends cdk.Resource {
     this.props = props;
 
     // generate an IAM role only when ImageRepositoryType is ECR and props.role is undefined
-    this.role = (this.props.image && this.props.image.type == ImageRepositoryType.ECR) ?
-      this.props.role ? this.props.role : this.generateDefaultRole() : undefined;
+    this.accessRole = (this.props.image && this.props.image.type == ImageRepositoryType.ECR) ?
+      this.props.accessRole ? this.props.accessRole : this.generateDefaultRole() : undefined;
 
     const resource = new CfnService(this, 'Resource', {
+      instanceConfiguration: {
+        cpu: props.cpu?.valueOf(),
+        memory: props.memory?.valueOf(),
+        instanceRoleArn: props.instanceRole?.roleArn,
+      },
       sourceConfiguration: {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
         imageRepository: this.props.image ? this.renderImageRepositoryConfiguration(this.props.image) : undefined,
@@ -404,8 +446,8 @@ export class Service extends cdk.Resource {
     });
 
     // grant required privileges for the role
-    if (this.role && this.ecrRepository) {
-      this.ecrRepository.grantPull(this.role);
+    if (this.accessRole && this.ecrRepository) {
+      this.ecrRepository.grantPull(this.accessRole);
     }
     this.serviceArn = resource.attrServiceArn;
     this.serviceId = resource.attrServiceId;
@@ -415,8 +457,8 @@ export class Service extends cdk.Resource {
   }
   private renderImageRepositoryConfiguration(assets: ContainerImage): ImageRepository {
     // grant pull privileges
-    if (assets.ecrRepository && this.role) {
-      assets.ecrRepository.grantPull(this.role);
+    if (assets.ecrRepository && this.accessRole) {
+      assets.ecrRepository.grantPull(this.accessRole);
     }
 
     // })
@@ -437,21 +479,21 @@ export class Service extends cdk.Resource {
   }
   private renderAuthenticationConfiguration(): AuthenticationConfiguration {
     return {
-      accessRoleArn: this.role?.roleArn,
+      accessRoleArn: this.accessRole?.roleArn,
       // assign connectionArn only when code is available
       connectionArn: this.props.code ? this.props.connection?.connectionArn : undefined,
     };
   }
   private generateDefaultRole(): iam.Role {
-    const role = new iam.Role(this, 'DefaultRole', {
+    const accessRole = new iam.Role(this, 'AccessRole', {
       assumedBy: new iam.ServicePrincipal('build.apprunner.amazonaws.com'),
     });
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
+    accessRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['ecr:GetAuthorizationToken'],
       resources: ['*'],
     }));
-    this.role = role;
-    return role;
+    this.accessRole = accessRole;
+    return accessRole;
   }
 }
 
