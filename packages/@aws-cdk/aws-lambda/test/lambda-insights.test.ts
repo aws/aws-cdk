@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { MatchStyle } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -17,8 +18,8 @@ function functionWithInsightsVersion(stack: cdk.Stack, id: string, insightsVersi
 /**
  * Check if the function's Role has the Lambda Insights IAM policy
  */
-function verifyRoleHasCorrectPolicies(stack: cdk.Stack): any {
-  return expect(stack).toHaveResource('AWS::IAM::Role', {
+function verifyRoleHasCorrectPolicies(stack: cdk.Stack) {
+  expect(stack).toHaveResource('AWS::IAM::Role', {
     ManagedPolicyArns:
       [
         { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] },
@@ -106,32 +107,209 @@ describe('lambda-insights', () => {
     functionWithInsightsVersion(stack, 'MyLambda1', lambda.LambdaInsightsVersion.VERSION_1_0_54_0);
     functionWithInsightsVersion(stack, 'MyLambda2', lambda.LambdaInsightsVersion.VERSION_1_0_54_0);
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Role: { 'Fn::GetAtt': ['MyLambda1ServiceRole69A7E1EA', 'Arn'] },
-      Layers: [{
-        'Fn::FindInMap': [
-          'LambdaInsightsVersions10540',
-          {
-            Ref: 'AWS::Region',
+    /* eslint-disable quote-props */
+    expect(stack).toMatchTemplate({
+      Resources: {
+        MyLambda1ServiceRole69A7E1EA: {
+          'Type': 'AWS::IAM::Role',
+          'Properties': {
+            'AssumeRolePolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'sts:AssumeRole',
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'Service': 'lambda.amazonaws.com',
+                  },
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+            'ManagedPolicyArns': [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy',
+                  ],
+                ],
+              },
+            ],
           },
-          'arn',
-        ],
-      }],
-    });
-
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Role: { 'Fn::GetAtt': ['MyLambda2ServiceRoleD09B370C', 'Arn'] },
-      Layers: [{
-        'Fn::FindInMap': [
-          'LambdaInsightsVersions10540',
-          {
-            Ref: 'AWS::Region',
+        },
+        MyLambda1AAFB4554: {
+          'Type': 'AWS::Lambda::Function',
+          'Properties': {
+            'Code': {
+              'ZipFile': 'foo',
+            },
+            'Role': {
+              'Fn::GetAtt': [
+                'MyLambda1ServiceRole69A7E1EA',
+                'Arn',
+              ],
+            },
+            'Handler': 'index.handler',
+            'Layers': [
+              {
+                'Fn::FindInMap': [
+                  'LambdaInsightsVersions10540',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  'arn',
+                ],
+              },
+            ],
+            'Runtime': 'nodejs10.x',
           },
-          'arn',
-        ],
-      }],
-    });
-
+          'DependsOn': [
+            'MyLambda1ServiceRole69A7E1EA',
+          ],
+        },
+        MyLambda2ServiceRoleD09B370C: {
+          'Type': 'AWS::IAM::Role',
+          'Properties': {
+            'AssumeRolePolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'sts:AssumeRole',
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'Service': 'lambda.amazonaws.com',
+                  },
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+            'ManagedPolicyArns': [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy',
+                  ],
+                ],
+              },
+            ],
+          },
+        },
+        MyLambda2254B54D5: {
+          'Type': 'AWS::Lambda::Function',
+          'Properties': {
+            'Code': {
+              'ZipFile': 'foo',
+            },
+            'Role': {
+              'Fn::GetAtt': [
+                'MyLambda2ServiceRoleD09B370C',
+                'Arn',
+              ],
+            },
+            'Handler': 'index.handler',
+            'Layers': [
+              {
+                'Fn::FindInMap': [
+                  'LambdaInsightsVersions10540',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  'arn',
+                ],
+              },
+            ],
+            'Runtime': 'nodejs10.x',
+          },
+          'DependsOn': [
+            'MyLambda2ServiceRoleD09B370C',
+          ],
+        },
+      },
+      Mappings: {
+        LambdaInsightsVersions10540: {
+          'ap-northeast-1': {
+            arn: 'arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'ap-northeast-2': {
+            'arn': 'arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'ap-south-1': {
+            'arn': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'ap-southeast-1': {
+            'arn': 'arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'ap-southeast-2': {
+            'arn': 'arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'ca-central-1': {
+            'arn': 'arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'eu-central-1': {
+            'arn': 'arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'eu-north-1': {
+            'arn': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'eu-west-1': {
+            'arn': 'arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'eu-west-2': {
+            'arn': 'arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'eu-west-3': {
+            'arn': 'arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'sa-east-1': {
+            'arn': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'us-east-1': {
+            'arn': 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'us-east-2': {
+            'arn': 'arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'us-west-1': {
+            'arn': 'arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:2',
+          },
+          'us-west-2': {
+            'arn': 'arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:2',
+          },
+        },
+      },
+    }, MatchStyle.EXACT);
     // On synthesis it should not throw an error
     expect(() => app.synth()).not.toThrow();
   });
