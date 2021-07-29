@@ -49,7 +49,6 @@ async function emptyBucket(bucketName: string) {
 }
 
 async function onDelete(bucketName?: string) {
-  // const bucketName = event.ResourceProperties?.BucketName;
   if (!bucketName) {
     throw new Error('No BucketName was provided.');
   }
