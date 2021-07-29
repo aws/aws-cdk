@@ -172,6 +172,13 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly rightAnnotations?: HorizontalAnnotation[];
 
   /**
+   * Annotations for the vertical axis
+   *
+   * @default - No annotations
+   */
+  readonly verticalAnnotations?: VerticalAnnotation[];
+
+  /**
    * Whether the graph should be shown as stacked lines
    *
    * @default false
@@ -281,6 +288,11 @@ export class GraphWidget extends ConcreteWidget {
       ...(this.props.leftAnnotations || []).map(mapAnnotation('left')),
       ...(this.props.rightAnnotations || []).map(mapAnnotation('right')),
     ];
+    const verticalAnnotations = this.props.verticalAnnotations;
+    const annotations = horizontalAnnotations.length > 0 || verticalAnnotations ? ({
+      horizontal: horizontalAnnotations.length > 0 ? horizontalAnnotations : undefined,
+      vertical: verticalAnnotations,
+    }) : undefined;
 
     const metrics = allMetricsGraphJson(this.leftMetrics, this.rightMetrics);
     return [{
@@ -295,7 +307,7 @@ export class GraphWidget extends ConcreteWidget {
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
         metrics: metrics.length > 0 ? metrics : undefined,
-        annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
+        annotations,
         yAxis: {
           left: this.props.leftYAxis ?? undefined,
           right: this.props.rightYAxis ?? undefined,
@@ -404,7 +416,46 @@ export interface HorizontalAnnotation {
 }
 
 /**
- * Fill shading options that will be used with an annotation
+ * Vertical annotation to be added to a graph
+ */
+export interface VerticalAnnotation {
+  /**
+   * The date and time in the graph where the vertical annotation line is to appear
+   */
+  readonly value: string;
+
+  /**
+   * Label for the annotation
+   *
+   * @default - No label
+   */
+  readonly label?: string;
+
+  /**
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to be used for the annotation.
+   * The `Color` class has a set of standard colors that can be used here.
+   *
+   * @default - Automatic color
+   */
+  readonly color?: string;
+
+  /**
+   * Add shading before or after the annotation
+   *
+   * @default No shading
+   */
+  readonly fill?: VerticalShading;
+
+  /**
+   * Whether the annotation is visible
+   *
+   * @default true
+   */
+  readonly visible?: boolean;
+}
+
+/**
+ * Fill shading options that will be used with a horizontal annotation
  */
 export enum Shading {
   /**
@@ -421,6 +472,26 @@ export enum Shading {
    * Add shading below the annotation
    */
   BELOW = 'below'
+}
+
+/**
+ * Fill shading options that will be used with a vertical annotation
+ */
+export enum VerticalShading {
+  /**
+   * Don't add shading
+   */
+  NONE = 'none',
+
+  /**
+   * Add shading before the annotation
+   */
+  BEFORE = 'before',
+
+  /**
+   * Add shading after the annotation
+   */
+  AFTER = 'after'
 }
 
 /**
