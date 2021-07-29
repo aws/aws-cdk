@@ -150,7 +150,7 @@ export abstract class OriginBase implements IOrigin {
         originCustomHeaders: this.renderCustomHeaders(),
         s3OriginConfig,
         customOriginConfig,
-        originShield: this.getOriginShield(this.originShieldRegion),
+        originShield: this.renderOriginShield(this.originShieldRegion),
       },
     };
   }
@@ -190,7 +190,6 @@ export abstract class OriginBase implements IOrigin {
    */
   private renderOriginShield(originShieldRegion?: string): CfnDistribution.OriginShieldProperty | undefined {
     if (originShieldRegion) {
-      if (!(/^\w\w\-[a-z]*\-\d$/).test(originShieldRegion)) throw new Error(`originShieldRegion ${originShieldRegion} is not a valid AWS region.`);
       return {
         enabled: true,
         originShieldRegion,
