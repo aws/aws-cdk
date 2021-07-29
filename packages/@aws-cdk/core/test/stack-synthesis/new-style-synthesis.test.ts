@@ -76,7 +76,7 @@ nodeunitShim({
     test.deepEqual(assertions.length, 1);
     test.deepEqual(assertions[0].Assert, {
       'Fn::Not': [
-        { 'Fn::Contains': [['1', '2', '3'], { Ref: 'BootstrapVersion' }] },
+        { 'Fn::Contains': [['1', '2', '3', '4', '5'], { Ref: 'BootstrapVersion' }] },
       ],
     });
 
@@ -269,6 +269,26 @@ nodeunitShim({
       assumeRoleArn: 'image:role:arn',
       assumeRoleExternalId: 'image-external-id',
     });
+
+    test.done();
+  },
+
+  'customize deploy role externalId'(test: Test) {
+    // GIVEN
+    const myapp = new App();
+
+    // WHEN
+    const mystack = new Stack(myapp, 'mystack', {
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleExternalId: 'deploy-external-id',
+      }),
+    });
+
+    // THEN
+    const asm = myapp.synth();
+
+    const stackArtifact = asm.getStack(mystack.stackName);
+    expect(stackArtifact.assumeRoleExternalId).toEqual('deploy-external-id');
 
     test.done();
   },

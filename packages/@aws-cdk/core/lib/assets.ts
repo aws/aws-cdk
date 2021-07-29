@@ -44,7 +44,8 @@ export interface AssetOptions {
   readonly assetHashType?: AssetHashType;
 
   /**
-   * Bundle the asset by executing a command in a Docker container.
+   * Bundle the asset by executing a command in a Docker container or a custom bundling provider.
+   *
    * The asset path will be mounted at `/asset-input`. The Docker
    * container is responsible for putting content at `/asset-output`.
    * The content at `/asset-output` will be zipped and used as the

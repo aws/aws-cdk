@@ -410,6 +410,7 @@ export interface DomainProps {
   /**
    * Additional options to specify for the Amazon ES domain.
    *
+   * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-advanced-options
    * @default - no advanced options are specified
    */
   readonly advancedOptions?: { [key: string]: (string) };
@@ -1211,7 +1212,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   public static fromDomainAttributes(scope: Construct, id: string, attrs: DomainAttributes): IDomain {
     const { domainArn, domainEndpoint } = attrs;
-    const domainName = extractNameFromEndpoint(domainEndpoint);
+    const domainName = cdk.Stack.of(scope).parseArn(domainArn).resourceName ?? extractNameFromEndpoint(domainEndpoint);
 
     return new class extends DomainBase {
       public readonly domainArn = domainArn;
@@ -1415,12 +1416,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // Validate feature support for the given Elasticsearch version, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
     if (elasticsearchVersionNum < 5.1) {
-      if (
-        props.logging?.slowIndexLogEnabled
-        || props.logging?.appLogEnabled
-        || props.logging?.slowSearchLogEnabled
-      ) {
-        throw new Error('Error and slow logs publishing requires Elasticsearch version 5.1 or later.');
+      if (props.logging?.appLogEnabled) {
+        throw new Error('Error logs publishing requires Elasticsearch version 5.1 or later.');
       }
       if (props.encryptionAtRest?.enabled) {
         throw new Error('Encryption of data at rest requires Elasticsearch version 5.1 or later.');
@@ -1682,6 +1679,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           },
         }
         : undefined,
+      advancedOptions: props.advancedOptions,
     });
     this.domain.applyRemovalPolicy(props.removalPolicy);
 

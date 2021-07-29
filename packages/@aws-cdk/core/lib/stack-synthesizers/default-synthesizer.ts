@@ -19,7 +19,7 @@ export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 /**
  * The minimum bootstrap stack version required by this app.
  */
-const MIN_BOOTSTRAP_STACK_VERSION = 4;
+const MIN_BOOTSTRAP_STACK_VERSION = 6;
 
 /**
  * Configuration properties for DefaultStackSynthesizer
@@ -97,6 +97,13 @@ export interface DefaultStackSynthesizerProps {
    * @default - No external ID
    */
   readonly imageAssetPublishingExternalId?: string;
+
+  /**
+   * External ID to use when assuming role for cloudformation deployments
+   *
+   * @default - No external ID
+   */
+  readonly deployRoleExternalId?: string;
 
   /**
    * The role to assume to initiate a deployment in this environment
@@ -424,6 +431,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     const artifactId = this.writeAssetManifest(session);
 
     this.emitStackArtifact(this.stack, session, {
+      assumeRoleExternalId: this.props.deployRoleExternalId,
       assumeRoleArn: this._deployRoleArn,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,

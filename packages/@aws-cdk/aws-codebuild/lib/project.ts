@@ -1,4 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
@@ -28,6 +29,8 @@ import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-typ
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
+
 /**
  * The type returned from {@link IProject#enableBatchBuilds}.
  */
@@ -36,7 +39,33 @@ export interface BatchBuildConfig {
   readonly role: iam.IRole;
 }
 
-export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
+/**
+ * Location of a PEM certificate on S3
+ */
+export interface BuildEnvironmentCertificate {
+  /**
+   * The bucket where the certificate is
+   */
+  readonly bucket: s3.IBucket;
+  /**
+   * The full path and name of the key file
+   */
+  readonly objectKey: string;
+}
+
+/**
+ * Additional options to pass to the notification rule.
+ */
+export interface ProjectNotifyOnOptions extends notifications.NotificationRuleOptions {
+  /**
+   * A list of event types associated with this notification rule for CodeBuild Project.
+   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
+   */
+  readonly events: ProjectNotificationEvents[];
+}
+
+export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource {
   /**
    * The ARN of this Project.
    * @attribute
@@ -170,6 +199,42 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    * @default sum over 5 minutes
    */
   metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Defines a CodeStar Notification rule triggered when the project
+   * events emitted by you specified, it very similar to `onEvent` API.
+   *
+   * You can also use the methods `notifyOnBuildSucceeded` and
+   * `notifyOnBuildFailed` to define rules for these specific event emitted.
+   *
+   * @param id The logical identifier of the CodeStar Notifications rule that will be created
+   * @param target The target to register for the CodeStar Notifications destination.
+   * @param options Customization options for CodeStar Notifications rule
+   * @returns CodeStar Notifications rule associated with this build project.
+   */
+  notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: ProjectNotifyOnOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar notification rule which triggers when a build completes successfully.
+   */
+  notifyOnBuildSucceeded(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar notification rule which triggers when a build fails.
+   */
+  notifyOnBuildFailed(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
 }
 
 /**
@@ -403,6 +468,46 @@ abstract class ProjectBase extends Resource implements IProject {
    */
   public metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(CodeBuildMetrics.failedBuildsSum, props);
+  }
+
+  public notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: ProjectNotifyOnOptions,
+  ): notifications.INotificationRule {
+    return new notifications.NotificationRule(this, id, {
+      ...options,
+      source: this,
+      targets: [target],
+    });
+  }
+
+  public notifyOnBuildSucceeded(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [ProjectNotificationEvents.BUILD_SUCCEEDED],
+    });
+  }
+
+  public notifyOnBuildFailed(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [ProjectNotificationEvents.BUILD_FAILED],
+    });
+  }
+
+  public bindAsNotificationRuleSource(_scope: Construct): notifications.NotificationRuleSourceConfig {
+    return {
+      sourceArn: this.projectArn,
+    };
   }
 
   private cannedMetric(
@@ -1221,6 +1326,7 @@ export class Project extends ProjectBase {
           credential: secret.secretFullArn ?? secret.secretName,
         }
         : undefined,
+      certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
@@ -1348,23 +1454,33 @@ export class Project extends ProjectBase {
       },
     }));
 
-    const policy = new iam.Policy(this, 'PolicyDocument', {
-      statements: [
-        new iam.PolicyStatement({
-          resources: ['*'],
-          actions: [
-            'ec2:CreateNetworkInterface',
-            'ec2:DescribeNetworkInterfaces',
-            'ec2:DeleteNetworkInterface',
-            'ec2:DescribeSubnets',
-            'ec2:DescribeSecurityGroups',
-            'ec2:DescribeDhcpOptions',
-            'ec2:DescribeVpcs',
-          ],
-        }),
-      ],
-    });
-    this.role.attachInlinePolicy(policy);
+    // If the same Role is used for multiple Projects, always creating a new `iam.Policy`
+    // will attach the same policy multiple times, probably exceeding the maximum size of the
+    // Role policy. Make sure we only do it once for the same role.
+    //
+    // This deduplication could be a feature of the Role itself, but that feels risky and
+    // is hard to implement (what with Tokens and all). Safer to fix it locally for now.
+    let policy: iam.Policy | undefined = (this.role as any)[VPC_POLICY_SYM];
+    if (!policy) {
+      policy = new iam.Policy(this, 'PolicyDocument', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: [
+              'ec2:CreateNetworkInterface',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeDhcpOptions',
+              'ec2:DescribeVpcs',
+            ],
+          }),
+        ],
+      });
+      this.role.attachInlinePolicy(policy);
+      (this.role as any)[VPC_POLICY_SYM] = policy;
+    }
 
     // add an explicit dependency between the EC2 Policy and this Project -
     // otherwise, creating the Project fails, as it requires these permissions
@@ -1440,6 +1556,13 @@ export interface BuildEnvironment {
    * @default false
    */
   readonly privileged?: boolean;
+
+  /**
+   * The location of the PEM-encoded certificate for the build project
+   *
+   * @default - No external certificate is added to the project
+   */
+  readonly certificate?: BuildEnvironmentCertificate;
 
   /**
    * The environment variables that your builds can use.
@@ -1960,4 +2083,40 @@ export enum BuildEnvironmentVariableType {
    * An environment variable stored in AWS Secrets Manager.
    */
   SECRETS_MANAGER = 'SECRETS_MANAGER'
+}
+
+/**
+ * The list of event types for AWS Codebuild
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject
+ */
+export enum ProjectNotificationEvents {
+  /**
+   * Trigger notification when project build state failed
+   */
+  BUILD_FAILED = 'codebuild-project-build-state-failed',
+
+  /**
+   * Trigger notification when project build state succeeded
+   */
+  BUILD_SUCCEEDED = 'codebuild-project-build-state-succeeded',
+
+  /**
+   * Trigger notification when project build state in progress
+   */
+  BUILD_IN_PROGRESS = 'codebuild-project-build-state-in-progress',
+
+  /**
+   * Trigger notification when project build state stopped
+   */
+  BUILD_STOPPED = 'codebuild-project-build-state-stopped',
+
+  /**
+   * Trigger notification when project build phase failure
+   */
+  BUILD_PHASE_FAILED = 'codebuild-project-build-phase-failure',
+
+  /**
+   * Trigger notification when project build phase success
+   */
+  BUILD_PHASE_SUCCEEDED = 'codebuild-project-build-phase-success',
 }

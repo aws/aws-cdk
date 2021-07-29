@@ -1055,6 +1055,7 @@ export class NpmIgnoreForJsiiModules extends ValidationRule {
       '*.ts',
       '!*.d.ts',
       '!*.js',
+      '!*.lit.ts', // <- This is part of the module's documentation!
       'coverage',
       '.nyc_output',
       '*.tgz',
@@ -1633,6 +1634,7 @@ export class NoExperimentalDependents extends ValidationRule {
     ['@aws-cdk/aws-apigatewayv2-integrations', ['@aws-cdk/aws-apigatewayv2']],
     ['@aws-cdk/aws-apigatewayv2-authorizers', ['@aws-cdk/aws-apigatewayv2']],
     ['@aws-cdk/aws-events-targets', ['@aws-cdk/aws-kinesisfirehose']],
+    ['@aws-cdk/aws-kinesisfirehose-destinations', ['@aws-cdk/aws-kinesisfirehose']],
   ]);
 
   private readonly excludedModules = ['@aws-cdk/cloudformation-include'];

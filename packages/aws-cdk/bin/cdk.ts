@@ -38,7 +38,7 @@ async function parseCommandLineArguments() {
   //
   //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
 
-  const initTemplateLanuages = await availableInitLanguages();
+  const initTemplateLanguages = await availableInitLanguages();
   return yargs
     .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
@@ -70,6 +70,7 @@ async function parseCommandLineArguments() {
     )
     .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' })
+      .option('validation', { type: 'boolean', desc: 'After synthesis, validate stacks with the "validateOnSynth" attribute set (can also be controlled with CDK_VALIDATION)', default: true })
       .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not output CloudFormation Template to stdout', default: false }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
@@ -112,11 +113,12 @@ async function parseCommandLineArguments() {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
-      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false }))
+      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
+      .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false }))
     .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false })
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', yargs => yargs
-      .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
+      .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
     )
@@ -259,6 +261,7 @@ async function initCommandLine() {
           templatePath: args.template,
           strict: args.strict,
           contextLines: args.contextLines,
+          securityOnly: args.securityOnly,
           fail: args.fail || !enableDiffNoFail,
         });
 
@@ -312,7 +315,7 @@ async function initCommandLine() {
           force: args.force,
           parameters: parameterMap,
           usePreviousParameters: args['previous-parameters'],
-          outputsFile: args.outputsFile,
+          outputsFile: configuration.settings.get(['outputsFile']),
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
         });
@@ -327,7 +330,12 @@ async function initCommandLine() {
 
       case 'synthesize':
       case 'synth':
-        return cli.synth(args.STACKS, args.exclusively, args.quiet);
+        if (args.exclusively) {
+          return cli.synth(args.STACKS, args.exclusively, args.quiet, args.validation);
+        } else {
+          return cli.synth(args.STACKS, true, args.quiet, args.validation);
+        }
+
 
       case 'metadata':
         return cli.metadata(args.STACK);
