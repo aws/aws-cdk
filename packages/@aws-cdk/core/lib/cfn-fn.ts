@@ -605,7 +605,7 @@ class FnCidr extends FnBase {
 }
 
 class FnConditionBase extends Intrinsic implements ICfnRuleConditionExpression {
-  readonly serviceCatalogdisambiguator: boolean = true;
+  readonly disambiguator: boolean = true;
   constructor(type: string, value: any) {
     super({ [type]: value });
   }

@@ -96,5 +96,5 @@ export interface ICfnRuleConditionExpression extends ICfnConditionExpression {
   /**
    * This field is here for typing service catalog rule specific intrinsic functions.
    */
-  readonly serviceCatalogDisambiguator: boolean;
+  readonly disambiguator: boolean;
 }
