@@ -311,6 +311,62 @@ new DeliveryStream(this, 'Delivery Stream', {
 });
 ```
 
+## Data Processing/Transformation
+
+Data can be transformed before being delivered to destinations. There are two types of
+data processing for delivery streams: record transformation with AWS Lambda, and record
+format conversion using a schema stored in an AWS Glue table. If both types of data
+processing are configured, then the Lambda transformation is performed first. By default,
+no data processing occurs. This construct library currently only supports data
+transformation with AWS Lambda. See [#15501](https://github.com/aws/aws-cdk/issues/15501)
+to track the status of adding support for record format conversion.
+
+### Data transformation with AWS Lambda
+
+To transform the data, Kinesis Data Firehose will call a Lambda function that you provide
+and deliver the data returned in place of the source record. The function must return a
+result that contains records in a specific format, including the following fields:
+
+- `recordId` -- the ID of the input record that corresponds the results.
+- `result` -- the status of the transformation of the record: "Ok" (success), "Dropped"
+  (not processed intentionally), or "ProcessingFailed" (not processed due to an error).
+- `data` -- the transformed data, Base64-encoded.
+
+The data is buffered up to 1 minute and up to 3 MiB by default before being sent to the
+function, but can be configured using `bufferInterval` and `bufferSize` in the processor
+configuration (see: [Buffering](#buffering)). If the function invocation fails due to a
+network timeout or because of hitting an invocation limit, the invocation is retried 3
+times by default, but can be configured using `retries` in the processor configuration.
+
+```ts fixture=with-bucket
+import * as cdk from '@aws-cdk/core';
+import * as lambda from '@aws-cdk/aws-lambda';
+
+// Provide a Lambda function that will transform records before delivery, with custom
+// buffering and retry configuration
+const lambdaFunction = new lambda.Function(this, 'Processor', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'process-records')),
+});
+const lambdaProcessor = new LambdaFunctionProcessor(lambdaFunction, {
+  bufferingInterval: cdk.Duration.minutes(5),
+  bufferingSize: cdk.Size.mebibytes(5),
+  retries: 5,
+});
+const s3Destination = new destinations.S3Bucket(bucket, {
+  processor: lambdaProcessor,
+});
+new DeliveryStream(this, 'Delivery Stream', {
+  destinations: [destination],
+});
+```
+
+[Example Lambda data processor performing the identity transformation.](../aws-kinesisfirehose-destinations/test/integ.s3-bucket.lit.ts)
+
+See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
+in the *Kinesis Data Firehose Developer Guide*.
+
 ## Specifying an IAM role
 
 The DeliveryStream class automatically creates IAM service roles with all the minimum
