@@ -27,17 +27,17 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 import apprunner = require('@aws-cdk/aws-apprunner');
 ```
 
-# Introduction
+## Introduction
 
 AWS App Runner is a fully managed service that makes it easy for developers to quickly deploy containerized web applications and APIs, at scale and with no prior infrastructure experience required. Start with your source code or a container image. App Runner automatically builds and deploys the web application and load balances traffic with encryption. App Runner also scales up or down automatically to meet your traffic needs. With App Runner, rather than thinking about servers or scaling, you have more time to focus on your applications.
 
-# Service
+## Service
 
 The `Service` construct allows you to create AWS App Runner services with `ECR Public`, `ECR` or `Github`. You need specify either `image` or `code` for different scenarios.
 
 ## ECR Public
 
-To create a `Service` with ECR Public:
+To create a `Service` with ECR Public, use `fromEcrPublic()`:
 
 ```ts
 new Service(stack, 'Service', {
@@ -48,7 +48,19 @@ new Service(stack, 'Service', {
 
 ## ECR
 
-To create a `Service` from local docker image assets being built and pushed to Amazon ECR:
+To create a `Service` from an existing ECR repository, use `fromEcrRepository()`:
+
+```ts
+// import the existing ECR repository by name
+const repo = ecr.Repository.fromRepositoryName(stack, 'ExistingRepository', 'existing-repo');
+new Service(stack, 'Service', {
+  image: ContainerImage.fromEcrRepository(repo),
+});
+```
+
+
+To create a `Service` from local docker image assets being built and pushed to Amazon ECR,
+use `fromDockerImageAssets()`:
 
 ```ts
 const imageAssets = new assets.DockerImageAsset(stack, 'ImageAssets', {

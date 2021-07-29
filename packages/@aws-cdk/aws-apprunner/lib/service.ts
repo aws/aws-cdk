@@ -1,3 +1,4 @@
+import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -351,6 +352,8 @@ export class Service extends cdk.Resource {
     return new Import(scope, id);
   }
   private readonly props: ServiceProps;
+  private role?: iam.IRole;
+  private ecrRepository?: ecr.IRepository;
   /**
    * The ARN of the Service.
    * @attribute
@@ -387,6 +390,11 @@ export class Service extends cdk.Resource {
       throw new Error('connection is required for github repository source.');
     }
     this.props = props;
+
+    // generate an IAM role only when ImageRepositoryType is ECR and props.role is undefined
+    this.role = (this.props.image && this.props.image.type == ImageRepositoryType.ECR) ?
+      this.props.role ? this.props.role : this.generateDefaultRole() : undefined;
+
     const resource = new CfnService(this, 'Resource', {
       sourceConfiguration: {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
@@ -394,6 +402,11 @@ export class Service extends cdk.Resource {
         codeRepository: this.props.code ? this.renderCodeRepositoryConfiguration(this.props.code) : undefined,
       },
     });
+
+    // grant required privileges for the role
+    if (this.role && this.ecrRepository) {
+      this.ecrRepository.grantPull(this.role);
+    }
     this.serviceArn = resource.attrServiceArn;
     this.serviceId = resource.attrServiceId;
     this.serviceUrl = resource.attrServiceUrl;
@@ -401,6 +414,12 @@ export class Service extends cdk.Resource {
     this.serviceName = resource.ref;
   }
   private renderImageRepositoryConfiguration(assets: ContainerImage): ImageRepository {
+    // grant pull privileges
+    if (assets.ecrRepository && this.role) {
+      assets.ecrRepository.grantPull(this.role);
+    }
+
+    // })
     return {
       imageIdentifier: assets.uri,
       imageRepositoryType: assets.type,
@@ -418,9 +437,7 @@ export class Service extends cdk.Resource {
   }
   private renderAuthenticationConfiguration(): AuthenticationConfiguration {
     return {
-      // assign accessRoleArn only when image is available and type is not ECR_PUBLIC
-      accessRoleArn: (this.props.image && this.props.image.type == ImageRepositoryType.ECR) ?
-        this.props.role ? this.props.role.roleArn : this.generateDefaultRole().roleArn : undefined,
+      accessRoleArn: this.role?.roleArn,
       // assign connectionArn only when code is available
       connectionArn: this.props.code ? this.props.connection?.connectionArn : undefined,
     };
@@ -428,10 +445,12 @@ export class Service extends cdk.Resource {
   private generateDefaultRole(): iam.Role {
     const role = new iam.Role(this, 'DefaultRole', {
       assumedBy: new iam.ServicePrincipal('build.apprunner.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppRunnerServicePolicyForECRAccess'),
-      ],
     });
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['ecr:GetAuthorizationToken'],
+      resources: ['*'],
+    }));
+    this.role = role;
     return role;
   }
 }
@@ -441,12 +460,22 @@ export class Service extends cdk.Resource {
  */
 export class ContainerImage {
   /**
-   * Using the ECR Public registry.
+   * Using the ECR Public repository.
    * @param uri URL of the ECR Public registry
    * @returns ContainerImage
    */
   public static fromEcrPublic(uri: string): ContainerImage {
     return new ContainerImage(ImageRepositoryType.ECR_PUBLIC, uri);
+  }
+  /**
+   * Using the ECR repository.
+   * @param repository The ECR repository.
+   * @param tag The image tag. Default `latest`.
+   * @returns
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag?: string): ContainerImage {
+    const uri = repository.repositoryUriForTag(tag || 'latest');
+    return new ContainerImage(ImageRepositoryType.ECR, uri, repository );
   }
   /**
    * Using local docker image assets. On deployment, local image assets will be built and pushed to Amazon ECR.
@@ -457,14 +486,16 @@ export class ContainerImage {
     return {
       type: ImageRepositoryType.ECR,
       uri: assert.imageUri,
+      ecrRepository: assert.repository,
     };
   }
   /**
    *
    * @param type Image repository type.
    * @param uri Image repository URI.
+   * @param ecrRepository ECR Repository.
    */
-  protected constructor(public readonly type: ImageRepositoryType, public readonly uri: string) { }
+  protected constructor(public readonly type: ImageRepositoryType, public readonly uri: string, public readonly ecrRepository?: ecr.IRepository) { }
 }
 
 /**

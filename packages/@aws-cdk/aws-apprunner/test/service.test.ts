@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -42,6 +43,65 @@ test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () =
   });
 });
 
+test('create a service from existing ECR repository(image repository type: ECR)', () => {
+  // GIVEN
+  const repo = ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx');
+
+  // WHEN
+  new Service(stack, 'Service', {
+    image: ContainerImage.fromEcrRepository(repo),
+    port: 80,
+  });
+
+  // THEN
+  // we should have an IAM role
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'build.apprunner.amazonaws.com',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+  // we should have the service
+  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {
+        AccessRoleArn: {
+          'Fn::GetAtt': [
+            'ServiceDefaultRole6324EC11',
+            'Arn',
+          ],
+        },
+      },
+      ImageRepository: {
+        ImageConfiguration: {
+          Port: '80',
+        },
+        ImageIdentifier: {
+          'Fn::Join': [
+            '',
+            [
+              '123456789012.dkr.ecr.us-east-1.',
+              {
+                Ref: 'AWS::URLSuffix',
+              },
+              '/nginx:latest',
+            ],
+          ],
+        },
+        ImageRepositoryType: 'ECR',
+      },
+    },
+  });
+});
+
 test('create a service with local assets(image repository type: ECR)', () => {
   // GIVEN
   const dockerAssets = new ecr_assets.DockerImageAsset(stack, 'Assets', {
@@ -68,20 +128,6 @@ test('create a service with local assets(image repository type: ECR)', () => {
       ],
       Version: '2012-10-17',
     },
-    ManagedPolicyArns: [
-      {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess',
-          ],
-        ],
-      },
-    ],
   });
   // we should have the service
   expect(stack).toHaveResource('AWS::AppRunner::Service', {
