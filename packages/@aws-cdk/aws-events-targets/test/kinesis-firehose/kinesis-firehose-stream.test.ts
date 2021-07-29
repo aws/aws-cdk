@@ -1,18 +1,24 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as events from '@aws-cdk/aws-events';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 describe('KinesisFirehoseStream event target', () => {
   let stack: Stack;
-  let stream: firehose.CfnDeliveryStream;
+  let stream: firehose.DeliveryStream;
   let streamArn: any;
 
   beforeEach(() => {
     stack = new Stack();
-    stream = new firehose.CfnDeliveryStream(stack, 'MyStream');
-    streamArn = { 'Fn::GetAtt': ['MyStream', 'Arn'] };
+    stream = new firehose.DeliveryStream(stack, 'MyStream', {
+      destinations: [
+        new destinations.S3Bucket(new s3.Bucket(stack, 'MyBucket')),
+      ],
+    });
+    streamArn = { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] };
   });
 
   describe('when added to an event rule as a target', () => {
