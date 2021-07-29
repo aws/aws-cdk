@@ -54,7 +54,7 @@ export interface SubscriptionOptions {
   readonly deadLetterQueue?: IQueue;
 
   /**
-   * Arn of role allowing access to Firehose delivery stream.
+   * Arn of role allowing access to firehose delivery stream.
    * Required for a firehose subscription protocol.
    * @default - No subscription role is provided
    */
