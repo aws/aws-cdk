@@ -36,38 +36,38 @@ function copyFilesRemovingDependencies(): void {
 
       let fileProcessed = false;
       if (sourceFileName === 'package.json') {
-        const phase1PackageJson = fs.readJsonSync(source);
-        if (phase1PackageJson.name === pkg.name) {
+        const packageJson = fs.readJsonSync(source);
+        if (packageJson.name === pkg.name) {
           const pkgUnscopedName = `${pkg.name.substring('@aws-cdk/'.length)}`;
 
-          phase1PackageJson.name = `@aws-cdk-lib-alpha/${pkgUnscopedName}`;
-          phase1PackageJson.repository.directory = `packages/individual-packages/${pkgUnscopedName}`;
+          packageJson.name = `@aws-cdk-lib-alpha/${pkgUnscopedName}`;
+          packageJson.repository.directory = `packages/individual-packages/${pkgUnscopedName}`;
 
           // disable awslint (some rules are hard-coded to @aws-cdk/core)
-          phase1PackageJson.awslint = {
+          packageJson.awslint = {
             exclude: ['*:*'],
           };
 
           // add a pkglint exemption for the 'package name = dir name' rule
-          const pkglint = phase1PackageJson.pkglint || {};
+          const pkglint = packageJson.pkglint || {};
           pkglint.exclude = [
             ...(pkglint.exclude || []),
             'naming/package-matches-directory',
             // the experimental packages need the "real" assert dependency
             'assert/assert-dependency',
           ];
-          phase1PackageJson.pkglint = pkglint;
+          packageJson.pkglint = pkglint;
 
           // turn off the L1 generation, which uses @aws-cdk/ modules
-          if (phase1PackageJson.scripts?.gen === 'cfn2ts') {
-            delete phase1PackageJson.scripts.gen;
+          if (packageJson.scripts?.gen === 'cfn2ts') {
+            delete packageJson.scripts.gen;
           }
 
           /* ****** handle dependencies ****** */
 
           // regular dependencies
           const alphaDependencies: { [dep: string]: string } = {};
-          for (const dependency of Object.keys(phase1PackageJson.dependencies || {})) {
+          for (const dependency of Object.keys(packageJson.dependencies || {})) {
             // all 'regular' dependencies on alpha modules will be converted to
             // a pair of devDependency on '0.0.0' and peerDependency on '^0.0.0',
             // and the package will have no regular dependencies anymore
@@ -75,12 +75,12 @@ function copyFilesRemovingDependencies(): void {
               alphaDependencies[alphaPackages[dependency]] = pkg.version;
             }
           }
-          phase1PackageJson.dependencies = undefined;
+          packageJson.dependencies = undefined;
 
-          const finalPackageJson = { ...phase1PackageJson };
+          const finalPackageJson = { ...packageJson };
           // devDependencies
           const alphaDevDependencies: { [dep: string]: string } = {};
-          const devDependencies = phase1PackageJson.devDependencies || {};
+          const devDependencies = packageJson.devDependencies || {};
           for (const devDependency of Object.keys(devDependencies)) {
             if (devDependency.startsWith('@aws-cdk/')) {
               delete devDependencies[devDependency];
@@ -98,7 +98,7 @@ function copyFilesRemovingDependencies(): void {
             ...alphaDevDependencies,
             ...alphaDependencies,
           };
-          phase1PackageJson.devDependencies = {
+          packageJson.devDependencies = {
             ...alphaDevDependencies,
             ...alphaDependencies,
           };
@@ -113,10 +113,10 @@ function copyFilesRemovingDependencies(): void {
                 return acc;
               }, {} as { [dep: string]: string })),
           };
-          phase1PackageJson.peerDependencies = undefined;
+          packageJson.peerDependencies = undefined;
 
           fileProcessed = true;
-          fs.writeJsonSync(destination, phase1PackageJson, { spaces: 2 });
+          fs.writeJsonSync(destination, packageJson, { spaces: 2 });
           fs.writeJsonSync(path.join(destDir, '_package.json'), finalPackageJson, { spaces: 2 });
         }
       } else if (sourceFileName === '.gitignore') {
