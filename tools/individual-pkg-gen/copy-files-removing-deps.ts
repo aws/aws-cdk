@@ -67,34 +67,49 @@ function copyFilesRemovingDependencies(): void {
 
           // regular dependencies
           const alphaDependencies: { [dep: string]: string } = {};
+          const constructsAndCdkLibDevDeps: { [dep: string]: string } = {};
           for (const dependency of Object.keys(packageJson.dependencies || {})) {
             // all 'regular' dependencies on alpha modules will be converted to
             // a pair of devDependency on '0.0.0' and peerDependency on '^0.0.0',
             // and the package will have no regular dependencies anymore
-            if (alphaPackages[dependency]) {
-              alphaDependencies[alphaPackages[dependency]] = pkg.version;
+            switch (dependency) {
+              // @core corresponds to aws-cdk-lib
+              case '@aws-cdk/core':
+                constructsAndCdkLibDevDeps['aws-cdk-lib'] = pkg.version;
+                break;
+              case 'constructs':
+                constructsAndCdkLibDevDeps.constructs = packageJson.dependencies.constructs;
+                break;
+              default:
+                if (alphaPackages[dependency]) {
+                  alphaDependencies[alphaPackages[dependency]] = pkg.version;
+                }
             }
           }
           packageJson.dependencies = undefined;
 
-          const finalPackageJson = { ...packageJson };
           // devDependencies
           const alphaDevDependencies: { [dep: string]: string } = {};
-          const devDependencies = packageJson.devDependencies || {};
-          for (const devDependency of Object.keys(devDependencies)) {
-            if (devDependency.startsWith('@aws-cdk/')) {
-              delete devDependencies[devDependency];
-            }
-            if (alphaPackages[devDependency]) {
-              alphaDevDependencies[alphaPackages[devDependency]] = pkg.version;
+          const devDependencies: { [dep: string]: string } = {};
+          for (const v1DevDependency of Object.keys(packageJson.devDependencies || {})) {
+            switch (v1DevDependency) {
+              case '@aws-cdk/assert-internal':
+              case '@aws-cdk/assert':
+                devDependencies['@aws-cdk/assert'] = packageJson.devDependencies[v1DevDependency];
+                break;
+              default:
+                if (alphaPackages[v1DevDependency]) {
+                  alphaDevDependencies[alphaPackages[v1DevDependency]] = pkg.version;
+                } else if (!v1DevDependency.startsWith('@aws-cdk/')) {
+                  devDependencies[v1DevDependency] = packageJson.devDependencies[v1DevDependency];
+                }
             }
           }
-          devDependencies['@aws-cdk/assert'] = pkg.version;
-          devDependencies['aws-cdk-lib'] = pkg.version;
-          devDependencies.constructs = '^10.0.0';
-          // we save the devDependencies in a temporary key in package.json
+          const finalPackageJson = { ...packageJson };
+          // we save the devDependencies in a temporary _package.json
           finalPackageJson.devDependencies = {
             ...devDependencies,
+            ...constructsAndCdkLibDevDeps,
             ...alphaDevDependencies,
             ...alphaDependencies,
           };
@@ -105,11 +120,16 @@ function copyFilesRemovingDependencies(): void {
 
           // peer dependencies
           finalPackageJson.peerDependencies = {
-            'aws-cdk-lib': `^${pkg.version}`,
-            'constructs': '^10.0.0',
-            ...(Object.keys(alphaDependencies)
-              .reduce((acc, alphaDependency) => {
-                acc[alphaDependency] = `^${pkg.version}`;
+            ...(Object.entries(alphaDependencies)
+              // for other alpha dependencies, we need to depend on exact versions
+              // (because of the braking changes between them)
+              .reduce((acc, [depName, depVersion]) => {
+                acc[depName] = depVersion;
+                return acc;
+              }, {} as { [dep: string]: string })),
+            ...(Object.entries(constructsAndCdkLibDevDeps)
+              .reduce((acc, [depName, depVersion]) => {
+                acc[depName] = `${depVersion.startsWith('^') ? '' : '^'}${depVersion}`;
                 return acc;
               }, {} as { [dep: string]: string })),
           };
