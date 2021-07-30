@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ICfnRuleConditionExpression } from './cfn-condition';
+import { ICfnConditionExpression } from './cfn-condition';
 import { CfnRefElement } from './cfn-element';
 import { capitalizePropertyNames } from './util';
 
@@ -31,7 +31,7 @@ export interface CfnRuleProps {
    *
    * @default - Rule's assertions will always take effect.
    */
-  readonly ruleCondition?: ICfnRuleConditionExpression;
+  readonly ruleCondition?: ICfnConditionExpression;
 
   /**
    * Assertions which define the rule.
@@ -57,7 +57,7 @@ export interface CfnRuleProps {
  * @link https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html
  */
 export class CfnRule extends CfnRefElement {
-  private ruleCondition?: ICfnRuleConditionExpression;
+  private ruleCondition?: ICfnConditionExpression;
   private assertions?: CfnRuleAssertion[];
 
   /**
@@ -77,7 +77,7 @@ export class CfnRule extends CfnRefElement {
    * @param condition The expression to evaluation.
    * @param description The description of the assertion.
    */
-  public addAssertion(condition: ICfnRuleConditionExpression, description: string) {
+  public addAssertion(condition: ICfnConditionExpression, description: string) {
     if (!this.assertions) {
       this.assertions = [];
     }
@@ -110,7 +110,7 @@ export interface CfnRuleAssertion {
   /**
    * The assertion.
    */
-  readonly assert: ICfnRuleConditionExpression;
+  readonly assert: ICfnConditionExpression;
 
   /**
    * The assertion description.
