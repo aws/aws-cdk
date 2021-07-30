@@ -3,15 +3,17 @@ import * as fs from 'fs-extra';
 import { Default } from '../lib/default';
 import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 import {
-  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, AWS_OLDER_REGIONS, DLC_REPOSITORY_ACCOUNTS, ELBV2_ACCOUNTS, PARTITION_MAP,
-  ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
+  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, AWS_OLDER_REGIONS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS,
+  ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
 } from './fact-tables';
 
 async function main(): Promise<void> {
   checkRegions(APPMESH_ECR_ACCOUNTS);
   checkRegions(DLC_REPOSITORY_ACCOUNTS);
   checkRegions(ELBV2_ACCOUNTS);
+  checkRegions(FIREHOSE_CIDR_BLOCKS);
   checkRegions(ROUTE_53_BUCKET_WEBSITE_ZONE_IDS);
+  checkRegionsSubMap(CLOUDWATCH_LAMBDA_INSIGHTS_ARNS);
 
   const lines = [
     "import { Fact, FactName } from './fact';",
@@ -61,11 +63,20 @@ async function main(): Promise<void> {
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
 
+    const firehoseCidrBlock = FIREHOSE_CIDR_BLOCKS[region];
+    if (firehoseCidrBlock) {
+      registerFact(region, 'FIREHOSE_CIDR_BLOCK', `${FIREHOSE_CIDR_BLOCKS[region]}/27`);
+    }
+
     const vpcEndpointServiceNamePrefix = `${domainSuffix.split('.').reverse().join('.')}.vpce`;
     registerFact(region, 'VPC_ENDPOINT_SERVICE_NAME_PREFIX', vpcEndpointServiceNamePrefix);
 
     for (const service of AWS_SERVICES) {
       registerFact(region, ['servicePrincipal', service], Default.servicePrincipal(service, region, domainSuffix));
+    }
+
+    for (const version in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS) {
+      registerFact(region, ['cloudwatchLambdaInsightsVersion', version], CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][region]);
     }
   }
   lines.push('  }');
@@ -90,6 +101,21 @@ function checkRegions(map: Record<string, unknown>) {
   for (const region of Object.keys(map)) {
     if (!allRegions.has(region)) {
       throw new Error(`Un-registered region fact found: ${region}. Add to AWS_REGIONS list!`);
+    }
+  }
+}
+
+/**
+ * Verifies that the provided map of <KEY> to region to fact does not contain an entry
+ * for a region that was not registered in `AWS_REGIONS`.
+ */
+function checkRegionsSubMap(map: Record<string, Record<string, unknown>>) {
+  const allRegions = new Set(AWS_REGIONS);
+  for (const key of Object.keys(map)) {
+    for (const region of Object.keys(map[key])) {
+      if (!allRegions.has(region)) {
+        throw new Error(`Un-registered region fact found: ${region}. Add to AWS_REGIONS list!`);
+      }
     }
   }
 }
