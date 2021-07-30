@@ -153,15 +153,16 @@ System defined metadata keys include the following:
 - content-language (`--content-language` in `aws s3 sync`)
 - content-type (`--content-type` in `aws s3 sync`)
 - expires (`--expires` in `aws s3 sync`)
-- server-side-encryption (`--sse` in `aws s3 sync`)
-- storage-class (`--storage-class` in `aws s3 sync`)
-- website-redirect-location (`--website-redirect` in `aws s3 sync`)
-- sse-kms-key-id (`--sse-kms-key-id` in `aws s3 sync`)
-- sse-customer-algorithm (`--sse-c-copy-source` in `aws s3 sync`)
-- acl (`--acl` in `aws s3 sync`)
+- x-amz-storage-class (`--storage-class` in `aws s3 sync`)
+- x-amz-website-redirect-location (`--website-redirect` in `aws s3 sync`)
+- x-amz-server-side-encryption (`--sse` in `aws s3 sync`)
+- x-amz-server-side-encryption-aws-kms-key-id (`--sse-kms-key-id` in `aws s3 sync`)
+- x-amz-server-side-encryption-customer-algorithm (`--sse-c-copy-source` in `aws s3 sync`)
+- x-amz-acl (`--acl` in `aws s3 sync`)
 
-You can find more information about system defined metadata keys in [`aws s3 sync`
-documentation](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html).
+You can find more information about system defined metadata keys in
+[S3 PutObject documentation](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html)
+and [`aws s3 sync` documentation](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html).
 
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
