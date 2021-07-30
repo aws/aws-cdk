@@ -9,7 +9,6 @@ import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps, CommonDestinationS3Props, Compression } from './common';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
 import { FirehoseRedshiftTable } from './redshift/table';
-import { RedshiftColumn } from './redshift/types';
 import { FirehoseRedshiftUser } from './redshift/user';
 
 /**
@@ -38,7 +37,20 @@ export interface RedshiftUser {
   readonly encryptionKey?: kms.IKey;
 }
 
-export { RedshiftColumn } from './redshift/types';
+/**
+ * A column in a Redshift table.
+ */
+export interface RedshiftColumn {
+  /**
+   * The name of the column.
+   */
+  readonly name: string;
+
+  /**
+   * The data type of the column.
+   */
+  readonly dataType: string;
+}
 
 /**
  * Properties for configuring a Redshift delivery stream destination.
