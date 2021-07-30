@@ -407,32 +407,38 @@ export class Service extends cdk.Resource {
   private readonly props: ServiceProps;
   private accessRole?: iam.IRole;
   private ecrRepository?: ecr.IRepository;
+  
   /**
    * The ARN of the Service.
    * @attribute
    */
   readonly serviceArn: string;
+  
   /**
    * The ID of the Service.
    * @attribute
    */
   readonly serviceId: string;
+  
   /**
    * The URL of the Service.
    * @attribute
    */
   readonly serviceUrl: string;
+  
   /**
    * The status of the Service.
    * @attribute
    */
   readonly serviceStatus: string;
+  
   /**
    * The name of the service.
    * @attribute
    */
   readonly serviceName: string;
-  constructor(scope: Construct, id: string, props: ServiceProps = {}) {
+  
+  public constructor(scope: Construct, id: string, props: ServiceProps = {}) {
     super(scope, id);
     // either image or code is allowed. Not both.
     if ((!props.code && !props.image) || (props.code && props.image)) {
