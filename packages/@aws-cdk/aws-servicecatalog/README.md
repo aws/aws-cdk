@@ -231,11 +231,11 @@ portfolio.notifyOnStackEvents(product, topic2, {
 
 ### CloudFormation parameters constraint
 
-Allows you to configure the options that are available to end users when they launch a product.
-A provisioning rule consists of one or more assertions that narrow the allowable values for parameters in a product.
-You can configure multiple rules to govern the different parameters and parameter options in your products.
-For example, a parameter might define the various instance types that users can choose from when launching a stack that includes EC2 instances.
-A provisioning rule has an optional `condition` field that allows ability to configure when rules are applied.
+CloudFormation parameters constraints allow you to configure the that are available to end users when they launch a product via defined rules.
+A rule consists of one or more assertions that narrow the allowable values for parameters in a product.
+You can configure multiple parameter constraints to govern the different parameters and parameter options in your products.
+For example, a rule might define the various instance types that users can choose from when launching a stack that includes EC2 instances.
+A parameter rule has an optional `condition` field that allows ability to configure when rules are applied.
 If a `condition` is specified, all the assertions will be applied if the condition evalutates to true.
 For information on rule-specific intrinsic functions to define rule conditions and assertions,
 see [AWS Rule Functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-rules.html).
