@@ -614,6 +614,8 @@ export class Volume extends VolumeBase {
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
+    if (props.volumeName) Tags.of(resource).add('Name', props.volumeName);
+
     this.volumeId = resource.ref;
     this.availabilityZone = props.availabilityZone;
     this.encryptionKey = props.encryptionKey;
