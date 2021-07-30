@@ -2,6 +2,8 @@ import '@aws-cdk/assert-internal/jest';
 import { ABSENT, MatchStyle, ResourcePart, anything, arrayWith } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -221,6 +223,125 @@ describe('S3 destination', () => {
     });
   });
 
+  describe('processing configuration', () => {
+    let lambdaFunction: lambda.IFunction;
+    let basicLambdaProcessor: firehose.LambdaFunctionProcessor;
+    let destinationWithBasicLambdaProcessor: firehosedestinations.S3Bucket;
+
+    beforeEach(() => {
+      lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'bar',
+      });
+      basicLambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
+      destinationWithBasicLambdaProcessor = new firehosedestinations.S3Bucket(bucket, {
+        role: destinationRole,
+        processor: basicLambdaProcessor,
+      });
+    });
+
+    it('creates configuration for LambdaFunctionProcessor', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destinationWithBasicLambdaProcessor],
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function');
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'Lambda',
+              Parameters: [
+                {
+                  ParameterName: 'RoleArn',
+                  ParameterValue: stack.resolve(destinationRole.roleArn),
+                },
+                {
+                  ParameterName: 'LambdaArn',
+                  ParameterValue: stack.resolve(lambdaFunction.functionArn),
+                },
+              ],
+            }],
+          },
+        },
+      });
+    });
+
+    it('set all optional parameters', () => {
+      const processor = new firehose.LambdaFunctionProcessor(lambdaFunction, {
+        bufferInterval: cdk.Duration.minutes(1),
+        bufferSize: cdk.Size.mebibytes(1),
+        retries: 5,
+      });
+      const destination = new firehosedestinations.S3Bucket(bucket, {
+        role: destinationRole,
+        processor: processor,
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function');
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'Lambda',
+              Parameters: [
+                {
+                  ParameterName: 'RoleArn',
+                  ParameterValue: stack.resolve(destinationRole.roleArn),
+                },
+                {
+                  ParameterName: 'LambdaArn',
+                  ParameterValue: stack.resolve(lambdaFunction.functionArn),
+                },
+                {
+                  ParameterName: 'BufferIntervalInSeconds',
+                  ParameterValue: '60',
+                },
+                {
+                  ParameterName: 'BufferSizeInMBs',
+                  ParameterValue: '1',
+                },
+                {
+                  ParameterName: 'NumberOfRetries',
+                  ParameterValue: '5',
+                },
+              ],
+            }],
+          },
+        },
+      });
+    });
+
+    it('grants invoke access to the lambda function and delivery stream depends on grant', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [destinationWithBasicLambdaProcessor],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        PolicyName: 'DestinationRoleDefaultPolicy1185C75D',
+        Roles: [stack.resolve(destinationRole.roleName)],
+        PolicyDocument: {
+          Statement: arrayWith(
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: stack.resolve(lambdaFunction.functionArn),
+            },
+          ),
+        },
+      });
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        DependsOn: ['DestinationRoleDefaultPolicy1185C75D'],
+      }, ResourcePart.CompleteDefinition);
+    });
+  });
+
   describe('compression', () => {
     it('configures when specified', () => {
       const destination = new firehosedestinations.S3Bucket(bucket, {
@@ -303,6 +424,56 @@ describe('S3 destination', () => {
           bufferingSize: cdk.Size.mebibytes(256),
         })],
       })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+    });
+  });
+
+  describe('destination encryption', () => {
+    it('creates configuration', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          encryptionKey: key,
+          role: destinationRole,
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          EncryptionConfiguration: {
+            KMSEncryptionConfig: {
+              AWSKMSKeyARN: stack.resolve(key.keyArn),
+            },
+          },
+        },
+      });
+    });
+
+    it('grants encrypt/decrypt access to the destination encryptionKey', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          encryptionKey: key,
+          role: destinationRole,
+        })],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        Roles: [stack.resolve(destinationRole.roleName)],
+        PolicyDocument: {
+          Statement: arrayWith({
+            Action: [
+              'kms:Decrypt',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: stack.resolve(key.keyArn),
+          }),
+        },
+      });
     });
   });
 });

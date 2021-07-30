@@ -1,10 +1,11 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CommonDestinationProps, Compression } from './common';
-import { createBufferingHints, createLoggingOptions } from './private/helpers';
+import { createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
 
 /**
  * Props for defining an S3 destination of a Kinesis Data Firehose delivery stream.
@@ -43,6 +44,13 @@ export interface S3BucketProps extends CommonDestinationProps {
    * @default - no compression is applied
    */
   readonly compression?: Compression;
+
+  /**
+   * The AWS KMS key used to encrypt the data that it delivers to your Amazon S3 bucket.
+   *
+   * @default - Data is not encrypted.
+   */
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * A prefix that Kinesis Data Firehose evaluates and adds to failed records before writing them to S3.
@@ -88,10 +96,12 @@ export class S3Bucket implements firehose.IDestination {
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
+        processingConfiguration: createProcessingConfig(scope, role, this.props.processor),
         roleArn: role.roleArn,
         bufferingHints: createBufferingHints(this.props.bufferingInterval, this.props.bufferingSize),
         bucketArn: this.bucket.bucketArn,
         compressionFormat: this.props.compression?.value,
+        encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
       },
