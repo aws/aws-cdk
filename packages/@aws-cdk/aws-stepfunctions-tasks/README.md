@@ -716,7 +716,7 @@ The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in
 
 ### Create Virtual Cluster
 
-The ['CreateVirtualCluster'](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
+The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
 
 Required Parameters Example:
 ```ts
@@ -728,7 +728,7 @@ new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
 });
 ```
 
-Full Example;
+Full Example:
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions'
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
@@ -741,9 +741,9 @@ new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
 ```
 ### Delete Virtual Cluster
 
-The ['DeleteVirtualCluster'](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a single virtual cluster that's mapped to a single Kubernetes namespace. 
+The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a single virtual cluster that's mapped to a single Kubernetes namespace. 
 
-Example;
+Example:
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
@@ -755,7 +755,7 @@ new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
 
 ### Start Job Run
 
-The ['StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_StartJobRun.html) API starts a job run. A job run is a unit of work, such as a Spark jar, PySpark script, or SparkSQL query, that you submit to Amazon EMR on EKS. 
+The [StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_StartJobRun.html) API starts a job run. A job run is a unit of work, such as a Spark jar, PySpark script, or SparkSQL query, that you submit to Amazon EMR on EKS. 
 
 Minimal Example:
 ```ts
@@ -786,8 +786,7 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 });
 ```
 
-Replace executionRole with own Job Execution role arn
-Full Example;
+Full Example (Replace with own Job Execution Role arn):
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
