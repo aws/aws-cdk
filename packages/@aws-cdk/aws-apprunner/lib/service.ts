@@ -83,7 +83,7 @@ interface ImageConfiguration {
    *
    * @default - no environment variables
    */
-  readonly environments?: { [key: string]: string };
+  readonly environment?: { [key: string]: string };
   /**
    * An optional command that App Runner runs to start the application in the source image.
    * If specified, this command overrides the Docker image’s default start command.
