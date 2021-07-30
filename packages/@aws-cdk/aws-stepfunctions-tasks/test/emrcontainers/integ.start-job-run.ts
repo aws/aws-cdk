@@ -2,7 +2,7 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { EmrContainersStartJobRun } from '../../lib';
-import { Classification, ReleaseLabel } from '../../lib/emrcontainers/base-types';
+import { Classification, ReleaseLabel } from '../../lib/emrcontainers/start-job-run';
 
 /**
  * Stack verification steps:
@@ -30,10 +30,9 @@ const startJobRunJob = new EmrContainersStartJobRun(stack, 'EMR Containers Start
   },
   monitoring: {
     logging: true,
-    persistentAppUI: true,
   },
   applicationConfig: [{
-    classification: Classification.configSparkDefaults,
+    classification: Classification.CONFIG_SPARK_DEFAULTS,
     properties: {
       'spark.executor.instances': '1',
       'spark.executor.memory': '512M',
@@ -45,7 +44,7 @@ const chain = sfn.Chain.start(startJobRunJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,
-  timeout: cdk.Duration.seconds(4000),
+  timeout: cdk.Duration.seconds(1000),
 });
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {

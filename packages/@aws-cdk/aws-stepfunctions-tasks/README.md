@@ -59,6 +59,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Cancel Step](#cancel-step)
     - [Modify Instance Fleet](#modify-instance-fleet)
     - [Modify Instance Group](#modify-instance-group)
+  - [EMR on EKS](#emr-on-eks)
   - [EKS](#eks)
     - [Call](#call)
   - [Glue](#glue)
@@ -703,6 +704,116 @@ new tasks.EmrModifyInstanceGroupByName(this, 'Task', {
 });
 ```
 
+## EMR on EKS
+
+Step Functions supports Amazon EMR on EKS through the service integration pattern.
+The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in the parameters that are used.
+
+[Read more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html) about the differences when using these service integrations.
+
+### Create Virtual Cluster
+
+The ['CreateVirtualCluster'](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
+
+Required Parameters Example:
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions'
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
+
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+  eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
+});
+```
+
+Full Example;
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions'
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
+
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+  eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
+  eksNamespace: 'specified-namespace',
+  virtuaClusterName: 'emr-containers-test-cluster',
+});
+```
+### Delete Virtual Cluster
+
+The ['DeleteVirtualCluster'](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a single virtual cluster that's mapped to a single Kubernetes namespace. 
+
+Example;
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
+
+new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
+  virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId'),
+});
+```
+
+### Start Job Run
+
+The ['StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_StartJobRun.html) API starts a job run. A job run is a unit of work, such as a Spark jar, PySpark script, or SparkSQL query, that you submit to Amazon EMR on EKS. 
+
+Minimal Example:
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/jars/spark-examples.jar'),
+      entryPointArguments: sfn.TaskInput.fromObject(['2']),
+      sparkSubmitParameters: '--class org.apache.spark.examples.SparkPi --conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false',
+    },
+  },
+  monitoring: {
+    logging: true,
+  },
+  applicationConfig: [{
+    classification: tasks.Classification.configSparkDefaults,
+    properties: {
+      'spark.executor.instances': '1',
+      'spark.executor.memory': '512M',
+    },
+  }],
+});
+```
+
+Replace executionRole with own Job Execution role arn
+Full Example;
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobName: 'EMR-Containers-Job',
+  executionRole: iam.Role.fromRoleArn(this, 'Job-Execution-Role', 'arn:aws:iam::xxxxxxxxxxxx:role/Job-Execution-Role'),
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/jars/spark-examples.jar'),
+      entryPointArguments: sfn.TaskInput.fromObject(['2']),
+      sparkSubmitParameters: '--class org.apache.spark.examples.SparkPi --conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false',
+    },
+  },
+  monitoring: {
+    logging: true,
+  },
+  applicationConfig: [{
+    classification: tasks.Classification.configSparkDefaults,
+    properties: {
+      'spark.executor.instances': '1',
+      'spark.executor.memory': '512M',
+    },
+  }],
+});
+```
 ## EKS
 
 Step Functions supports Amazon EKS through the service integration pattern.

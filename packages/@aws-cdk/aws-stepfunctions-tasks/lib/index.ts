@@ -32,7 +32,6 @@ export * from './emr/emr-modify-instance-group-by-name';
 export * from './emrcontainers/create-virtual-cluster';
 export * from './emrcontainers/delete-virtual-cluster';
 export * from './emrcontainers/start-job-run';
-export * from './emrcontainers/base-types';
 export * from './glue/run-glue-job-task';
 export * from './glue/start-job-run';
 export * from './batch/run-batch-job';
