@@ -177,7 +177,7 @@ export interface ServiceProps {
   /**
    * The number of CPU units reserved for each instance of your App Runner service.
    *
-   * @default - 1 vCPU
+   * @default Cpu.ONE_VCPU
    */
   readonly cpu?: Cpu;
   /**
