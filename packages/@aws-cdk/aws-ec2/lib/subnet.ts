@@ -9,6 +9,13 @@ import { ISubnet } from './vpc';
 export abstract class SubnetFilter {
 
   /**
+   * Chooses subnets by id.
+   */
+  public static byIds(subnetIds: string[]): SubnetFilter {
+    return new SubnetIdSubnetFilter(subnetIds);
+  }
+
+  /**
    * Chooses subnets which are in one of the given availability zones.
   */
   public static availabilityZones(availabilityZones: string[]): SubnetFilter {
@@ -27,6 +34,13 @@ export abstract class SubnetFilter {
   */
   public static containsIpAddresses(ipv4addrs: string[]): SubnetFilter {
     return new ContainsIpAddressesSubnetFilter(ipv4addrs);
+  }
+
+  /**
+   * Chooses subnets which have the provided CIDR netmask.
+   */
+  public static byCidrMask(mask: number): SubnetFilter {
+    return new CidrMaskSubnetFilter(mask);
   }
 
   /**
@@ -110,6 +124,48 @@ class ContainsIpAddressesSubnetFilter extends SubnetFilter {
     return subnets.filter(s => {
       const subnetCidrBlock = new CidrBlock(s.ipv4CidrBlock);
       return cidrBlockObjs.some(cidr => subnetCidrBlock.containsCidr(cidr));
+    });
+  }
+}
+
+/**
+ * Chooses subnets based on the subnetId
+ */
+class SubnetIdSubnetFilter extends SubnetFilter {
+
+  private readonly subnetIds: string[];
+
+  constructor(subnetIds: string[]) {
+    super();
+    this.subnetIds = subnetIds;
+  }
+
+  /**
+   * Executes the subnet filtering logic.
+   */
+  public selectSubnets(subnets: ISubnet[]): ISubnet[] {
+    return subnets.filter(subnet => this.subnetIds.includes(subnet.subnetId));
+  }
+}
+
+/**
+ * Chooses subnets based on the CIDR Netmask
+ */
+class CidrMaskSubnetFilter extends SubnetFilter {
+  private readonly mask: number
+
+  constructor(mask: number) {
+    super();
+    this.mask = mask;
+  }
+
+  /**
+   * Executes the subnet filtering logic.
+   */
+  public selectSubnets(subnets: ISubnet[]): ISubnet[] {
+    return subnets.filter(subnet => {
+      const subnetCidr = new CidrBlock(subnet.ipv4CidrBlock);
+      return subnetCidr.mask === this.mask;
     });
   }
 }
