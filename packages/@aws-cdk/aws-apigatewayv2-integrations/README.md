@@ -170,8 +170,9 @@ listener.addTargets('target', {
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
   defaultIntegration: new HttpAlbIntegration({
     listener,
-    requestParameters: new RequestParameters()
-      .addParameter({
+    requestParameters: new ParameterMapping()
+      .appendHeader('header2', MappingValue.header('header1'))
+      .removeHeader('header1');
         mappingKey: HttpMappingKey.appendHeader('header2'),
         mappingValue: MappingValue.requestHeader('header1'),
       })
