@@ -457,7 +457,104 @@ describe('portfolio associations and product constraints', () => {
     expect(() => {
       portfolio.notifyOnStackEvents(product, topic);
     }).toThrowError(`Topic ${topic} is already subscribed to association`);
-  });
+  }),
+
+  test('creates a CloudFormation parameters constraint', () => {
+    portfolio.addProduct(product);
+    portfolio.constrainCloudFormationParameters(product, {
+      rule: {
+        ruleName: 'Rule',
+        assertions: [
+          {
+            assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
+            description: 'assert description',
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchTemplateConstraint', {
+      PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
+      ProductId: { Ref: 'MyProduct49A3C587' },
+      Rules: JSON.stringify( {
+        Rule: {
+          Assertions: [
+            {
+              Assert: { 'Fn::Contains': [['t2.micro', 't2.small'], { Ref: 'InstanceType' }] },
+              AssertDescription: 'assert description',
+            },
+          ],
+        },
+      }),
+    });
+  }),
+
+  test('CloudFormation parameters constraint still creates without explicit association', () => {
+    portfolio.constrainCloudFormationParameters(product, {
+      rule: {
+        ruleName: 'Rule',
+        condition: cdk.Fn.conditionContains(['a', 'b'], 'text'),
+        assertions: [
+          {
+            assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
+            description: 'assert description',
+          },
+        ],
+      },
+      description: 'test description',
+      messageLanguage: servicecatalog.MessageLanguage.EN,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchTemplateConstraint');
+  }),
+
+  test('set multiple CloudFormation parameters constraints', () => {
+    portfolio.constrainCloudFormationParameters(product, {
+      rule: {
+        ruleName: 'Rule01',
+        assertions: [{
+          assert: cdk.Fn.conditionContains(['BucketOwnerRead'], cdk.Fn.ref('AccessControl')),
+          description: 'assert description',
+        }],
+      },
+    });
+
+    portfolio.constrainCloudFormationParameters(product, {
+      rule: {
+        ruleName: 'Rule02',
+        assertions: [{
+          assert: cdk.Fn.conditionContains(['BucketOwnerWrite'], cdk.Fn.ref('AccessControl')),
+          description: 'assert description',
+        }],
+      },
+    });
+
+    expect(stack).toCountResources('AWS::ServiceCatalog::LaunchTemplateConstraint', 2);
+  }),
+
+  test('fails to set a duplicate CloudFormation parameters constraint', () => {
+    portfolio.constrainCloudFormationParameters(product, {
+      rule: {
+        ruleName: 'Rule01',
+        assertions: [{
+          assert: cdk.Fn.conditionContains(['BucketOwnerRead'], cdk.Fn.ref('AccessControl')),
+          description: 'assert description',
+        }],
+      },
+    });
+
+    expect(() => {
+      portfolio.constrainCloudFormationParameters(product, {
+        rule: {
+          ruleName: 'Rule01',
+          assertions: [{
+            assert: cdk.Fn.conditionContains(['BucketOwnerWrite'], cdk.Fn.ref('AccessControl')),
+            description: 'assert description',
+          }],
+        },
+      });
+    }).toThrowError(/Provisioning rule Rule01 already configured on association/);
+  }),
 
   describe('portfolio constraints that have roles', () => {
     let launchRole: iam.IRole, adminRole: iam.IRole;
