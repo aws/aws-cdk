@@ -101,7 +101,7 @@ topic.addSubscription(new subs.LambdaSubscription(fn, {
   import { Subscription, SubscriptionProtocol, Topic } from '@aws-cdk/aws-sns';
   import { DeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
   const topic = new Topic(stack, 'Topic');
-  const stream = new DeliverStream(stack, 'DeliveryStream', ...)
+  const stream = new DeliveryStream(stack, 'DeliveryStream', ...)
   new Subscription(stack, 'Subscription', {
     endpoint: stream.deliveryStreamArn,
     protocol: SubscriptionProtocol.FIREHOSE,
