@@ -225,6 +225,7 @@ can use the `environment` property to customize the build environment:
 
 * `buildImage` defines the Docker image used. See [Images](#images) below for
   details on how to define build images.
+* `certificate` defines the location of a PEM encoded certificate to import.
 * `computeType` defines the instance type used for the build.
 * `privileged` can be set to `true` to allow privileged access.
 * `environmentVariables` can be set at this level (and also at the project
@@ -262,6 +263,11 @@ which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageTy
 new codebuild.Project(this, 'Project', {
   environment: {
     buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
+    // optional certificate to include in the build image
+    certificate: {
+      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket'),
+      objectKey: 'path/to/cert.pem',
+    },
   },
   ...
 })
