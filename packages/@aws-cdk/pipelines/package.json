@@ -107,20 +107,20 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.pipelines",
+        "package": "software.amazon.awscdk.alpha.pipelines",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-pipelines"
+          "artifactId": "cdk-alpha.pipelines"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Pipelines",
+        "namespace": "Amazon.CDK.Alpha.Pipelines",
         "packageId": "Amazon.CDK.Pipelines",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.pipelines",
-        "module": "aws_cdk.pipelines",
+        "distName": "aws-cdk.alpha.pipelines",
+        "module": "aws_cdk.alpha.pipelines",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"

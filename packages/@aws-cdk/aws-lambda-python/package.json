@@ -8,20 +8,20 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.lambda.python",
+        "package": "software.amazon.awscdk.alpha.services.lambda.python",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lambda-python"
+          "artifactId": "cdk-alpha.aws-lambda-python"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Lambda.Python",
+        "namespace": "Amazon.CDK.Alpha.AWS.Lambda.Python",
         "packageId": "Amazon.CDK.AWS.Lambda.Python",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-lambda-python",
-        "module": "aws_cdk.aws_lambda_python",
+        "distName": "aws-cdk.alpha.aws-lambda-python",
+        "module": "aws_cdk.alpha.aws_lambda_python",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"

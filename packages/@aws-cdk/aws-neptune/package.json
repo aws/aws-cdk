@@ -8,20 +8,20 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Neptune",
+        "namespace": "Amazon.CDK.Alpha.AWS.Neptune",
         "packageId": "Amazon.CDK.AWS.Neptune",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.neptune",
+        "package": "software.amazon.awscdk.alpha.services.neptune",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "neptune"
+          "artifactId": "cdk-alpha.aws-neptune"
         }
       },
       "python": {
-        "distName": "aws-cdk.aws-neptune",
-        "module": "aws_cdk.aws_neptune",
+        "distName": "aws-cdk.alpha.aws-neptune",
+        "module": "aws_cdk.alpha.aws_neptune",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"

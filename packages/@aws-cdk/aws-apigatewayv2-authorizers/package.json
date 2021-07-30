@@ -8,22 +8,22 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.APIGatewayv2.Authorizers",
+        "namespace": "Amazon.CDK.Alpha.AWS.APIGatewayv2.Authorizers",
         "packageId": "Amazon.CDK.AWS.APIGatewayv2.Authorizers",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.apigatewayv2.authorizers",
+        "package": "software.amazon.awscdk.alpha.services.apigatewayv2.authorizers",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "apigatewayv2-authorizers"
+          "artifactId": "cdk-alpha.aws-apigatewayv2-authorizers"
         }
       },
       "python": {
-        "distName": "aws-cdk.aws-apigatewayv2-authorizers",
-        "module": "aws_cdk.aws_apigatewayv2_authorizers",
+        "distName": "aws-cdk.alpha.aws-apigatewayv2-authorizers",
+        "module": "aws_cdk.alpha.aws_apigatewayv2_authorizers",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"

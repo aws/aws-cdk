@@ -26,20 +26,20 @@
     },
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.assertions",
+        "package": "software.amazon.awscdk.alpha.assertions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-assertions"
+          "artifactId": "cdk-alpha.assertions"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Assertions",
+        "namespace": "Amazon.CDK.Alpha.Assertions",
         "packageId": "Amazon.CDK.Assertions",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.assertions",
-        "module": "aws_cdk.assertions",
+        "distName": "aws-cdk.alpha.assertions",
+        "module": "aws_cdk.alpha.assertions",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
