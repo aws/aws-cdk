@@ -1,7 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import { EmrContainersCreateVirtualCluster, ContainerProviderTypes, EksClusterInput } from '../../lib/emrcontainers/create-virtual-cluster';
+import { EmrContainersEksCreateVirtualCluster, EksClusterInput } from '../../lib/emrcontainers/create-virtual-cluster';
 
 const emrContainersVirtualClusterName = 'EMR Containers Virtual Cluster';
 let stack: Stack;
@@ -20,8 +20,8 @@ beforeEach(() => {
 
 test('Invoke emr-containers CreateVirtualCluster without required properties', () => {
   // WHEN
-  const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
-    virtuaClusterName: emrContainersVirtualClusterName,
+  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+    virtualClusterName: emrContainersVirtualClusterName,
     eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
@@ -50,7 +50,7 @@ test('Invoke emr-containers CreateVirtualCluster without required properties', (
       Name: emrContainersVirtualClusterName,
       ContainerProvider: {
         Id: clusterId,
-        Type: ContainerProviderTypes.EKS.type,
+        Type: 'EKS',
       },
     },
   });
@@ -58,8 +58,8 @@ test('Invoke emr-containers CreateVirtualCluster without required properties', (
 
 test('Invoke emr-containers CreateVirtualCluster with all required/non-required properties', () => {
   // WHEN
-  const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
-    virtuaClusterName: emrContainersVirtualClusterName,
+  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+    virtualClusterName: emrContainersVirtualClusterName,
     eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
     eksNamespace: 'kube-system',
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -94,7 +94,7 @@ test('Invoke emr-containers CreateVirtualCluster with all required/non-required 
             Namespace: 'kube-system',
           },
         },
-        Type: ContainerProviderTypes.EKS.type,
+        Type: 'EKS',
       },
     },
   });
@@ -102,8 +102,8 @@ test('Invoke emr-containers CreateVirtualCluster with all required/non-required 
 
 test('Create virtual cluster with clusterId from payload', () => {
   // WHEN
-  const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
-    virtuaClusterName: emrContainersVirtualClusterName,
+  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+    virtualClusterName: emrContainersVirtualClusterName,
     eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.ClusterId')),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
@@ -128,7 +128,7 @@ test('Create virtual cluster with clusterId from payload', () => {
       Name: emrContainersVirtualClusterName,
       ContainerProvider: {
         'Id.$': '$.ClusterId',
-        'Type': ContainerProviderTypes.EKS.type,
+        'Type': 'EKS',
       },
     },
   });
@@ -136,8 +136,8 @@ test('Create virtual cluster with clusterId from payload', () => {
 
 test('Permitted role actions included for CreateVirtualCluster if service integration pattern is REQUEST_RESPONSE', () => {
   // WHEN
-  const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
-    virtuaClusterName: emrContainersVirtualClusterName,
+  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+    virtualClusterName: emrContainersVirtualClusterName,
     eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
@@ -160,8 +160,8 @@ test('Permitted role actions included for CreateVirtualCluster if service integr
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new EmrContainersCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
-      virtuaClusterName: emrContainersVirtualClusterName,
+    new EmrContainersEksCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
+      virtualClusterName: emrContainersVirtualClusterName,
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
@@ -170,8 +170,8 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
 
 test('Task throws if RUN_JOB is supplied as service integration pattern', () => {
   expect(() => {
-    new EmrContainersCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
-      virtuaClusterName: emrContainersVirtualClusterName,
+    new EmrContainersEksCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
+      virtualClusterName: emrContainersVirtualClusterName,
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });

@@ -1,0 +1,1120 @@
+{
+  "Resources": {
+    "EMRContainersStartJobRunJobExecutionRole40B8DD81": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "emr-containers.amazonaws.com"
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Ref": "EMRContainersStartJobRunEmrContainersManagingVirtualClustersPolicies056A827F"
+          },
+          {
+            "Ref": "EMRContainersStartJobRunEmrContainersS3andLogPolicies72797076"
+          },
+          {
+            "Ref": "EMRContainersStartJobRunEmrContainersJobRunPolicy4F242E5A"
+          },
+          {
+            "Ref": "EMRContainersStartJobRunEmrContainersMonitoringPolicyD6B61DBB"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Job-Execution-Role/Resource"
+      }
+    },
+    "EMRContainersStartJobRunEmrContainersManagingVirtualClustersPolicies056A827F": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "emr-containers:CreateVirtualCluster",
+                "emr-containers:DeleteVirtualCluster",
+                "emr-containers:DescribeVirtualCluster",
+                "emr-containers:ListVirtualClusters"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "",
+        "Path": "/"
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Emr Containers Managing Virtual Clusters Policies/Resource"
+      }
+    },
+    "EMRContainersStartJobRunEmrContainersS3andLogPolicies72797076": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:ListBucket"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:PutLogEvents",
+                "logs:CreateLogStream",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:logs:*:*:*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "",
+        "Path": "/"
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Emr Containers S3 and Log Policies/Resource"
+      }
+    },
+    "EMRContainersStartJobRunEmrContainersJobRunPolicy4F242E5A": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "emr-containers:StartJobRun",
+                "emr-containers:ListJobRuns",
+                "emr-containers:DescribeJobRun",
+                "emr-containers:CancelJobRun"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "",
+        "Path": "/"
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Emr Containers Job Run Policy/Resource"
+      }
+    },
+    "EMRContainersStartJobRunEmrContainersMonitoringPolicyD6B61DBB": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "emr-containers:DescribeJobRun",
+                "elasticmapreduce:CreatePersistentAppUI",
+                "elasticmapreduce:DescribePersistentAppUI",
+                "elasticmapreduce:GetPersistentAppUIPresignedURL"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:ListBucket"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:Get*",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "",
+        "Path": "/"
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Emr Containers Monitoring Policy/Resource"
+      }
+    },
+    "EMRContainersStartJobRunEMRContainersDescribeVirtualClusterSDKcallerCustomResourcePolicy33D30ED6": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "emr-containers:DescribeVirtualCluster",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "EMRContainersStartJobRunEMRContainersDescribeVirtualClusterSDKcallerCustomResourcePolicy33D30ED6",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/EMR Containers DescribeVirtualCluster SDK caller/CustomResourcePolicy/Resource"
+      }
+    },
+    "EMRContainersStartJobRunEMRContainersDescribeVirtualClusterSDKcallerF5AF7566": {
+      "Type": "Custom::AWS",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn"
+          ]
+        },
+        "Create": "{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"llr8lezdxlonrv3orxvufp9p0\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}",
+        "InstallLatestAwsSdk": true
+      },
+      "DependsOn": [
+        "EMRContainersStartJobRunEMRContainersDescribeVirtualClusterSDKcallerCustomResourcePolicy33D30ED6"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/EMR Containers DescribeVirtualCluster SDK caller/Resource/Default"
+      }
+    },
+    "EMRContainersStartJobRunawsclilayerB42D57FE": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Ref": "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3BucketAEADE8C7"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3VersionKeyE415415F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3VersionKeyE415415F"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Description": "/opt/awscli/aws"
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/awsclilayer/Resource",
+        "aws:asset:path": "asset.e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68.zip",
+        "aws:asset:property": "Content"
+      }
+    },
+    "EMRContainersStartJobRunCallUpdateRoleTrustPolicyServiceRoleC2F44630": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Call Update-Role-Trust-Policy/ServiceRole/Resource"
+      }
+    },
+    "EMRContainersStartJobRunCallUpdateRoleTrustPolicyServiceRoleDefaultPolicy08FF7616": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "eks:DescribeCluster",
+                "iam:GetRole",
+                "iam:UpdateAssumeRolePolicy"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "EMRContainersStartJobRunCallUpdateRoleTrustPolicyServiceRoleDefaultPolicy08FF7616",
+        "Roles": [
+          {
+            "Ref": "EMRContainersStartJobRunCallUpdateRoleTrustPolicyServiceRoleC2F44630"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Call Update-Role-Trust-Policy/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "EMRContainersStartJobRunCallUpdateRoleTrustPolicy1C520DC6": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3BucketA4134174"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3VersionKey8D410D66"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3VersionKey8D410D66"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "EMRContainersStartJobRunCallUpdateRoleTrustPolicyServiceRoleC2F44630",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "eksNamespace": {
+              "Fn::GetAtt": [
+                "EMRContainersStartJobRunEMRContainersDescribeVirtualClusterSDKcallerF5AF7566",
+                "virtualCluster.containerProvider.info.eksInfo.namespace"
+              ]
+            },
+            "eksClusterId": {
+              "Fn::GetAtt": [
+                "EMRContainersStartJobRunEMRContainersDescribeVirtualClusterSDKcallerF5AF7566",
+                "virtualCluster.containerProvider.id"
+              ]
+            },
+            "roleName": {
+              "Ref": "EMRContainersStartJobRunJobExecutionRole40B8DD81"
+            }
+          }
+        },
+        "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "EMRContainersStartJobRunawsclilayerB42D57FE"
+          }
+        ],
+        "Runtime": "python3.6",
+        "Timeout": 60
+      },
+      "DependsOn": [
+        "EMRContainersStartJobRunCallUpdateRoleTrustPolicyServiceRoleDefaultPolicy08FF7616",
+        "EMRContainersStartJobRunCallUpdateRoleTrustPolicyServiceRoleC2F44630"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Call Update-Role-Trust-Policy/Resource",
+        "aws:asset:path": "asset.b071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904d",
+        "aws:asset:property": "Code"
+      }
+    },
+    "EMRContainersStartJobRunCallUpdateRoleTrustPolicyPermissionforUpdateRoleTrustPolicyF0394C27": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "EMRContainersStartJobRunCallUpdateRoleTrustPolicy1C520DC6",
+            "Arn"
+          ]
+        },
+        "Principal": "emr-containers.amazonaws.com"
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Call Update-Role-Trust-Policy/Permission for Update-Role-Trust-Policy"
+      }
+    },
+    "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleD12CFCFD": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/Resource"
+      }
+    },
+    "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy280C9AB2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "EMRContainersStartJobRunCallUpdateRoleTrustPolicy1C520DC6",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy280C9AB2",
+        "Roles": [
+          {
+            "Ref": "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleD12CFCFD"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "EMRContainersStartJobRunCustomResourceProviderframeworkonEvent98F54BA8": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleD12CFCFD",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/CustomResourceProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "EMRContainersStartJobRunCallUpdateRoleTrustPolicy1C520DC6",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs14.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy280C9AB2",
+        "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleD12CFCFD"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/CustomResourceProvider/framework-onEvent/Resource",
+        "aws:asset:path": "asset.daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1",
+        "aws:asset:property": "Code"
+      }
+    },
+    "EMRContainersStartJobRunCustomResource1F296E66": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "EMRContainersStartJobRunCustomResourceProviderframeworkonEvent98F54BA8",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Custom Resource/Default"
+      }
+    },
+    "EMRContainersStartJobRunEmrContainersDefaultCloudwatchLogGroup2D995FF6": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Emr Containers Default Cloudwatch Log Group/Resource"
+      }
+    },
+    "EMRContainersStartJobRunEmrContainersDefaultS3BucketF3E0B4C9": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/EMR Containers Start Job Run/Emr Containers Default S3 Bucket/Resource"
+      }
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource"
+      }
+    },
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4S3BucketB17E5ABD"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4S3VersionKey77778F6A"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4S3VersionKey77778F6A"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs12.x",
+        "Timeout": 120
+      },
+      "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+        "aws:asset:path": "asset.5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4",
+        "aws:asset:property": "Code"
+      }
+    },
+    "StateMachineRoleB840431D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/StateMachine/Role/Resource"
+      }
+    },
+    "StateMachineRoleDefaultPolicyDF1E6607": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "emr-containers:StartJobRun",
+              "Condition": {
+                "StringEquals": {
+                  "emr-containers:ExecutionRoleArn": {
+                    "Fn::GetAtt": [
+                      "EMRContainersStartJobRunJobExecutionRole40B8DD81",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":emr-containers:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":virtualclusters/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "emr-containers:DescribeJobRun",
+                "emr-containers:CancelJobRun"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":emr-containers:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":virtualclusters/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+        "Roles": [
+          {
+            "Ref": "StateMachineRoleB840431D"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/StateMachine/Role/DefaultPolicy/Resource"
+      }
+    },
+    "StateMachine2E01A3A5": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"EMR Containers Start Job Run\",\"States\":{\"EMR Containers Start Job Run\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::emr-containers:startJobRun.sync\",\"Parameters\":{\"VirtualClusterId\":\"llr8lezdxlonrv3orxvufp9p0\",\"Name\":\"Run-EMR-Containers-Job\",\"ExecutionRoleArn\":\"",
+              {
+                "Fn::GetAtt": [
+                  "EMRContainersStartJobRunJobExecutionRole40B8DD81",
+                  "Arn"
+                ]
+              },
+              "\",\"ReleaseLabel\":\"emr-6.2.0-latest\",\"JobDriver\":{\"SparkSubmitJobDriver\":{\"EntryPoint\":\"local:///usr/lib/spark/examples/jars/spark-examples.jar\",\"EntryPointArguments\":[\"2\"],\"SparkSubmitParameters\":\"--class org.apache.spark.examples.SparkPi --conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false1\"}},\"ConfigurationOverrides\":{\"ApplicationConfiguration\":[{\"Classification\":\"spark-defaults\",\"Properties\":{\"spark.executor.instances\":\"1\",\"spark.executor.memory\":\"512M\"}}],\"MonitoringConfiguration\":{\"CloudWatchMonitoringConfiguration\":{\"LogGroupName\":\"",
+              {
+                "Ref": "EMRContainersStartJobRunEmrContainersDefaultCloudwatchLogGroup2D995FF6"
+              },
+              "\"},\"PersistentAppUI\":\"ENABLED\",\"S3MonitoringConfiguration\":{\"LogUri\":\"s3://",
+              {
+                "Ref": "EMRContainersStartJobRunEmrContainersDefaultS3BucketF3E0B4C9"
+              },
+              "\"}}}}}},\"TimeoutSeconds\":4000}"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "StateMachineRoleDefaultPolicyDF1E6607",
+        "StateMachineRoleB840431D"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/StateMachine/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAAE11S0U7DMAz8Ft7TbIDEM2MCJLSJqki8Z6lXsqZJZTubpqr/TpIOVnjK+XKJfZcs5VIubx7ViQpdt4tBewQ5fLDSrVgHYt9VQD6gBrHeu1+8IgKOqsa4RlwV3hFj0Jy0pULVAQOm4j1wHzIdNbVh490oUtOBGPp9cDpRVLCiluRzh1HGyjhAil2Q3/yuCk4Y1cmh8nYaJq1b5VQDdemt0efE/iWu/IRGYVW3q1W0GCe3wN69XJon0UadAT9j01TPN+a4BOwMUbZA94VKUZDMiQjrG5LDxjev6EOfr7zgpJXDU9At5BwmFNm5/5w8w1bpr+g9yeb1OAqdn6TAS+LxwOpE/96pRH80NeCP18ImV0VMW1sjk96abHQUztcgD7Q43j7Iu/gPDmRMgcGx6UBW0/oNqVZO7CICAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Parameters": {
+    "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4S3BucketB17E5ABD": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4\""
+    },
+    "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4S3VersionKey77778F6A": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4\""
+    },
+    "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4ArtifactHash580E429C": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4\""
+    },
+    "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3BucketAEADE8C7": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68\""
+    },
+    "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3VersionKeyE415415F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68\""
+    },
+    "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68ArtifactHashD9A515C3": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68\""
+    },
+    "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3BucketA4134174": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"b071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904d\""
+    },
+    "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3VersionKey8D410D66": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"b071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904d\""
+    },
+    "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dArtifactHashBFC6502B": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"b071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904d\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1ArtifactHashA521A16F": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    }
+  },
+  "Outputs": {
+    "stateMachineArn": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-2"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

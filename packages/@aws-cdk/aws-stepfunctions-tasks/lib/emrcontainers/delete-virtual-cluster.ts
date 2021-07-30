@@ -70,7 +70,7 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
         cdk.Stack.of(this).formatArn({
           service: 'emr-containers',
           resource: 'virtualclusters',
-          resourceName: this.props.virtualClusterId.value ?? '*', // https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html need wild card here for dynamic resources
+          resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? this.props.virtualClusterId.value : '*', // https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html need wild card here for dynamic resources
         }),
       ],
       actions: iamActions,

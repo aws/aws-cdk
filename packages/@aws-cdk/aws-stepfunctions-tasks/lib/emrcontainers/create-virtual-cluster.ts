@@ -10,23 +10,15 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  *
  * @default - EKS
  */
-export class ContainerProviderTypes {
+enum ContainerProviderTypes {
 
   /**
    * Supported container provider type for a EKS Cluster
    *
    * @returns 'EKS'
    */
-  static readonly EKS = new ContainerProviderTypes('EKS');
+  EKS = 'EKS'
 
-  /**
-   * Use a literal string for a new ContainerProviderType.
-   * Can be extended in case a new ContainerProviderType is needed.
-   *
-   * @param type A new ContainerProvider type ex. 'EKS'
-   */
-  constructor(public readonly type: string) {
-  }
 }
 
 /**
@@ -65,12 +57,10 @@ export class EksClusterInput {
 /**
  * The props for a EMR Containers EKS CreateVirtualCluster Task.
  */
-export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
+export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
 
   /**
    * EKS Cluster or TaskInput that contains the id of the cluster
-   *
-   * @default - No EKS Cluster
    */
   readonly eksCluster: EksClusterInput;
 
@@ -83,11 +73,11 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
 
   /**
    * Name of the specified virtual cluster.
-   * If not provided defaults to Names.uniqueId()
+   * If not provided defaults to the state machine execution id
    *
    * @default - Automatically generated
    */
-  readonly virtuaClusterName?: string;
+  readonly virtualClusterName?: string;
 
   /**
    * The tags assigned to the virtual cluster
@@ -100,9 +90,9 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
 /**
  * Creates a Virtual Cluster from a EKS cluster in a Task State
  *
- * @see https://docs.amazonaws.cn/en_us/step-functions/latest/dg/connect-emr-eks.html
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html
  */
-export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
+export class EmrContainersEksCreateVirtualCluster extends sfn.TaskStateBase {
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -113,10 +103,10 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EmrContainersCreateVirtualClusterProps) {
+  constructor(scope: Construct, id: string, private readonly props: EmrContainersEksCreateVirtualClusterProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, EmrContainersCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(this.integrationPattern, EmrContainersEksCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -128,7 +118,7 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('emr-containers', 'createVirtualCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        Name: this.props.virtuaClusterName ?? cdk.Names.uniqueId(this),
+        Name: this.props.virtualClusterName ?? sfn.JsonPath.stringAt('$$.Execution.Id'),
         ContainerProvider: {
           Id: this.props.eksCluster.clusterName,
           Info: {
@@ -136,7 +126,7 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
               Namespace: this.props.eksNamespace ?? 'default',
             },
           },
-          Type: ContainerProviderTypes.EKS.type,
+          Type: ContainerProviderTypes.EKS,
         },
         Tags: this.props.tags,
       }),
@@ -153,7 +143,6 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
         resources: [
           cdk.Stack.of(this).formatArn({
             service: 'iam',
-            region: '',
             resource: 'role/aws-service-role/emr-containers.amazonaws.com',
             resourceName: 'AWSServiceRoleForAmazonEMRContainers',
           }),

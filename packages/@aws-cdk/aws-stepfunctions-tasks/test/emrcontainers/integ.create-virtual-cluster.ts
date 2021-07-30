@@ -1,6 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { EksClusterInput, EmrContainersCreateVirtualCluster } from '../../lib/emrcontainers/create-virtual-cluster';
+import { EksClusterInput, EmrContainersEksCreateVirtualCluster } from '../../lib/emrcontainers/create-virtual-cluster';
 
 /**
  * Stack verification steps:
@@ -14,10 +14,10 @@ import { EksClusterInput, EmrContainersCreateVirtualCluster } from '../../lib/em
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-create-virtual-cluster-integ');
 
-const createVirtualClusterJob = new EmrContainersCreateVirtualCluster(stack, 'Create a Virtual Cluster Job', {
-  virtuaClusterName: 'emr-containers-test-cluster',
+const createVirtualClusterJob = new EmrContainersEksCreateVirtualCluster(stack, 'Create a Virtual Cluster Job', {
+  virtualClusterName: 'emr-containers-test-cluster',
   eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('test-eks')),
-  eksNamespace: 'kube-system',
+  eksNamespace: 'spark',
   integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
 });
 
