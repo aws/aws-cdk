@@ -675,7 +675,7 @@ export interface JobProps {
 
   /**
    * The number of AWS Glue data processing units (DPUs) that can be allocated when this job runs.
-   * Should not be used for Glue version 2.0 and later - workerType and numberOfWorkers should be used instead.
+   * Cannot be used for Glue version 2.0 and later - workerType and numberOfWorkers should be used instead.
    *
    * @default 10 when you specify an Apache Spark ETL or Sreaming job, 0.0625 DPU when you specify a Python shell job.
    */
@@ -692,21 +692,21 @@ export interface JobProps {
    * The maximum number of concurrent runs allowed for the job.
    * An error is returned when this threshold is reached. The maximum value you can specify is controlled by a service limit.
    *
-   * @default 1.
+   * @default 1
    */
   readonly maxConcurrentRuns?: number;
 
   /**
    * The number of minutes to wait after a job run starts, before sending a job run delay notification.
    *
-   * @default N/A (no delay notifications)
+   * @default - no delay notifications
    */
   readonly notifyDelayAfter?: cdk.Duration;
 
   /**
    * The maximum time that a job run can consume resources before it is terminated and enters TIMEOUT status.
    *
-   * @default 2,880 minutes (48 hours)
+   * @default cdk.Duration.hours(48)
    */
   readonly timeout?: cdk.Duration;
 
@@ -718,7 +718,6 @@ export interface JobProps {
 
   /**
    * The type of predefined worker that is allocated when a job runs.
-   * Should not be used for Glue version 1.0 and earlier - maxCapacity should be used instead.
    *
    * @default differs based on specific glueVersion
    */
@@ -726,7 +725,6 @@ export interface JobProps {
 
   /**
    * The number of workers of a defined {@link WorkerType} that are allocated when a job runs.
-   * Should not be used for Glue version 1.0 and earlier - maxCapacity should be used instead.
    *
    * @default differs based on specific glueVersion/workerType
    */
@@ -764,7 +762,8 @@ export interface JobProps {
 
   /**
    * The IAM role associated with this job.
-   * @default a new IAM role with arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole managed policy
+   *
+   * @default an IAM role is generated
    */
   readonly role?: iam.IRole;
 
@@ -815,9 +814,8 @@ export class Job extends JobBase {
     });
 
     // Create a basic service role if one is not provided https://docs.aws.amazon.com/glue/latest/dg/create-service-policy.html
-    this.role = props.role || new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('glue'),
-      // arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+    this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
+      assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
     });
 
@@ -830,8 +828,8 @@ export class Job extends JobBase {
         scriptLocation: props.jobCommand.scriptLocation,
         pythonVersion: props.jobCommand.pythonVersion,
       },
-      glueVersion: props.glueVersion ? props.glueVersion.name : undefined,
-      workerType: props.workerType ? props.workerType.name : undefined,
+      glueVersion: props.glueVersion?.name,
+      workerType: props.workerType?.name,
       numberOfWorkers: props.numberOfWorkers,
       maxCapacity: props.maxCapacity,
       maxRetries: props.maxRetries,
