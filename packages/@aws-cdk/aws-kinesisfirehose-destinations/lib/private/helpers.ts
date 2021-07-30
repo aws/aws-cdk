@@ -2,8 +2,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import { DestinationS3BackupProps } from '../common';
 
 export interface DestinationLoggingProps {
   /**
@@ -35,19 +37,28 @@ export interface DestinationLoggingProps {
   readonly streamId: string;
 }
 
-export interface DestinationLoggingOutput {
-  /**
-   * Logging options that will be injected into the destination configuration.
-   */
-  readonly loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
-
+interface ConfigWithDependables {
   /**
    * Resources that were created by the sub-config creator that must be deployed before the delivery stream is deployed.
    */
   readonly dependables: cdk.IDependable[];
 }
 
-export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingOutput | undefined {
+export interface DestinationLoggingConfig extends ConfigWithDependables {
+  /**
+   * Logging options that will be injected into the destination configuration.
+   */
+  readonly loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
+}
+
+export interface DestinationBackupConfig extends ConfigWithDependables {
+  /**
+   * S3 backup configuration that will be injected into the destination configuration.
+   */
+  readonly backupConfig: firehose.CfnDeliveryStream.S3DestinationConfigurationProperty;
+}
+
+export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingConfig | undefined {
   if (props.logging === false && props.logGroup) {
     throw new Error('logging cannot be set to false when logGroup is provided');
   }
@@ -128,5 +139,35 @@ function renderDataProcessor(
   return {
     type: processorConfig.processorType,
     parameters,
+  };
+}
+
+export function createBackupConfig(scope: Construct, role: iam.IRole, props?: DestinationS3BackupProps): DestinationBackupConfig | undefined {
+  if (!props || (props.mode === undefined && !props.bucket)) {
+    return undefined;
+  }
+
+  const bucket = props.bucket ?? new s3.Bucket(scope, 'BackupBucket');
+  const bucketGrant = bucket.grantReadWrite(role);
+
+  const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {
+    logging: props.logging,
+    logGroup: props.logGroup,
+    role,
+    streamId: 'S3Backup',
+  }) ?? {};
+
+  return {
+    backupConfig: {
+      bucketArn: bucket.bucketArn,
+      roleArn: role.roleArn,
+      prefix: props.dataOutputPrefix,
+      errorOutputPrefix: props.errorOutputPrefix,
+      bufferingHints: createBufferingHints(props.bufferingInterval, props.bufferingSize),
+      compressionFormat: props.compression?.value,
+      encryptionConfiguration: createEncryptionConfig(role, props.encryptionKey),
+      cloudWatchLoggingOptions: loggingOptions,
+    },
+    dependables: [bucketGrant, ...(loggingDependables ?? [])],
   };
 }
