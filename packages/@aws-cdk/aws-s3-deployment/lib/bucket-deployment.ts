@@ -165,10 +165,8 @@ export interface BucketDeploymentProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
-
   /**
-   * Sets the ACL for the object when the command is performed.
-   * If you use this parameter you must have the "s3:PutObjectAcl" permission included in the list of actions for your IAM policy.
+   * System-defined x-amz-acl metadata to be set on all objects in the deployment.
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
    */
