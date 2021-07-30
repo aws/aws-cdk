@@ -44,6 +44,7 @@ export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
 
     this.apiEndpoint = this.getApiEndpoint();
     this.arnForExecuteApi = this.getArnForExecuteApi();
+    this.stageName = props.stageName;
 
     this.taskPolicies = this.createPolicyStatements();
   }
