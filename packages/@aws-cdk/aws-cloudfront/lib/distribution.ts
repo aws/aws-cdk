@@ -450,7 +450,7 @@ export class Distribution extends Resource implements IDistribution {
     minimumProtocolVersionProp?: SecurityPolicyProtocol): CfnDistribution.ViewerCertificateProperty {
 
     const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
-      ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019
+      ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
     const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;
 
     return {
