@@ -23,7 +23,10 @@ export interface KinesisFirehoseStreamProps {
  */
 export class KinesisFirehoseStream implements events.IRuleTarget {
 
-  constructor(private readonly stream: firehose.DeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {
+  private streamArn: string
+
+  constructor(private readonly stream: firehose.DeliveryStream|firehose.CfnDeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {
+    this.streamArn = ('deliveryStreamArn' in stream) ? stream.deliveryStreamArn : stream.attrArn;
   }
 
   /**
@@ -33,11 +36,11 @@ export class KinesisFirehoseStream implements events.IRuleTarget {
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const policyStatements = [new iam.PolicyStatement({
       actions: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
-      resources: [this.stream.deliveryStreamArn],
+      resources: [this.streamArn],
     })];
 
     return {
-      arn: this.stream.deliveryStreamArn,
+      arn: this.streamArn,
       role: singletonEventRole(this.stream, policyStatements),
       input: this.props.message,
       targetResource: this.stream,
