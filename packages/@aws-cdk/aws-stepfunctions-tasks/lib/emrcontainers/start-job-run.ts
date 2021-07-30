@@ -35,8 +35,6 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
 
   /**
    * The Amazon EMR release version to use for the job run.
-   *
-   * @example - ReleaseLabel.EMR_6_3_0
    */
   readonly releaseLabel: ReleaseLabel;
 
@@ -54,8 +52,6 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
    * The job driver for the job run.
    *
    * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_JobDriver.html
-   *
-   * @default - No job driver
    */
   readonly jobDriver: JobDriver;
 
@@ -496,7 +492,7 @@ export class Classification {
    *
    * @returns 'spark'
    */
-  static CONFIG_SPARK = new Classification('spark');
+  static readonly CONFIG_SPARK = new Classification('spark');
 
   /**
    * Sets values in the spark-defaults.conf file.
@@ -506,7 +502,7 @@ export class Classification {
    *
    * @returns 'spark-defaults'
    */
-  static CONFIG_SPARK_DEFAULTS = new Classification('spark-defaults');
+  static readonly CONFIG_SPARK_DEFAULTS = new Classification('spark-defaults');
 
   /**
    * Sets values in the spark-env.sh file.
@@ -516,14 +512,14 @@ export class Classification {
    *
    * @returns 'spark-env'
    */
-  static CONFIG_SPARK_ENV = new Classification('spark-env');
+  static readonly CONFIG_SPARK_ENV = new Classification('spark-env');
 
   /**
    * Sets values in the hive-site.xml for Spark.
    *
    * @returns 'spark-hive-site'
    */
-  static CONFIG_SPARK_HIVE_SITE = new Classification('spark-hive-site');
+  static readonly CONFIG_SPARK_HIVE_SITE = new Classification('spark-hive-site');
 
   /**
    * Sets values in the log4j.properties file.
@@ -533,7 +529,7 @@ export class Classification {
    *
    * @returns 'spark-log4j'
    */
-  static CONFIG_SPARK_LOG4J = new Classification('spark-log4j');
+  static readonly CONFIG_SPARK_LOG4J = new Classification('spark-log4j');
 
   /**
    * Sets values in the metrics.properties file.
@@ -543,7 +539,7 @@ export class Classification {
    *
    * @returns 'spark-metrics'
    */
-  static CONFIG_SPARK_METRICS = new Classification('spark-metrics');
+  static readonly CONFIG_SPARK_METRICS = new Classification('spark-metrics');
 
   /**
    * Creates a new Classification, can be extended to support a classification
