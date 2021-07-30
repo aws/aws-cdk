@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import { App, Stack } from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
@@ -44,5 +45,38 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
 portfolio.addProduct(product);
 
 portfolio.constrainTagUpdates(product);
+
+const topic = new sns.Topic(stack, 'Topic1');
+
+const specialTopic = new sns.Topic(stack, 'specialTopic');
+
+portfolio.notifyOnStackEvents(product, topic);
+portfolio.notifyOnStackEvents(product, specialTopic, {
+  description: 'special topic description',
+  messageLanguage: servicecatalog.MessageLanguage.EN,
+});
+
+const launchRole = new iam.Role(stack, 'LaunchRole', {
+  assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
+});
+
+portfolio.setLaunchRole(product, launchRole);
+
+const secondPortfolio = new servicecatalog.Portfolio(stack, 'SecondTestPortfolio', {
+  displayName: 'SecondTestPortfolio',
+  providerName: 'TestProvider',
+});
+
+const adminRole = new iam.Role(stack, 'AdminRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+secondPortfolio.deployWithStackSets(product, {
+  accounts: ['000000000000', '111111111111', '222222222222'],
+  regions: ['us-east-1', 'us-west-2', 'eu-west-1'],
+  adminRole: adminRole,
+  executionRoleName: 'StackSetExecutionRole',
+  allowStackSetInstanceOperations: true,
+});
 
 app.synth();

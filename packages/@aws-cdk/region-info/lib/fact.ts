@@ -153,6 +153,18 @@ export class FactName {
   public static readonly APPMESH_ECR_ACCOUNT = 'appMeshRepositoryAccount';
 
   /**
+   * The CIDR block used by Kinesis Data Firehose servers.
+   */
+  public static readonly FIREHOSE_CIDR_BLOCK = 'firehoseCidrBlock';
+
+  /**
+   * The ARN of CloudWatch Lambda Insights for a version (e.g. 1.0.98.0)
+   */
+  public static cloudwatchLambdaInsightsVersion(version: string) {
+    return `cloudwatch-lambda-insights-version:${version.split('.').join('_')}`;
+  }
+
+  /**
    * The name of the regional service principal for a given service.
    *
    * @param service the service name, either simple (e.g: `s3`, `codedeploy`) or qualified (e.g: `s3.amazonaws.com`).

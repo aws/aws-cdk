@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { TemplateAssertions } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { Alarm, GraphWidget, IWidget, Metric } from '../lib';
 
@@ -89,7 +89,7 @@ describe('cross environment', () => {
       });
 
       // THEN
-      expect(stack1).toHaveResourceLike('AWS::CloudWatch::Alarm', {
+      TemplateAssertions.fromStack(stack1).hasResourceProperties('AWS::CloudWatch::Alarm', {
         MetricName: 'ACount',
         Namespace: 'Test',
         Period: 300,
