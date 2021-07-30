@@ -183,7 +183,7 @@ export interface ServiceProps {
   /**
    * The amount of memory reserved for each instance of your App Runner service.
    *
-   * @default - 2 GB
+   * @default Memory.TWO_GB
    */
   readonly memory?: Memory;
   /**
