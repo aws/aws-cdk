@@ -191,7 +191,7 @@ export interface ServiceProps {
    *
    * @default - no connection
    */
-  readonly connection?: Connection;
+  readonly gitHubConnection?: GitHubConnection;
   /**
    * The IAM role that grants the App Runner service access to a source repository.
    * It's required for ECR image repositories (but not for ECR Public repositories).
