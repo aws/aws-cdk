@@ -81,7 +81,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   /**
    * The load balancing algorithm to select targets for routing requests.
    *
-   * @default round_robin.
+   * @default TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN
    */
   readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
 
