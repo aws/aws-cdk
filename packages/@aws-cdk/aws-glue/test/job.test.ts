@@ -1,6 +1,5 @@
 import * as cdkassert from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import '@aws-cdk/assert-internal/jest';
@@ -118,36 +117,6 @@ describe('Job', () => {
       resource: 'job',
       resourceName: jobName,
     }));
-  });
-
-  describe('.ruleMetric()', () => {
-    let rule: events.IRule;
-
-    beforeEach(() => {
-      rule = events.Rule.fromEventRuleArn(stack, 'Rule', 'arn:aws:events:us-east-1:123456789012:rule/example');
-    });
-
-    test('with no props returns default metric', () => {
-      expect(glue.Job.metricRule(rule)).toEqual(new cloudwatch.Metric({
-        dimensions: {
-          RuleName: 'example',
-        },
-        metricName: 'TriggeredRules',
-        namespace: 'AWS/Events',
-        statistic: 'Sum',
-      }));
-    });
-
-    test('with props overrides', () => {
-      expect(glue.Job.metricRule(rule, { statistic: cloudwatch.Statistic.AVERAGE })).toEqual(new cloudwatch.Metric({
-        dimensions: {
-          RuleName: 'example',
-        },
-        metricName: 'TriggeredRules',
-        namespace: 'AWS/Events',
-        statistic: 'Average',
-      }));
-    });
   });
 
   describe('new', () => {

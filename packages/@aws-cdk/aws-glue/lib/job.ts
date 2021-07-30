@@ -464,7 +464,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * @param rule for use in setting RuleName dimension value
    * @param props metric properties
    */
-  public static metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  protected static metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/Events',
       metricName: 'TriggeredRules',
@@ -480,7 +480,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * @param scope
    * @param jobName
    */
-  public static buildJobArn(scope: constructs.Construct, jobName: string) : string {
+  protected static buildJobArn(scope: constructs.Construct, jobName: string) : string {
     return cdk.Stack.of(scope).formatArn({
       service: 'glue',
       resource: 'job',
