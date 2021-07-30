@@ -349,14 +349,14 @@ test('system metadata is correctly transformed', () => {
 // type checking structure that forces to update it if BucketAccessControl changes
 // see `--acl` here: https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
 const accessControlMap: Record<s3.BucketAccessControl, string> = {
-  [s3.BucketAccessControl.PRIVATE]: "private",
-  [s3.BucketAccessControl.PUBLIC_READ]: "public-read",
-  [s3.BucketAccessControl.PUBLIC_READ_WRITE]: "public-read-write",
-  [s3.BucketAccessControl.AUTHENTICATED_READ]: "authenticated-read",
-  [s3.BucketAccessControl.AWS_EXEC_READ]: "aws-exec-read",
-  [s3.BucketAccessControl.BUCKET_OWNER_READ]: "bucket-owner-read",
-  [s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL]: "bucket-owner-full-control",
-  [s3.BucketAccessControl.LOG_DELIVERY_WRITE]: "log-delivery-write"
+  [s3.BucketAccessControl.PRIVATE]: 'private',
+  [s3.BucketAccessControl.PUBLIC_READ]: 'public-read',
+  [s3.BucketAccessControl.PUBLIC_READ_WRITE]: 'public-read-write',
+  [s3.BucketAccessControl.AUTHENTICATED_READ]: 'authenticated-read',
+  [s3.BucketAccessControl.AWS_EXEC_READ]: 'aws-exec-read',
+  [s3.BucketAccessControl.BUCKET_OWNER_READ]: 'bucket-owner-read',
+  [s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL]: 'bucket-owner-full-control',
+  [s3.BucketAccessControl.LOG_DELIVERY_WRITE]: 'log-delivery-write',
 };
 
 test.each(Object.entries(accessControlMap) as [s3.BucketAccessControl, string][])(
@@ -376,10 +376,10 @@ test.each(Object.entries(accessControlMap) as [s3.BucketAccessControl, string][]
     // THEN
     expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
       SystemMetadata: {
-        'acl': systemMetadataKeyword,
+        acl: systemMetadataKeyword,
       },
     });
-  }
+  },
 );
 
 test('expires type has correct values', () => {
