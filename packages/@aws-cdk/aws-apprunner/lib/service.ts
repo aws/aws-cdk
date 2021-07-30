@@ -483,7 +483,6 @@ export class Service extends cdk.Resource {
       assets.ecrRepository.grantPull(this.accessRole);
     }
 
-    // })
     return {
       imageIdentifier: assets.uri,
       imageRepositoryType: assets.type,
