@@ -3,8 +3,8 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { MessageLanguage } from './common';
 import {
-  CommonConstraintOptions, StackSetsConstraintOptions,
-  TagUpdateConstraintOptions, ProvisioningRuleOptions,
+  CloudFormationRuleConstraintOptions, CommonConstraintOptions,
+  StackSetsConstraintOptions, TagUpdateConstraintOptions,
 } from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
@@ -108,7 +108,7 @@ export interface IPortfolio extends cdk.IResource {
    * @param product A service catalog product.
    * @param options options for the constraint.
    */
-  constrainCloudFormationParameters(product:IProduct, options: ProvisioningRuleOptions): void;
+  constrainCloudFormationParameters(product:IProduct, options: CloudFormationRuleConstraintOptions): void;
 
   /**
    * Force users to assume a certain role when launching a product.
@@ -146,7 +146,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   }
 
   public addProduct(product: IProduct): void {
-    AssociationManager.associateProductWithPortfolio(this, product);
+    AssociationManager.associateProductWithPortfolio(this, product, undefined);
   }
 
   public shareWithAccount(accountId: string, options: PortfolioShareOptions = {}): void {
@@ -171,7 +171,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     AssociationManager.notifyOnStackEvents(this, product, topic, options);
   }
 
-  public constrainCloudFormationParameters(product: IProduct, options: ProvisioningRuleOptions): void {
+  public constrainCloudFormationParameters(product: IProduct, options: CloudFormationRuleConstraintOptions): void {
     AssociationManager.constrainCloudFormationParameters(this, product, options);
   }
 

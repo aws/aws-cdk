@@ -35,7 +35,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Constraints](#constraints)
   - [Tag update constraint](#tag-update-constraint)
   - [Notify on stack events](#notify-on-stack-events)
-  - [Cloudformation parameters constraint](#cloudformation-parameters-constraint)
+  - [CloudFormation parameters constraint](#cloudformation-parameters-constraint)
   - [Set launch role](#set-launch-role)
   - [Deploy with StackSets](#deploy-with-stacksets)
 
@@ -229,7 +229,7 @@ portfolio.notifyOnStackEvents(product, topic2, {
 });
 ```
 
-### Cloudformation parameters constraint
+### CloudFormation parameters constraint
 
 Allows you to configure the options that are available to end users when they launch a product.
 A provisioning rule consists of one or more assertions that narrow the allowable values for parameters in a product.
@@ -244,7 +244,7 @@ see [AWS Rule Functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/Us
 import * as cdk from '@aws-cdk/core';
 
 portfolio.constrainCloudFormationParameters(product, {
-  assertion: {
+  rule: {
     ruleName: 'testInstanceType',
     condition: cdk.Fn.conditionEquals(cdk.Fn.ref('Environment'), 'test'),
     assertions: [{

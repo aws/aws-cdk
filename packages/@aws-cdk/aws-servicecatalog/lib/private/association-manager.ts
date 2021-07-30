@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import {
-  CommonConstraintOptions, ProvisioningRuleOptions, StackSetsConstraintOptions,
+  CloudFormationRuleConstraintOptions, CommonConstraintOptions, StackSetsConstraintOptions,
   TagUpdateConstraintOptions, TemplateRule, TemplateRuleAssertion,
 } from '../constraints';
 import { IPortfolio } from '../portfolio';
@@ -17,7 +17,7 @@ import { InputValidator } from './validation';
 
 export class AssociationManager {
   public static associateProductWithPortfolio(
-    portfolio: IPortfolio, product: IProduct, options?: CommonConstraintOptions,
+    portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions | undefined,
   ): { associationKey: string, cfnPortfolioProductAssociation: CfnPortfolioProductAssociation } {
     InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options?.description);
     const associationKey = hashValues(portfolio.node.addr, product.node.addr, product.stack.node.addr);
@@ -37,7 +37,7 @@ export class AssociationManager {
   }
 
   public static constrainTagUpdates(portfolio: IPortfolio, product: IProduct, options: TagUpdateConstraintOptions): void {
-    const association = this.associateProductWithPortfolio(portfolio, product);
+    const association = this.associateProductWithPortfolio(portfolio, product, options);
     const constructId = `ResourceUpdateConstraint${association.associationKey}`;
 
     if (!portfolio.node.tryFindChild(constructId)) {
@@ -57,7 +57,7 @@ export class AssociationManager {
   }
 
   public static notifyOnStackEvents(portfolio: IPortfolio, product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions): void {
-    const association = this.associateProductWithPortfolio(portfolio, product);
+    const association = this.associateProductWithPortfolio(portfolio, product, options);
     const constructId = `LaunchNotificationConstraint${hashValues(topic.node.addr, topic.stack.node.addr, association.associationKey)}`;
 
     if (!portfolio.node.tryFindChild(constructId)) {
@@ -78,9 +78,9 @@ export class AssociationManager {
 
   public static constrainCloudFormationParameters(
     portfolio: IPortfolio, product: IProduct,
-    options: ProvisioningRuleOptions,
+    options: CloudFormationRuleConstraintOptions,
   ): void {
-    const association = this.associateProductWithPortfolio(portfolio, product);
+    const association = this.associateProductWithPortfolio(portfolio, product, options);
     const constructId = `LaunchTemplateConstraint${hashValues(association.associationKey, options.rule.ruleName)}`;
 
     if (!portfolio.node.tryFindChild(constructId)) {
@@ -100,7 +100,7 @@ export class AssociationManager {
   }
 
   public static setLaunchRole(portfolio: IPortfolio, product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions): void {
-    const association = this.associateProductWithPortfolio(portfolio, product);
+    const association = this.associateProductWithPortfolio(portfolio, product, options);
     // Check if a stackset deployment constraint has already been configured.
     if (portfolio.node.tryFindChild(this.stackSetConstraintLogicalId(association.associationKey))) {
       throw new Error(`Cannot set launch role when a StackSet rule is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
@@ -124,7 +124,7 @@ export class AssociationManager {
   }
 
   public static deployWithStackSets(portfolio: IPortfolio, product: IProduct, options: StackSetsConstraintOptions) {
-    const association = this.associateProductWithPortfolio(portfolio, product);
+    const association = this.associateProductWithPortfolio(portfolio, product, options);
     // Check if a launch role has already been set.
     if (portfolio.node.tryFindChild(this.launchRoleConstraintLogicalId(association.associationKey))) {
       throw new Error(`Cannot configure StackSet deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
@@ -209,7 +209,7 @@ export class AssociationManager {
         AssertDescription: assertion.description,
       });
       return formattedAssertions;
-    }, Array<{ Assert: string, AssertDescription: string | undefined }>());
+    }, new Array<{ Assert: string, AssertDescription: string | undefined }>());
   };
 }
 

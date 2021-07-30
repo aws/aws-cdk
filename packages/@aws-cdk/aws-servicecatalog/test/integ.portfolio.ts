@@ -83,7 +83,9 @@ portfolio.constrainCloudFormationParameters(product, {
   rule: {
     ruleName: 'SubnetsinVPC',
     assertions: [{
-      assert: cdk.Fn.conditionEachMemberIn(cdk.Fn.valueOfAll('AWs::EC2::Subnet::Id', 'VpcId'), cdk.Fn.refAll('AWS::EC2::VPC::Id')),
+      assert: cdk.Fn.conditionEachMemberIn(
+        cdk.Fn.valueOfAll('AWs::EC2::Subnet::Id', 'VpcId'),
+        cdk.Fn.refAll('AWS::EC2::VPC::Id')),
       description: 'test description',
     }],
   },

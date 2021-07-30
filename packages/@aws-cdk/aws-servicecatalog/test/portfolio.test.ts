@@ -459,7 +459,7 @@ describe('portfolio associations and product constraints', () => {
     }).toThrowError(`Topic ${topic} is already subscribed to association`);
   }),
 
-  test('set provisioning rule', () => {
+  test('creates a CloudFormation parameters constraint', () => {
     portfolio.addProduct(product);
     portfolio.constrainCloudFormationParameters(product, {
       rule: {
@@ -489,7 +489,7 @@ describe('portfolio associations and product constraints', () => {
     });
   }),
 
-  test('set provisioning rule still creates without explicit association', () => {
+  test('CloudFormation parameters constraint still creates without explicit association', () => {
     portfolio.constrainCloudFormationParameters(product, {
       rule: {
         ruleName: 'Rule',
@@ -508,7 +508,7 @@ describe('portfolio associations and product constraints', () => {
     expect(stack).toHaveResourceLike('AWS::ServiceCatalog::LaunchTemplateConstraint');
   }),
 
-  test('set multiple provisioning rules', () => {
+  test('set multiple CloudFormation parameters constraints', () => {
     portfolio.constrainCloudFormationParameters(product, {
       rule: {
         ruleName: 'Rule01',
@@ -532,7 +532,7 @@ describe('portfolio associations and product constraints', () => {
     expect(stack).toCountResources('AWS::ServiceCatalog::LaunchTemplateConstraint', 2);
   }),
 
-  test('fails to set a duplicate provisioning rule', () => {
+  test('fails to set a duplicate CloudFormation parameters constraint', () => {
     portfolio.constrainCloudFormationParameters(product, {
       rule: {
         ruleName: 'Rule01',

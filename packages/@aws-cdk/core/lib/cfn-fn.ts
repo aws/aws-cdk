@@ -605,7 +605,7 @@ class FnCidr extends FnBase {
 }
 
 class FnConditionBase extends Intrinsic implements ICfnRuleConditionExpression {
-  readonly disambiguator: boolean = true;
+  readonly disambiguator = true;
   constructor(type: string, value: any) {
     super({ [type]: value });
   }

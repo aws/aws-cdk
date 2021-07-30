@@ -94,7 +94,8 @@ export interface ICfnConditionExpression extends IResolvable {}
  */
 export interface ICfnRuleConditionExpression extends ICfnConditionExpression {
   /**
-   * This field is here for typing service catalog rule specific intrinsic functions.
+   * This field is only needed to defeat TypeScript's structural typing.
+   * It is never used.
    */
   readonly disambiguator: boolean;
 }
