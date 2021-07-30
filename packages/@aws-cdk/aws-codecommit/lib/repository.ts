@@ -124,19 +124,14 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
 
-
   /**
-   *
    * Defines a CodeStar Notification rule triggered when the project
    * events specified by you are emitted. Similar to `onEvent` API.
    *
    * You can also use the methods to define rules for the specific event emitted.
-   * eg: `notifyOnPullRequstCreated`
+   * eg: `notifyOnPullRequstCreated`.
    *
-   * @param id
-   * @param target
-   * @param options
-   * @returns CodeStar Notifications rule associated with this repository
+   * @returns CodeStar Notifications rule associated with this repository.
    */
   notifyOn(
     id: string,
@@ -147,7 +142,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   /**
    * Defines a CodeStar Notification rule which triggers when a comment is made on a commit.
    */
-  notifyOnCommentOnCommits(
+  notifyOnCommitComment(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
@@ -156,7 +151,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   /**
    * Defines a CodeStar Notification rule which triggers when a comment is made on a pull request
    */
-  notifyOnCommentOnPullRequests(
+  notifyOnPullRequestComment(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
@@ -402,13 +397,6 @@ abstract class RepositoryBase extends Resource implements IRepository {
     );
   }
 
-  /**
-   * Defines a CodeStar Notification rule
-   *
-   * @param id
-   * @param target
-   * @param options
-   */
   public notifyOn(
     id: string,
     target: notifications.INotificationRuleTarget,
@@ -421,25 +409,25 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
-  public notifyOnCommentOnCommits(
+  public notifyOnCommitComment(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
-      events: [RepositoryNotificationEvents.COMMENT_ON_COMMITS],
+      events: [RepositoryNotificationEvents.COMMIT_COMMENT],
     });
   }
 
-  public notifyOnCommentOnPullRequests(
+  public notifyOnPullRequestComment(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
-      events: [RepositoryNotificationEvents.COMMENT_ON_PULL_REQUESTS],
+      events: [RepositoryNotificationEvents.PULL_REQUEST_COMMENT],
     });
   }
 
@@ -736,12 +724,12 @@ export enum RepositoryNotificationEvents {
   /**
    * Trigger notication when comment made on commit
    */
-  COMMENT_ON_COMMITS = 'codecommit-repository-comments-on-commits',
+  COMMIT_COMMENT = 'codecommit-repository-comments-on-commits',
 
   /**
    * Trigger notification when comment made on pull request
    */
-  COMMENT_ON_PULL_REQUESTS = 'codecommit-repository-comments-on-pull-requests',
+  PULL_REQUEST_COMMENT = 'codecommit-repository-comments-on-pull-requests',
 
   /**
    * Trigger notification when approval status changed
