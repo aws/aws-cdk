@@ -47,13 +47,6 @@ export class GlueVersion {
   private constructor(name: string) {
     this.name = name;
   }
-
-  /**
-   * The glue version name as expected by job resource.
-   */
-  public toString(): string {
-    return this.name;
-  }
 }
 
 /**
@@ -93,13 +86,6 @@ export class WorkerType {
 
   private constructor(name: string) {
     this.name = name;
-  }
-
-  /**
-   * The worker type name as expected by Job resource.
-   */
-  public toString(): string {
-    return this.name;
   }
 }
 
@@ -214,13 +200,6 @@ export class JobCommandName {
 
   private constructor(name: string) {
     this.name = name;
-  }
-
-  /**
-   * The worker type name as expected by Job resource.
-   */
-  public toString(): string {
-    return this.name;
   }
 }
 
