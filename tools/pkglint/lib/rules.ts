@@ -661,7 +661,7 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
 
-    const moduleName = cdkModuleName(pkg.json.name);
+    const moduleName = cdkModuleName(pkg.json);
 
     expectJSON(this.name, pkg, 'jsii.targets.java.maven.groupId', 'software.amazon.awscdk');
     expectJSON(this.name, pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId, /-/g);
@@ -688,7 +688,7 @@ export class JSIIPythonTarget extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
 
-    const moduleName = cdkModuleName(pkg.json.name);
+    const moduleName = cdkModuleName(pkg.json);
 
     // See: https://github.com/aws/jsii/blob/master/docs/configuration.md#configuring-python
 
@@ -825,12 +825,16 @@ function isCdkModuleName(name: string) {
 /**
  * Computes the module name for various other purposes (java package, ...)
  */
-function cdkModuleName(name: string) {
+function cdkModuleName(pkgJson: { [key: string]: any }) {
+  let name: string = pkgJson.name;
+  const isV2AlphaPkg = cdkMajorVersion() === 2 &&
+    (pkgJson.maturity === 'experimental' || pkgJson.maturity === 'developer-preview');
   const isCdkPkg = name === '@aws-cdk/core';
   const isLegacyCdkPkg = name === '@aws-cdk/cdk';
 
   name = name.replace(/^aws-cdk-/, '');
-  name = name.replace(/^@aws-cdk\//, '');
+  // we change the name of the V2 alpha packages to `@aws-cdk-lib-alpha`
+  name = name.replace(/^@aws-cdk\//, isV2AlphaPkg ? '@aws-cdk-lib-alpha/' : '');
   name = name.replace(/^@aws-cdk-lib-alpha\//, 'alpha.');
 
   const dotnetSuffix = name.split('-')
@@ -871,7 +875,7 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
     if (pkg.packageName === '@aws-cdk/cdk') { return; }
 
     const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
-    const moduleName = cdkModuleName(pkg.json.name);
+    const moduleName = cdkModuleName(pkg.json);
     expectJSON(this.name, pkg, 'jsii.targets.dotnet.namespace', moduleName.dotnetNamespace, /\./g, /*case insensitive*/ true);
 
     if (dotnet) {
@@ -1809,7 +1813,7 @@ function readBannerFile(file: string): string {
   return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' }).trim();
 }
 
-function cdkMajorVersion() {
+function cdkMajorVersion(): number {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const releaseJson = require(`${monoRepoRoot()}/release.json`);
   return releaseJson.majorVersion as number;
