@@ -15,7 +15,7 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
 
   /**
-   * The virtual cluster ID for which the job run request is submitted.
+   * The ID of the virtual cluster where the job will be run
    */
   readonly virtualClusterId: sfn.TaskInput;
 
@@ -707,4 +707,3 @@ export class VirtualClusterInput {
    */
   private constructor(public readonly id: string) { }
 }
-
