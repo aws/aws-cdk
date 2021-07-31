@@ -70,7 +70,7 @@ export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskState
   readonly eksNamespace?: string;
 
   /**
-   * Name of the specified virtual cluster.
+   * Name of the virtual cluster that will be created.
    * If not provided defaults to the state machine execution id
    *
    * @default - Automatically generated
