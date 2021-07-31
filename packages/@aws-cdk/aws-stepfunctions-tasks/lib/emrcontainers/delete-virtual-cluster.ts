@@ -54,15 +54,9 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
   };
 
   private createPolicyStatements(): iam.PolicyStatement[] {
-    let iamActions: string[] | undefined;
-
-    if (this.integrationPattern === sfn.IntegrationPattern.REQUEST_RESPONSE) {
-      iamActions = ['emr-containers:DeleteVirtualCluster'];
-    } else if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      iamActions = [
-        'emr-containers:DescribeVirtualCluster',
-        'emr-containers:DeleteVirtualCluster',
-      ];
+    const actions = ['emr-containers:DeleteVirtualCluster'];
+    if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
+      actions.push('emr-containers:DescribeVirtualCluster');
     }
 
     return [new iam.PolicyStatement({
