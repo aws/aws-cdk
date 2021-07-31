@@ -58,7 +58,7 @@ export class EksClusterInput {
 export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
 
   /**
-   * EKS Cluster or TaskInput that contains the id of the cluster
+   * EKS Cluster or task input that contains the name of the cluster
    */
   readonly eksCluster: EksClusterInput;
 
