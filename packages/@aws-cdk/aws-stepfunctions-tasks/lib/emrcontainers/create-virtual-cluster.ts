@@ -84,7 +84,7 @@ export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskState
 }
 
 /**
- * Creates a Virtual Cluster from a EKS cluster in a Task State
+ * Task that creates an EMR Containers virtual cluster from an EKS cluster
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html
  */
