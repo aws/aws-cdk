@@ -20,7 +20,7 @@ enum ContainerProviderTypes {
 }
 
 /**
- * Class that supports methods which return the EKS cluster's id depending on input type.
+ * Class that supports methods which return the EKS cluster name depending on input type.
  */
 export class EksClusterInput {
 
