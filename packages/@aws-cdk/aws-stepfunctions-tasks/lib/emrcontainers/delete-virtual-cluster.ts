@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * The props for a EMR Containers DeleteVirtualCluster Task.
+ * Properties to define a EMR Containers DeleteVirtualCluster Task
  */
 export interface EmrContainersDeleteVirtualClusterProps extends sfn.TaskStateBaseProps {
 
