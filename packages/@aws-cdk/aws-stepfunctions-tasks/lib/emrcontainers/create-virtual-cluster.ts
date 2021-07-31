@@ -7,8 +7,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * Class for supported types of EMR Containers' Container Providers
- *
- * @default - EKS
  */
 enum ContainerProviderTypes {
 
