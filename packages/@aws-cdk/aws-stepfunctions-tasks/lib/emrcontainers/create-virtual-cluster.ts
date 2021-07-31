@@ -53,7 +53,7 @@ export class EksClusterInput {
 }
 
 /**
- * The props for a EMR Containers EKS CreateVirtualCluster Task.
+ * Properties to define a EMR Containers CreateVirtualCluster Task on an EKS cluster
  */
 export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
 
