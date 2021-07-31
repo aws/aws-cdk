@@ -740,7 +740,7 @@ new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
 ```
 ### Delete Virtual Cluster
 
-The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a single virtual cluster that's mapped to a single Kubernetes namespace. 
+The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a virtual cluster.
 
 Example:
 ```ts
