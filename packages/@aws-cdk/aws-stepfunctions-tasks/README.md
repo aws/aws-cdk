@@ -742,7 +742,6 @@ new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
 
 The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a virtual cluster.
 
-Example:
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
