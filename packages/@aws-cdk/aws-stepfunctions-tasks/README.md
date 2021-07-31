@@ -755,7 +755,6 @@ new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
 
 The [StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_StartJobRun.html) API starts a job run. A job run is a unit of work, such as a Spark jar, PySpark script, or SparkSQL query, that you submit to Amazon EMR on EKS. 
 
-Minimal Example:
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
