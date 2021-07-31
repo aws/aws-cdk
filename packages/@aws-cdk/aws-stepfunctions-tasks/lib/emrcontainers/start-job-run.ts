@@ -35,8 +35,6 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
 
   /**
    * The Amazon EMR release version to use for the job run.
-   *
-   * @example - ReleaseLabel.EMR_6_3_0
    */
   readonly releaseLabel: ReleaseLabel;
 
