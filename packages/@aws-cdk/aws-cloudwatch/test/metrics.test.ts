@@ -1,4 +1,4 @@
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Alarm, Metric } from '../lib';
@@ -15,7 +15,7 @@ describe('Metrics', () => {
     Metric.grantPutMetricData(role);
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -188,7 +188,7 @@ describe('Metrics', () => {
       dimensionA: 'value1',
       dimensionB: 'value2',
     });
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Namespace: 'Test',
       MetricName: 'Metric',
       Dimensions: [
