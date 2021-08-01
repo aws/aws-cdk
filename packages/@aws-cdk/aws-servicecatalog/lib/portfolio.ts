@@ -2,7 +2,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { MessageLanguage } from './common';
-import { CommonConstraintOptions, StackSetsConstraintOptions, TagUpdateConstraintOptions } from './constraints';
+import {
+  CloudFormationRuleConstraintOptions, CommonConstraintOptions,
+  StackSetsConstraintOptions, TagUpdateConstraintOptions,
+} from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -101,6 +104,13 @@ export interface IPortfolio extends cdk.IResource {
   notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options?: CommonConstraintOptions): void;
 
   /**
+   * Set provisioning rules for the product.
+   * @param product A service catalog product.
+   * @param options options for the constraint.
+   */
+  constrainCloudFormationParameters(product:IProduct, options: CloudFormationRuleConstraintOptions): void;
+
+  /**
    * Force users to assume a certain role when launching a product.
    *
    * @param product A service catalog product.
@@ -136,7 +146,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   }
 
   public addProduct(product: IProduct): void {
-    AssociationManager.associateProductWithPortfolio(this, product);
+    AssociationManager.associateProductWithPortfolio(this, product, undefined);
   }
 
   public shareWithAccount(accountId: string, options: PortfolioShareOptions = {}): void {
@@ -159,6 +169,10 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
 
   public notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions = {}): void {
     AssociationManager.notifyOnStackEvents(this, product, topic, options);
+  }
+
+  public constrainCloudFormationParameters(product: IProduct, options: CloudFormationRuleConstraintOptions): void {
+    AssociationManager.constrainCloudFormationParameters(this, product, options);
   }
 
   public setLaunchRole(product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions = {}): void {
