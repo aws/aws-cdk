@@ -4,7 +4,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
@@ -536,6 +536,7 @@ export class CodePipeline extends PipelineBase {
           templateConfiguration: templateConfigurationPath
             ? templateArtifact.atPath(toPosixPath(templateConfigurationPath))
             : undefined,
+          cfnCapabilities: [CfnCapabilities.NAMED_IAM, CfnCapabilities.AUTO_EXPAND],
         }));
         return { runOrdersConsumed: 1 };
       },
