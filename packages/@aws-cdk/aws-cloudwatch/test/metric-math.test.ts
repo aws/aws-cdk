@@ -1,4 +1,4 @@
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
 
@@ -638,7 +638,7 @@ function graphMetricsAre(w: IWidget, metrics: any[]) {
 }
 
 function alarmMetricsAre(metrics: any[]) {
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     Metrics: metrics,
   });
 }
