@@ -6,7 +6,7 @@ import { Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
 
 /**
- * Additional options to pass to the notification rule
+ * Additional options to pass to the notification rule.
  */
 export interface RepositoryNotifyOnOptions extends notifications.NotificationRuleOptions {
   /**
@@ -31,19 +31,19 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   readonly repositoryName: string;
 
   /**
-   * The HTTP clone URL
+   * The HTTP clone URL.
    * @attribute
    */
   readonly repositoryCloneUrlHttp: string;
 
   /**
-   * The SSH clone URL
+   * The SSH clone URL.
    * @attribute
    */
   readonly repositoryCloneUrlSsh: string;
 
   /**
-   * The HTTPS (GRC) clone URL
+   * The HTTPS (GRC) clone URL.
    *
    * HTTPS (GRC) is the protocol to use with git-remote-codecommit (GRC).
    *
@@ -105,7 +105,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   onCommit(id: string, options?: OnCommitOptions): events.Rule;
 
   /**
-   * Grant the given principal identity permissions to perform the actions on this repository
+   * Grant the given principal identity permissions to perform the actions on this repository.
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
@@ -149,7 +149,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   ): notifications.INotificationRule;
 
   /**
-   * Defines a CodeStar Notification rule which triggers when a comment is made on a pull request
+   * Defines a CodeStar Notification rule which triggers when a comment is made on a pull request.
    */
   notifyOnPullRequestComment(
     id: string,
@@ -158,25 +158,25 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   ): notifications.INotificationRule;
 
   /**
-   * Defines a CodeStar Notification rule which triggers when an approval status is changed
+   * Defines a CodeStar Notification rule which triggers when an approval status is changed.
    */
-  notifyOnApprovalsStatusChanged(
+  notifyOnApprovalStatusChanged(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule;
 
   /**
-   * Defines a CodeStar Notification rule which triggers when an approval rule is overridden
+   * Defines a CodeStar Notification rule which triggers when an approval rule is overridden.
    */
-  notifyOnApprovalsRuleOverride(
+  notifyOnApprovalRuleOverridden(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule;
 
   /**
-   * Defines a CodeStar Notification rule which triggers when a pull request is created
+   * Defines a CodeStar Notification rule which triggers when a pull request is created.
    */
   notifyOnPullRequestCreated(
     id: string,
@@ -185,25 +185,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   ): notifications.INotificationRule;
 
   /**
-   * Defines a CodeStar Notification rule which triggers when a pull request source is updated
-   */
-  notifyOnPullRequestSourceUpdated(
-    id: string,
-    target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
-  ): notifications.INotificationRule;
-
-  /**
-   * Defines a CodeStar Notification rule which triggers when a pull request status has changed
-   */
-  notifyOnPullRequestStatusChanged(
-    id: string,
-    target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
-  ): notifications.INotificationRule;
-
-  /**
-   * Defines a CodeStar Notification rule which triggers when a pull request is merged
+   * Defines a CodeStar Notification rule which triggers when a pull request is merged.
    */
   notifiyOnPullRequestMerged(
     id: string,
@@ -212,39 +194,28 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   ): notifications.INotificationRule;
 
   /**
-   * Defines a CodeStar Notification rule which triggers when a new branch or tag are created
+   * Defines a CodeStar Notification rule which triggers when a new branch or tag is created.
    */
-  notifyOnBranchesAndTagsCreated(
+  notifyOnBranchOrTagCreated(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule;
 
   /**
-   * Defines a CodeStar Notification rule which triggers when a branch or tag is deleted
+   * Defines a CodeStar Notification rule which triggers when a branch or tag is deleted.
    */
-  notifyOnBranchesAndTagsDeleted(
-    id: string,
-    target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
-  ): notifications.INotificationRule;
-
-  /**
-   * Defines a CodeStar Notification rule which triggers when a branch or tag is updated
-   */
-  notifyOnBranchesAndTagsUpdated(
+  notifyOnBranchOrTagDeleted(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule;
 }
 
-
 /**
- * Options for the onCommit() method
+ * Options for the onCommit() method.
  */
 export interface OnCommitOptions extends events.OnEventOptions {
-
   /**
    * The branch to monitor.
    *
@@ -431,25 +402,25 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
-  public notifyOnApprovalsStatusChanged(
+  public notifyOnApprovalStatusChanged(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
-      events: [RepositoryNotificationEvents.APPROVALS_STATUS_CHANGED],
+      events: [RepositoryNotificationEvents.APPROVAL_STATUS_CHANGED],
     });
   }
 
-  public notifyOnApprovalsRuleOverride(
+  public notifyOnApprovalRuleOverridden(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
-      events: [RepositoryNotificationEvents.APPROVALS_RULE_OVERRIDE],
+      events: [RepositoryNotificationEvents.APPROVAL_RULE_OVERRIDDEN],
     });
   }
 
@@ -464,28 +435,6 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
-  public notifyOnPullRequestSourceUpdated(
-    id: string,
-    target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
-  ): notifications.INotificationRule {
-    return this.notifyOn(id, target, {
-      ...options,
-      events: [RepositoryNotificationEvents.PULL_REQUEST_SOURCE_UPDATED],
-    });
-  }
-
-  public notifyOnPullRequestStatusChanged(
-    id: string,
-    target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
-  ): notifications.INotificationRule {
-    return this.notifyOn(id, target, {
-      ...options,
-      events: [RepositoryNotificationEvents.PULL_REQUEST_STATUS_CHANGED],
-    });
-  }
-
   public notifiyOnPullRequestMerged(
     id: string,
     target: notifications.INotificationRuleTarget,
@@ -497,36 +446,25 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
-  public notifyOnBranchesAndTagsCreated(
+  public notifyOnBranchOrTagCreated(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
-      events: [RepositoryNotificationEvents.BRANCHES_AND_TAGS_CREATED],
+      events: [RepositoryNotificationEvents.BRANCH_OR_TAG_CREATED],
     });
   }
 
-  public notifyOnBranchesAndTagsDeleted(
+  public notifyOnBranchOrTagDeleted(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
-      events: [RepositoryNotificationEvents.BRANCHES_AND_TAGS_DELETED],
-    });
-  }
-
-  public notifyOnBranchesAndTagsUpdated(
-    id: string,
-    target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
-  ): notifications.INotificationRule {
-    return this.notifyOn(id, target, {
-      ...options,
-      events: [RepositoryNotificationEvents.BRANCHES_AND_TAGS_UPDATED],
+      events: [RepositoryNotificationEvents.BRANCH_OR_TAG_DELETED],
     });
   }
 
@@ -555,7 +493,7 @@ export interface RepositoryProps {
 }
 
 /**
- * Provides a CodeCommit Repository
+ * Provides a CodeCommit Repository.
  */
 export class Repository extends RepositoryBase {
 
@@ -668,7 +606,7 @@ export class Repository extends RepositoryBase {
  */
 export interface RepositoryTriggerOptions {
   /**
-   * A name for the trigger.Triggers on a repository must have unique names
+   * A name for the trigger.Triggers on a repository must have unique names.
    */
   readonly name?: string;
 
@@ -704,7 +642,7 @@ export enum RepositoryEventTrigger {
 }
 
 /**
- * Returns the clone URL for a protocol
+ * Returns the clone URL for a protocol.
  */
 function makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh' | 'grc', region?: string) {
   switch (protocol) {
@@ -722,57 +660,57 @@ function makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 
  */
 export enum RepositoryNotificationEvents {
   /**
-   * Trigger notication when comment made on commit
+   * Trigger notication when comment made on commit.
    */
   COMMIT_COMMENT = 'codecommit-repository-comments-on-commits',
 
   /**
-   * Trigger notification when comment made on pull request
+   * Trigger notification when comment made on pull request.
    */
   PULL_REQUEST_COMMENT = 'codecommit-repository-comments-on-pull-requests',
 
   /**
-   * Trigger notification when approval status changed
+   * Trigger notification when approval status changed.
    */
-  APPROVALS_STATUS_CHANGED = 'codecommit-repository-approvals-status-changed',
+  APPROVAL_STATUS_CHANGED = 'codecommit-repository-approvals-status-changed',
 
   /**
-   * Trigger notifications when approval rule is overridden
+   * Trigger notifications when approval rule is overridden.
    */
-  APPROVALS_RULE_OVERRIDE = 'codecommit-repository-approvals-rule-override',
+  APPROVAL_RULE_OVERRIDDEN = 'codecommit-repository-approvals-rule-override',
 
   /**
-   * Trigger notification when pull request created
+   * Trigger notification when pull request created.
    */
   PULL_REQUEST_CREATED = 'codecommit-repository-pull-request-created',
 
   /**
-   * Trigger notification when pull request source updated
+   * Trigger notification when pull request source updated.
    */
   PULL_REQUEST_SOURCE_UPDATED = 'codecommit-repository-pull-request-source-updated',
 
   /**
-   * Trigger notification when pull request status is changed
+   * Trigger notification when pull request status is changed.
    */
   PULL_REQUEST_STATUS_CHANGED = 'codecommit-repository-pull-request-status-changed',
 
   /**
-   * Trigger notification when pull requset is merged
+   * Trigger notification when pull requset is merged.
    */
   PULL_REQUEST_MERGED = 'codecommit-repository-pull-request-merged',
 
   /**
-   * Trigger notification when a branch or tag is created
+   * Trigger notification when a branch or tag is created.
    */
-  BRANCHES_AND_TAGS_CREATED = 'codecommit-repository-branches-and-tags-created',
+  BRANCH_OR_TAG_CREATED = 'codecommit-repository-branches-and-tags-created',
 
   /**
-   * Trigger notification when a branch or tag is deleted
+   * Trigger notification when a branch or tag is deleted.
    */
-  BRANCHES_AND_TAGS_DELETED = 'codecommit-repository-branches-and-tags-deleted',
+  BRANCH_OR_TAG_DELETED = 'codecommit-repository-branches-and-tags-deleted',
 
   /**
-   * Trigger notification when a branch or tag is updated
+   * Trigger notification when a branch or tag is updated.
    */
-  BRANCHES_AND_TAGS_UPDATED = 'codecommit-repository-branches-and-tags-updated',
+  BRANCH_OR_TAG_UPDATED = 'codecommit-repository-branches-and-tags-updated',
 }
