@@ -58,11 +58,11 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
   readonly jobDriver: JobDriver;
 
   /**
-   * The configurations for monitoring.
+   * Configuration for monitoring the job run
    *
    * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_MonitoringConfiguration.html
    *
-   * @default - Automatically generated if monitoring.logging is set to true
+   * @default - logging enabled and resources automatically generated if `monitoring.logging` is set to `true`
    */
   readonly monitoring?: Monitoring;
 
@@ -128,7 +128,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
     }
 
 
-    this.role = this.props.executionRole || this.createJobExecutionRole();
+    this.role = this.props.executionRole ?? this.createJobExecutionRole();
     this.taskPolicies = this.createPolicyStatements();
   }
 
@@ -180,7 +180,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
    *
    * @param property
    */
-  private ApplicationConfigPropertyToJson(property: ApplicationConfiguration) {
+  private applicationConfigPropertyToJson(property: ApplicationConfiguration) {
     return {
       Classification: cdk.stringToCloudFormation(property.classification.classificationStatement),
       Properties: cdk.objectToCloudFormation(property.properties),
@@ -188,7 +188,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
     };
   }
 
-  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
+  private renderTags(tags?: { [key: string]: any }): { Key: string, Value: any } {
     return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
@@ -212,7 +212,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
 
   // https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
   private createJobExecutionRole(): iam.Role {
-    let jobExecutionRole: iam.Role = new iam.Role(this, 'Job-Execution-Role', {
+    const jobExecutionRole = new iam.Role(this, 'Job Execution Role', {
       assumedBy: new iam.ServicePrincipal('emr-containers.amazonaws.com'),
     });
 
@@ -322,10 +322,10 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
    *
    * @param roleName - provided from automatically generated name
    */
-  private updateRoleTrustPolicy(roleName: string) {
+  private updateRoleTrustPolicy(role: iam.Role) {
 
     // first create a custom resource to retrieve the eks namespace and eks cluster output from describe virtual cluster
-    const descVirtClust = new cr.AwsCustomResource(this, 'EMR Containers DescribeVirtualCluster SDK caller', {
+    const eksClusterInfo = new cr.AwsCustomResource(this, 'GetEksClusterInfo', {
       onCreate: {
         service: 'EMRcontainers',
         action: 'describeVirtualCluster',
@@ -342,7 +342,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
 
     // next use the awscli within the lambda layer to call update-role-trust-policy using the eks namespace and eks clusterId
     const cliLayer = new awscli.AwsCliLayer(this, 'awsclilayer');
-    const shellCliLambda = new lambda.SingletonFunction(this, 'Call Update-Role-Trust-Policy', {
+    const shellCliLambda = new lambda.SingletonFunction(this, 'Update Role Trust Policy', {
       uuid: this.renderSingletonUuid(roleName), // ensures a random uuid for a singleton function
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
