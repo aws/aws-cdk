@@ -430,13 +430,12 @@ export interface IJob extends cdk.IResource {
    * Create a CloudWatch metric.
    *
    * @param metricName name of the metric typically prefixed with `glue.driver.`, `glue.<executorId>.` or `glue.ALL.`.
-   * @param jobRunId a dimension that filters for metrics of a specific JobRun ID, or `ALL`.
    * @param type the metric type.
    * @param props metric options.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html
    */
-  metric(metricName: string, jobRunId: string, type: MetricType, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metric(metricName: string, type: MetricType, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Create a CloudWatch Metric indicating job success.
@@ -559,19 +558,18 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * Create a CloudWatch metric.
    *
    * @param metricName name of the metric typically prefixed with `glue.driver.`, `glue.<executorId>.` or `glue.ALL.`.
-   * @param jobRunId a dimension that filters for metrics of a specific JobRun ID, or `ALL`.
    * @param type the metric type.
    * @param props metric options.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html
    */
-  public metric(metricName: string, jobRunId: string, type: MetricType, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metric(metricName: string, type: MetricType, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       metricName,
       namespace: 'Glue',
       dimensions: {
         JobName: this.jobName,
-        JobRunId: jobRunId,
+        JobRunId: 'ALL',
         Type: type,
       },
       ...props,

@@ -800,7 +800,7 @@ describe('Job', () => {
         const metricName = 'glue.driver.aggregate.bytesRead';
         const props = { statistic: cloudwatch.Statistic.SUM };
 
-        expect(job.metric(metricName, 'ALL', glue.MetricType.COUNT, props)).toEqual(new cloudwatch.Metric({
+        expect(job.metric(metricName, glue.MetricType.COUNT, props)).toEqual(new cloudwatch.Metric({
           metricName,
           statistic: 'Sum',
           namespace: 'Glue',
@@ -816,7 +816,7 @@ describe('Job', () => {
         const metricName = 'glue.driver.BlockManager.disk.diskSpaceUsed_MB';
         const props = { statistic: cloudwatch.Statistic.AVERAGE };
 
-        expect(job.metric(metricName, 'ALL', glue.MetricType.GAUGE, props)).toEqual(new cloudwatch.Metric({
+        expect(job.metric(metricName, glue.MetricType.GAUGE, props)).toEqual(new cloudwatch.Metric({
           metricName,
           statistic: 'Average',
           namespace: 'Glue',
