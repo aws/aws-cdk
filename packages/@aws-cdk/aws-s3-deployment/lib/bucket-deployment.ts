@@ -6,6 +6,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
+import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
@@ -164,6 +165,12 @@ export interface BucketDeploymentProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
+  /**
+   * System-defined x-amz-acl metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
+   */
+  readonly accessControl?: s3.BucketAccessControl;
 
   /**
    * The VPC network to place the deployment lambda handler in.
@@ -282,6 +289,7 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.websiteRedirectLocation) { res['website-redirect'] = metadata.websiteRedirectLocation; }
   if (metadata.serverSideEncryptionAwsKmsKeyId) { res['sse-kms-key-id'] = metadata.serverSideEncryptionAwsKmsKeyId; }
   if (metadata.serverSideEncryptionCustomerAlgorithm) { res['sse-c-copy-source'] = metadata.serverSideEncryptionCustomerAlgorithm; }
+  if (metadata.accessControl) { res.acl = toKebabCase(metadata.accessControl.toString()); }
 
   return Object.keys(res).length === 0 ? undefined : res;
 }

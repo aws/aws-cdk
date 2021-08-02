@@ -147,17 +147,22 @@ User-defined metadata are not used by S3 and keys always begin with `x-amz-meta-
 
 System defined metadata keys include the following:
 
-- cache-control
-- content-disposition
-- content-encoding
-- content-language
-- content-type
-- expires
-- server-side-encryption
-- storage-class
-- website-redirect-location
-- ssekms-key-id
-- sse-customer-algorithm
+- cache-control (`--cache-control` in `aws s3 sync`)
+- content-disposition (`--content-disposition` in `aws s3 sync`)
+- content-encoding (`--content-encoding` in `aws s3 sync`)
+- content-language (`--content-language` in `aws s3 sync`)
+- content-type (`--content-type` in `aws s3 sync`)
+- expires (`--expires` in `aws s3 sync`)
+- x-amz-storage-class (`--storage-class` in `aws s3 sync`)
+- x-amz-website-redirect-location (`--website-redirect` in `aws s3 sync`)
+- x-amz-server-side-encryption (`--sse` in `aws s3 sync`)
+- x-amz-server-side-encryption-aws-kms-key-id (`--sse-kms-key-id` in `aws s3 sync`)
+- x-amz-server-side-encryption-customer-algorithm (`--sse-c-copy-source` in `aws s3 sync`)
+- x-amz-acl (`--acl` in `aws s3 sync`)
+
+You can find more information about system defined metadata keys in
+[S3 PutObject documentation](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html)
+and [`aws s3 sync` documentation](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html).
 
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
@@ -177,6 +182,7 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   storageClass: StorageClass.INTELLIGENT_TIERING,
   serverSideEncryption: ServerSideEncryption.AES_256,
   cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
+  accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
 });
 ```
 
@@ -230,7 +236,7 @@ size of the AWS Lambda resource handler.
 ## Development
 
 The custom resource is implemented in Python 3.6 in order to be able to leverage
-the AWS CLI for "aws sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
+the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
 unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
 
 This package requires Python 3.6 during build time in order to create the custom
