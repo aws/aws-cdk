@@ -104,6 +104,33 @@ export interface FargatePlatformConfiguration {
 }
 
 /**
+ * Whether or not to assign a public IP to the job
+ */
+export enum AssignPublicIp {
+  /**
+   * Assign public IP address to job
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Do not assign public IP address to job
+   */
+  DISABLED = 'DISABLED',
+}
+
+/**
+ * Fargate network configuration
+ */
+export interface NetworkConfiguration {
+  /**
+   * Whether or not to assign a public IP to the job
+   *
+   * @default - DISABLED
+   */
+  readonly assignPublicIp?: AssignPublicIp
+}
+
+/**
  * Properties of a job definition container.
  */
 export interface JobDefinitionContainer {
@@ -163,7 +190,7 @@ export interface JobDefinitionContainer {
    * The hard limit (in MiB) of memory to present to the container. If your container attempts to exceed
    * the memory specified here, the container is killed. You must specify at least 4 MiB of memory for a job.
    *
-   * @default 4
+   * @default - 4 for EC2, 512 for Fargate
    */
   readonly memoryLimitMiB?: number;
 
@@ -211,9 +238,9 @@ export interface JobDefinitionContainer {
 
   /**
    * The number of vCPUs reserved for the container. Each vCPU is equivalent to
-   * 1,024 CPU shares. You must specify at least one vCPU.
+   * 1,024 CPU shares. You must specify at least one vCPU for EC2 and 0.25 for Fargate.
    *
-   * @default 1
+   * @default - 1 for EC2, 0.25 for Fargate
    */
   readonly vcpus?: number;
 
@@ -237,6 +264,14 @@ export interface JobDefinitionContainer {
    * @default - None
    */
   readonly executionRole?: iam.IRole;
+
+  /**
+   * The network configuration for jobs that are running on Fargate resources.
+   * Jobs that are running on EC2 resources must not specify this parameter.
+   *
+   * @default - None
+   */
+  readonly networkConfiguration?: NetworkConfiguration
 }
 
 /**
@@ -433,14 +468,16 @@ export class JobDefinition extends Resource implements IJobDefinition {
 
     this.imageConfig = new JobDefinitionImageConfig(this, props.container);
 
+    const isFargate = !!props.platformCapabilities?.includes(PlatformCapabilities.FARGATE);
+
     const jobDef = new CfnJobDefinition(this, 'Resource', {
       jobDefinitionName: props.jobDefinitionName,
-      containerProperties: this.buildJobContainer(props.container),
+      containerProperties: this.buildJobContainer(props.container, isFargate),
       type: 'container',
       nodeProperties: props.nodeProps
         ? {
           mainNode: props.nodeProps.mainNode,
-          nodeRangeProperties: this.buildNodeRangeProps(props.nodeProps),
+          nodeRangeProperties: this.buildNodeRangeProps(props.nodeProps, isFargate),
           numNodes: props.nodeProps.count,
         }
         : undefined,
@@ -462,7 +499,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
     this.jobDefinitionName = this.getResourceNameAttribute(jobDef.ref);
   }
 
-  private deserializeEnvVariables(env?: { [name: string]: string}): CfnJobDefinition.EnvironmentProperty[] | undefined {
+  private deserializeEnvVariables(env?: { [name: string]: string }): CfnJobDefinition.EnvironmentProperty[] | undefined {
     const vars = new Array<CfnJobDefinition.EnvironmentProperty>();
 
     if (env === undefined) {
@@ -485,17 +522,22 @@ export class JobDefinition extends Resource implements IJobDefinition {
     }
 
     if (props.platformCapabilities !== undefined && props.platformCapabilities.includes(PlatformCapabilities.FARGATE)
-        && props.container.executionRole === undefined) {
+      && props.container.executionRole === undefined) {
       throw new Error('Fargate job must have executionRole set');
+    }
+
+    if (props.platformCapabilities !== undefined && props.platformCapabilities.includes(PlatformCapabilities.EC2)
+      && props.container.networkConfiguration !== undefined) {
+      throw new Error('EC2 job must not have networkConfiguration set');
     }
   }
 
-  private buildJobContainer(container?: JobDefinitionContainer): CfnJobDefinition.ContainerPropertiesProperty | undefined {
+  private buildJobContainer(container: JobDefinitionContainer, isFargate: boolean): CfnJobDefinition.ContainerPropertiesProperty | undefined {
     if (container === undefined) {
       return undefined;
     }
 
-    return {
+    const containerProperties = {
       command: container.command,
       environment: this.deserializeEnvVariables(container.environment),
       image: this.imageConfig.imageName,
@@ -512,29 +554,44 @@ export class JobDefinition extends Resource implements IJobDefinition {
           ? this.buildLogConfigurationSecretOptions(container.logConfiguration.secretOptions)
           : undefined,
       } : undefined,
-      memory: container.memoryLimitMiB || 4,
       mountPoints: container.mountPoints,
       privileged: container.privileged || false,
-      resourceRequirements: container.gpuCount
-        ? [{ type: 'GPU', value: String(container.gpuCount) }]
-        : undefined,
+      networkConfiguration: container.networkConfiguration,
       readonlyRootFilesystem: container.readOnly || false,
       ulimits: container.ulimits,
       user: container.user,
-      vcpus: container.vcpus || 1,
       volumes: container.volumes,
       fargatePlatformConfiguration: container.fargatePlatformConfiguration ? {
         platformVersion: container.fargatePlatformConfiguration.platformVersion,
       } : undefined,
     };
+
+    if (!isFargate) {
+      Object.assign(containerProperties, {
+        memory: container.memoryLimitMiB || 4,
+        vcpus: container.vcpus || 1,
+        resourceRequirements: container.gpuCount
+          ? [{ type: 'GPU', value: String(container.gpuCount) }]
+          : undefined,
+      });
+    } else {
+      Object.assign(containerProperties, {
+        resourceRequirements: [
+          { type: 'VCPU', value: String(container.vcpus || 0.25) },
+          { type: 'MEMORY', value: String(container.memoryLimitMiB || 512) },
+        ],
+      });
+    }
+
+    return containerProperties;
   }
 
-  private buildNodeRangeProps(multiNodeProps: IMultiNodeProps): CfnJobDefinition.NodeRangePropertyProperty[] {
+  private buildNodeRangeProps(multiNodeProps: IMultiNodeProps, isFargate: boolean): CfnJobDefinition.NodeRangePropertyProperty[] {
     const rangeProps = new Array<CfnJobDefinition.NodeRangePropertyProperty>();
 
     for (const prop of multiNodeProps.rangeProps) {
       rangeProps.push({
-        container: this.buildJobContainer(prop.container),
+        container: this.buildJobContainer(prop.container, isFargate),
         targetNodes: `${prop.fromNodeIndex || 0}:${prop.toNodeIndex || multiNodeProps.count}`,
       });
     }

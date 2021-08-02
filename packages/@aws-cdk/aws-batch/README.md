@@ -81,7 +81,7 @@ It is possible to have AWS Batch submit jobs to be run on Fargate compute resour
 ```ts
 const vpc = new ec2.Vpc(this, 'VPC');
 
-const spotEnvironment = new batch.ComputeEnvironment(stack, 'MyFargateEnvironment', {
+const fargateSpotEnvironment = new batch.ComputeEnvironment(stack, 'MyFargateEnvironment', {
   computeResources: {
     type: batch.ComputeResourceType.FARGATE_SPOT,
     vpc,

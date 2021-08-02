@@ -6,7 +6,7 @@ import { CfnComputeEnvironment } from './batch.generated';
 
 /**
  * Property to specify if the compute environment
- * uses On-Demand or SpotFleet compute resources.
+ * uses On-Demand, SpotFleet, Fargate, or Fargate Spot compute resources.
  */
 export enum ComputeResourceType {
   /**
@@ -25,7 +25,11 @@ export enum ComputeResourceType {
   FARGATE = 'FARGATE',
 
   /**
-   * Resources will be Fargate resources.
+   * Resources will be Fargate Spot resources.
+   *
+   * Fargate Spot uses spare capacity in the AWS cloud to run your fault-tolerant,
+   * time-flexible jobs at up to a 70% discount. If AWS needs the resources back,
+   * jobs running on Fargate Spot will be interrupted with two minutes of notification.
    */
   FARGATE_SPOT = 'FARGATE_SPOT',
 }
@@ -145,7 +149,7 @@ export interface ComputeResources {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * The type of compute environment: ON_DEMAND or SPOT.
+   * The type of compute environment: ON_DEMAND, SPOT, FARGATE, or FARGATE_SPOT.
    *
    * @default ON_DEMAND
    */
@@ -358,30 +362,12 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     // Only allow compute resources to be set when using MANAGED type
     if (props.computeResources && this.isManaged(props)) {
       computeResources = {
-        allocationStrategy: props.computeResources.allocationStrategy
-         || (
-           props.computeResources.type === ComputeResourceType.SPOT
-             ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED
-             : AllocationStrategy.BEST_FIT
-         ),
         bidPercentage: props.computeResources.bidPercentage,
         desiredvCpus: props.computeResources.desiredvCpus,
         ec2KeyPair: props.computeResources.ec2KeyPair,
         imageId: props.computeResources.image && props.computeResources.image.getImage(this).imageId,
-        instanceRole: props.computeResources.instanceRole
-          ? props.computeResources.instanceRole
-          : new iam.CfnInstanceProfile(this, 'Instance-Profile', {
-            roles: [new iam.Role(this, 'Ecs-Instance-Role', {
-              assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-              managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
-              ],
-            }).roleName],
-          }).attrArn,
-        instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
         launchTemplate: props.computeResources.launchTemplate,
         maxvCpus: props.computeResources.maxvCpus || 256,
-        minvCpus: props.computeResources.minvCpus || 0,
         placementGroup: props.computeResources.placementGroup,
         securityGroupIds: this.buildSecurityGroupIds(props.computeResources.vpc, props.computeResources.securityGroups),
         spotIamFleetRole: spotFleetRole?.roleArn,
@@ -389,6 +375,32 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         tags: props.computeResources.computeResourcesTags,
         type: props.computeResources.type || ComputeResourceType.ON_DEMAND,
       };
+
+      const isFargate = ComputeResourceType.FARGATE === props.computeResources.type
+        || ComputeResourceType.FARGATE_SPOT === props.computeResources.type;
+
+      if (!isFargate) {
+        Object.assign(computeResources, {
+          allocationStrategy: props.computeResources.allocationStrategy
+            || (
+              props.computeResources.type === ComputeResourceType.SPOT
+                ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED
+                : AllocationStrategy.BEST_FIT
+            ),
+          instanceRole: props.computeResources.instanceRole
+            ? props.computeResources.instanceRole
+            : new iam.CfnInstanceProfile(this, 'Instance-Profile', {
+              roles: [new iam.Role(this, 'Ecs-Instance-Role', {
+                assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+                managedPolicies: [
+                  iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
+                ],
+              }).roleName],
+            }).attrArn,
+          instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
+          minvCpus: props.computeResources.minvCpus || 0,
+        });
+      }
     }
 
     const computeEnvironment = new CfnComputeEnvironment(this, 'Resource', {
@@ -505,7 +517,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
 
           // minvCpus cannot exceed max vCpus
           if (props.computeResources.maxvCpus &&
-              props.computeResources.minvCpus > props.computeResources.maxvCpus) {
+            props.computeResources.minvCpus > props.computeResources.maxvCpus) {
             throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
           }
         }
@@ -528,7 +540,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
 
           // Bid percentage must be from 0 - 100
           if (props.computeResources.bidPercentage !== undefined &&
-              (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
+            (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
             throw new Error('Bid percentage can only be a value between 0 and 100');
           }
         }

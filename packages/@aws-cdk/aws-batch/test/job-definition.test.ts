@@ -8,6 +8,7 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import * as batch from '../lib';
+import { PlatformCapabilities } from '../lib';
 
 describe('Batch Job Definition', () => {
   let stack: cdk.Stack;
@@ -117,6 +118,74 @@ describe('Batch Job Definition', () => {
       PlatformCapabilities: ['EC2'],
     });
   });
+
+  test('renders the correct cloudformation properties for a Fargate job definition', () => {
+    // WHEN
+    const executionRole = new iam.Role(stack, 'execution-role', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    });
+
+    new batch.JobDefinition(stack, 'job-def', {
+      ...jobDefProps,
+      container: { ...jobDefProps.container, executionRole },
+      platformCapabilities: [PlatformCapabilities.FARGATE],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      JobDefinitionName: jobDefProps.jobDefinitionName,
+      ContainerProperties: jobDefProps.container ? {
+        Command: jobDefProps.container.command,
+        Environment: [
+          {
+            Name: 'foo',
+            Value: 'bar',
+          },
+        ],
+        ExecutionRoleArn: {
+          'Fn::GetAtt': [
+            'executionroleD9A39BE6',
+            'Arn',
+          ],
+        },
+        InstanceType: jobDefProps.container.instanceType ? jobDefProps.container.instanceType.toString() : '',
+        LinuxParameters: {},
+        LogConfiguration: {
+          LogDriver: 'awslogs',
+          Options: {
+            'awslogs-region': 'us-east-1',
+          },
+        },
+        MountPoints: [],
+        Privileged: jobDefProps.container.privileged,
+        ReadonlyRootFilesystem: jobDefProps.container.readOnly,
+        ResourceRequirements: [
+          { Type: 'VCPU', Value: String(jobDefProps.container.vcpus) },
+          { Type: 'MEMORY', Value: String(jobDefProps.container.memoryLimitMiB) },
+        ],
+        Ulimits: [],
+        User: jobDefProps.container.user,
+        Volumes: [],
+      } : undefined,
+      NodeProperties: jobDefProps.nodeProps ? {
+        MainNode: jobDefProps.nodeProps.mainNode,
+        NodeRangeProperties: [],
+        NumNodes: jobDefProps.nodeProps.count,
+      } : undefined,
+      Parameters: {
+        foo: 'bar',
+      },
+      RetryStrategy: {
+        Attempts: jobDefProps.retryAttempts,
+      },
+      Timeout: {
+        AttemptDurationSeconds: jobDefProps.timeout ? jobDefProps.timeout.toSeconds() : -1,
+      },
+      Type: 'container',
+      PlatformCapabilities: ['FARGATE'],
+    });
+  });
+
   test('can use an ecr image', () => {
     // WHEN
     const repo = new ecr.Repository(stack, 'image-repo');
