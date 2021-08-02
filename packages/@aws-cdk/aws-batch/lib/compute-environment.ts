@@ -361,6 +361,9 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
 
     // Only allow compute resources to be set when using MANAGED type
     if (props.computeResources && this.isManaged(props)) {
+      const isFargate = ComputeResourceType.FARGATE === props.computeResources.type
+        || ComputeResourceType.FARGATE_SPOT === props.computeResources.type;
+
       computeResources = {
         bidPercentage: props.computeResources.bidPercentage,
         desiredvCpus: props.computeResources.desiredvCpus,
@@ -374,13 +377,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         subnets: props.computeResources.vpc.selectSubnets(props.computeResources.vpcSubnets).subnetIds,
         tags: props.computeResources.computeResourcesTags,
         type: props.computeResources.type || ComputeResourceType.ON_DEMAND,
-      };
-
-      const isFargate = ComputeResourceType.FARGATE === props.computeResources.type
-        || ComputeResourceType.FARGATE_SPOT === props.computeResources.type;
-
-      if (!isFargate) {
-        Object.assign(computeResources, {
+        ...(!isFargate ? {
           allocationStrategy: props.computeResources.allocationStrategy
             || (
               props.computeResources.type === ComputeResourceType.SPOT
@@ -399,8 +396,8 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
             }).attrArn,
           instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
           minvCpus: props.computeResources.minvCpus || 0,
-        });
-      }
+        } : {}),
+      };
     }
 
     const computeEnvironment = new CfnComputeEnvironment(this, 'Resource', {

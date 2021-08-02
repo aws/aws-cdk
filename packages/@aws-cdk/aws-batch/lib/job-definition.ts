@@ -104,30 +104,15 @@ export interface FargatePlatformConfiguration {
 }
 
 /**
- * Whether or not to assign a public IP to the job
- */
-export enum AssignPublicIp {
-  /**
-   * Assign public IP address to job
-   */
-  ENABLED = 'ENABLED',
-
-  /**
-   * Do not assign public IP address to job
-   */
-  DISABLED = 'DISABLED',
-}
-
-/**
  * Fargate network configuration
  */
 export interface NetworkConfiguration {
   /**
    * Whether or not to assign a public IP to the job
    *
-   * @default - DISABLED
+   * @default - false
    */
-  readonly assignPublicIp?: AssignPublicIp
+  readonly assignPublicIp?: boolean
 }
 
 /**
@@ -537,7 +522,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
       return undefined;
     }
 
-    const containerProperties = {
+    return {
       command: container.command,
       environment: this.deserializeEnvVariables(container.environment),
       image: this.imageConfig.imageName,
@@ -556,7 +541,9 @@ export class JobDefinition extends Resource implements IJobDefinition {
       } : undefined,
       mountPoints: container.mountPoints,
       privileged: container.privileged || false,
-      networkConfiguration: container.networkConfiguration,
+      networkConfiguration: container.networkConfiguration ? {
+        assignPublicIp: container.networkConfiguration.assignPublicIp ? 'ENABLED' : 'DISABLED',
+      } : undefined,
       readonlyRootFilesystem: container.readOnly || false,
       ulimits: container.ulimits,
       user: container.user,
@@ -564,26 +551,19 @@ export class JobDefinition extends Resource implements IJobDefinition {
       fargatePlatformConfiguration: container.fargatePlatformConfiguration ? {
         platformVersion: container.fargatePlatformConfiguration.platformVersion,
       } : undefined,
-    };
-
-    if (!isFargate) {
-      Object.assign(containerProperties, {
+      ...(isFargate ? {
+        resourceRequirements: [
+          { type: 'VCPU', value: String(container.vcpus || 0.25) },
+          { type: 'MEMORY', value: String(container.memoryLimitMiB || 512) },
+        ],
+      } : {
         memory: container.memoryLimitMiB || 4,
         vcpus: container.vcpus || 1,
         resourceRequirements: container.gpuCount
           ? [{ type: 'GPU', value: String(container.gpuCount) }]
           : undefined,
-      });
-    } else {
-      Object.assign(containerProperties, {
-        resourceRequirements: [
-          { type: 'VCPU', value: String(container.vcpus || 0.25) },
-          { type: 'MEMORY', value: String(container.memoryLimitMiB || 512) },
-        ],
-      });
-    }
-
-    return containerProperties;
+      }),
+    };
   }
 
   private buildNodeRangeProps(multiNodeProps: IMultiNodeProps, isFargate: boolean): CfnJobDefinition.NodeRangePropertyProperty[] {
