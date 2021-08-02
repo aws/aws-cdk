@@ -1,6 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import { CfnDeliveryStream, DeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
 import { singletonEventRole } from './util';
 
 /**
@@ -25,8 +25,8 @@ export class KinesisFirehoseStream implements events.IRuleTarget {
 
   private streamArn: string
 
-  constructor(private readonly stream: firehose.DeliveryStream|firehose.CfnDeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {
-    this.streamArn = ('deliveryStreamArn' in stream) ? stream.deliveryStreamArn : stream.attrArn;
+  constructor(private readonly stream: DeliveryStream | CfnDeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {
+    this.streamArn = (stream instanceof DeliveryStream) ? stream.deliveryStreamArn : stream.attrArn;
   }
 
   /**
