@@ -1,11 +1,11 @@
 import { CfnResource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Match, TemplateAssertions } from '../lib';
+import { Match, Template } from '../lib';
 
-describe('TemplateAssertions', () => {
+describe('Template', () => {
   describe('fromString', () => {
     test('default', () => {
-      const assertions = TemplateAssertions.fromString(`{
+      const assertions = Template.fromString(`{
         "Resources": { 
           "Foo": { 
             "Type": "Baz::Qux",
@@ -21,7 +21,7 @@ describe('TemplateAssertions', () => {
     test('fails when root is not a stage', () => {
       const c = new Construct(undefined as any, '');
       const stack = new Stack(c, 'MyStack');
-      expect(() => TemplateAssertions.fromStack(stack)).toThrow(/must be part of a Stage or an App/);
+      expect(() => Template.fromStack(stack)).toThrow(/must be part of a Stage or an App/);
     });
   });
 
@@ -32,7 +32,7 @@ describe('TemplateAssertions', () => {
         type: 'Foo::Bar',
       });
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
       inspect.resourceCountIs('Foo::Bar', 1);
 
       expect(() => inspect.resourceCountIs('Foo::Bar', 0)).toThrow(/has 1 resource of type Foo::Bar/);
@@ -44,7 +44,7 @@ describe('TemplateAssertions', () => {
     test('no resource', () => {
       const stack = new Stack();
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
       inspect.resourceCountIs('Foo::Bar', 0);
 
       expect(() => inspect.resourceCountIs('Foo::Bar', 1)).toThrow(/has 0 resource of type Foo::Bar/);
@@ -59,7 +59,7 @@ describe('TemplateAssertions', () => {
         properties: { baz: 'qux' },
       });
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
       inspect.templateMatches({
         Resources: {
           Foo: {
@@ -77,7 +77,7 @@ describe('TemplateAssertions', () => {
         properties: { baz: 'qux' },
       });
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
       expect(() => inspect.templateMatches({
         Resources: {
           Foo: {
@@ -97,7 +97,7 @@ describe('TemplateAssertions', () => {
         properties: { baz: 'qux' },
       });
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
       inspect.hasResource('Foo::Bar', {
         Properties: { baz: 'qux' },
       });
@@ -118,7 +118,7 @@ describe('TemplateAssertions', () => {
         properties: { baz: ['qux', 'quy'] },
       });
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
       inspect.hasResource('Foo::Bar', {
         Properties: { baz: Match.arrayWith(['qux']) },
       });
@@ -139,7 +139,7 @@ describe('TemplateAssertions', () => {
         properties: { flob: ['qux'] },
       });
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
 
       expectToThrow(() => {
         inspect.hasResource('Foo::Bar', {
@@ -157,7 +157,7 @@ describe('TemplateAssertions', () => {
         properties: { baz: 'qux', fred: 'waldo' },
       });
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
       inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ baz: 'qux' }),
       });
@@ -181,7 +181,7 @@ describe('TemplateAssertions', () => {
         properties: { flob: 'waldo' },
       });
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
 
       expectToThrow(() => {
         inspect.hasResource('Foo::Bar', {
@@ -199,7 +199,7 @@ describe('TemplateAssertions', () => {
         properties: { baz: 'qux' },
       });
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
       inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ foo: Match.absentProperty() }),
       });
@@ -215,10 +215,72 @@ describe('TemplateAssertions', () => {
         properties: { baz: 'qux', fred: 'waldo' },
       });
 
-      const inspect = TemplateAssertions.fromStack(stack);
+      const inspect = Template.fromStack(stack);
       expect(() => inspect.hasResource('Foo::Baz', {
         Properties: Match.objectLike({ baz: 'qux' }),
       })).toThrow(/No resource/);
+    });
+  });
+
+  describe('getResources', () => {
+    test('matching resource type', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.findResources('Foo::Bar')).toEqual([{
+        Type: 'Foo::Bar',
+        Properties: { baz: 'qux', fred: 'waldo' },
+      }]);
+    });
+
+    test('no matching resource type', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.findResources('Foo::Baz')).toEqual([]);
+    });
+
+    test('matching resource props', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.findResources('Foo::Bar', {
+        Properties: { baz: 'qux' },
+      }).length).toEqual(1);
+    });
+
+    test('no matching resource props', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.findResources('Foo::Bar', {
+        Properties: { baz: 'waldo' },
+      })).toEqual([]);
+    });
+
+    test('multiple matching resources', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', { type: 'Foo::Bar' });
+      new CfnResource(stack, 'Bar', { type: 'Foo::Bar' });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.findResources('Foo::Bar').length).toEqual(2);
     });
   });
 });

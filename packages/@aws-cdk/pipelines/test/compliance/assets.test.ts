@@ -670,7 +670,7 @@ describe('pipeline with VPC', () => {
     }
   });
 
-  behavior('Asset publishing CodeBuild Projects have a dependency on attached policies to the role', (suite) => {
+  behavior('Asset publishing CodeBuild Projects have correct VPC permissions', (suite) => {
     suite.legacy(() => {
       const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
         vpc,
@@ -690,17 +690,31 @@ describe('pipeline with VPC', () => {
 
     function THEN_codePipelineExpectation() {
       // Assets Project
+      expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Resource: '*',
+              Action: [
+                'ec2:CreateNetworkInterface',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DeleteNetworkInterface',
+                'ec2:DescribeSubnets',
+                'ec2:DescribeSecurityGroups',
+                'ec2:DescribeDhcpOptions',
+                'ec2:DescribeVpcs',
+              ],
+            },
+          ],
+        },
+        Roles: [{ Ref: 'CdkAssetsDockerRole484B6DD3' }],
+      });
       expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
         Properties: {
-          ServiceRole: {
-            'Fn::GetAtt': [
-              'CdkAssetsDockerRole484B6DD3',
-              'Arn',
-            ],
-          },
+          ServiceRole: { 'Fn::GetAtt': ['CdkAssetsDockerRole484B6DD3', 'Arn'] },
         },
         DependsOn: [
-          'CdkAssetsDockerRoleVpcPolicy86CA024B',
+          'CdkAssetsDockerAsset1PolicyDocument8DA96A22',
         ],
       }, ResourcePart.CompleteDefinition);
     }
@@ -808,6 +822,83 @@ describe('pipeline with single asset publisher', () => {
   });
 });
 
+
+describe('pipeline with custom asset publisher BuildSpec', () => {
+
+  behavior('custom buildspec is merged correctly', (suite) => {
+    suite.legacy(() => {
+      // WHEN
+      const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        singlePublisherPerType: true,
+        assetBuildSpec: cb.BuildSpec.fromObject({
+          phases: {
+            pre_install: {
+              commands: 'preinstall',
+            },
+          },
+          cache: {
+            paths: 'node_modules',
+          },
+        }),
+      });
+      pipeline.addApplicationStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+
+      THEN_codePipelineExpectation();
+    });
+
+    suite.modern(() => {
+      // WHEN
+      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+        publishAssetsInParallel: false,
+        assetPublishingCodeBuildDefaults: {
+          partialBuildSpec: cb.BuildSpec.fromObject({
+            phases: {
+              pre_install: {
+                commands: 'preinstall',
+              },
+            },
+            cache: {
+              paths: 'node_modules',
+            },
+          }),
+        },
+      });
+      pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+
+      THEN_codePipelineExpectation();
+    });
+
+
+    function THEN_codePipelineExpectation() {
+      const buildSpecName = Capture.aString();
+
+      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: arrayWith({
+          Name: 'Assets',
+          Actions: [
+            // Only one file asset action
+            objectLike({ RunOrder: 1, Name: 'FileAsset' }),
+          ],
+        }),
+      });
+      expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+        Environment: {
+          Image: 'aws/codebuild/standard:5.0',
+        },
+        Source: {
+          BuildSpec: buildSpecName.capture(stringLike('buildspec-*.yaml')),
+        },
+      });
+      const assembly = SynthUtils.synthesize(pipelineStack, { skipValidation: true }).assembly;
+      const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, buildSpecName.capturedValue)).toString());
+      expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
+      expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
+      expect(buildSpec.phases.pre_install.commands).toContain('preinstall');
+      expect(buildSpec.cache.paths).toContain('node_modules');
+    }
+  });
+});
+
 function expectedAssetRolePolicy(assumeRolePattern: string | string[], attachedRole: string) {
   if (typeof assumeRolePattern === 'string') { assumeRolePattern = [assumeRolePattern]; }
 
@@ -862,3 +953,90 @@ function expectedAssetRolePolicy(assumeRolePattern: string | string[], attachedR
     Roles: [{ Ref: attachedRole }],
   };
 }
+
+
+behavior('necessary secrets manager permissions get added to asset roles', suite => {
+  // Not possible to configure this for legacy pipelines
+  suite.doesNotApply.legacy();
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+      assetPublishingCodeBuildDefaults: {
+        buildEnvironment: {
+          environmentVariables: {
+            FOOBAR: {
+              value: 'FoobarSecret',
+              type: cb.BuildEnvironmentVariableType.SECRETS_MANAGER,
+            },
+          },
+        },
+      },
+    });
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'MyApp'));
+
+    THEN_codePipelineExpectation();
+  });
+
+  function THEN_codePipelineExpectation() {
+    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: arrayWith({
+          Action: 'secretsmanager:GetSecretValue',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+              ],
+            ],
+          },
+        }),
+      },
+      Roles: [
+        { Ref: 'PipelineAssetsFileRole59943A77' },
+      ],
+    });
+  }
+});
+
+behavior('adding environment variable to assets job adds SecretsManager permissions', suite => {
+  // No way to manipulate buildEnvironment in legacy API
+  suite.doesNotApply.legacy();
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+      assetPublishingCodeBuildDefaults: {
+        buildEnvironment: {
+          environmentVariables: {
+            FOOBAR: {
+              value: 'FoobarSecret',
+              type: cb.BuildEnvironmentVariableType.SECRETS_MANAGER,
+            },
+          },
+        },
+      },
+    });
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'MyApp'));
+
+    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: arrayWith(
+          objectLike({
+            Action: 'secretsmanager:GetSecretValue',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+              ]],
+            },
+          }),
+        ),
+      },
+    });
+  });
+});
