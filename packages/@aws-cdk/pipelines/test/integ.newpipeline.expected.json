@@ -320,7 +320,7 @@
                 },
                 "Configuration": {
                   "StackName": "Beta-Stack1",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -426,7 +426,7 @@
                 },
                 "Configuration": {
                   "StackName": "Beta-Stack2",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -537,7 +537,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod1-Stack1",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -605,7 +605,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod2-Stack1",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -749,7 +749,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod1-Stack2",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -817,7 +817,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod2-Stack2",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -966,7 +966,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod3-Stack1",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -1034,7 +1034,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod4-Stack1",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -1102,7 +1102,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod5-Stack1",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -1170,7 +1170,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod6-Stack1",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -1390,7 +1390,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod3-Stack2",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -1458,7 +1458,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod4-Stack2",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -1526,7 +1526,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod5-Stack2",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -1594,7 +1594,7 @@
                 },
                 "Configuration": {
                   "StackName": "Prod6-Stack2",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
