@@ -5,6 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Token } from '@aws-cdk/core';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
@@ -200,8 +201,10 @@ export class BucketDeployment extends CoreConstruct {
       if (!props.distribution) {
         throw new Error('Distribution must be specified if distribution paths are specified');
       }
-      if (!props.distributionPaths.every(distributionPath => distributionPath.startsWith('/'))) {
-        throw new Error('Distribution paths must start with "/"');
+      if (!Token.isUnresolved(props.distributionPaths)) {
+        if (!props.distributionPaths.every(distributionPath => Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
+          throw new Error('Distribution paths must start with "/"');
+        }
       }
     }
 
