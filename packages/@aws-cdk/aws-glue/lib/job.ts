@@ -489,7 +489,6 @@ abstract class JobBase extends cdk.Resource implements IJob {
 
   public abstract readonly jobArn: string;
   public abstract readonly jobName: string;
-  private cachedRules: Record<string, events.Rule> = {};
 
   /**
    * Create a CloudWatch Event Rule for this Glue Job when it's in a given state
@@ -615,30 +614,23 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * @private
    */
   private rule(jobState: JobState, id?: string, options: events.OnEventOptions = {}): events.Rule {
-    // No caching
-    if (id) {
-      const rule = this.onEvent(id, options);
-      rule.addEventPattern({
-        detail: {
-          state: [jobState],
-        },
-      });
-      return rule;
+    // Caching (for metric methods and default arg-less event methods)
+    const cachedRuleId = `${jobState}Rule`;
+    const cachedRule = this.node.tryFindChild(cachedRuleId);
+    // Use the already created rule if no id is provided (arg-less event methods or events supporting metrics)
+    if (!id && cachedRule) {
+      return cachedRule as events.Rule;
     }
-    // Caching
-    const ruleId = `${jobState}Rule`;
-    if (!this.cachedRules[ruleId]) {
-      const rule = this.onEvent(ruleId, {
-        description: `Rule triggered when Glue job ${this.jobName} is in ${jobState} state`,
-      });
-      rule.addEventPattern({
-        detail: {
-          state: [jobState],
-        },
-      });
-      this.cachedRules[ruleId] = rule;
-    }
-    return this.cachedRules[ruleId];
+    const rule = this.onEvent(id || cachedRuleId, {
+      description: `Rule triggered when Glue job ${this.jobName} is in ${jobState} state`,
+      ...options,
+    });
+    rule.addEventPattern({
+      detail: {
+        state: [jobState],
+      },
+    });
+    return rule;
   }
 
 }
