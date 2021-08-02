@@ -53,6 +53,14 @@ assert.templateMatches({
 });
 ```
 
+The `asObject()` can also be used to perform [snapshot
+testing](https://jestjs.io/docs/snapshot-testing).
+
+```ts
+// using jest
+expect(Template.fromStack(stack).asObject()).toMatchSnapshot();
+```
+
 ## Counting Resources
 
 This module allows asserting the number of resources of a specific type found

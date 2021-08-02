@@ -24,7 +24,7 @@ export class Template {
    * nested set of records.
    * @param template the CloudFormation template formatted as a nested set of records
    */
-  public static fromTemplate(template: { [key: string] : any }): Template {
+  public static fromObject(template: { [key: string] : any }): Template {
     return new Template(template);
   }
 
@@ -36,10 +36,19 @@ export class Template {
     return new Template(JSON.parse(template));
   }
 
+  private readonly template: { [key: string]: any };
   private readonly inspector: assert.StackInspector;
 
-  private constructor(template: any) {
+  private constructor(template: { [key: string]: any }) {
+    this.template = template;
     this.inspector = new assert.StackInspector(template);
+  }
+
+  /**
+   * The CloudFormation template deserialized into an object.
+   */
+  public asObject(): { [key: string]: any } {
+    return this.template;
   }
 
   /**
