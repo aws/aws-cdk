@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { CfnApplication } from '../lib';
 
@@ -16,7 +16,7 @@ test('construct an AWS::Serverless::Application', () => {
     },
   });
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     Transform: 'AWS::Serverless-2016-10-31',
     Resources: {
       App: {

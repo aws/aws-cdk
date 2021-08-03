@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
 import { DomainName, HttpApi, ApiMapping, WebSocketApi } from '../../lib';
@@ -22,7 +22,7 @@ describe('ApiMapping', () => {
       domainName: dn,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::ApiMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
       ApiId: {
         Ref: 'ApiF70053CD',
       },
@@ -54,7 +54,7 @@ describe('ApiMapping', () => {
       apiMappingKey: 'beta',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::ApiMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
       ApiId: {
         Ref: 'ApiF70053CD',
       },

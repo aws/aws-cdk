@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as es from '@aws-cdk/aws-elasticsearch';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -25,7 +25,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     api.addElasticsearchDataSource('ds', domain);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -56,7 +56,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     api.addElasticsearchDataSource('ds', domain);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       ElasticsearchConfig: {
         Endpoint: {
           'Fn::Join': ['', ['https://', {
@@ -72,7 +72,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     api.addElasticsearchDataSource('ds', domain);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_ELASTICSEARCH',
       Name: 'ds',
     });
@@ -85,7 +85,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_ELASTICSEARCH',
       Name: 'custom',
     });
@@ -99,7 +99,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_ELASTICSEARCH',
       Name: 'custom',
       Description: 'custom description',
@@ -127,7 +127,7 @@ describe('adding elasticsearch data source from imported api', () => {
     importedApi.addElasticsearchDataSource('ds', domain);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_ELASTICSEARCH',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
@@ -142,7 +142,7 @@ describe('adding elasticsearch data source from imported api', () => {
     importedApi.addElasticsearchDataSource('ds', domain);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_ELASTICSEARCH',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });

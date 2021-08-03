@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
@@ -24,7 +24,7 @@ describe('Product', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::CloudFormationProduct', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::CloudFormationProduct', {
       Name: 'testProduct',
       Owner: 'testOwner',
       ProvisioningArtifactParameters: [
@@ -50,7 +50,7 @@ describe('Product', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::CloudFormationProduct', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::CloudFormationProduct', {
       Name: 'testProduct',
       Owner: 'testOwner',
       ProvisioningArtifactParameters: [
@@ -100,16 +100,16 @@ describe('Product', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::CloudFormationProduct', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::CloudFormationProduct', {
       Name: 'testProduct',
       Owner: 'testOwner',
-      ProvisioningArtifactParameters: [
-        {
+      ProvisioningArtifactParameters: Match.arrayWith([
+        Match.objectLike({
           'Info': {
             'LoadTemplateFromURL': 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template',
           },
-        },
-      ],
+        }),
+      ]),
     });
   }),
 

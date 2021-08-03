@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { HttpApi, HttpRoute, HttpRouteKey, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
@@ -17,7 +17,7 @@ describe('LambdaProxyIntegration', () => {
       routeKey: HttpRouteKey.with('/pets'),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'AWS_PROXY',
       IntegrationUri: stack.resolve(fooFn.functionArn),
       PayloadFormatVersion: '2.0',
@@ -36,7 +36,7 @@ describe('LambdaProxyIntegration', () => {
       routeKey: HttpRouteKey.with('/pets'),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       PayloadFormatVersion: '1.0',
     });
   });
