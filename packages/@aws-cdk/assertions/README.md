@@ -53,13 +53,16 @@ assert.templateMatches({
 });
 ```
 
-The `asObject()` can also be used to perform [snapshot
-testing](https://jestjs.io/docs/snapshot-testing).
+The `Template` class also supports [snapshot
+testing](https://jestjs.io/docs/snapshot-testing) using jest.
 
 ```ts
 // using jest
-expect(Template.fromStack(stack).asObject()).toMatchSnapshot();
+expect(Template.fromStack(stack)).toMatchSnapshot();
 ```
+
+For non-javascript languages, the `toJSON()` can be called to get an in-memory object
+of the template.
 
 ## Counting Resources
 

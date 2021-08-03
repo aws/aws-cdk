@@ -14,7 +14,7 @@ describe('Template', () => {
         }
       }`);
 
-      expect(template.asObject()).toEqual({
+      expect(template.toJSON()).toEqual({
         Resources: {
           Foo: {
             Type: 'Baz::Qux',
@@ -34,7 +34,7 @@ describe('Template', () => {
       });
       const template = Template.fromStack(stack);
 
-      expect(template.asObject()).toEqual({
+      expect(template.toJSON()).toEqual({
         Resources: {
           Foo: {
             Type: 'Foo::Bar',

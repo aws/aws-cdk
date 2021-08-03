@@ -524,7 +524,7 @@ describe('MSK Cluster', () => {
     );
 
     // THEN
-    expect(Template.fromStack(stack).asObject()).toMatchSnapshot();
+    expect(Template.fromStack(stack)).toMatchSnapshot();
   });
 
   describe('when creating sasl/scram users', () => {

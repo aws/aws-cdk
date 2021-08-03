@@ -47,7 +47,7 @@ export class Template {
   /**
    * The CloudFormation template deserialized into an object.
    */
-  public asObject(): { [key: string]: any } {
+  public toJSON(): { [key: string]: any } {
     return this.template;
   }
 
