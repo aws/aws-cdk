@@ -59,11 +59,11 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
   readonly jobDriver: JobDriver;
 
   /**
-   * The configurations for monitoring.
+   * Configuration for monitoring the job run
    *
    * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_MonitoringConfiguration.html
    *
-   * @default - Automatically generated if monitoring.logging is set to true
+   * @default - logging enabled and resources automatically generated if `monitoring.logging` is set to `true`
    */
   readonly monitoring?: Monitoring;
 
@@ -142,7 +142,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
 
     this.logGroup = this.props.monitoring?.logGroup ?? this.props.monitoring?.logging ? new logs.LogGroup(this, 'Emr Containers Default Cloudwatch Log Group') : undefined;
     this.logBucket = this.props.monitoring?.logBucket ?? this.props.monitoring?.logging ? new s3.Bucket(this, 'Emr Containers Default S3 Bucket') : undefined;
-    this.role = this.props.executionRole || this.createJobExecutionRole();
+    this.role = this.props.executionRole ?? this.createJobExecutionRole();
     this.taskPolicies = this.createPolicyStatements();
   }
 
@@ -165,9 +165,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
           },
         },
         ConfigurationOverrides: {
-          ApplicationConfiguration: this.props.applicationConfig !== undefined
-            ? cdk.listMapper(this.applicationConfigPropertyToJson)(this.props.applicationConfig)
-            : undefined,
+          ApplicationConfiguration: cdk.listMapper(this.applicationConfigPropertyToJson)(this.props.applicationConfig),
           MonitoringConfiguration: {
             CloudWatchMonitoringConfiguration: {
               LogGroupName: this.logGroup?.logGroupName, // automatically generated name https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-logs/loggroup.html#aws_logs_LogGroup_synopsis
@@ -194,12 +192,12 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
   private applicationConfigPropertyToJson(property: ApplicationConfiguration) {
     return {
       Classification: cdk.stringToCloudFormation(property.classification.classificationStatement),
-      Properties: cdk.objectToCloudFormation(property.properties),
-      Configurations: cdk.listMapper(this.applicationConfigPropertyToJson)(property.nestedConfig),
+      Properties: property.properties ? cdk.objectToCloudFormation(property.properties) : undefined,
+      Configurations: property.nestedConfig ? cdk.listMapper(this.applicationConfigPropertyToJson)(property.nestedConfig) : undefined,
     };
   }
 
-  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
+  private renderTags(tags?: { [key: string]: any }): { Key: string, Value: any } {
     return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
@@ -283,7 +281,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
    */
   private updateRoleTrustPolicy(role: iam.Role) {
 
-    const descVirtClust = new cr.AwsCustomResource(this, 'EMR Containers DescribeVirtualCluster SDK caller', {
+    // first create a custom resource to retrieve the eks namespace and eks cluster output from describe virtual cluster
+    const eksClusterInfo = new cr.AwsCustomResource(this, 'GetEksClusterInfo', {
       onCreate: {
         service: 'EMRcontainers',
         action: 'describeVirtualCluster',
