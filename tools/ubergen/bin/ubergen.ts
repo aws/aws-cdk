@@ -329,21 +329,21 @@ function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: P
       case 'dotnet':
         if (monoConfig?.dotnet != null) {
           result[language] = {
-            namespace: (config as any).namespace,
+            namespace: (config as any).namespace.replace(/\.Alpha\./, '.'),
           };
         }
         break;
       case 'java':
         if (monoConfig?.java != null) {
           result[language] = {
-            package: (config as any).package,
+            package: (config as any).package.replace(/\.alpha\./, '.'),
           };
         }
         break;
       case 'python':
         if (monoConfig?.python != null) {
           result[language] = {
-            module: `${monoConfig.python.module}.${(config as any).module.replace(/^aws_cdk\./, '')}`,
+            module: `${monoConfig.python.module}.${(config as any).module.replace(/\.alpha\./, '.').replace(/^aws_cdk\./, '')}`,
           };
         }
         break;
