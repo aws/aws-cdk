@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * The props for a EMR Containers DeleteVirtualCluster Task.
+ * Properties to define a EMR Containers DeleteVirtualCluster Task
  */
 export interface EmrContainersDeleteVirtualClusterProps extends sfn.TaskStateBaseProps {
 
@@ -54,15 +54,9 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
   };
 
   private createPolicyStatements(): iam.PolicyStatement[] {
-    let iamActions: string[] | undefined;
-
-    if (this.integrationPattern === sfn.IntegrationPattern.REQUEST_RESPONSE) {
-      iamActions = ['emr-containers:DeleteVirtualCluster'];
-    } else if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      iamActions = [
-        'emr-containers:DescribeVirtualCluster',
-        'emr-containers:DeleteVirtualCluster',
-      ];
+    const actions = ['emr-containers:DeleteVirtualCluster'];
+    if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
+      actions.push('emr-containers:DescribeVirtualCluster');
     }
 
     return [new iam.PolicyStatement({
@@ -70,10 +64,10 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
         cdk.Stack.of(this).formatArn({
           service: 'emr-containers',
           resource: 'virtualclusters',
-          resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? this.props.virtualClusterId.value : '*', // https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html need wild card here for dynamic resources
+          resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? '*' : this.props.virtualClusterId.value,
         }),
       ],
-      actions: iamActions,
+      actions: actions,
     })];
   }
 }

@@ -104,8 +104,8 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
+    "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -122,15 +122,15 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69",
-    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0"
+    "constructs": "^3.3.69"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

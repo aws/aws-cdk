@@ -718,8 +718,6 @@ The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in
 
 The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
 
-Required Parameters Example:
-
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions'
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
@@ -744,9 +742,7 @@ new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
 
 ### Delete Virtual Cluster
 
-The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a single virtual cluster that's mapped to a single Kubernetes namespace. 
-
-Example:
+The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a virtual cluster.
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -759,9 +755,7 @@ new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
 
 ### Start Job Run
 
-The [StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_StartJobRun.html) API starts a job run. A job run is a unit of work, such as a Spark jar, PySpark script, or SparkSQL query, that you submit to Amazon EMR on EKS. 
-
-Minimal Example:
+The [StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_StartJobRun.html) API starts a job run. A job is a unit of work that you submit to Amazon EMR on EKS for execution. The work performed by the job can be defined by a Spark jar, PySpark script, or SparkSQL query. A job run is an execution of the job on the virtual cluster.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
@@ -773,21 +767,10 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
   jobDriver: {
     sparkSubmitJobDriver: {
-      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/jars/spark-examples.jar'),
-      entryPointArguments: sfn.TaskInput.fromObject(['2']),
-      sparkSubmitParameters: '--class org.apache.spark.examples.SparkPi --conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false',
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
     },
   },
-  monitoring: {
-    logging: true,
-  },
-  applicationConfig: [{
-    classification: tasks.Classification.configSparkDefaults,
-    properties: {
-      'spark.executor.instances': '1',
-      'spark.executor.memory': '512M',
-    },
-  }],
 });
 ```
 
@@ -814,7 +797,7 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
     logging: true,
   },
   applicationConfig: [{
-    classification: tasks.Classification.configSparkDefaults,
+    classification: tasks.Classification.SPARK_DEFAULTS,
     properties: {
       'spark.executor.instances': '1',
       'spark.executor.memory': '512M',

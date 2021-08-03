@@ -32,7 +32,7 @@ const startJobRunJob = new EmrContainersStartJobRun(stack, 'EMR Containers Start
     logging: true,
   },
   applicationConfig: [{
-    classification: Classification.CONFIG_SPARK_DEFAULTS,
+    classification: Classification.SPARK_DEFAULTS,
     properties: {
       'spark.executor.instances': '1',
       'spark.executor.memory': '512M',

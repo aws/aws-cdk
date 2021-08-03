@@ -7,8 +7,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * Class for supported types of EMR Containers' Container Providers
- *
- * @default - EKS
  */
 enum ContainerProviderTypes {
 
@@ -22,7 +20,7 @@ enum ContainerProviderTypes {
 }
 
 /**
- * Class that supports methods which return the EKS cluster's id depending on input type.
+ * Class that supports methods which return the EKS cluster name depending on input type.
  */
 export class EksClusterInput {
 
@@ -55,12 +53,12 @@ export class EksClusterInput {
 }
 
 /**
- * The props for a EMR Containers EKS CreateVirtualCluster Task.
+ * Properties to define a EMR Containers CreateVirtualCluster Task on an EKS cluster
  */
 export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
 
   /**
-   * EKS Cluster or TaskInput that contains the id of the cluster
+   * EKS Cluster or task input that contains the name of the cluster
    */
   readonly eksCluster: EksClusterInput;
 
@@ -72,10 +70,8 @@ export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskState
   readonly eksNamespace?: string;
 
   /**
-   * Name of the specified virtual cluster.
-   * If not provided defaults to the state machine execution id
-   *
-   * @default - Automatically generated
+   * Name of the virtual cluster that will be created.
+   * @default - the id of the state machine execution that runs this task
    */
   readonly virtualClusterName?: string;
 
@@ -88,7 +84,7 @@ export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskState
 }
 
 /**
- * Creates a Virtual Cluster from a EKS cluster in a Task State
+ * Task that creates an EMR Containers virtual cluster from an EKS cluster
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html
  */
