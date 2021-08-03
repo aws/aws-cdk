@@ -200,7 +200,7 @@ export interface DeliveryStreamProps {
   /**
    * The Kinesis data stream to use as a source for this delivery stream.
    *
-   * @default - data is written to the delivery stream via a direct put.
+   * @default - data must be written to the delivery stream via a direct put.
    */
   readonly sourceStream?: kinesis.IStream;
 
@@ -331,7 +331,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       props.sourceStream &&
         (props.encryption === StreamEncryption.AWS_OWNED || props.encryption === StreamEncryption.CUSTOMER_MANAGED || props.encryptionKey)
     ) {
-      throw new Error('Requested server-side encryption but delivery stream source is a Kinesis Data Stream. Specify server-side encryption on the Data Stream instead.');
+      throw new Error('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
     }
     if ((props.encryption === StreamEncryption.AWS_OWNED || props.encryption === StreamEncryption.UNENCRYPTED) && props.encryptionKey) {
       throw new Error(`Specified stream encryption as ${StreamEncryption[props.encryption]} but provided a customer-managed key`);
@@ -358,6 +358,10 @@ export class DeliveryStream extends DeliveryStreamBase {
       roleArn: role.roleArn,
     } : undefined;
     const readStreamGrant = props.sourceStream?.grantRead(role);
+    /*
+     * Firehose still uses the deprecated DescribeStream API instead of the modern DescribeStreamSummary API.
+     * kinesis.IStream.grantRead does not provide DescribeStream permissions so we add it manually here.
+     */
     if (readStreamGrant && readStreamGrant.principalStatement) {
       readStreamGrant.principalStatement.addActions('kinesis:DescribeStream');
     }
