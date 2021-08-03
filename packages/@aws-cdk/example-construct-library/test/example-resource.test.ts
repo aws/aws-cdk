@@ -93,6 +93,7 @@ describe('Example Resource', () => {
           'Statement': [
             {
               'Action': 's3:Get*',
+              'Effect': 'Allow',
               'Resource': {
                 'Fn::Join': ['', [
                   'arn:',
