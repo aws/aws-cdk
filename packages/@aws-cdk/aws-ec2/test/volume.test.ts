@@ -32,6 +32,7 @@ describe('volume', () => {
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
       size: cdk.Size.gibibytes(8),
+      volumeName: 'MyVolume',
     });
 
     // THEN
@@ -40,6 +41,12 @@ describe('volume', () => {
       MultiAttachEnabled: false,
       Size: 8,
       VolumeType: 'gp2',
+      Tags: [
+        {
+          Key: 'Name',
+          Value: 'MyVolume',
+        },
+      ],
     }, ResourcePart.Properties));
 
     cdkExpect(stack).to(haveResource('AWS::EC2::Volume', {

@@ -202,6 +202,21 @@
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
+    "TestPortfolioLaunchTemplateConstraintfac7b49c426e599F9FFF": {
+      "Type": "AWS::ServiceCatalog::LaunchTemplateConstraint",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "ProductId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "Rules": "{\"SubnetsinVPC\":{\"Assertions\":[{\"Assert\":{\"Fn::EachMemberIn\":[{\"Fn::ValueOfAll\":[\"AWs::EC2::Subnet::Id\",\"VpcId\"]},{\"Fn::RefAll\":\"AWS::EC2::VPC::Id\"}]},\"AssertDescription\":\"test description\"}]}}"
+      },
+      "DependsOn": [
+        "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+      ]
+    },
     "TagOptionc0d88a3c4b8b": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
