@@ -35,17 +35,17 @@ After you create your service mesh, you can create virtual services, virtual nod
 The following example creates the `AppMesh` service mesh with the default egress filter of `DROP_ALL`. See [the AWS CloudFormation `EgressFilter` resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-mesh-egressfilter.html) for more info on egress filters.
 
 ```ts
-const mesh = new Mesh(stack, 'AppMesh', {
-  meshName: 'myAwsmMesh',
+const mesh = new appmesh.Mesh(stack, 'AppMesh', {
+  meshName: 'myAwsMesh',
 });
 ```
 
 The mesh can instead be created with the `ALLOW_ALL` egress filter by providing the `egressFilter` property.
 
 ```ts
-const mesh = new Mesh(stack, 'AppMesh', {
-  meshName: 'myAwsmMesh',
-  egressFilter: MeshFilterType.ALLOW_ALL,
+const mesh = new appmesh.Mesh(stack, 'AppMesh', {
+  meshName: 'myAwsMesh',
+  egressFilter: appmesh.MeshFilterType.ALLOW_ALL,
 });
 ```
 
@@ -68,15 +68,15 @@ The router can also be created using the `VirtualRouter` constructor (passing in
 This is particularly useful when splitting your resources between many stacks: for example, defining the mesh itself as part of an infrastructure stack, but defining the other resources, such as routers, in the application stack:
 
 ```ts
-const mesh = new Mesh(infraStack, 'AppMesh', {
-  meshName: 'myAwsmMesh',
-  egressFilter: MeshFilterType.ALLOW_ALL,
+const mesh = new appmesh.Mesh(infraStack, 'AppMesh', {
+  meshName: 'myAwsMesh',
+  egressFilter: appmesh.MeshFilterType.ALLOW_ALL,
 });
 
 // the VirtualRouter will belong to 'appStack',
 // even though the Mesh belongs to 'infraStack'
-const router = new VirtualRouter(appStack, 'router', {
-  mesh: mesh, // notice that mesh is a required property when creating a router with the 'new' statement
+const router = new appmesh.VirtualRouter(appStack, 'router', {
+  mesh, // notice that mesh is a required property when creating a router with the 'new' statement
   listeners: [appmesh.VirtualRouterListener.http(8081)],
 });
 ```
@@ -102,7 +102,7 @@ When creating a virtual service:
 Adding a virtual router as the provider:
 
 ```ts
-new appmesh.VirtualService('virtual-service', {
+new appmesh.VirtualService(stack, 'virtual-service', {
   virtualServiceName: 'my-service.default.svc.cluster.local', // optional
   virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
 });
@@ -111,7 +111,7 @@ new appmesh.VirtualService('virtual-service', {
 Adding a virtual node as the provider:
 
 ```ts
-new appmesh.VirtualService('virtual-service', {
+new appmesh.VirtualService(stack, 'virtual-service', {
   virtualServiceName: `my-service.default.svc.cluster.local`, // optional
   virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
 });
@@ -130,7 +130,7 @@ The response metadata for your new virtual node contains the Amazon Resource Nam
 
 ```ts
 const vpc = new ec2.Vpc(stack, 'vpc');
-const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace', {
+const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'test-namespace', {
     vpc,
     name: 'domain.local',
 });
@@ -138,13 +138,13 @@ const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
   serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
-  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+  listeners: [appmesh.VirtualNodeListener.http({
     port: 8081,
     healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
-      interval: Duration.seconds(5), // minimum
-      path: `/health-check-path`,
-      timeout: Duration.seconds(2), // minimum
+      interval: cdk.Duration.seconds(5), // minimum
+      path: '/health-check-path',
+      timeout: cdk.Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
     }),
   })],
@@ -155,16 +155,16 @@ const node = mesh.addVirtualNode('virtual-node', {
 Create a `VirtualNode` with the constructor and add tags.
 
 ```ts
-const node = new VirtualNode(this, 'node', {
+const node = new appmesh.VirtualNode(stack, 'node', {
   mesh,
   serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
   listeners: [appmesh.VirtualNodeListener.http({
     port: 8080,
     healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
-      interval: Duration.seconds(5), // min
+      interval: cdk.Duration.seconds(5), 
       path: '/ping',
-      timeout: Duration.seconds(2), // min
+      timeout: cdk.Duration.seconds(2), 
       unhealthyThreshold: 2,
     }),
     timeout: {
@@ -181,22 +181,22 @@ const node = new VirtualNode(this, 'node', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
-cdk.Tag.add(node, 'Environment', 'Dev');
+cdk.Tags.of(node).add('Environment', 'Dev');
 ```
 
 Create a `VirtualNode` with the constructor and add backend virtual service.
 
 ```ts
-const node = new VirtualNode(this, 'node', {
+const node = new appmesh.VirtualNode(stack, 'node', {
   mesh,
   serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
-  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+  listeners: [appmesh.VirtualNodeListener.http({
     port: 8080,
     healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
-      interval: Duration.seconds(5), // min
+      interval: cdk.Duration.seconds(5), 
       path: '/ping',
-      timeout: Duration.seconds(2), // min
+      timeout: cdk.Duration.seconds(2), 
       unhealthyThreshold: 2,
     }),
     timeout: {
@@ -220,7 +220,7 @@ The `backends` property can be added with `node.addBackend()`. In the example, w
 
 The `backendDefaults` property is added to the node while creating the virtual node. These are the virtual node's default settings for all backends.
 
-## Adding TLS to a listener
+### Adding TLS to a listener
 
 The `tls` property specifies TLS configuration when creating a listener for a virtual node or a virtual gateway. 
 Provide the TLS certificate to the proxy in one of the following ways:
@@ -276,7 +276,7 @@ const gateway2 = new appmesh.VirtualGateway(this, 'gateway2', {
 });
 ```
 
-## Adding mutual TLS authentication
+### Adding mutual TLS authentication
 
 Mutual TLS authentication is an optional component of TLS that offers two-way peer authentication. 
 To enable mutual TLS authentication, add the `mutualTlsCertificate` property to TLS client policy and/or the `mutualTlsValidation` property to your TLS listener.
@@ -327,7 +327,7 @@ const node2 = new appmesh.VirtualNode(stack, 'node2', {
 });
 ```
 
-## Adding outlier detection to a Virtual Node listener
+### Adding outlier detection to a Virtual Node listener
 
 The `outlierDetection` property adds outlier detection to a Virtual Node listener. The properties 
 `baseEjectionDuration`, `interval`, `maxEjectionPercent`, and `maxServerErrors` are required.
@@ -343,16 +343,18 @@ const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
   serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
-  outlierDetection: {
-    baseEjectionDuration: cdk.Duration.seconds(10),
-    interval: cdk.Duration.seconds(30),
-    maxEjectionPercent: 50,
-    maxServerErrors: 5,
-  },
+  listeners: [appmesh.VirtualNodeListener.http({
+    outlierDetection: {
+      baseEjectionDuration: cdk.Duration.seconds(10),
+      interval: cdk.Duration.seconds(30),
+      maxEjectionPercent: 50,
+      maxServerErrors: 5,
+    },
+  })],
 });
 ```
 
-## Adding a connection pool to a listener
+### Adding a connection pool to a listener
 
 The `connectionPool` property can be added to a Virtual Node listener or Virtual Gateway listener to add a request connection pool. Each listener protocol type has its own connection pool properties.
 
@@ -361,10 +363,10 @@ The `connectionPool` property can be added to a Virtual Node listener or Virtual
 const node = new appmesh.VirtualNode(stack, 'node', {
   mesh,
   // DNS service discovery can optionally specify the DNS response type as either LOAD_BALANCER or ENDPOINTS.
-  // LOAD_BALANCER means that the DNS resolver returns a loadbalanced set of endpoints, 
+  // LOAD_BALANCER means that the DNS resolver returns a loadbalanced set of endpoints,
   // whereas ENDPOINTS means that the DNS resolver is returning all the endpoints.
   // By default, the response type is assumed to be LOAD_BALANCER
-  serviceDiscovery: appmesh.ServiceDiscovery.dns('node', appmesh.ResponseType.ENDPOINTS),
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('node', appmesh.DnsResponseType.ENDPOINTS),
   listeners: [appmesh.VirtualNodeListener.http({
     port: 80,
     connectionPool: {
@@ -375,8 +377,8 @@ const node = new appmesh.VirtualNode(stack, 'node', {
 });
 
 // A Virtual Gateway with a gRPC listener with a connection pool set
-const gateway = new appmesh.VirtualGateway(this, 'gateway', {
-  mesh: mesh,
+const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
+  mesh,
   listeners: [appmesh.VirtualGatewayListener.grpc({
     port: 8080,
     connectionPool: {
@@ -547,8 +549,8 @@ router.addRoute('route-http', {
       serviceName: 'my-service.default.svc.cluster.local',
     },
     timeout:  {
-      idle : Duration.seconds(2),
-      perRequest: Duration.seconds(1),
+      idle : cdk.Duration.seconds(2),
+      perRequest: cdk.Duration.seconds(1),
     },
   }),
 });
@@ -560,7 +562,7 @@ A _virtual gateway_ allows resources outside your mesh to communicate with resou
 The virtual gateway represents an Envoy proxy running in an Amazon ECS task, in a Kubernetes service, or on an Amazon EC2 instance.
 Unlike a virtual node, which represents Envoy running with an application, a virtual gateway represents Envoy deployed by itself.
 
-A virtual gateway is similar to a virtual node in that it has a listener that accepts traffic for a particular port and protocol (HTTP, HTTP2, GRPC).
+A virtual gateway is similar to a virtual node in that it has a listener that accepts traffic for a particular port and protocol (HTTP, HTTP2, gRPC).
 Traffic received by the virtual gateway is directed to other services in your mesh
 using rules defined in gateway routes which can be added to your virtual gateway.
 
@@ -707,7 +709,7 @@ Each App Mesh resource class comes with two static methods, `from<Resource>Arn` 
 These imported resources can be used with other resources in your mesh as if they were defined directly in your CDK application.
 
 ```ts
-const arn = "arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh/virtualNode/testNode";
+const arn = 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh/virtualNode/testNode';
 appmesh.VirtualNode.fromVirtualNodeArn(stack, 'importedVirtualNode', arn);
 ```
 
