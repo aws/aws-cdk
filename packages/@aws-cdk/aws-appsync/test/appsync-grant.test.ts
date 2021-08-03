@@ -544,6 +544,7 @@ describe('grantSubscription Permissions', () => {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: [
               {
                 'Fn::Join': ['', [
