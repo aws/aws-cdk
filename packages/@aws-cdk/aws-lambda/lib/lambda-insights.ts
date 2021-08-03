@@ -1,6 +1,5 @@
 import { Aws, CfnMapping, Fn, IResolveContext, Lazy, Stack, Token } from '@aws-cdk/core';
 import { FactName, RegionInfo } from '@aws-cdk/region-info';
-import { CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '@aws-cdk/region-info/build-tools/fact-tables';
 
 // This is the name of the mapping that will be added to the CloudFormation template, if a stack is region agnostic
 const DEFAULT_MAPPING_PREFIX = 'LambdaInsightsVersions';
@@ -49,8 +48,9 @@ export abstract class LambdaInsightsVersion {
   private static fromInsightsVersion(insightsVersion: string): LambdaInsightsVersion {
 
     // Check if insights version is valid. This should only happen if one of the public static readonly versions are set incorrectly
-    if (!(insightsVersion in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS)) {
-      throw new Error(`Insights version ${insightsVersion} does not exist. Available versions are ${CLOUDWATCH_LAMBDA_INSIGHTS_ARNS.keys()}`);
+    const versionExists = RegionInfo.regions.some(regionInfo => regionInfo.cloudwatchLambdaInsightsArn(insightsVersion));
+    if (!versionExists) {
+      throw new Error(`Insights version ${insightsVersion} does not exist.`);
     }
 
     class InsightsVersion extends LambdaInsightsVersion {

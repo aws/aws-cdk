@@ -20,26 +20,36 @@ export class Template {
   }
 
   /**
-   * Base your assertions from an existing CloudFormation template formatted as a
-   * nested set of records.
+   * Base your assertions from an existing CloudFormation template formatted as an in-memory
+   * JSON object.
    * @param template the CloudFormation template formatted as a nested set of records
    */
-  public static fromTemplate(template: { [key: string] : any }): Template {
+  public static fromJSON(template: { [key: string] : any }): Template {
     return new Template(template);
   }
 
   /**
-   * Base your assertions from an existing CloudFormation template formatted as a string.
+   * Base your assertions from an existing CloudFormation template formatted as a
+   * JSON string.
    * @param template the CloudFormation template in
    */
   public static fromString(template: string): Template {
     return new Template(JSON.parse(template));
   }
 
+  private readonly template: { [key: string]: any };
   private readonly inspector: assert.StackInspector;
 
-  private constructor(template: any) {
+  private constructor(template: { [key: string]: any }) {
+    this.template = template;
     this.inspector = new assert.StackInspector(template);
+  }
+
+  /**
+   * The CloudFormation template deserialized into an object.
+   */
+  public toJSON(): { [key: string]: any } {
+    return this.template;
   }
 
   /**
