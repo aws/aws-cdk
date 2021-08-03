@@ -53,6 +53,17 @@ assert.templateMatches({
 });
 ```
 
+The `Template` class also supports [snapshot
+testing](https://jestjs.io/docs/snapshot-testing) using jest.
+
+```ts
+// using jest
+expect(Template.fromStack(stack)).toMatchSnapshot();
+```
+
+For non-javascript languages, the `toJSON()` can be called to get an in-memory object
+of the template.
+
 ## Counting Resources
 
 This module allows asserting the number of resources of a specific type found
