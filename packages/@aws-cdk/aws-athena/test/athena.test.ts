@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { CfnWorkGroup } from '../lib';
 
@@ -28,7 +27,7 @@ describe('Athena Workgroup Tags', () => {
         },
       },
     });
-    expect(stack).to(haveResource('AWS::Athena::WorkGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Athena::WorkGroup', {
       Tags: [
         {
           Key: 'key1',
@@ -39,7 +38,7 @@ describe('Athena Workgroup Tags', () => {
           Value: 'value2',
         },
       ],
-    }));
+    });
   });
   test('test tag aspect spec correction', () => {
     const stack = new cdk.Stack();
@@ -57,7 +56,7 @@ describe('Athena Workgroup Tags', () => {
         },
       },
     });
-    expect(stack).to(haveResource('AWS::Athena::WorkGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Athena::WorkGroup', {
       Tags: [
         {
           Key: 'key1',
@@ -68,6 +67,6 @@ describe('Athena Workgroup Tags', () => {
           Value: 'value2',
         },
       ],
-    }));
+    });
   });
 });
