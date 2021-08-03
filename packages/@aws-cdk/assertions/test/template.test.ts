@@ -3,6 +3,48 @@ import { Construct } from 'constructs';
 import { Match, Template } from '../lib';
 
 describe('Template', () => {
+  describe('asObject', () => {
+    test('fromString', () => {
+      const template = Template.fromString(`{
+        "Resources": { 
+          "Foo": { 
+            "Type": "Baz::Qux",
+            "Properties": { "Fred": "Waldo" }
+          } 
+        }
+      }`);
+
+      expect(template.toJSON()).toEqual({
+        Resources: {
+          Foo: {
+            Type: 'Baz::Qux',
+            Properties: { Fred: 'Waldo' },
+          },
+        },
+      });
+    });
+
+    test('fromStack', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: {
+          Baz: 'Qux',
+        },
+      });
+      const template = Template.fromStack(stack);
+
+      expect(template.toJSON()).toEqual({
+        Resources: {
+          Foo: {
+            Type: 'Foo::Bar',
+            Properties: { Baz: 'Qux' },
+          },
+        },
+      });
+    });
+  });
+
   describe('fromString', () => {
     test('default', () => {
       const assertions = Template.fromString(`{
