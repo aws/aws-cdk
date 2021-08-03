@@ -6,7 +6,7 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
-import { RedshiftColumn } from '../redshift-cluster';
+import { RedshiftColumn } from '../redshift-table';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -24,17 +24,12 @@ export interface FirehoseRedshiftTableProps {
   /**
    * The secret containing credentials to a Redshift user with administrator privileges.
    */
-  readonly masterSecret: secretsmanager.ISecret;
+  readonly adminUser: secretsmanager.ISecret;
 
   /**
    * The database containing the desired output table.
    */
   readonly database: string;
-
-  /**
-   * The table that data should be inserted into.
-   */
-  readonly tableName: string;
 
   /**
    * The table columns that the source fields will be loaded into.
@@ -54,23 +49,26 @@ export class FirehoseRedshiftTable extends CoreConstruct {
   constructor(scope: Construct, id: string, props: FirehoseRedshiftTableProps) {
     super(scope, id);
 
-    const handler = new lambda.Function(this, 'Handler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'provider')),
+    const handler = new lambda.SingletonFunction(this, 'Handler', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'create-table-user-provider')),
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'table.handler',
       environment: {
         clusterName: props.cluster.clusterName,
-        masterSecretArn: props.masterSecret.secretArn,
+        adminUserArn: props.adminUser.secretArn,
         database: props.database,
-        tableName: props.tableName,
+        tableName: cdk.Names.uniqueId(this),
         tableColumns: JSON.stringify(props.tableColumns),
       },
+      timeout: cdk.Duration.seconds(10),
+      uuid: '002dbf33-b1a4-46fc-9ff7-dcde90588b0c',
+      lambdaPurpose: 'Create Firehose Redshift Table',
     });
     handler.addToRolePolicy(new iam.PolicyStatement({
       actions: ['redshift-data:DescribeStatement', 'redshift-data:ExecuteStatement'],
       resources: ['*'],
     }));
-    props.masterSecret.grantRead(handler);
+    props.adminUser.grantRead(handler);
 
     const provider = new customresources.Provider(this, 'Provider', {
       onEventHandler: handler,

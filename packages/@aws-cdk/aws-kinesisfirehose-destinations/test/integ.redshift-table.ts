@@ -33,7 +33,7 @@ const cluster = new redshift.Cluster(stack, 'Cluster', {
     subnetType: ec2.SubnetType.PUBLIC,
   },
   masterUser: {
-    masterUsername: 'master',
+    masterUsername: 'admin',
   },
   defaultDatabaseName: database,
   publiclyAccessible: true,
@@ -44,12 +44,9 @@ const dataProcessorFunction = new lambdanodejs.NodejsFunction(stack, 'DataProces
   timeout: cdk.Duration.minutes(1),
 });
 
-const redshiftDestination = new firehosedestinations.RedshiftCluster(cluster, {
-  user: {
-    username: 'firehose',
-  },
+const redshiftDestination = new firehosedestinations.RedshiftTable(cluster, {
+  user: firehosedestinations.RedshiftUser.create(),
   database: database,
-  tableName: 'firehose_test_table',
   tableColumns: [
     { name: 'TICKER_SYMBOL', dataType: 'varchar(4)' },
     { name: 'SECTOR', dataType: 'varchar(16)' },

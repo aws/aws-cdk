@@ -23,19 +23,19 @@ export async function waitForStatementComplete(statementId?: string): Promise<vo
 
 export interface ClusterParams {
   clusterId: string;
-  masterSecretArn: string;
+  adminUserArn: string;
   database: string;
   tableName: string;
 }
 
 export function getClusterParamsFromEnv(): ClusterParams {
   const env = process.env;
-  if (!env.clusterName || !env.masterSecretArn || !env.database || !env.tableName) {
-    throw new Error(`Environment not setup, must provide values for all variables but given: ${{ clusterName: env.clusterName, masterSecretArn: env.masterSecretArn, database: env.database, table: env.table, tableColumns: env.tableColumns }}`);
+  if (!env.clusterName || !env.adminUserArn || !env.database || !env.tableName) {
+    throw new Error(`Environment not setup, must provide values for all variables but given: ${JSON.stringify({ clusterName: env.clusterName, adminUserArn: env.adminUserArn, database: env.database, table: env.table, tableColumns: env.tableColumns })}`);
   }
   return {
     clusterId: env.clusterName,
-    masterSecretArn: env.masterSecretArn,
+    adminUserArn: env.adminUserArn,
     database: env.database,
     tableName: env.tableName,
   };

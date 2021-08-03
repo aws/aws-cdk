@@ -23,7 +23,7 @@ export interface FirehoseRedshiftUserProps {
   /**
    * The secret containing credentials to a Redshift user with administrator privileges.
    */
-  readonly masterSecret: secretsmanager.ISecret;
+  readonly adminUser: secretsmanager.ISecret;
 
   /**
    * The secret containing credentials to the Redshift user that Firehose will assume.
@@ -53,23 +53,26 @@ export class FirehoseRedshiftUser extends CoreConstruct {
   constructor(scope: Construct, id: string, props: FirehoseRedshiftUserProps) {
     super(scope, id);
 
-    const handler = new lambda.Function(this, 'Handler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'provider')),
+    const handler = new lambda.SingletonFunction(this, 'Handler', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'create-table-user-provider')),
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'user.handler',
       environment: {
         clusterName: props.cluster.clusterName,
-        masterSecretArn: props.masterSecret.secretArn,
+        adminUserArn: props.adminUser.secretArn,
         database: props.database,
         userSecretArn: props.userSecret.secretArn,
-        table: props.tableName,
+        tableName: props.tableName,
       },
+      timeout: cdk.Duration.seconds(10),
+      uuid: 'bb38176c-277a-492c-be7d-3d1f842b1eab',
+      lambdaPurpose: 'Create Firehose Redshift User',
     });
     handler.addToRolePolicy(new iam.PolicyStatement({
       actions: ['redshift-data:DescribeStatement', 'redshift-data:ExecuteStatement'],
       resources: ['*'],
     }));
-    props.masterSecret.grantRead(handler);
+    props.adminUser.grantRead(handler);
     props.userSecret.grantRead(handler);
 
     const provider = new customresources.Provider(this, 'Provider', {

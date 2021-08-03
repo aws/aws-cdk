@@ -18,9 +18,8 @@ describe('redshift destination', () => {
   let cluster: redshift.ICluster;
 
   const minimalProps = {
-    user: { username: 'firehose' },
+    user: dests.RedshiftUser.create(),
     database: 'database',
-    tableName: 'tableName',
     tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
   };
 
@@ -33,14 +32,14 @@ describe('redshift destination', () => {
         subnetType: ec2.SubnetType.PUBLIC,
       },
       masterUser: {
-        masterUsername: 'master',
+        masterUsername: 'admin',
       },
       publiclyAccessible: true,
     });
   });
 
   it('produces config when minimally specified', () => {
-    const destination = new dests.RedshiftCluster(cluster, {
+    const destination = new dests.RedshiftTable(cluster, {
       ...minimalProps,
     });
 
@@ -73,7 +72,7 @@ describe('redshift destination', () => {
           ],
         },
         CopyCommand: {
-          DataTableName: 'tableName',
+          DataTableName: { Ref: 'DeliveryStreamFirehoseRedshiftTableB357B8E2' },
           DataTableColumns: 'col1,col2',
         },
         Username: {
@@ -106,7 +105,7 @@ describe('redshift destination', () => {
     });
     const destinationRoleArn = 'arn:aws:iam::111122223333:role/manual-destination-role';
     const destinationRole = iam.Role.fromRoleArn(stack, 'Redshift Destination Role', destinationRoleArn);
-    const destination = new dests.RedshiftCluster(cluster, {
+    const destination = new dests.RedshiftTable(cluster, {
       ...minimalProps,
       copyOptions: 'json \'auto\'',
       role: destinationRole,
@@ -151,7 +150,7 @@ describe('redshift destination', () => {
         },
         CopyCommand: {
           CopyOptions: 'json \'auto\' gzip',
-          DataTableName: 'tableName',
+          DataTableName: { Ref: 'DeliveryStreamFirehoseRedshiftTableB357B8E2' },
           DataTableColumns: 'col1,col2',
         },
         Username: {
@@ -214,21 +213,21 @@ describe('redshift destination', () => {
     });
   });
 
-  describe('master secret', () => {
-    it('uses master secret if provided', () => {
-      cluster = new redshift.Cluster(stack, 'Cluster With Provided Master Secret', {
+  describe('admin user', () => {
+    it('uses admin user if provided', () => {
+      cluster = new redshift.Cluster(stack, 'Cluster With Provided Admin Secret', {
         vpc,
         vpcSubnets: {
           subnetType: ec2.SubnetType.PUBLIC,
         },
         masterUser: {
-          masterUsername: 'master',
+          masterUsername: 'admin',
           masterPassword: cdk.SecretValue.plainText('INSECURE_NOT_FOR_PRODUCTION'),
         },
         publiclyAccessible: true,
       });
-      const destination = new dests.RedshiftCluster(cluster, {
-        masterSecret: secretsmanager.Secret.fromSecretNameV2(stack, 'Imported Master Secret', 'imported-master-secret'),
+      const destination = new dests.RedshiftTable(cluster, {
+        adminUser: secretsmanager.Secret.fromSecretNameV2(stack, 'Imported Admin User', 'imported-admin-secret'),
         ...minimalProps,
       });
 
@@ -239,7 +238,7 @@ describe('redshift destination', () => {
       expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
         Environment: {
           Variables: {
-            masterSecretArn: {
+            adminUserArn: {
               'Fn::Join': [
                 '',
                 [
@@ -255,7 +254,7 @@ describe('redshift destination', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':secret:imported-master-secret',
+                  ':secret:imported-admin-secret',
                 ],
               ],
             },
@@ -264,25 +263,25 @@ describe('redshift destination', () => {
       });
     });
 
-    it('throws error if master secret not provided and cluster was provided a master password', () => {
-      cluster = new redshift.Cluster(stack, 'Cluster With Provided Master Secret', {
+    it('throws error if admin user not provided and cluster was provided a admin password', () => {
+      cluster = new redshift.Cluster(stack, 'Cluster With Provided Admin Secret', {
         vpc,
         vpcSubnets: {
           subnetType: ec2.SubnetType.PUBLIC,
         },
         masterUser: {
-          masterUsername: 'master',
+          masterUsername: 'admin',
           masterPassword: cdk.SecretValue.plainText('INSECURE_NOT_FOR_PRODUCTION'),
         },
         publiclyAccessible: true,
       });
 
-      expect(() => new dests.RedshiftCluster(cluster, {
+      expect(() => new dests.RedshiftTable(cluster, {
         ...minimalProps,
-      })).toThrowError('Master secret must be provided or Redshift cluster must generate a master secret');
+      })).toThrowError('Administrative access to the cluster is required but an admin user secret was not provided and either the Redshift cluster did not generate admin user credentials (they were provided explicitly) or the cluster was imported');
     });
 
-    it('throws error if master secret not provided and cluster was imported', () => {
+    it('throws error if admin user not provided and cluster was imported', () => {
       const subnetGroup = new redshift.ClusterSubnetGroup(stack, 'Cluster Subnet Group', {
         vpc,
         vpcSubnets: {
@@ -298,9 +297,9 @@ describe('redshift destination', () => {
         subnetGroup,
       });
 
-      expect(() => new dests.RedshiftCluster(cluster, {
+      expect(() => new dests.RedshiftTable(cluster, {
         ...minimalProps,
-      })).toThrowError('Master secret must be provided or Redshift cluster must generate a master secret');
+      })).toThrowError('Administrative access to the cluster is required but an admin user secret was not provided and either the Redshift cluster did not generate admin user credentials (they were provided explicitly) or the cluster was imported');
     });
   });
 
@@ -312,14 +311,14 @@ describe('redshift destination', () => {
           subnetType: ec2.SubnetType.PUBLIC,
         },
         masterUser: {
-          masterUsername: 'master',
+          masterUsername: 'admin',
         },
         publiclyAccessible: false,
       });
 
-      expect(() => new dests.RedshiftCluster(cluster, {
+      expect(() => new dests.RedshiftTable(cluster, {
         ...minimalProps,
-      })).toThrowError('Redshift cluster used as Firehose destination must be publicly accessible');
+      })).toThrowError('Redshift cluster used as delivery stream destination is not publicly accessible');
     });
 
     it('throws error if cluster not in public subnet', () => {
@@ -329,21 +328,21 @@ describe('redshift destination', () => {
           subnetType: ec2.SubnetType.PRIVATE,
         },
         masterUser: {
-          masterUsername: 'master',
+          masterUsername: 'admin',
         },
         publiclyAccessible: true,
       });
 
-      expect(() => new dests.RedshiftCluster(cluster, {
+      expect(() => new dests.RedshiftTable(cluster, {
         ...minimalProps,
-      })).toThrowError('Redshift cluster used as Firehose destination must be located in a public subnet');
+      })).toThrowError('Redshift cluster used as delivery stream destination is not located in a public subnet');
     });
   });
 
   it('uses provided intermediate bucket and access role', () => {
     const intermediateBucket = s3.Bucket.fromBucketName(stack, 'Manual Intermediate Bucket', 'manual-intermediate-bucket');
     const intermediateBucketAccessRole = iam.Role.fromRoleArn(stack, 'Manual Intermediate Bucket Access Role', 'arn:aws:iam::111122223333:role/manual-intermediate-access-role');
-    const destination = new dests.RedshiftCluster(cluster, {
+    const destination = new dests.RedshiftTable(cluster, {
       ...minimalProps,
       intermediateBucket: intermediateBucket,
       bucketAccessRole: intermediateBucketAccessRole,
@@ -417,11 +416,11 @@ describe('redshift destination', () => {
   });
 
   describe('cluster user', () => {
-    it('uses provided cluster user password', () => {
+    it('uses provided cluster user', () => {
       const clusterUserPassword = cdk.SecretValue.plainText('INSECURE_NOT_FOR_PRODUCTION');
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
-        user: { username: 'firehose', password: clusterUserPassword },
+        user: dests.RedshiftUser.fromExisting('firehose', clusterUserPassword),
       });
 
       new firehose.DeliveryStream(stack, 'Delivery Stream', {
@@ -433,10 +432,11 @@ describe('redshift destination', () => {
           Password: 'INSECURE_NOT_FOR_PRODUCTION',
         },
       });
+      expect(stack).not.toHaveResource('Custom::FirehoseRedshiftUser');
     });
 
     it('creates cluster user using custom resource', () => {
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
       });
 
@@ -446,11 +446,51 @@ describe('redshift destination', () => {
 
       expect(stack).toHaveResource('Custom::FirehoseRedshiftUser');
     });
+
+    it('only creates one Lambda handler', () => {
+      const tableName = 'firehose-table';
+
+      new firehose.DeliveryStream(stack, 'Delivery Stream 1', {
+        destinations: [new dests.RedshiftTable(cluster, {
+          ...minimalProps,
+          tableName,
+        })],
+      });
+      new firehose.DeliveryStream(stack, 'Delivery Stream 2', {
+        destinations: [new dests.RedshiftTable(cluster, {
+          ...minimalProps,
+          tableName,
+        })],
+      });
+
+      // 3 = 1 handler + 2 providers
+      expect(stack).toCountResources('AWS::Lambda::Function', 3);
+    });
   });
 
   describe('cluster table', () => {
+    it('uses provided cluster table', () => {
+      const destination = new dests.RedshiftTable(cluster, {
+        ...minimalProps,
+        tableName: 'existing-table',
+      });
+
+      new firehose.DeliveryStream(stack, 'Delivery Stream', {
+        destinations: [destination],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+        RedshiftDestinationConfiguration: {
+          CopyCommand: {
+            DataTableName: 'existing-table',
+          },
+        },
+      });
+      expect(stack).not.toHaveResource('Custom::FirehoseRedshiftTable');
+    });
+
     it('creates cluster table using custom resource', () => {
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
       });
 
@@ -460,33 +500,53 @@ describe('redshift destination', () => {
 
       expect(stack).toHaveResource('Custom::FirehoseRedshiftTable');
     });
+
+    it('only creates one Lambda handler', () => {
+      const user = dests.RedshiftUser.fromExisting('firehose', cdk.SecretValue.plainText('INSECURE_NOT_FOR_PRODUCTION'));
+
+      new firehose.DeliveryStream(stack, 'Delivery Stream 1', {
+        destinations: [new dests.RedshiftTable(cluster, {
+          ...minimalProps,
+          user,
+        })],
+      });
+      new firehose.DeliveryStream(stack, 'Delivery Stream 2', {
+        destinations: [new dests.RedshiftTable(cluster, {
+          ...minimalProps,
+          user,
+        })],
+      });
+
+      // 3 = 1 handler + 2 providers
+      expect(stack).toCountResources('AWS::Lambda::Function', 3);
+    });
   });
 
   it('validates retryTimeout', () => {
-    expect(() => new dests.RedshiftCluster(cluster, {
+    expect(() => new dests.RedshiftTable(cluster, {
       ...minimalProps,
       retryTimeout: cdk.Duration.hours(3),
-    })).toThrowError('Retry timeout must be less that 2 hours');
+    })).toThrowError(/Retry timeout must be less than 7,200 seconds/);
   });
 
   it('validates compression', () => {
-    expect(() => new dests.RedshiftCluster(cluster, {
+    expect(() => new dests.RedshiftTable(cluster, {
       ...minimalProps,
       compression: dests.Compression.SNAPPY,
-    })).toThrowError('Compression must not be HADOOP_SNAPPY, SNAPPY, or ZIP');
-    expect(() => new dests.RedshiftCluster(cluster, {
+    })).toThrowError(/Redshift delivery stream destination does not support .* compression/);
+    expect(() => new dests.RedshiftTable(cluster, {
       ...minimalProps,
       compression: dests.Compression.HADOOP_SNAPPY,
-    })).toThrowError('Compression must not be HADOOP_SNAPPY, SNAPPY, or ZIP');
-    expect(() => new dests.RedshiftCluster(cluster, {
+    })).toThrowError(/Redshift delivery stream destination does not support .* compression/);
+    expect(() => new dests.RedshiftTable(cluster, {
       ...minimalProps,
       compression: dests.Compression.ZIP,
-    })).toThrowError('Compression must not be HADOOP_SNAPPY, SNAPPY, or ZIP');
+    })).toThrowError(/Redshift delivery stream destination does not support .* compression/);
   });
 
   describe('logging', () => {
     it('creates resources and configuration by default', () => {
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
       });
 
@@ -508,7 +568,7 @@ describe('redshift destination', () => {
     });
 
     it('does not create resources or configuration if disabled', () => {
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         logging: false,
       });
@@ -527,7 +587,7 @@ describe('redshift destination', () => {
 
     it('uses provided log group', () => {
       const logGroup = new logs.LogGroup(stack, 'Log Group');
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         logGroup,
       });
@@ -549,7 +609,7 @@ describe('redshift destination', () => {
     });
 
     it('throws error if logging disabled but log group provided', () => {
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         logging: false,
         logGroup: new logs.LogGroup(stack, 'Log Group'),
@@ -565,7 +625,7 @@ describe('redshift destination', () => {
       const destinationRole = new iam.Role(stack, 'Redshift Destination Role', {
         assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
       });
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         logGroup,
         role: destinationRole,
@@ -597,7 +657,7 @@ describe('redshift destination', () => {
     let destinationRole: iam.Role;
     let lambdaFunction: lambda.Function;
     let basicLambdaProcessor: firehose.LambdaFunctionProcessor;
-    let destinationWithBasicLambdaProcessor: dests.RedshiftCluster;
+    let destinationWithBasicLambdaProcessor: dests.RedshiftTable;
 
     beforeEach(() => {
       destinationRole = new iam.Role(stack, 'Redshift Destination Role', {
@@ -609,7 +669,7 @@ describe('redshift destination', () => {
         handler: 'bar',
       });
       basicLambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
-      destinationWithBasicLambdaProcessor = new dests.RedshiftCluster(cluster, {
+      destinationWithBasicLambdaProcessor = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         role: destinationRole,
         processor: basicLambdaProcessor,
@@ -650,7 +710,7 @@ describe('redshift destination', () => {
         bufferSize: cdk.Size.mebibytes(1),
         retries: 5,
       });
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         role: destinationRole,
         processor: processor,
@@ -728,7 +788,7 @@ describe('redshift destination', () => {
     });
 
     it('set backupMode to ALL creates resources', () => {
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         role: destinationRole,
         s3Backup: {
@@ -753,7 +813,7 @@ describe('redshift destination', () => {
 
     it('sets backup configuration if backup bucket provided', () => {
       const backupBucket = new s3.Bucket(stack, 'MyBackupBucket');
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         role: destinationRole,
         s3Backup: {
@@ -780,20 +840,20 @@ describe('redshift destination', () => {
       });
     });
 
-    it('throws error if backup mode set to FAILED_ONLY', () => {
-      expect(() => new dests.RedshiftCluster(cluster, {
+    it('throws error if backup mode set to FAILED', () => {
+      expect(() => new dests.RedshiftTable(cluster, {
         ...minimalProps,
         s3Backup: {
           mode: dests.BackupMode.FAILED,
         },
-      })).toThrowError('Redshift delivery stream destination only supports ALL and DISABLED BackupMode, given FAILED');
+      })).toThrowError(/Redshift delivery stream destination does not support .* backup mode/);
     });
 
     it('sets full backup configuration', () => {
       const backupBucket = new s3.Bucket(stack, 'MyBackupBucket');
       const key = new kms.Key(stack, 'Key');
       const logGroup = new logs.LogGroup(stack, 'BackupLogGroup');
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         role: destinationRole,
         s3Backup: {
@@ -841,7 +901,7 @@ describe('redshift destination', () => {
 
   describe('buffering', () => {
     it('does not create configuration by default', () => {
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
       });
 
@@ -859,7 +919,7 @@ describe('redshift destination', () => {
     });
 
     it('creates configuration when interval and size provided', () => {
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         bufferingInterval: cdk.Duration.minutes(1),
         bufferingSize: cdk.Size.mebibytes(1),
@@ -882,7 +942,7 @@ describe('redshift destination', () => {
     });
 
     it('validates bufferingInterval', () => {
-      const smallDestination = new dests.RedshiftCluster(cluster, {
+      const smallDestination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         bufferingInterval: cdk.Duration.seconds(30),
         bufferingSize: cdk.Size.mebibytes(1),
@@ -891,7 +951,7 @@ describe('redshift destination', () => {
         destinations: [smallDestination],
       })).toThrowError(/Buffering interval must be between 60 and 900 seconds. Buffering interval provided was .* seconds./);
 
-      const largeDestination = new dests.RedshiftCluster(cluster, {
+      const largeDestination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         bufferingInterval: cdk.Duration.seconds(30),
         bufferingSize: cdk.Size.mebibytes(1),
@@ -902,7 +962,7 @@ describe('redshift destination', () => {
     });
 
     it('validates bufferingSize', () => {
-      const smallDestination = new dests.RedshiftCluster(cluster, {
+      const smallDestination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         bufferingInterval: cdk.Duration.minutes(1),
         bufferingSize: cdk.Size.mebibytes(0),
@@ -911,7 +971,7 @@ describe('redshift destination', () => {
         destinations: [smallDestination],
       })).toThrowError(/Buffering size must be between 1 and 128 MiBs. Buffering size provided was .* MiBs./);
 
-      const largeDestination = new dests.RedshiftCluster(cluster, {
+      const largeDestination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         bufferingInterval: cdk.Duration.minutes(1),
         bufferingSize: cdk.Size.mebibytes(256),
@@ -925,7 +985,7 @@ describe('redshift destination', () => {
   describe('destination encryption', () => {
     it('creates configuration', () => {
       const key = new kms.Key(stack, 'Key');
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         encryptionKey: key,
       });
@@ -953,7 +1013,7 @@ describe('redshift destination', () => {
       const destinationRole = new iam.Role(stack, 'Redshift Destination Role', {
         assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
       });
-      const destination = new dests.RedshiftCluster(cluster, {
+      const destination = new dests.RedshiftTable(cluster, {
         ...minimalProps,
         encryptionKey: key,
         role: destinationRole,

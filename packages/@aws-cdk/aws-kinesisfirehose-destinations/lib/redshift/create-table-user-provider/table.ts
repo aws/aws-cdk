@@ -38,7 +38,7 @@ async function createTable(clusterParams: ClusterParams, tableColumns: Column[])
   const createStatement = await redshiftData.executeStatement({
     ClusterIdentifier: clusterParams.clusterId,
     Database: clusterParams.database,
-    SecretArn: clusterParams.masterSecretArn,
+    SecretArn: clusterParams.adminUserArn,
     Sql: `CREATE TABLE ${clusterParams.tableName} (${tableColumnsString})`,
   }).promise();
 

@@ -33,14 +33,14 @@ async function deleteUser(clusterParams: ClusterParams, username: string) {
   const revokeStatement = await redshiftData.executeStatement({
     ClusterIdentifier: clusterParams.clusterId,
     Database: clusterParams.database,
-    SecretArn: clusterParams.masterSecretArn,
+    SecretArn: clusterParams.adminUserArn,
     Sql: `REVOKE INSERT ON ${clusterParams.tableName} FROM ${username}`,
   }).promise();
   await waitForStatementComplete(revokeStatement.Id);
   const dropStatement = await redshiftData.executeStatement({
     ClusterIdentifier: clusterParams.clusterId,
     Database: clusterParams.database,
-    SecretArn: clusterParams.masterSecretArn,
+    SecretArn: clusterParams.adminUserArn,
     Sql: `DROP USER ${username}`,
   }).promise();
   await waitForStatementComplete(dropStatement.Id);
@@ -58,14 +58,14 @@ async function createUser(clusterParams: ClusterParams, userSecretArn: string): 
   const createStatement = await redshiftData.executeStatement({
     ClusterIdentifier: clusterParams.clusterId,
     Database: clusterParams.database,
-    SecretArn: clusterParams.masterSecretArn,
+    SecretArn: clusterParams.adminUserArn,
     Sql: `CREATE USER ${username} PASSWORD '${password}'`,
   }).promise();
   await waitForStatementComplete(createStatement.Id);
   const grantStatement = await redshiftData.executeStatement({
     ClusterIdentifier: clusterParams.clusterId,
     Database: clusterParams.database,
-    SecretArn: clusterParams.masterSecretArn,
+    SecretArn: clusterParams.adminUserArn,
     Sql: `GRANT INSERT ON ${clusterParams.tableName} TO ${username}`,
   }).promise();
   await waitForStatementComplete(grantStatement.Id);
