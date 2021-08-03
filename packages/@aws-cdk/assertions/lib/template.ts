@@ -20,16 +20,17 @@ export class Template {
   }
 
   /**
-   * Base your assertions from an existing CloudFormation template formatted as a
-   * nested set of records.
+   * Base your assertions from an existing CloudFormation template formatted as an in-memory
+   * JSON object.
    * @param template the CloudFormation template formatted as a nested set of records
    */
-  public static fromObject(template: { [key: string] : any }): Template {
+  public static fromJSON(template: { [key: string] : any }): Template {
     return new Template(template);
   }
 
   /**
-   * Base your assertions from an existing CloudFormation template formatted as a string.
+   * Base your assertions from an existing CloudFormation template formatted as a
+   * JSON string.
    * @param template the CloudFormation template in
    */
   public static fromString(template: string): Template {
