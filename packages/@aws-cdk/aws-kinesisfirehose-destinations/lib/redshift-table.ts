@@ -21,7 +21,7 @@ export class RedshiftUser {
    * The user must have INSERT permissions to the destination table.
    *
    * @param username Username for the user.
-   * @param password Password for the user. Do not put passwords in your CDK code directly.
+   * @param password Password for the user. Do not put passwords in CDK code directly.
    */
   static fromExisting(username: string, password: cdk.SecretValue): RedshiftUser {
     return new RedshiftUser(username, password);
@@ -40,7 +40,7 @@ export class RedshiftUser {
 
   /**
    * @param username Username for the user.
-   * @param password Password for the user. Do not put passwords in your CDK code directly.
+   * @param password Password for the user. Do not put passwords in CDK code directly.
    * @param encryptionKey KMS key to encrypt the generated secret. If not provided, the default AWS managed key is used.
    */
   private constructor(public readonly username?: string, public readonly password?: cdk.SecretValue, public readonly encryptionKey?: kms.IKey) {}
@@ -118,9 +118,9 @@ export interface RedshiftDestinationProps extends CommonDestinationProps, Common
   readonly retryTimeout?: cdk.Duration;
 
   /**
-   * The intermediate bucket where Firehose will stage your data before COPYing it to the Redshift cluster.
+   * The intermediate bucket where Firehose will stage the data before COPYing to the Redshift cluster.
    *
-   * @default - a bucket will be created for you.
+   * @default - a bucket will be created
    */
   readonly intermediateBucket?: s3.IBucket;
 
@@ -129,7 +129,7 @@ export interface RedshiftDestinationProps extends CommonDestinationProps, Common
    *
    * If a role is provided, it must be already attached to the cluster, to avoid the 10 role per cluster limit.
    *
-   * @default - a role will be created for you.
+   * @default - a role will be created
    */
   readonly bucketAccessRole?: iam.IRole;
 }
