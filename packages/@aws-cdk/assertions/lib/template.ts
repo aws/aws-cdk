@@ -1,6 +1,7 @@
 import { Stack, Stage } from '@aws-cdk/core';
 import { Match } from './match';
 import { Matcher } from './matcher';
+import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
 import { findResources, hasResource } from './private/resources';
 import * as assert from './vendored/assert';
@@ -125,6 +126,29 @@ export class Template {
    */
   public findOutputs(props: any = {}): { [key: string]: any }[] {
     return findOutputs(this.inspector, props);
+  }
+
+  /**
+   * Assert that a Mapping with the given properties exists in the CloudFormation template.
+   * By default, performs partial matching on the resource, via the `Match.objectLike()`.
+   * To configure different behavour, use other matchers in the `Match` class.
+   * @param props the output as should be expected in the template.
+   */
+  public hasMapping(props: any): void {
+    const matchError = hasMapping(this.inspector, props);
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Get the set of matching Mappings that match the given properties in the CloudFormation template.
+   * @param props by default, matches all Mappings in the template.
+   * When a literal object is provided, performs a partial match via `Match.objectLike()`.
+   * Use the `Match` APIs to configure a different behaviour.
+   */
+  public findMappings(props: any = {}): { [key: string]: any }[] {
+    return findMappings(this.inspector, props);
   }
 
   /**

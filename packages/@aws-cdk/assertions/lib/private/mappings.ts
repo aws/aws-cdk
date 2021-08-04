@@ -3,10 +3,10 @@ import { Matcher } from '../matcher';
 import { StackInspector } from '../vendored/assert';
 import { formatFailure, matchSection } from './section';
 
-export function findOutputs(inspector: StackInspector, props: any = {}): { [key: string]: any }[] {
+export function findMappings(inspector: StackInspector, props: any = {}): { [key: string]: any }[] {
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
 
-  const section: { [key: string] : {} } = inspector.value.Outputs ?? {};
+  const section: { [key: string] : {} } = inspector.value.Mappings ?? {};
   const result = matchSection(section, matcher);
 
   if (!result.match) {
@@ -16,10 +16,10 @@ export function findOutputs(inspector: StackInspector, props: any = {}): { [key:
   return result.matches;
 }
 
-export function hasOutput(inspector: StackInspector, props: any): string | void {
+export function hasMapping(inspector: StackInspector, props: any): string | void {
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
 
-  const section: { [key: string]: {} } = inspector.value.Outputs ?? {};
+  const section: { [key: string]: {} } = inspector.value.Mappings ?? {};
   const result = matchSection(section, matcher);
 
   if (result.match) {
@@ -27,11 +27,11 @@ export function hasOutput(inspector: StackInspector, props: any): string | void 
   }
 
   if (result.closestResult === undefined) {
-    return 'No outputs found in the template';
+    return 'No mappings found in the template';
   }
 
   return [
-    `Template has ${result.analyzedCount} outputs, but none match as expected.`,
+    `Template has ${result.analyzedCount} mappings, but none match as expected.`,
     formatFailure(result.closestResult),
   ].join('\n');
 }

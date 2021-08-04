@@ -36,7 +36,7 @@ export function hasResource(inspector: StackInspector, type: string, props: any)
   }
 
   return [
-    `${result.analyzedCount} resources with type ${type} found, but none match as expected.`,
+    `Template has ${result.analyzedCount} resources with type ${type}, but none match as expected.`,
     formatFailure(result.closestResult),
   ].join('\n');
 }
