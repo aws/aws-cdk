@@ -8,20 +8,20 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.alpha.services.servicecatalog",
+        "package": "software.amazon.awscdk.services.servicecatalog",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-alpha.aws-servicecatalog"
+          "artifactId": "servicecatalog"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Alpha.AWS.ServiceCatalog",
+        "namespace": "Amazon.CDK.AWS.Servicecatalog",
         "packageId": "Amazon.CDK.AWS.ServiceCatalog",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.alpha.aws-servicecatalog",
-        "module": "aws_cdk.alpha.aws_servicecatalog",
+        "distName": "aws-cdk.aws-servicecatalog",
+        "module": "aws_cdk.aws_servicecatalog",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"

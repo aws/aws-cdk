@@ -8,20 +8,20 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.alpha.services.appsync",
+        "package": "software.amazon.awscdk.services.appsync",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-alpha.aws-appsync"
+          "artifactId": "appsync"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Alpha.AWS.AppSync",
+        "namespace": "Amazon.CDK.AWS.Appsync",
         "packageId": "Amazon.CDK.AWS.AppSync",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.alpha.aws-appsync",
-        "module": "aws_cdk.alpha.aws_appsync",
+        "distName": "aws-cdk.aws-appsync",
+        "module": "aws_cdk.aws_appsync",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"

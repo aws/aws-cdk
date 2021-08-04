@@ -8,20 +8,20 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.alpha.services.kinesisanalytics.flink",
+        "package": "software.amazon.awscdk.services.kinesisanalytics.flink",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-alpha.aws-kinesisanalytics-flink"
+          "artifactId": "kinesisanalytics-flink"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Alpha.AWS.KinesisAnalyticsFlink",
+        "namespace": "Amazon.CDK.AWS.Kinesisanalytics.Flink",
         "packageId": "Amazon.CDK.AWS.KinesisAnalyticsFlink",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.alpha.aws-kinesisanalytics-flink",
-        "module": "aws_cdk.alpha.aws_kinesisanalytics_flink",
+        "distName": "aws-cdk.aws-kinesisanalytics-flink",
+        "module": "aws_cdk.aws_kinesisanalytics_flink",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"

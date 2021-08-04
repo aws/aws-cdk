@@ -8,20 +8,20 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.alpha.services.redshift",
+        "package": "software.amazon.awscdk.services.redshift",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-alpha.aws-redshift"
+          "artifactId": "redshift"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Alpha.AWS.Redshift",
+        "namespace": "Amazon.CDK.AWS.Redshift",
         "packageId": "Amazon.CDK.AWS.Redshift",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.alpha.aws-redshift",
-        "module": "aws_cdk.alpha.aws_redshift",
+        "distName": "aws-cdk.aws-redshift",
+        "module": "aws_cdk.aws_redshift",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"

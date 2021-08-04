@@ -8,20 +8,20 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.alpha.services.batch",
+        "package": "software.amazon.awscdk.services.batch",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-alpha.aws-batch"
+          "artifactId": "batch"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Alpha.AWS.Batch",
+        "namespace": "Amazon.CDK.AWS.Batch",
         "packageId": "Amazon.CDK.AWS.Batch",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.alpha.aws-batch",
-        "module": "aws_cdk.alpha.aws_batch",
+        "distName": "aws-cdk.aws-batch",
+        "module": "aws_cdk.aws_batch",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
