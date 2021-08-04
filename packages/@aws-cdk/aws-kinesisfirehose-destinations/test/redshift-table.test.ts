@@ -277,7 +277,7 @@ describe('redshift destination', () => {
 
       expect(() => new dests.RedshiftTable(cluster, {
         ...minimalProps,
-      })).toThrowError('Administrative access to the cluster is required but an admin user secret was not provided and either the Redshift cluster did not generate admin user credentials (they were provided explicitly) or the cluster was imported');
+      })).toThrowError('Administrative access to the cluster is required but an admin user secret was not provided and the Redshift cluster did not generate admin user credentials (they were provided explicitly)');
     });
 
     it('throws error if admin user not provided and cluster was imported', () => {
@@ -298,7 +298,7 @@ describe('redshift destination', () => {
 
       expect(() => new dests.RedshiftTable(cluster, {
         ...minimalProps,
-      })).toThrowError('Administrative access to the cluster is required but an admin user secret was not provided and either the Redshift cluster did not generate admin user credentials (they were provided explicitly) or the cluster was imported');
+      })).toThrowError('Administrative access to the cluster is required but an admin user secret was not provided and the Redshift cluster was imported');
     });
   });
 

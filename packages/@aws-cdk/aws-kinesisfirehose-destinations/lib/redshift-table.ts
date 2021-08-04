@@ -175,13 +175,22 @@ export class RedshiftTable implements firehose.IDestination {
 
     const generateTable = !props.tableName;
     const generateUser = !props.user.username || !props.user.password;
-    const adminUser = props.adminUser ?? (cluster instanceof redshift.Cluster ? cluster.secret : undefined);
-    if (!adminUser && (generateTable || generateUser)) {
-      throw new Error(
-        'Administrative access to the cluster is required but an admin user secret was not provided and either the Redshift cluster did not generate admin user credentials (they were provided explicitly) or the cluster was imported',
-      );
+    this.adminUser = props.adminUser;
+    if (!this.adminUser && (generateTable || generateUser)) {
+      if (cluster instanceof redshift.Cluster) {
+        if (cluster.secret) {
+          this.adminUser = cluster.secret;
+        } else {
+          throw new Error(
+            'Administrative access to the cluster is required but an admin user secret was not provided and the Redshift cluster did not generate admin user credentials (they were provided explicitly)',
+          );
+        }
+      } else {
+        throw new Error(
+          'Administrative access to the cluster is required but an admin user secret was not provided and the Redshift cluster was imported',
+        );
+      }
     }
-    this.adminUser = adminUser;
 
     this.database = props.database;
     this._tableName = props.tableName;
