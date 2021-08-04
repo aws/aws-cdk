@@ -1,4 +1,4 @@
-import { CfnResource, Stack } from '@aws-cdk/core';
+import { CfnOutput, CfnResource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Match, Template } from '../lib';
 
@@ -323,6 +323,82 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expect(inspect.findResources('Foo::Bar').length).toEqual(2);
+    });
+  });
+
+  describe('hasOutput', () => {
+    test('matching', () => {
+      const stack = new Stack();
+      new CfnOutput(stack, 'Foo', {
+        value: 'Bar',
+      });
+      new CfnOutput(stack, 'Fred', {
+        value: 'Waldo',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(() => inspect.hasOutput({ Value: 'Bar' })).not.toThrow();
+    });
+
+    test('not matching', (done) => {
+      const stack = new Stack();
+      new CfnOutput(stack, 'Foo', {
+        value: 'Bar',
+        exportName: 'ExportBar',
+      });
+      new CfnOutput(stack, 'Fred', {
+        value: 'Waldo',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasOutput({
+          Value: 'Bar',
+          Export: { Name: 'ExportBaz' },
+        }),
+        [
+          /2 outputs found/,
+          /Expected ExportBaz but received ExportBar/,
+        ],
+        done,
+      );
+      done();
+    });
+  });
+
+  describe('findOutputs', () => {
+    test('matching', () => {
+      const stack = new Stack();
+      new CfnOutput(stack, 'Foo', {
+        value: 'Fred',
+        description: 'FooFred',
+      });
+      new CfnOutput(stack, 'Bar', {
+        value: 'Fred',
+        description: 'BarFred',
+      });
+      new CfnOutput(stack, 'Baz', {
+        value: 'Waldo',
+        description: 'BazWaldo',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findOutputs({ Value: 'Fred' });
+      expect(result).toEqual([
+        { Value: 'Fred', Description: 'FooFred' },
+        { Value: 'Fred', Description: 'BarFred' },
+      ]);
+    });
+
+    test('not matching', () => {
+      const stack = new Stack();
+      new CfnOutput(stack, 'Foo', {
+        value: 'Fred',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findOutputs({ Value: 'Waldo' });
+      expect(result.length).toEqual(0);
     });
   });
 });

@@ -1,6 +1,7 @@
 import { Stack, Stage } from '@aws-cdk/core';
 import { Match } from './match';
 import { Matcher } from './matcher';
+import { findOutputs, hasOutput } from './private/outputs';
 import { findResources, hasResource } from './private/resources';
 import * as assert from './vendored/assert';
 
@@ -101,6 +102,29 @@ export class Template {
    */
   public findResources(type: string, props: any = {}): { [key: string]: any }[] {
     return findResources(this.inspector, type, props);
+  }
+
+  /**
+   * Assert that an Output with the given properties exists in the CloudFormation template.
+   * By default, performs partial matching on the resource, via the `Match.objectLike()`.
+   * To configure different behavour, use other matchers in the `Match` class.
+   * @param props the output as should be expected in the template.
+   */
+  public hasOutput(props: any): void {
+    const matchError = hasOutput(this.inspector, props);
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Get the set of matching Outputs that match the given properties in the CloudFormation template.
+   * @param props by default, matches all Outputs in the template.
+   * When a literal object is provided, performs a partial match via `Match.objectLike()`.
+   * Use the `Match` APIs to configure a different behaviour.
+   */
+  public findOutputs(props: any = {}): { [key: string]: any }[] {
+    return findOutputs(this.inspector, props);
   }
 
   /**
