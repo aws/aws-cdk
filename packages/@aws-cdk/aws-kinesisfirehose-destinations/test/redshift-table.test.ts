@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT, ResourcePart, anything, arrayWith } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
@@ -47,7 +46,7 @@ describe('redshift destination', () => {
       destinations: [destination],
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       RedshiftDestinationConfiguration: {
         ClusterJDBCURL: {
           'Fn::Join': [
@@ -124,7 +123,7 @@ describe('redshift destination', () => {
       destinations: [destination],
     });
 
-    expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       RedshiftDestinationConfiguration: {
         ClusterJDBCURL: {
           'Fn::Join': [
@@ -235,7 +234,7 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Environment: {
           Variables: {
             adminUserArn: {
@@ -352,7 +351,7 @@ describe('redshift destination', () => {
       destinations: [destination],
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       RedshiftDestinationConfiguration: {
         S3Configuration: {
           BucketARN: {
@@ -370,10 +369,10 @@ describe('redshift destination', () => {
         },
       },
     });
-    expect(stack).toHaveResourceLike('AWS::Redshift::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       IamRoles: [],
     });
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -382,6 +381,7 @@ describe('redshift destination', () => {
               's3:GetBucket*',
               's3:List*',
             ],
+            Effect: 'Allow',
             Resource: [
               {
                 'Fn::Join': [
@@ -427,12 +427,12 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         RedshiftDestinationConfiguration: {
           Password: 'INSECURE_NOT_FOR_PRODUCTION',
         },
       });
-      expect(stack).not.toHaveResource('Custom::FirehoseRedshiftUser');
+      Template.fromStack(stack).resourceCountIs('Custom::FirehoseRedshiftUser', 0);
     });
 
     it('creates cluster user using custom resource', () => {
@@ -444,7 +444,7 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResource('Custom::FirehoseRedshiftUser');
+      Template.fromStack(stack).resourceCountIs('Custom::FirehoseRedshiftUser', 1);
     });
 
     it('only creates one Lambda handler', () => {
@@ -464,7 +464,7 @@ describe('redshift destination', () => {
       });
 
       // 3 = 1 handler + 2 providers
-      expect(stack).toCountResources('AWS::Lambda::Function', 3);
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 3);
     });
   });
 
@@ -479,14 +479,14 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         RedshiftDestinationConfiguration: {
           CopyCommand: {
             DataTableName: 'existing-table',
           },
         },
       });
-      expect(stack).not.toHaveResource('Custom::FirehoseRedshiftTable');
+      Template.fromStack(stack).resourceCountIs('Custom::FirehoseRedshiftTable', 0);
     });
 
     it('creates cluster table using custom resource', () => {
@@ -498,7 +498,7 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResource('Custom::FirehoseRedshiftTable');
+      Template.fromStack(stack).resourceCountIs('Custom::FirehoseRedshiftTable', 1);
     });
 
     it('only creates one Lambda handler', () => {
@@ -518,7 +518,7 @@ describe('redshift destination', () => {
       });
 
       // 3 = 1 handler + 2 providers
-      expect(stack).toCountResources('AWS::Lambda::Function', 3);
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 3);
     });
   });
 
@@ -554,14 +554,14 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResource('AWS::Logs::LogGroup');
-      expect(stack).toHaveResource('AWS::Logs::LogStream');
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogStream', 2);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         RedshiftDestinationConfiguration: {
           CloudWatchLoggingOptions: {
             Enabled: true,
-            LogGroupName: anything(),
-            LogStreamName: anything(),
+            LogGroupName: { Ref: 'DeliveryStreamLogGroupA92E8EA0' },
+            LogStreamName: { Ref: 'DeliveryStreamLogGroupRedshift67DE3657' },
           },
         },
       });
@@ -577,10 +577,10 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         RedshiftDestinationConfiguration: {
-          CloudWatchLoggingOptions: ABSENT,
+          CloudWatchLoggingOptions: Match.absentProperty(),
         },
       });
     });
@@ -596,13 +596,13 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         RedshiftDestinationConfiguration: {
           CloudWatchLoggingOptions: {
             Enabled: true,
             LogGroupName: stack.resolve(logGroup.logGroupName),
-            LogStreamName: anything(),
+            LogStreamName: { Ref: 'LogGroupRedshift4ADB569B' },
           },
         },
       });
@@ -635,19 +635,17 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         Roles: [stack.resolve(destinationRole.roleName)],
         PolicyDocument: {
-          Statement: arrayWith(
-            {
-              Action: [
-                'logs:CreateLogStream',
-                'logs:PutLogEvents',
-              ],
-              Effect: 'Allow',
-              Resource: stack.resolve(logGroup.logGroupArn),
-            },
-          ),
+          Statement: Match.arrayWith([{
+            Action: [
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: stack.resolve(logGroup.logGroupArn),
+          }]),
         },
       });
     });
@@ -681,8 +679,7 @@ describe('redshift destination', () => {
         destinations: [destinationWithBasicLambdaProcessor],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function');
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         RedshiftDestinationConfiguration: {
           ProcessingConfiguration: {
             Enabled: true,
@@ -719,8 +716,7 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function');
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         RedshiftDestinationConfiguration: {
           ProcessingConfiguration: {
             Enabled: true,
@@ -759,22 +755,20 @@ describe('redshift destination', () => {
         destinations: [destinationWithBasicLambdaProcessor],
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: 'RedshiftDestinationRoleDefaultPolicyB29BE586',
         Roles: [stack.resolve(destinationRole.roleName)],
         PolicyDocument: {
-          Statement: arrayWith(
-            {
-              Action: 'lambda:InvokeFunction',
-              Effect: 'Allow',
-              Resource: stack.resolve(lambdaFunction.functionArn),
-            },
-          ),
+          Statement: Match.arrayWith([{
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: stack.resolve(lambdaFunction.functionArn),
+          }]),
         },
       });
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResource('AWS::KinesisFirehose::DeliveryStream', {
         DependsOn: ['RedshiftDestinationRoleDefaultPolicyB29BE586'],
-      }, ResourcePart.CompleteDefinition);
+      });
     });
   });
 
@@ -800,14 +794,14 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
-        RedshiftDestinationConfiguration: {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        RedshiftDestinationConfiguration: Match.objectLike({
           S3BackupConfiguration: {
-            BucketARN: anything(),
+            BucketARN: { 'Fn::GetAtt': ['DeliveryStreamBackupBucket48C8465F', 'Arn'] },
             RoleARN: stack.resolve(destinationRole.roleArn),
           },
           S3BackupMode: 'Enabled',
-        },
+        }),
       });
     });
 
@@ -824,19 +818,19 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
-        RedshiftDestinationConfiguration: {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        RedshiftDestinationConfiguration: Match.objectLike({
           S3BackupConfiguration: {
             BucketARN: stack.resolve(backupBucket.bucketArn),
             CloudWatchLoggingOptions: {
               Enabled: true,
-              LogGroupName: anything(),
-              LogStreamName: anything(),
+              LogGroupName: { Ref: 'DeliveryStreamLogGroupA92E8EA0' },
+              LogStreamName: { Ref: 'DeliveryStreamLogGroupS3BackupD848C05F' },
             },
             RoleARN: stack.resolve(destinationRole.roleArn),
           },
           S3BackupMode: 'Enabled',
-        },
+        }),
       });
     });
 
@@ -873,14 +867,14 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
-        RedshiftDestinationConfiguration: {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        RedshiftDestinationConfiguration: Match.objectLike({
           S3BackupConfiguration: {
             BucketARN: stack.resolve(backupBucket.bucketArn),
             CloudWatchLoggingOptions: {
               Enabled: true,
               LogGroupName: stack.resolve(logGroup.logGroupName),
-              LogStreamName: anything(),
+              LogStreamName: { Ref: 'BackupLogGroupS3BackupA7B3FB1E' },
             },
             RoleARN: stack.resolve(destinationRole.roleArn),
             EncryptionConfiguration: {
@@ -894,7 +888,7 @@ describe('redshift destination', () => {
             CompressionFormat: 'ZIP',
           },
           S3BackupMode: 'Enabled',
-        },
+        }),
       });
     });
   });
@@ -909,10 +903,10 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         RedshiftDestinationConfiguration: {
           CloudWatchLoggingOptions: {
-            BufferingHints: ABSENT,
+            BufferingHints: Match.absentProperty(),
           },
         },
       });
@@ -929,7 +923,7 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         RedshiftDestinationConfiguration: {
           S3Configuration: {
             BufferingHints: {
@@ -994,7 +988,7 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         RedshiftDestinationConfiguration: {
           S3Configuration: {
             EncryptionConfiguration: {
@@ -1023,10 +1017,10 @@ describe('redshift destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         Roles: [stack.resolve(destinationRole.roleName)],
         PolicyDocument: {
-          Statement: arrayWith({
+          Statement: Match.arrayWith([{
             Action: [
               'kms:Decrypt',
               'kms:Encrypt',
@@ -1035,7 +1029,7 @@ describe('redshift destination', () => {
             ],
             Effect: 'Allow',
             Resource: stack.resolve(key.keyArn),
-          }),
+          }]),
         },
       });
     });
