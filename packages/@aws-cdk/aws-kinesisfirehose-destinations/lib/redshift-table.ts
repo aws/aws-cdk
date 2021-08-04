@@ -138,22 +138,6 @@ export interface RedshiftDestinationProps extends CommonDestinationProps, Common
  * Redshift table delivery stream destination.
  */
 export class RedshiftTable implements firehose.IDestination {
-  /**
-   * The Redshift database that contains the table were data will be delivered.
-   */
-  public readonly database: string;
-
-  /**
-   * The name of the Redshift table were data will be delivered.
-   */
-  get tableName(): string {
-    if (!this._tableName) {
-      throw new Error('Bind must be called before the name of the generated table is available');
-    }
-    return this._tableName;
-  }
-
-  private _tableName?: string;
   private readonly adminUser?: secretsmanager.ISecret;
 
   constructor(private readonly cluster: redshift.ICluster, private readonly props: RedshiftDestinationProps) {
@@ -191,13 +175,11 @@ export class RedshiftTable implements firehose.IDestination {
         );
       }
     }
-
-    this.database = props.database;
-    this._tableName = props.tableName;
   }
 
   public bind(scope: Construct, options: firehose.DestinationBindOptions): firehose.DestinationConfig {
     const {
+      database,
       tableColumns,
       user: userConfig,
       compression,
@@ -212,17 +194,18 @@ export class RedshiftTable implements firehose.IDestination {
     });
 
     const endpoint = this.cluster.clusterEndpoint;
-    const jdbcUrl = `jdbc:redshift://${endpoint.hostname}:${cdk.Token.asString(endpoint.port)}/${this.database}`;
+    const jdbcUrl = `jdbc:redshift://${endpoint.hostname}:${cdk.Token.asString(endpoint.port)}/${database}`;
     this.cluster.connections.allowDefaultPortFrom(options.connections, 'Allow incoming connections from Kinesis Data Firehose');
 
-    if (!this._tableName) {
+    let tableName = this.props.tableName;
+    if (!tableName) {
       const redshiftTable = new FirehoseRedshiftTable(scope, 'Firehose Redshift Table', {
         cluster: this.cluster,
         adminUser: this.adminUser!,
-        database: this.database,
+        database: database,
         tableColumns: tableColumns,
       });
-      this._tableName = redshiftTable.tableName;
+      tableName = redshiftTable.tableName;
     }
 
     const user = (() => {
@@ -242,8 +225,8 @@ export class RedshiftTable implements firehose.IDestination {
           cluster: this.cluster,
           adminUser: this.adminUser!,
           userSecret: attachedSecret,
-          database: this.database,
-          tableName: this.tableName,
+          database: database,
+          tableName: tableName,
         });
 
         return {
@@ -288,7 +271,7 @@ export class RedshiftTable implements firehose.IDestination {
       redshiftDestinationConfiguration: {
         clusterJdbcurl: jdbcUrl,
         copyCommand: {
-          dataTableName: this.tableName,
+          dataTableName: tableName,
           dataTableColumns: tableColumns.map(column => column.name).join(),
           copyOptions: copyOptions + (compression === Compression.GZIP ? ' gzip' : ''),
         },
