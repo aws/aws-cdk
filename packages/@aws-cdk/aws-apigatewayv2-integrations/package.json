@@ -8,20 +8,20 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.Alpha.AWS.APIGatewayv2.Integrations",
+        "namespace": "Amazon.CDK.AWS.Apigatewayv2.Integrations",
         "packageId": "Amazon.CDK.AWS.APIGatewayv2.Integrations",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.alpha.services.apigatewayv2.integrations",
+        "package": "software.amazon.awscdk.services.apigatewayv2.integrations",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-alpha.aws-apigatewayv2-integrations"
+          "artifactId": "apigatewayv2-integrations"
         }
       },
       "python": {
-        "distName": "aws-cdk.alpha.aws-apigatewayv2-integrations",
-        "module": "aws_cdk.alpha.aws_apigatewayv2_integrations",
+        "distName": "aws-cdk.aws-apigatewayv2-integrations",
+        "module": "aws_cdk.aws_apigatewayv2_integrations",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"

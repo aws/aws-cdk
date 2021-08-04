@@ -9,15 +9,15 @@
     "projectReferences": true,
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.Alpha.AWS.IVS",
+        "namespace": "Amazon.CDK.AWS.Ivs",
         "packageId": "Amazon.CDK.AWS.IVS",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.alpha.services.ivs",
+        "package": "software.amazon.awscdk.services.ivs",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-alpha.aws-ivs"
+          "artifactId": "ivs"
         }
       },
       "python": {
@@ -25,8 +25,8 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
         ],
-        "distName": "aws-cdk.alpha.aws-ivs",
-        "module": "aws_cdk.alpha.aws_ivs"
+        "distName": "aws-cdk.aws-ivs",
+        "module": "aws_cdk.aws_ivs"
       }
     }
   },

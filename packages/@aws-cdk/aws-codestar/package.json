@@ -8,20 +8,20 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.Alpha.AWS.CodeStar",
+        "namespace": "Amazon.CDK.AWS.Codestar",
         "packageId": "Amazon.CDK.AWS.CodeStar",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.alpha.services.codestar",
+        "package": "software.amazon.awscdk.services.codestar",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-alpha.aws-codestar"
+          "artifactId": "codestar"
         }
       },
       "python": {
-        "distName": "aws-cdk.alpha.aws-codestar",
-        "module": "aws_cdk.alpha.aws_codestar",
+        "distName": "aws-cdk.aws-codestar",
+        "module": "aws_cdk.aws_codestar",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
