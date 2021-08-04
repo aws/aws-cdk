@@ -1,7 +1,7 @@
 import { Stack, Stage } from '@aws-cdk/core';
 import { Match } from './match';
 import { Matcher } from './matcher';
-import { findResources, hasResource } from './private/resource';
+import { findResources, hasResource } from './private/resources';
 import * as assert from './vendored/assert';
 
 /**
