@@ -6,12 +6,17 @@ export function findResources(inspector: StackInspector, type: string, props: an
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
   let results: { [key: string]: any }[] = [];
 
-  eachResourceWithType(inspector, type, (resource) => {
-    const result = matcher.test(resource);
-    if (!result.hasFailed()) {
-      results.push(resource);
-    }
-  });
+  eachEntryInSection(
+    inspector.value.Resources,
+    (resource) => resource.Type === type,
+
+    (resource) => {
+      const result = matcher.test(resource);
+      if (!result.hasFailed()) {
+        results.push(resource);
+      }
+    },
+  );
 
   return results;
 }
@@ -19,22 +24,25 @@ export function findResources(inspector: StackInspector, type: string, props: an
 export function hasResource(inspector: StackInspector, type: string, props: any): string | void {
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
   let closestResult: MatchResult | undefined = undefined;
-  let closestResource: { [key: string]: any } | undefined = undefined;
   let count: number = 0;
 
   let match = false;
-  eachResourceWithType(inspector, type, (resource) => {
-    if (match) { return; }
-    count++;
-    const result = matcher.test(resource);
-    if (!result.hasFailed()) {
-      match = true;
-    }
-    if (closestResult === undefined || closestResult.failCount > result.failCount) {
-      closestResult = result;
-      closestResource = resource;
-    }
-  });
+  eachEntryInSection(
+    inspector.value.Resources,
+    (resource) => resource.Type === type,
+
+    (resource) => {
+      if (match) { return; }
+      count++;
+      const result = matcher.test(resource);
+      if (!result.hasFailed()) {
+        match = true;
+      }
+      if (closestResult === undefined || closestResult.failCount > result.failCount) {
+        closestResult = result;
+      }
+    },
+  );
 
   if (match) {
     return;
@@ -44,24 +52,25 @@ export function hasResource(inspector: StackInspector, type: string, props: any)
     return `No resource with type ${type} found`;
   }
 
-  if (!closestResource) {
-    throw new Error('unexpected: closestResult is null');
-  }
-
   return [
     `${count} resources with type ${type} found, but none match as expected.`,
-    formatMessage(closestResult, closestResource),
+    formatMessage(
+      closestResult,
+      // typescript thinks 'closestResult' is never at this point but is not.
+      // Not clear why. Force cast.
+      (closestResult as unknown as MatchResult).target,
+    ),
   ].join('\n');
 }
 
-function eachResourceWithType(
-  inspector: StackInspector,
-  type: string,
+function eachEntryInSection(
+  section: any,
+  predicate: undefined | ((entry: any) => boolean),
   cb: (resource: {[key: string]: any}) => void): void {
 
-  for (const logicalId of Object.keys(inspector.value.Resources ?? {})) {
-    const resource: { [key: string]: any } = inspector.value.Resources[logicalId];
-    if (resource.Type === type) {
+  for (const logicalId of Object.keys(section ?? {})) {
+    const resource: { [key: string]: any } = section[logicalId];
+    if (predicate === undefined || predicate(resource)) {
       cb(resource);
     }
   }
