@@ -277,17 +277,17 @@ describe('delivery stream', () => {
       destinations: [mockS3Destination],
       encryption: firehose.StreamEncryption.AWS_OWNED,
       sourceStream,
-    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis Data Stream. Specify server-side encryption on the Data Stream instead.');
+    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 2', {
       destinations: [mockS3Destination],
       encryption: firehose.StreamEncryption.CUSTOMER_MANAGED,
       sourceStream,
-    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis Data Stream. Specify server-side encryption on the Data Stream instead.');
+    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 3', {
       destinations: [mockS3Destination],
       encryptionKey: new kms.Key(stack, 'Key'),
       sourceStream,
-    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis Data Stream. Specify server-side encryption on the Data Stream instead.');
+    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
   });
 
   test('grant provides access to stream', () => {

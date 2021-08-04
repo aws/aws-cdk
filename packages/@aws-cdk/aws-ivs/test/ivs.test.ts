@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { expect as expectStack } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import * as ivs from '../lib';
 
@@ -13,7 +12,7 @@ test('channel default properties', () => {
   const stack = new Stack();
   new ivs.Channel(stack, 'Channel');
 
-  expectStack(stack).toMatch({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       Channel4048F119: {
         Type: 'AWS::IVS::Channel',
@@ -28,7 +27,7 @@ test('channel name', () => {
     name: 'CarrotsAreTasty',
   });
 
-  expectStack(stack).toMatch({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       Channel4048F119: {
         Type: 'AWS::IVS::Channel',
@@ -46,7 +45,7 @@ test('channel is authorized', () => {
     authorized: true,
   });
 
-  expectStack(stack).toMatch({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       Channel4048F119: {
         Type: 'AWS::IVS::Channel',
@@ -64,7 +63,7 @@ test('channel type', () => {
     type: ivs.ChannelType.BASIC,
   });
 
-  expectStack(stack).toMatch({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       Channel4048F119: {
         Type: 'AWS::IVS::Channel',
@@ -82,7 +81,7 @@ test('channel latency mode', () => {
     latencyMode: ivs.LatencyMode.NORMAL,
   });
 
-  expectStack(stack).toMatch({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       Channel4048F119: {
         Type: 'AWS::IVS::Channel',
@@ -115,7 +114,7 @@ test('playback key pair mandatory properties', () => {
     publicKeyMaterial: publicKey,
   });
 
-  expectStack(stack).toMatch({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       PlaybackKeyPairBE17315B: {
         Type: 'AWS::IVS::PlaybackKeyPair',
@@ -134,7 +133,7 @@ test('playback key pair name', () => {
     name: 'CarrotsAreNutritious',
   });
 
-  expectStack(stack).toMatch({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       PlaybackKeyPairBE17315B: {
         Type: 'AWS::IVS::PlaybackKeyPair',
@@ -162,7 +161,7 @@ test('stream key mandatory properties', () => {
     channel: ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh'),
   });
 
-  expectStack(stack).toMatch({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       StreamKey9F296F4F: {
         Type: 'AWS::IVS::StreamKey',
@@ -179,7 +178,7 @@ test('channel and stream key.. at the same time', () => {
   const channel = new ivs.Channel(stack, 'Channel');
   channel.addStreamKey('StreamKey');
 
-  expectStack(stack).toMatch({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       Channel4048F119: {
         Type: 'AWS::IVS::Channel',
@@ -199,7 +198,7 @@ test('stream key from channel reference', () => {
   const channel = ivs.Channel.fromChannelArn(stack, 'Channel', 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh');
   channel.addStreamKey('StreamKey');
 
-  expectStack(stack).toMatch({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       ChannelStreamKey60BDC2BE: {
         Type: 'AWS::IVS::StreamKey',
