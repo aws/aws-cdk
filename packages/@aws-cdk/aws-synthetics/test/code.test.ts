@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cxapi from '@aws-cdk/cx-api';
 import { App, Stack } from '@aws-cdk/core';
@@ -54,7 +54,7 @@ describe(synthetics.Code.fromAsset, () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
       Code: {
         Handler: 'canary.handler',
         S3Bucket: stack.resolve(directoryAsset.bind(stack, 'canary.handler').s3Location?.bucketName),

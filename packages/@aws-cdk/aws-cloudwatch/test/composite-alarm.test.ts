@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from '../lib';
 
@@ -59,7 +59,7 @@ describe('CompositeAlarm', () => {
       alarmRule,
     });
 
-    expect(stack).toHaveResource('AWS::CloudWatch::CompositeAlarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
       AlarmName: 'CompositeAlarm',
       AlarmRule: {
         'Fn::Join': [

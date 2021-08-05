@@ -6,7 +6,7 @@ import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
 
-jest.mock('@aws-cdk/aws-lambda');
+jest.spyOn(Code, 'fromAsset');
 const fromAssetMock = jest.spyOn(DockerImage, 'fromBuild');
 let getGoBuildVersionMock = jest.spyOn(util, 'getGoBuildVersion');
 

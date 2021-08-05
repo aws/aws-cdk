@@ -1,4 +1,4 @@
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -27,7 +27,7 @@ describe('DynamoEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -58,7 +58,7 @@ describe('DynamoEventSource', () => {
       }],
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
@@ -95,7 +95,7 @@ describe('DynamoEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       TumblingWindowInSeconds: 60,
     });
 
@@ -121,7 +121,7 @@ describe('DynamoEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
@@ -219,7 +219,7 @@ describe('DynamoEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
@@ -319,7 +319,7 @@ describe('DynamoEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
@@ -399,7 +399,7 @@ describe('DynamoEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
@@ -435,7 +435,7 @@ describe('DynamoEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
@@ -515,7 +515,7 @@ describe('DynamoEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
@@ -596,7 +596,7 @@ describe('DynamoEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
@@ -642,7 +642,7 @@ describe('DynamoEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
@@ -678,7 +678,7 @@ describe('DynamoEventSource', () => {
     }));
 
     //THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
 

@@ -9,7 +9,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { CodeBuildStep } from '../../lib';
-import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps } from '../testhelpers';
+import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps, OneStackApp } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -1103,5 +1103,49 @@ behavior('can provide custom BuildSpec that is merged with generated one', (suit
         })),
       },
     });
+  }
+});
+
+behavior('stacks synthesized for pipeline will be checked during synth', (suite) => {
+  let stage: OneStackApp;
+  beforeEach(() => {
+    stage = new OneStackApp(pipelineStack, 'MyApp');
+  });
+
+  suite.legacy(() => {
+    // WHEN
+    const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      synthAction: new cdkp.SimpleSynthAction({
+        sourceArtifact,
+        cloudAssemblyArtifact,
+        installCommands: ['install1', 'install2'],
+        buildCommands: ['build1', 'build2'],
+        testCommands: ['test1', 'test2'],
+        synthCommand: 'cdk synth',
+      }),
+    });
+    pipeline.addApplicationStage(stage);
+
+    THEN();
+  });
+
+  suite.modern(() => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      installCommands: ['install1', 'install2'],
+      commands: ['build1', 'build2', 'test1', 'test2', 'cdk synth'],
+    });
+    pipeline.addStage(stage);
+
+    THEN();
+  });
+
+  function THEN() {
+    // All stacks in the ASM have been synthesized with 'validateOnSynth: true'
+    const asm = stage.synth();
+    for (const stack of asm.stacks) {
+      expect(stack.validateOnSynth).toEqual(true);
+    }
   }
 });

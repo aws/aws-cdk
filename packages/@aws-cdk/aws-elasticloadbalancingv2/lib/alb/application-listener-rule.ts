@@ -225,7 +225,7 @@ export class ApplicationListenerRule extends Construct {
       throw new Error(`'${providedActions}' specified together, specify only one`);
     }
 
-    if (props.priority <= 0) {
+    if (!cdk.Token.isUnresolved(props.priority) && props.priority <= 0) {
       throw new Error('Priority must have value greater than or equal to 1');
     }
 

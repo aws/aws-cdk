@@ -1,3 +1,81 @@
+# CloudFormation Resource Specification v39.7.0
+
+## New Resource Types
+
+* AWS::Logs::ResourcePolicy
+* AWS::LookoutEquipment::InferenceScheduler
+
+## Attribute Changes
+
+* AWS::Amplify::Domain AutoSubDomainCreationPatterns.DuplicatesAllowed (__added__)
+* AWS::S3::AccessPoint Arn (__added__)
+* AWS::S3::AccessPoint Name (__added__)
+
+## Property Changes
+
+* AWS::Amplify::Domain AutoSubDomainCreationPatterns.DuplicatesAllowed (__added__)
+* AWS::Amplify::Domain SubDomainSettings.DuplicatesAllowed (__added__)
+* AWS::Cassandra::Table EncryptionSpecification (__added__)
+* AWS::EC2::TransitGateway AssociationDefaultRouteTableId (__added__)
+* AWS::EC2::TransitGateway PropagationDefaultRouteTableId (__added__)
+* AWS::EC2::TransitGateway TransitGatewayCidrBlocks (__added__)
+* AWS::EC2::TransitGateway AutoAcceptSharedAttachments.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway DefaultRouteTableAssociation.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway DefaultRouteTablePropagation.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway DnsSupport.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway VpnEcmpSupport.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::VPCCidrBlock Ipv6CidrBlock (__added__)
+* AWS::EC2::VPCCidrBlock Ipv6Pool (__added__)
+* AWS::Glue::Crawler RecrawlPolicy (__added__)
+* AWS::ImageBuilder::ContainerRecipe InstanceConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::ImageRecipe AdditionalInstanceConfiguration (__added__)
+* AWS::LookoutMetrics::Alert Action.PrimitiveType (__deleted__)
+* AWS::LookoutMetrics::Alert Action.Type (__added__)
+* AWS::LookoutMetrics::AnomalyDetector AnomalyDetectorConfig.PrimitiveType (__deleted__)
+* AWS::LookoutMetrics::AnomalyDetector AnomalyDetectorConfig.Type (__added__)
+* AWS::S3::AccessPoint Name (__deleted__)
+* AWS::S3::AccessPoint PolicyStatus (__added__)
+* AWS::SSMIncidents::ReplicationSet Regions.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::Cassandra::Table.EncryptionSpecification (__added__)
+* AWS::Glue::Crawler.RecrawlPolicy (__added__)
+* AWS::Glue::Database.DataLakePrincipal (__added__)
+* AWS::Glue::Database.PrincipalPrivileges (__added__)
+* AWS::ImageBuilder::ImageRecipe.AdditionalInstanceConfiguration (__added__)
+* AWS::ImageBuilder::ImageRecipe.ComponentParameter (__added__)
+* AWS::ImageBuilder::ImageRecipe.SystemsManagerAgent (__added__)
+* AWS::LookoutMetrics::Alert.Action (__added__)
+* AWS::LookoutMetrics::Alert.LambdaConfiguration (__added__)
+* AWS::LookoutMetrics::Alert.SNSConfiguration (__added__)
+* AWS::LookoutMetrics::AnomalyDetector.AnomalyDetectorConfig (__added__)
+* AWS::CloudWatch::Alarm.MetricDataQuery AccountId (__added__)
+* AWS::Glue::Database.DatabaseInput CreateTableDefaultPermissions (__added__)
+* AWS::Glue::Partition.SchemaReference SchameVersionId (__deleted__)
+* AWS::Glue::Partition.SchemaReference SchemaVersionId (__added__)
+* AWS::Glue::Table.SchemaReference SchameVersionId (__deleted__)
+* AWS::Glue::Table.SchemaReference SchemaVersionId (__added__)
+* AWS::ImageBuilder::ImageRecipe.ComponentConfiguration Parameters (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionDataSet FormatVersion (__added__)
+
+
 # CloudFormation Resource Specification v39.5.0
 
 ## New Resource Types
