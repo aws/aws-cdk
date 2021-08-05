@@ -118,9 +118,6 @@ export class HelmChart extends CoreConstruct {
     let chartAssetPolicy: Policy | undefined = undefined;
 
     if (props.chartAsset) {
-      // TODO: try: props.chartAsset.grantRead(provider.handlerRole);
-      // Use of props.chartAsset.grantRead(provider.handlerRole) causes a
-      // dependency loop as it causes the cluster to depend on the asset.
       chartAssetPolicy = new Policy(this, 'ChartAssetPolicy', {
         roles: [provider.handlerRole],
         statements: [new PolicyStatement({
