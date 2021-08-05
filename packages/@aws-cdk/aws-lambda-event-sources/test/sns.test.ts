@@ -1,4 +1,4 @@
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
@@ -18,7 +18,7 @@ describe('SNSEventSource', () => {
     fn.addEventSource(new sources.SnsEventSource(topic));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       'Action': 'lambda:InvokeFunction',
       'FunctionName': {
         'Fn::GetAtt': [
@@ -32,7 +32,7 @@ describe('SNSEventSource', () => {
       },
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       'Endpoint': {
         'Fn::GetAtt': [
           'Fn9270CBC0',
@@ -67,7 +67,7 @@ describe('SNSEventSource', () => {
     fn.addEventSource(new sources.SnsEventSource(topic, props));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       'Action': 'lambda:InvokeFunction',
       'FunctionName': {
         'Fn::GetAtt': [
@@ -81,7 +81,7 @@ describe('SNSEventSource', () => {
       },
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       'Endpoint': {
         'Fn::GetAtt': [
           'Fn9270CBC0',
