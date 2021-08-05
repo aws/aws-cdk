@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.117.0](https://github.com/aws/aws-cdk/compare/v1.116.0...v1.117.0) (2021-08-05)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **assertions:** `Template.fromTemplate()` is now
+renamed to `Template.fromJSON()` to provide clarity.
+* **assertions:** `TemplateAssertions` is now renamed to
+`Template`.
+
+### Features
+
+* **aws-cloudfront:** add enabled to web distribution ([#15433](https://github.com/aws/aws-cdk/issues/15433)) ([7ad9348](https://github.com/aws/aws-cdk/commit/7ad9348b49ab3b9dde1b4f1db3d888ddec423a9f))
+* **aws-ec2:** Add SubnetFilter for Id and CIDR netmask ([#15373](https://github.com/aws/aws-cdk/issues/15373)) ([407b02d](https://github.com/aws/aws-cdk/commit/407b02d62bd8b3eb77e53fc74197b64148640b5a)), closes [#15228](https://github.com/aws/aws-cdk/issues/15228)
+* **aws-kinesisfirehose:** support for S3 destination encryption on DeliveryStream ([#15558](https://github.com/aws/aws-cdk/issues/15558)) ([3888773](https://github.com/aws/aws-cdk/commit/388877300e460e23cd69d67a16a00f7c57630649)), closes [#15555](https://github.com/aws/aws-cdk/issues/15555)
+* **cfnspec:** cloudformation spec v39.8.0 ([#15885](https://github.com/aws/aws-cdk/issues/15885)) ([60e6b41](https://github.com/aws/aws-cdk/commit/60e6b4186680af98b538a21e82146fb0a0e84f33))
+* **cloudfront:** Origin Shield support ([#15453](https://github.com/aws/aws-cdk/issues/15453)) ([08ebbae](https://github.com/aws/aws-cdk/commit/08ebbae4cffdf85a66775f4e8f5ea9d7400bf358)), closes [#12872](https://github.com/aws/aws-cdk/issues/12872)
+* **cloudfront:** use TLS_V1_2_2021 SecurityPolicy as default version (under feature flag) ([#15477](https://github.com/aws/aws-cdk/issues/15477)) ([7b64abf](https://github.com/aws/aws-cdk/commit/7b64abf51c52cd2f6f585d7fd9201030fdba8163))
+* **ec2:** Add Transcribe interface endpoint ([#15465](https://github.com/aws/aws-cdk/issues/15465)) ([929d6ae](https://github.com/aws/aws-cdk/commit/929d6aef84eb21aea0d9a4fff953a0f39246288e))
+* **eks:** support Kubernetes 1.21 ([#15774](https://github.com/aws/aws-cdk/issues/15774)) ([83dd318](https://github.com/aws/aws-cdk/commit/83dd318959b1b1e5f94b5a31030d03379638c9ad)), closes [#15758](https://github.com/aws/aws-cdk/issues/15758)
+* **kinesisfirehose:** add metrics functions to IDeliveryStream ([#15618](https://github.com/aws/aws-cdk/issues/15618)) ([33909ed](https://github.com/aws/aws-cdk/commit/33909ed2144ede58e5e503f3f220f610dbd89675)), closes [#15543](https://github.com/aws/aws-cdk/issues/15543)
+* **kinesisfirehose:** add support for backing up source records to S3 ([#15725](https://github.com/aws/aws-cdk/issues/15725)) ([b86062f](https://github.com/aws/aws-cdk/commit/b86062ff6215384b5def76e07586e94cc6ecc9c1)), closes [#15724](https://github.com/aws/aws-cdk/issues/15724)
+* **kinesisfirehose:** add support for BufferingHints ([#15557](https://github.com/aws/aws-cdk/issues/15557)) ([099b584](https://github.com/aws/aws-cdk/commit/099b5840cc5b45bad987b7e797e6009d6383a3a7)), closes [#15554](https://github.com/aws/aws-cdk/issues/15554)
+* **kinesisfirehose:** add support for Lambda data processors ([#15704](https://github.com/aws/aws-cdk/issues/15704)) ([6244a81](https://github.com/aws/aws-cdk/commit/6244a81af17ec823df409437c4a33ef5fb13a1c5)), closes [#15703](https://github.com/aws/aws-cdk/issues/15703)
+* **kinesisfirehose:** add support for server-side encryption on DeliveryStream ([#15547](https://github.com/aws/aws-cdk/issues/15547)) ([74f3cda](https://github.com/aws/aws-cdk/commit/74f3cda53de7e8b5cd1d144e79cf9f5bb28e1938)), closes [#15546](https://github.com/aws/aws-cdk/issues/15546)
+* **kinesisfirehose:** supports Kinesis data stream source for delivery stream ([#15836](https://github.com/aws/aws-cdk/issues/15836)) ([afd5bf7](https://github.com/aws/aws-cdk/commit/afd5bf768a280cd11b4e72db841af36df2268ccf)), closes [#15500](https://github.com/aws/aws-cdk/issues/15500) [#10783](https://github.com/aws/aws-cdk/issues/10783)
+* **kinesisfirehose-destinations:** add support for compression on S3 delivery stream destinations ([#15550](https://github.com/aws/aws-cdk/issues/15550)) ([1eb56a0](https://github.com/aws/aws-cdk/commit/1eb56a025f728b7596f57b1289c2fc4c1c20e7f4)), closes [#15548](https://github.com/aws/aws-cdk/issues/15548)
+* **kinesisfirehose-destinations:** add support for prefixes in the S3 destination ([#15552](https://github.com/aws/aws-cdk/issues/15552)) ([d227e48](https://github.com/aws/aws-cdk/commit/d227e48458832ff85d2d575e5462e45d29f49a6c)), closes [#15551](https://github.com/aws/aws-cdk/issues/15551)
+* **lambda:** cloudwatch lambda insights ([#15439](https://github.com/aws/aws-cdk/issues/15439)) ([9efd800](https://github.com/aws/aws-cdk/commit/9efd800b4eea3a849edc5710975e4d70ec14a5cd))
+* **Route53:** add support for RemovalPolicy in CrossAccountZoneDelegationRecord ([#15782](https://github.com/aws/aws-cdk/issues/15782)) ([9eea4b8](https://github.com/aws/aws-cdk/commit/9eea4b8d454f7bc23930e6254651029b1a348a2c)), closes [#15211](https://github.com/aws/aws-cdk/issues/15211)
+* **s3-deployment:** control object access ([#15730](https://github.com/aws/aws-cdk/issues/15730)) ([f58cf3c](https://github.com/aws/aws-cdk/commit/f58cf3c95eb32e9a4dc797665160e1b508ace2e1))
+* **servicecatalog:** add CloudFormation Parameter constraint ([#15770](https://github.com/aws/aws-cdk/issues/15770)) ([58fda91](https://github.com/aws/aws-cdk/commit/58fda9104ad884026d578dc0602f7d64dd533f6d))
+* **stepfunctions-tasks:** add sns publish with message attributes ([#14817](https://github.com/aws/aws-cdk/issues/14817)) ([bc99e82](https://github.com/aws/aws-cdk/commit/bc99e8271d443b10928d99437593c52efd763d7c)), closes [#4702](https://github.com/aws/aws-cdk/issues/4702)
+
+
+### Bug Fixes
+
+* **assert:** module is incompatible with jest@27 ([#15666](https://github.com/aws/aws-cdk/issues/15666)) ([f446566](https://github.com/aws/aws-cdk/commit/f446566bd26ca024aed0a88da08a82a261c0dac6))
+* **appsync:** graphqlapi throws incorrect error message for authorizationConfig ([#15830](https://github.com/aws/aws-cdk/issues/15830)) ([1f23313](https://github.com/aws/aws-cdk/commit/1f23313e889a00d85e7cbc56a64242d6e7762835)), closes [#15039](https://github.com/aws/aws-cdk/issues/15039)
+* **eks:** Allow desiredsize minsize and maxsize to accept CfnParameters. ([#15487](https://github.com/aws/aws-cdk/issues/15487)) ([fb43769](https://github.com/aws/aws-cdk/commit/fb437693c0f1568ddc53e9a198e54be3b9a01592))
+* **chatbot:** ARN validation in fromSlackChannelConfigurationArn fails for tokenized values ([#15849](https://github.com/aws/aws-cdk/issues/15849)) ([440ca35](https://github.com/aws/aws-cdk/commit/440ca35cf0f0e9f6f86bef445bd9aa6ef05ff9be)), closes [#15842](https://github.com/aws/aws-cdk/issues/15842)
+* **cli:** move fail option into the diff command ([#15829](https://github.com/aws/aws-cdk/issues/15829)) ([473c1d8](https://github.com/aws/aws-cdk/commit/473c1d8248ae84bd8b4bb3863334e05e5328fddc))
+* **ec2:** volumename doesn't set name of volume ([#15832](https://github.com/aws/aws-cdk/issues/15832)) ([b842702](https://github.com/aws/aws-cdk/commit/b842702cbb7aa6632dd2fc4b4981abdd3a773826)), closes [#15831](https://github.com/aws/aws-cdk/issues/15831)
+* **elbv2:** unresolved listener priority throws error ([#15804](https://github.com/aws/aws-cdk/issues/15804)) ([fce9ac7](https://github.com/aws/aws-cdk/commit/fce9ac73fe6da5e604f0659d9f101001dcef830a))
+* **pipelines:** Prepare stage doesn't have AUTO_EXPAND capability ([#15819](https://github.com/aws/aws-cdk/issues/15819)) ([a6fac49](https://github.com/aws/aws-cdk/commit/a6fac4974fa17949b836c72d04e1cc4504bc920a)), closes [#15711](https://github.com/aws/aws-cdk/issues/15711)
+* **s3:** notifications are broken in some regions ([#15884](https://github.com/aws/aws-cdk/issues/15884)) ([ee19196](https://github.com/aws/aws-cdk/commit/ee191961a8b057a0585e731a67c15a7edd59c79e))
+* **stepfunctions-tasks:** Stage field not included in CallApiGatewayHttpApiEndpoint task definition ([#15755](https://github.com/aws/aws-cdk/issues/15755)) ([4f38fe1](https://github.com/aws/aws-cdk/commit/4f38fe1c3e5515ae22f2820712644ed763dbc248)), closes [#14242](https://github.com/aws/aws-cdk/issues/14242)
+
+
+### Miscellaneous Chores
+
+* **assertions:** migrate more modules to use assertions ([#15857](https://github.com/aws/aws-cdk/issues/15857)) ([45b484c](https://github.com/aws/aws-cdk/commit/45b484cdff115a0893f7eed2b0c1d6424c2751e4))
+* **assertions:** rename TemplateAssertions to Template ([#15823](https://github.com/aws/aws-cdk/issues/15823)) ([823dfda](https://github.com/aws/aws-cdk/commit/823dfda76f39f0eff51d792b28aafcc5568f3db1))
+
 ## [1.116.0](https://github.com/aws/aws-cdk/compare/v1.115.0...v1.116.0) (2021-07-28)
 
 
