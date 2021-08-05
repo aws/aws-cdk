@@ -1,6 +1,6 @@
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, IConstruct, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName } from '@aws-cdk/core';
-import { Node, Construct } from 'constructs';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName } from '@aws-cdk/core';
+import { Node, Construct, IConstruct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';
@@ -8,10 +8,6 @@ import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern, sameEnvDimension } from './util';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties for defining an EventBridge Rule
@@ -154,6 +150,8 @@ export class Rule extends Resource implements IRule {
     for (const target of props.targets || []) {
       this.addTarget(target);
     }
+
+    this.node.addValidation({ validate: () => this.validateRule() });
   }
 
   /**
@@ -297,7 +295,7 @@ export class Rule extends Resource implements IRule {
             return self._renderEventPattern();
           }
 
-          // we need to override validate(), as it uses the
+          // we need to override validateRule(), as it uses the
           // value of the eventPattern field,
           // which might be empty in the case of the copied rule
           // (as the patterns in the original might be added through addEventPattern(),
@@ -305,7 +303,7 @@ export class Rule extends Resource implements IRule {
           // Anyway, even if the original rule is invalid,
           // we would get duplicate errors if we didn't override this,
           // which is probably a bad idea in and of itself
-          protected validate(): string[] {
+          protected validateRule(): string[] {
             return [];
           }
 
@@ -396,7 +394,7 @@ export class Rule extends Resource implements IRule {
     return renderEventPattern(this.eventPattern);
   }
 
-  protected validate() {
+  protected validateRule() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       return ['Either \'eventPattern\' or \'schedule\' must be defined'];
     }
@@ -424,7 +422,7 @@ export class Rule extends Resource implements IRule {
     const existing = scope.node.tryFindChild(id) as IRole;
     if (existing) { return existing; }
 
-    const role = new Role(scope as CoreConstruct, id, {
+    const role = new Role(scope as Construct, id, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new ServicePrincipal('events.amazonaws.com'),
     });
