@@ -1,6 +1,6 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as route53 from '../lib';
 
@@ -617,6 +617,7 @@ nodeunitShim({
       parentHostedZoneId: parentZone.hostedZoneId,
       delegationRole: parentZone.crossAccountZoneDelegationRole!,
       ttl: Duration.seconds(60),
+      removalPolicy: RemovalPolicy.RETAIN,
     });
 
     // THEN
@@ -645,6 +646,10 @@ nodeunitShim({
       },
       TTL: 60,
     }));
+    expect(stack).to(haveResource('Custom::CrossAccountZoneDelegation', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
     test.done();
   },
 
