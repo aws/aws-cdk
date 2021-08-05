@@ -98,32 +98,33 @@ describe('delivery stream', () => {
       role: deliveryStreamRole,
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: arrayWith(
-              'kinesis:DescribeStream',
+            Effect: 'Allow',
+            Action: Match.arrayWith([
               'kinesis:GetRecords',
               'kinesis:GetShardIterator',
               'kinesis:ListShards',
-            ),
+              'kinesis:DescribeStream',
+            ]),
             Resource: stack.resolve(sourceStream.streamArn),
           },
         ],
       },
       Roles: [stack.resolve(deliveryStreamRole.roleName)],
     });
-    expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamType: 'KinesisStreamAsSource',
       KinesisStreamSourceConfiguration: {
         KinesisStreamARN: stack.resolve(sourceStream.streamArn),
         RoleARN: stack.resolve(deliveryStreamRole.roleArn),
       },
     });
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
-      DependsOn: arrayWith('DeliveryStreamRoleDefaultPolicy2759968B'),
-    }, ResourcePart.CompleteDefinition);
+    Template.fromStack(stack).hasResource('AWS::KinesisFirehose::DeliveryStream', {
+      DependsOn: Match.arrayWith(['DeliveryStreamRoleDefaultPolicy2759968B']),
+    });
   });
 
   test('requesting customer-owned encryption creates key and configuration', () => {
