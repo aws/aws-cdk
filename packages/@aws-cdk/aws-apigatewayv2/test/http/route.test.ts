@@ -1,4 +1,3 @@
-import { SynthUtils } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { Stack, App } from '@aws-cdk/core';
 import {
@@ -198,9 +197,6 @@ describe('HttpRoute', () => {
       integration: new PrivateIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
-
-    // eslint-disable-next-line no-console
-    console.log(JSON.stringify(SynthUtils.synthesize(stack).template, null, 4));
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
