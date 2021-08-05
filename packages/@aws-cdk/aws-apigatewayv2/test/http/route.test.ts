@@ -1,8 +1,10 @@
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { Stack, App } from '@aws-cdk/core';
 import {
-  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
-  HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
+  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMappingKey, HttpMethod, HttpRoute,
+  HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration,
+  MappingValue, ParameterMapping, PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpRoute', () => {
@@ -174,6 +176,18 @@ describe('HttpRoute', () => {
           connectionType: HttpConnectionType.VPC_LINK,
           uri: 'some-target-arn',
           secureServerName: 'some-server-name',
+          parameterMapping: new ParameterMapping(
+            [
+              {
+                key: HttpMappingKey.appendHeader('header2'),
+                value: MappingValue.requestHeader('header1'),
+              },
+              {
+                key: HttpMappingKey.removeHeader('header1'),
+                value: MappingValue.NONE,
+              },
+            ],
+          ),
         };
       }
     }
@@ -184,6 +198,9 @@ describe('HttpRoute', () => {
       integration: new PrivateIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
+
+    // eslint-disable-next-line no-console
+    console.log(JSON.stringify(SynthUtils.synthesize(stack).template, null, 4));
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {

@@ -74,6 +74,60 @@ export class PayloadFormatVersion {
   }
 }
 
+export interface IMappingKey {
+  key: string;
+};
+
+export interface IMappingValue {
+  value: string;
+};
+
+export class MappingKey implements IMappingKey {
+  public static custom(mappingKey: string) {return new MappingKey(mappingKey); }
+  protected constructor(public readonly key: string) {}
+}
+
+export class HttpMappingKey extends MappingKey {
+  public static appendHeader(name: string) { return new MappingKey(`append:header.${name}`); }
+  public static overwriteHeader(name: string) { return new MappingKey(`overwrite:header.${name}`); }
+  public static removeHeader(name: string) { return new MappingKey(`remove:header.${name}`); }
+  public static appendQueryString(name: string) {return new MappingKey(`append:querystring.${name}`); }
+  public static overwriteQueryString(name: string) { return new MappingKey(`overwrite:querystring.${name}`); }
+  public static removeQueryString(name: string) { return new MappingKey(`remove:querystring.${name}`); }
+  public static overwritePath() { return new MappingKey('overwrite:path'); }
+  protected constructor(public readonly k: string) {
+    super(k);
+  }
+}
+
+export class MappingValue implements IMappingValue {
+  public static readonly NONE = new MappingValue('');
+  public static requestHeader(name: string) { return new MappingValue(`$request.header.${name}`); }
+  public static requestQueryString(name: string) { return new MappingValue(`$request.querystring.${name}`); }
+  public static requestBody(name: string) { return new MappingValue(`$request.body.${name}`); }
+  public static requestPathFull() {return new MappingValue('$request.path'); }
+  public static requestPath(name: string) { return new MappingValue(`$request.path.${name}`); }
+  public static contextVariable(variableName: string) { return new MappingValue(`$context.${variableName}`); }
+  public static stageVariablesVariable(variableName: string) { return new MappingValue(`$stageVariables.${variableName}`); }
+  public static custom(value: string) {return new MappingValue(value); }
+  protected constructor(public readonly value: string) {}
+}
+
+export interface ParameterMappingProps {
+  readonly key: IMappingKey,
+  readonly value: IMappingValue,
+};
+
+export class ParameterMapping {
+  public readonly mappings: {[key: string]: string}
+  constructor(params: ParameterMappingProps[]) {
+    this.mappings = {};
+    params.forEach(param => {
+      this.mappings[param.key.key] = param.value.value;
+    });
+  }
+}
+
 /**
  * The integration properties
  */
@@ -128,6 +182,8 @@ export interface HttpIntegrationProps {
    * @default undefined private integration traffic will use HTTP protocol
    */
   readonly secureServerName?: string;
+
+  readonly parameterMapping?: ParameterMapping;
 }
 
 /**
@@ -149,6 +205,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       connectionId: props.connectionId,
       connectionType: props.connectionType,
       payloadFormatVersion: props.payloadFormatVersion?.version,
+      requestParameters: props.parameterMapping?.mappings,
     });
 
     if (props.secureServerName) {
@@ -237,4 +294,6 @@ export interface HttpRouteIntegrationConfig {
    * @default undefined private integration traffic will use HTTP protocol
    */
   readonly secureServerName?: string;
+
+  readonly parameterMapping?: ParameterMapping;
 }
