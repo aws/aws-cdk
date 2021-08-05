@@ -153,16 +153,16 @@ export interface DestinationS3BackupProps extends DestinationLoggingProps, Commo
   /**
    * The S3 bucket that will store data and failed records.
    *
-   * @default - If `backup` is set to `BackupMode.ALL` or `BackupMode.FAILED`, a bucket will be created for you.
+   * @default - If `mode` is set to `BackupMode.ALL` or `BackupMode.FAILED`, a bucket will be created for you.
    */
   readonly bucket?: s3.IBucket;
 
   /**
    * Indicates the mode by which incoming records should be backed up to S3, if any.
    *
-   * If `backupBucket ` is provided, this will be implicitly set to `BackupMode.ALL`.
+   * If `bucket` is provided, this will be implicitly set to `BackupMode.ALL`.
    *
-   * @default - If `backupBucket` is provided, the default will be `BackupMode.ALL`. Otherwise,
+   * @default - If `bucket` is provided, the default will be `BackupMode.ALL`. Otherwise,
    * source records are not backed up to S3.
   */
   readonly mode?: BackupMode;
