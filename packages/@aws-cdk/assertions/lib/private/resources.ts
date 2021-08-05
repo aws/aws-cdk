@@ -1,5 +1,3 @@
-import { Match } from '../match';
-import { Matcher } from '../matcher';
 import { StackInspector } from '../vendored/assert';
 import { formatFailure, matchSection } from './section';
 
@@ -9,10 +7,8 @@ type Resource = {
 }
 
 export function findResources(inspector: StackInspector, type: string, props: any = {}): { [key: string]: any }[] {
-  const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
-
-  const section: { [key: string] : Resource } = inspector.value.Resources ?? {};
-  const result = matchSection(filterType(section, type), matcher);
+  const section: { [key: string] : Resource } = inspector.value.Resources;
+  const result = matchSection(filterType(section, type), props);
 
   if (!result.match) {
     return [];
@@ -22,10 +18,8 @@ export function findResources(inspector: StackInspector, type: string, props: an
 }
 
 export function hasResource(inspector: StackInspector, type: string, props: any): string | void {
-  const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
-
-  const section: { [key: string]: Resource } = inspector.value.Resources ?? {};
-  const result = matchSection(filterType(section, type), matcher);
+  const section: { [key: string]: Resource } = inspector.value.Resources;
+  const result = matchSection(filterType(section, type), props);
 
   if (result.match) {
     return;
@@ -42,7 +36,7 @@ export function hasResource(inspector: StackInspector, type: string, props: any)
 }
 
 function filterType(section: { [key: string]: Resource }, type: string): { [key: string]: Resource } {
-  return Object.entries(section)
+  return Object.entries(section ?? {})
     .filter(([_, v]) => v.Type === type)
     .reduce((agg, [k, v]) => { return { ...agg, [k]: v }; }, {});
 }

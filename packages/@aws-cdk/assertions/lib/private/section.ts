@@ -1,9 +1,11 @@
+import { Match } from '../match';
 import { Matcher, MatchResult } from '../matcher';
 
 export type MatchSuccess = { match: true, matches: any[] };
 export type MatchFailure = { match: false, closestResult?: MatchResult, analyzedCount: number };
 
-export function matchSection(section: any, matcher: Matcher): MatchSuccess | MatchFailure {
+export function matchSection(section: any, props: any): MatchSuccess | MatchFailure {
+  const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
   let closestResult: MatchResult | undefined = undefined;
   let matching: any[] = [];
   let count = 0;
@@ -44,13 +46,13 @@ function eachEntryInSection(
 export function formatFailure(closestResult: MatchResult): string {
   return [
     'The closest result is:',
-    reindent(JSON.stringify(closestResult.target, undefined, 2)),
+    leftPad(JSON.stringify(closestResult.target, undefined, 2)),
     'with the following mismatches:',
     ...closestResult.toHumanStrings().map(s => `\t${s}`),
   ].join('\n');
 }
 
-function reindent(x: string, indent: number = 2): string {
+function leftPad(x: string, indent: number = 2): string {
   const pad = ' '.repeat(indent);
   return pad + x.split('\n').join(`\n${pad}`);
 }
