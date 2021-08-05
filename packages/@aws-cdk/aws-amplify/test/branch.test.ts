@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { SecretValue, Stack } from '@aws-cdk/core';
 import * as amplify from '../lib';
 
@@ -20,7 +20,7 @@ test('create a branch', () => {
   app.addBranch('dev');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Branch', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
     AppId: {
       'Fn::GetAtt': [
         'AppF1B96344',
@@ -40,7 +40,7 @@ test('with basic auth from credentials', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Branch', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
     BasicAuthConfig: {
       EnableBasicAuth: true,
       Password: 'password',
@@ -56,7 +56,7 @@ test('with basic auth from generated password', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Branch', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
     BasicAuthConfig: {
       EnableBasicAuth: true,
       Password: {
@@ -86,7 +86,7 @@ test('with env vars', () => {
   branch.addEnvironment('key2', 'value2');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Branch', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
     EnvironmentVariables: [
       {
         Name: 'key1',

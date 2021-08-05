@@ -1,4 +1,4 @@
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { CfnParameter, Stack } from '@aws-cdk/core';
 import { UserPool, UserPoolDomain } from '../lib';
@@ -21,7 +21,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
       UserPoolId: stack.resolve(pool.userPoolId),
       Domain: 'test-domain.example.com',
       CustomDomainConfig: {
@@ -44,7 +44,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
       UserPoolId: stack.resolve(pool.userPoolId),
       Domain: 'cognito-domain-prefix',
     });
@@ -124,8 +124,8 @@ describe('User Pool Client', () => {
       ],
     });
 
-    TemplateAssertions.fromStack(stack).resourceCountIs('Custom::UserPoolCloudFrontDomainName', 1);
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(stack).resourceCountIs('Custom::UserPoolCloudFrontDomainName', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: 'cognito-idp:DescribeUserPoolDomain',
@@ -161,7 +161,7 @@ describe('User Pool Client', () => {
 
     // THEN
     expect(client.domainName).toEqual('domain-name-1');
-    TemplateAssertions.fromStack(stack).resourceCountIs('AWS::Cognito::UserPoolDomain', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::Cognito::UserPoolDomain', 0);
   });
 
   describe('signInUrl', () => {

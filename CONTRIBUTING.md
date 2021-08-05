@@ -759,17 +759,7 @@ The pattern is simple:
    through `cdk init`.
 4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
 
-    ```
-    fix(core): impossible to use the same physical stack name for two stacks (under feature flag)
-    ```
-5. Under `BREAKING CHANGES` in your commit message describe this new behavior:
-
-    ```
-    BREAKING CHANGE: template file names for new projects created through "cdk init"
-    will use the template artifact ID instead of the physical stack name to enable
-    multiple stacks to use the same name. This is enabled through the flag
-    `@aws-cdk/core:enableStackNameDuplicates` in newly generated `cdk.json` files.
-    ```
+    `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
 In the [next major version of the
 CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the

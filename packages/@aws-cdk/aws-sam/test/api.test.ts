@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as sam from '../lib';
 
@@ -19,7 +19,7 @@ describe('AWS::Serverless::Api', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Serverless::Api', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Api', {
       StageName: 'prod',
       EndpointConfiguration: {
         Type: 'GLOBAL',
@@ -36,7 +36,7 @@ describe('AWS::Serverless::Api', () => {
       endpointConfiguration: 'GLOBAL',
     });
 
-    expect(stack).toHaveResourceLike('AWS::Serverless::Api', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Api', {
       StageName: 'prod',
       EndpointConfiguration: 'GLOBAL',
     });

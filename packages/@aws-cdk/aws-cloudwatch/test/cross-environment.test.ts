@@ -1,4 +1,4 @@
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { Alarm, GraphWidget, IWidget, Metric } from '../lib';
 
@@ -89,7 +89,7 @@ describe('cross environment', () => {
       });
 
       // THEN
-      TemplateAssertions.fromStack(stack1).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Template.fromStack(stack1).hasResourceProperties('AWS::CloudWatch::Alarm', {
         MetricName: 'ACount',
         Namespace: 'Test',
         Period: 300,

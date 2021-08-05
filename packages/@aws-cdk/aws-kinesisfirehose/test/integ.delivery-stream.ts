@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -30,8 +31,13 @@ const mockS3Destination: firehose.IDestination = {
   },
 };
 
+const key = new kms.Key(stack, 'Key', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
   destinations: [mockS3Destination],
+  encryptionKey: key,
 });
 
 app.synth();

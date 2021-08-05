@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import {
   IWebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
@@ -19,7 +19,7 @@ describe('WebSocketRoute', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       ApiId: stack.resolve(webSocketApi.apiId),
       RouteKey: 'message',
       Target: {
@@ -35,7 +35,7 @@ describe('WebSocketRoute', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ApiId: stack.resolve(webSocketApi.apiId),
       IntegrationType: 'AWS_PROXY',
       IntegrationUri: 'some-uri',

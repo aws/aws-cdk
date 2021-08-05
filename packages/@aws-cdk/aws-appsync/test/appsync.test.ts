@@ -1,5 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -32,7 +32,7 @@ test('appsync should configure pipeline when pipelineConfig has contents', () =>
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
     Kind: 'PIPELINE',
     PipelineConfig: {
       Functions: [
@@ -74,7 +74,7 @@ test('appsync should configure resolver as unit when pipelineConfig is empty', (
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
     Kind: 'UNIT',
   });
 });
@@ -88,7 +88,7 @@ test('appsync should configure resolver as unit when pipelineConfig is empty arr
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
     Kind: 'UNIT',
   });
 });
@@ -103,7 +103,7 @@ test('when xray is enabled should not throw an Error', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     XrayEnabled: true,
   });
 });
@@ -128,7 +128,7 @@ test('appsync GraphqlApi should be configured with custom CloudWatch Logs role w
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     Name: 'apiWithCustomRole',
     LogConfig: {
       CloudWatchLogsRoleArn: {
@@ -143,7 +143,7 @@ test('appsync GraphqlApi should be configured with custom CloudWatch Logs role w
 
 test('appsync GraphqlApi should not use custom role for CW Logs when not specified', () => {
   // EXPECT
-  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     Name: 'api',
     LogConfig: {
       CloudWatchLogsRoleArn: {

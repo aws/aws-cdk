@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as sam from '../lib';
 
@@ -15,7 +15,7 @@ test("correctly chooses a string array from the type unions of the 'policies' pr
     policies: ['AWSLambdaExecute'],
   });
 
-  expect(stack).toHaveResourceLike('AWS::Serverless::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Function', {
     CodeUri: {
       Bucket: 'my-bucket',
       Key: 'my-key',

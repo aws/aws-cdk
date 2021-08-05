@@ -1,8 +1,11 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import { DestinationS3BackupProps } from '../common';
 
 export interface DestinationLoggingProps {
   /**
@@ -34,19 +37,28 @@ export interface DestinationLoggingProps {
   readonly streamId: string;
 }
 
-export interface DestinationLoggingOutput {
-  /**
-   * Logging options that will be injected into the destination configuration.
-   */
-  readonly loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
-
+interface ConfigWithDependables {
   /**
    * Resources that were created by the sub-config creator that must be deployed before the delivery stream is deployed.
    */
   readonly dependables: cdk.IDependable[];
 }
 
-export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingOutput | undefined {
+export interface DestinationLoggingConfig extends ConfigWithDependables {
+  /**
+   * Logging options that will be injected into the destination configuration.
+   */
+  readonly loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
+}
+
+export interface DestinationBackupConfig extends ConfigWithDependables {
+  /**
+   * S3 backup configuration that will be injected into the destination configuration.
+   */
+  readonly backupConfig: firehose.CfnDeliveryStream.S3DestinationConfigurationProperty;
+}
+
+export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingConfig | undefined {
   if (props.logging === false && props.logGroup) {
     throw new Error('logging cannot be set to false when logGroup is provided');
   }
@@ -63,4 +75,99 @@ export function createLoggingOptions(scope: Construct, props: DestinationLogging
     };
   }
   return undefined;
+}
+
+export function createBufferingHints(
+  interval?: cdk.Duration,
+  size?: cdk.Size,
+): firehose.CfnDeliveryStream.BufferingHintsProperty | undefined {
+  if (!interval && !size) {
+    return undefined;
+  }
+
+  const intervalInSeconds = interval?.toSeconds() ?? 300;
+  if (intervalInSeconds < 60 || intervalInSeconds > 900) {
+    throw new Error(`Buffering interval must be between 60 and 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`);
+  }
+  const sizeInMBs = size?.toMebibytes() ?? 5;
+  if (sizeInMBs < 1 || sizeInMBs > 128) {
+    throw new Error(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`);
+  }
+  return { intervalInSeconds, sizeInMBs };
+}
+
+export function createEncryptionConfig(
+  role: iam.IRole,
+  encryptionKey?: kms.IKey,
+): firehose.CfnDeliveryStream.EncryptionConfigurationProperty | undefined {
+  encryptionKey?.grantEncryptDecrypt(role);
+  return encryptionKey
+    ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
+    : undefined;
+}
+
+export function createProcessingConfig(
+  scope: Construct,
+  role: iam.IRole,
+  dataProcessor?: firehose.IDataProcessor,
+): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
+  return dataProcessor
+    ? {
+      enabled: true,
+      processors: [renderDataProcessor(dataProcessor, scope, role)],
+    }
+    : undefined;
+}
+
+function renderDataProcessor(
+  processor: firehose.IDataProcessor,
+  scope: Construct,
+  role: iam.IRole,
+): firehose.CfnDeliveryStream.ProcessorProperty {
+  const processorConfig = processor.bind(scope, { role });
+  const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
+  parameters.push(processorConfig.processorIdentifier);
+  if (processor.props.bufferInterval) {
+    parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
+  }
+  if (processor.props.bufferSize) {
+    parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
+  }
+  if (processor.props.retries) {
+    parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
+  }
+  return {
+    type: processorConfig.processorType,
+    parameters,
+  };
+}
+
+export function createBackupConfig(scope: Construct, role: iam.IRole, props?: DestinationS3BackupProps): DestinationBackupConfig | undefined {
+  if (!props || (props.mode === undefined && !props.bucket)) {
+    return undefined;
+  }
+
+  const bucket = props.bucket ?? new s3.Bucket(scope, 'BackupBucket');
+  const bucketGrant = bucket.grantReadWrite(role);
+
+  const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {
+    logging: props.logging,
+    logGroup: props.logGroup,
+    role,
+    streamId: 'S3Backup',
+  }) ?? {};
+
+  return {
+    backupConfig: {
+      bucketArn: bucket.bucketArn,
+      roleArn: role.roleArn,
+      prefix: props.dataOutputPrefix,
+      errorOutputPrefix: props.errorOutputPrefix,
+      bufferingHints: createBufferingHints(props.bufferingInterval, props.bufferingSize),
+      compressionFormat: props.compression?.value,
+      encryptionConfiguration: createEncryptionConfig(role, props.encryptionKey),
+      cloudWatchLoggingOptions: loggingOptions,
+    },
+    dependables: [bucketGrant, ...(loggingDependables ?? [])],
+  };
 }
