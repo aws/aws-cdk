@@ -39,6 +39,7 @@ renamed to `Template.fromJSON()` to provide clarity.
 
 ### Bug Fixes
 
+* **assert:** module is incompatible with jest@27 ([#15666](https://github.com/aws/aws-cdk/issues/15666)) ([f446566](https://github.com/aws/aws-cdk/commit/f446566bd26ca024aed0a88da08a82a261c0dac6))
 * **appsync:** graphqlapi throws incorrect error message for authorizationConfig ([#15830](https://github.com/aws/aws-cdk/issues/15830)) ([1f23313](https://github.com/aws/aws-cdk/commit/1f23313e889a00d85e7cbc56a64242d6e7762835)), closes [#15039](https://github.com/aws/aws-cdk/issues/15039)
 * **eks:** Allow desiredsize minsize and maxsize to accept CfnParameters. ([#15487](https://github.com/aws/aws-cdk/issues/15487)) ([fb43769](https://github.com/aws/aws-cdk/commit/fb437693c0f1568ddc53e9a198e54be3b9a01592))
 * **chatbot:** ARN validation in fromSlackChannelConfigurationArn fails for tokenized values ([#15849](https://github.com/aws/aws-cdk/issues/15849)) ([440ca35](https://github.com/aws/aws-cdk/commit/440ca35cf0f0e9f6f86bef445bd9aa6ef05ff9be)), closes [#15842](https://github.com/aws/aws-cdk/issues/15842)
