@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
@@ -22,17 +23,17 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
   /**
    * The name of the job run.
    *
-   * @default - No job name
+   * @default - No job run name
    */
   readonly jobName?: string;
 
   /**
    * The execution role for the job run.
    *
-   * If the execution role is provided, follow the documentation to setup the job-execution-role
+   * If the execution role is provided, follow the documentation to setup the job execution role and update the role trust policy
    * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
    *
-   * @default - Automatically generated
+   * @default - Automatically generated `only` when the provided `virtualClusterId` is not an encoded JSON path
    */
   readonly executionRole?: iam.IRole;
 
@@ -108,13 +109,13 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
       if (props.applicationConfig.length > 100) {
         throw new Error(`Application configuration array must have 100 or fewer entries. Received ${props.applicationConfig.length}.`);
       }
-      props.applicationConfig.forEach(function helper(config: ApplicationConfiguration) {
+      props.applicationConfig.forEach(function findError(config: ApplicationConfiguration) {
         if (config === undefined || config.nestedConfig === undefined) {
           return;
         } else if (config.nestedConfig?.length > 100) {
           throw new Error(`Application Configuration nested configuration array must have 100 or fewer entries. Received ${config.nestedConfig.length}`);
         } else {
-          config.nestedConfig.forEach(element => helper(element));
+          config.nestedConfig.forEach(element => findError(element));
         }
       });
     }
@@ -127,17 +128,22 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments !== undefined
-      && !Array.isArray(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)
+      && !this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)
       && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value)
       && (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length > 10280
           || props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length < 1)) {
-      throw new Error(`Entry point arguments must be an array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
+      throw new Error(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters !== undefined
       && (props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length > 102400
         || props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length < 1)) {
       throw new Error(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length}.`);
+    }
+
+    if (props.executionRole === undefined
+      && sfn.JsonPath.isEncodedJsonPath(props.virtualClusterId.value)) {
+      throw new Error('Execution role cannot be undefined when the virtual cluster id is an encoded JSON path');
     }
 
     this.logGroup = this.props.monitoring?.logGroup ?? this.props.monitoring?.logging ? new logs.LogGroup(this, 'Emr Containers Default Cloudwatch Log Group') : undefined;
@@ -175,7 +181,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
               ? 'DISABLED'
               : 'ENABLED',
             S3MonitoringConfiguration: {
-              LogUri: this.logBucket?.s3UrlForObject(), // automatically generated name https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-s3.Bucket.html#bucketname
+              LogUri: this.logBucket?.s3UrlForObject(), // automatically generated unique name https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-s3.Bucket.html#bucketname
             },
           },
           Tags: this.props.tags ? this.renderTags(this.props.tags) : undefined,
@@ -197,13 +203,17 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
     };
   }
 
-  private renderTags(tags?: { [key: string]: any }): { Key: string, Value: any } {
+  private isArrayOfStrings(value: any): boolean {
+    return Array.isArray(value) && value.every(item => typeof item === 'string');
+  }
+
+  private renderTags(tags?: { [key: string]: any }): { [key: string]: any } {
     return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
   // https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
   private createJobExecutionRole(): iam.Role {
-    let jobExecutionRole: iam.Role = new iam.Role(this, 'Job-Execution-Role', {
+    const jobExecutionRole = new iam.Role(this, 'Job-Execution-Role', {
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('emr-containers.amazonaws.com'),
         new iam.ServicePrincipal('states.amazonaws.com'),
@@ -233,55 +243,22 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
       }),
     );
 
-    jobExecutionRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        resources: ['*'],
-        actions: [
-          'emr-containers:DescribeJobRun',
-          'elasticmapreduce:CreatePersistentAppUI',
-          'elasticmapreduce:DescribePersistentAppUI',
-          'elasticmapreduce:GetPersistentAppUIPresignedURL',
-        ],
-      }),
-    );
-
-    jobExecutionRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        resources: ['*'],
-        actions: [
-          's3:GetObject',
-          's3:ListBucket',
-        ],
-      }),
-    );
-
-    jobExecutionRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        resources: ['*'],
-        actions: [
-          'logs:Get*',
-          'logs:DescribeLogGroups',
-          'logs:DescribeLogStreams',
-        ],
-      }),
-    );
-
     this.updateRoleTrustPolicy(jobExecutionRole);
 
     return jobExecutionRole;
   }
 
   /**
-   * If an execution role is not provided by user, the automatically generated Job Execution Role must create a trust relationship
-   * between the administrator and the job execution role and the identity of the EMR managed service account.
+   * If an execution role is not provided by user, the automatically generated job execution role must create a trust relationship
+   * between itself and the identity of the EMR managed service account in order to run jobs on the Kubernetes namespace.
+   *
+   * This cannot occur if the user provided virtualClusterId is within an encoded JSON path.
    *
    * The trust relationship can be created by updating the trust policy of the job execution role.
    *
-   * @param role - provided from automatically generated name
+   * @param role the automatically generated job execution role
    */
   private updateRoleTrustPolicy(role: iam.Role) {
-
-    // first create a custom resource to retrieve the eks namespace and eks cluster output from describe virtual cluster
     const eksClusterInfo = new cr.AwsCustomResource(this, 'GetEksClusterInfo', {
       onCreate: {
         service: 'EMRcontainers',
@@ -302,26 +279,39 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
       uuid: this.renderSingletonUuid(),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('../../lib/emrcontainers/utils/role-policy'),
-      timeout: cdk.Duration.minutes(1),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'utils/role-policy')),
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
       environment: {
-        eksNamespace: descVirtClust.getResponseField('virtualCluster.containerProvider.info.eksInfo.namespace'),
-        eksClusterId: descVirtClust.getResponseField('virtualCluster.containerProvider.id'),
+        eksNamespace: eksClusterInfo.getResponseField('virtualCluster.containerProvider.info.eksInfo.namespace'),
+        eksClusterId: eksClusterInfo.getResponseField('virtualCluster.containerProvider.id'),
         roleName: role.roleName,
       },
-      initialPolicy: [
-        new iam.PolicyStatement({
-          resources: ['*'],
-          actions: [
-            'eks:DescribeCluster',
-            'iam:GetRole',
-            'iam:UpdateAssumeRolePolicy',
-          ],
-        }),
-      ],
       layers: [cliLayer],
     });
-
+    shellCliLambda.addToRolePolicy(
+      new iam.PolicyStatement({
+        resources: [
+          cdk.Stack.of(this).formatArn({
+            service: 'eks',
+            resource: 'cluster',
+            resourceName: eksClusterInfo.getResponseField('virtualCluster.containerProvider.id'),
+          }),
+        ],
+        actions: [
+          'eks:DescribeCluster',
+        ],
+      }),
+    );
+    shellCliLambda.addToRolePolicy(
+      new iam.PolicyStatement({
+        resources: [role.roleArn],
+        actions: [
+          'iam:GetRole',
+          'iam:UpdateAssumeRolePolicy',
+        ],
+      }),
+    );
     const provider = new cr.Provider(this, 'CustomResourceProvider', {
       onEventHandler: shellCliLambda,
     });
@@ -331,8 +321,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
   }
 
   /**
-   * Generates a UUID for a lambda singleton for update-role-trust-policy
-   *
+   * Generates a UUID for a lambda singleton in update-role-trust-policy
    **/
   private renderSingletonUuid() {
     const uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8757C';
@@ -347,8 +336,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
         resources: [
           cdk.Stack.of(this).formatArn({
             service: 'emr-containers',
-            resource: 'virtualclusters',
-            resourceName: '*', // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
+            resource: '/virtualclusters',
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? '*' : this.props.virtualClusterId.value, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
           }),
         ],
         actions: ['emr-containers:StartJobRun'],
@@ -366,8 +355,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
           resources: [
             cdk.Stack.of(this).formatArn({
               service: 'emr-containers',
-              resource: 'virtualclusters',
-              resourceName: '*', // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
+              resource: '/virtualclusters',
+              resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? '*' : `${this.props.virtualClusterId.value}/jobruns/*`, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
             }),
           ],
           actions: [
@@ -415,7 +404,7 @@ export interface SparkSubmitJobDriver {
 
 /**
  * Specify the driver that the EMR Containers job runs on.
- * Job driver is used to provide an input on the main job that will be run.
+ * The job driver is used to provide an input for the job that will be run.
  */
 export interface JobDriver {
 

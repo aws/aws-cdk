@@ -18,14 +18,14 @@ const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-start-j
 
 const startJobRunJob = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
   virtualClusterId: sfn.TaskInput.fromText('llr8lezdxlonrv3orxvufp9p0'),
-  jobName: 'Run-EMR-Containers-Job',
-  // executionRole: iam.Role.fromRoleArn(stack, 'Job-Execution-Role-Arn', 'arn:aws:iam::070850498885:role/Job-Execution-Role'),
   releaseLabel: ReleaseLabel.EMR_6_2_0,
+  jobName: 'EMR-Containers-Job',
+  // executionRole: iam.Role.fromRoleArn(this, 'Job-Execution-Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
   jobDriver: {
     sparkSubmitJobDriver: {
-      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/jars/spark-examples.jar'),
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
       entryPointArguments: sfn.TaskInput.fromObject(['2']),
-      sparkSubmitParameters: '--class org.apache.spark.examples.SparkPi --conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false',
+      sparkSubmitParameters: '--conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false',
     },
   },
   monitoring: {

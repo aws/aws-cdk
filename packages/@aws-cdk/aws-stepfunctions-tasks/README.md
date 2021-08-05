@@ -712,6 +712,8 @@ new tasks.EmrModifyInstanceGroupByName(this, 'Task', {
 Step Functions supports Amazon EMR on EKS through the service integration pattern.
 The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in the parameters that are used.
 
+[Setting up](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) the EKS cluster is required.
+
 [Read more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html) about the differences when using these service integrations.
 
 ### Create Virtual Cluster
@@ -719,24 +721,38 @@ The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in
 The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions'
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
 });
 ```
 
-Full Example:
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as eks from '@aws-cdk/aws-eks';
+
+const eksCluster = new eks.Cluster(this, 'EKS cluster', {
+  version: eks.KubernetesVersion.V1_20,
+});
+
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+  eksCluster: tasks.EksClusterInput.fromCluster(eksCluster),
+});
+```
+
+**Full example:**
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions'
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
   eksNamespace: 'specified-namespace',
-  virtuaClusterName: 'emr-containers-test-cluster',
+  virtualClusterName: 'emr-containers-virtual-cluster'
 });
 ```
 
@@ -763,7 +779,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
-  virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId'),
+  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
   jobDriver: {
     sparkSubmitJobDriver: {
@@ -774,7 +790,60 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 });
 ```
 
-Full Example (Replace with own Job Execution Role arn):
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+  monitoring: {
+    logging: true,
+  },
+});
+```
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+const logGroup = new logs.LogGroup(this, 'Log Group');
+const logBucket = new s3.Bucket(this, 'S3 Bucket')
+
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+  monitoring: {
+    logGroup: this.logGroup,
+    logBucket: this.logBucket,
+  },
+});
+```
+
+**Required** Setup for Full Example:
+
+ - If not done already, follow the EMR on EKS [setting up steps](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) and [create an EKS Cluster](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-eks-cluster.html).
+ - Create a [Job Execution Role](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html).
+ - Update the [Role Trust Policy](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html) of the Job Execution Role.
+ - **Optional** - Attach [IAM policies](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-iam.html) to give users access to EMR on EKS.
+ 
+**Full Example** 
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
@@ -785,12 +854,12 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
   virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId'),
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
-  executionRole: iam.Role.fromRoleArn(this, 'Job-Execution-Role', 'arn:aws:iam::xxxxxxxxxxxx:role/Job-Execution-Role'),
+  executionRole: iam.Role.fromRoleArn(this, 'Job-Execution-Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
   jobDriver: {
     sparkSubmitJobDriver: {
-      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/jars/spark-examples.jar'),
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
       entryPointArguments: sfn.TaskInput.fromObject(['2']),
-      sparkSubmitParameters: '--class org.apache.spark.examples.SparkPi --conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false',
+      sparkSubmitParameters: '--conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false',
     },
   },
   monitoring: {
