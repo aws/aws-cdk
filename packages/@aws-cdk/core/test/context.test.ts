@@ -1,5 +1,7 @@
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { Construct, Stack } from '../lib';
+import { App, Stack } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
 import { synthesize } from '../lib/private/synthesis';
 
@@ -13,7 +15,8 @@ nodeunitShim({
   },
 
   'AvailabilityZoneProvider will return context list if available'(test: Test) {
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
     test.deepEqual(before, ['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
@@ -27,7 +30,8 @@ nodeunitShim({
   },
 
   'AvailabilityZoneProvider will complain if not given a list'(test: Test) {
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
     test.deepEqual(before, ['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
