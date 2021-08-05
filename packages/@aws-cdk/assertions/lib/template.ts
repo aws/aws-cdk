@@ -1,7 +1,7 @@
 import { Stack, Stage } from '@aws-cdk/core';
-import { hasResource } from './has-resource';
 import { Match } from './match';
 import { Matcher } from './matcher';
+import { findResources, hasResource } from './private/resource';
 import * as assert from './vendored/assert';
 
 /**
@@ -9,14 +9,14 @@ import * as assert from './vendored/assert';
  * Typically used, as part of unit tests, to validate that the rendered
  * CloudFormation template has expected resources and properties.
  */
-export class TemplateAssertions {
+export class Template {
 
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
    */
-  public static fromStack(stack: Stack): TemplateAssertions {
-    return new TemplateAssertions(toTemplate(stack));
+  public static fromStack(stack: Stack): Template {
+    return new Template(toTemplate(stack));
   }
 
   /**
@@ -24,16 +24,16 @@ export class TemplateAssertions {
    * nested set of records.
    * @param template the CloudFormation template formatted as a nested set of records
    */
-  public static fromTemplate(template: { [key: string] : any }): TemplateAssertions {
-    return new TemplateAssertions(template);
+  public static fromTemplate(template: { [key: string] : any }): Template {
+    return new Template(template);
   }
 
   /**
    * Base your assertions from an existing CloudFormation template formatted as a string.
    * @param template the CloudFormation template in
    */
-  public static fromString(template: string): TemplateAssertions {
-    return new TemplateAssertions(JSON.parse(template));
+  public static fromString(template: string): Template {
+    return new Template(JSON.parse(template));
   }
 
   private readonly inspector: assert.StackInspector;
@@ -80,6 +80,17 @@ export class TemplateAssertions {
     if (matchError) {
       throw new Error(matchError);
     }
+  }
+
+  /**
+   * Get the set of matching resources of a given type and properties in the CloudFormation template.
+   * @param type the type to match in the CloudFormation template
+   * @param props by default, matches all resources with the given type.
+   * When a literal is provided, performs a partial match via `Match.objectLike()`.
+   * Use the `Match` APIs to configure a different behaviour.
+   */
+  public findResources(type: string, props: any = {}): { [key: string]: any }[] {
+    return findResources(this.inspector, type, props);
   }
 
   /**

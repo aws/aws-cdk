@@ -86,4 +86,16 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
  * });
  * ```
  */
-export interface ICfnConditionExpression extends IResolvable { }
+export interface ICfnConditionExpression extends IResolvable {}
+
+/**
+ * Interface to specify certain functions as Service Catalog rule-specifc.
+ * These functions can only be used in ``Rules`` section of template.
+ */
+export interface ICfnRuleConditionExpression extends ICfnConditionExpression {
+  /**
+   * This field is only needed to defeat TypeScript's structural typing.
+   * It is never used.
+   */
+  readonly disambiguator: boolean;
+}

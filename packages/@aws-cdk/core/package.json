@@ -170,7 +170,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.78",
+    "@types/aws-lambda": "^8.10.79",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.171",
