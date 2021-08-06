@@ -1,12 +1,15 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceType, LaunchTemplate } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
+import { Names } from '@aws-cdk/core';
 import * as autoscaling from '../lib';
+import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -1314,6 +1317,260 @@ describe('auto scaling group', () => {
         'Default',
       ],
     });
+  });
+
+  test('Can use imported Launch Template with ID', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+      launchTemplate: LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+        launchTemplateId: 'test-lt-id',
+        versionNumber: '0',
+      }),
+      vpc: mockVpc(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      LaunchTemplate: {
+        LaunchTemplateId: 'test-lt-id',
+        Version: '0',
+      },
+    });
+  });
+
+  test('Can use imported Launch Template with name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+      launchTemplate: LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+        launchTemplateName: 'test-lt',
+        versionNumber: '0',
+      }),
+      vpc: mockVpc(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      LaunchTemplate: {
+        LaunchTemplateName: 'test-lt',
+        Version: '0',
+      },
+    });
+  });
+
+  test('Can use in-stack Launch Template reference', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = new LaunchTemplate(stack, 'lt', {
+      instanceType: new InstanceType('t3.micro'),
+      machineImage: new AmazonLinuxImage({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+        cpuType: AmazonLinuxCpuType.X86_64,
+      }),
+    });
+
+    new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+      launchTemplate: lt,
+      vpc: mockVpc(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      LaunchTemplate: {
+        LaunchTemplateName: {
+          'Ref': Names.uniqueId(lt),
+        },
+        Version: {
+          'Fn::GetAtt': [
+            Names.uniqueId(lt),
+            'LatestVersionNumber',
+          ],
+        },
+      },
+    });
+  });
+
+  test('Can use mixed instance policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+      mixedInstancesPolicy: {
+        launchTemplate: lt,
+        launchTemplateOverrides: [{
+          instanceType: new InstanceType('t4g.micro'),
+          launchTemplate: lt,
+          weightedCapacity: 9,
+        }],
+        instancesDistribution: {
+          onDemandAllocationStrategy: OnDemandAllocationStrategy.PRIORITIZED,
+          onDemandBaseCapacity: 1,
+          onDemandPercentageAboveBaseCapacity: 2,
+          spotAllocationStrategy: SpotAllocationStrategy.CAPACITY_OPTIMIZED_PRIORITIZED,
+          spotInstancePools: 3,
+          spotMaxPrice: '4',
+        },
+      },
+      vpc: mockVpc(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      MixedInstancesPolicy: {
+        LaunchTemplate: {
+          LaunchTemplateSpecification: {
+            LaunchTemplateId: 'test-lt-id',
+            Version: '0',
+          },
+          Overrides: [
+            {
+              InstanceType: 't4g.micro',
+              LaunchTemplateSpecification: {
+                LaunchTemplateId: 'test-lt-id',
+                Version: '0',
+              },
+              WeightedCapacity: '9',
+            },
+          ],
+        },
+        InstancesDistribution: {
+          OnDemandAllocationStrategy: 'prioritized',
+          OnDemandBaseCapacity: 1,
+          OnDemandPercentageAboveBaseCapacity: 2,
+          SpotAllocationStrategy: 'capacity-optimized-prioritized',
+          SpotInstancePools: 3,
+          SpotMaxPrice: '4',
+        },
+      },
+    });
+  });
+
+  test('Cannot specify both Launch Template and Launch Config', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+        launchTemplate: lt,
+        instanceType: new InstanceType('t3.micro'),
+        machineImage: new AmazonLinuxImage({
+          generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+          cpuType: AmazonLinuxCpuType.X86_64,
+        }),
+        vpc: mockVpc(stack),
+      });
+    }).toThrow();
+  });
+
+  test('Cannot be created without machine image', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+        instanceType: new InstanceType('t3.micro'),
+        vpc: mockVpc(stack),
+      });
+    }).toThrow();
+  });
+
+  test('Cannot be created without instance type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+        machineImage: new AmazonLinuxImage({
+          generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+          cpuType: AmazonLinuxCpuType.X86_64,
+        }),
+        vpc: mockVpc(stack),
+      });
+    }).toThrow();
+  });
+
+  test('Should throw when accessing inferred fields with imported Launch Template', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+      launchTemplate: LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+        launchTemplateId: 'test-lt-id',
+        versionNumber: '0',
+      }),
+      vpc: mockVpc(stack),
+    });
+
+    // THEN
+    expect(() => {
+      asg.userData;
+    }).toThrow();
+
+    expect(() => {
+      asg.connections;
+    }).toThrow();
+
+    expect(() => {
+      asg.role;
+    }).toThrow();
+
+    expect(() => {
+      asg.addSecurityGroup(mockSecurityGroup(stack));
+    }).toThrow();
+  });
+
+  test('Should not throw when accessing inferred fields with in-stack Launch Template', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+      launchTemplate: LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+        launchTemplateId: 'test-lt-id',
+        versionNumber: '0',
+      }),
+      vpc: mockVpc(stack),
+    });
+
+    // THEN
+    expect(() => {
+      asg.userData;
+    }).not.toThrow();
+
+    expect(() => {
+      asg.connections;
+    }).not.toThrow();
+
+    expect(() => {
+      asg.role;
+    }).not.toThrow();
+
+    expect(() => {
+      asg.addSecurityGroup(mockSecurityGroup(stack));
+    }).not.toThrow();
   });
 });
 
