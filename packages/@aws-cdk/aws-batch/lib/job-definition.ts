@@ -92,29 +92,6 @@ export interface LogConfiguration {
   readonly secretOptions?: ExposedSecret[];
 }
 
-
-/**
- * Fargate platform configuration
- */
-export interface FargatePlatformConfiguration {
-  /**
-   * Fargate platform version
-   */
-  readonly platformVersion: ecs.FargatePlatformVersion
-}
-
-/**
- * Fargate network configuration
- */
-export interface NetworkConfiguration {
-  /**
-   * Whether or not to assign a public IP to the job
-   *
-   * @default - false
-   */
-  readonly assignPublicIp?: boolean
-}
-
 /**
  * Properties of a job definition container.
  */
@@ -237,26 +214,26 @@ export interface JobDefinitionContainer {
   readonly volumes?: ecs.Volume[];
 
   /**
-   * The platform configuration for jobs that are running on Fargate resources.
+   * Fargate platform version
    *
    * @default - LATEST platform version will be used
    */
-  readonly fargatePlatformConfiguration?: FargatePlatformConfiguration;
+  readonly platformVersion?: ecs.FargatePlatformVersion
 
   /**
    * The IAM role that AWS Batch can assume.
+   * Required when using Fargate.
    *
    * @default - None
    */
   readonly executionRole?: iam.IRole;
 
   /**
-   * The network configuration for jobs that are running on Fargate resources.
-   * Jobs that are running on EC2 resources must not specify this parameter.
+   * Whether or not to assign a public IP to the job
    *
-   * @default - None
+   * @default - false
    */
-  readonly networkConfiguration?: NetworkConfiguration
+  readonly assignPublicIp?: boolean
 }
 
 /**
@@ -316,7 +293,7 @@ export interface JobDefinitionProps {
   /**
    * The platform capabilities required by the job definition.
    *
-   * @default - undefined
+   * @default - EC2
    */
   readonly platformCapabilities?: PlatformCapabilities[];
 }
@@ -473,7 +450,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
       timeout: {
         attemptDurationSeconds: props.timeout ? props.timeout.toSeconds() : undefined,
       },
-      platformCapabilities: props.platformCapabilities || undefined,
+      platformCapabilities: props.platformCapabilities ?? [PlatformCapabilities.EC2],
     });
 
     this.jobDefinitionArn = this.getResourceArnAttribute(jobDef.ref, {
@@ -511,9 +488,14 @@ export class JobDefinition extends Resource implements IJobDefinition {
       throw new Error('Fargate job must have executionRole set');
     }
 
-    if (props.platformCapabilities !== undefined && props.platformCapabilities.includes(PlatformCapabilities.EC2)
-      && props.container.networkConfiguration !== undefined) {
-      throw new Error('EC2 job must not have networkConfiguration set');
+    if (props.platformCapabilities !== undefined && props.platformCapabilities.includes(PlatformCapabilities.FARGATE)
+      && props.container.gpuCount !== undefined) {
+      throw new Error('Fargate job must not have gpuCount set');
+    }
+
+    if ((props.platformCapabilities === undefined || props.platformCapabilities.includes(PlatformCapabilities.EC2))
+      && props.container.assignPublicIp !== undefined) {
+      throw new Error('EC2 job must not have assignPublicIp set');
     }
   }
 
@@ -541,15 +523,15 @@ export class JobDefinition extends Resource implements IJobDefinition {
       } : undefined,
       mountPoints: container.mountPoints,
       privileged: container.privileged || false,
-      networkConfiguration: container.networkConfiguration ? {
-        assignPublicIp: container.networkConfiguration.assignPublicIp ? 'ENABLED' : 'DISABLED',
+      networkConfiguration: container.assignPublicIp ? {
+        assignPublicIp: container.assignPublicIp ? 'ENABLED' : 'DISABLED',
       } : undefined,
       readonlyRootFilesystem: container.readOnly || false,
       ulimits: container.ulimits,
       user: container.user,
       volumes: container.volumes,
-      fargatePlatformConfiguration: container.fargatePlatformConfiguration ? {
-        platformVersion: container.fargatePlatformConfiguration.platformVersion,
+      fargatePlatformConfiguration: container.platformVersion ? {
+        platformVersion: container.platformVersion,
       } : undefined,
       ...(isFargate ? {
         resourceRequirements: [

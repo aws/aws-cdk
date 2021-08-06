@@ -354,16 +354,16 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
       physicalName: props.computeEnvironmentName,
     });
 
-    this.validateProps(props);
+    const isFargate = ComputeResourceType.FARGATE === props.computeResources?.type
+      || ComputeResourceType.FARGATE_SPOT === props.computeResources?.type;;
+
+    this.validateProps(props, isFargate);
 
     const spotFleetRole = this.getSpotFleetRole(props);
     let computeResources: CfnComputeEnvironment.ComputeResourcesProperty | undefined;
 
     // Only allow compute resources to be set when using MANAGED type
     if (props.computeResources && this.isManaged(props)) {
-      const isFargate = ComputeResourceType.FARGATE === props.computeResources.type
-        || ComputeResourceType.FARGATE_SPOT === props.computeResources.type;
-
       computeResources = {
         bidPercentage: props.computeResources.bidPercentage,
         desiredvCpus: props.computeResources.desiredvCpus,
@@ -433,7 +433,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
   /**
    * Validates the properties provided for a new batch compute environment.
    */
-  private validateProps(props: ComputeEnvironmentProps) {
+  private validateProps(props: ComputeEnvironmentProps, isFargate: boolean) {
     if (props === undefined) {
       return;
     }
@@ -447,7 +447,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     }
 
     if (props.computeResources) {
-      if (props.computeResources.type === ComputeResourceType.FARGATE || props.computeResources.type === ComputeResourceType.FARGATE_SPOT) {
+      if (isFargate) {
         // VALIDATE FOR FARGATE
 
         // Bid percentage cannot be set for Fargate evnvironments

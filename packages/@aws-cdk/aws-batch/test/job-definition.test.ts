@@ -127,7 +127,7 @@ describe('Batch Job Definition', () => {
 
     new batch.JobDefinition(stack, 'job-def', {
       ...jobDefProps,
-      container: { ...jobDefProps.container, executionRole },
+      container: { ...jobDefProps.container, executionRole, gpuCount: undefined },
       platformCapabilities: [PlatformCapabilities.FARGATE],
     });
 
@@ -361,9 +361,6 @@ describe('Batch Job Definition', () => {
   describe('using fargate job definition', () => {
     test('can configure platform configuration properly', () => {
       // GIVEN
-      const platformConfiguration: batch.FargatePlatformConfiguration = {
-        platformVersion: ecs.FargatePlatformVersion.LATEST,
-      };
       const executionRole = new iam.Role(stack, 'execution-role', {
         assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
       });
@@ -372,7 +369,7 @@ describe('Batch Job Definition', () => {
         platformCapabilities: [batch.PlatformCapabilities.FARGATE],
         container: {
           image: ecs.EcrImage.fromRegistry('docker/whalesay'),
-          fargatePlatformConfiguration: platformConfiguration,
+          platformVersion: ecs.FargatePlatformVersion.LATEST,
           executionRole: executionRole,
         },
       });

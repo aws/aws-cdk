@@ -1727,6 +1727,9 @@
           "ReadonlyRootFilesystem": false,
           "Vcpus": 1
         },
+        "PlatformCapabilities": [
+          "EC2"
+        ],
         "RetryStrategy": {
           "Attempts": 1
         },
@@ -1744,6 +1747,9 @@
           "ReadonlyRootFilesystem": false,
           "Vcpus": 1
         },
+        "PlatformCapabilities": [
+          "EC2"
+        ],
         "RetryStrategy": {
           "Attempts": 1
         },
