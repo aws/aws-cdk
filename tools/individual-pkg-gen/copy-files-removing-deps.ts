@@ -21,13 +21,24 @@ function transformPackages(): void {
     const destDir = path.join('.', packageUnscopedName);
     fs.mkdirpSync(destDir);
 
-    copyOrTransformFiles(pkg, srcDir, destDir);
+    copyOrTransformFiles(pkg, srcDir, destDir, [
+      // list of files to _not_ copy from the V1 package root
+      // .gitignore is not on the list, because pkglint checks it
+      'dist',
+      'node_modules',
+      'coverage',
+      '.nyc_output',
+      'nyc.config.js',
+      '.jsii',
+      'tsconfig.json',
+      'tsconfig.tsbuildinfo',
+    ]);
   }
 
-  function copyOrTransformFiles(pkg: any, srcDir: string, destDir: string): void {
+  function copyOrTransformFiles(pkg: any, srcDir: string, destDir: string, ignoredFiles: string[]): void {
     const sourceFiles = fs.readdirSync(srcDir);
     for (const sourceFileName of sourceFiles) {
-      if (shouldIgnoreFile(sourceFileName)) {
+      if (ignoredFiles.includes(sourceFileName)) {
         continue;
       }
 
@@ -46,10 +57,19 @@ function transformPackages(): void {
         // Change the default configuration of the import/no-extraneous-dependencies rule
         // (as the unstable packages don't use direct dependencies,
         // but instead a combination of devDependencies + peerDependencies)
-        const esLintRcContents = fs.readFileSync(source);
-        fs.outputFileSync(destination, Buffer.concat([esLintRcContents,
-          Buffer.from("\nbaseConfig.rules['import/no-extraneous-dependencies'] = ['error', " +
-              '{ devDependencies: true, peerDependencies: true } ];\n')]));
+        const esLintRcLines = fs.readFileSync(source).toString().split('\n');
+        const resultFileLines = [];
+        for (const line of esLintRcLines) {
+          resultFileLines.push(line);
+          // put our new line right after the parserOptions.project setting line,
+          // as some files export a copy of this object,
+          // in which case putting it at the end doesn't work
+          if (line.startsWith('baseConfig.parserOptions.project')) {
+            resultFileLines.push("\nbaseConfig.rules['import/no-extraneous-dependencies'] = ['error', " +
+              '{ devDependencies: true, peerDependencies: true } ];\n');
+          }
+        }
+        fs.outputFileSync(destination, resultFileLines.join('\n'));
       } else if (sourceFileName.endsWith('.ts') && !sourceFileName.endsWith('.d.ts')) {
         const sourceCode = fs.readFileSync(source).toString();
         const sourceCodeOutput = awsCdkMigration.rewriteImports(sourceCode, sourceFileName, {
@@ -59,7 +79,11 @@ function transformPackages(): void {
       } else {
         const stat = fs.statSync(source);
         if (stat.isDirectory()) {
-          copyOrTransformFiles(pkg, source, destination);
+          // we only ignore files on the top level in the package,
+          // as some subdirectories we do want to copy over
+          // (for example, synthetics contains a node_modules/ in the test/ directory
+          // that is needed for running the tests)
+          copyOrTransformFiles(pkg, source, destination, []);
         } else {
           fs.copySync(source, destination);
         }
@@ -118,6 +142,8 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
   // regular dependencies
   const alphaDependencies: { [dep: string]: string; } = {};
   const constructsAndCdkLibDevDeps: { [dep: string]: string; } = {};
+  const bundledDependencies: { [dep: string]: string } = {};
+  const v1BundledDependencies: string[] = packageJson.bundledDependencies || [];
   for (const dependency of Object.keys(packageJson.dependencies || {})) {
     // all 'regular' dependencies on alpha modules will be converted to
     // a pair of devDependency on '0.0.0' and peerDependency on '^0.0.0',
@@ -133,10 +159,13 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
       default:
         if (alphaPackages[dependency]) {
           alphaDependencies[alphaPackages[dependency]] = pkg.version;
+        } else if (v1BundledDependencies.indexOf(dependency) !== -1) {
+          // ...other than third-party dependencies, which are in bundledDependencies
+          bundledDependencies[dependency] = packageJson.dependencies[dependency];
         }
     }
   }
-  packageJson.dependencies = undefined;
+  packageJson.dependencies = bundledDependencies;
 
   // devDependencies
   const alphaDevDependencies: { [dep: string]: string; } = {};
@@ -185,20 +214,6 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
   };
   packageJson.peerDependencies = undefined;
   return finalPackageJson;
-}
-
-function shouldIgnoreFile(name: string): boolean {
-  // .gitignore is not on the list, because pkglint checks it
-  return [
-    'dist',
-    'node_modules',
-    'coverage',
-    '.nyc_output',
-    'nyc.config.js',
-    '.jsii',
-    'tsconfig.json',
-    'tsconfig.tsbuildinfo',
-  ].indexOf(name) !== -1;
 }
 
 function getAlphaPackages(packages: any[]): { [dep: string]: string } {
