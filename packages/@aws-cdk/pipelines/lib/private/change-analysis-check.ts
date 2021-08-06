@@ -5,15 +5,16 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { PreApproveLambda } from './pre-approve-lambda';
+import { ifElse } from './security-check-utils';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
- * Properties for an ApplicationSecurityCheck
+ * Properties for an ChangeAnalysisCheck
  */
-export interface ApplicationSecurityCheckProps {
+export interface ChangeAnalysisCheckProps {
   /**
    * The pipeline that will be automatically approved
    *
@@ -29,10 +30,10 @@ export interface ApplicationSecurityCheckProps {
  * The Lambda acts as an auto approving mechanism that should only be
  * triggered when the CodeBuild Project registers no security changes.
  *
- * The CodeBuild Project runs a security diff on the application stage,
+ * The CodeBuild Project runs c2a diff on the application stage,
  * and exports the link to the console of the project.
  */
-export class ApplicationSecurityCheck extends CoreConstruct {
+export class ChangeAnalysisCheck extends CoreConstruct {
   /**
    * A lambda function that approves a Manual Approval Action, given
    * the following payload:
@@ -45,28 +46,28 @@ export class ApplicationSecurityCheck extends CoreConstruct {
    */
   public readonly preApproveLambda: lambda.Function;
   /**
-   * A CodeBuild Project that runs a security diff on the application stage.
+   * A CodeBuild Project that runs c2a diff on the application stage.
    *
-   * - If the diff registers no security changes, CodeBuild will invoke the
+   * - If the c2a diff registers no security changes, CodeBuild will invoke the
    *   pre-approval lambda and approve the ManualApprovalAction.
    * - If changes are detected, CodeBuild will exit into a ManualApprovalAction
    */
-  public readonly cdkDiffProject: codebuild.Project;
+  public readonly c2aDiffProject: codebuild.Project;
 
-  constructor(scope: Construct, id: string, props: ApplicationSecurityCheckProps) {
+  constructor(scope: Construct, id: string, props: ChangeAnalysisCheckProps) {
     super(scope, id);
 
-    Tags.of(props.codePipeline).add('SECURITY_CHECK', 'ALLOW_APPROVE', {
+    Tags.of(props.codePipeline).add('CHANGE_ANALYSIS', 'ALLOW_APPROVE', {
       includeResourceTypes: ['AWS::CodePipeline::Pipeline'],
     });
 
     const { preApproveLambda, invokeLambda } = new PreApproveLambda(this, 'CDKPreApproveLambda', {
-      pipelineTag: 'SECURITY_CHECK',
+      pipelineTag: 'CHANGE_ANALYSIS',
     });
     this.preApproveLambda = preApproveLambda;
 
     const message = [
-      'An upcoming change would broaden security changes in $PIPELINE_NAME.',
+      'An upcoming change would violate configured rules settings in $PIPELINE_NAME.',
       'Review and approve the changes in CodePipeline to proceed with the deployment.',
       '',
       'Review the changes in CodeBuild:',
@@ -77,19 +78,23 @@ export class ApplicationSecurityCheck extends CoreConstruct {
       '',
       '$PIPELINE_LINK',
     ];
+
     const publishNotification =
       'aws sns publish' +
       ' --topic-arn $NOTIFICATION_ARN' +
       ' --subject "$NOTIFICATION_SUBJECT"' +
       ` --message "${message.join('\n')}"`;
 
-    this.cdkDiffProject = new codebuild.Project(this, 'CDKSecurityCheck', {
+    this.c2aDiffProject = new codebuild.Project(this, 'CDKSecurityCheck', {
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+      },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: 0.2,
         phases: {
           build: {
             commands: [
-              'npm install -g aws-cdk',
+              'npm install -g cdk-change-analyzer',
               // $CODEBUILD_INITIATOR will always be Code Pipeline and in the form of:
               // "codepipeline/example-pipeline-name-Xxx"
               'export PIPELINE_NAME="$(node -pe \'`${process.env.CODEBUILD_INITIATOR}`.split("/")[1]\')"',
@@ -106,10 +111,10 @@ export class ApplicationSecurityCheck extends CoreConstruct {
               // Run invoke only if cdk diff passes (returns exit code 0)
               // 0 -> true, 1 -> false
               ifElse({
-                condition: 'cdk diff -a . --security-only --fail $STAGE_PATH/\\*',
+                condition: `aws-c2a diff --app "assembly-${props.codePipeline.stack.stackName}-$STAGE_NAME/" --broadening-permissions --fail`,
                 thenStatements: [
                   invokeLambda,
-                  'export MESSAGE="No security-impacting changes detected."',
+                  'export MESSAGE="No changes that violate rules detected."',
                 ],
                 elseStatements: [
                   `[ -z "\${NOTIFICATION_ARN}" ] || ${publishNotification}`,
@@ -129,7 +134,7 @@ export class ApplicationSecurityCheck extends CoreConstruct {
     });
 
     // this is needed to check the status the stacks when doing `cdk diff`
-    this.cdkDiffProject.addToRolePolicy(new iam.PolicyStatement({
+    this.c2aDiffProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
       resources: ['*'],
       conditions: {
@@ -139,26 +144,11 @@ export class ApplicationSecurityCheck extends CoreConstruct {
       },
     }));
 
-    this.preApproveLambda.grantInvoke(this.cdkDiffProject);
+    this.c2aDiffProject.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['cloudformation:GetTemplate', 'cloudformation:DescribeStack'],
+      resources: ['*'],
+    }));
+
+    this.preApproveLambda.grantInvoke(this.c2aDiffProject);
   }
 }
-
-interface ifElseOptions {
-  readonly condition: string,
-  readonly thenStatements: string[],
-  readonly elseStatements?: string[]
-}
-
-const ifElse = ({ condition, thenStatements, elseStatements }: ifElseOptions): string => {
-  let statement = thenStatements.reduce((acc, ifTrue) => {
-    return `${acc} ${ifTrue};`;
-  }, `if ${condition}; then`);
-
-  if (elseStatements) {
-    statement = elseStatements.reduce((acc, ifFalse) => {
-      return `${acc} ${ifFalse};`;
-    }, `${statement} else`);
-  }
-
-  return `${statement} fi`;
-};
