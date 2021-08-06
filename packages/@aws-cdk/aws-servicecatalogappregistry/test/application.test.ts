@@ -197,7 +197,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
         Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
-        Resource: { 'Fn::ImportValue': 'MyStack:MyStackExportsOutputRefAWSStackId23D778D8' },
+        Resource: { 'Fn::ImportValue': 'MyStack:ExportsOutputRefAWSStackIdB2DD5BAA' },
       });
     }),
 
