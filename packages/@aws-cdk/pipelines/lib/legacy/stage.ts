@@ -5,10 +5,11 @@ import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
 import * as sns from '@aws-cdk/aws-sns';
 import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
+import { pipelineSynth } from '../private/construct-internals';
 import { topologicalSort } from '../private/toposort';
 import { DeployCdkStackAction } from './actions';
 import { CdkPipeline } from './pipeline';
@@ -109,7 +110,7 @@ export class CdkStage extends Construct {
    * publishing stage.
    */
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
-    const asm = appStage.synth({ validateOnSynthesis: true });
+    const asm = pipelineSynth(appStage);
     const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
 
     if (options.confirmBroadeningPermissions ?? this.confirmBroadeningPermissions) {
@@ -307,7 +308,7 @@ export class CdkStage extends Construct {
       variablesNamespace: `${appStageName}SecurityCheck`,
       environmentVariables: {
         STAGE_PATH: {
-          value: this.pipelineStage.pipeline.stack.stackName,
+          value: Node.of(appStage).path,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         STAGE_NAME: {
