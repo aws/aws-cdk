@@ -9,37 +9,47 @@ import * as assert from './vendored/assert';
  * Typically used, as part of unit tests, to validate that the rendered
  * CloudFormation template has expected resources and properties.
  */
-export class TemplateAssertions {
+export class Template {
 
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
    */
-  public static fromStack(stack: Stack): TemplateAssertions {
-    return new TemplateAssertions(toTemplate(stack));
+  public static fromStack(stack: Stack): Template {
+    return new Template(toTemplate(stack));
+  }
+
+  /**
+   * Base your assertions from an existing CloudFormation template formatted as an in-memory
+   * JSON object.
+   * @param template the CloudFormation template formatted as a nested set of records
+   */
+  public static fromJSON(template: { [key: string] : any }): Template {
+    return new Template(template);
   }
 
   /**
    * Base your assertions from an existing CloudFormation template formatted as a
-   * nested set of records.
-   * @param template the CloudFormation template formatted as a nested set of records
+   * JSON string.
+   * @param template the CloudFormation template in
    */
-  public static fromTemplate(template: { [key: string] : any }): TemplateAssertions {
-    return new TemplateAssertions(template);
+  public static fromString(template: string): Template {
+    return new Template(JSON.parse(template));
+  }
+
+  private readonly template: { [key: string]: any };
+  private readonly inspector: assert.StackInspector;
+
+  private constructor(template: { [key: string]: any }) {
+    this.template = template;
+    this.inspector = new assert.StackInspector(template);
   }
 
   /**
-   * Base your assertions from an existing CloudFormation template formatted as a string.
-   * @param template the CloudFormation template in
+   * The CloudFormation template deserialized into an object.
    */
-  public static fromString(template: string): TemplateAssertions {
-    return new TemplateAssertions(JSON.parse(template));
-  }
-
-  private readonly inspector: assert.StackInspector;
-
-  private constructor(template: any) {
-    this.inspector = new assert.StackInspector(template);
+  public toJSON(): { [key: string]: any } {
+    return this.template;
   }
 
   /**
