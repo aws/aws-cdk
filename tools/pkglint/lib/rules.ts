@@ -1373,9 +1373,9 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
 
   public validate(pkg: PackageJson) {
     // don't do this check for the separately-vended modules
-    if (pkg.packageName.startsWith('@aws-cdk-lib-alpha/')) {
-      return;
-    }
+    // if (pkg.packageName.startsWith('@aws-cdk-lib-alpha/')) {
+    //   return;
+    // }
 
     const bundled: string[] = pkg.json.bundleDependencies || pkg.json.bundledDependencies || [];
     if (bundled.length === 0) { return; }
