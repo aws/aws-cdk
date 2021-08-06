@@ -1,4 +1,5 @@
 import { Stack, Stage } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Match } from './match';
 import { Matcher } from './matcher';
 import { findResources, hasResource } from './private/resource';
@@ -119,5 +120,22 @@ function toTemplate(stack: Stack): any {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
   }
   const assembly = root.synth();
-  return assembly.getStackArtifact(stack.artifactId).template;
+  return stripNewStyleSynthCfnElements(assembly.getStackArtifact(stack.artifactId)).template;
+}
+
+function stripNewStyleSynthCfnElements(stackArtifact: cxapi.CloudFormationStackArtifact): cxapi.CloudFormationStackArtifact {
+  const synthesizedTemplate = stackArtifact.template;
+
+  // if new-style synthesis is not explicitly set, remove the extra generated Rule and Parameter from the synthesized template,
+  // to avoid changing many tests that rely on the template being exactly what it is
+  delete synthesizedTemplate?.Rules?.CheckBootstrapVersion;
+  if (Object.keys(synthesizedTemplate?.Rules ?? {}).length === 0) {
+    delete synthesizedTemplate?.Rules;
+  }
+  delete synthesizedTemplate?.Parameters?.BootstrapVersion;
+  if (Object.keys(synthesizedTemplate?.Parameters ?? {}).length === 0) {
+    delete synthesizedTemplate?.Parameters;
+  }
+
+  return stackArtifact;
 }
