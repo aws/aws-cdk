@@ -1,4 +1,4 @@
-import { CfnResource, Stack } from '@aws-cdk/core';
+import { App, CfnResource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Match, Template } from '../lib';
 
@@ -25,7 +25,12 @@ describe('Template', () => {
     });
 
     test('fromStack', () => {
-      const stack = new Stack();
+      const app = new App({
+        context: {
+          '@aws-cdk/core:newStyleStackSynthesis': false,
+        },
+      });
+      const stack = new Stack(app);
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
         properties: {
