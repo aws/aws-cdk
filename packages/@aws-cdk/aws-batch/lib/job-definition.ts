@@ -150,7 +150,7 @@ export interface JobDefinitionContainer {
 
   /**
    * The hard limit (in MiB) of memory to present to the container. If your container attempts to exceed
-   * the memory specified here, the container is killed. You must specify at least 4 MiB of memory for a job.
+   * the memory specified here, the container is killed. You must specify at least 4 MiB of memory for EC2 and 512 MiB for Fargate.
    *
    * @default - 4 for EC2, 512 for Fargate
    */
@@ -533,18 +533,10 @@ export class JobDefinition extends Resource implements IJobDefinition {
       fargatePlatformConfiguration: container.platformVersion ? {
         platformVersion: container.platformVersion,
       } : undefined,
-      ...(isFargate ? {
-        resourceRequirements: [
-          { type: 'VCPU', value: String(container.vcpus || 0.25) },
-          { type: 'MEMORY', value: String(container.memoryLimitMiB || 512) },
-        ],
-      } : {
-        memory: container.memoryLimitMiB || 4,
-        vcpus: container.vcpus || 1,
-        resourceRequirements: container.gpuCount
-          ? [{ type: 'GPU', value: String(container.gpuCount) }]
-          : undefined,
-      }),
+      resourceRequirements: [
+        { type: 'VCPU', value: String(container.vcpus || (isFargate ? 0.25 : 1)) },
+        { type: 'MEMORY', value: String(container.memoryLimitMiB || (isFargate ? 512 : 4)) },
+      ].concat(container.gpuCount ? [{ type: 'GPU', value: String(container.gpuCount) }] : []),
     };
   }
 

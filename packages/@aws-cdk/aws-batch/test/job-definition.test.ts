@@ -90,14 +90,16 @@ describe('Batch Job Definition', () => {
             'awslogs-region': 'us-east-1',
           },
         },
-        Memory: jobDefProps.container.memoryLimitMiB,
         MountPoints: [],
         Privileged: jobDefProps.container.privileged,
         ReadonlyRootFilesystem: jobDefProps.container.readOnly,
-        ResourceRequirements: [{ Type: 'GPU', Value: String(jobDefProps.container.gpuCount) }],
+        ResourceRequirements: [
+          { Type: 'VCPU', Value: String(jobDefProps.container.vcpus) },
+          { Type: 'MEMORY', Value: String(jobDefProps.container.memoryLimitMiB) },
+          { Type: 'GPU', Value: String(jobDefProps.container.gpuCount) },
+        ],
         Ulimits: [],
         User: jobDefProps.container.user,
-        Vcpus: jobDefProps.container.vcpus,
         Volumes: [],
       } : undefined,
       NodeProperties: jobDefProps.nodeProps ? {
@@ -248,10 +250,12 @@ describe('Batch Job Definition', () => {
             ],
           ],
         },
-        Memory: 4,
         Privileged: false,
         ReadonlyRootFilesystem: false,
-        Vcpus: 1,
+        ResourceRequirements: [
+          { Type: 'VCPU', Value: '1' },
+          { Type: 'MEMORY', Value: '4' },
+        ],
       },
     });
   });
@@ -268,10 +272,12 @@ describe('Batch Job Definition', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ContainerProperties: {
         Image: 'docker/whalesay',
-        Memory: 4,
         Privileged: false,
         ReadonlyRootFilesystem: false,
-        Vcpus: 1,
+        ResourceRequirements: [
+          { Type: 'VCPU', Value: '1' },
+          { Type: 'MEMORY', Value: '4' },
+        ],
       },
     });
   });
