@@ -28,13 +28,13 @@ export interface BackupPlanProps {
    */
   readonly backupPlanName?: string;
 
-    /**
+  /**
    * The option for backup.
    *
-   * @default - Object used to set Windows VSS options. 
-   * default value is {"WindowsVSS": "disabled"}
+   * @default - Object used to set Windows VSS options.
+   * @see {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-backup-backupplan-windows.html}
    */
-  readonly backupPlanOptions? : object;
+  readonly backupOptions? : object;
 
 
   /**
@@ -133,8 +133,8 @@ export class BackupPlan extends Resource implements IBackupPlan {
 
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
+        ...(props.backupOptions ? { advancedBackupSettings: [{ backupOptions: props.backupOptions, resourceType: 'EC2' }] } : {}),
         backupPlanName: props.backupPlanName || id,
-        backupPlanOptions: props.backupPlanOptions || { WindowsVSS: 'disabled' },
         backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
       },
     });
