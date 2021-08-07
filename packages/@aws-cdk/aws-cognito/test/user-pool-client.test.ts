@@ -550,7 +550,7 @@ describe('User Pool Client', () => {
     pool.addClient('Client');
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       EnableTokenRevocation: Match.absentProperty(),
     });
   });
@@ -566,7 +566,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       EnableTokenRevocation: true,
     });
   });
@@ -583,7 +583,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       EnableTokenRevocation: true,
     });
   });
