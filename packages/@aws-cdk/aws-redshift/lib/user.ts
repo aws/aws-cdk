@@ -15,8 +15,6 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 export enum Privilege {
   /**
    * Grants privilege to select data from a table or view using a SELECT statement.
-   *
-   * The SELECT privilege is also required to reference existing column values for UPDATE or DELETE operations.
    */
   SELECT,
 
@@ -27,15 +25,11 @@ export enum Privilege {
 
   /**
    * Grants privilege to update a table column using an UPDATE statement.
-   *
-   * UPDATE operations also require the SELECT privilege, because they must reference table columns to determine which rows to update, or to compute new values for columns.
    */
   UPDATE,
 
   /**
    * Grants privilege to delete a data row from a table.
-   *
-   * DELETE operations also require the SELECT privilege, because they must reference table columns to determine which rows to delete.
    */
   DELETE,
 
