@@ -26,7 +26,7 @@ cdk.Aspects.of(stack).add({
 });
 
 const vpc = new ec2.Vpc(stack, 'Vpc');
-const database = 'my_db';
+const databaseName = 'my_db';
 const cluster = new redshift.Cluster(stack, 'Cluster', {
   vpc: vpc,
   vpcSubnets: {
@@ -35,8 +35,18 @@ const cluster = new redshift.Cluster(stack, 'Cluster', {
   masterUser: {
     masterUsername: 'admin',
   },
-  defaultDatabaseName: database,
+  defaultDatabaseName: databaseName,
   publiclyAccessible: true,
+});
+const table = new redshift.Table(stack, 'Table', {
+  cluster: cluster,
+  databaseName: databaseName,
+  tableColumns: [
+    { name: 'TICKER_SYMBOL', dataType: 'varchar(4)' },
+    { name: 'SECTOR', dataType: 'varchar(16)' },
+    { name: 'CHANGE', dataType: 'float' },
+    { name: 'PRICE', dataType: 'float' },
+  ],
 });
 
 const dataProcessorFunction = new lambdanodejs.NodejsFunction(stack, 'DataProcessorFunction', {
@@ -44,15 +54,7 @@ const dataProcessorFunction = new lambdanodejs.NodejsFunction(stack, 'DataProces
   timeout: cdk.Duration.minutes(1),
 });
 
-const redshiftDestination = new firehosedestinations.RedshiftTable(cluster, {
-  user: firehosedestinations.RedshiftUser.create(),
-  database: database,
-  tableColumns: [
-    { name: 'TICKER_SYMBOL', dataType: 'varchar(4)' },
-    { name: 'SECTOR', dataType: 'varchar(16)' },
-    { name: 'CHANGE', dataType: 'float' },
-    { name: 'PRICE', dataType: 'float' },
-  ],
+const redshiftDestination = new firehosedestinations.RedshiftTable(table, {
   copyOptions: 'json \'auto\'',
   bufferingInterval: cdk.Duration.minutes(1),
   bufferingSize: cdk.Size.mebibytes(1),

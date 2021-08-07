@@ -1,102 +1,22 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
-import * as kms from '@aws-cdk/aws-kms';
 import * as redshift from '@aws-cdk/aws-redshift';
 import * as s3 from '@aws-cdk/aws-s3';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps, CommonDestinationS3Props, Compression } from './common';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
-import { FirehoseRedshiftTable } from './redshift/table';
-import { FirehoseRedshiftUser } from './redshift/user';
-
-/**
- * The Redshift user Firehose will assume to deliver data to the destination table.
- */
-export class RedshiftUser {
-  /**
-   * Specify a Redshift user using credentials that already exist.
-   *
-   * The user must have INSERT permissions to the destination table.
-   *
-   * @param username Username for the user.
-   * @param password Password for the user. Do not put passwords in CDK code directly.
-   */
-  static fromExisting(username: string, password: cdk.SecretValue): RedshiftUser {
-    return new RedshiftUser(username, password);
-  }
-
-  /**
-   * Generate credentials and create a Redshift user.
-   *
-   * The user will be given INSERT permissions to the destination table. The credentials for the user will be stored in AWS Secrets Manager.
-   *
-   * @param encryptionKey KMS key to encrypt the generated secret. If not provided, the default AWS managed key is used.
-   */
-  static create(encryptionKey?: kms.IKey): RedshiftUser {
-    return new RedshiftUser(undefined, undefined, encryptionKey);
-  }
-
-  /**
-   * @param username Username for the user.
-   * @param password Password for the user. Do not put passwords in CDK code directly.
-   * @param encryptionKey KMS key to encrypt the generated secret. If not provided, the default AWS managed key is used.
-   */
-  private constructor(public readonly username?: string, public readonly password?: cdk.SecretValue, public readonly encryptionKey?: kms.IKey) {}
-}
-
-/**
- * A column in a Redshift table.
- */
-export interface RedshiftColumn {
-  /**
-   * The name of the column.
-   */
-  readonly name: string;
-
-  /**
-   * The data type of the column.
-   */
-  readonly dataType: string;
-}
 
 /**
  * Properties for configuring a Redshift delivery stream destination.
  */
 export interface RedshiftDestinationProps extends CommonDestinationProps, CommonDestinationS3Props {
   /**
-   * The Redshift user Firehose will assume to deliver data to Redshift.
-   */
-  readonly user: RedshiftUser;
-
-  /**
-   * The database containing the destination table.
-   */
-  readonly database: string;
-
-  /**
-   * The name of the table that data should be inserted into.
+   * The Redshift user Firehose will assume to deliver data to the destination table.
    *
-   * @default - a table is generated automatically
+   * @default - a user is generated
    */
-  readonly tableName?: string;
-
-  /**
-   * The table columns that the source fields will be loaded into.
-   */
-  readonly tableColumns: RedshiftColumn[];
-
-  /**
-   * The secret that holds Redshift cluster credentials for a user with administrator privileges.
-   *
-   * Used to create the user that Firehose assumes and the table that data is inserted into.
-   * Not required if neither user nor table need to be generated.
-   * Secret JSON schema: `{ username: string; password: string }`.
-   *
-   * @default - the admin secret is taken from the cluster
-   */
-  readonly adminUser?: secretsmanager.ISecret;
+  readonly user?: redshift.IUser;
 
   /**
    * Parameters given to the COPY command that is used to move data from S3 to Redshift.
@@ -138,14 +58,21 @@ export interface RedshiftDestinationProps extends CommonDestinationProps, Common
  * Redshift table delivery stream destination.
  */
 export class RedshiftTable implements firehose.IDestination {
-  private readonly adminUser?: secretsmanager.ISecret;
-
-  constructor(private readonly cluster: redshift.ICluster, private readonly props: RedshiftDestinationProps) {
+  /**
+   * @param table The Redshift table that data should be inserted into.
+   */
+  constructor(private readonly table: redshift.ITable, private readonly props: RedshiftDestinationProps = {}) {
+    const cluster = table.cluster;
     if (!cluster.publiclyAccessible) {
       throw new Error('Redshift cluster used as delivery stream destination is not publicly accessible');
     }
     if (!cluster.subnetGroup?.selectedSubnets?.hasPublic) {
       throw new Error('Redshift cluster used as delivery stream destination is not located in a public subnet');
+    }
+    if (props.user) {
+      if (props.user.cluster !== table.cluster || props.user.databaseName !== table.databaseName) {
+        throw new Error('Provided Redshift user must be located in the same Redshift cluster and database as the table');
+      }
     }
     if (props.retryTimeout && props.retryTimeout.toSeconds() > cdk.Duration.hours(2).toSeconds()) {
       throw new Error(`Retry timeout must be less than 7,200 seconds (2 hours), given ${props.retryTimeout.toSeconds()} seconds`);
@@ -156,85 +83,31 @@ export class RedshiftTable implements firehose.IDestination {
     if (props.s3Backup?.mode === BackupMode.FAILED) {
       throw new Error('Redshift delivery stream destination does not support ${props.s3Backup?.mode} backup mode');
     }
-
-    const generateTable = !props.tableName;
-    const generateUser = !props.user.username || !props.user.password;
-    this.adminUser = props.adminUser;
-    if (!this.adminUser && (generateTable || generateUser)) {
-      if (cluster instanceof redshift.Cluster) {
-        if (cluster.secret) {
-          this.adminUser = cluster.secret;
-        } else {
-          throw new Error(
-            'Administrative access to the cluster is required but an admin user secret was not provided and the Redshift cluster did not generate admin user credentials (they were provided explicitly)',
-          );
-        }
-      } else {
-        throw new Error(
-          'Administrative access to the cluster is required but an admin user secret was not provided and the Redshift cluster was imported',
-        );
-      }
-    }
   }
 
   public bind(scope: Construct, options: firehose.DestinationBindOptions): firehose.DestinationConfig {
     const {
-      database,
-      tableColumns,
-      user: userConfig,
       compression,
       retryTimeout,
       bufferingInterval,
       bufferingSize,
       copyOptions,
     } = this.props;
+    const cluster = this.table.cluster;
 
     const role = this.props.role ?? new iam.Role(scope, 'Redshift Destination Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
 
-    const endpoint = this.cluster.clusterEndpoint;
-    const jdbcUrl = `jdbc:redshift://${endpoint.hostname}:${cdk.Token.asString(endpoint.port)}/${database}`;
-    this.cluster.connections.allowDefaultPortFrom(options.connections, 'Allow incoming connections from Kinesis Data Firehose');
+    const endpoint = cluster.clusterEndpoint;
+    const jdbcUrl = `jdbc:redshift://${endpoint.hostname}:${cdk.Token.asString(endpoint.port)}/${this.table.databaseName}`;
+    cluster.connections.allowDefaultPortFrom(options.connections, 'Allow incoming connections from Kinesis Data Firehose');
 
-    let tableName = this.props.tableName;
-    if (!tableName) {
-      const redshiftTable = new FirehoseRedshiftTable(scope, 'Firehose Redshift Table', {
-        cluster: this.cluster,
-        adminUser: this.adminUser!,
-        database: database,
-        tableColumns: tableColumns,
-      });
-      tableName = redshiftTable.tableName;
-    }
-
-    const user = (() => {
-      if (userConfig.username && userConfig.password) {
-        return {
-          username: userConfig.username,
-          password: userConfig.password,
-        };
-      } else {
-        const secret = new redshift.DatabaseSecret(scope, 'Firehose User Secret', {
-          username: cdk.Names.uniqueId(scope),
-          encryptionKey: userConfig.encryptionKey,
-        });
-        const attachedSecret = secret.attach(this.cluster);
-
-        const redshiftUser = new FirehoseRedshiftUser(scope, 'Firehose Redshift User', {
-          cluster: this.cluster,
-          adminUser: this.adminUser!,
-          userSecret: attachedSecret,
-          database: database,
-          tableName: tableName,
-        });
-
-        return {
-          username: redshiftUser.username,
-          password: attachedSecret.secretValueFromJson('password'),
-        };
-      };
-    })();
+    const user = this.props.user ?? new redshift.User(scope, 'Redshift User', {
+      cluster: cluster,
+      databaseName: this.table.databaseName,
+    });
+    this.table.grant(user, redshift.Privilege.INSERT); // TODO: needs to be added as a dependable
 
     const { loggingOptions: intermediateLoggingOptions, dependables: intermediateLoggingDependables } = createLoggingOptions(scope, {
       logging: this.props.logging,
@@ -252,11 +125,11 @@ export class RedshiftTable implements firehose.IDestination {
       cloudWatchLoggingOptions: intermediateLoggingOptions,
       compressionFormat: compression?.value,
     };
-    const bucketAccessRole = this.props.bucketAccessRole ?? new iam.Role(scope, 'Intermediate Bucket Access Role', {
+    const bucketAccessRole = this.props.bucketAccessRole ?? new iam.Role(scope, 'Intermediate Bucket Redshift Access Role', {
       assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
     });
-    if (!this.props.bucketAccessRole && this.cluster instanceof redshift.Cluster) {
-      this.cluster.attachRole(bucketAccessRole);
+    if (!this.props.bucketAccessRole && cluster instanceof redshift.Cluster) {
+      cluster.attachRole(bucketAccessRole);
     }
     intermediateBucket.grantRead(bucketAccessRole);
 
@@ -267,12 +140,13 @@ export class RedshiftTable implements firehose.IDestination {
       streamId: 'Redshift',
     }) ?? {};
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
+
     return {
       redshiftDestinationConfiguration: {
         clusterJdbcurl: jdbcUrl,
         copyCommand: {
-          dataTableName: tableName,
-          dataTableColumns: tableColumns.map(column => column.name).join(),
+          dataTableName: this.table.tableName,
+          dataTableColumns: this.table.tableColumns.map(column => column.name).join(),
           copyOptions: copyOptions + (compression === Compression.GZIP ? ' gzip' : ''),
         },
         password: user.password.toString(),
