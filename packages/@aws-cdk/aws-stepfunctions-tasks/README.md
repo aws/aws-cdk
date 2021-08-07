@@ -720,6 +720,7 @@ The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in
 
 The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
 
+The EKS cluster containing the Kubernetes namespace where the virtual cluster will be mapped can be passed in from the task input.
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
@@ -729,6 +730,7 @@ new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
 });
 ```
 
+The EKS cluster can also be passed in directly.
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
@@ -743,7 +745,7 @@ new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
 });
 ```
 
-**Full example:**
+By default, the Kubernetes namespace that a virtual cluster maps to is "default", but a specific namespace within an EKS cluster can be selected.
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';

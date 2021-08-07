@@ -33,7 +33,7 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
    * If the execution role is provided, follow the documentation to setup the job execution role and update the role trust policy
    * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
    *
-   * @default - Automatically generated `only` when the provided `virtualClusterId` is not an encoded JSON path
+   * @default - Automatically generated only when the provided `virtualClusterId` is not an encoded JSON path
    */
   readonly executionRole?: iam.IRole;
 
@@ -44,6 +44,7 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
 
   /**
    * The configurations for the application running in the job run.
+   *
    * Maximum of 100 items
    *
    * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_Configuration.html
@@ -94,9 +95,9 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  protected role: iam.IRole;
-  protected readonly logGroup: logs.ILogGroup | undefined;
-  protected readonly logBucket: s3.IBucket | undefined;
+  private role: iam.IRole;
+  private readonly logGroup?: logs.ILogGroup;
+  private readonly logBucket?: s3.IBucket;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
   constructor(scope: Construct, id: string, private readonly props: EmrContainersStartJobRunProps) {
@@ -143,11 +144,11 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
 
     if (props.executionRole === undefined
       && sfn.JsonPath.isEncodedJsonPath(props.virtualClusterId.value)) {
-      throw new Error('Execution role cannot be undefined when the virtual cluster id is an encoded JSON path');
+      throw new Error('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
     }
 
-    this.logGroup = this.props.monitoring?.logGroup ?? this.props.monitoring?.logging ? new logs.LogGroup(this, 'Emr Containers Default Cloudwatch Log Group') : undefined;
-    this.logBucket = this.props.monitoring?.logBucket ?? this.props.monitoring?.logging ? new s3.Bucket(this, 'Emr Containers Default S3 Bucket') : undefined;
+    this.logGroup = this.props.monitoring?.logGroup ?? this.props.monitoring?.logging ? new logs.LogGroup(this, 'Monitoring Log Group') : undefined;
+    this.logBucket = this.props.monitoring?.logBucket ?? this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined;
     this.role = this.props.executionRole ?? this.createJobExecutionRole();
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -192,8 +193,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
 
   /**
    * Render the EMR Containers ConfigurationProperty as JSON
-   *
-   * @param property
    */
   private applicationConfigPropertyToJson(property: ApplicationConfiguration) {
     return {
@@ -388,6 +387,7 @@ export interface SparkSubmitJobDriver {
    *
    * Length Constraints: Minimum length of 1. Maximum length of 10280.
    * @type string[]
+   *
    * @default - No arguments defined
    */
   readonly entryPointArguments?: sfn.TaskInput;
@@ -498,6 +498,7 @@ export class Classification {
  * A configuration consists of a classification, properties, and optional nested configurations.
  * A classification refers to an application-specific configuration file.
  * Properties are the settings you want to change in that file.
+ * @see https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-configure-apps.html
  */
 export interface ApplicationConfiguration {
 
@@ -541,6 +542,7 @@ export interface Monitoring {
 
   /**
    * A log group for CloudWatch monitoring.
+   *
    * You can configure your jobs to send log information to CloudWatch Logs.
    *
    * @default - Automatically generated
@@ -556,6 +558,7 @@ export interface Monitoring {
 
   /**
    * Amazon S3 Bucket for monitoring log publishing.
+   *
    * You can configure your jobs to send log information to Amazon S3.
    *
    * @default - Automatically generated
@@ -572,9 +575,10 @@ export interface Monitoring {
 
 /**
  * The Amazon EMR release version to use for the job run.
+ *
  * Can be extended to include new EMR releases
  *
- * @example class Example extends ReleaseLabel { static EMR_X_XX_X = new Example('emr-x.xx.x-latest')}
+ * @example new Example('emr-x.xx.x-latest');
  */
 export class ReleaseLabel {
 
@@ -623,7 +627,6 @@ export class VirtualClusterInput {
    * Input for a virtualClusterId from a Task Input
    *
    * @param taskInput Task Input that contains a virtualClusterId.
-   * @returns a Task Input's value - typically a literal string or path that contains the virtualClusterId.
    */
   static fromTaskInput(taskInput: sfn.TaskInput): VirtualClusterInput {
     return new VirtualClusterInput(taskInput.value);
@@ -633,7 +636,6 @@ export class VirtualClusterInput {
    * Input for virtualClusterId from a literal string
    *
    * @param virtualClusterId literal string containing the virtualClusterId
-   * @returns the virtualClusterId
    */
   static fromVirtualClusterId(virtualClusterId: string): VirtualClusterInput {
     return new VirtualClusterInput(virtualClusterId);

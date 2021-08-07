@@ -71,6 +71,7 @@ export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskState
 
   /**
    * Name of the virtual cluster that will be created.
+   *
    * @default - the id of the state machine execution that runs this task
    */
   readonly virtualClusterName?: string;
