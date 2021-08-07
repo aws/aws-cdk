@@ -565,7 +565,7 @@ pool.addClient('app-client', {
 });
 ```
 
-If the identity provider and the app client are created in the same stack, specify the dependency between both constructs to make sure, the identity provider already exists when the app client will be created. The app client cannot handle the dependency to the identity provider automatically because it does not have access to its construct.
+If the identity provider and the app client are created in the same stack, specify the dependency between both constructs to make sure that the identity provider already exists when the app client will be created. The app client cannot handle the dependency to the identity provider automatically because the client does not have access to the provider's construct.
 
 ```ts
 const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
