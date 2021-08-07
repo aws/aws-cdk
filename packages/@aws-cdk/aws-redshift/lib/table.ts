@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { ICluster } from './cluster';
 import { DatabaseProps, DatabaseQuery } from './database';
 import { IUser, Privilege } from './user';
 
@@ -61,6 +62,16 @@ export interface ITable extends cdk.IConstruct {
   readonly tableColumns: Column[];
 
   /**
+   * The cluster where the table is located.
+   */
+  readonly cluster: ICluster;
+
+  /**
+   * The name of the database where the table is located.
+   */
+  readonly databaseName: string;
+
+  /**
    * Grant a user privilege to access this table.
    */
   grant(user: IUser, ...privileges: Privilege[]): void;
@@ -79,11 +90,23 @@ export interface TableAttributes {
    * The columns of the table.
    */
   readonly tableColumns: Column[];
+
+  /**
+   * The cluster where the table is located.
+   */
+  readonly cluster: ICluster;
+
+  /**
+   * The name of the database where the table is located.
+   */
+  readonly databaseName: string;
 }
 
 abstract class TableBase extends CoreConstruct implements ITable {
   abstract readonly tableName: string;
   abstract readonly tableColumns: Column[];
+  abstract readonly cluster: ICluster;
+  abstract readonly databaseName: string;
   grant(user: IUser, ...privileges: Privilege[]) {
     user.addPrivilege(this.tableName, ...privileges);
   }
@@ -100,11 +123,15 @@ export class Table extends TableBase {
     return new class extends TableBase {
       readonly tableName = attrs.tableName;
       readonly tableColumns = attrs.tableColumns;
+      readonly cluster = attrs.cluster;
+      readonly databaseName = attrs.databaseName;
     }(scope, id);
   }
 
   readonly tableName: string;
   readonly tableColumns: Column[];
+  readonly cluster: ICluster;
+  readonly databaseName: string;
 
   private resource: DatabaseQuery;
 
@@ -112,6 +139,8 @@ export class Table extends TableBase {
     super(scope, id);
 
     this.tableColumns = props.tableColumns;
+    this.cluster = props.cluster;
+    this.databaseName = props.databaseName;
 
     this.resource = new DatabaseQuery(this, 'Resource', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,

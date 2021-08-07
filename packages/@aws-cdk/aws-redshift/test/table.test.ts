@@ -73,10 +73,14 @@ describe('cluster table', () => {
     const table = redshift.Table.fromTableAttributes(stack, 'Table', {
       tableName,
       tableColumns,
+      cluster,
+      databaseName: 'databaseName',
     });
 
     expect(table.tableName).toBe(tableName);
     expect(table.tableColumns).toBe(tableColumns);
+    expect(table.cluster).toBe(cluster);
+    expect(table.databaseName).toBe('databaseName');
   });
 
   it('grant adds privileges to user', () => {
@@ -89,6 +93,8 @@ describe('cluster table', () => {
     const table = redshift.Table.fromTableAttributes(stack, 'Table', {
       tableName,
       tableColumns,
+      cluster,
+      databaseName: 'databaseName',
     });
 
     privileges.forEach(privilege => table.grant(user, privilege));

@@ -1,6 +1,7 @@
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { ICluster } from './cluster';
 import { DatabaseProps, DatabaseQuery } from './database';
 import { DatabaseSecret } from './database-secret';
 
@@ -97,6 +98,16 @@ export interface IUser extends cdk.IConstruct {
   readonly password: cdk.SecretValue;
 
   /**
+   * The cluster where the table is located.
+   */
+  readonly cluster: ICluster;
+
+  /**
+   * The name of the database where the table is located.
+   */
+  readonly databaseName: string;
+
+  /**
    * Grant this user privilege to access a table.
    */
   addPrivilege(tableName: string, ...privileges: Privilege[]): void;
@@ -127,6 +138,8 @@ interface TablePrivilege {
 abstract class UserBase extends CoreConstruct implements IUser {
   abstract readonly username: string;
   abstract readonly password: cdk.SecretValue;
+  abstract readonly cluster: ICluster;
+  abstract readonly databaseName: string;
 
   /**
    * The tables that user will have access to
@@ -180,12 +193,16 @@ export class User extends UserBase {
     return new class extends UserBase {
       readonly username = attrs.username;
       readonly password = attrs.password;
+      readonly cluster = attrs.cluster;
+      readonly databaseName = attrs.databaseName;
       protected readonly databaseProps = attrs;
     }(scope, id);
   }
 
   readonly username: string;
   readonly password: cdk.SecretValue;
+  readonly cluster: ICluster;
+  readonly databaseName: string;
   protected databaseProps: DatabaseProps;
 
   private resource: DatabaseQuery;
@@ -194,6 +211,8 @@ export class User extends UserBase {
     super(scope, id);
 
     this.databaseProps = props;
+    this.cluster = props.cluster;
+    this.databaseName = props.databaseName;
 
     const username = props.username ?? cdk.Names.uniqueId(this).toLowerCase();
     const secret = new DatabaseSecret(this, 'Secret', {
