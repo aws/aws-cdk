@@ -70,6 +70,70 @@ test('create a plan and add rules', () => {
   });
 });
 
+test('create a plan and add rules - add BackupPlan.AdvancedBackupSettings.BackupOptions', () => {
+  // GIVEN
+  const vault = new BackupVault(stack, 'Vault');
+  const otherVault = new BackupVault(stack, 'OtherVault');
+
+  // WHEN
+  const plan = new BackupPlan(stack, 'Plan', {
+    backupOptions: { WindowsVSS: 'enabled' },
+    backupVault: vault,
+    backupPlanRules: [
+      new BackupPlanRule({
+        completionWindow: Duration.hours(2),
+        startWindow: Duration.hours(1),
+        scheduleExpression: events.Schedule.cron({
+          day: '15',
+          hour: '3',
+          minute: '30',
+        }),
+        moveToColdStorageAfter: Duration.days(30),
+      }),
+    ],
+  });
+  plan.addRule(BackupPlanRule.monthly5Year(otherVault));
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      AdvancedBackupSettings: [{ BackupOptions: { WindowsVSS: 'enabled' }, ResourceType: 'EC2' }],
+      BackupPlanName: 'Plan',
+      BackupPlanRule: [
+        {
+          CompletionWindowMinutes: 120,
+          Lifecycle: {
+            MoveToColdStorageAfterDays: 30,
+          },
+          RuleName: 'PlanRule0',
+          ScheduleExpression: 'cron(30 3 15 * ? *)',
+          StartWindowMinutes: 60,
+          TargetBackupVault: {
+            'Fn::GetAtt': [
+              'Vault23237E5B',
+              'BackupVaultName',
+            ],
+          },
+        },
+        {
+          Lifecycle: {
+            DeleteAfterDays: 1825,
+            MoveToColdStorageAfterDays: 90,
+          },
+          RuleName: 'Monthly5Year',
+          ScheduleExpression: 'cron(0 5 1 * ? *)',
+          TargetBackupVault: {
+            'Fn::GetAtt': [
+              'OtherVault3C99BCE2',
+              'BackupVaultName',
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
 test('daily35DayRetention', () => {
   // WHEN
   BackupPlan.daily35DayRetention(stack, 'D35');
