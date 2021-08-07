@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
@@ -576,6 +576,8 @@ export class Function extends FunctionBase {
       physicalName: props.functionName,
     });
 
+    this.validateFunctionName(id);
+
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -1025,6 +1027,20 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
     if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
       throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
+    }
+  }
+
+  private validateFunctionName(id: string) {
+    if (Token.isUnresolved(id)) {
+      return;
+    }
+
+    const validFunctionNameRegex = /^(arn:(aws[a-zA-Z-]*)?:lambda:)?([a-z]{2}(-gov)?-[a-z]+-\d{1}:)?(\d{12}:)?(function:)?([a-zA-Z0-9-_]+)(:(\$LATEST|[a-zA-Z0-9-_]+))?$/;
+
+    if (!validFunctionNameRegex.test(id)) {
+      throw new Error(`Function name must match regular expression: ${validFunctionNameRegex.toString()}, got '${id}'`);
+    } else if (id.length === 0 || id.length > 140) {
+      throw new Error('Length of function name is invalid: length must be between 1 and 140, inclusive.');
     }
   }
 }

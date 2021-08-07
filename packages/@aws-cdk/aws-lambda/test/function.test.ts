@@ -2172,6 +2172,30 @@ describe('function', () => {
     })).toThrow(/Layers are not supported for container image functions/);
   });
 
+  test('error when function name is invalid', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const tooLongName = 'M'.repeat(141);
+
+    // THEN
+    expect (() => new lambda.Function(stack, tooLongName, {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    })).toThrow(/Length of function name is invalid/);
+
+    expect (() => new lambda.Function(stack, '', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    })).toThrow(/Only root constructs may have an empty name/);
+
+    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar => expect(() => new lambda.Function(stack, `foo${invalidChar}`, {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    })).toThrow(/Function name must match regular expression/));
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
