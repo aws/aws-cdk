@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as redshift from '../lib';
-import { DatabaseQuery } from '../lib/database';
+import { DatabaseQuery } from '../lib/database-query';
 
 describe('database query', () => {
   let stack: cdk.Stack;
