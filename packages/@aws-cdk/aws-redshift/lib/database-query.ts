@@ -5,35 +5,12 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
-import { Cluster, ICluster } from './cluster';
+import { Cluster } from './cluster';
+import { DatabaseProps } from './database-props';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-
-/**
- * Properties for accessing a Redshift database
- */
-export interface DatabaseProps {
-  /**
-   * The cluster containing the database.
-   */
-  readonly cluster: ICluster;
-
-  /**
-   * The name of the database.
-   */
-  readonly databaseName: string;
-
-  /**
-   * The secret containing credentials to a Redshift user with administrator privileges.
-   *
-   * Secret JSON schema: `{ username: string; password: string }`.
-   *
-   * @default - the admin secret is taken from the cluster
-   */
-  readonly adminUser?: secretsmanager.ISecret;
-}
 
 export interface DatabaseQueryProps extends DatabaseProps {
   readonly handler: string;

@@ -2,7 +2,8 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { DatabaseProps, DatabaseQuery } from './database';
+import { DatabaseQuery } from './database-query';
+import { DatabaseProps } from './database-props';
 import { DatabaseSecret } from './database-secret';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main

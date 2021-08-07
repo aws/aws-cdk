@@ -1,6 +1,6 @@
 export * from './cluster';
 export * from './parameter-group';
-export { DatabaseProps } from './database';
+export * from './database-props';
 export * from './database-secret';
 export * from './endpoint';
 export * from './subnet-group';
