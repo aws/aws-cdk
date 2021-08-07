@@ -28,6 +28,15 @@ export interface BackupPlanProps {
    */
   readonly backupPlanName?: string;
 
+    /**
+   * The option for backup.
+   *
+   * @default - Object used to set Windows VSS options. 
+   * default value is {"WindowsVSS": "disabled"}
+   */
+  readonly backupPlanOptions? : object;
+
+
   /**
    * The backup vault where backups are stored
    *
@@ -125,6 +134,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
         backupPlanName: props.backupPlanName || id,
+        backupPlanOptions: props.backupPlanOptions || { WindowsVSS: 'disabled' },
         backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
       },
     });
