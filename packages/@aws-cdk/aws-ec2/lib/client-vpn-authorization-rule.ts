@@ -66,11 +66,7 @@ export class ClientVpnAuthorizationRule extends Resource {
     const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;
     super(scope, id);
     new CfnClientVpnAuthorizationRule(this, 'Resource', {
-<<<<<<< HEAD
-      clientVpnEndpointId: props.clientVpnEndpoint!.endpointId,
-=======
       clientVpnEndpointId: clientVpnEndpoint!.endpointId,
->>>>>>> 843dd921aa46d65fd0835b947a57bd9177e63b87
       targetNetworkCidr: props.cidr,
       accessGroupId: props.groupId,
       authorizeAllGroups: !props.groupId,
