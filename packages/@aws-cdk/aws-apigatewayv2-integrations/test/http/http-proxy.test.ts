@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
 import { HttpProxyIntegration } from '../../lib';
@@ -15,7 +15,7 @@ describe('HttpProxyIntegration', () => {
       routeKey: HttpRouteKey.with('/pets'),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'HTTP_PROXY',
       IntegrationUri: 'some-target-url',
       PayloadFormatVersion: '1.0',
@@ -35,7 +35,7 @@ describe('HttpProxyIntegration', () => {
       routeKey: HttpRouteKey.with('/pets'),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationMethod: 'PATCH',
     });
   });
@@ -50,7 +50,7 @@ describe('HttpProxyIntegration', () => {
       integrationUri: 'some-target-url',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'HTTP_PROXY',
       IntegrationUri: 'some-target-url',
       PayloadFormatVersion: '99.99',
@@ -66,7 +66,7 @@ describe('HttpProxyIntegration', () => {
       integrationUri: 'some-target-url',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'HTTP_PROXY',
       IntegrationUri: 'some-target-url',
     });
