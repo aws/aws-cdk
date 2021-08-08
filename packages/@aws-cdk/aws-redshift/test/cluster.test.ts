@@ -1,5 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -34,7 +35,6 @@ test('check that instantiation works', () => {
       Encrypted: true,
       NumberOfNodes: 2,
       NodeType: 'dc2.large',
-      IamRoles: [],
       DBName: 'default_db',
       PubliclyAccessible: false,
       ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
@@ -423,6 +423,26 @@ test('default child returns a CfnCluster', () => {
   });
 
   expect(cluster.node.defaultChild).toBeInstanceOf(CfnCluster);
+});
+
+test('can attach a role after creation', () => {
+  const cluster = new Cluster(stack, 'Redshift', {
+    vpc,
+    masterUser: {
+      masterUsername: 'admin',
+    },
+  });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+  });
+
+  cluster.attachRole(role);
+
+  Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+    Properties: {
+      IamRoles: [stack.resolve(role.roleArn)],
+    },
+  });
 });
 
 function testStack() {

@@ -98,6 +98,9 @@ describe('redshift destination', () => {
         },
       },
     });
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      IamRoles: [{ 'Fn::GetAtt': ['DeliveryStreamIntermediateBucketRedshiftAccessRole5B43F237', 'Arn'] }],
+    });
   });
 
   it('produces config when fully specified', () => {
@@ -291,7 +294,7 @@ describe('redshift destination', () => {
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
-      IamRoles: [],
+      IamRoles: Match.absentProperty(),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {

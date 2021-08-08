@@ -519,7 +519,7 @@ export class Cluster extends ClusterBase {
       numberOfNodes: nodeCount,
       loggingProperties,
       iamRoles: Lazy.list({
-        produce: () => this.attachedRoles.map(role => role.roleArn),
+        produce: () => this.attachedRoles.length > 0 ? this.attachedRoles.map(role => role.roleArn) : undefined,
       }),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: this.publiclyAccessible,
