@@ -911,7 +911,7 @@
                 },
                 "Configuration": {
                   "StackName": "Beta-Stack1",
-                  "Capabilities": "CAPABILITY_NAMED_IAM",
+                  "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
