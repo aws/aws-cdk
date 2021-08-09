@@ -831,7 +831,6 @@ function cdkModuleName(name: string) {
 
   name = name.replace(/^aws-cdk-/, '');
   name = name.replace(/^@aws-cdk\//, '');
-  name = name.replace(/^@aws-cdk-lib-alpha\//, 'alpha.');
 
   const dotnetSuffix = name.split('-')
     .map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s))
