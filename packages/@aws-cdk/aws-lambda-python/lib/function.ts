@@ -113,7 +113,7 @@ export class PythonFunction extends lambda.Function {
         assetHashType: props.assetHashType,
         assetHash: props.assetHash,
       }),
-      handler: `${index.slice(0, -3)}.${handler}`,
+      handler: `${index.replace('.py', '').replace('/', '.')}.${handler}`,
     });
   }
 }

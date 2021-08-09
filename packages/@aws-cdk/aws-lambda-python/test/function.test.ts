@@ -70,7 +70,7 @@ test('PythonFunction with index in a subdirectory', () => {
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Handler: 'inner/custom_index.custom_handler',
+    Handler: 'inner.custom_index.custom_handler',
   });
 });
 
