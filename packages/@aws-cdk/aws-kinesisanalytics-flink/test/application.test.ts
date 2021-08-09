@@ -5,7 +5,6 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as path from 'path';
 import * as flink from '../lib';
 
 describe('Application', () => {
