@@ -128,7 +128,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
       throw new Error(`Entry point must be between 1 and 256 characters in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPoint.value.length}.`);
     }
 
-    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments !== undefined
+    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
       && !this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)
       && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value)
       && (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length > 10280
