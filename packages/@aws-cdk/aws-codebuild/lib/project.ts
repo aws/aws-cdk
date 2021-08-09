@@ -40,6 +40,20 @@ export interface BatchBuildConfig {
 }
 
 /**
+ * Location of a PEM certificate on S3
+ */
+export interface BuildEnvironmentCertificate {
+  /**
+   * The bucket where the certificate is
+   */
+  readonly bucket: s3.IBucket;
+  /**
+   * The full path and name of the key file
+   */
+  readonly objectKey: string;
+}
+
+/**
  * Additional options to pass to the notification rule.
  */
 export interface ProjectNotifyOnOptions extends notifications.NotificationRuleOptions {
@@ -1312,6 +1326,7 @@ export class Project extends ProjectBase {
           credential: secret.secretFullArn ?? secret.secretName,
         }
         : undefined,
+      certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
@@ -1541,6 +1556,13 @@ export interface BuildEnvironment {
    * @default false
    */
   readonly privileged?: boolean;
+
+  /**
+   * The location of the PEM-encoded certificate for the build project
+   *
+   * @default - No external certificate is added to the project
+   */
+  readonly certificate?: BuildEnvironmentCertificate;
 
   /**
    * The environment variables that your builds can use.

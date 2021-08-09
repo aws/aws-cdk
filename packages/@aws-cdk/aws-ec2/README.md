@@ -166,7 +166,13 @@ Which subnets are selected is evaluated as follows:
   * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
     types that do not allow creating two ENIs in the same availability zone).
 * `subnetFilters`: additional filtering on subnets using any number of user-provided filters which
-  extend the SubnetFilter class.
+  extend `SubnetFilter`.  The following methods on the `SubnetFilter` class can be used to create
+  a filter:
+  * `byIds`: chooses subnets from a list of ids
+  * `availabilityZones`: chooses subnets in the provided list of availability zones
+  * `onePerAz`: chooses at most one subnet per availability zone
+  * `containsIpAddresses`: chooses a subnet which contains *any* of the listed ip addresses
+  * `byCidrMask`: chooses subnets that have the provided CIDR netmask
 
 ### Using NAT instances
 
