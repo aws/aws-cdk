@@ -165,6 +165,81 @@
         "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
       ]
     },
+    "BackupBucket26B8E51C": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "BackupBucketPolicy8C403F71": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "BackupBucket26B8E51C"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "BackupBucket26B8E51C",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "BackupBucket26B8E51C",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "BackupBucketAutoDeleteObjectsCustomResourceD2F511C5": {
+      "Type": "Custom::S3AutoDeleteObjects",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn"
+          ]
+        },
+        "BucketName": {
+          "Ref": "BackupBucket26B8E51C"
+        }
+      },
+      "DependsOn": [
+        "BackupBucketPolicy8C403F71"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "LogGroupF5B46931": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
@@ -309,6 +384,41 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "BackupKey60B97760": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "DeliveryStreamServiceRole964EEBCC": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -395,6 +505,67 @@
               }
             },
             {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "BackupBucket26B8E51C",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "BackupBucket26B8E51C",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "DeliveryStreamLogGroup9D8FA3BB",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "BackupKey60B97760",
+                  "Arn"
+                ]
+              }
+            },
+            {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
               "Resource": {
@@ -429,6 +600,24 @@
           }
         ]
       }
+    },
+    "DeliveryStreamLogGroup9D8FA3BB": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "DeliveryStreamLogGroupS3BackupD5DF41B2": {
+      "Type": "AWS::Logs::LogStream",
+      "Properties": {
+        "LogGroupName": {
+          "Ref": "DeliveryStreamLogGroup9D8FA3BB"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "DeliveryStreamF6D5572D": {
       "Type": "AWS::KinesisFirehose::DeliveryStream",
@@ -512,7 +701,48 @@
               "DeliveryStreamS3DestinationRole500FC089",
               "Arn"
             ]
-          }
+          },
+          "S3BackupConfiguration": {
+            "BucketARN": {
+              "Fn::GetAtt": [
+                "BackupBucket26B8E51C",
+                "Arn"
+              ]
+            },
+            "BufferingHints": {
+              "IntervalInSeconds": 60,
+              "SizeInMBs": 1
+            },
+            "CloudWatchLoggingOptions": {
+              "Enabled": true,
+              "LogGroupName": {
+                "Ref": "DeliveryStreamLogGroup9D8FA3BB"
+              },
+              "LogStreamName": {
+                "Ref": "DeliveryStreamLogGroupS3BackupD5DF41B2"
+              }
+            },
+            "CompressionFormat": "ZIP",
+            "EncryptionConfiguration": {
+              "KMSEncryptionConfig": {
+                "AWSKMSKeyARN": {
+                  "Fn::GetAtt": [
+                    "BackupKey60B97760",
+                    "Arn"
+                  ]
+                }
+              }
+            },
+            "ErrorOutputPrefix": "backupErrorPrefix",
+            "Prefix": "backupPrefix",
+            "RoleARN": {
+              "Fn::GetAtt": [
+                "DeliveryStreamS3DestinationRole500FC089",
+                "Arn"
+              ]
+            }
+          },
+          "S3BackupMode": "Enabled"
         }
       },
       "DependsOn": [
