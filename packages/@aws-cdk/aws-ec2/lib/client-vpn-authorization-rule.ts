@@ -35,8 +35,16 @@ export interface ClientVpnAuthorizationRuleOptions {
 export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationRuleOptions {
   /**
    * The client VPN endpoint to which to add the rule.
+   * @default clientVpnEndpoint is required
    */
-  readonly clientVpnEndoint: IClientVpnEndpoint;
+  readonly clientVpnEndpoint?: IClientVpnEndpoint;
+
+  /**
+   * The client VPN endpoint to which to add the rule.
+   * @deprecated Use `clientVpnEndpoint` instead
+   * @default clientVpnEndpoint is required
+   */
+  readonly clientVpnEndoint?: IClientVpnEndpoint;
 }
 
 /**
@@ -44,10 +52,21 @@ export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationR
  */
 export class ClientVpnAuthorizationRule extends Resource {
   constructor(scope: Construct, id: string, props: ClientVpnAuthorizationRuleProps) {
+    if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
+      throw new Error(
+        'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
+      );
+    }
+    if (props.clientVpnEndoint && props.clientVpnEndpoint) {
+      throw new Error(
+        'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
+          ', but not both',
+      );
+    }
+    const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;
     super(scope, id);
-
     new CfnClientVpnAuthorizationRule(this, 'Resource', {
-      clientVpnEndpointId: props.clientVpnEndoint.endpointId,
+      clientVpnEndpointId: clientVpnEndpoint!.endpointId,
       targetNetworkCidr: props.cidr,
       accessGroupId: props.groupId,
       authorizeAllGroups: !props.groupId,
