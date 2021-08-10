@@ -192,8 +192,10 @@ export = {
     },
 
     'import queueArn from token, fifo and standard queues can be defined'(test: Test) {
+      // GIVEN
       const stack = new Stack();
 
+      // WHEN
       const stdQueue1 = sqs.Queue.fromQueueAttributes(stack, 'StdQueue1', {
         queueArn: Token.asString({ Ref: 'ARN' }),
       });
@@ -205,6 +207,8 @@ export = {
         queueArn: Token.asString({ Ref: 'ARN' }),
         fifo: true,
       });
+
+      // THEN
       test.deepEqual(stdQueue1.fifo, false);
       test.deepEqual(stdQueue2.fifo, false);
       test.deepEqual(fifoQueue.fifo, true);
@@ -212,10 +216,13 @@ export = {
     },
 
     'import queueArn from token, check attributes'(test: Test) {
+      // GIVEN
       const stack = new Stack();
 
+      // WHEN
       const stdQueue1 = sqs.Queue.fromQueueArn(stack, 'StdQueue', Token.asString({ Ref: 'ARN' }));
 
+      // THEN
       test.deepEqual(stack.resolve(stdQueue1.queueArn), {
         Ref: 'ARN',
       });
@@ -234,9 +241,7 @@ export = {
               '/',
               { 'Fn::Select': [5, { 'Fn::Split': [':', { Ref: 'ARN' }] }] }]],
       });
-
       test.deepEqual(stdQueue1.fifo, false);
-
       test.done();
     },
 
