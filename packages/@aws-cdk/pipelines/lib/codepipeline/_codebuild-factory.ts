@@ -110,6 +110,13 @@ export interface CodeBuildFactoryProps {
    * @default false
    */
   readonly isSynth?: boolean;
+
+  /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default - no name space will be generated
+   */
+  readonly variablesNamespace?: string;
 }
 
 /**
@@ -146,6 +153,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         subnetSelection: step.subnetSelection,
         ...additional?.projectOptions,
       },
+      variablesNamespace: step.variablesNamespace,
       ...additional,
     });
 
@@ -300,6 +308,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       outputs: outputArtifacts,
       project,
       runOrder: options.runOrder,
+      variablesNamespace: this.props.variablesNamespace,
 
       // Inclusion of the hash here will lead to the pipeline structure for any changes
       // made the config of the underlying CodeBuild Project.

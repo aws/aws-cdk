@@ -82,6 +82,13 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default - Security group will be automatically created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default - no namespace will be generated
+   */
+  readonly variablesNamespace?: string;
 }
 
 /**
@@ -144,6 +151,13 @@ export class CodeBuildStep extends ShellStep {
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
+  /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default - no namespace will be generated
+   */
+  readonly variablesNamespace?: string;
+
   private _project?: codebuild.IProject;
 
   constructor(id: string, props: CodeBuildStepProps) {
@@ -157,6 +171,7 @@ export class CodeBuildStep extends ShellStep {
     this.role = props.role;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
+    this.variablesNamespace = props.variablesNamespace;
   }
 
   /**
