@@ -2021,7 +2021,6 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  *
  * We have the following requirements:
  *
- * - NatGatewayCount = 0 ==> there are no private subnets
  * - NatGatewayCount > 0 ==> there must be public subnets
  *
  * Do we want to require that there are private subnets if there are NatGateways?
@@ -2032,11 +2031,6 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC);
 
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
-
-  if (count === 0 && hasPrivateSubnets) {
-    // eslint-disable-next-line max-len
-    throw new Error('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
-  }
 
   if (count > 0 && !hasPublicSubnets) {
     // eslint-disable-next-line max-len
