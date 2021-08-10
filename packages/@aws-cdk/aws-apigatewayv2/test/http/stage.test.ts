@@ -1,8 +1,11 @@
 import { Template } from '@aws-cdk/assertions';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
-import { HttpApi, HttpStage } from '../../lib';
+import { DomainName, HttpApi, HttpStage } from '../../lib';
 
+const domainName = 'example.com';
+const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 
 describe('HttpStage', () => {
   test('default', () => {
@@ -56,6 +59,69 @@ describe('HttpStage', () => {
 
     expect(defaultStage.url.endsWith('/')).toBe(true);
     expect(betaStage.url.endsWith('/')).toBe(false);
+  });
+
+  test('customDomainUrl returns the correct path', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+
+    const dn = new DomainName(stack, 'DN', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    const stage = new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      domainMapping: {
+        domainName: dn,
+      },
+    });
+
+    expect(stage.customDomainUrl.endsWith(`${domainName}/`)).toBe(true);
+  });
+
+  test('customDomainUrl throws error if domainMapping is not configured', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+
+    const stage = new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+    });
+
+    const t = () => {
+      stage.customDomainUrl;
+    };
+
+    expect(t).toThrow('customDomainUrl is not available when domain mapping has not been added');
+  });
+
+  test('customDomainUrl throws error if domainName is invalid', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+
+    const dn = new DomainName(stack, 'DN', {
+      domainName: '',
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    const stage = new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      domainMapping: {
+        domainName: dn,
+      },
+    });
+
+    const t = () => {
+      stage.customDomainUrl;
+    };
+
+    expect(t).toThrow('Unable to build customDomainUrl due to invalid domainName');
   });
 
   test('get metric', () => {

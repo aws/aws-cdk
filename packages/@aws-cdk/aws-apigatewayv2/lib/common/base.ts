@@ -37,6 +37,11 @@ export abstract class StageBase extends Resource implements IStage {
   protected abstract readonly baseApi: IApi;
 
   /**
+   * The created ApiMapping if domain mapping has been added
+   */
+  protected apiMapping?: ApiMapping
+
+  /**
    * The URL to this stage.
    */
   abstract get url(): string;
@@ -45,7 +50,7 @@ export abstract class StageBase extends Resource implements IStage {
    * @internal
    */
   protected _addDomainMapping(domainMapping: DomainMappingOptions) {
-    new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
+    this.apiMapping = new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
       api: this.baseApi,
       domainName: domainMapping.domainName,
       stage: this,
