@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT, MatchStyle, ResourcePart, anything, arrayWith } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
@@ -27,19 +26,17 @@ describe('S3 destination', () => {
       destinations: [new firehosedestinations.S3Bucket(bucket, { role: destinationRole })],
     });
 
-    expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       ExtendedS3DestinationConfiguration: {
         BucketARN: stack.resolve(bucket.bucketArn),
         CloudWatchLoggingOptions: {
           Enabled: true,
-          LogGroupName: anything(),
-          LogStreamName: anything(),
         },
         RoleARN: stack.resolve(destinationRole.roleArn),
       },
     });
-    expect(stack).toHaveResource('AWS::Logs::LogGroup');
-    expect(stack).toHaveResource('AWS::Logs::LogStream');
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogStream', 1);
   });
 
   it('creates a role when none is provided', () => {
@@ -48,7 +45,7 @@ describe('S3 destination', () => {
       destinations: [new firehosedestinations.S3Bucket(bucket)],
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       ExtendedS3DestinationConfiguration: {
         RoleARN: {
           'Fn::GetAtt': [
@@ -58,11 +55,19 @@ describe('S3 destination', () => {
         },
       },
     });
-    expect(stack).toMatchTemplate({
-      ['DeliveryStreamS3DestinationRoleD96B8345']: {
-        Type: 'AWS::IAM::Role',
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              Service: 'firehose.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
       },
-    }, MatchStyle.SUPERSET);
+    });
   });
 
   it('grants read/write access to the bucket', () => {
@@ -72,10 +77,10 @@ describe('S3 destination', () => {
       destinations: [destination],
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Roles: [stack.resolve(destinationRole.roleName)],
       PolicyDocument: {
-        Statement: [
+        Statement: Match.arrayWith([
           {
             Action: [
               's3:GetObject*',
@@ -91,7 +96,7 @@ describe('S3 destination', () => {
               { 'Fn::Join': ['', [stack.resolve(bucket.bucketArn), '/*']] },
             ],
           },
-        ],
+        ]),
       },
     });
   });
@@ -103,7 +108,7 @@ describe('S3 destination', () => {
       destinations: [destination],
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'DestinationRoleDefaultPolicy1185C75D',
       Roles: [stack.resolve(destinationRole.roleName)],
       PolicyDocument: {
@@ -134,9 +139,9 @@ describe('S3 destination', () => {
         ],
       },
     });
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResource('AWS::KinesisFirehose::DeliveryStream', {
       DependsOn: ['DestinationRoleDefaultPolicy1185C75D'],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   describe('logging', () => {
@@ -145,14 +150,12 @@ describe('S3 destination', () => {
         destinations: [new firehosedestinations.S3Bucket(bucket)],
       });
 
-      expect(stack).toHaveResource('AWS::Logs::LogGroup');
-      expect(stack).toHaveResource('AWS::Logs::LogStream');
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogStream', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           CloudWatchLoggingOptions: {
             Enabled: true,
-            LogGroupName: anything(),
-            LogStreamName: anything(),
           },
         },
       });
@@ -163,10 +166,10 @@ describe('S3 destination', () => {
         destinations: [new firehosedestinations.S3Bucket(bucket, { logging: false })],
       });
 
-      expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
-          CloudWatchLoggingOptions: ABSENT,
+          CloudWatchLoggingOptions: Match.absentProperty(),
         },
       });
     });
@@ -178,13 +181,12 @@ describe('S3 destination', () => {
         destinations: [new firehosedestinations.S3Bucket(bucket, { logGroup })],
       });
 
-      expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           CloudWatchLoggingOptions: {
             Enabled: true,
             LogGroupName: stack.resolve(logGroup.logGroupName),
-            LogStreamName: anything(),
           },
         },
       });
@@ -205,10 +207,10 @@ describe('S3 destination', () => {
         destinations: [new firehosedestinations.S3Bucket(bucket, { logGroup, role: destinationRole })],
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         Roles: [stack.resolve(destinationRole.roleName)],
         PolicyDocument: {
-          Statement: arrayWith(
+          Statement: Match.arrayWith([
             {
               Action: [
                 'logs:CreateLogStream',
@@ -217,7 +219,7 @@ describe('S3 destination', () => {
               Effect: 'Allow',
               Resource: stack.resolve(logGroup.logGroupArn),
             },
-          ),
+          ]),
         },
       });
     });
@@ -246,8 +248,8 @@ describe('S3 destination', () => {
         destinations: [destinationWithBasicLambdaProcessor],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function');
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           ProcessingConfiguration: {
             Enabled: true,
@@ -283,8 +285,8 @@ describe('S3 destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function');
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           ProcessingConfiguration: {
             Enabled: true,
@@ -323,22 +325,22 @@ describe('S3 destination', () => {
         destinations: [destinationWithBasicLambdaProcessor],
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: 'DestinationRoleDefaultPolicy1185C75D',
         Roles: [stack.resolve(destinationRole.roleName)],
         PolicyDocument: {
-          Statement: arrayWith(
+          Statement: Match.arrayWith([
             {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
               Resource: stack.resolve(lambdaFunction.functionArn),
             },
-          ),
+          ]),
         },
       });
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResource('AWS::KinesisFirehose::DeliveryStream', {
         DependsOn: ['DestinationRoleDefaultPolicy1185C75D'],
-      }, ResourcePart.CompleteDefinition);
+      });
     });
   });
 
@@ -351,7 +353,7 @@ describe('S3 destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           CompressionFormat: 'GZIP',
         },
@@ -366,7 +368,7 @@ describe('S3 destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           CompressionFormat: 'SNAZZY',
         },
@@ -383,7 +385,7 @@ describe('S3 destination', () => {
         })],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           BufferingHints: {
             IntervalInSeconds: 60,
@@ -438,7 +440,7 @@ describe('S3 destination', () => {
         })],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           EncryptionConfiguration: {
             KMSEncryptionConfig: {
@@ -459,10 +461,10 @@ describe('S3 destination', () => {
         })],
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         Roles: [stack.resolve(destinationRole.roleName)],
         PolicyDocument: {
-          Statement: arrayWith({
+          Statement: Match.arrayWith([{
             Action: [
               'kms:Decrypt',
               'kms:Encrypt',
@@ -471,7 +473,7 @@ describe('S3 destination', () => {
             ],
             Effect: 'Allow',
             Resource: stack.resolve(key.keyArn),
-          }),
+          }]),
         },
       });
     });
@@ -489,14 +491,11 @@ describe('S3 destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           S3BackupConfiguration: {
-            BucketARN: anything(),
             CloudWatchLoggingOptions: {
               Enabled: true,
-              LogGroupName: anything(),
-              LogStreamName: anything(),
             },
             RoleARN: stack.resolve(destinationRole.roleArn),
           },
@@ -517,14 +516,12 @@ describe('S3 destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           S3BackupConfiguration: {
             BucketARN: stack.resolve(backupBucket.bucketArn),
             CloudWatchLoggingOptions: {
               Enabled: true,
-              LogGroupName: anything(),
-              LogStreamName: anything(),
             },
             RoleARN: stack.resolve(destinationRole.roleArn),
           },
@@ -548,10 +545,10 @@ describe('S3 destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResource('AWS::S3::Bucket', 1);
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
-          S3BackupConfiguration: ABSENT,
+          S3BackupConfiguration: Match.absentProperty(),
         },
       });
     });
@@ -579,14 +576,13 @@ describe('S3 destination', () => {
         destinations: [destination],
       });
 
-      expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
           S3BackupConfiguration: {
             BucketARN: stack.resolve(backupBucket.bucketArn),
             CloudWatchLoggingOptions: {
               Enabled: true,
               LogGroupName: stack.resolve(logGroup.logGroupName),
-              LogStreamName: anything(),
             },
             RoleARN: stack.resolve(destinationRole.roleArn),
             EncryptionConfiguration: {
