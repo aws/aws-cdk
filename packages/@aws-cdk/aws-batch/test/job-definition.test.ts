@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal/lib/assertions/have-resource';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -70,7 +69,7 @@ describe('Batch Job Definition', () => {
     new batch.JobDefinition(stack, 'job-def', jobDefProps);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       JobDefinitionName: jobDefProps.jobDefinitionName,
       ContainerProperties: jobDefProps.container ? {
         Command: jobDefProps.container.command,
@@ -113,7 +112,7 @@ describe('Batch Job Definition', () => {
         AttemptDurationSeconds: jobDefProps.timeout ? jobDefProps.timeout.toSeconds() : -1,
       },
       Type: 'container',
-    }, ResourcePart.Properties);
+    });
   });
   test('can use an ecr image', () => {
     // WHEN
@@ -126,7 +125,7 @@ describe('Batch Job Definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ContainerProperties: {
         Image: {
           'Fn::Join': [
@@ -182,7 +181,7 @@ describe('Batch Job Definition', () => {
         ReadonlyRootFilesystem: false,
         Vcpus: 1,
       },
-    }, ResourcePart.Properties);
+    });
   });
 
   test('can use a registry image', () => {
@@ -194,7 +193,7 @@ describe('Batch Job Definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ContainerProperties: {
         Image: 'docker/whalesay',
         Memory: 4,
@@ -202,7 +201,7 @@ describe('Batch Job Definition', () => {
         ReadonlyRootFilesystem: false,
         Vcpus: 1,
       },
-    }, ResourcePart.Properties);
+    });
   });
 
   test('can be imported from an ARN', () => {
@@ -247,7 +246,7 @@ describe('Batch Job Definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ContainerProperties: {
         LogConfiguration: {
           LogDriver: 'awslogs',
@@ -285,6 +284,6 @@ describe('Batch Job Definition', () => {
           ],
         },
       },
-    }, ResourcePart.Properties);
+    });
   });
 });

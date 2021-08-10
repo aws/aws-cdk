@@ -179,7 +179,7 @@ async function main() {
       license: 'Apache-2.0',
       devDependencies: {
         '@types/jest': '^26.0.22',
-        '@aws-cdk/assert-internal': version,
+        '@aws-cdk/assertions': version,
         'cdk-build-tools': version,
         'cfn2ts': version,
         'pkglint': version,
@@ -263,7 +263,7 @@ async function main() {
     ]);
 
     await write(`test/${lowcaseModuleName}.test.ts`, [
-      "import '@aws-cdk/assert-internal/jest';",
+      "import '@aws-cdk/assertions';",
       "import {} from '../lib';",
       '',
       "test('No tests are specified for this package', () => {",

@@ -63,10 +63,26 @@ The above example defines the following resources:
 ## Sources
 
 There are two main methods of sourcing input data: Kinesis Data Streams and via a "direct
-put". This construct library currently only supports "direct put". See [#15500](https://github.com/aws/aws-cdk/issues/15500) to track the status of adding support for Kinesis Data Streams.
+put".
 
 See: [Sending Data to a Delivery Stream](https://docs.aws.amazon.com/firehose/latest/dev/basic-write.html)
 in the *Kinesis Data Firehose Developer Guide*.
+
+### Kinesis Data Stream
+
+A delivery stream can read directly from a Kinesis data stream as a consumer of the data
+stream. Configure this behaviour by providing a data stream in the `sourceStream`
+property when constructing a delivery stream:
+
+```ts fixture=with-destination
+import * as kinesis from '@aws-cdk/aws-kinesis';
+
+const sourceStream = new kinesis.Stream(this, 'Source Stream');
+new DeliveryStream(this, 'Delivery Stream', {
+  sourceStream: sourceStream,
+  destinations: [destination],
+});
+```
 
 ### Direct Put
 

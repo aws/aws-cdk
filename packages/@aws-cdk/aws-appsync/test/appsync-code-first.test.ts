@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
@@ -34,7 +34,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -55,7 +55,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -75,7 +75,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -96,7 +96,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -116,7 +116,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -137,7 +137,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -171,7 +171,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -197,7 +197,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -223,7 +223,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -248,7 +248,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -272,7 +272,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -297,7 +297,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
