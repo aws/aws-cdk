@@ -1012,6 +1012,28 @@ describe('tests', () => {
     })).toThrowError('Priority must have value greater than or equal to 1');
   });
 
+  test('Accepts unresolved priority', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc,
+    });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+    });
+
+    // THEN
+    expect(() => new elbv2.ApplicationListenerRule(stack, 'Rule', {
+      listener,
+      priority: new cdk.CfnParameter(stack, 'PriorityParam', { type: 'Number' }).valueAsNumber,
+      pathPattern: '/hello',
+      fixedResponse: {
+        statusCode: '500',
+      },
+    })).not.toThrowError('Priority must have value greater than or equal to 1');
+  });
+
   test('Throws when specifying both target groups and redirect response', () => {
     // GIVEN
     const stack = new cdk.Stack();
