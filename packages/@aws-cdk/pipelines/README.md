@@ -569,6 +569,9 @@ new CodeBuildStep('Synth', {
     computeType: codebuild.ComputeType.LARGE,
   },
 
+  // Make any exported variables available to other actions
+  variableNamespace: "example",
+
   // Control Elastic Network Interface creation
   vpc: vpc,
   subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
