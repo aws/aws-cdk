@@ -4,13 +4,14 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Fn, IDependable, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
+import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
@@ -262,11 +263,6 @@ export class CodePipeline extends PipelineBase {
   private readonly assetCodeBuildRoles: Record<string, iam.IRole> = {};
 
   /**
-   * Policies created for the build projects that they have to depend on
-   */
-  private readonly assetAttachedPolicies: Record<string, iam.Policy> = {};
-
-  /**
    * Per asset type, the target role ARNs that need to be assumed
    */
   private readonly assetPublishingRoles: Record<string, Set<string>> = {};
@@ -478,7 +474,7 @@ export class CodePipeline extends PipelineBase {
    *
    * There are only 3 types of Steps we need to support:
    *
-   * - RunScript (generic)
+   * - Shell (generic)
    * - ManualApproval (generic)
    * - CodePipelineActionFactory (CodePipeline-specific)
    *
@@ -547,6 +543,7 @@ export class CodePipeline extends PipelineBase {
           templateConfiguration: templateConfigurationPath
             ? templateArtifact.atPath(toPosixPath(templateConfigurationPath))
             : undefined,
+          cfnCapabilities: [CfnCapabilities.NAMED_IAM, CfnCapabilities.AUTO_EXPAND],
         }));
         return { runOrdersConsumed: 1 };
       },
@@ -642,7 +639,7 @@ export class CodePipeline extends PipelineBase {
       }
     }
 
-    const assetBuildConfig = this.obtainAssetCodeBuildRole(assets[0].assetType);
+    const role = this.obtainAssetCodeBuildRole(assets[0].assetType);
 
     // The base commands that need to be run
     const script = new CodeBuildStep(node.id, {
@@ -654,13 +651,12 @@ export class CodePipeline extends PipelineBase {
       buildEnvironment: {
         privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
       },
-      role: assetBuildConfig.role,
+      role,
     });
 
     // Customizations that are not accessible to regular users
     return CodeBuildFactory.fromCodeBuildStep(node.id, script, {
       additionalConstructLevel: false,
-      additionalDependable: assetBuildConfig.dependable,
 
       // If we use a single publisher, pass buildspec via file otherwise it'll
       // grow too big.
@@ -736,7 +732,7 @@ export class CodePipeline extends PipelineBase {
 
     if (!arn) { return undefined; }
 
-    // Use placeholdered arn as construct ID.
+    // Use placeholder arn as construct ID.
     const id = arn;
 
     // https://github.com/aws/aws-cdk/issues/7255
@@ -782,63 +778,21 @@ export class CodePipeline extends PipelineBase {
    * Modeled after the CodePipeline role and 'CodePipelineActionRole' roles.
    * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
-  private obtainAssetCodeBuildRole(assetType: AssetType): AssetCodeBuildRole {
+  private obtainAssetCodeBuildRole(assetType: AssetType): iam.IRole {
     if (this.assetCodeBuildRoles[assetType]) {
-      return {
-        role: this.assetCodeBuildRoles[assetType],
-        dependable: this.assetAttachedPolicies[assetType],
-      };
+      return this.assetCodeBuildRoles[assetType];
     }
 
     const stack = Stack.of(this);
 
     const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
-    const assetRole = new iam.Role(this.assetsScope, `${rolePrefix}Role`, {
+    const assetRole = new AssetSingletonRole(this.assetsScope, `${rolePrefix}Role`, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('codebuild.amazonaws.com'),
         new iam.AccountPrincipal(stack.account),
       ),
     });
-
-    // Logging permissions
-    const logGroupArn = stack.formatArn({
-      service: 'logs',
-      resource: 'log-group',
-      sep: ':',
-      resourceName: '/aws/codebuild/*',
-    });
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      resources: [logGroupArn],
-      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-    }));
-
-    // CodeBuild report groups
-    const codeBuildArn = stack.formatArn({
-      service: 'codebuild',
-      resource: 'report-group',
-      resourceName: '*',
-    });
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'codebuild:CreateReportGroup',
-        'codebuild:CreateReport',
-        'codebuild:UpdateReport',
-        'codebuild:BatchPutTestCases',
-        'codebuild:BatchPutCodeCoverages',
-      ],
-      resources: [codeBuildArn],
-    }));
-
-    // CodeBuild start/stop
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'codebuild:BatchGetBuilds',
-        'codebuild:StartBuild',
-        'codebuild:StopBuild',
-      ],
-    }));
 
     // Publishing role access
     // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
@@ -853,51 +807,8 @@ export class CodePipeline extends PipelineBase {
       this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
-    // Artifact access
-    this.pipeline.artifactBucket.grantRead(assetRole);
-
-    // VPC permissions required for CodeBuild
-    // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
-    // we need to do this.
-    const assetCodeBuildOptions = this.codeBuildDefaultsFor(CodeBuildProjectType.ASSETS);
-    if (assetCodeBuildOptions?.vpc) {
-      const vpcPolicy = new iam.Policy(assetRole, 'VpcPolicy', {
-        statements: [
-          new iam.PolicyStatement({
-            resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
-            actions: ['ec2:CreateNetworkInterfacePermission'],
-            conditions: {
-              StringEquals: {
-                'ec2:Subnet': assetCodeBuildOptions.vpc
-                  .selectSubnets(assetCodeBuildOptions.subnetSelection).subnetIds
-                  .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
-                'ec2:AuthorizedService': 'codebuild.amazonaws.com',
-              },
-            },
-          }),
-          new iam.PolicyStatement({
-            resources: ['*'],
-            actions: [
-              'ec2:CreateNetworkInterface',
-              'ec2:DescribeNetworkInterfaces',
-              'ec2:DeleteNetworkInterface',
-              'ec2:DescribeSubnets',
-              'ec2:DescribeSecurityGroups',
-              'ec2:DescribeDhcpOptions',
-              'ec2:DescribeVpcs',
-            ],
-          }),
-        ],
-      });
-      assetRole.attachInlinePolicy(vpcPolicy);
-      this.assetAttachedPolicies[assetType] = vpcPolicy;
-    }
-
-    this.assetCodeBuildRoles[assetType] = assetRole.withoutPolicyUpdates();
-    return {
-      role: this.assetCodeBuildRoles[assetType],
-      dependable: this.assetAttachedPolicies[assetType],
-    };
+    this.assetCodeBuildRoles[assetType] = assetRole;
+    return assetRole;
   }
 }
 
@@ -908,11 +819,6 @@ function dockerUsageFromCodeBuild(cbt: CodeBuildProjectType): DockerCredentialUs
     case CodeBuildProjectType.SYNTH: return DockerCredentialUsage.SYNTH;
     case CodeBuildProjectType.STEP: return undefined;
   }
-}
-
-interface AssetCodeBuildRole {
-  readonly role: iam.IRole;
-  readonly dependable?: IDependable;
 }
 
 enum CodeBuildProjectType {

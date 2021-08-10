@@ -4,7 +4,7 @@ import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { FileSystem } from '@aws-cdk/core';
 import { stageDependencies, bundle } from '../lib/bundling';
 
-jest.mock('@aws-cdk/aws-lambda');
+jest.spyOn(Code, 'fromAsset');
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn(() => {
