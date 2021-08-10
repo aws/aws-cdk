@@ -3,6 +3,7 @@ import { ABSENT, ResourcePart, SynthUtils, anything, arrayWith } from '@aws-cdk/
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
@@ -87,6 +88,43 @@ describe('delivery stream', () => {
         ],
       },
     });
+  });
+
+  test('providing source stream creates configuration and grants permission', () => {
+    const sourceStream = new kinesis.Stream(stack, 'Source Stream');
+
+    new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+      sourceStream: sourceStream,
+      role: deliveryStreamRole,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: arrayWith(
+              'kinesis:DescribeStream',
+              'kinesis:GetRecords',
+              'kinesis:GetShardIterator',
+              'kinesis:ListShards',
+            ),
+            Resource: stack.resolve(sourceStream.streamArn),
+          },
+        ],
+      },
+      Roles: [stack.resolve(deliveryStreamRole.roleName)],
+    });
+    expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+      DeliveryStreamType: 'KinesisStreamAsSource',
+      KinesisStreamSourceConfiguration: {
+        KinesisStreamARN: stack.resolve(sourceStream.streamArn),
+        RoleARN: stack.resolve(deliveryStreamRole.roleArn),
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+      DependsOn: arrayWith('DeliveryStreamRoleDefaultPolicy2759968B'),
+    }, ResourcePart.CompleteDefinition);
   });
 
   test('requesting customer-owned encryption creates key and configuration', () => {
@@ -230,6 +268,26 @@ describe('delivery stream', () => {
       encryption: firehose.StreamEncryption.UNENCRYPTED,
       encryptionKey: key,
     })).toThrowError('Specified stream encryption as UNENCRYPTED but provided a customer-managed key');
+  });
+
+  test('requesting encryption or providing a key when source is a stream throws an error', () => {
+    const sourceStream = new kinesis.Stream(stack, 'Source Stream');
+
+    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 1', {
+      destinations: [mockS3Destination],
+      encryption: firehose.StreamEncryption.AWS_OWNED,
+      sourceStream,
+    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 2', {
+      destinations: [mockS3Destination],
+      encryption: firehose.StreamEncryption.CUSTOMER_MANAGED,
+      sourceStream,
+    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 3', {
+      destinations: [mockS3Destination],
+      encryptionKey: new kms.Key(stack, 'Key'),
+      sourceStream,
+    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
   });
 
   test('grant provides access to stream', () => {
