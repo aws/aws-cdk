@@ -23,15 +23,15 @@ export function increaseVerbosity() {
   logLevel += 1;
 }
 
-const _debug = logger(stderr, [colors.gray]);
+const _debug = logger(stdout, [colors.gray]);
 
 export const trace = (fmt: string, ...args: any) => logLevel >= LogLevel.TRACE && _debug(fmt, ...args);
 export const debug = (fmt: string, ...args: any[]) => logLevel >= LogLevel.DEBUG && _debug(fmt, ...args);
 export const error = logger(stderr, [colors.red]);
-export const warning = logger(stderr, [colors.yellow]);
-export const success = logger(stderr, [colors.green]);
-export const highlight = logger(stderr, [colors.bold]);
-export const print = logger(stderr);
+export const warning = logger(stdout, [colors.yellow]);
+export const success = logger(stdout, [colors.green]);
+export const highlight = logger(stdout, [colors.bold]);
+export const print = logger(stdout);
 export const data = logger(stdout);
 
 export type LoggerFunction = (fmt: string, ...args: any[]) => void;
