@@ -1,4 +1,3 @@
-import { Capture, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { HttpApi, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { IRole, Role } from '@aws-cdk/aws-iam';
@@ -138,11 +137,6 @@ describe('Step Functions integrations', () => {
   describe('StopExecution', () => {
     test('minimum integration', () => {
       const { stack, httpApi, role } = createTestFixtures('arn:aws:iam::123456789012:role/stop');
-      const stateMachine = StateMachine.fromStateMachineArn(
-        stack,
-        'StateMachine',
-        'arn:aws:states:eu-central-2:123456789012:stateMachine:minimum',
-      );
       new HttpRoute(stack, 'Route', {
         httpApi,
         routeKey: HttpRouteKey.DEFAULT,
@@ -152,7 +146,6 @@ describe('Step Functions integrations', () => {
         }),
       });
 
-      const roleId = Capture.aString();
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
         IntegrationType: 'AWS_PROXY',
         IntegrationSubtype: 'StepFunctions-StopExecution',
@@ -161,14 +154,6 @@ describe('Step Functions integrations', () => {
         RequestParameters: {
           ExecutionArn: 'arn:aws:states:us-east-2:123456789012:executions:state:my-execution',
         },
-      });
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
-        PolicyDocument: objectLike({
-          Effect: 'Allow',
-          Action: 'states:StopExecution',
-          Resource: stateMachine.stateMachineArn,
-        }),
-        Roles: [{ Ref: roleId.capturedValue }],
       });
     });
     test('full integration', () => {

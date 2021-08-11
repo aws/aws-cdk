@@ -1,0 +1,177 @@
+{
+  "Resources": {
+    "IntegrationApi17ACB35A": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "IntegrationApi",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "IntegrationApiDefaultStageBE4B2B3D": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegrationApi17ACB35A"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true
+      }
+    },
+    "IntegrationApiANYputEventHttpIntegrationa0fa240dbe2639e08a92b6ff3948fd5647226CB5": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegrationApi17ACB35A"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "CredentialsArn": {
+          "Fn::GetAtt": [
+            "PutEventsFA73D0E4",
+            "Arn"
+          ]
+        },
+        "IntegrationSubtype": "EventBridge-PutEvents",
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "Detail": "$request.body.detail",
+          "DetailType": "test",
+          "Source": "integ-aws-proxy",
+          "EventBusName": "$request.body.bus",
+          "Region": "eu-west-2",
+          "Resources": "[ \"arn:aws:s3:::bucket\", \"arn:aws:s3:::bucket2\" ]"
+        }
+      }
+    },
+    "IntegrationApiANYputEvent7FEA02CC": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegrationApi17ACB35A"
+        },
+        "RouteKey": "ANY /putEvent",
+        "AuthorizationType": "NONE",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "IntegrationApiANYputEventHttpIntegrationa0fa240dbe2639e08a92b6ff3948fd5647226CB5"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "IntegrationApiPOSTsqsHttpIntegration7b80079129d9127b77113aead4cd64e9DB760AF8": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegrationApi17ACB35A"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "CredentialsArn": {
+          "Fn::GetAtt": [
+            "SendMessage33FB0275",
+            "Arn"
+          ]
+        },
+        "IntegrationSubtype": "SQS-SendMessage",
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "QueueUrl": {
+            "Ref": "Queue4A7E3555"
+          },
+          "MessageBody": "$request.body",
+          "DelaySeconds": "30",
+          "MessageAttributes": "TestMessage=true"
+        }
+      }
+    },
+    "IntegrationApiPOSTsqs27866B90": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegrationApi17ACB35A"
+        },
+        "RouteKey": "POST /sqs",
+        "AuthorizationType": "NONE",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "IntegrationApiPOSTsqsHttpIntegration7b80079129d9127b77113aead4cd64e9DB760AF8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "PutEventsFA73D0E4": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyName": "PutEvents",
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "events:PutEvents",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:events:eu-west-2:998973235548:event-bus/*"
+                }
+              ],
+              "Version": "2012-10-17"
+            }
+          }
+        ]
+      }
+    },
+    "Queue4A7E3555": {
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "SendMessage33FB0275": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ApiGatewayUrl": {
+      "Value": {
+        "Fn::GetAtt": [
+          "IntegrationApi17ACB35A",
+          "ApiEndpoint"
+        ]
+      }
+    }
+  }
+}

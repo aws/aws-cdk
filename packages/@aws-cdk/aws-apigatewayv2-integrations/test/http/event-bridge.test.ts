@@ -1,10 +1,9 @@
-import { arrayWith, Capture, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { HttpApi, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { EventBus } from '@aws-cdk/aws-events';
 import { Role } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { EventBridgePutEventsIntegration } from '../../lib/http/aws-proxy';
+import { EventBridgePutEventsIntegration, EventBusMappingExpression, MappingExpression } from '../../lib/http/aws-proxy';
 
 describe('EventBridge PutEvents Integration', () => {
   test('basic integration', () => {
@@ -14,14 +13,13 @@ describe('EventBridge PutEvents Integration', () => {
     new HttpRoute(stack, 'Route', {
       httpApi: api,
       integration: new EventBridgePutEventsIntegration({
-        detail: 'detail',
-        detailType: 'type',
-        source: 'source',
+        detail: MappingExpression.staticValue('detail'),
+        detailType: MappingExpression.staticValue('type'),
+        source: MappingExpression.staticValue('source'),
         role,
       }),
       routeKey: HttpRouteKey.with('/event'),
     });
-    const roleId = Capture.aString();
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'AWS_PROXY',
       IntegrationSubtype: 'EventBridge-PutEvents',
@@ -32,18 +30,6 @@ describe('EventBridge PutEvents Integration', () => {
         DetailType: 'type',
         Source: 'source',
       },
-    });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
-      PolicyDocument: objectLike({
-        Statement: arrayWith({
-          Effect: 'Allow',
-          Action: 'events:PutEvents',
-          Resource: makeEventBusArn('default'),
-        }),
-      }),
-      Roles: [
-        { Ref: roleId.capturedValue },
-      ],
     });
   });
   test('full integration', () => {
@@ -57,15 +43,15 @@ describe('EventBridge PutEvents Integration', () => {
     new HttpRoute(stack, 'Route', {
       httpApi: api,
       integration: new EventBridgePutEventsIntegration({
-        detail: 'detail',
-        detailType: 'detail-type',
-        source: 'source',
+        detail: MappingExpression.staticValue('detail'),
+        detailType: MappingExpression.staticValue('detail-type'),
+        source: MappingExpression.staticValue('source'),
         role,
-        eventBus,
+        eventBus: EventBusMappingExpression.fromEventBus(eventBus),
         region: 'eu-west-1',
-        resources: ['arn:aws:s3:::bucket'],
-        time: '2021-07-14T20:18:15Z',
-        traceHeader: 'x-trace-header',
+        resources: MappingExpression.staticValue('["arn:aws:s3:::bucket"]'),
+        time: MappingExpression.staticValue('2021-07-14T20:18:15Z'),
+        traceHeader: MappingExpression.staticValue('x-trace-header'),
       }),
       routeKey: HttpRouteKey.with('/event'),
     });
@@ -81,33 +67,10 @@ describe('EventBridge PutEvents Integration', () => {
         Source: 'source',
         EventBusName: 'different',
         Region: 'eu-west-1',
-        Resources: ['arn:aws:s3:::bucket'],
+        Resources: '["arn:aws:s3:::bucket"]',
         Time: '2021-07-14T20:18:15Z',
         TraceHeader: 'x-trace-header',
       },
     });
   });
 });
-
-function makeEventBusArn(eventBusName: string): object {
-  return {
-    'Fn::Join': [
-      '',
-      [
-        'arn:',
-        {
-          Ref: 'AWS::Partition',
-        },
-        ':events:',
-        {
-          Ref: 'AWS::Region',
-        },
-        ':',
-        {
-          Ref: 'AWS::AccountId',
-        },
-        `:event-bus/${eventBusName}`,
-      ],
-    ],
-  };
-}

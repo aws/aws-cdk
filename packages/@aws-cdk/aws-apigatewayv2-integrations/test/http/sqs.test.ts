@@ -1,15 +1,17 @@
-import { Capture, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { HttpApi, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
-import { Role } from '@aws-cdk/aws-iam';
+import { IRole, Role } from '@aws-cdk/aws-iam';
 import { Queue } from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
+  DurationMappingExpression,
+  MappingExpression,
+  QueueMappingExpression,
   SQSAttribute,
   SQSDeleteMessageIntegration,
   SQSPurgeQueueIntegration,
   SQSReceiveMessageIntegration,
-  SQSSendMessageIntegration
+  SQSSendMessageIntegration,
 } from '../../lib/http/aws-proxy';
 
 describe('SQS Integrations', () => {
@@ -17,19 +19,18 @@ describe('SQS Integrations', () => {
     test('basic integration', () => {
       const { stack, api, queue, role } = setupTestFixtures(
         'arn:aws:sqs:eu-west-2:123456789012:queue',
-        'arn:aws:iam::123456789012:role/send'
+        'arn:aws:iam::123456789012:role/send',
       );
       new HttpRoute(stack, 'Route', {
         httpApi: api,
         integration: new SQSSendMessageIntegration({
           queue,
-          body: 'message',
+          body: MappingExpression.staticValue('message'),
           role,
         }),
         routeKey: HttpRouteKey.with('/sendMessage'),
       });
 
-      const roleId = Capture.aString();
 
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
         IntegrationType: 'AWS_PROXY',
@@ -41,18 +42,6 @@ describe('SQS Integrations', () => {
           MessageBody: 'message',
         },
       });
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
-        PolicyDocument: objectLike({
-          Statement: [{
-            Effect: 'Allow',
-            Action: 'sqs:SendMessage',
-            Resource: queue.queueArn,
-          }],
-        }),
-        Roles: [{
-          Ref: roleId.capturedValue,
-        }],
-      });
     });
     test('full integration', () => {
       const { stack, api, queue, role } = setupTestFixtures(
@@ -62,15 +51,15 @@ describe('SQS Integrations', () => {
       new HttpRoute(stack, 'Full', {
         httpApi: api,
         integration: new SQSSendMessageIntegration({
-          body: 'message-body',
+          body: MappingExpression.staticValue('message-body'),
           queue,
           role,
-          attributes: 'some-attributes',
-          deduplicationId: '$request.id',
-          delay: Duration.seconds(4),
-          groupId: 'the-group',
+          attributes: MappingExpression.staticValue('some-attributes'),
+          deduplicationId: MappingExpression.staticValue('$request.id'),
+          delay: DurationMappingExpression.fromDuration(Duration.seconds(4)),
+          groupId: MappingExpression.staticValue('the-group'),
           region: 'us-east-1',
-          systemAttributes: 'system-attrs',
+          systemAttributes: MappingExpression.staticValue('system-attrs'),
         }),
         routeKey: HttpRouteKey.DEFAULT,
       });
@@ -82,7 +71,7 @@ describe('SQS Integrations', () => {
         CredentialsArn: 'arn:aws:iam::123456789012:role/sqs-role',
         RequestParameters: {
           QueueUrl: makeQueueUrl('us-east-1', '123456789012', 'queue'),
-          DelaySeconds: 4,
+          DelaySeconds: '4',
           MessageAttributes: 'some-attributes',
           MessageBody: 'message-body',
           MessageDeduplicationId: '$request.id',
@@ -134,8 +123,8 @@ describe('SQS Integrations', () => {
           maxNumberOfMessages: 2,
           messageAttributeNames: ['Attribute1'],
           receiveRequestAttemptId: 'rra-id',
-          visibilityTimeout: Duration.seconds(30),
-          waitTime: Duration.seconds(4),
+          visibilityTimeout: DurationMappingExpression.fromDuration(Duration.seconds(30)),
+          waitTime: DurationMappingExpression.fromDuration(Duration.seconds(4)),
           region: 'eu-central-1',
         }),
         routeKey: HttpRouteKey.DEFAULT,
@@ -152,8 +141,8 @@ describe('SQS Integrations', () => {
           MaxNumberOfMessages: 2,
           MessageAttributeNames: ['Attribute1'],
           ReceiveRequestAttemptId: 'rra-id',
-          VisibilityTimeout: 30,
-          WaitTimeSeconds: 4,
+          VisibilityTimeout: '30',
+          WaitTimeSeconds: '4',
           Region: 'eu-central-1',
         },
       });
@@ -267,13 +256,20 @@ describe('SQS Integrations', () => {
   });
 });
 
-function setupTestFixtures(queueArn: string, roleArn: string) {
+function setupTestFixtures(): { stack: Stack, api: HttpApi };
+function setupTestFixtures(queueArn: string, roleArn: string): {
+  stack: Stack,
+  api: HttpApi,
+  queue: QueueMappingExpression,
+  role: IRole,
+};
+function setupTestFixtures(queueArn?: string, roleArn?: string) {
   const stack = new Stack();
   return {
     stack,
     api: new HttpApi(stack, 'API'),
-    queue: Queue.fromQueueArn(stack, 'Queue', queueArn),
-    role: Role.fromRoleArn(stack, 'Role', roleArn),
+    queue: queueArn && QueueMappingExpression.fromQueue(Queue.fromQueueArn(stack, 'Queue', queueArn)),
+    role: roleArn && Role.fromRoleArn(stack, 'Role', roleArn),
   };
 }
 

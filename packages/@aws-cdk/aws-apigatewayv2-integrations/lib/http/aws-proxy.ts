@@ -12,7 +12,7 @@ interface AwsServiceIntegrationProps {
    */
   readonly role: IRole;
   /**
-   * The region of the integration
+   * The region of the integration, cannot be an expression.
    * @default - undefined
    */
   region?: string;
@@ -26,6 +26,40 @@ abstract class AwsServiceIntegration<T extends AwsServiceIntegrationProps> imple
   abstract bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig;
 }
 
+export class MappingExpression {
+  static staticValue(string: string): MappingExpression {
+    return new MappingExpression(string);
+  }
+  static fromHeader(headerName: string): MappingExpression {
+    return new MappingExpression(`$request.header.${headerName}`);
+  }
+  static fromQueryString(queryParam: string): MappingExpression {
+    return new MappingExpression(`$request.querystring.${queryParam}`);
+  }
+  static fromPath(pathParam: string): MappingExpression {
+    return new MappingExpression(`$request.path.${pathParam}`);
+  }
+  static requestBody(): MappingExpression {
+    return new MappingExpression('$request.body');
+  }
+  static fromRequestBody(path: string): MappingExpression {
+    return new MappingExpression(`$request.body.${path}`);
+  }
+  static fromContext(contextVariable: string): MappingExpression {
+    return new MappingExpression(`$context.${contextVariable}`);
+  }
+  static fromStage(stageVariable: string): MappingExpression {
+    return new MappingExpression(`$stageVariables.${stageVariable}`);
+  }
+  protected constructor(readonly expression: string) { }
+}
+
+export class EventBusMappingExpression extends MappingExpression {
+  static fromEventBus(eventBus: IEventBus): MappingExpression {
+    return new MappingExpression(eventBus.eventBusName);
+  }
+}
+
 /**
  * Properties for EventBridge PutEvents Integrations.
  *
@@ -35,40 +69,42 @@ export interface EventBridgePutEventsIntegrationProps extends AwsServiceIntegrat
   /**
    * How to map the event detail.
    */
-  detail: string;
+  detail: MappingExpression;
   /**
    * How to map the event detail-type.
    */
-  detailType: string;
+  detailType: MappingExpression;
   /**
    * How to map the event source.
    */
-  source: string;
+  source: MappingExpression;
   /**
    * How to map the event timestamp. Expects an RFC3339 timestamp.
    *
    * @default - the timestamp of the PutEvents call is used
    */
-  time?: string;
+  time?: MappingExpression;
   /**
    * The event bus to receive the event.
    *
    * @default - the default event bus
    */
-  eventBus?: IEventBus;
+  eventBus?: EventBusMappingExpression;
   /**
    * AWS resources, identified by Amazon Resource Name (ARN), which the event primarily concerns.
    *
+   * Must be a string representation of a JSON array, either containing static values or an expression.
+   *
    * @default - none
    */
-  resources?: Array<string>;
+  resources?: MappingExpression;
   /**
    * An AWS X-Ray trade header, which is an http header (X-Amzn-Trace-Id) that contains the
    * trace-id associated with the event.
    *
    * @default - none
    */
-  traceHeader?: string;
+  traceHeader?: MappingExpression;
 }
 
 export class EventBridgePutEventsIntegration
@@ -86,22 +122,39 @@ export class EventBridgePutEventsIntegration
       payloadFormatVersion: this.payloadFormatVersion,
       credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
-        Detail: this.props.detail,
-        DetailType: this.props.detailType,
-        Source: this.props.source,
-        Time: this.props.time,
-        EventBusName: this.props.eventBus?.eventBusName,
+        Detail: this.props.detail.expression,
+        DetailType: this.props.detailType.expression,
+        Source: this.props.source.expression,
+        Time: this.props.time?.expression,
+        EventBusName: this.props.eventBus?.expression,
         Region: this.props.region,
-        Resources: this.props.resources,
-        TraceHeader: this.props.traceHeader,
+        Resources: this.props.resources?.expression,
+        TraceHeader: this.props.traceHeader?.expression,
       },
     };
   }
 }
 
+export class QueueMappingExpression extends MappingExpression {
+  /**
+   * Send messages to a statically defined queue.
+   * @param queue a static queue to send all messages to
+   * @returns the expression for the queue URL
+   */
+  static fromQueue(queue: IQueue): MappingExpression {
+    return new MappingExpression(queue.queueUrl);
+  }
+}
+
+export class DurationMappingExpression extends MappingExpression {
+  static fromDuration(duration: Duration): MappingExpression {
+    return new MappingExpression(duration.toSeconds().toString());
+  }
+}
+
 interface SQSIntegrationProps extends AwsServiceIntegrationProps {
   /** The SQS Queue to send messages to */
-  readonly queue: IQueue;
+  readonly queue: QueueMappingExpression;
 }
 
 /**
@@ -110,7 +163,7 @@ interface SQSIntegrationProps extends AwsServiceIntegrationProps {
  */
 export interface SQSSendMessageIntegrationProps extends SQSIntegrationProps {
   /** The message body */
-  readonly body: string;
+  readonly body: MappingExpression;
   /**
    * The message send delay, up to 15 minutes.
    * Messages with a positive DelaySeconds value become available for processing after the delay
@@ -118,23 +171,23 @@ export interface SQSSendMessageIntegrationProps extends SQSIntegrationProps {
    *
    * @default - undefined
    */
-  readonly delay?: Duration,
+  readonly delay?: DurationMappingExpression,
   /**
    * Attributes of the message.
    * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html#sqs-message-attributes
    */
-  readonly attributes?: string;
+  readonly attributes?: MappingExpression;
   /**
    * The token used for deduplication of sent messages.
    * This parameter applies only to FIFO (first-in-first-out) queues.
    * @default - undefined
    */
-  readonly deduplicationId?: string;
+  readonly deduplicationId?: MappingExpression;
   /**
    * The tag that specifies that a message belongs to a specific message group.
    * This parameter applies only to FIFO (first-in-first-out) queues.
    */
-  readonly groupId?: string;
+  readonly groupId?: MappingExpression;
   /**
    * The message system attribute to send.
    * Currently, the only supported message system attribute is AWSTraceHeader.
@@ -142,7 +195,7 @@ export interface SQSSendMessageIntegrationProps extends SQSIntegrationProps {
    * string.
    * @default - undefined
    */
-  readonly systemAttributes?: string;
+  readonly systemAttributes?: MappingExpression;
 }
 
 export class SQSSendMessageIntegration
@@ -154,23 +207,19 @@ export class SQSSendMessageIntegration
     const role = this.props.role ?? new Role(options.scope, 'Role', {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [this.props.queue.queueArn],
-    }));
     return {
       type: this.integrationType,
       subtype: HttpIntegrationSubtype.SQS_SENDMESSAGE,
       payloadFormatVersion: this.payloadFormatVersion,
       credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
-        QueueUrl: this.props.queue.queueUrl,
-        MessageBody: this.props.body,
-        DelaySeconds: this.props.delay?.toSeconds(),
-        MessageAttributes: this.props.attributes,
-        MessageDeduplicationId: this.props.deduplicationId,
-        MessageGroupId: this.props.groupId,
-        MessageSystemAttributes: this.props.systemAttributes,
+        QueueUrl: this.props.queue.expression,
+        MessageBody: this.props.body.expression,
+        DelaySeconds: this.props.delay?.expression,
+        MessageAttributes: this.props.attributes?.expression,
+        MessageDeduplicationId: this.props.deduplicationId?.expression,
+        MessageGroupId: this.props.groupId?.expression,
+        MessageSystemAttributes: this.props.systemAttributes?.expression,
         Region: this.props.region,
       },
     };
@@ -204,7 +253,7 @@ export interface SQSReceiveMessageIntegrationProps extends SQSIntegrationProps {
   /**
    * The Queue to read messages from.
    */
-  readonly queue: IQueue;
+  readonly queue: QueueMappingExpression;
   /**
    * The attributes to return.
    * @default - undefined
@@ -232,12 +281,12 @@ export interface SQSReceiveMessageIntegrationProps extends SQSIntegrationProps {
    * being retrieved by a ReceiveMessage request.
    * @default - undefined
    */
-  readonly visibilityTimeout?: Duration;
+  readonly visibilityTimeout?: DurationMappingExpression;
   /**
    * The duration for which the call waits for a message to arrive in the queue before returning.
    * @default - undefined
    */
-  readonly waitTime?: Duration;
+  readonly waitTime?: DurationMappingExpression;
 }
 
 export class SQSReceiveMessageIntegration
@@ -249,23 +298,19 @@ export class SQSReceiveMessageIntegration
     const role = this.props.role ?? new Role(options.scope, 'Role', {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['sqs:ReceiveMessage'],
-      resources: [this.props.queue.queueArn],
-    }));
     return {
       type: this.integrationType,
       subtype: HttpIntegrationSubtype.SQS_RECEIVEMESSAGE,
       payloadFormatVersion: this.payloadFormatVersion,
       credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
-        QueueUrl: this.props.queue.queueUrl,
+        QueueUrl: this.props.queue.expression,
         AttributeNames: this.props.attributeNames,
         MaxNumberOfMessages: this.props.maxNumberOfMessages,
         MessageAttributeNames: this.props.messageAttributeNames,
         ReceiveRequestAttemptId: this.props.receiveRequestAttemptId,
-        VisibilityTimeout: this.props.visibilityTimeout?.toSeconds(),
-        WaitTimeSeconds: this.props.waitTime?.toSeconds(),
+        VisibilityTimeout: this.props.visibilityTimeout?.expression,
+        WaitTimeSeconds: this.props.waitTime?.expression,
         Region: this.props.region,
       },
     };
@@ -293,7 +338,7 @@ export class SQSDeleteMessageIntegration extends AwsServiceIntegration<SQSDelete
       payloadFormatVersion: this.payloadFormatVersion,
       credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
-        QueueUrl: this.props.queue.queueUrl,
+        QueueUrl: this.props.queue.expression,
         ReceiptHandle: this.props.receiptHandle,
         Region: this.props.region,
       },
@@ -319,7 +364,7 @@ export class SQSPurgeQueueIntegration
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
       credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
-        QueueUrl: this.props.queue.queueUrl,
+        QueueUrl: this.props.queue.expression,
         Region: this.props.region,
       },
     };
