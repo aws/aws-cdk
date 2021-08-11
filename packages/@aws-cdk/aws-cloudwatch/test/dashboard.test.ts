@@ -1,4 +1,4 @@
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';
 
@@ -26,7 +26,7 @@ describe('Dashboard', () => {
     }));
 
     // THEN
-    const resources = TemplateAssertions.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
     expect(resources.length).toEqual(1);
     hasWidgets(resources[0].Properties, [
       { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: { markdown: 'first' } },
@@ -62,7 +62,7 @@ describe('Dashboard', () => {
     );
 
     // THEN
-    const resources = TemplateAssertions.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
     expect(resources.length).toEqual(1);
     hasWidgets(resources[0].Properties, [
       { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: { markdown: 'first' } },
@@ -84,7 +84,7 @@ describe('Dashboard', () => {
     );
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
       DashboardBody: {
         'Fn::Join': ['', [
           '{"widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
@@ -113,7 +113,7 @@ describe('Dashboard', () => {
     );
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
       DashboardBody: {
         'Fn::Join': ['', [
           '{"start":"-9H","end":"2018-12-17T06:00:00.000Z","periodOverride":"inherit",\
@@ -138,7 +138,7 @@ describe('Dashboard', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
       DashboardName: 'MyCustomDashboardName',
     });
 
@@ -154,7 +154,7 @@ describe('Dashboard', () => {
     new Dashboard(stack, 'MyDashboard');
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {});
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {});
 
 
   });
