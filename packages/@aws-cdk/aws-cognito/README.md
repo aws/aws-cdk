@@ -565,6 +565,21 @@ pool.addClient('app-client', {
 });
 ```
 
+If the identity provider and the app client are created in the same stack, specify the dependency between both constructs to make sure that the identity provider already exists when the app client will be created. The app client cannot handle the dependency to the identity provider automatically because the client does not have access to the provider's construct.
+
+```ts
+const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
+  // ...
+});
+const client = pool.addClient('app-client', {
+  // ...
+  supportedIdentityProviders: [
+    cognito.UserPoolClientIdentityProvider.AMAZON,
+  ],
+}
+client.node.addDependency(provider);
+```
+
 In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
 More information is available at [Using Tokens with User Pools](https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
 The expiration time for these tokens can be configured as shown below.
@@ -602,6 +617,17 @@ pool.addClient('app-client', {
   writeAttributes: clientWriteAttributes,
 });
 ```
+
+[Token revocation](https://docs.aws.amazon.com/cognito/latest/developerguide/token-revocation.html
+) can be configured to be able to revoke refresh tokens in app clients. By default, token revocation is enabled for new user pools. The property can be used to enable the token revocation in existing app clients or to change the default behavior.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  enableTokenRevocation: true,
+});
+``` 
 
 ### Resource Servers
 
