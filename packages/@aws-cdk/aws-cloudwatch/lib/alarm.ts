@@ -1,12 +1,11 @@
 import { Lazy, Stack, Token } from '@aws-cdk/core';
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
-import { accountIfDifferentFromStack } from './private/env-tokens';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
