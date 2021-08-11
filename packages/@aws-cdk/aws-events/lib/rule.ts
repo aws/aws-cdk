@@ -354,7 +354,7 @@ export class Rule extends Resource implements IRule {
       account: targetAccount,
     });
 
-    // For some region, cross-region requires a Role (with `PutEvents` on the
+    // For some reason, cross-region requires a Role (with `PutEvents` on the
     // target event bus) while cross-account doesn't
     const roleArn = !sameEnvDimension(targetRegion, Stack.of(this).region)
       ? this.crossRegionPutEventsRole(eventBusArn).roleArn
