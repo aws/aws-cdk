@@ -1,11 +1,12 @@
 import { Lazy, Stack, Token } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
+import { accountIfDifferentFromStack } from './private/env-tokens';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
@@ -257,7 +258,8 @@ export class Alarm extends AlarmBase {
     return dispatchMetric(metric, {
       withStat(stat, conf) {
         self.validateMetricStat(stat, metric);
-        if (conf.renderingProperties?.label == undefined) {
+        if (conf.renderingProperties?.label == undefined && 
+          (stat.account == undefined || Stack.of(self).account == stat.account )) {
           return dropUndefined({
             dimensions: stat.dimensions,
             namespace: stat.namespace,
@@ -283,6 +285,7 @@ export class Alarm extends AlarmBase {
                 unit: stat.unitFilter,
               },
               id: 'm1',
+              accountId: stat.account,
               label: conf.renderingProperties?.label,
               returnData: true,
             } as CfnAlarm.MetricDataQueryProperty,
@@ -344,16 +347,13 @@ export class Alarm extends AlarmBase {
   }
 
   /**
-   * Validate that if a region and account are in the given stat config, they match the Alarm
+   * Validate that if a region is in the given stat config, they match the Alarm
    */
   private validateMetricStat(stat: MetricStatConfig, metric: IMetric) {
     const stack = Stack.of(this);
 
     if (definitelyDifferent(stat.region, stack.region)) {
       throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
-    }
-    if (definitelyDifferent(stat.account, stack.account)) {
-      throw new Error(`Cannot create an Alarm in account '${stack.account}' based on metric '${metric}' in '${stat.account}'`);
     }
   }
 }
