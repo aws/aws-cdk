@@ -13,6 +13,7 @@ export enum ImageRepositoryType {
    * Amazon ECR Public
    */
   ECR_PUBLIC = 'ECR_PUBLIC',
+
   /**
    * Amazon ECR
    */
@@ -22,33 +23,63 @@ export enum ImageRepositoryType {
 /**
  * The number of CPU units reserved for each instance of your App Runner service.
  */
-export enum Cpu {
+export class Cpu {
   /**
    * 1 vCPU
    */
-  ONE_VCPU = '1 vCPU',
+  public static readonly ONE_VCPU = Cpu.of('1 vCPU')
+
   /**
    * 2 vCPU
    */
-  TWO_VCPU = '2 vCPU',
+  public static readonly TWO_VCPU = Cpu.of('2 vCPU')
+
+  /**
+   * Custom CPU unit
+   *
+   * @param unit custom CPU unit
+   */
+  public static of(unit: string) { return new Cpu(unit); }
+
+  /**
+   *
+   * @param unit The unit of CPU.
+   */
+  private constructor(public readonly unit: string) {}
 }
+
 
 /**
  * The amount of memory reserved for each instance of your App Runner service.
  */
-export enum Memory {
+export class Memory {
   /**
    * 2 GB
    */
-  TWO_GB = '2 GB',
+  public static readonly TWO_GB = Memory.of('2 GB')
+
   /**
    * 3 GB
    */
-  THREE_GB = '3 GB',
+  public static readonly THREE_GB = Memory.of('3 GB')
+
   /**
    * 4 GB
    */
-  FOUR_GB = '4 GB',
+  public static readonly FOUR_GB = Memory.of('4 GB')
+
+  /**
+   * Custom Memory unit
+   *
+   * @param unit custom Memory unit
+   */
+  public static of(unit: string) { return new Memory(unit); }
+
+  /**
+   *
+   * @param unit The unit of memory.
+   */
+  private constructor(public readonly unit: string) { }
 }
 
 /**
@@ -59,10 +90,149 @@ export enum CodeRuntime {
    * NodeJS 12
    */
   NODEJS_12 = 'NODEJS_12',
+
   /**
    * Python 3
    */
   PYTHON_3 = 'PYTHON_3',
+}
+
+/**
+ * The configuration for the Code.
+ */
+export interface CodeConfig {
+  /**
+   * The image repository configuration.
+   *
+   * @default - no image repository.
+   */
+  readonly imageRepository?: ImageRepository;
+
+  /**
+   * The ECR repository.
+   *
+   * @default - no ECR repository.
+   */
+  readonly ecrRepository?: ecr.IRepository;
+
+  /**
+   * The code repository configuration.
+   *
+   * @default - no code repository.
+   */
+  readonly codeRepository?: CodeRepositoryProps;
+
+  /**
+   * The github connectoin for the app runner.
+   *
+   * @default - no github connection.
+   */
+  readonly connection?: GitHubConnection;
+}
+
+/**
+ * Properties of the Github repository.
+ */
+export interface GithubRepositoryProps {
+  /**
+   * The location of the repository that contains the source code.
+   */
+  readonly repositoryUrl: string;
+
+  /**
+   * A runtime environment type for building and running an App Runner service.
+   * It represents a programming language runtime.
+   */
+  readonly runtime: CodeRuntime;
+
+  /**
+   * The branch name that represents a specific version for the repository.
+   *
+   * @default main
+   */
+  readonly branch?: string;
+
+  /**
+   * ARN of the connection to Github. Only required for Github source.
+   */
+  readonly connection: GitHubConnection;
+
+  /**
+   * The command App Runner runs to build your application.
+   *
+   * @default - no build command.
+   */
+  readonly buildCommand?: string;
+
+  /**
+   * The port that your application listens to in the container.
+   *
+   * @default 8080
+   */
+  readonly port?: number;
+
+  /**
+   * The command App Runner runs to start your application.
+   *
+   * @default - no start command.
+   */
+  readonly startCommand?: string;
+
+  /**
+   * The environment variables that are available to your running App Runner service.
+   * Keys with a prefix of AWSAPPRUNNER are reserved for system use and aren't valid.
+   *
+   * @default - no environment variables
+   */
+  readonly environment?: {[s: string]: string}
+}
+
+/**
+ * Represents the source of the repositories for the service.
+ */
+export class Code {
+  /**
+   * Code from the GitHub repository.
+   */
+  public static fromGitHub(props: GithubRepositoryProps): CodeConfig {
+    return {
+      connection: props.connection,
+      codeRepository: {
+        codeConfiguration: {
+          configurationValues: {
+            runtime: props.runtime,
+            buildCommand: props.buildCommand,
+            port: props.port?.toString(),
+            startCommand: props.startCommand,
+            environment: props.environment,
+          },
+          configurationSource: ConfigurationSourceType.REPOSITORY,
+        },
+        repositoryUrl: props.repositoryUrl,
+        sourceCodeVersion: {
+          type: 'BRANCH',
+          value: props.branch ?? 'main',
+        },
+      },
+    };
+  }
+  /**
+   * Code from the container image.
+   */
+  public static fromImage(assets: ContainerImage, options?: ImageConfiguration): CodeConfig {
+    return {
+      ecrRepository: assets.ecrRepository,
+      imageRepository: {
+        imageIdentifier: assets.uri,
+        imageRepositoryType: assets.type,
+        imageConfiguration: options ? {
+          port: options.port,
+          environment: options.environment,
+          startCommand: options.startCommand,
+        } : {},
+      },
+    };
+  }
 }
 
 /**
@@ -71,19 +241,21 @@ export enum CodeRuntime {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imageconfiguration.html
  */
-interface ImageConfiguration {
+export interface ImageConfiguration {
   /**
    * The port that your application listens to in the container.
    *
    * @default 8080
    */
-  readonly port?: string;
+  readonly port?: number;
+
   /**
    * Environment variables that are available to your running App Runner service.
    *
    * @default - no environment variables
    */
   readonly environment?: { [key: string]: string };
+
   /**
    * An optional command that App Runner runs to start the application in the source image.
    * If specified, this command overrides the Docker image’s default start command.
@@ -98,18 +270,20 @@ interface ImageConfiguration {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html
  */
-interface ImageRepository {
+export interface ImageRepository {
   /**
    * The identifier of an image.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html
    */
   readonly imageIdentifier: string;
+
   /**
    * The type of the image repository. This reflects the repository provider and whether
    * the repository is private or public.
    */
   readonly imageRepositoryType: ImageRepositoryType;
+
   /**
    * Configuration for running the identified image.
    */
@@ -126,6 +300,7 @@ export interface SourceCodeVersion {
    * The type of version identifier.
    */
   readonly type: string;
+
   /**
    * A source code version.
    */
@@ -140,10 +315,12 @@ export interface CodeRepositoryProps {
    * Configuration for building and running the service from a source code repository.
    */
   readonly codeConfiguration: CodeConfiguration;
+
   /**
    * The location of the repository that contains the source code.
    */
   readonly repositoryUrl: string;
+
   /**
    * The version that should be used within the source code repository.
    */
@@ -155,43 +332,24 @@ export interface CodeRepositoryProps {
  */
 export interface ServiceProps {
   /**
-   * The description of a source image repository.
-   * You must provide either `image` or `code`(but not both).
-   *
-   * @default - no image repository.
+   * The source of the repository for the service.
    */
-  readonly image?: ContainerImage;
-  /**
-   * The description of a source code repository.
-   * You must provide either `image` or `code`(but not both).
-   *
-   * @default - no code repository.
-   */
-  readonly code?: CodeRepositoryProps;
-  /**
-   * The port that your application listens to in the container.
-   *
-   * @default 8080
-   */
-  readonly port?: number;
+  readonly source: CodeConfig;
+
   /**
    * The number of CPU units reserved for each instance of your App Runner service.
    *
    * @default Cpu.ONE_VCPU
    */
   readonly cpu?: Cpu;
+
   /**
    * The amount of memory reserved for each instance of your App Runner service.
    *
    * @default Memory.TWO_GB
    */
   readonly memory?: Memory;
-  /**
-   * ARN of the connection to Github. Only required for Github source.
-   *
-   * @default - no connection
-   */
-  readonly gitHubConnection?: GitHubConnection;
+
   /**
    * The IAM role that grants the App Runner service access to a source repository.
    * It's required for ECR image repositories (but not for ECR Public repositories).
@@ -199,6 +357,7 @@ export interface ServiceProps {
    * @default - generate a new access role.
    */
   readonly accessRole?: iam.IRole;
+
   /**
    * The IAM role that provides permissions to your App Runner service.
    * These are permissions that your code needs when it calls any AWS APIs.
@@ -206,6 +365,7 @@ export interface ServiceProps {
    * @default - no instance role attached.
    */
   readonly instanceRole?: iam.IRole;
+
   /**
    * Name of the service.
    *
@@ -223,6 +383,7 @@ export enum ConfigurationSourceType {
    * and ignores `configurationValues`.
    */
   REPOSITORY = 'REPOSITORY',
+
   /**
    * App Runner uses configuration values provided in `configurationValues` and ignores the `apprunner.yaml`
    * file in the source code repository.
@@ -245,6 +406,7 @@ export interface CodeConfiguration {
    * @default - not specified. Use `apprunner.yaml` instead.
    */
   readonly configurationValues?: CodeConfigurationValues;
+
   /**
    * The source of the App Runner configuration.
    */
@@ -263,6 +425,7 @@ interface AuthenticationConfiguration {
    * @defult - no access role.
    */
   readonly accessRoleArn?: string;
+
   /**
    * The Amazon Resource Name (ARN) of the App Runner connection that enables the App Runner service
    * to connect to a source repository. It's required for GitHub code repositories.
@@ -284,23 +447,27 @@ export interface CodeConfigurationValues {
    * @default - no build command.
    */
   readonly buildCommand?: string;
+
   /**
    * The port that your application listens to in the container.
    *
    * @default 8080
    */
   readonly port?: string;
+
   /**
    * A runtime environment type for building and running an App Runner service. It represents
    * a programming language runtime.
    */
   readonly runtime: CodeRuntime;
+
   /**
    * The environment variables that are available to your running App Runner service.
    *
    * @default - no environment variables.
    */
   readonly environment?: { [key: string]: string };
+
   /**
    * The command App Runner runs to start your application.
    *
@@ -313,14 +480,14 @@ export interface CodeConfigurationValues {
  * Represents the App Runner connection that enables the App Runner service to connect
  * to a source repository. It's required for GitHub code repositories.
  */
-export class Connection {
+export class GitHubConnection {
   /**
    * Using existing App Runner connection by specifying the connection ARN.
    * @param arn connection ARN
    * @returns Connection
    */
-  public static fromConnectionArn(arn: string): Connection {
-    return new Connection(arn);
+  public static fromConnectionArn(arn: string): GitHubConnection {
+    return new GitHubConnection(arn);
   }
   /**
    * The ARN of the Connection for App Runner service to connect to the repository.
@@ -339,14 +506,17 @@ export interface ServiceAttributes {
    * The name of the service.
    */
   readonly serviceName: string;
+
   /**
    * The ARN of the service.
    */
   readonly serviceArn: string;
+
   /**
    * The URL of the service.
    */
   readonly serviceUrl: string;
+
   /**
    * The status of the service.
    */
@@ -361,6 +531,7 @@ export interface IService extends cdk.IResource {
    * The Name of the service.
    */
   readonly serviceName: string;
+
   /**
    * The ARN of the service.
    */
@@ -406,105 +577,92 @@ export class Service extends cdk.Resource {
   }
   private readonly props: ServiceProps;
   private accessRole?: iam.IRole;
-  private ecrRepository?: ecr.IRepository;
-  
+  // private ecrRepository?: ecr.IRepository;
+  private source: CodeConfig;
+
   /**
    * The ARN of the Service.
    * @attribute
    */
   readonly serviceArn: string;
-  
+
   /**
    * The ID of the Service.
    * @attribute
    */
   readonly serviceId: string;
-  
+
   /**
    * The URL of the Service.
    * @attribute
    */
   readonly serviceUrl: string;
-  
+
   /**
    * The status of the Service.
    * @attribute
    */
   readonly serviceStatus: string;
-  
+
   /**
    * The name of the service.
    * @attribute
    */
   readonly serviceName: string;
-  
-  public constructor(scope: Construct, id: string, props: ServiceProps = {}) {
+
+  public constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
-    // either image or code is allowed. Not both.
-    if ((!props.code && !props.image) || (props.code && props.image)) {
-      throw new Error('Either image or code is required, not both.');
-    }
-    // connection is required if code is defined
-    if (props.code && !props.connection) {
-      throw new Error('connection is required for github repository source.');
-    }
     this.props = props;
+    this.source = props.source;
 
     // generate an IAM role only when ImageRepositoryType is ECR and props.role is undefined
-    this.accessRole = (this.props.image && this.props.image.type == ImageRepositoryType.ECR) ?
+    this.accessRole = (this.source.imageRepository?.imageRepositoryType == ImageRepositoryType.ECR) ?
       this.props.accessRole ? this.props.accessRole : this.generateDefaultRole() : undefined;
 
     const resource = new CfnService(this, 'Resource', {
       instanceConfiguration: {
-        cpu: props.cpu?.valueOf(),
-        memory: props.memory?.valueOf(),
+        cpu: props.cpu?.unit,
+        memory: props.memory?.unit,
         instanceRoleArn: props.instanceRole?.roleArn,
       },
       sourceConfiguration: {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
-        imageRepository: this.props.image ? this.renderImageRepositoryConfiguration(this.props.image) : undefined,
-        codeRepository: this.props.code ? this.renderCodeRepositoryConfiguration(this.props.code) : undefined,
+        imageRepository: this.source.imageRepository ?
+          this.renderImageRepository(this.source.imageRepository) : undefined,
+        codeRepository: this.source.codeRepository,
       },
     });
 
     // grant required privileges for the role
-    if (this.accessRole && this.ecrRepository) {
-      this.ecrRepository.grantPull(this.accessRole);
+    if (this.source.ecrRepository && this.accessRole) {
+      this.source.ecrRepository.grantPull(this.accessRole);
     }
+
     this.serviceArn = resource.attrServiceArn;
     this.serviceId = resource.attrServiceId;
     this.serviceUrl = resource.attrServiceUrl;
     this.serviceStatus = resource.attrStatus;
     this.serviceName = resource.ref;
   }
-  private renderImageRepositoryConfiguration(assets: ContainerImage): ImageRepository {
-    // grant pull privileges
-    if (assets.ecrRepository && this.accessRole) {
-      assets.ecrRepository.grantPull(this.accessRole);
-    }
-
-    return {
-      imageIdentifier: assets.uri,
-      imageRepositoryType: assets.type,
-      imageConfiguration: {
-        port: this.props.port ? this.props.port.toString() : undefined,
-      },
-    };
-  }
-  private renderCodeRepositoryConfiguration(code: CodeRepositoryProps): CodeRepositoryProps {
-    return {
-      repositoryUrl: code.repositoryUrl,
-      sourceCodeVersion: code.sourceCodeVersion,
-      codeConfiguration: code.codeConfiguration,
-    };
-  }
   private renderAuthenticationConfiguration(): AuthenticationConfiguration {
     return {
       accessRoleArn: this.accessRole?.roleArn,
-      // assign connectionArn only when code is available
-      connectionArn: this.props.code ? this.props.connection?.connectionArn : undefined,
+      connectionArn: this.source.connection?.connectionArn,
     };
   }
+  private renderImageRepository(repo: ImageRepository): any {
+  // convert port from number to string
+    if (repo.imageConfiguration.port) {
+      return Object.assign(repo, {
+        imageConfiguration: {
+          port: repo.imageConfiguration.port.toString(),
+        },
+      });
+    } else {
+      return repo;
+    }
+  }
+
   private generateDefaultRole(): iam.Role {
     const accessRole = new iam.Role(this, 'AccessRole', {
       assumedBy: new iam.ServicePrincipal('build.apprunner.amazonaws.com'),
@@ -540,6 +698,7 @@ export class ContainerImage {
     const uri = repository.repositoryUriForTag(tag || 'latest');
     return new ContainerImage(ImageRepositoryType.ECR, uri, repository );
   }
+
   /**
    * Using local docker image assets. On deployment, local image assets will be built and pushed to Amazon ECR.
    * @param assert docker image asset
@@ -552,6 +711,7 @@ export class ContainerImage {
       ecrRepository: assert.repository,
     };
   }
+
   /**
    *
    * @param type Image repository type.
@@ -559,51 +719,4 @@ export class ContainerImage {
    * @param ecrRepository ECR Repository.
    */
   protected constructor(public readonly type: ImageRepositoryType, public readonly uri: string, public readonly ecrRepository?: ecr.IRepository) { }
-}
-
-/**
- * Properties of the Github repository.
- */
-export interface GithubRepositoryProps {
-  /**
-   * The location of the repository that contains the source code.
-   */
-  readonly repositoryUrl: string;
-  /**
-   * A runtime environment type for building and running an App Runner service.
-   * It represents a programming language runtime.
-   */
-  readonly runtime: CodeRuntime;
-  /**
-   * The branch name that represents a specific version for the repository.
-   *
-   * @default main
-   */
-  readonly branch?: string;
-}
-
-/**
- * Represents the CodeRepository.
- */
-export class CodeRepository {
-  /**
-   * This method returns required properties for github repository.
-   * @param props github repository properties
-   * @returns code repository properties
-   */
-  public static fromGithubRepository(props: GithubRepositoryProps): CodeRepositoryProps {
-    return {
-      codeConfiguration: {
-        configurationValues: {
-          runtime: props.runtime,
-        },
-        configurationSource: ConfigurationSourceType.REPOSITORY,
-      },
-      repositoryUrl: props.repositoryUrl,
-      sourceCodeVersion: {
-        type: 'BRANCH',
-        value: props.branch ?? 'main',
-      },
-    };
-  }
 }

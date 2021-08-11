@@ -37,39 +37,41 @@ The `Service` construct allows you to create AWS App Runner services with `ECR P
 
 ## ECR Public
 
-To create a `Service` with ECR Public, define the `image` property with `ContainerImage.fromEcrPublic()`:
+To create a `Service` with ECR Public:
 
 ```ts
+const image = ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest');
+
 new Service(stack, 'Service', {
-  image: ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest'),
-  port: 80,
+  source: Code.fromImage(image, { port: 80 }),
 });
 ```
 
 ## ECR
 
-To create a `Service` from an existing ECR repository, use `ContainerImage.fromEcrRepository()`:
+To create a `Service` from an existing ECR repository:
 
 ```ts
 // import the existing ECR repository by name
-const repo = ecr.Repository.fromRepositoryName(stack, 'ExistingRepository', 'existing-repo');
+const repo = ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx');
+const image = ContainerImage.fromEcrRepository(repo);
+
 new Service(stack, 'Service', {
-  image: ContainerImage.fromEcrRepository(repo),
-  port: 80,
+  source: Code.fromImage(image, { port: 80 }),
 });
 ```
 
 
-To create a `Service` from local docker image assets being built and pushed to Amazon ECR,
-use `ContainerImage.fromDockerImageAssets()`:
+To create a `Service` from local docker image assets being built and pushed to Amazon ECR:
 
 ```ts
 const imageAssets = new assets.DockerImageAsset(stack, 'ImageAssets', {
   directory, // your code assets directory with Dockerfile
 });
+const image = ContainerImage.fromDockerImageAssets(imageAssets);
+
 new Service(stack, 'Service', {
-  image: ContainerImage.fromDockerImageAssets(imageAssets),
-  port: 80,
+  source: Code.fromImage(image, { port: 80 }),
 });
 ```
 
@@ -81,11 +83,12 @@ See [Managing App Runner connections](https://docs.aws.amazon.com/apprunner/late
 
 ```ts
 new Service(stack, 'Service', {
-  connection: Connection.fromConnectionArn(connectionArn),
-  code: CodeRepository.fromGithubRepository({
+  source: Code.fromGitHub({
     repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
     branch: 'main',
     runtime: CodeRuntime.PYTHON_3,
+    port: 8080,
+    connection: GitHubConnection.fromConnectionArn(connectionArn),
   }),
 });
 ```
@@ -102,4 +105,3 @@ ECR image repositories (but not for ECR Public repositories). If not defined, a 
 when required.
 
 See [App Runner IAM Roles](https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles) for more details.
-

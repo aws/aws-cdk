@@ -4,7 +4,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Service, ContainerImage, CodeRepository, Connection, CodeRuntime } from '../lib';
+import { Service, ContainerImage, GitHubConnection, CodeRuntime, Code, Cpu, Memory } from '../lib';
 
 let app: cdk.App;
 let env: { region: string; account: string };
@@ -22,9 +22,9 @@ beforeEach(() => {
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {
   // WHEN
+  const image = ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest');
   new Service(stack, 'DemoService', {
-    image: ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest'),
-    port: 80,
+    source: Code.fromImage(image, { port: 80 }),
   });
 
   // THEN
@@ -46,11 +46,11 @@ test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () =
 test('create a service from existing ECR repository(image repository type: ECR)', () => {
   // GIVEN
   const repo = ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx');
+  const image = ContainerImage.fromEcrRepository(repo);
 
   // WHEN
   new Service(stack, 'Service', {
-    image: ContainerImage.fromEcrRepository(repo),
-    port: 80,
+    source: Code.fromImage(image, { port: 80 }),
   });
 
   // THEN
@@ -107,10 +107,10 @@ test('create a service with local assets(image repository type: ECR)', () => {
   const dockerAssets = new ecr_assets.DockerImageAsset(stack, 'Assets', {
     directory: path.join(__dirname, './docker.assets'),
   });
+  const image = ContainerImage.fromDockerImageAssets(dockerAssets);
   // WHEN
   new Service(stack, 'DemoService', {
-    image: ContainerImage.fromDockerImageAssets(dockerAssets),
-    port: 80,
+    source: Code.fromImage(image, { port: 80 }),
   });
 
   // THEN
@@ -166,11 +166,11 @@ test('create a service with local assets(image repository type: ECR)', () => {
 test('create a service with github repository', () => {
   // WHEN
   new Service(stack, 'DemoService', {
-    connection: Connection.fromConnectionArn('MOCK'),
-    code: CodeRepository.fromGithubRepository({
+    source: Code.fromGitHub({
       repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
       branch: 'main',
       runtime: CodeRuntime.PYTHON_3,
+      connection: GitHubConnection.fromConnectionArn('MOCK'),
     }),
   });
 
@@ -198,10 +198,10 @@ test('create a service with github repository', () => {
 test('create a service with github repository - undefined branch name is allowed', () => {
   // WHEN
   new Service(stack, 'DemoService', {
-    connection: Connection.fromConnectionArn('MOCK'),
-    code: CodeRepository.fromGithubRepository({
+    source: Code.fromGitHub({
       repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
       runtime: CodeRuntime.PYTHON_3,
+      connection: GitHubConnection.fromConnectionArn('MOCK'),
     }),
   });
 
@@ -253,8 +253,9 @@ test('import from service attributes)', () => {
 
 test('undefined port is allowed', () => {
   // WHEN
-  new Service(stack, 'DemoService', {
-    image: ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest'),
+  const image = ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest');
+  new Service(stack, 'Service', {
+    source: Code.fromImage(image),
   });
 
   // THEN
@@ -271,65 +272,16 @@ test('undefined port is allowed', () => {
   });
 });
 
-test('either image or code should be defined', () => {
-  // WHEN
-  const t = () => {
-    new Service(stack, 'DemoService', {
-      port: 80,
-    });
-  };
-
-  // THEN
-  // we should throw the error
-  expect(t).toThrow('Either image or code is required, not both.');
-});
-
-test('Shoud not define both image and code', () => {
-  // WHEN
-  const t = () => {
-    new Service(stack, 'DemoService', {
-      image: ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest'),
-      connection: Connection.fromConnectionArn('MOCK'),
-      code: CodeRepository.fromGithubRepository({
-        repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
-        runtime: CodeRuntime.PYTHON_3,
-      }),
-      port: 80,
-    });
-  };
-
-  // THEN
-  // we should throw the error
-  expect(t).toThrow('Either image or code is required, not both.');
-});
-
-
-test('connection is required with code', () => {
-  // WHEN
-  const t = () => {
-    new Service(stack, 'DemoService', {
-      code: CodeRepository.fromGithubRepository({
-        repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
-        runtime: CodeRuntime.PYTHON_3,
-      }),
-      port: 80,
-    });
-  };
-
-  // THEN
-  // we should throw the error
-  expect(t).toThrow('connection is required for github repository source.');
-});
-
 test('custom IAM access role and instance role are allowed', () => {
   // WHEN
   // GIVEN
   const dockerAssets = new ecr_assets.DockerImageAsset(stack, 'Assets', {
     directory: path.join(__dirname, './docker.assets'),
   });
+  const image = ContainerImage.fromDockerImageAssets(dockerAssets);
   // WHEN
   new Service(stack, 'DemoService', {
-    image: ContainerImage.fromDockerImageAssets(dockerAssets),
+    source: Code.fromImage(image, { port: 80 }),
     accessRole: new iam.Role(stack, 'AccessRole', {
       assumedBy: new iam.ServicePrincipal('build.apprunner.amazonaws.com'),
       managedPolicies: [
@@ -339,7 +291,6 @@ test('custom IAM access role and instance role are allowed', () => {
     instanceRole: new iam.Role(stack, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('tasks.apprunner.amazonaws.com'),
     }),
-    port: 80,
   });
   // THEN
   // we should have the service with the branch value as 'main'
@@ -379,6 +330,40 @@ test('custom IAM access role and instance role are allowed', () => {
           'Arn',
         ],
       },
+    },
+  });
+});
+
+test('cpu and memory properties are allowed', () => {
+  // WHEN
+  const image = ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest');
+  new Service(stack, 'DemoService', {
+    source: Code.fromImage(image, { port: 80 }),
+    cpu: Cpu.ONE_VCPU,
+    memory: Memory.THREE_GB,
+  });
+  // THEN
+  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+    InstanceConfiguration: {
+      Cpu: '1 vCPU',
+      Memory: '3 GB',
+    },
+  });
+});
+
+test('custom cpu and memory units are allowed', () => {
+  // WHEN
+  const image = ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest');
+  new Service(stack, 'DemoService', {
+    source: Code.fromImage(image, { port: 80 }),
+    cpu: Cpu.of('Some vCPU'),
+    memory: Memory.of('Some GB'),
+  });
+  // THEN
+  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+    InstanceConfiguration: {
+      Cpu: 'Some vCPU',
+      Memory: 'Some GB',
     },
   });
 });
