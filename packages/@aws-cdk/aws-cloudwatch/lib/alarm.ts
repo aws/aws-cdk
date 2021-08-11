@@ -257,7 +257,7 @@ export class Alarm extends AlarmBase {
     return dispatchMetric(metric, {
       withStat(stat, conf) {
         self.validateMetricStat(stat, metric);
-        if (conf.renderingProperties?.label == undefined && 
+        if (conf.renderingProperties?.label == undefined &&
           (stat.account == undefined || Stack.of(self).account == stat.account )) {
           return dropUndefined({
             dimensions: stat.dimensions,

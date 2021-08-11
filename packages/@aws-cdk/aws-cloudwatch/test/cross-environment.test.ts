@@ -11,7 +11,7 @@ describe('cross environment', () => {
   beforeEach(() => {
     stack1 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '1234' } });
     stack2 = new Stack(undefined, undefined, { env: { region: 'mars', account: '5678' } });
-    stack3 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '0000'} });
+    stack3 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '0000' } });
   });
 
   describe('in graphs', () => {
@@ -128,21 +128,21 @@ describe('cross environment', () => {
       Template.fromStack(stack1).hasResourceProperties('AWS::CloudWatch::Alarm', {
         Metrics: [
           {
-            AccountId: "0000",
-            Id: "m1",
+            AccountId: '0000',
+            Id: 'm1',
             MetricStat: {
               Metric: {
-                MetricName: "ACount",
-                Namespace: "Test",
+                MetricName: 'ACount',
+                Namespace: 'Test',
               },
               Period: 300,
-              Stat: "Average",
+              Stat: 'Average',
             },
             ReturnData: true,
-          }
-        ]
+          },
+        ],
       });
-    })
+    });
   });
 });
 
