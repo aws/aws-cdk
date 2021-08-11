@@ -1,11 +1,16 @@
 import '@aws-cdk/assert-internal/jest';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import { Connections, IClientVpnEndpoint } from '../lib';
 import { ClientVpnAuthorizationRule } from '../lib/client-vpn-authorization-rule';
 
 let stack: Stack;
 beforeEach(() => {
-  stack = new Stack();
+  const app = new App({
+    context: {
+      '@aws-cdk/core:newStyleStackSynthesis': false,
+    },
+  });
+  stack = new Stack(app);
 });
 
 describe('ClientVpnAuthorizationRule constructor', () => {
