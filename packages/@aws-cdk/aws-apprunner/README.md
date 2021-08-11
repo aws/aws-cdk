@@ -33,7 +33,10 @@ AWS App Runner is a fully managed service that makes it easy for developers to q
 
 ## Service
 
-The `Service` construct allows you to create AWS App Runner services with `ECR Public`, `ECR` or `Github`. You need specify either `image` or `code` for different scenarios.
+The `Service` construct allows you to create AWS App Runner services with `ECR Public`, `ECR` or `Github` with the `source` property in the following scenarios:
+
+- `Code.fromImage()` - To define the source repository from `ECR Public`, `ECR` or images built from local docker image assets.
+- `Code.fromGitHub()` - To define the source repository from a GitHub repository. 
 
 ## ECR Public
 
