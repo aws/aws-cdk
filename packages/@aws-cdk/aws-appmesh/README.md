@@ -36,7 +36,7 @@ The following example creates the `AppMesh` service mesh with the default egress
 
 ```ts
 const mesh = new Mesh(stack, 'AppMesh', {
-  meshName: 'myAwsmMesh',
+  meshName: 'myAwsMesh',
 });
 ```
 
@@ -44,7 +44,7 @@ The mesh can instead be created with the `ALLOW_ALL` egress filter by providing 
 
 ```ts
 const mesh = new Mesh(stack, 'AppMesh', {
-  meshName: 'myAwsmMesh',
+  meshName: 'myAwsMesh',
   egressFilter: MeshFilterType.ALLOW_ALL,
 });
 ```
@@ -58,7 +58,7 @@ After you create a virtual router, you can create and associate routes to your v
 
 ```ts
 const router = mesh.addVirtualRouter('router', {
-  listeners: [ appmesh.VirtualRouterListener.http(8080) ],
+  listeners: [ VirtualRouterListener.http(8080) ],
 });
 ```
 
@@ -69,15 +69,15 @@ This is particularly useful when splitting your resources between many stacks: f
 
 ```ts
 const mesh = new Mesh(infraStack, 'AppMesh', {
-  meshName: 'myAwsmMesh',
+  meshName: 'myAwsMesh',
   egressFilter: MeshFilterType.ALLOW_ALL,
 });
 
 // the VirtualRouter will belong to 'appStack',
 // even though the Mesh belongs to 'infraStack'
 const router = new VirtualRouter(appStack, 'router', {
-  mesh: mesh, // notice that mesh is a required property when creating a router with the 'new' statement
-  listeners: [appmesh.VirtualRouterListener.http(8081)],
+  mesh, // notice that mesh is a required property when creating a router with the 'new' statement
+  listeners: [VirtualRouterListener.http(8081)],
 });
 ```
 
@@ -102,18 +102,18 @@ When creating a virtual service:
 Adding a virtual router as the provider:
 
 ```ts
-new appmesh.VirtualService('virtual-service', {
+new VirtualService(stack, 'virtual-service', {
   virtualServiceName: 'my-service.default.svc.cluster.local', // optional
-  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
+  virtualServiceProvider: VirtualServiceProvider.virtualRouter(router),
 });
 ```
 
 Adding a virtual node as the provider:
 
 ```ts
-new appmesh.VirtualService('virtual-service', {
+new VirtualService(stack, 'virtual-service', {
   virtualServiceName: `my-service.default.svc.cluster.local`, // optional
-  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
+  virtualServiceProvider: VirtualServiceProvider.virtualNode(node),
 });
 ```
 
@@ -130,41 +130,41 @@ The response metadata for your new virtual node contains the Amazon Resource Nam
 
 ```ts
 const vpc = new ec2.Vpc(stack, 'vpc');
-const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace', {
+const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'test-namespace', {
     vpc,
     name: 'domain.local',
 });
 const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
-  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+  serviceDiscovery: ServiceDiscovery.cloudMap(service),
+  listeners: [VirtualNodeListener.http({
     port: 8081,
-    healthCheck: appmesh.HealthCheck.http({
+    healthCheck: HealthCheck.http({
       healthyThreshold: 3,
-      interval: Duration.seconds(5), // minimum
-      path: `/health-check-path`,
-      timeout: Duration.seconds(2), // minimum
+      interval: cdk.Duration.seconds(5), // minimum
+      path: '/health-check-path',
+      timeout: cdk.Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
     }),
   })],
-  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  accessLog: AccessLog.fromFilePath('/dev/stdout'),
 });
 ```
 
 Create a `VirtualNode` with the constructor and add tags.
 
 ```ts
-const node = new VirtualNode(this, 'node', {
+const node = new VirtualNode(stack, 'node', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
-  listeners: [appmesh.VirtualNodeListener.http({
+  serviceDiscovery: ServiceDiscovery.cloudMap(service),
+  listeners: [VirtualNodeListener.http({
     port: 8080,
-    healthCheck: appmesh.HealthCheck.http({
+    healthCheck: HealthCheck.http({
       healthyThreshold: 3,
-      interval: Duration.seconds(5), // min
+      interval: cdk.Duration.seconds(5), 
       path: '/ping',
-      timeout: Duration.seconds(2), // min
+      timeout: cdk.Duration.seconds(2), 
       unhealthyThreshold: 2,
     }),
     timeout: {
@@ -174,44 +174,44 @@ const node = new VirtualNode(this, 'node', {
   backendDefaults: {
     tlsClientPolicy: {
       validation: {
-        trust: appmesh.TlsValidationTrust.file('/keys/local_cert_chain.pem'),
+        trust: TlsValidationTrust.file('/keys/local_cert_chain.pem'),
       },
     },
   },
-  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  accessLog: AccessLog.fromFilePath('/dev/stdout'),
 });
 
-cdk.Tag.add(node, 'Environment', 'Dev');
+cdk.Tags.of(node).add('Environment', 'Dev');
 ```
 
 Create a `VirtualNode` with the constructor and add backend virtual service.
 
 ```ts
-const node = new VirtualNode(this, 'node', {
+const node = new VirtualNode(stack, 'node', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
-  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+  serviceDiscovery: ServiceDiscovery.cloudMap(service),
+  listeners: [VirtualNodeListener.http({
     port: 8080,
-    healthCheck: appmesh.HealthCheck.http({
+    healthCheck: HealthCheck.http({
       healthyThreshold: 3,
-      interval: Duration.seconds(5), // min
+      interval: cdk.Duration.seconds(5), 
       path: '/ping',
-      timeout: Duration.seconds(2), // min
+      timeout: cdk.Duration.seconds(2), 
       unhealthyThreshold: 2,
     }),
     timeout: {
       idle: cdk.Duration.seconds(5),
     },
   })],
-  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  accessLog: AccessLog.fromFilePath('/dev/stdout'),
 });
 
-const virtualService = new appmesh.VirtualService(stack, 'service-1', {
-  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
+const virtualService = new VirtualService(stack, 'service-1', {
+  virtualServiceProvider: VirtualServiceProvider.virtualRouter(router),
   virtualServiceName: 'service1.domain.local',
 });
 
-node.addBackend(appmesh.Backend.virtualService(virtualService));
+node.addBackend(Backend.virtualService(virtualService));
 ```
 
 The `listeners` property can be left blank and added later with the `node.addListener()` method. The `serviceDiscovery` property must be specified when specifying a listener.
@@ -220,7 +220,7 @@ The `backends` property can be added with `node.addBackend()`. In the example, w
 
 The `backendDefaults` property is added to the node while creating the virtual node. These are the virtual node's default settings for all backends.
 
-## Adding TLS to a listener
+### Adding TLS to a listener
 
 The `tls` property specifies TLS configuration when creating a listener for a virtual node or a virtual gateway. 
 Provide the TLS certificate to the proxy in one of the following ways:
@@ -237,46 +237,46 @@ import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 // A Virtual Node with listener TLS from an ACM provided certificate
 const cert = new certificatemanager.Certificate(this, 'cert', {...});
 
-const node = new appmesh.VirtualNode(stack, 'node', {
+const node = new VirtualNode(stack, 'node', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.dns('node'),
-  listeners: [appmesh.VirtualNodeListener.grpc({
+  serviceDiscovery: ServiceDiscovery.dns('node'),
+  listeners: [VirtualNodeListener.grpc({
     port: 80,
     tls: {
-      mode: appmesh.TlsMode.STRICT,
-      certificate: appmesh.TlsCertificate.acm(cert),
+      mode: TlsMode.STRICT,
+      certificate: TlsCertificate.acm(cert),
     },
   })],
 });
 
 // A Virtual Gateway with listener TLS from a customer provided file certificate
-const gateway = new appmesh.VirtualGateway(this, 'gateway', {
+const gateway = new VirtualGateway(this, 'gateway', {
   mesh: mesh,
-  listeners: [appmesh.VirtualGatewayListener.grpc({
+  listeners: [VirtualGatewayListener.grpc({
     port: 8080,
     tls: {
-      mode: appmesh.TlsMode.STRICT,
-      certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+      mode: TlsMode.STRICT,
+      certificate: TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
     },
   })],
   virtualGatewayName: 'gateway',
 });
 
 // A Virtual Gateway with listener TLS from a SDS provided certificate
-const gateway2 = new appmesh.VirtualGateway(this, 'gateway2', {
+const gateway2 = new VirtualGateway(this, 'gateway2', {
   mesh: mesh,
-  listeners: [appmesh.VirtualGatewayListener.http2({
+  listeners: [VirtualGatewayListener.http2({
     port: 8080,
     tls: {
-      mode: appmesh.TlsMode.STRICT,
-      certificate: appmesh.TlsCertificate.sds('secrete_certificate'),
+      mode: TlsMode.STRICT,
+      certificate: TlsCertificate.sds('secrete_certificate'),
     },
   })],
   virtualGatewayName: 'gateway2',
 });
 ```
 
-## Adding mutual TLS authentication
+### Adding mutual TLS authentication
 
 Mutual TLS authentication is an optional component of TLS that offers two-way peer authentication. 
 To enable mutual TLS authentication, add the `mutualTlsCertificate` property to TLS client policy and/or the `mutualTlsValidation` property to your TLS listener.
@@ -293,41 +293,41 @@ To enable mutual TLS authentication, add the `mutualTlsCertificate` property to 
 ```typescript
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 
-const node1 = new appmesh.VirtualNode(stack, 'node1', {
+const node1 = new VirtualNode(stack, 'node1', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.dns('node'),
-  listeners: [appmesh.VirtualNodeListener.grpc({
+  serviceDiscovery: ServiceDiscovery.dns('node'),
+  listeners: [VirtualNodeListener.grpc({
     port: 80,
     tls: {
-      mode: appmesh.TlsMode.STRICT,
-      certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+      mode: TlsMode.STRICT,
+      certificate: TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
       // Validate a file client certificates to enable mutual TLS authentication when a client provides a certificate.
       mutualTlsValidation: {
-        trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
+        trust: TlsValidationTrust.file('path-to-certificate'),
       },
     },
   })],
 });
 
-const node2 = new appmesh.VirtualNode(stack, 'node2', {
+const node2 = new VirtualNode(stack, 'node2', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.dns('node2'),
+  serviceDiscovery: ServiceDiscovery.dns('node2'),
   backendDefaults: {
     tlsClientPolicy: {
       ports: [8080, 8081],
       validation: {
-        subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
-        trust: appmesh.TlsValidationTrust.acm([
+        subjectAlternativeNames: SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
+        trust: TlsValidationTrust.acm([
           acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
       },
       // Provide a SDS client certificate when a server requests it and enable mutual TLS authentication.
-      mutualTlsCertificate: appmesh.TlsCertificate.sds('secret_certificate'),
+      mutualTlsCertificate: TlsCertificate.sds('secret_certificate'),
     },
   },
 });
 ```
 
-## Adding outlier detection to a Virtual Node listener
+### Adding outlier detection to a Virtual Node listener
 
 The `outlierDetection` property adds outlier detection to a Virtual Node listener. The properties 
 `baseEjectionDuration`, `interval`, `maxEjectionPercent`, and `maxServerErrors` are required.
@@ -342,30 +342,32 @@ const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace
 const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
-  outlierDetection: {
-    baseEjectionDuration: cdk.Duration.seconds(10),
-    interval: cdk.Duration.seconds(30),
-    maxEjectionPercent: 50,
-    maxServerErrors: 5,
-  },
+  serviceDiscovery: ServiceDiscovery.cloudMap(service),
+  listeners: [VirtualNodeListener.http({
+    outlierDetection: {
+      baseEjectionDuration: cdk.Duration.seconds(10),
+      interval: cdk.Duration.seconds(30),
+      maxEjectionPercent: 50,
+      maxServerErrors: 5,
+    },
+  })],
 });
 ```
 
-## Adding a connection pool to a listener
+### Adding a connection pool to a listener
 
 The `connectionPool` property can be added to a Virtual Node listener or Virtual Gateway listener to add a request connection pool. Each listener protocol type has its own connection pool properties.
 
 ```typescript
 // A Virtual Node with a gRPC listener with a connection pool set
-const node = new appmesh.VirtualNode(stack, 'node', {
+const node = new VirtualNode(stack, 'node', {
   mesh,
   // DNS service discovery can optionally specify the DNS response type as either LOAD_BALANCER or ENDPOINTS.
-  // LOAD_BALANCER means that the DNS resolver returns a loadbalanced set of endpoints, 
+  // LOAD_BALANCER means that the DNS resolver returns a loadbalanced set of endpoints,
   // whereas ENDPOINTS means that the DNS resolver is returning all the endpoints.
   // By default, the response type is assumed to be LOAD_BALANCER
-  serviceDiscovery: appmesh.ServiceDiscovery.dns('node', appmesh.ResponseType.ENDPOINTS),
-  listeners: [appmesh.VirtualNodeListener.http({
+  serviceDiscovery: ServiceDiscovery.dns('node', DnsResponseType.ENDPOINTS),
+  listeners: [VirtualNodeListener.http({
     port: 80,
     connectionPool: {
       maxConnections: 100,
@@ -375,9 +377,9 @@ const node = new appmesh.VirtualNode(stack, 'node', {
 });
 
 // A Virtual Gateway with a gRPC listener with a connection pool set
-const gateway = new appmesh.VirtualGateway(this, 'gateway', {
-  mesh: mesh,
-  listeners: [appmesh.VirtualGatewayListener.grpc({
+const gateway = new VirtualGateway(stack, 'gateway', {
+  mesh,
+  listeners: [VirtualGatewayListener.grpc({
     port: 8080,
     connectionPool: {
       maxRequests: 10,
@@ -405,7 +407,7 @@ For example, here's how to add an HTTP route that matches based on a prefix of t
 
 ```ts
 router.addRoute('route-http', {
-  routeSpec: appmesh.RouteSpec.http({
+  routeSpec: RouteSpec.http({
     weightedTargets: [
       {
         virtualNode: node,
@@ -413,7 +415,7 @@ router.addRoute('route-http', {
     ],
     match: {
       // Path that is passed to this method must start with '/'.
-      path: appmesh.HttpRoutePathMatch.startsWith('/path-to-app'),
+      path: HttpRoutePathMatch.startsWith('/path-to-app'),
     },
   }),
 });
@@ -423,24 +425,24 @@ Add an HTTP2 route that matches based on exact path, method, scheme, headers, an
 
 ```ts
 router.addRoute('route-http2', {
-  routeSpec: appmesh.RouteSpec.http2({
+  routeSpec: RouteSpec.http2({
     weightedTargets: [
       {
         virtualNode: node,
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.exactly('/exact'),
-      method: appmesh.HttpRouteMethod.POST,
-      protocol: appmesh.HttpRouteProtocol.HTTPS,
+      path: HttpRoutePathMatch.exactly('/exact'),
+      method: HttpRouteMethod.POST,
+      protocol: HttpRouteProtocol.HTTPS,
       headers: [
         // All specified headers must match for the route to match.
-        appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
-        appmesh.HeaderMatch.valueIsNot('Content-Type', 'application/json'),
+        HeaderMatch.valueIs('Content-Type', 'application/json'),
+        HeaderMatch.valueIsNot('Content-Type', 'application/json'),
       ],
       queryParameters: [
         // All specified query parameters must match for the route to match.
-        appmesh.QueryParameterMatch.valueIs('query-field', 'value')
+        QueryParameterMatch.valueIs('query-field', 'value')
       ],
     },
   }),
@@ -451,7 +453,7 @@ Add a single route with two targets and split traffic 50/50:
 
 ```ts
 router.addRoute('route-http', {
-  routeSpec: appmesh.RouteSpec.http({
+  routeSpec: RouteSpec.http({
     weightedTargets: [
       {
         virtualNode: node,
@@ -463,7 +465,7 @@ router.addRoute('route-http', {
       },
     ],
     match: {
-      path: appmesh.HttpRoutePathMatch.startsWith('/path-to-app'),
+      path: HttpRoutePathMatch.startsWith('/path-to-app'),
     },
   }),
 });
@@ -473,13 +475,13 @@ Add an http2 route with retries:
 
 ```ts
 router.addRoute('route-http2-retry', {
-  routeSpec: appmesh.RouteSpec.http2({
+  routeSpec: RouteSpec.http2({
     weightedTargets: [{ virtualNode: node }],
     retryPolicy: {
       // Retry if the connection failed
-      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      tcpRetryEvents: [TcpRetryEvent.CONNECTION_ERROR],
       // Retry if HTTP responds with a gateway error (502, 503, 504)
-      httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
+      httpRetryEvents: [HttpRetryEvent.GATEWAY_ERROR],
       // Retry five times
       retryAttempts: 5,
       // Use a 1 second timeout per retry
@@ -493,18 +495,18 @@ Add a gRPC route with retries:
 
 ```ts
 router.addRoute('route-grpc-retry', {
-  routeSpec: appmesh.RouteSpec.grpc({
+  routeSpec: RouteSpec.grpc({
     weightedTargets: [{ virtualNode: node }],
     match: { serviceName: 'servicename' },
     retryPolicy: {
-      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-      httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
+      tcpRetryEvents: [TcpRetryEvent.CONNECTION_ERROR],
+      httpRetryEvents: [HttpRetryEvent.GATEWAY_ERROR],
       // Retry if gRPC responds that the request was cancelled, a resource
       // was exhausted, or if the service is unavailable
       grpcRetryEvents: [
-        appmesh.GrpcRetryEvent.CANCELLED,
-        appmesh.GrpcRetryEvent.RESOURCE_EXHAUSTED,
-        appmesh.GrpcRetryEvent.UNAVAILABLE,
+        GrpcRetryEvent.CANCELLED,
+        GrpcRetryEvent.RESOURCE_EXHAUSTED,
+        GrpcRetryEvent.UNAVAILABLE,
       ],
       retryAttempts: 5,
       retryTimeout: cdk.Duration.seconds(1),
@@ -517,7 +519,7 @@ Add an gRPC route that matches based on method name and metadata:
 
 ```ts
 router.addRoute('route-grpc-retry', {
-  routeSpec: appmesh.RouteSpec.grpc({
+  routeSpec: RouteSpec.grpc({
     weightedTargets: [{ virtualNode: node }],
     match: { 
       // When method name is specified, service name must be also specified.
@@ -525,8 +527,8 @@ router.addRoute('route-grpc-retry', {
       serviceName: 'servicename',
       metadata: [
         // All specified metadata must match for the route to match.
-        appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/'),
-        appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+        HeaderMatch.valueStartsWith('Content-Type', 'application/'),
+        HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
       ],
     },
   }),
@@ -537,7 +539,7 @@ Add a gRPC route with timeout:
 
 ```ts
 router.addRoute('route-http', {
-  routeSpec: appmesh.RouteSpec.grpc({
+  routeSpec: RouteSpec.grpc({
     weightedTargets: [
       {
         virtualNode: node,
@@ -547,8 +549,8 @@ router.addRoute('route-http', {
       serviceName: 'my-service.default.svc.cluster.local',
     },
     timeout:  {
-      idle : Duration.seconds(2),
-      perRequest: Duration.seconds(1),
+      idle : cdk.Duration.seconds(2),
+      perRequest: cdk.Duration.seconds(1),
     },
   }),
 });
@@ -560,7 +562,7 @@ A _virtual gateway_ allows resources outside your mesh to communicate with resou
 The virtual gateway represents an Envoy proxy running in an Amazon ECS task, in a Kubernetes service, or on an Amazon EC2 instance.
 Unlike a virtual node, which represents Envoy running with an application, a virtual gateway represents Envoy deployed by itself.
 
-A virtual gateway is similar to a virtual node in that it has a listener that accepts traffic for a particular port and protocol (HTTP, HTTP2, GRPC).
+A virtual gateway is similar to a virtual node in that it has a listener that accepts traffic for a particular port and protocol (HTTP, HTTP2, gRPC).
 Traffic received by the virtual gateway is directed to other services in your mesh
 using rules defined in gateway routes which can be added to your virtual gateway.
 
@@ -569,11 +571,11 @@ Create a virtual gateway with the constructor:
 ```ts
 const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
 
-const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
+const gateway = new VirtualGateway(stack, 'gateway', {
   mesh: mesh,
-  listeners: [appmesh.VirtualGatewayListener.http({
+  listeners: [VirtualGatewayListener.http({
     port: 443,
-    healthCheck: appmesh.HealthCheck.http({
+    healthCheck: HealthCheck.http({
       interval: cdk.Duration.seconds(10),
     }),
   })],
@@ -581,12 +583,12 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
     tlsClientPolicy: {
       ports: [8080, 8081],
       validation: {
-        trust: appmesh.TlsValidationTrust.acm([
+        trust: TlsValidationTrust.acm([
           acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
       },
     },
   },
-  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  accessLog: AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
 });
 ```
@@ -595,11 +597,11 @@ Add a virtual gateway directly to the mesh:
 
 ```ts
 const gateway = mesh.addVirtualGateway('gateway', {
-  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  accessLog: AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
-    listeners: [appmesh.VirtualGatewayListener.http({
+    listeners: [VirtualGatewayListener.http({
       port: 443,
-      healthCheck: appmesh.HealthCheck.http({
+      healthCheck: HealthCheck.http({
         interval: cdk.Duration.seconds(10),
       }),
   })],
@@ -621,10 +623,10 @@ By default, HTTP-based gateway routes match all requests.
 
 ```ts
 gateway.addGatewayRoute('gateway-route-http', {
-  routeSpec: appmesh.GatewayRouteSpec.http({
+  routeSpec: GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
-      path: appmesh.HttpGatewayRoutePathMatch.regex('regex'),
+      path: HttpGatewayRoutePathMatch.regex('regex'),
     },
   }),
 });
@@ -634,10 +636,10 @@ For gRPC-based gateway routes, the `match` field can be used to match on service
 
 ```ts
 gateway.addGatewayRoute('gateway-route-grpc', {
-  routeSpec: appmesh.GatewayRouteSpec.grpc({
+  routeSpec: GatewayRouteSpec.grpc({
     routeTarget: virtualService,
     match: {
-      hostname: appmesh.GatewayRouteHostnameMatch.endsWith('.example.com'),
+      hostname: GatewayRouteHostnameMatch.endsWith('.example.com'),
     },
   }),
 });
@@ -648,22 +650,22 @@ This automatic rewrite configuration can be overwritten in following ways:
 
 ```ts
 gateway.addGatewayRoute('gateway-route-http', {
-  routeSpec: appmesh.GatewayRouteSpec.http({
+  routeSpec: GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
       // This disables the default rewrite to '/', and retains original path.
-      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app/', ''),
+      path: HttpGatewayRoutePathMatch.startsWith('/path-to-app/', ''),
     },
   }),
 });
 
 gateway.addGatewayRoute('gateway-route-http-1', {
-  routeSpec: appmesh.GatewayRouteSpec.http({
+  routeSpec: GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
       // If the request full path is '/path-to-app/xxxxx', this rewrites the path to '/rewrittenUri/xxxxx'.
       // Please note both `prefixPathMatch` and `rewriteTo` must start and end with the `/` character.
-      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app/', '/rewrittenUri/'),    
+      path: HttpGatewayRoutePathMatch.startsWith('/path-to-app/', '/rewrittenUri/'),    
     },
   }),
 });
@@ -674,11 +676,11 @@ Unlike `startsWith()` method above, no default rewrite is performed.
 
 ```ts
 gateway.addGatewayRoute('gateway-route-http-2', {
-  routeSpec: appmesh.GatewayRouteSpec.http({
+  routeSpec: GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
       // This rewrites the path from '/test' to '/rewrittenPath'.
-      path: appmesh.HttpGatewayRoutePathMatch.exactly('/test', '/rewrittenPath'),    
+      path: HttpGatewayRoutePathMatch.exactly('/test', '/rewrittenPath'),    
     },
   }),
 });
@@ -690,10 +692,10 @@ This default host name rewrite can be configured by specifying the rewrite rule 
 
 ```ts
 gateway.addGatewayRoute('gateway-route-grpc', {
-  routeSpec: appmesh.GatewayRouteSpec.grpc({
+  routeSpec: GatewayRouteSpec.grpc({
     routeTarget: virtualService,
     match: {
-      hostname: appmesh.GatewayRouteHostnameMatch.exactly('example.com'),
+      hostname: GatewayRouteHostnameMatch.exactly('example.com'),
       // This disables the default rewrite to virtual service name and retain original request.
       rewriteRequestHostname: false,
     },
@@ -707,13 +709,13 @@ Each App Mesh resource class comes with two static methods, `from<Resource>Arn` 
 These imported resources can be used with other resources in your mesh as if they were defined directly in your CDK application.
 
 ```ts
-const arn = "arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh/virtualNode/testNode";
-appmesh.VirtualNode.fromVirtualNodeArn(stack, 'importedVirtualNode', arn);
+const arn = 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh/virtualNode/testNode';
+VirtualNode.fromVirtualNodeArn(stack, 'importedVirtualNode', arn);
 ```
 
 ```ts
-appmesh.VirtualNode.fromVirtualNodeAttributes(stack, 'imported-virtual-node', {
-  mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', 'testMesh'),
+VirtualNode.fromVirtualNodeAttributes(stack, 'imported-virtual-node', {
+  mesh: Mesh.fromMeshName(stack, 'Mesh', 'testMesh'),
   virtualNodeName: virtualNodeName,
 });
 ```
@@ -722,11 +724,11 @@ To import a mesh, again there are two static methods, `fromMeshArn` and `fromMes
 
 ```ts
 const arn = 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh';
-appmesh.Mesh.fromMeshArn(stack, 'imported-mesh', arn);
+Mesh.fromMeshArn(stack, 'imported-mesh', arn);
 ```
 
 ```ts
-appmesh.Mesh.fromMeshName(stack, 'imported-mesh', 'abc');
+Mesh.fromMeshName(stack, 'imported-mesh', 'abc');
 ```
 
 ## IAM Grants
@@ -735,7 +737,7 @@ appmesh.Mesh.fromMeshName(stack, 'imported-mesh', 'abc');
 Envoy access to stream generated config from App Mesh.
 
 ```ts
-const gateway = new appmesh.VirtualGateway(stack, 'testGateway', { mesh: mesh });
+const gateway = new VirtualGateway(stack, 'testGateway', { mesh: mesh });
 const envoyUser = new iam.User(stack, 'envoyUser');
 
 /**
@@ -752,10 +754,10 @@ A shared mesh allows resources created by different accounts to communicate with
 // This is the ARN for the mesh from different AWS IAM account ID.
 // Ensure mesh is properly shared with your account. For more details, see: https://github.com/aws/aws-cdk/issues/15404
 const arn = 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh';
-sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'imported-mesh', arn);
+sharedMesh = Mesh.fromMeshArn(stack, 'imported-mesh', arn);
 
 // This VirtualNode resource can communicate with the resources in the mesh from different AWS IAM account ID.
-new appmesh.VirtualNode(stack, 'test-node', {
+new VirtualNode(stack, 'test-node', {
   mesh: sharedMesh,
 });
 ```

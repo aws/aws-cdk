@@ -559,6 +559,14 @@ behavior('Synth can be made to run in a VPC', (suite) => {
     THEN_codePipelineExpectation();
   });
 
+  suite.additional('Modern, using the synthCodeBuildDefaults', () => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synthCodeBuildDefaults: { vpc },
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
   suite.additional('Modern, using CodeBuildStep', () => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       synth: new CodeBuildStep('Synth', {

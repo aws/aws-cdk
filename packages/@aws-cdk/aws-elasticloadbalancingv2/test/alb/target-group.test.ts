@@ -156,6 +156,29 @@ describe('tests', () => {
     });
   });
 
+  test('Custom Load balancer algorithm type', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.LEAST_OUTSTANDING_REQUESTS,
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'load_balancing.algorithm.type',
+          Value: 'least_outstanding_requests',
+        },
+      ],
+    });
+  });
+
   test('Can set a protocol version', () => {
     // GIVEN
     const app = new cdk.App();

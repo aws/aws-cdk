@@ -171,3 +171,18 @@ export enum TargetType {
    */
   LAMBDA = 'lambda',
 }
+
+/**
+ * Load balancing algorithmm type for target groups
+ */
+export enum TargetGroupLoadBalancingAlgorithmType {
+  /**
+   * round_robin
+   */
+  ROUND_ROBIN = 'round_robin',
+
+  /**
+   * least_outstanding_requests
+   */
+  LEAST_OUTSTANDING_REQUESTS = 'least_outstanding_requests',
+}

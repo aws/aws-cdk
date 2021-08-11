@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, IpAddressType, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ListenerAction } from './application-listener-action';
@@ -367,6 +367,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       slowStart: props.slowStart,
       stickinessCookieDuration: props.stickinessCookieDuration,
       stickinessCookieName: props.stickinessCookieName,
+      loadBalancingAlgorithmType: props.loadBalancingAlgorithmType,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
       vpc: this.loadBalancer.vpc,
@@ -887,6 +888,14 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default No health check
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * The load balancing algorithm to select targets for routing requests.
+   *
+   * @default round_robin.
+   */
+  readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
+
 }
 
 /**
