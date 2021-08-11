@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.17](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.16...v2.0.0-rc.17) (2021-08-11)
+
+
+### Features
+
+* **aws-cloudfront:** add enabled to web distribution ([#15433](https://github.com/aws/aws-cdk/issues/15433)) ([7ad9348](https://github.com/aws/aws-cdk/commit/7ad9348b49ab3b9dde1b4f1db3d888ddec423a9f))
+* **aws-ec2:** Add SubnetFilter for Id and CIDR netmask ([#15373](https://github.com/aws/aws-cdk/issues/15373)) ([407b02d](https://github.com/aws/aws-cdk/commit/407b02d62bd8b3eb77e53fc74197b64148640b5a)), closes [#15228](https://github.com/aws/aws-cdk/issues/15228)
+* **cfnspec:** cloudformation spec v39.7.0 ([#15719](https://github.com/aws/aws-cdk/issues/15719)) ([2c4ef01](https://github.com/aws/aws-cdk/commit/2c4ef0131893e77d373c52b41c62d31847023446))
+* **cfnspec:** cloudformation spec v39.7.0 ([#15796](https://github.com/aws/aws-cdk/issues/15796)) ([dbe4641](https://github.com/aws/aws-cdk/commit/dbe4641666c918c7bba36010fb4656d050ef5556))
+* **cfnspec:** cloudformation spec v39.8.0 ([#15885](https://github.com/aws/aws-cdk/issues/15885)) ([60e6b41](https://github.com/aws/aws-cdk/commit/60e6b4186680af98b538a21e82146fb0a0e84f33))
+* **cloudfront:** Origin Shield support ([#15453](https://github.com/aws/aws-cdk/issues/15453)) ([08ebbae](https://github.com/aws/aws-cdk/commit/08ebbae4cffdf85a66775f4e8f5ea9d7400bf358)), closes [#12872](https://github.com/aws/aws-cdk/issues/12872) [/github.com/aws/aws-cdk/issues/12872#issuecomment-775873384](https://github.com/aws//github.com/aws/aws-cdk/issues/12872/issues/issuecomment-775873384)
+* **cloudfront:** use TLS_V1_2_2021 SecurityPolicy as default version (under feature flag) ([#15477](https://github.com/aws/aws-cdk/issues/15477)) ([7b64abf](https://github.com/aws/aws-cdk/commit/7b64abf51c52cd2f6f585d7fd9201030fdba8163))
+* **codebuild:** add support for setting a BuildEnvironment Certificate ([#15738](https://github.com/aws/aws-cdk/issues/15738)) ([76fb481](https://github.com/aws/aws-cdk/commit/76fb4811bb9f5d5fc1bd340954840032cb23698b)), closes [#15701](https://github.com/aws/aws-cdk/issues/15701)
+* **core:** lazy mappings will only synthesize if keys are unresolved ([#15617](https://github.com/aws/aws-cdk/issues/15617)) ([32ed229](https://github.com/aws/aws-cdk/commit/32ed2290f8efb27bf622998f98808ff18a8cdef1))
+* **ec2:** Add Transcribe interface endpoint ([#15465](https://github.com/aws/aws-cdk/issues/15465)) ([929d6ae](https://github.com/aws/aws-cdk/commit/929d6aef84eb21aea0d9a4fff953a0f39246288e))
+* **eks:** support Kubernetes 1.21 ([#15774](https://github.com/aws/aws-cdk/issues/15774)) ([83dd318](https://github.com/aws/aws-cdk/commit/83dd318959b1b1e5f94b5a31030d03379638c9ad)), closes [#15758](https://github.com/aws/aws-cdk/issues/15758)
+* **lambda:** cloudwatch lambda insights ([#15439](https://github.com/aws/aws-cdk/issues/15439)) ([9efd800](https://github.com/aws/aws-cdk/commit/9efd800b4eea3a849edc5710975e4d70ec14a5cd))
+* **pipelines:** CDK Pipelines is now Generally Available ([#15667](https://github.com/aws/aws-cdk/issues/15667)) ([2e4cfae](https://github.com/aws/aws-cdk/commit/2e4cfaeb8612179c79e293ba52a8afcdcfd6ef52))
+* **Route53:** add support for RemovalPolicy in CrossAccountZoneDelegationRecord ([#15782](https://github.com/aws/aws-cdk/issues/15782)) ([9eea4b8](https://github.com/aws/aws-cdk/commit/9eea4b8d454f7bc23930e6254651029b1a348a2c)), closes [#15211](https://github.com/aws/aws-cdk/issues/15211)
+* **s3-deployment:** control object access ([#15730](https://github.com/aws/aws-cdk/issues/15730)) ([f58cf3c](https://github.com/aws/aws-cdk/commit/f58cf3c95eb32e9a4dc797665160e1b508ace2e1))
+* **stepfunctions:** allow intrinsic functions for json path ([#15320](https://github.com/aws/aws-cdk/issues/15320)) ([d9285cb](https://github.com/aws/aws-cdk/commit/d9285cb75745028ede8c36afcee34f7a53d27993))
+* **stepfunctions-tasks:** add sns publish with message attributes ([#14817](https://github.com/aws/aws-cdk/issues/14817)) ([bc99e82](https://github.com/aws/aws-cdk/commit/bc99e8271d443b10928d99437593c52efd763d7c)), closes [#4702](https://github.com/aws/aws-cdk/issues/4702)
+
+
+### Bug Fixes
+
+* **aws-cloudwatch:** unable to use generic extended statistics for cloudwatch alarms ([#15720](https://github.com/aws/aws-cdk/issues/15720)) ([f593311](https://github.com/aws/aws-cdk/commit/f59331193b5a2cc4a33d71d775f6650d66bb1bf8))
+* **aws-eks:** Allow desiredsize minsize and maxsize to accept CfnParameters. ([#15487](https://github.com/aws/aws-cdk/issues/15487)) ([fb43769](https://github.com/aws/aws-cdk/commit/fb437693c0f1568ddc53e9a198e54be3b9a01592))
+* **chatbot:** ARN validation in fromSlackChannelConfigurationArn fails for tokenized values ([#15849](https://github.com/aws/aws-cdk/issues/15849)) ([440ca35](https://github.com/aws/aws-cdk/commit/440ca35cf0f0e9f6f86bef445bd9aa6ef05ff9be)), closes [#15842](https://github.com/aws/aws-cdk/issues/15842)
+* **cli:** move fail option into the diff command ([#15829](https://github.com/aws/aws-cdk/issues/15829)) ([473c1d8](https://github.com/aws/aws-cdk/commit/473c1d8248ae84bd8b4bb3863334e05e5328fddc))
+* **ec2:** volumename doesn't set name of volume ([#15832](https://github.com/aws/aws-cdk/issues/15832)) ([b842702](https://github.com/aws/aws-cdk/commit/b842702cbb7aa6632dd2fc4b4981abdd3a773826)), closes [#15831](https://github.com/aws/aws-cdk/issues/15831)
+* **elasticsearch:** advancedOptions in domain has no effect ([#15330](https://github.com/aws/aws-cdk/issues/15330)) ([81cbfec](https://github.com/aws/aws-cdk/commit/81cbfec5ddf065aac442d925484a358ee8cd26a1)), closes [#14067](https://github.com/aws/aws-cdk/issues/14067)
+* **elasticsearch:** slow logs incorrectly disabled for Elasticsearch versions lower than 5.1 ([#15714](https://github.com/aws/aws-cdk/issues/15714)) ([91cf79b](https://github.com/aws/aws-cdk/commit/91cf79bc55ffd72b1c79e2218eb76921fbac32b4)), closes [#15532](https://github.com/aws/aws-cdk/issues/15532) [#15532](https://github.com/aws/aws-cdk/issues/15532)
+* **elbv2:** unresolved listener priority throws error ([#15804](https://github.com/aws/aws-cdk/issues/15804)) ([fce9ac7](https://github.com/aws/aws-cdk/commit/fce9ac73fe6da5e604f0659d9f101001dcef830a))
+* **pipelines:** new pipeline stages aren't validated ([#15665](https://github.com/aws/aws-cdk/issues/15665)) ([309b9b4](https://github.com/aws/aws-cdk/commit/309b9b4cf554474c87fe3d833a5205498e200ecf))
+* **pipelines:** permissions check in legacy API does not work ([#15660](https://github.com/aws/aws-cdk/issues/15660)) ([5e3cf2b](https://github.com/aws/aws-cdk/commit/5e3cf2b0558401fab25f75da319fac587df1bcfb))
+* **pipelines:** Prepare stage doesn't have AUTO_EXPAND capability ([#15819](https://github.com/aws/aws-cdk/issues/15819)) ([a6fac49](https://github.com/aws/aws-cdk/commit/a6fac4974fa17949b836c72d04e1cc4504bc920a)), closes [#15711](https://github.com/aws/aws-cdk/issues/15711)
+* **pipelines:** Secrets Manager permissions not added to asset projects ([#15718](https://github.com/aws/aws-cdk/issues/15718)) ([7668400](https://github.com/aws/aws-cdk/commit/7668400ec8d4e6ee042c05976f95e42147993375)), closes [#15628](https://github.com/aws/aws-cdk/issues/15628)
+* **s3:** notifications are broken in some regions ([#15884](https://github.com/aws/aws-cdk/issues/15884)) ([ee19196](https://github.com/aws/aws-cdk/commit/ee191961a8b057a0585e731a67c15a7edd59c79e))
+* **stepfunctions:** non-object arguments to recurseObject are incorrectly treated as objects ([#14631](https://github.com/aws/aws-cdk/issues/14631)) ([e133bca](https://github.com/aws/aws-cdk/commit/e133bca61b95b71d51b509b646ff1720099ee31e)), closes [#12935](https://github.com/aws/aws-cdk/issues/12935) [aws-cdk/aws-stepfunctions/lib/input.ts#L65](https://github.com/aws-cdk/aws-stepfunctions/lib/input.ts/issues/L65)
+* **stepfunctions-tasks:** instance type cannot be provided to SageMakerCreateTransformJob as input path ([#15726](https://github.com/aws/aws-cdk/issues/15726)) ([6f2384d](https://github.com/aws/aws-cdk/commit/6f2384ddc180e944c9564a543351b8df2f75c1a7))
+* **stepfunctions-tasks:** Stage field not included in CallApiGatewayHttpApiEndpoint task definition ([#15755](https://github.com/aws/aws-cdk/issues/15755)) ([4f38fe1](https://github.com/aws/aws-cdk/commit/4f38fe1c3e5515ae22f2820712644ed763dbc248)), closes [#14242](https://github.com/aws/aws-cdk/issues/14242)
+
 ## [2.0.0-rc.16](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.15...v2.0.0-rc.16) (2021-08-04)
 
 ## [2.0.0-rc.15](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.14...v2.0.0-rc.15) (2021-07-28)
