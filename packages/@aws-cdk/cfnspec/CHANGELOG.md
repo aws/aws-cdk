@@ -1,3 +1,41 @@
+# CloudFormation Resource Specification v39.9.0
+
+## New Resource Types
+
+* AWS::Athena::PreparedStatement
+
+## Attribute Changes
+
+* AWS::ApiGateway::Resource ResourceId (__added__)
+* AWS::Athena::WorkGroup WorkGroupConfigurationUpdates.EngineVersion.EffectiveEngineVersion (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.SchedulerLogs.CloudWatchLogGroupArn (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.TaskLogs.CloudWatchLogGroupArn (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.WebserverLogs.CloudWatchLogGroupArn (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.WorkerLogs.CloudWatchLogGroupArn (__added__)
+
+## Property Changes
+
+* AWS::AppSync::GraphQLApi LambdaAuthorizerConfig (__added__)
+* AWS::LookoutEquipment::InferenceScheduler ModelName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LookoutEquipment::InferenceScheduler ServerSideKmsKeyId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::S3::AccessPoint Name (__added__)
+* AWS::Synthetics::Canary VisualReference (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::GraphQLApi.LambdaAuthorizerConfig (__added__)
+* AWS::SageMaker::Model.RepositoryAuthConfig (__added__)
+* AWS::Synthetics::Canary.BaseScreenshot (__added__)
+* AWS::Synthetics::Canary.VisualReference (__added__)
+* AWS::AppSync::GraphQLApi.AdditionalAuthenticationProvider LambdaAuthorizerConfig (__added__)
+* AWS::IoTSiteWise::AssetModel.TumblingWindow Offset (__added__)
+* AWS::SageMaker::Model.ImageConfig RepositoryAuthConfig (__added__)
+
+
 # CloudFormation Resource Specification v39.8.0
 
 ## New Resource Types
