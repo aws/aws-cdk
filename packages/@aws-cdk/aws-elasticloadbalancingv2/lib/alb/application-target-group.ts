@@ -7,7 +7,7 @@ import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
 } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, Protocol, TargetType } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, Protocol, TargetType, TargetGroupLoadBalancingAlgorithmType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
@@ -79,6 +79,13 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   readonly stickinessCookieName?: string;
 
   /**
+   * The load balancing algorithm to select targets for routing requests.
+   *
+   * @default TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN
+   */
+  readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
+
+  /**
    * The targets to add to this target group.
    *
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
@@ -139,6 +146,9 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       }
       if (props.stickinessCookieDuration) {
         this.enableCookieStickiness(props.stickinessCookieDuration, props.stickinessCookieName);
+      }
+      if (props.loadBalancingAlgorithmType) {
+        this.setAttribute('load_balancing.algorithm.type', props.loadBalancingAlgorithmType);
       }
       this.addTarget(...(props.targets || []));
     }
