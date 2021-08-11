@@ -25,77 +25,26 @@ describe('WorkerType', () => {
   test('of(customType) sets name correctly', () => expect(glue.WorkerType.of('CustomType').name).toEqual('CustomType'));
 });
 
-describe('JobCommandName', () => {
-  test('.ETL', () => expect(glue.JobCommandName.ETL.name).toEqual('glueetl'));
-
-  test('.STREAMING', () => expect(glue.JobCommandName.STREAMING.name).toEqual('gluestreaming'));
-
-  test('.PYTHON_SHELL', () => expect(glue.JobCommandName.PYTHON_SHELL.name).toEqual('pythonshell'));
-
-  test('of(customName) sets name correctly', () => expect(glue.JobCommandName.of('CustomName').name).toEqual('CustomName'));
-});
-
-describe('JobCommand', () => {
-  let scriptLocation: string;
-
-  beforeEach(() => {
-    scriptLocation = 's3://bucketName/script';
+describe('JobType', () => {
+  test('.ETL', () => {
+    expect(glue.JobType.ETL.name).toEqual('glueetl');
+    expect(glue.JobType.ETL.languages).toEqual([glue.JobLanguage.SCALA, glue.JobLanguage.PYTHON]);
   });
 
-  describe('new', () => {
-    let jobCommandName: glue.JobCommandName;
-
-    // known command names + custom one
-    [glue.JobCommandName.STREAMING, glue.JobCommandName.PYTHON_SHELL, glue.JobCommandName.ETL,
-      glue.JobCommandName.of('CustomName')].forEach((name) => {
-      describe(`with ${name} JobCommandName`, () => {
-
-        beforeEach(() => {
-          jobCommandName = name;
-        });
-
-        test('without specified python version sets properties correctly', () => {
-          const jobCommand = new glue.JobCommand(jobCommandName, scriptLocation);
-
-          expect(jobCommand.name).toEqual(jobCommandName);
-          expect(jobCommand.scriptLocation).toEqual(scriptLocation);
-          expect(jobCommand.pythonVersion).toBeUndefined();
-        });
-
-        test('with specified python version sets properties correctly', () => {
-          const pythonVersion = glue.PythonVersion.TWO;
-          const jobCommand = new glue.JobCommand(jobCommandName, scriptLocation, pythonVersion);
-
-          expect(jobCommand.name).toEqual(jobCommandName);
-          expect(jobCommand.scriptLocation).toEqual(scriptLocation);
-          expect(jobCommand.pythonVersion).toEqual(pythonVersion);
-        });
-      });
-    });
+  test('.STREAMING', () => {
+    expect(glue.JobType.STREAMING.name).toEqual('gluestreaming');
+    expect(glue.JobType.STREAMING.languages).toEqual([glue.JobLanguage.SCALA, glue.JobLanguage.PYTHON]);
   });
 
-  test('.etl() uses ETL JobCommandName', () => {
-    const jobCommand = glue.JobCommand.etl(scriptLocation);
-
-    expect(jobCommand.name).toEqual(glue.JobCommandName.ETL);
-    expect(jobCommand.scriptLocation).toEqual(scriptLocation);
-    expect(jobCommand.pythonVersion).toBeUndefined();
+  test('.PYTHON_SHELL', () => {
+    expect(glue.JobType.PYTHON_SHELL.name).toEqual('pythonshell');
+    expect(glue.JobType.PYTHON_SHELL.languages).toEqual([glue.JobLanguage.PYTHON]);
   });
 
-  test('.streaming() uses STREAMING JobCommandName', () => {
-    const jobCommand = glue.JobCommand.streaming(scriptLocation, glue.PythonVersion.THREE);
-
-    expect(jobCommand.name).toEqual(glue.JobCommandName.STREAMING);
-    expect(jobCommand.scriptLocation).toEqual(scriptLocation);
-    expect(jobCommand.pythonVersion).toEqual(glue.PythonVersion.THREE);
-  });
-
-  test('.pythonShell() uses PYTHON_SHELL JobCommandName', () => {
-    const jobCommand = glue.JobCommand.pythonShell(scriptLocation, glue.PythonVersion.TWO);
-
-    expect(jobCommand.name).toEqual(glue.JobCommandName.PYTHON_SHELL);
-    expect(jobCommand.scriptLocation).toEqual(scriptLocation);
-    expect(jobCommand.pythonVersion).toEqual(glue.PythonVersion.TWO);
+  test('of(customName, supportedLanguages) sets name correctly', () => {
+    const jobType = glue.JobType.of('CustomName', [glue.JobLanguage.SCALA]);
+    expect(jobType.name).toEqual('CustomName');
+    expect(jobType.languages).toEqual([glue.JobLanguage.SCALA]);
   });
 });
 
@@ -121,17 +70,23 @@ describe('Job', () => {
 
   describe('new', () => {
     let scriptLocation: string;
+    let className: string;
     let job: glue.Job;
 
     beforeEach(() => {
       scriptLocation = 's3://bucketName/script';
+      className = 'com.amazon.test.ClassName';
     });
 
     describe('with necessary props only', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
-          glueVersion: glue.GlueVersion.V2_0,
-          jobCommand: glue.JobCommand.etl(scriptLocation),
+          executable: glue.JobExecutable.scala({
+            type: glue.JobType.ETL,
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            scriptLocation,
+          }),
         });
       });
 
@@ -196,8 +151,12 @@ describe('Job', () => {
       test('with a custom role should use it and set it in CloudFormation', () => {
         const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
         job = new glue.Job(stack, 'JobWithRole', {
-          glueVersion: glue.GlueVersion.V2_0,
-          jobCommand: glue.JobCommand.etl(scriptLocation),
+          executable: glue.JobExecutable.scala({
+            type: glue.JobType.ETL,
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            scriptLocation,
+          }),
           role,
         });
 
@@ -209,8 +168,12 @@ describe('Job', () => {
 
       test('with a custom jobName should set it in CloudFormation', () => {
         job = new glue.Job(stack, 'JobWithName', {
-          glueVersion: glue.GlueVersion.V2_0,
-          jobCommand: glue.JobCommand.etl(scriptLocation),
+          executable: glue.JobExecutable.scala({
+            type: glue.JobType.ETL,
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            scriptLocation,
+          }),
           jobName,
         });
 
@@ -225,8 +188,12 @@ describe('Job', () => {
         job = new glue.Job(stack, 'Job', {
           jobName,
           description: 'test job',
-          jobCommand: glue.JobCommand.etl(scriptLocation),
-          glueVersion: glue.GlueVersion.V2_0,
+          executable: glue.JobExecutable.scala({
+            type: glue.JobType.ETL,
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            scriptLocation,
+          }),
           workerType: glue.WorkerType.G_2X,
           numberOfWorkers: 10,
           maxConcurrentRuns: 2,
@@ -258,8 +225,10 @@ describe('Job', () => {
             ],
           },
           DefaultArguments: {
-            arg1: 'value1',
-            arg2: 'value2',
+            '--job-language': 'scala',
+            '--class': 'com.amazon.test.ClassName',
+            'arg1': 'value1',
+            'arg2': 'value2',
           },
           Description: 'test job',
           ExecutionProperty: {
@@ -290,8 +259,12 @@ describe('Job', () => {
     describe('event rules and rule-based metrics', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
-          glueVersion: glue.GlueVersion.V2_0,
-          jobCommand: glue.JobCommand.etl(scriptLocation),
+          executable: glue.JobExecutable.scala({
+            type: glue.JobType.ETL,
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            scriptLocation,
+          }),
         });
       });
 

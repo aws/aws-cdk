@@ -12,26 +12,41 @@ const script = new s3_assets.Asset(stack, 'script', {
 });
 
 const minimalEtlJob = new glue.Job(stack, 'MinimalGlueEtlJob', {
-  glueVersion: glue.GlueVersion.V2_0,
-  jobCommand: glue.JobCommand.etl(script.s3ObjectUrl),
+  executable: glue.JobExecutable.python({
+    glueVersion: glue.GlueVersion.V2_0,
+    type: glue.JobType.ETL,
+    pythonVersion: glue.PythonVersion.TWO,
+    scriptLocation: script.s3ObjectUrl,
+  }),
 });
 script.bucket.grantRead(minimalEtlJob.role);
 
 const minimalStreamingJob = new glue.Job(stack, 'MinimalGlueStreamingJob', {
-  glueVersion: glue.GlueVersion.V2_0,
-  jobCommand: glue.JobCommand.streaming(script.s3ObjectUrl),
+  executable: glue.JobExecutable.python({
+    glueVersion: glue.GlueVersion.V2_0,
+    type: glue.JobType.STREAMING,
+    pythonVersion: glue.PythonVersion.TWO,
+    scriptLocation: script.s3ObjectUrl,
+  }),
 });
 script.bucket.grantRead(minimalStreamingJob.role);
 
 const minimalPythonShellJob = new glue.Job(stack, 'MinimalPythonShellJob', {
-  glueVersion: glue.GlueVersion.V2_0,
-  jobCommand: glue.JobCommand.pythonShell(script.s3ObjectUrl),
+  executable: glue.JobExecutable.pythonShell({
+    glueVersion: glue.GlueVersion.V2_0,
+    pythonVersion: glue.PythonVersion.TWO,
+    scriptLocation: script.s3ObjectUrl,
+  }),
 });
 script.bucket.grantRead(minimalPythonShellJob.role);
 
 const etlJob = new glue.Job(stack, 'Job', {
-  glueVersion: glue.GlueVersion.V2_0,
-  jobCommand: glue.JobCommand.etl(script.s3ObjectUrl),
+  executable: glue.JobExecutable.python({
+    glueVersion: glue.GlueVersion.V2_0,
+    type: glue.JobType.ETL,
+    pythonVersion: glue.PythonVersion.TWO,
+    scriptLocation: script.s3ObjectUrl,
+  }),
   workerType: glue.WorkerType.G_2X,
   numberOfWorkers: 10,
   maxConcurrentRuns: 2,

@@ -107,6 +107,7 @@
       "Properties": {
         "Command": {
           "Name": "glueetl",
+          "PythonVersion": "2",
           "ScriptLocation": {
             "Fn::Join": [
               "",
@@ -151,6 +152,9 @@
             "MinimalGlueEtlJobServiceRole60989380",
             "Arn"
           ]
+        },
+        "DefaultArguments": {
+          "--job-language": "python"
         },
         "GlueVersion": "2.0"
       }
@@ -248,6 +252,7 @@
       "Properties": {
         "Command": {
           "Name": "gluestreaming",
+          "PythonVersion": "2",
           "ScriptLocation": {
             "Fn::Join": [
               "",
@@ -292,6 +297,9 @@
             "MinimalGlueStreamingJobServiceRole77973DB5",
             "Arn"
           ]
+        },
+        "DefaultArguments": {
+          "--job-language": "python"
         },
         "GlueVersion": "2.0"
       }
@@ -389,6 +397,7 @@
       "Properties": {
         "Command": {
           "Name": "pythonshell",
+          "PythonVersion": "2",
           "ScriptLocation": {
             "Fn::Join": [
               "",
@@ -433,6 +442,9 @@
             "MinimalPythonShellJobServiceRole4944649D",
             "Arn"
           ]
+        },
+        "DefaultArguments": {
+          "--job-language": "python"
         },
         "GlueVersion": "2.0"
       }
@@ -530,6 +542,7 @@
       "Properties": {
         "Command": {
           "Name": "glueetl",
+          "PythonVersion": "2",
           "ScriptLocation": {
             "Fn::Join": [
               "",
@@ -576,6 +589,7 @@
           ]
         },
         "DefaultArguments": {
+          "--job-language": "python",
           "arg1": "value1",
           "arg2": "value2"
         },
