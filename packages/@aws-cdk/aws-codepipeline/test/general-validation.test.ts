@@ -49,7 +49,7 @@ nodeunitShim({
       const stack = new cdk.Stack();
       const pipeline = new Pipeline(stack, 'Pipeline');
 
-      test.deepEqual(cdk.ConstructNode.validate(pipeline.node).length, 1);
+      test.deepEqual(pipeline.node.validate().length, 1);
 
       test.done();
     },
@@ -68,7 +68,7 @@ nodeunitShim({
         ],
       });
 
-      test.deepEqual(cdk.ConstructNode.validate(pipeline.node).length, 1);
+      test.deepEqual(pipeline.node.validate().length, 1);
 
       test.done();
     },

@@ -1,5 +1,5 @@
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnOutput, CfnResource, ConstructNode, Stack, ValidationError } from '../lib';
+import { App, CfnOutput, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 let app: App;
@@ -115,9 +115,8 @@ nodeunitShim({
   },
 
   'Verify maximum length of export name'(test: Test) {
-    new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'x'.repeat(260) });
-
-    const errors = ConstructNode.validate(stack.node).map((v: ValidationError) => v.message);
+    const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'x'.repeat(260) });
+    const errors = output.node.validate();
 
     expect(errors).toEqual([
       expect.stringContaining('Export name cannot exceed 255 characters'),
