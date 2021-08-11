@@ -13,7 +13,12 @@ describe('MSK Cluster', () => {
   let vpc: ec2.IVpc;
 
   beforeEach(() => {
-    stack = new core.Stack();
+    const app = new core.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+    stack = new core.Stack(app);
     vpc = new ec2.Vpc(stack, 'Vpc');
   });
 
