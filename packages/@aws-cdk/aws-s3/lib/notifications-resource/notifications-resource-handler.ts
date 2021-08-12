@@ -87,7 +87,7 @@ export class NotificationsResourceHandler extends Construct {
         Code: { ZipFile: fs.readFileSync(path.join(__dirname, 'lambda/index.py'), 'utf8') },
         Handler: 'index.handler',
         Role: this.role.roleArn,
-        Runtime: 'python3.8',
+        Runtime: 'python3.7',
         Timeout: 300,
       },
     });

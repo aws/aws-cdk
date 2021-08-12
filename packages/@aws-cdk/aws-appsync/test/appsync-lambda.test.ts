@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -31,7 +31,7 @@ describe('Lambda Data Source configuration', () => {
     api.addLambdaDataSource('ds', func);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
       Name: 'ds',
     });
@@ -44,7 +44,7 @@ describe('Lambda Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
       Name: 'custom',
     });
@@ -58,7 +58,7 @@ describe('Lambda Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
       Name: 'custom',
       Description: 'custom description',
@@ -86,7 +86,7 @@ describe('Lambda Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AppSync::Resolver');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::Resolver', 1);
   });
 });
 
@@ -108,7 +108,7 @@ describe('adding lambda data source from imported api', () => {
     importedApi.addLambdaDataSource('ds', func);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
@@ -123,7 +123,7 @@ describe('adding lambda data source from imported api', () => {
     importedApi.addLambdaDataSource('ds', func);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });

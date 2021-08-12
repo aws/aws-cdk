@@ -3,13 +3,7 @@
 
 ---
 
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they
-> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
-> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
-> will be announced in release notes. This means that while you may use them, you may need to
-> update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -28,7 +22,7 @@ to the new version if possible.
 > allows more control of CodeBuild project generation; supports deployment
 > engines other than CodePipeline.
 >
-> The README for the original API can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
+> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
 
 ## At a glance
 
@@ -204,10 +198,10 @@ expected to produce the CDK Cloud Assembly as its single output (the contents of
 the `cdk.out` directory after running `cdk synth`). "Steps" are arbitrary
 actions in the pipeline, typically used to run scripts or commands.
 
-For the synth, use a `ShellStep` and specify the commands necessary to build
-your project and run `cdk synth`; the specific commands required will depend on
-the programming language you are using. For a typical NPM-based project, the synth
-will look like this:
+For the synth, use a `ShellStep` and specify the commands necessary to install
+dependencies, the CDK CLI, build your project and run `cdk synth`; the specific
+commands required will depend on the programming language you are using. For a
+typical NPM-based project, the synth will look like this:
 
 ```ts
 const source = /* the repository source */;
@@ -249,6 +243,63 @@ when `app.synth()` is called. You can also force it to be produced
 earlier by calling `pipeline.buildPipeline()`. After you've called
 that method, you can inspect the constructs that were produced by
 accessing the properties of the `pipeline` object.
+
+#### Commands for other languages and package managers
+
+The commands you pass to `new ShellStep` will be very similar to the commands
+you run on your own workstation to install dependencies and synth your CDK
+project. Here are some (non-exhaustive) examples for what those commands might
+look like in a number of different situations.
+
+For Yarn, the install commands are different:
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ShellStep('Synth', {
+    input: source,
+    commands: [
+      'yarn install --frozen-lockfile',
+      'yarn build',
+      'npx cdk synth',
+    ],
+  })
+});
+```
+
+For Python projects, remember to install the CDK CLI globally (as
+there is no `package.json` to automatically install it for you):
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ShellStep('Synth', {
+    input: source,
+    commands: [
+      'pip install -r requirements.txt',
+      'npm install -g aws-cdk',
+      'cdk synth',
+    ],
+  })
+});
+```
+
+For Java projects, remember to install the CDK CLI globally (as
+there is no `package.json` to automatically install it for you),
+and the Maven compilation step is automatically executed for you
+as you run `cdk synth`:
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ShellStep('Synth', {
+    input: source,
+    commands: [
+      'npm install -g aws-cdk',
+      'cdk synth',
+    ],
+  })
+});
+```
+
+You can adapt these examples to your own situation.
 
 #### CodePipeline Sources
 
@@ -405,7 +456,8 @@ const pipeline = new CodePipeline(this, 'Pipeline', {
 Every `addStage()` and `addWave()` command takes additional options. As part of these options,
 you can specify `pre` and `post` steps, which are arbitrary steps that run before or after
 the contents of the stage or wave, respectively. You can use these to add validations like
-manual or automated gates to your pipeline.
+manual or automated gates to your pipeline. We recommend putting manual approval gates in the set of `pre` steps, and automated approval gates in
+the set of `post` steps.
 
 The following example shows both an automated approval in the form of a `ShellStep`, and
 a manual approvel in the form of a `ManualApprovalStep` added to the pipeline. Both must
@@ -495,7 +547,7 @@ of properties that allow you to customize various aspects of the projects:
 
 ```ts
 new CodeBuildStep('Synth', {
-  // ...standard RunScript props...
+  // ...standard ShellStep props...
   commands: [/* ... */],
   env: { /* ... */ },
 
@@ -530,8 +582,8 @@ new CodeBuildStep('Synth', {
 ```
 
 You can also configure defaults for *all* CodeBuild projects by passing `codeBuildDefaults`,
-or just for the asset publishing and self-mutation projects by passing `assetPublishingCodeBuildDefaults`
-or `selfMutationCodeBuildDefaults`:
+or just for the synth, asset publishing, and self-mutation projects by passing `synthCodeBuildDefaults`,
+`assetPublishingCodeBuildDefaults`, or `selfMutationCodeBuildDefaults`:
 
 ```ts
 new CodePipeline(this, 'Pipeline', {
@@ -561,6 +613,7 @@ new CodePipeline(this, 'Pipeline', {
     ],
   },
 
+  synthCodeBuildDefaults: { /* ... */ },
   assetPublishingCodeBuildDefaults: { /* ... */ },
   selfMutationCodeBuildDefaults: { /* ... */ },
 });
@@ -572,7 +625,7 @@ If you want to add a type of CodePipeline action to the CDK Pipeline that
 doesn't have a matching class yet, you can define your own step class that extends
 `Step` and implements `ICodePipelineActionFactory`.
 
-Here's a simple example that adds a Jenkins step:
+Here's an example that adds a Jenkins step:
 
 ```ts
 class MyJenkinsStep extends Step implements ICodePipelineActionFactory {
