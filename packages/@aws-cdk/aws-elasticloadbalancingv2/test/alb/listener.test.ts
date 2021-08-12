@@ -866,6 +866,31 @@ describe('tests', () => {
     });
   });
 
+  test('Custom Load balancer algorithm type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // WHEN
+    listener.addTargets('Group', {
+      port: 80,
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+      loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.LEAST_OUTSTANDING_REQUESTS,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'load_balancing.algorithm.type',
+          Value: 'least_outstanding_requests',
+        },
+      ],
+    });
+  });
+
   describe('Throws with bad fixed responses', () => {
 
     test('status code', () => {

@@ -84,9 +84,9 @@ export class ContextProvider {
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
       throw new Error(`Cannot retrieve value from context provider ${options.provider} since account/region ` +
-                      'are not specified at the stack level. Either configure "env" with explicit account and region when ' +
-                      'you define your stack, or use the environment variables "CDK_DEFAULT_ACCOUNT" and "CDK_DEFAULT_REGION" ' +
-                      'to inherit environment information from the CLI (not recommended for production stacks)');
+                      'are not specified at the stack level. Configure "env" with an account and region when ' +
+                      'you define your stack.' +
+                      'See https://docs.aws.amazon.com/cdk/latest/guide/environments.html for more details.');
     }
 
     const { key, props } = this.getKey(scope, options);

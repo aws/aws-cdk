@@ -84,7 +84,7 @@ export interface IHttpApi extends IApi {
  */
 export interface HttpApiProps {
   /**
-   * Name for the HTTP API resoruce
+   * Name for the HTTP API resource
    * @default - id of the HttpApi construct.
    */
   readonly apiName?: string;
@@ -209,7 +209,7 @@ export interface CorsPreflightOptions {
 }
 
 /**
- * Options for the Route with Integration resoruce
+ * Options for the Route with Integration resource
  */
 export interface AddRoutesOptions extends BatchHttpRouteOptions {
   /**
