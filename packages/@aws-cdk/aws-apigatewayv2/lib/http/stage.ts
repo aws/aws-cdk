@@ -182,7 +182,7 @@ export class HttpStage extends HttpStageBase {
    */
   public get domainUrl(): string {
     if (!this.apiMapping) {
-      throw new Error('domainUrl is not available when domain mapping has not been added');
+      throw new Error('domainUrl is not available when no API mapping is associated with the Stage');
     }
     if (!this.apiMapping.domainName.name) {
       throw new Error('Unable to build domainUrl due to invalid domainName');
