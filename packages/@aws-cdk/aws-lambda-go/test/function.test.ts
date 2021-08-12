@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { GoFunction } from '../lib';
@@ -34,7 +34,7 @@ test('GoFunction with defaults', () => {
     entry: expect.stringMatching(/aws-lambda-go\/test\/lambda-handler-vendor\/cmd\/api$/),
   }));
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'bootstrap',
     Runtime: 'provided.al2',
   });
@@ -51,7 +51,7 @@ test('GoFunction with using provided runtime', () => {
     entry: expect.stringMatching(/aws-lambda-go\/test\/lambda-handler-vendor\/cmd\/api$/),
   }));
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'bootstrap',
     Runtime: 'provided',
   });
@@ -68,7 +68,7 @@ test('GoFunction with using golang runtime', () => {
     entry: expect.stringMatching(/aws-lambda-go\/test\/lambda-handler-vendor\/cmd\/api$/),
   }));
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'bootstrap',
     Runtime: 'go1.x',
   });
@@ -130,7 +130,7 @@ test('custom moduleDir can be used', () => {
     moduleDir: 'test/lambda-handler-vendor',
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'bootstrap',
   });
 });
@@ -141,7 +141,7 @@ test('custom moduleDir with file path can be used', () => {
     moduleDir: 'test/lambda-handler-vendor/go.mod',
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'bootstrap',
   });
 });
