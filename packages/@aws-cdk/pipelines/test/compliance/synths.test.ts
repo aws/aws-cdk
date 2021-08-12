@@ -948,8 +948,8 @@ behavior('Multiple input sources in side-by-side directories', (suite) => {
           phases: {
             install: {
               commands: [
-                'ln -s "$CODEBUILD_SRC_DIR_foo_bar_Source" "../sibling"',
-                'ln -s "$CODEBUILD_SRC_DIR_Prebuild_Output" "sub"',
+                'ln -s -- "$CODEBUILD_SRC_DIR_foo_bar_Source" "../sibling"',
+                'ln -s -- "$CODEBUILD_SRC_DIR_Prebuild_Output" "sub"',
               ],
             },
             build: {
