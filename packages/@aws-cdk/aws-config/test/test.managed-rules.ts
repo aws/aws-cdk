@@ -3,7 +3,6 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as config from '../lib';
-import { ManagedRuleIdentifiers } from '../lib';
 
 export = {
   'access keys rotated'(test: Test) {
@@ -138,14 +137,14 @@ export = {
 
     // WHEN
     new config.ManagedRule(stack, 'Ec2InstanceProfileAttached', {
-      identifier: ManagedRuleIdentifiers.EC2_INSTANCE_PROFILE_ATTACHED,
+      identifier: config.ManagedRuleIdentifiers.EC2_INSTANCE_PROFILE_ATTACHED,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
-        SourceIdentifier: ManagedRuleIdentifiers.EC2_INSTANCE_PROFILE_ATTACHED,
+        SourceIdentifier: config.ManagedRuleIdentifiers.EC2_INSTANCE_PROFILE_ATTACHED,
       },
     }));
 
