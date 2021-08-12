@@ -120,6 +120,7 @@ test('use OpenID Connect principal from provider', () => {
   const stack = new Stack();
   const provider = new iam.OpenIdConnectProvider(stack, 'MyProvider', {
     url: 'https://openid-endpoint',
+    thumbprints: ['athumbprint'],
   });
 
   // WHEN

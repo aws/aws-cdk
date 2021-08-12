@@ -487,7 +487,7 @@ export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
    *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
    */
   constructor(openIdConnectProvider: IOpenIdConnectProvider, conditions: Conditions = {}) {
-    super(openIdConnectProvider.openIdConnectProviderArn, conditions ?? {});
+    super(openIdConnectProvider.oidcProviderArn, conditions ?? {});
   }
 
   public get policyFragment(): PrincipalPolicyFragment {

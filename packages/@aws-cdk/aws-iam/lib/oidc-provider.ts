@@ -1,16 +1,6 @@
-import * as path from 'path';
-import {
-  Arn,
-  CustomResource,
-  CustomResourceProvider,
-  CustomResourceProviderRuntime,
-  IResource,
-  Resource,
-  Token,
-} from '@aws-cdk/core';
+import { Arn, IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-
-const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
+import { CfnOIDCProvider } from './iam.generated';
 
 /**
  * Represents an IAM OpenID Connect provider.
@@ -19,6 +9,13 @@ const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
 export interface IOpenIdConnectProvider extends IResource {
   /**
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   *
+   * @attribute
+   */
+  readonly oidcProviderArn: string;
+  /**
+   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   * @deprecated use `oidcProviderArn` instead
    */
   readonly openIdConnectProviderArn: string;
 
@@ -79,12 +76,8 @@ export interface OpenIdConnectProviderProps {
    * https://keys.server.example.com/openid-connect. In that case, the
    * thumbprint string would be the hex-encoded SHA-1 hash value of the
    * certificate used by https://keys.server.example.com.
-   *
-   * @default - If no thumbprints are specified (an empty array or `undefined`),
-   * the thumbprint of the root certificate authority will be obtained from the
-   * provider's server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
    */
-  readonly thumbprints?: string[];
+  readonly thumbprints: string[];
 }
 
 /**
@@ -99,7 +92,7 @@ export interface OpenIdConnectProviderProps {
  * @see http://openid.net/connect
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
  *
- * @resource AWS::CloudFormation::CustomResource
+ * @resource AWS::IAM::OIDCProvider
  */
 export class OpenIdConnectProvider extends Resource implements IOpenIdConnectProvider {
   /**
@@ -107,11 +100,13 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    * @param scope The definition scope
    * @param id ID of the construct
    * @param openIdConnectProviderArn the ARN to import
+   * @deprecated use `OpenIdConnectProvider.fromOidcProviderArn` instead
    */
   public static fromOpenIdConnectProviderArn(scope: Construct, id: string, openIdConnectProviderArn: string): IOpenIdConnectProvider {
     const resourceName = Arn.extractResourceName(openIdConnectProviderArn, 'oidc-provider');
 
     class Import extends Resource implements IOpenIdConnectProvider {
+      public readonly oidcProviderArn = openIdConnectProviderArn;
       public readonly openIdConnectProviderArn = openIdConnectProviderArn;
       public readonly openIdConnectProviderIssuer = resourceName;
     }
@@ -120,10 +115,45 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
   }
 
   /**
-   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   * Imports an Open ID connect provider from an ARN.
+   * @param scope The definition scope
+   * @param id ID of the construct
+   * @param oidcProviderArn the ARN to import
    */
-  public readonly openIdConnectProviderArn: string;
+  public static fromOidcProviderArn(scope: Construct, id: string, oidcProviderArn: string): IOpenIdConnectProvider {
+    const resourceName = Arn.extractResourceName(oidcProviderArn, 'oidc-provider');
 
+    class Import extends Resource implements IOpenIdConnectProvider {
+      public readonly oidcProviderArn = oidcProviderArn;
+      public readonly openIdConnectProviderArn = oidcProviderArn;
+      public readonly openIdConnectProviderIssuer = resourceName;
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   *
+   * @attribute
+   */
+  public readonly oidcProviderArn: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   *
+   * @attribute
+   * @deprecated use `oidcProviderArn` instead
+   */
+  public get openIdConnectProviderArn(): string {
+    return this.oidcProviderArn;
+  }
+
+  /**
+   * The issuer of the OIDC provider.
+   *
+   * @attribute
+   */
   public readonly openIdConnectProviderIssuer: string;
 
   /**
@@ -135,37 +165,17 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
   public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
     super(scope, id);
 
-    const resource = new CustomResource(this, 'Resource', {
-      resourceType: RESOURCE_TYPE,
-      serviceToken: this.getOrCreateProvider(),
-      properties: {
-        ClientIDList: props.clientIds,
-        ThumbprintList: props.thumbprints,
-        Url: props.url,
-      },
+    if (props.thumbprints.length < 1) {
+      throw new Error('Thumbprint list must contain at least one thumbprint.');
+    }
+
+    const resource = new CfnOIDCProvider(this, 'Resource', {
+      clientIdList: props.clientIds,
+      thumbprintList: props.thumbprints,
+      url: props.url,
     });
 
-    this.openIdConnectProviderArn = Token.asString(resource.ref);
-    this.openIdConnectProviderIssuer = Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
-  }
-
-  private getOrCreateProvider() {
-    return CustomResourceProvider.getOrCreate(this, RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, 'oidc-provider'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
-      policyStatements: [
-        {
-          Effect: 'Allow',
-          Resource: '*',
-          Action: [
-            'iam:CreateOpenIDConnectProvider',
-            'iam:DeleteOpenIDConnectProvider',
-            'iam:UpdateOpenIDConnectProviderThumbprint',
-            'iam:AddClientIDToOpenIDConnectProvider',
-            'iam:RemoveClientIDFromOpenIDConnectProvider',
-          ],
-        },
-      ],
-    });
+    this.oidcProviderArn = Token.asString(resource.ref);
+    this.openIdConnectProviderIssuer = Arn.extractResourceName(this.oidcProviderArn, 'oidc-provider');
   }
 }

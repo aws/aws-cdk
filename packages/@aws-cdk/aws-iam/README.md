@@ -325,20 +325,15 @@ Identity Pools Developer Guide].
 [Amazon Cognito Identity Pools Developer Guide]: https://docs.aws.amazon.com/cognito/latest/developerguide/open-id.html
 
 The following examples defines an OpenID Connect provider. Two client IDs
-(audiences) are will be able to send authentication requests to
-https://openid/connect.
+(audiences) will be able to send authentication requests to https://openid/connect.
 
 ```ts
 const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
   url: 'https://openid/connect',
   clientIds: [ 'myclient1', 'myclient2' ],
+  thumbprints: ['athumbprint'],
 });
 ```
-
-You can specify an optional list of `thumbprints`. If not specified, the
-thumbprint of the root certificate authority (CA) will automatically be obtained
-from the host as described
-[here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html).
 
 Once you define an OpenID connect provider, you can use it with AWS services
 that expect an IAM OIDC provider. For example, when you define an [Amazon
@@ -348,7 +343,7 @@ you can reference the provider's ARN as follows:
 
 ```ts
 new cognito.CfnIdentityPool(this, 'IdentityPool', {
-  openIdConnectProviderArns: [myProvider.openIdConnectProviderArn],
+  openIdConnectProviderArns: [myProvider.oidcProviderArn],
   // And the other properties for your identity pool
   allowUnauthenticatedIdentities,
 });
