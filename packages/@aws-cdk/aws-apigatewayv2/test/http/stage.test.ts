@@ -140,7 +140,7 @@ describe('HttpStage with domain mapping', () => {
       },
     });
 
-    expect(stage.domainUrl.endsWith(`${domainName}/`)).toBe(true);
+    expect(stage.domainUrl).toBe(`https://${domainName}/`);
   });
 
   test('domainUrl throws error if domainMapping is not configured', () => {
@@ -157,31 +157,6 @@ describe('HttpStage with domain mapping', () => {
       stage.domainUrl;
     };
 
-    expect(t).toThrow(/domainUrl is not available when domain mapping has not been added/);
-  });
-
-  test('domainUrl throws error if domainName is invalid', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
-    const dn = new DomainName(stack, 'DN', {
-      domainName: '',
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-    });
-
-    const stage = new HttpStage(stack, 'DefaultStage', {
-      httpApi: api,
-      domainMapping: {
-        domainName: dn,
-      },
-    });
-
-    const t = () => {
-      stage.domainUrl;
-    };
-
-    expect(t).toThrow(/Unable to build domainUrl due to invalid domainName/);
+    expect(t).toThrow(/domainUrl is not available when no API mapping is associated with the Stage/);
   });
 });
