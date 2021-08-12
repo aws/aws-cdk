@@ -48,7 +48,11 @@ Typically, a job runs extract, transform, and load (ETL) scripts. Jobs can also 
 
 ```ts
 new glue.Job(stack, 'Job', {
-  jobCommand: glue.JobCommand.pythonShell('s3://bucketName/script.py', glue.PythonVersion.TWO),
+  executable: glue.JobExecutable.shellPython({
+    glueVersion: glue.GlueVersion.V2_0,
+    pythonVersion: PythonVersion.TWO,
+    scriptLocation: 's3://bucketName/script.py',
+  }),
   description: 'an example pythonshell job',
 });
 ```

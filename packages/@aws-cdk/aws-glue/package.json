@@ -149,6 +149,7 @@
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.PARQUET",
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.ORC",
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.value",
+      "docs-public-apis:@aws-cdk/aws-glue.JobExecutable.bind",
       "no-unused-type:@aws-cdk/aws-glue.JobState"
     ]
   },

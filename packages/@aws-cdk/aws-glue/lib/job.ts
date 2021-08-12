@@ -3,51 +3,10 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
+import { JobExecutable, JobExecutableConfig } from '.';
 import { IConnection } from './connection';
 import { CfnJob } from './glue.generated';
 import { ISecurityConfiguration } from './security-configuration';
-
-/**
- * AWS Glue version determines the versions of Apache Spark and Python that are available to the job.
- *
- * @see https://docs.aws.amazon.com/glue/latest/dg/add-job.html.
- *
- * If you need to use a GlueVersion that doesn't exist as a static member, you
- * can instantiate a `GlueVersion` object, e.g: `GlueVersion.of('1.5')`.
- */
-export class GlueVersion {
-  /**
-   * Glue version using Spark 2.2.1 and Python 2.7
-   */
-  public static readonly V0_9 = new GlueVersion('0.9');
-
-  /**
-   * Glue version using Spark 2.4.3, Python 2.7 and Python 3.6
-   */
-  public static readonly V1_0 = new GlueVersion('1.0');
-
-  /**
-   * Glue version using Spark 2.4.3 and Python 3.7
-   */
-  public static readonly V2_0 = new GlueVersion('2.0');
-
-  /**
-   * Custom Glue version
-   * @param version custom version
-   */
-  public static of(version: string): GlueVersion {
-    return new GlueVersion(version);
-  }
-
-  /**
-   * The name of this GlueVersion, as expected by Job resource.
-   */
-  public readonly name: string;
-
-  private constructor(name: string) {
-    this.name = name;
-  }
-}
 
 /**
  * The type of predefined worker that is allocated when a job runs.
@@ -87,21 +46,6 @@ export class WorkerType {
   private constructor(name: string) {
     this.name = name;
   }
-}
-
-/**
- * Python version
- */
-export enum PythonVersion {
-  /**
-   * Python 2 (the exact version depends on GlueVersion and JobCommand used)
-   */
-  TWO = '2',
-
-  /**
-   * Python 3 (the exact version depends on GlueVersion and JobCommand used)
-   */
-  THREE = '3',
 }
 
 /**
@@ -161,395 +105,6 @@ export enum MetricType {
    * An aggregate number.
    */
   COUNT = 'count',
-}
-
-/**
- * Runtime language of the Glue job
- */
-export enum JobLanguage {
-  /**
-   * Scala
-   */
-  SCALA = 'scala',
-
-  /**
-   * Python
-   */
-  PYTHON = 'python',
-}
-
-/**
- * The job type.
- *
- * If you need to use a JobType that doesn't exist as a static member, you
- * can instantiate a `JobType` object, e.g: `JobType.of('other name', ['supported languages'])`.
- */
-export class JobType {
-  /**
-   * Command for running a Glue ETL job.
-   */
-  public static readonly ETL = new JobType('glueetl', [JobLanguage.SCALA, JobLanguage.PYTHON]);
-
-  /**
-   * Command for running a Glue streaming job.
-   */
-  public static readonly STREAMING = new JobType('gluestreaming', [JobLanguage.SCALA, JobLanguage.PYTHON]);
-
-  /**
-   * Command for running a Glue python shell job.
-   */
-  public static readonly PYTHON_SHELL = new JobType('pythonshell', [JobLanguage.PYTHON]);
-
-  /**
-   * Custom type name
-   * @param name type name
-   * @param languages languages supported by this job type
-   */
-  public static of(name: string, languages: JobLanguage[]): JobType {
-    return new JobType(name, languages);
-  }
-
-  /**
-   * The name of this JobType, as expected by Job resource.
-   */
-  public readonly name: string;
-
-  /**
-   * Languages supported by this job type
-   */
-  public languages: JobLanguage[];
-
-  private constructor(name: string, languages: JobLanguage[]) {
-    if (languages.length === 0) {
-      throw new Error('languages cannot be empty');
-    }
-    this.name = name;
-    this.languages = languages;
-  }
-}
-
-/**
- * TODO: Q for reviewer - any way to better model these props, Omit seems to cause problems with JSII?
- */
-interface JobExecutableProps {
-  readonly glueVersion: GlueVersion;
-
-  readonly language: JobLanguage;
-
-  readonly type: JobType;
-
-  readonly pythonVersion?: PythonVersion;
-
-  readonly scriptLocation: string;
-
-  readonly className?: string;
-
-  readonly extraJars?: string[];
-
-  readonly extraPythonFiles?: string[];
-
-  readonly extraFiles?: string[];
-
-  readonly extraJarsFirst?: boolean;
-}
-
-/**
- * Props for creating a Scala Spark (ETL or Streaming) job executable
- */
-export interface ScalaJobExecutableProps {
-
-  /**
-   * Glue version.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/release-notes.html
-   */
-  readonly glueVersion: GlueVersion;
-
-  /**
-   * Specify the type of the job whether it's an Apache Spark ETL or streaming one.
-   */
-  readonly type: JobType;
-
-  /**
-   * Specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job.
-   */
-  readonly scriptLocation: string;
-
-  /**
-   * The fully qualified Scala class name that serves as the entry point for the job.
-   *
-   * @see `--class` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly className: string;
-
-  /**
-   * The Amazon S3 paths to additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
-   * Only individual files are supported, not a directory path.
-   *
-   * @default - no extra jars and argument is not set
-   *
-   * @see `--extra-jars` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraJars?: string[];
-
-  /**
-   * The Amazon S3 paths to additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
-   * Only individual files are supported, not a directory path.
-   *
-   * @default - no extra files and argument is not set
-   *
-   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraFiles?: string[];
-
-  /**
-   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
-   *
-   * @default - priortiy is not given to extra jars and argument is not set
-   *
-   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraJarsFirst?: boolean;
-}
-
-/**
- * Props for creating a Python Spark (ETL or Streaming) job executable
- */
-export interface PythonJobExecutableProps {
-
-  /**
-   * Glue version.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/release-notes.html
-   */
-  readonly glueVersion: GlueVersion;
-
-  /**
-   * Specify the type of the job whether it's an Apache Spark ETL or streaming one.
-   */
-  readonly type: JobType;
-
-  /**
-   * The Python version to use.
-   */
-  readonly pythonVersion: PythonVersion;
-
-  /**
-   * Specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job.
-   */
-  readonly scriptLocation: string;
-
-  /**
-   * The Amazon S3 paths to additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
-   * Only individual files are supported, not a directory path.
-   *
-   * @default - no extra jars and argument is not set
-   *
-   * @see `--extra-jars` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraJars?: string[];
-
-  /**
-   * The Amazon S3 paths to additional Python modules that AWS Glue adds to the Python path before executing your script.
-   * Only individual files are supported, not a directory path.
-   *
-   * @default - no extra python files and argument is not set
-   *
-   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraPythonFiles?: string[];
-
-  /**
-   * The Amazon S3 paths to additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
-   * Only individual files are supported, not a directory path.
-   *
-   * @default - no extra files and argument is not set
-   *
-   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraFiles?: string[];
-
-  /**
-   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
-   *
-   * @default - priortiy is not given to extra jars and argument is not set
-   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraJarsFirst?: boolean;
-}
-
-/**
- * Props for creating a Python shell job executable
- */
-export interface PythonShellExecutableProps {
-
-  /**
-   * Glue version.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/release-notes.html
-   */
-  readonly glueVersion: GlueVersion;
-
-  /**
-   * The Python version to use.
-   */
-  readonly pythonVersion: PythonVersion;
-
-  /**
-   * Specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job.
-   */
-  readonly scriptLocation: string;
-
-  /**
-   * The Amazon S3 paths to additional Python modules that AWS Glue adds to the Python path before executing your script.
-   * Only individual files are supported, not a directory path.
-   *
-   * @default - no extra python files and argument is not set
-   *
-   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraPythonFiles?: string[];
-
-  /**
-   * The Amazon S3 paths to additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
-   * Only individual files are supported, not a directory path.
-   *
-   * @default - no extra files and argument is not set
-   *
-   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraFiles?: string[];
-}
-
-/**
- * The executable properties related to the Glue job's GlueVersion, JobType and code
- *
- * TODO test for exceptions
- */
-export class JobExecutable {
-
-  /**
-   * Create Scala executable props for Apache Spark jobs (ETL or streaming)
-   *
-   * @param props Scala Apache Spark Job props
-   */
-  public static scala(props: ScalaJobExecutableProps): JobExecutable {
-    return new JobExecutable({
-      ...props,
-      language: JobLanguage.SCALA,
-    });
-  }
-
-  /**
-   * Create Python executable props for Apache Spark jobs (ETL or streaming)
-   *
-   * @param props Python Apache Spark Job props
-   */
-  public static python(props: PythonJobExecutableProps): JobExecutable {
-    return new JobExecutable({
-      ...props,
-      language: JobLanguage.PYTHON,
-    });
-  }
-
-  /**
-   * Create Python executable props for python shell jobs
-   *
-   * @param props Python Shell Job props
-   */
-  public static pythonShell(props: PythonShellExecutableProps): JobExecutable {
-    return new JobExecutable({
-      ...props,
-      type: JobType.PYTHON_SHELL,
-      language: JobLanguage.PYTHON,
-    });
-  }
-
-  /**
-   * Glue version.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/release-notes.html
-   */
-  public readonly glueVersion: GlueVersion;
-
-  /**
-   * The language of the job (Scala or Python).
-   *
-   * @see `--job-languae` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  public readonly language: JobLanguage;
-
-  /**
-   * Specify the type of the job whether it's an Apache Spark ETL or streaming one or if it's a Python shell job.
-   */
-  public readonly type: JobType;
-
-  /**
-   * The Python version to use.
-   */
-  public readonly pythonVersion?: PythonVersion;
-
-  /**
-   * Specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job.
-   */
-  public readonly scriptLocation: string;
-
-  /**
-   * The Scala class that serves as the entry point for the job. This applies only if your the job langauage is Scala.
-   *
-   * @see `--class` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  public readonly className?: string;
-
-  /**
-   * The Amazon S3 paths to additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
-   * Only individual files are supported, not a directory path.
-   *
-   * @see `--extra-jars` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  public readonly extraJars?: string[];
-
-  /**
-   * The Amazon S3 paths to additional Python modules that AWS Glue adds to the Python path before executing your script.
-   * Only individual files are supported, not a directory path.
-   *
-   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  public readonly extraPythonFiles?: string[];
-
-  /**
-   * The Amazon S3 paths to additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
-   * Only individual files are supported, not a directory path.
-   *
-   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  public readonly extraFiles?: string[];
-
-  /**
-   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
-   *
-   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  public readonly extraJarsFirst?: boolean;
-
-  private constructor(props: JobExecutableProps) {
-    if (!props.type.languages.includes(props.language)) {
-      throw new Error(`${props.type.name} JobType does not support ${props.language} language`);
-    }
-    if (props.extraJarsFirst && [GlueVersion.V0_9, GlueVersion.V1_0].includes(props.glueVersion)) {
-      throw new Error(`${props.type.name} JobType does not support ${props.language} language`);
-    }
-    this.glueVersion = props.glueVersion;
-    this.language = props.language;
-    this.type = props.type;
-    this.pythonVersion = props.pythonVersion;
-    this.scriptLocation = props.scriptLocation;
-    this.className = props.className;
-    this.extraJars = props.extraJars;
-    this.extraPythonFiles = props.extraPythonFiles;
-    this.extraFiles = props.extraFiles;
-    this.extraJarsFirst = props.extraJarsFirst;
-  }
 }
 
 /**
@@ -977,8 +532,9 @@ export class Job extends JobBase {
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
     });
 
+    const executable = props.executable.bind(this);
     const defaultArguments = {
-      ...this.executableArguments(props.executable),
+      ...this.executableArguments(executable),
       ...props.defaultArguments,
     };
 
@@ -987,11 +543,11 @@ export class Job extends JobBase {
       description: props.description,
       role: this.role.roleArn,
       command: {
-        name: props.executable.type.name,
-        scriptLocation: props.executable.scriptLocation,
-        pythonVersion: props.executable.pythonVersion,
+        name: executable.type.name,
+        scriptLocation: executable.scriptLocation,
+        pythonVersion: executable.pythonVersion,
       },
-      glueVersion: props.executable.glueVersion.name,
+      glueVersion: executable.glueVersion.name,
       workerType: props.workerType?.name,
       numberOfWorkers: props.numberOfWorkers,
       maxCapacity: props.maxCapacity,
@@ -1010,22 +566,22 @@ export class Job extends JobBase {
     this.jobName = resourceName;
   }
 
-  private executableArguments(executable: JobExecutable) {
+  private executableArguments(config: JobExecutableConfig) {
     const args: { [key: string]: string } = {};
-    args['--job-language'] = executable.language;
-    if (executable.className) {
-      args['--class'] = executable.className;
+    args['--job-language'] = config.language;
+    if (config.className) {
+      args['--class'] = config.className;
     }
-    if (executable.extraJars && executable.extraJars.length > 0) {
-      args['--extra-jars'] = executable.extraJars.join(',');
+    if (config.extraJars && config.extraJars.length > 0) {
+      args['--extra-jars'] = config.extraJars.join(',');
     }
-    if (executable.extraPythonFiles && executable.extraPythonFiles.length > 0) {
-      args['--extra-py-files'] = executable.extraPythonFiles.join(',');
+    if (config.extraPythonFiles && config.extraPythonFiles.length > 0) {
+      args['--extra-py-files'] = config.extraPythonFiles.join(',');
     }
-    if (executable.extraFiles && executable.extraFiles.length > 0) {
-      args['--extra-files'] = executable.extraFiles.join(',');
+    if (config.extraFiles && config.extraFiles.length > 0) {
+      args['--extra-files'] = config.extraFiles.join(',');
     }
-    if (executable.extraJarsFirst) {
+    if (config.extraJarsFirst) {
       args['--user-jars-first'] = 'true';
     }
     return args;
