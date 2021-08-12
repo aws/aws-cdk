@@ -196,6 +196,7 @@ describe('Job', () => {
           },
           connections: [glue.Connection.fromConnectionName(stack, 'ImportedConnection', 'ConnectionName')],
           securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'ImportedSecurityConfiguration', 'SecurityConfigurationName'),
+          enableProfilingMetrics: true,
           tags: {
             key: 'value',
           },
@@ -217,6 +218,7 @@ describe('Job', () => {
           },
           DefaultArguments: {
             '--job-language': 'python',
+            '--enable-metrics': '',
             'arg1': 'value1',
             'arg2': 'value2',
           },

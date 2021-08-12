@@ -375,6 +375,11 @@ export interface JobAttributes {
  */
 export interface JobProps {
   /**
+   * The job's executable properties.
+   */
+  readonly executable: JobExecutable;
+
+  /**
    * The name of the job.
    *
    * @default cloudformation generated name.
@@ -476,14 +481,13 @@ export interface JobProps {
   readonly role?: iam.IRole;
 
   /**
-   * The job's executable properties.
+   * Enables the collection of metrics for job profiling.
+   *
+   * @default - no profiling metrics emitted.
+   *
+   * @see `--enable-metrics` at https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly executable: JobExecutable;
-
-  // TODO '--TempDir': 's3-path-to-directory' we should have a prop to enable setting this, and enable a bucket to be created
-  // or one specified, the role should also be updated to have access to that bucket
-
-  // TODO --enable-metrics confirm if it's needed for count/guage metrics or not and add a prop
+  readonly enableProfilingMetrics? :boolean;
 }
 
 /**
@@ -537,6 +541,9 @@ export class Job extends JobBase {
       ...this.executableArguments(executable),
       ...props.defaultArguments,
     };
+    if (props.enableProfilingMetrics) {
+      defaultArguments['--enable-metrics'] = '';
+    }
 
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
