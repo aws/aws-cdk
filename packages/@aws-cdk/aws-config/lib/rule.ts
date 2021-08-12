@@ -683,6 +683,13 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EC2_INSTANCE_MANAGED_BY_SSM = 'EC2_INSTANCE_MANAGED_BY_SSM';
   /**
+   * Checks if an Amazon Elastic Compute Cloud (Amazon EC2) instance has an Identity and Access
+   * Management (IAM) profile attached to it. This rule is NON_COMPLIANT if no IAM profile is
+   * attached to the Amazon EC2 instance.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instance-profile-attached.html
+   */
+  public static readonly EC2_INSTANCE_PROFILE_ATTACHED = 'EC2_INSTANCE_PROFILE_ATTACHED';
+  /**
    * Checks whether Amazon Elastic Compute Cloud (Amazon EC2) instances have a public IP association.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instance-no-public-ip.html
    */

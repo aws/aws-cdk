@@ -3,6 +3,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as config from '../lib';
+import { ManagedRuleIdentifiers } from '../lib';
 
 export = {
   'access keys rotated'(test: Test) {
@@ -127,6 +128,26 @@ export = {
     test.throws(() => new config.CloudFormationStackNotificationCheck(stack, 'Notification', {
       topics: [topic, topic, topic, topic, topic, topic],
     }), /5 topics/);
+
+    test.done();
+  },
+
+  'ec2 instance profile attached check'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new config.ManagedRule(stack, 'Ec2InstanceProfileAttached', {
+      identifier: ManagedRuleIdentifiers.EC2_INSTANCE_PROFILE_ATTACHED,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+      Source: {
+        Owner: 'AWS',
+        SourceIdentifier: ManagedRuleIdentifiers.EC2_INSTANCE_PROFILE_ATTACHED,
+      },
+    }));
 
     test.done();
   },
