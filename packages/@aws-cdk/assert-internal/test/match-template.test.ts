@@ -1,8 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
-import { CloudAssemblyBuilder, CloudFormationStackArtifact, EnvironmentUtils } from '@aws-cdk/cx-api';
 import { MatchStyle } from '../lib';
+import { mkStack } from './cloud-artifact';
 import '../jest';
 
 describe('matchTemplate', () => {
@@ -145,17 +142,3 @@ describe('matchTemplate', () => {
     });
   });
 });
-
-function mkStack(template: any): CloudFormationStackArtifact {
-  const assembly = new CloudAssemblyBuilder();
-  assembly.addArtifact('test', {
-    type: ArtifactType.AWS_CLOUDFORMATION_STACK,
-    environment: EnvironmentUtils.format('123456789012', 'bermuda-triangle-1'),
-    properties: {
-      templateFile: 'template.json',
-    },
-  });
-
-  fs.writeFileSync(path.join(assembly.outdir, 'template.json'), JSON.stringify(template));
-  return assembly.buildAssembly().getStackByName('test');
-}
