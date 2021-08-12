@@ -51,7 +51,7 @@ export abstract class StageBase extends Resource implements IStage {
    */
   protected _addDomainMapping(domainMapping: DomainMappingOptions) {
     if (this.apiMapping) {
-      throw new Error('_addDomainMapping cannot be called more than once for a Stage');
+      throw new Error('Only one ApiMapping allowed per Stage');
     }
     this.apiMapping = new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
       api: this.baseApi,
