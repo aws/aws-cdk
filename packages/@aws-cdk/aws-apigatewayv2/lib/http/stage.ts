@@ -180,14 +180,14 @@ export class HttpStage extends HttpStageBase {
   /**
    * The custom domain URL to this stage
    */
-  public get customDomainUrl(): string {
+  public get domainUrl(): string {
     if (!this.apiMapping) {
-      throw new Error('customDomainUrl is not available when domain mapping has not been added');
+      throw new Error('domainUrl is not available when domain mapping has not been added');
     }
-    if (!this.apiMapping.domainName) {
-      throw new Error('Unable to build customDomainUrl due to invalid domainName');
+    if (!this.apiMapping.domainName.name) {
+      throw new Error('Unable to build domainUrl due to invalid domainName');
     }
 
-    return `https://${this.apiMapping.domainName}/${this.apiMapping.mappingKey ?? ''}`;
+    return `https://${this.apiMapping.domainName.name}/${this.apiMapping.mappingKey ?? ''}`;
   }
 }
