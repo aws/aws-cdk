@@ -75,6 +75,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@types/nodeunit": "^0.0.32",
     "@aws-cdk/aws-s3-assets": "0.0.0",
