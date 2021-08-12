@@ -1,9 +1,10 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-import { JobExecutable, JobExecutableConfig } from '.';
+import { JobExecutable, JobExecutableConfig, JobType } from '.';
 import { IConnection } from './connection';
 import { CfnJob } from './glue.generated';
 import { ISecurityConfiguration } from './security-configuration';
@@ -361,6 +362,48 @@ abstract class JobBase extends cdk.Resource implements IJob {
 }
 
 /**
+ * Properties for enabling Spark UI monitoring feature for Spark-based Glue jobs.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
+ * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+ */
+export interface SparkUIProps {
+  /**
+   * The bucket where the Glue job stores the logs.
+   *
+   * @default a new bucket will be created.
+   */
+  readonly bucket?: s3.IBucket;
+
+  /**
+   * The path inside the bucket (objects prefix) where the Glue job stores the logs.
+   *
+   * @default - no path will be used, the logs will be written at the root of the bucket.
+   */
+  readonly path?: string;
+}
+
+/**
+ * The Spark UI monitoring configurations for Spark-based Glue jobs.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
+ * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+ */
+export interface SparkUIConfig {
+  /**
+   * The bucket where the Glue job stores the logs.
+   */
+  readonly bucket: s3.IBucket;
+
+  /**
+   * The path inside the bucket (objects prefix) where the Glue job stores the logs.
+   *
+   * @default - no path will be used, the logs will be written at the root of the bucket.
+   */
+  readonly path?: string;
+}
+
+/**
  * Attributes for importing {@link Job}.
  */
 export interface JobAttributes {
@@ -488,6 +531,16 @@ export interface JobProps {
    * @see `--enable-metrics` at https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly enableProfilingMetrics? :boolean;
+
+  /**
+   * Enables the Spark UI debugging and monitoring with the specified props.
+   *
+   * @default - Spark UI debugging and monitoring is disabled.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly sparkUI?: SparkUIProps,
 }
 
 /**
@@ -525,10 +578,20 @@ export class Job extends JobBase {
    */
   public readonly role: iam.IRole;
 
+  /**
+   * The Spark monitoring configuration (Bucket, path) if Spark UI monitoring and debugging is enabled.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  public readonly sparkUIConfig?: SparkUIConfig;
+
   constructor(scope: constructs.Construct, id: string, props: JobProps) {
     super(scope, id, {
       physicalName: props.jobName,
     });
+
+    const executable = props.executable.bind(this);
 
     // Create a basic service role if one is not provided https://docs.aws.amazon.com/glue/latest/dg/create-service-policy.html
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
@@ -536,13 +599,15 @@ export class Job extends JobBase {
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
     });
 
-    const executable = props.executable.bind(this);
     const defaultArguments = {
       ...this.executableArguments(executable),
       ...props.defaultArguments,
     };
     if (props.enableProfilingMetrics) {
       defaultArguments['--enable-metrics'] = '';
+    }
+    if (props.sparkUI) {
+      this.sparkUIConfig = this.setupSparkUI(executable, this.role, defaultArguments, props.sparkUI);
     }
 
     const jobResource = new CfnJob(this, 'Resource', {
@@ -592,5 +657,21 @@ export class Job extends JobBase {
       args['--user-jars-first'] = 'true';
     }
     return args;
+  }
+
+  private setupSparkUI(executable: JobExecutableConfig, role: iam.IRole, args: {[key: string]: string}, props: SparkUIProps): SparkUIConfig {
+    if (![JobType.ETL, JobType.STREAMING].includes(executable.type)) {
+      throw new Error('Spark UI can only be configured for JobType.ETL or JobType.STREAMING jobs');
+    }
+
+    const bucket = props.bucket || new s3.Bucket(this, 'SparkUIBucket');
+    bucket.grantReadWrite(role);
+    args['--enable-spark-ui'] = 'true';
+    args['--spark-event-logs-path'] = `s3://${bucket.bucketName}/${props.path || ''}`;
+
+    return {
+      ...props,
+      bucket,
+    };
   }
 }

@@ -1,6 +1,7 @@
 import * as cdkassert from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import '@aws-cdk/assert-internal/jest';
 import * as glue from '../lib';
@@ -174,6 +175,204 @@ describe('Job', () => {
       });
     });
 
+    describe('enabling spark ui but no bucket or path provided', () => {
+      beforeEach(() => {
+        job = new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.etlScala({
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            scriptLocation,
+          }),
+          sparkUI: {},
+        });
+      });
+
+      test('should create spark ui bucket', () => {
+        cdkassert.expect(stack).to(cdkassert.countResources('AWS::S3::Bucket', 1));
+      });
+
+      test('should grant the role read/write permissions to the spark ui bucket', () => {
+        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: [
+                  's3:GetObject*',
+                  's3:GetBucket*',
+                  's3:List*',
+                  's3:DeleteObject*',
+                  's3:PutObject*',
+                  's3:Abort*',
+                ],
+                Effect: 'Allow',
+                Resource: [
+                  {
+                    'Fn::GetAtt': [
+                      'JobSparkUIBucket8E6A0139',
+                      'Arn',
+                    ],
+                  },
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        {
+                          'Fn::GetAtt': [
+                            'JobSparkUIBucket8E6A0139',
+                            'Arn',
+                          ],
+                        },
+                        '/*',
+                      ],
+                    ],
+                  },
+                ],
+              },
+            ],
+            Version: '2012-10-17',
+          },
+          PolicyName: 'JobServiceRoleDefaultPolicy03F68F9D',
+          Roles: [
+            {
+              Ref: 'JobServiceRole4F432993',
+            },
+          ],
+        }));
+      });
+
+      test('should set spark arguments on the job', () => {
+        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+          DefaultArguments: {
+            '--enable-spark-ui': 'true',
+            '--spark-event-logs-path': {
+              'Fn::Join': [
+                '',
+                [
+                  's3://',
+                  {
+                    Ref: 'JobSparkUIBucket8E6A0139',
+                  },
+                  '/',
+                ],
+              ],
+            },
+          },
+        }));
+      });
+    });
+
+    describe('enabling spark ui with bucket provided', () => {
+      let bucketName: string;
+      let bucket: s3.IBucket;
+
+      beforeEach(() => {
+        bucketName = 'BucketName';
+        bucket = s3.Bucket.fromBucketName(stack, 'BucketId', bucketName);
+        job = new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.etlScala({
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            scriptLocation,
+          }),
+          sparkUI: {
+            bucket,
+          },
+        });
+      });
+
+      test('should grant the role read/write permissions to the provided spark ui bucket', () => {
+        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: [
+                  's3:GetObject*',
+                  's3:GetBucket*',
+                  's3:List*',
+                  's3:DeleteObject*',
+                  's3:PutObject*',
+                  's3:Abort*',
+                ],
+                Effect: 'Allow',
+                Resource: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::BucketName',
+                      ],
+                    ],
+                  },
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::BucketName/*',
+                      ],
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          Roles: [
+            {
+              Ref: 'JobServiceRole4F432993',
+            },
+          ],
+        }));
+      });
+
+      test('should set spark arguments on the job', () => {
+        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+          DefaultArguments: {
+            '--enable-spark-ui': 'true',
+            '--spark-event-logs-path': `s3://${bucketName}/`,
+          },
+        }));
+      });
+    });
+
+    describe('enabling spark ui with bucket and path provided', () => {
+      let bucketName: string;
+      let bucket: s3.IBucket;
+      let path: string;
+
+      beforeEach(() => {
+        bucketName = 'BucketName';
+        bucket = s3.Bucket.fromBucketName(stack, 'BucketId', bucketName);
+        path = 'some/path/';
+        job = new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.etlScala({
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            scriptLocation,
+          }),
+          sparkUI: {
+            bucket,
+            path,
+          },
+        });
+      });
+
+      test('should set spark arguments on the job', () => {
+        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+          DefaultArguments: {
+            '--enable-spark-ui': 'true',
+            '--spark-event-logs-path': `s3://${bucketName}/${path}`,
+          },
+        }));
+      });
+    });
+
     describe('with extended props', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
@@ -270,7 +469,7 @@ describe('Job', () => {
         }));
       });
 
-      test('with unsupported glue version', () => {
+      test('with unsupported glue version throws', () => {
         expect(() => new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.shellPython({
             glueVersion: glue.GlueVersion.V0_9,
@@ -278,6 +477,17 @@ describe('Job', () => {
             scriptLocation,
           }),
         })).toThrow('Specified GlueVersion 0.9 does not support Python Shell');
+      });
+
+      test('with unsupported Spark UI prop throws', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.shellPython({
+            glueVersion: glue.GlueVersion.V2_0,
+            pythonVersion: PythonVersion.TWO,
+            scriptLocation,
+          }),
+          sparkUI: {},
+        })).toThrow('Spark UI can only be configured for JobType.ETL or JobType.STREAMING jobs');
       });
 
       test('with all props should synthesize correctly', () => {
