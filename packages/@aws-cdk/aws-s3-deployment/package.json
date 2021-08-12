@@ -96,6 +96,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "case": "1.6.3",
     "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -110,6 +111,9 @@
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69"
   },
+  "bundledDependencies": [
+    "case"
+  ],
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
