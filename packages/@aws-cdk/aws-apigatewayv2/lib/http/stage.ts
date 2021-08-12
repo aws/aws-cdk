@@ -176,4 +176,15 @@ export class HttpStage extends HttpStageBase {
     const urlPath = this.stageName === DEFAULT_STAGE_NAME ? '' : this.stageName;
     return `https://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}`;
   }
+
+  /**
+   * The custom domain URL to this stage
+   */
+  public get domainUrl(): string {
+    if (!this._apiMapping) {
+      throw new Error('domainUrl is not available when no API mapping is associated with the Stage');
+    }
+
+    return `https://${this._apiMapping.domainName.name}/${this._apiMapping.mappingKey ?? ''}`;
+  }
 }
