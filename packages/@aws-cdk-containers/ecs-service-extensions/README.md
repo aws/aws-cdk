@@ -327,6 +327,7 @@ We encourage the development of Community Service Extensions that support
 advanced features. Here are some useful extensions that we have reviewed:
 
 - [ListenerRulesExtension](https://www.npmjs.com/package/@wheatstalk/ecs-service-extension-listener-rules) for more precise control over Application Load Balancer rules
+- SubscribeExtension to allow the service to create SQS Queues to subscribe and consume messages published to SNS Topics 
 
 > Please submit a pull request so that we can review your service extension and
 > list it here.
