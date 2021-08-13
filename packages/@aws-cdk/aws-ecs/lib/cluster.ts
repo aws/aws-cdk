@@ -294,12 +294,13 @@ export class Cluster extends Resource implements ICluster {
    * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
-    if (options.machineImage && options.machineImageType) {
-      throw new Error('You can only specify either machineImage or machineImageType, not both.');
-    }
+    // Do 2-way defaulting here: if the machineImageType is BOTTLEROCKET, pick the right AMI.
+    // Otherwise, determine the machineImageType from the given AMI.
+    const machineImage = options.machineImage ??
+      (options.machineImageType === MachineImageType.BOTTLEROCKET ? new BottleRocketImage() : new EcsOptimizedAmi());
 
-    const machineImage = options.machineImage ?? options.machineImageType === MachineImageType.BOTTLEROCKET ?
-      new BottleRocketImage() : new EcsOptimizedAmi();
+    const machineImageType = options.machineImageType ??
+      (isBottleRocketImage(machineImage) ? MachineImageType.BOTTLEROCKET : MachineImageType.AMAZON_LINUX_2);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       vpc: this.vpc,
@@ -309,7 +310,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     this.addAutoScalingGroup(autoScalingGroup, {
-      machineImageType: options.machineImageType,
+      machineImageType: machineImageType,
       ...options,
     });
 
@@ -1016,11 +1017,18 @@ export interface AddAutoScalingGroupCapacityOptions {
    */
   readonly topicEncryptionKey?: kms.IKey;
 
-
   /**
-   * Specify the machine image type.
+   * What type of machine image this is
    *
-   * @default MachineImageType.AMAZON_LINUX_2
+   * Depending on the setting, different UserData will automatically be added
+   * to the `AutoScalingGroup` to configure it properly for use with ECS.
+   *
+   * If you create an `AutoScalingGroup` yourself and are adding it via
+   * `addAutoScalingGroup()`, you must specify this value. If you are adding an
+   * `autoScalingGroup` via `addCapacity`, this value will be determined
+   * from the `machineImage` you pass.
+   *
+   * @default - Automatically determined from `machineImage`, if available, otherwise `MachineImageType.AMAZON_LINUX_2`.
    */
   readonly machineImageType?: MachineImageType;
 }
@@ -1355,4 +1363,9 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
       }
     }
   }
+}
+
+
+function isBottleRocketImage(image: ec2.IMachineImage) {
+  return image instanceof BottleRocketImage;
 }
