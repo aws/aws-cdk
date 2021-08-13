@@ -388,6 +388,8 @@ export class Rule extends Resource implements IRule {
             account: targetAccount,
             region: targetRegion,
           },
+          // The region in the stack name is rather redundant (it will always be the target region)
+          // Leaving it in for backwards compatibility.
           stackName: `${targetStack.stackName}-EventBusPolicy-support-${targetRegion}-${sourceAccount}`,
         });
         new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
