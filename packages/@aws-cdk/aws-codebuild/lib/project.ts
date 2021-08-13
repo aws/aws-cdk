@@ -7,7 +7,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { ArnComponents, Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
+import { ArnComponents, Aws, Duration, FeatureFlags, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
+import { CODEBUILD_BUILD_IMAGE_REQUIRED } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -456,9 +457,49 @@ export interface CommonProjectProps {
   /**
    * Build environment to use for the build.
    *
+   * Cannot be specified together with any of `buildImage`, `computeType`, or `privileged`.
+   *
    * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
+   * @deprecated Specify `buildImage`, `computeType` etc in this property object instead
    */
   readonly environment?: BuildEnvironment;
+
+  /**
+   * The image used for the builds.
+   *
+   * Even though this property is optional, you should always specify the build image
+   * you want to use. If the feature flag `@aws-cdk/aws-codebuild:buildImageRequired` is
+   * set, this construct cannot be defined without a `buildImage` property.
+   *
+   * Cannot be specified together with `environment`.
+   *
+   * @default - Required if `@aws-cdk/aws-codebuild:buildImageRequired` is set, `LinuxBuildImage.STANDARD_1_0` otherwise
+   */
+  readonly buildImage?: IBuildImage;
+
+  /**
+   * The type of compute to use for this build.
+   * See the {@link ComputeType} enum for the possible values.
+   *
+   * Cannot be specified together with `environment`.
+   *
+   * @default taken from {@link #buildImage#defaultComputeType}
+   */
+  readonly computeType?: ComputeType;
+
+  /**
+   * Indicates how the project builds Docker images. Specify true to enable
+   * running the Docker daemon inside a Docker container. This value must be
+   * set to true only if this build project will be used to build Docker
+   * images, and the specified build environment image is not one provided by
+   * AWS CodeBuild with Docker support. Otherwise, all associated builds that
+   * attempt to interact with the Docker daemon will fail.
+   *
+   * Cannot be specified together with `environment`.
+   *
+   * @default false
+   */
+  readonly privileged?: boolean;
 
   /**
    * Indicates whether AWS CodeBuild generates a publicly accessible URL for
@@ -881,7 +922,15 @@ export class Project extends ProjectBase {
     });
     this.grantPrincipal = this.role;
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
+    if (props.environment && (props.buildImage || props.computeType || props.privileged !== undefined)) {
+      throw new Error('Cannot specify \'environment\' together with any of \'buildImage\', \'computeType\' or \'privileged\'. Prefer the latter.');
+    }
+
+    const buildImage = props.buildImage ?? props.environment?.buildImage;
+    if (!buildImage && FeatureFlags.of(this).isEnabled(CODEBUILD_BUILD_IMAGE_REQUIRED)) {
+      throw new Error('Project: you must specify a \'buildImage\'');
+    }
+    this.buildImage = buildImage ?? LinuxBuildImage.STANDARD_1_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -1131,19 +1180,17 @@ export class Project extends ProjectBase {
     props: ProjectProps,
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
 
-    const env = props.environment ?? {};
-    const vars: { [name: string]: BuildEnvironmentVariable } = {};
-    const containerVars = env.environmentVariables || {};
+    const env = props.environment ?? {
+      buildImage: this.buildImage,
+      computeType: props.computeType,
+      privileged: props.privileged,
+    };
 
-    // first apply environment variables from the container definition
-    for (const name of Object.keys(containerVars)) {
-      vars[name] = containerVars[name];
-    }
-
-    // now apply project-level vars
-    for (const name of Object.keys(projectVars)) {
-      vars[name] = projectVars[name];
-    }
+    // Combine environment variables
+    const vars: { [name: string]: BuildEnvironmentVariable } = {
+      ...env.environmentVariables,
+      ...projectVars,
+    };
 
     const hasEnvironmentVars = Object.keys(vars).length > 0;
 
