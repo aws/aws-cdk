@@ -45,6 +45,8 @@ export class AwsClients {
   public async deleteStacks(...stackNames: string[]) {
     if (stackNames.length === 0) { return; }
 
+    // We purposely do all stacks serially, because they've been ordered
+    // to do the bootstrap stack last.
     for (const stackName of stackNames) {
       await this.cloudFormation('updateTerminationProtection', {
         EnableTerminationProtection: false,
@@ -53,10 +55,8 @@ export class AwsClients {
       await this.cloudFormation('deleteStack', {
         StackName: stackName,
       });
-    }
 
-    await retry(this.output, `Deleting ${stackNames}`, retry.forSeconds(600), async () => {
-      for (const stackName of stackNames) {
+      await retry(this.output, `Deleting ${stackName}`, retry.forSeconds(600), async () => {
         const status = await this.stackStatus(stackName);
         if (status !== undefined && status.endsWith('_FAILED')) {
           throw retry.abort(new Error(`'${stackName}' is in state '${status}'`));
@@ -64,8 +64,8 @@ export class AwsClients {
         if (status !== undefined) {
           throw new Error(`Delete of '${stackName}' not complete yet`);
         }
-      }
-    });
+      });
+    }
   }
 
   public async stackStatus(stackName: string): Promise<string | undefined> {
@@ -78,15 +78,23 @@ export class AwsClients {
   }
 
   public async emptyBucket(bucketName: string) {
-    const objects = await this.s3('listObjects', { Bucket: bucketName });
-    const deletes = (objects.Contents || []).map(obj => obj.Key || '').filter(d => !!d);
+    const objects = await this.s3('listObjectVersions', { Bucket: bucketName });
+    const deletes = [...objects.Versions || [], ...objects.DeleteMarkers || []]
+      .reduce((acc, obj) => {
+        if (typeof obj.VersionId !== 'undefined' && typeof obj.Key !== 'undefined') {
+          acc.push({ Key: obj.Key, VersionId: obj.VersionId });
+        } else if (typeof obj.Key !== 'undefined') {
+          acc.push({ Key: obj.Key });
+        }
+        return acc;
+      }, [] as AWS.S3.ObjectIdentifierList);
     if (deletes.length === 0) {
       return Promise.resolve();
     }
     return this.s3('deleteObjects', {
       Bucket: bucketName,
       Delete: {
-        Objects: deletes.map(d => ({ Key: d })),
+        Objects: deletes,
         Quiet: false,
       },
     });

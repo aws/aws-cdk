@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import {
   IWebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
@@ -14,14 +14,14 @@ describe('WebSocketApi', () => {
     new WebSocketApi(stack, 'api');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
       Name: 'api',
       ProtocolType: 'WEBSOCKET',
     });
 
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Stage');
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Route');
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Integration');
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Stage', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Route', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 0);
   });
 
   test('addRoute: adds a route with passed key', () => {
@@ -33,7 +33,7 @@ describe('WebSocketApi', () => {
     api.addRoute('myroute', { integration: new DummyIntegration() });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       ApiId: stack.resolve(api.apiId),
       RouteKey: 'myroute',
     });
@@ -47,7 +47,7 @@ describe('WebSocketApi', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       ApiId: stack.resolve(api.apiId),
       RouteKey: '$connect',
     });
@@ -61,7 +61,7 @@ describe('WebSocketApi', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       ApiId: stack.resolve(api.apiId),
       RouteKey: '$disconnect',
     });
@@ -75,7 +75,7 @@ describe('WebSocketApi', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       ApiId: stack.resolve(api.apiId),
       RouteKey: '$default',
     });

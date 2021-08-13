@@ -40,7 +40,7 @@ To perform version upgrades without replacing the entire domain, specify the `en
 import * as es from '@aws-cdk/aws-elasticsearch';
 
 const devDomain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_9,
+    version: es.ElasticsearchVersion.V7_10,
     enableVersionUpgrade: true // defaults to false
 });
 ```
@@ -265,7 +265,7 @@ UltraWarm nodes can be enabled to provide a cost-effective way to store large am
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_9,
+    version: es.ElasticsearchVersion.V7_10,
     capacity: {
         masterNodes: 2,
         warmNodes: 2,
@@ -290,3 +290,18 @@ new Domain(stack, 'Domain', {
 It is also possible to specify a custom certificate instead of the auto-generated one.
 
 Additionally, an automatic CNAME-Record is created if a hosted zone is provided for the custom endpoint
+
+## Advanced options
+
+[Advanced options](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-advanced-options) can used to configure additional options.
+
+```ts
+new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_7,
+    advancedOptions: {
+        'rest.action.multi.allow_explicit_index': 'false',
+        'indices.fielddata.cache.size': '25',
+        'indices.query.bool.max_clause_count': '2048',
+    },
+});
+```

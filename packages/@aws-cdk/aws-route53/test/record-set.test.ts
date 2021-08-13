@@ -1,6 +1,6 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as route53 from '../lib';
 
@@ -540,6 +540,36 @@ nodeunitShim({
     test.done();
   },
 
+  'DS record'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.DsRecord(stack, 'DS', {
+      zone,
+      recordName: 'www',
+      values: ['12345 3 1 123456789abcdef67890123456789abcdef67890'],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'DS',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        '12345 3 1 123456789abcdef67890123456789abcdef67890',
+      ],
+      TTL: '1800',
+    }));
+    test.done();
+  },
+
   'Zone delegation record'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -570,7 +600,7 @@ nodeunitShim({
     test.done();
   },
 
-  'Cross account zone delegation record'(test: Test) {
+  'Cross account zone delegation record with parentHostedZoneId'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
@@ -587,6 +617,7 @@ nodeunitShim({
       parentHostedZoneId: parentZone.hostedZoneId,
       delegationRole: parentZone.crossAccountZoneDelegationRole!,
       ttl: Duration.seconds(60),
+      removalPolicy: RemovalPolicy.RETAIN,
     });
 
     // THEN
@@ -615,6 +646,90 @@ nodeunitShim({
       },
       TTL: 60,
     }));
+    expect(stack).to(haveResource('Custom::CrossAccountZoneDelegation', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
+    test.done();
+  },
+
+  'Cross account zone delegation record with parentHostedZoneName'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneName: 'myzone.com',
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      ttl: Duration.seconds(60),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::CrossAccountZoneDelegation', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
+          'Arn',
+        ],
+      },
+      AssumeRoleArn: {
+        'Fn::GetAtt': [
+          'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+          'Arn',
+        ],
+      },
+      ParentZoneName: 'myzone.com',
+      DelegatedZoneName: 'sub.myzone.com',
+      DelegatedZoneNameServers: {
+        'Fn::GetAtt': [
+          'ChildHostedZone4B14AC71',
+          'NameServers',
+        ],
+      },
+      TTL: 60,
+    }));
+    test.done();
+  },
+
+  'Cross account zone delegation record throws when parent id and name both/nither are supplied'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // THEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+
+    test.throws(() => {
+      new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation1', {
+        delegatedZone: childZone,
+        delegationRole: parentZone.crossAccountZoneDelegationRole!,
+        ttl: Duration.seconds(60),
+      });
+    }, /At least one of parentHostedZoneName or parentHostedZoneId is required/);
+
+    test.throws(() => {
+      new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation2', {
+        delegatedZone: childZone,
+        parentHostedZoneId: parentZone.hostedZoneId,
+        parentHostedZoneName: parentZone.zoneName,
+        delegationRole: parentZone.crossAccountZoneDelegationRole!,
+        ttl: Duration.seconds(60),
+      });
+    }, /Only one of parentHostedZoneName and parentHostedZoneId is supported/);
+
     test.done();
   },
 });

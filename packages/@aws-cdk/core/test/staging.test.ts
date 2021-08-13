@@ -597,6 +597,34 @@ nodeunitShim({
     test.done();
   },
 
+
+  'bundling with docker security option'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        securityOpt: 'no-new-privileges',
+      },
+      assetHashType: AssetHashType.BUNDLE,
+    });
+
+    // THEN
+    test.equal(
+      readDockerStubInput(),
+      `run --rm --security-opt no-new-privileges ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
+    test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
+
+    test.done();
+  },
+
   'bundling with OUTPUT asset hash type'(test: Test) {
     // GIVEN
     const app = new App();
@@ -887,16 +915,66 @@ nodeunitShim({
     // THEN
     const assembly = app.synth();
     test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48', // this is the bundle dir but it's empty
+      'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48', // this is the bundle dir
       'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48.zip',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
       'tree.json',
     ]);
-    test.equal(fs.readdirSync(path.join(assembly.directory, 'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48')).length, 0); // empty bundle dir
+    test.deepEqual(fs.readdirSync(path.join(assembly.directory, 'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48')), [
+      'test.zip', // bundle dir with "touched" bundled output file
+    ]);
     test.deepEqual(staging.packaging, FileAssetPackaging.FILE);
     test.deepEqual(staging.isArchive, true);
+
+    test.done();
+  },
+
+  'bundling that produces a single archive file with disk cache'(test: Test) {
+    // GIVEN
+    const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
+    if (fs.existsSync(TEST_OUTDIR)) {
+      fs.removeSync(TEST_OUTDIR);
+    }
+
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    const app1 = new App({ outdir: TEST_OUTDIR });
+    const stack1 = new Stack(app1, 'Stack');
+
+    const app2 = new App({ outdir: TEST_OUTDIR }); // same OUTDIR
+    const stack2 = new Stack(app2, 'stack');
+
+    // WHEN
+    const staging1 = new AssetStaging(stack1, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SINGLE_ARCHIVE],
+        outputType: BundlingOutput.ARCHIVED,
+      },
+    });
+
+    // Now clear asset hash cache to show that during the second staging
+    // even though bundling is skipped it will correctly be considered
+    // as a FileAssetPackaging.FILE.
+    AssetStaging.clearAssetHashCache();
+
+    const staging2 = new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SINGLE_ARCHIVE],
+        outputType: BundlingOutput.ARCHIVED,
+      },
+    });
+
+    // THEN
+    test.deepEqual(staging1.packaging, FileAssetPackaging.FILE);
+    test.deepEqual(staging1.isArchive, true);
+    test.deepEqual(staging2.packaging, staging1.packaging);
+    test.deepEqual(staging2.isArchive, staging1.isArchive);
 
     test.done();
   },

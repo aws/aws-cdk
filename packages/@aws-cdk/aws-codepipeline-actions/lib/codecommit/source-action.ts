@@ -106,6 +106,15 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
 
 /**
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
+ *
+ * If the CodeCommit repository is in a different account, you must use
+ * `CodeCommitTrigger.EVENTS` to trigger the pipeline.
+ *
+ * (That is because the Pipeline structure normally only has a `RepositoryName`
+ * field, and that is not enough for the pipeline to locate the repository's
+ * source account. However, if the pipeline is triggered via an EventBridge
+ * event, the event itself has the full repository ARN in there, allowing the
+ * pipeline to locate the repository).
  */
 export class CodeCommitSourceAction extends Action {
   /**

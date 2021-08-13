@@ -123,6 +123,16 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_0 = new Runtime('syn-nodejs-puppeteer-3.0');
 
   /**
+   * `syn-nodejs-puppeteer-3.1` includes the following:
+   * - Lambda runtime Node.js 12.x
+   * - Puppeteer-core version 5.5.0
+   * - Chromium version 88.0.4298.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_1 = new Runtime('syn-nodejs-puppeteer-3.1');
+
+  /**
    * @param name The name of the runtime version
    */
   public constructor(public readonly name: string) {
@@ -235,6 +245,14 @@ export interface CanaryProps {
    */
   readonly test: Test;
 
+  /**
+   * Key-value pairs that the Synthetics caches and makes available for your canary scripts. Use environment variables
+   * to apply configuration changes, such as test and production environment configurations, without changing your
+   * Canary script source code.
+   *
+   * @default - No environment variables.
+   */
+  readonly environmentVariables?: { [key: string]: string };
 }
 
 /**
@@ -296,6 +314,7 @@ export class Canary extends cdk.Resource {
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
       code: this.createCode(props),
+      runConfig: this.createRunConfig(props),
     });
 
     this.canaryId = resource.attrId;
@@ -397,6 +416,15 @@ export class Canary extends cdk.Resource {
     return {
       durationInSeconds: String(`${props.timeToLive?.toSeconds() ?? 0}`),
       expression: props.schedule?.expressionString ?? 'rate(5 minutes)',
+    };
+  }
+
+  private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {
+    if (!props.environmentVariables) {
+      return undefined;
+    }
+    return {
+      environmentVariables: props.environmentVariables,
     };
   }
 

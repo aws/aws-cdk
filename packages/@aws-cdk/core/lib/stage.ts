@@ -179,6 +179,7 @@ export class Stage extends CoreConstruct {
     if (!this.assembly || options.force) {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
+        validateOnSynthesis: options.validateOnSynthesis,
       });
     }
 
@@ -201,7 +202,7 @@ export class Stage extends CoreConstruct {
 }
 
 /**
- * Options for assemly synthesis.
+ * Options for assembly synthesis.
  */
 export interface StageSynthesisOptions {
   /**
@@ -209,6 +210,13 @@ export interface StageSynthesisOptions {
    * @default - false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Whether the stack should be validated after synthesis to check for error metadata
+   *
+   * @default - false
+   */
+  readonly validateOnSynthesis?: boolean;
 
   /**
    * Force a re-synth, even if the stage has already been synthesized.

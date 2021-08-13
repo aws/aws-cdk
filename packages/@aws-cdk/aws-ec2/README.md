@@ -166,7 +166,13 @@ Which subnets are selected is evaluated as follows:
   * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
     types that do not allow creating two ENIs in the same availability zone).
 * `subnetFilters`: additional filtering on subnets using any number of user-provided filters which
-  extend the SubnetFilter class.
+  extend `SubnetFilter`.  The following methods on the `SubnetFilter` class can be used to create
+  a filter:
+  * `byIds`: chooses subnets from a list of ids
+  * `availabilityZones`: chooses subnets in the provided list of availability zones
+  * `onePerAz`: chooses at most one subnet per availability zone
+  * `containsIpAddresses`: chooses a subnet which contains *any* of the listed ip addresses
+  * `byCidrMask`: chooses subnets that have the provided CIDR netmask
 
 ### Using NAT instances
 
@@ -962,8 +968,12 @@ const instance = new ec2.Instance(this, 'Instance', {
 volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 const targetDevice = '/dev/xvdz';
 instance.userData.addCommands(
+  // Retrieve token for accessing EC2 instance metadata (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-data-retrieval.html)
+  `TOKEN=$(curl -SsfX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")`,
+  // Retrieve the instance Id of the current EC2 instance
+  `INSTANCE_ID=$(curl -SsfH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)`,
   // Attach the volume to /dev/xvdz
-  `aws --region ${Stack.of(this).region} ec2 attach-volume --volume-id ${volume.volumeId} --instance-id ${instance.instanceId} --device ${targetDevice}`,
+  `aws --region ${Stack.of(this).region} ec2 attach-volume --volume-id ${volume.volumeId} --instance-id $INSTANCE_ID --device ${targetDevice}`,
   // Wait until the volume has attached
   `while ! test -e ${targetDevice}; do sleep 1; done`
   // The volume will now be mounted. You may have to add additional code to format the volume if it has not been prepared.
@@ -1111,6 +1121,23 @@ new ec2.LaunchTemplate(stack, '', {
 For more information see
 [Specifying Multiple User Data Blocks Using a MIME Multi Part Archive](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#multi-part_user_data)
 
+#### Using add*Command on MultipartUserData
+
+To use the `add*Command` methods, that are inherited from the `UserData` interface, on `MultipartUserData` you must add a part
+to the `MultipartUserData` and designate it as the reciever for these methods. This is accomplished by using the `addUserDataPart()`
+method on `MultipartUserData` with the `makeDefault` argument set to `true`:
+
+```ts
+const multipartUserData = new ec2.MultipartUserData();
+const commandsUserData = ec2.UserData.forLinux();
+multipartUserData.addUserDataPart(commandsUserData, MultipartBody.SHELL_SCRIPT, true);
+
+// Adding commands to the multipartUserData adds them to commandsUserData, and vice-versa.
+multipartUserData.addCommands('touch /root/multi.txt');
+commandsUserData.addCommands('touch /root/userdata.txt');
+```
+
+When used on an EC2 instance, the above `multipartUserData` will create both `multi.txt` and `userdata.txt` in `/root`.
 
 ## Importing existing subnet
 

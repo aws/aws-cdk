@@ -1,6 +1,5 @@
 import { throws } from 'assert';
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
@@ -96,7 +95,7 @@ describe('Batch Compute Evironment', () => {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
         Type: 'MANAGED',
         ...expectedManagedDefaultComputeProps({
           Type: batch.ComputeResourceType.SPOT,
@@ -117,7 +116,7 @@ describe('Batch Compute Evironment', () => {
             ],
           },
         }),
-      }, ResourcePart.Properties));
+      });
     });
 
     describe('with a bid percentage', () => {
@@ -200,7 +199,7 @@ describe('Batch Compute Evironment', () => {
       new batch.ComputeEnvironment(stack, 'test-compute-env', props);
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
         ComputeEnvironmentName: 'my-test-compute-env',
         Type: 'MANAGED',
         State: 'DISABLED',
@@ -214,7 +213,9 @@ describe('Batch Compute Evironment', () => {
           AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
           DesiredvCpus: props.computeResources.desiredvCpus,
           Ec2KeyPair: props.computeResources.ec2KeyPair,
-          ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}',
+          ImageId: {
+            Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+          },
           InstanceRole: {
             'Fn::GetAtt': [
               props.computeResources.instanceRole ? 'InstanceProfile' : '',
@@ -249,7 +250,7 @@ describe('Batch Compute Evironment', () => {
           },
           Type: 'EC2',
         },
-      }, ResourcePart.Properties));
+      });
     });
 
     describe('with no allocation strategy specified', () => {
@@ -263,7 +264,7 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           Type: 'MANAGED',
           ServiceRole: {
             'Fn::GetAtt': [
@@ -271,7 +272,7 @@ describe('Batch Compute Evironment', () => {
               'Arn',
             ],
           },
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -315,12 +316,12 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...defaultServiceRole,
           ...expectedManagedDefaultComputeProps({
             MinvCpus: 0,
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -335,11 +336,11 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
             MaxvCpus: 256,
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -354,8 +355,8 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResource('AWS::Batch::ComputeEnvironment'));
-        expect(stack).to(haveResource('AWS::IAM::Role'));
+        Template.fromStack(stack).resourceCountIs('AWS::Batch::ComputeEnvironment', 1);
+        Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
       });
     });
 
@@ -370,11 +371,11 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
             InstanceTypes: ['optimal'],
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -389,11 +390,11 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
             Type: batch.ComputeResourceType.ON_DEMAND,
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
   });

@@ -158,9 +158,9 @@ and always deploy the stack.
 
 You can have multiple stacks in a cdk app. An example can be found in [how to create multiple stacks](https://docs.aws.amazon.com/cdk/latest/guide/stack_how_to_create_multiple_stacks.html).
 
-In order to deploy them, you can list the stacks you want to deploy.
+In order to deploy them, you can list the stacks you want to deploy. If your application contains pipeline stacks, the `cdk list` command will show stack names as paths, showing where they are in the pipeline hierarchy (e.g., `PipelineStack`, `PipelineStack/Prod`, `PipelineStack/Prod/MyService` etc).
 
-If you want to deploy all of them, you can use the flag `--all` or the wildcard `*` to deploy all stacks in an app.
+If you want to deploy all of them, you can use the flag `--all` or the wildcard `*` to deploy all stacks in an app. Please note that, if you have a hierarchy of stacks as described above, `--all` and `*` will only match the stacks on the top level. If you want to match all the stacks in the hierarchy, use `**`. You can also combine these patterns. For example, if you want to deploy all stacks in the `Prod` stage, you can use `cdk deploy PipelineStack/Prod/**`.
 
 #### Parameters
 
@@ -220,6 +220,24 @@ Specify an outputs file to write to by supplying the `--outputs-file` parameter
 ```console
 $ cdk deploy --outputs-file outputs.json
 ```
+
+Alternatively, the `outputsFile` key can be specified in the project config (`cdk.json`).
+
+The following shows a sample `cdk.json` where the `outputsFile` key is set to *outputs.json*.
+
+```json
+{
+  "app": "npx ts-node bin/myproject.ts",
+  "context": {
+    "@aws-cdk/core:enableStackNameDuplicates": "true",
+    "aws-cdk:enableDiffNoFail": "true",
+    "@aws-cdk/core:stackRelativeExports": "true"
+  },
+  "outputsFile": "outputs.json"
+}
+```
+
+The `outputsFile` key can also be specified as a user setting (`~/.cdk.json`)
 
 When the stack finishes deployment, `outputs.json` would look like this:
 
@@ -291,7 +309,7 @@ For more control over when stack changes are deployed, the CDK can generate a
 CloudFormation change set but not execute it. The default name of the generated
 change set is *cdk-deploy-change-set*, and a previous change set with that
 name will be overwritten. The change set will always be created, even if it
-is empty. A name can also be given to the change set to make it easier to later 
+is empty. A name can also be given to the change set to make it easier to later
 execute.
 
 ```console

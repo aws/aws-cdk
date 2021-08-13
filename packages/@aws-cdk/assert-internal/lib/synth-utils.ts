@@ -18,7 +18,7 @@ export class SynthUtils {
    */
   public static toCloudFormation(stack: core.Stack, options: core.SynthesisOptions = { }): any {
     const synth = this._synthesizeWithNested(stack, options);
-    if (synth instanceof cxapi.CloudFormationStackArtifact) {
+    if (isStackArtifact(synth)) {
       return synth.template;
     } else {
       return synth;
@@ -84,4 +84,8 @@ export interface SubsetOptions {
    * Match all resources of the given type
    */
   resourceTypes?: string[];
+}
+
+function isStackArtifact(x: object): x is cxapi.CloudFormationStackArtifact {
+  return 'template' in x;
 }

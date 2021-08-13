@@ -30,10 +30,10 @@ According to the kind of project you are developing:
 You can use a classic import to get access to each service namespaces:
 
 ```ts
-import { core, aws_s3 as s3 } from 'aws-cdk-lib';
+import { Stack, App, aws_s3 as s3 } from 'aws-cdk-lib';
 
-const app = new core.App();
-const stack = new core.Stack(app, 'TestStack');
+const app = new App();
+const stack = new Stack(app, 'TestStack');
 
 new s3.Bucket(stack, 'TestBucket');
 ```
@@ -806,6 +806,38 @@ Mappings:
     regionName:
       us-east-1: US East (N. Virginia)
       us-east-2: US East (Ohio)
+```
+
+Mappings can also be synthesized "lazily"; lazy mappings will only render a "Mappings"
+section in the synthesized CloudFormation template if some `findInMap` call is unable to
+immediately return a concrete value due to one or both of the keys being unresolved tokens
+(some value only available at deploy-time).
+
+For example, the following code will not produce anything in the "Mappings" section. The
+call to `findInMap` will be able to resolve the value during synthesis and simply return
+`'US East (Ohio)'`.
+
+```ts
+const regionTable = new CfnMapping(this, 'RegionTable', {
+  mapping: {
+    regionName: {
+      'us-east-1': 'US East (N. Virginia)',
+      'us-east-2': 'US East (Ohio)',
+    },
+  },
+  lazy: true,
+});
+
+regionTable.findInMap('regionName', 'us-east-2');
+```
+
+On the other hand, the following code will produce the "Mappings" section shown above,
+since the second-level key is an unresolved token. The call to `findInMap` will return a
+token that resolves to `{ Fn::FindInMap: [ 'RegionTable', 'regionName', { Ref: AWS::Region
+} ] }`.
+
+```ts
+regionTable.findInMap('regionName', Aws.REGION);
 ```
 
 [cfn-mappings]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html

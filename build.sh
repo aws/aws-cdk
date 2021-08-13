@@ -2,13 +2,15 @@
 set -euo pipefail
 
 bail="--bail"
-runtarget="build+test"
+runtarget="build"
+run_tests="true"
 check_prereqs="true"
 check_compat="true"
+extract_snippets="false"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test]"
+            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--skip-prereqs] [--skip-compat] [--extract]"
             exit 1
             ;;
         --no-bail)
@@ -18,13 +20,16 @@ while [[ "${1:-}" != "" ]]; do
             export CDK_BUILD="--force"
             ;;
         --skip-test|--skip-tests)
-            runtarget="build"
+            run_tests="false"
             ;;
         --skip-prereqs)
             check_prereqs="false"
             ;;
         --skip-compat)
             check_compat="false"
+            ;;
+        --extract)
+            extract_snippets="true"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -35,7 +40,7 @@ while [[ "${1:-}" != "" ]]; do
 done
 
 export PATH=$(npm bin):$PATH
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTIONS:-}"
 
 if ! [ -x "$(command -v yarn)" ]; then
   echo "yarn is not installed. Install it from here- https://yarnpkg.com/en/docs/install."
@@ -59,6 +64,9 @@ if [ "$check_prereqs" == "true" ]; then
   /bin/bash ./scripts/check-build-prerequisites.sh
 fi
 
+# Check that the yarn.lock is consistent
+node ./scripts/check-yarn-lock.js
+
 # Prepare for build with references
 /bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
 
@@ -69,6 +77,13 @@ rm -rf $BUILD_INDICATOR
 # On dev machine, this speeds up the TypeScript part of the build by ~30%.
 export MERKLE_BUILD_CACHE=$(mktemp -d)
 trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
+
+if [ "$run_tests" == "true" ]; then
+    runtarget="$runtarget+test"
+fi
+if [ "$extract_snippets" == "true" ]; then
+    runtarget="$runtarget+extract"
+fi
 
 echo "============================================================================================="
 echo "building..."

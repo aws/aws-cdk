@@ -7,6 +7,9 @@ import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   CfnDistribution,
   CloudFrontWebDistribution,
+  Function,
+  FunctionCode,
+  FunctionEventType,
   GeoRestriction,
   KeyGroup,
   LambdaEdgeEventType,
@@ -44,6 +47,7 @@ nodeunitShim({
           customOriginSource: {
             domainName: 'myorigin.com',
           },
+          originShieldRegion: 'us-east-1',
           behaviors: [
             {
               isDefaultBehavior: true,
@@ -105,6 +109,10 @@ nodeunitShim({
                         'HeaderValue': 'somevalue',
                       },
                     ],
+                    'OriginShield': {
+                      'Enabled': true,
+                      'OriginShieldRegion': 'us-east-1',
+                    },
                   },
                 ],
                 'PriceClass': 'PriceClass_100',
@@ -188,6 +196,84 @@ nodeunitShim({
                 'Compress': true,
               },
               'Enabled': true,
+              'IPV6Enabled': true,
+              'HttpVersion': 'http2',
+            },
+          },
+        },
+      },
+    });
+    test.done();
+  },
+
+  'can disable distribution'(test: Test) {
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      enabled: false,
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(stack).toMatch({
+      'Resources': {
+        'Bucket83908E77': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+        'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+          'Type': 'AWS::CloudFront::Distribution',
+          'Properties': {
+            'DistributionConfig': {
+              'DefaultRootObject': 'index.html',
+              'Origins': [
+                {
+                  'ConnectionAttempts': 3,
+                  'ConnectionTimeout': 10,
+                  'DomainName': {
+                    'Fn::GetAtt': [
+                      'Bucket83908E77',
+                      'RegionalDomainName',
+                    ],
+                  },
+                  'Id': 'origin1',
+                  'S3OriginConfig': {},
+                },
+              ],
+              'ViewerCertificate': {
+                'CloudFrontDefaultCertificate': true,
+              },
+              'PriceClass': 'PriceClass_100',
+              'DefaultCacheBehavior': {
+                'AllowedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'CachedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'TargetOriginId': 'origin1',
+                'ViewerProtocolPolicy': 'redirect-to-https',
+                'ForwardedValues': {
+                  'QueryString': false,
+                  'Cookies': { 'Forward': 'none' },
+                },
+                'Compress': true,
+              },
+              'Enabled': false,
               'IPV6Enabled': true,
               'HttpVersion': 'http2',
             },
@@ -594,6 +680,52 @@ added the ellipsis so a user would know there was more to ...`,
         },
       },
     });
+    test.done();
+  },
+
+  'distribution with CloudFront function-association'(test: Test) {
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+              functionAssociations: [{
+                eventType: FunctionEventType.VIEWER_REQUEST,
+                function: new Function(stack, 'TestFunction', {
+                  code: FunctionCode.fromInline('foo'),
+                }),
+              }],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+      'DistributionConfig': {
+        'DefaultCacheBehavior': {
+          'FunctionAssociations': [
+            {
+              'EventType': 'viewer-request',
+              'FunctionARN': {
+                'Fn::GetAtt': [
+                  'TestFunction22AD90FC',
+                  'FunctionARN',
+                ],
+              },
+            },
+          ],
+        },
+      },
+    }));
+
     test.done();
   },
 

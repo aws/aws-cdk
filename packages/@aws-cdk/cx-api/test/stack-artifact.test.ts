@@ -130,3 +130,30 @@ test('read tags from stack metadata', () => {
   // THEN
   expect(assembly.getStackByName('Stack').tags).toEqual({ foo: 'bar' });
 });
+
+test('user friendly id is the assembly display name', () => {
+  // GIVEN
+  builder.addArtifact('Stack', {
+    ...stackBase,
+    displayName: 'some/path/to/the/stack',
+  });
+
+  // WHEN
+  const assembly = builder.buildAssembly();
+
+  // THEN
+  expect(assembly.getStackByName('Stack').hierarchicalId).toEqual('some/path/to/the/stack');
+});
+
+test('user friendly id is the id itself if no display name is given', () => {
+  // GIVEN
+  builder.addArtifact('Stack', {
+    ...stackBase,
+  });
+
+  // WHEN
+  const assembly = builder.buildAssembly();
+
+  // THEN
+  expect(assembly.getStackByName('Stack').hierarchicalId).toEqual('Stack');
+});

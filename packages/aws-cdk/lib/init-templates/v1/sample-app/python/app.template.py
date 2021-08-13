@@ -6,6 +6,6 @@ from %name.PythonModule%.%name.PythonModule%_stack import %name.PascalCased%Stac
 
 
 app = core.App()
-%name.PascalCased%Stack(app, "%name.StackName%", env={'region': 'us-west-2'})
+%name.PascalCased%Stack(app, "%name.StackName%")
 
 app.synth()

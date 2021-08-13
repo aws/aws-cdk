@@ -12,20 +12,22 @@ export interface IMetric {
   /**
    * Turn this metric object into an alarm configuration
    *
-   * @deprecated Use `toMetricsConfig()` instead.
+   * @deprecated Use `toMetricConfig()` instead.
    */
   toAlarmConfig(): MetricAlarmConfig;
 
   /**
    * Turn this metric object into a graph configuration
    *
-   * @deprecated Use `toMetricsConfig()` instead.
+   * @deprecated Use `toMetricConfig()` instead.
    */
   toGraphConfig(): MetricGraphConfig;
 }
 
 /**
  * Metric dimension
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html
  *
  */
 export interface Dimension {

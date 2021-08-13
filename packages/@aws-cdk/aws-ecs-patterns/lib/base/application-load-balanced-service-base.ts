@@ -244,6 +244,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
 
+  /**
+   * Name of the load balancer
+   *
+   * @default - Automatically generated name.
+   */
+  readonly loadBalancerName?: string;
+
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -325,6 +332,13 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * A key/value map of labels to add to the container.
+   *
+   * @default - No labels.
+   */
+  readonly dockerLabels?: { [key: string]: string };
 }
 
 /**
@@ -403,6 +417,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
 
     const lbProps = {
       vpc: this.cluster.vpc,
+      loadBalancerName: props.loadBalancerName,
       internetFacing,
     };
 

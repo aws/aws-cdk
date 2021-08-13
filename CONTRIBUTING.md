@@ -2,17 +2,24 @@
 
 Thanks for your interest in contributing to the AWS CDK! ❤️
 
-This document describes how to set up a development environment and submit your contributions. Please read it carefully
-and let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
+We highly value contributions, with roughly half of all commits to the CDK
+coming from the community. We want to recognize all your hard work
+by getting your code merged as quickly as we can, so please read the guidance
+here carefully to make sure the review process goes smoothly.
+
+The CDK is released under the [Apache license](http://aws.amazon.com/apache2.0/).
+Any code you submit will be released under that license.
+
+This document describes how to set up a development environment and submit your changes. Please
+let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
 - [Getting Started](#getting-started)
 - [Pull Requests](#pull-requests)
   - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
   - [Step 2: Design (optional)](#step-2-design-optional)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
-  - [Step 4: Commit](#step-4-commit)
-  - [Step 5: Pull Request](#step-5-pull-request)
-  - [Step 6: Merge](#step-6-merge)
+  - [Step 4: Pull Request](#step-5-pull-request)
+  - [Step 5: Merge](#step-5-merge)
 - [Breaking Changes](#breaking-changes)
 - [Documentation](#documentation)
   - [rosetta](#rosetta)
@@ -51,17 +58,19 @@ The following tools need to be installed on your system prior to installing the 
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
+- [Docker >= 19.03](https://docs.docker.com/get-docker/)
+  - the Docker daemon must also be running
 
-Run the following commands to clone the repository locally.
+First fork the repository, and then run the following commands to clone the repository locally.
 
 ```console
-$ git clone https://github.com/aws/aws-cdk.git
+$ git clone https://github.com/{your-account}/aws-cdk.git
 $ cd aws-cdk
 $ yarn install
 ```
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK.
-We use `eslint` to keep our consistent in terms of style and reducing defects. We recommend installing the
+We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing the
 the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
 
 ### Repo Layout
@@ -108,8 +117,9 @@ However, if you wish to build the the entire repository, the following command w
 
 ```console
 cd <root of the CDK repo>
-yarn build
+scripts/foreach.sh yarn build
 ```
+Note: The `foreach` command is resumable by default; you must supply `-r` or `--reset` to start a new session.
 
 You are now ready to start contributing to the CDK. See the [Pull Requests](#pull-requests) section on how to make your
 changes and submit it as a pull request.
@@ -134,20 +144,6 @@ docker$ exit
 ```
 
 The `dist/` folder within each module contains the packaged up language artifacts.
-
-## Docker Build (Alternative)
-
-Build the docker image:
-
-```console
-$ docker build -t aws-cdk .
-```
-
-This allows you to run the CDK in a CDK-compatible directory with a command like:
-
-```console
-$ docker run -v $(pwd):/app -w /app aws-cdk <CDK ARGS>
-```
 
 ## Gitpod (Alternative)
 
@@ -185,18 +181,29 @@ contributing your changes.
 
 On the other hand, if you are here looking for an issue to work on, explore our [backlog of
 issues](https://github.com/aws/aws-cdk/issues) and find something that piques your interest. We have labeled all of our
-issues for easy filtration.
+issues for easy searching.
 If you are looking for your first contribution, the ['good first issue'
 label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) will be of help.
 
-### Step 2: Design (optional)
+It's a good idea to keep the priority of issues in mind when deciding what to
+work on. If we have labelled an issue as `P2`, it means it's something we won't
+get to soon, and we're waiting on more feedback from the community (in the form
+of +1s and comments) to give it a higher priority. A PR for a `P2` issue may
+take us some time to review, especially if it involves a complex
+implementation. `P1` issues impact a significant number of customers, so we are
+much more likely to give a PR for those issues prompt attention.
+
+### Step 2: Design
 
 In some cases, it is useful to seek feedback by iterating on a design document. This is useful
 when you plan a big change or feature, or you want advice on what would be the best path forward.
 
-In most cases, the GitHub issue is sufficient for such discussions, and can be sufficient to get
-clarity on what you plan to do. If the changes are significant or intrusive to the existing CDK experience,
-consider writing an RFC in our [RFC repository](https://github.com/aws/aws-cdk-rfcs) before jumping into our code base.
+In many cases, the GitHub issue is sufficient for such discussions, and can be
+sufficient to get clarity on what you plan to do. If the changes are
+significant or intrusive to the existing CDK experience, and especially for a
+brand new L2 construct implementation, please write an RFC in our [RFC
+repository](https://github.com/aws/aws-cdk-rfcs) before jumping into the code
+base.
 
 ### Step 3: Work your Magic
 
@@ -244,7 +251,7 @@ The steps here are usually AWS CLI commands but they need not be.
 
 Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
-* [integ.token-authorizer.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.ts#L6)
+* [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
 
 #### yarn watch (Optional)
 
@@ -260,52 +267,59 @@ $ cd packages/@aws-cdk/aws-iam
 $ yarn watch & # runs in the background
 ```
 
-### Step 4: Commit
+### Step 4: Pull Request
 
-Create a commit with the proposed changes:
+* Create a commit with your changes and push them to a
+  [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+  > Note: CDK core members can push to a branch on the AWS CDK repo (naming convention: `<user>/<feature-bug-name>`).
 
-* Commit title and message (and PR title and description) must adhere to [conventionalcommits](https://www.conventionalcommits.org).
+* Create a [pull request on
+  Github](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
+
+* Pull request title and message (and PR title and description) must adhere to
+  [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
     `chore(module): title`.
   * Title should be lowercase.
   * No period at the end of the title.
 
-* Commit message should describe _motivation_. Think about your code reviewers and what information they need in
+* Pull request message should describe _motivation_. Think about your code reviewers and what information they need in
   order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
   it will be easier to follow.
 
-* Commit message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
+* Pull request message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
 
 * Shout out to collaborators.
 
 * If not obvious (i.e. from unit tests), describe how you verified that your change works.
 
-* If this commit includes breaking changes, they must be listed at the end in the following format (notice how multiple breaking changes should be formatted):
+* If this PR includes breaking changes, they must be listed at the end in the following format
+  (notice how multiple breaking changes should be formatted):
 
-```
-BREAKING CHANGE: Description of what broke and how to achieve this behavior now
-* **module-name:** Another breaking change
-* **module-name:** Yet another breaking change
-```
+  ```
+  BREAKING CHANGE: Description of what broke and how to achieve this behavior now
+  * **module-name:** Another breaking change
+  * **module-name:** Yet another breaking change
+  ```
 
-### Step 5: Pull Request
+* Once the pull request is submitted, a reviewer will be assigned by the maintainers.
 
-* Push to a GitHub fork.
-  * CDK core members can push to a branch on the AWS CDK repo (naming convention: `<user>/<feature-bug-name>`).
-* Submit a Pull Request on GitHub. A reviewer will later be assigned by the maintainers.
 * Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
   for you when you finalize your merge commit message.
+
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
 
-### Step 6: Merge
+### Step 5: Merge
 
 * Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs).
 * Once approved and tested, one of our bots will squash-merge to master and will use your PR title/description as the
   commit message.
 
 ## Breaking Changes
+
+_NOTE: Breaking changes will not be allowed in the upcoming v2 release. These instructions apply to v1._
 
 Whenever you are making changes, there is a chance for those changes to be
 *breaking* existing users of the library. A change is breaking if there are
@@ -745,17 +759,7 @@ The pattern is simple:
    through `cdk init`.
 4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
 
-    ```
-    fix(core): impossible to use the same physical stack name for two stacks (under feature flag)
-    ```
-5. Under `BREAKING CHANGES` in your commit message describe this new behavior:
-
-    ```
-    BREAKING CHANGE: template file names for new projects created through "cdk init"
-    will use the template artifact ID instead of the physical stack name to enable
-    multiple stacks to use the same name. This is enabled through the flag
-    `@aws-cdk/core:enableStackNameDuplicates` in newly generated `cdk.json` files.
-    ```
+    `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
 In the [next major version of the
 CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the

@@ -222,6 +222,14 @@ interface DatabaseClusterBaseProps {
    * @default - a new subnet group will be created.
    */
   readonly subnetGroup?: ISubnetGroup;
+
+  /**
+   * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
+   * to database accounts.
+   *
+   * @default false
+   */
+  readonly iamAuthentication?: boolean;
 }
 
 /**
@@ -290,8 +298,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * Never undefined.
    */
   public readonly engine?: IClusterEngine;
-  public readonly instanceIdentifiers: string[] = [];
-  public readonly instanceEndpoints: Endpoint[] = [];
 
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
@@ -356,6 +362,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
+      enableIamDatabaseAuthentication: props.iamAuthentication,
       // Admin
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
@@ -453,6 +460,13 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
   readonly storageEncryptionKey?: kms.IKey;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default: true
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -472,6 +486,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
+  public readonly instanceIdentifiers: string[];
+  public readonly instanceEndpoints: Endpoint[];
 
   /**
    * The secret attached to this cluster
@@ -504,6 +520,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     });
 
     this.clusterIdentifier = cluster.ref;
@@ -524,7 +541,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
     }
 
     setLogRetention(this, props);
-    createInstances(this, props, this.subnetGroup);
+    const createdInstances = createInstances(this, props, this.subnetGroup);
+    this.instanceIdentifiers = createdInstances.instanceIdentifiers;
+    this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
 
   /**
@@ -593,6 +612,8 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
+  public readonly instanceIdentifiers: string[];
+  public readonly instanceEndpoints: Endpoint[];
 
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
@@ -616,7 +637,9 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     setLogRetention(this, props);
-    createInstances(this, props, this.subnetGroup);
+    const createdInstances = createInstances(this, props, this.subnetGroup);
+    this.instanceIdentifiers = createdInstances.instanceIdentifiers;
+    this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
 }
 

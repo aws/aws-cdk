@@ -306,7 +306,7 @@ describe('bucket', () => {
                     },
                   },
                   'Effect': 'Deny',
-                  'Principal': '*',
+                  'Principal': { AWS: '*' },
                   'Resource': [
                     {
                       'Fn::GetAtt': [
@@ -525,7 +525,7 @@ describe('bucket', () => {
                   {
                     'Action': 'bar:baz',
                     'Effect': 'Allow',
-                    'Principal': '*',
+                    'Principal': { AWS: '*' },
                     'Resource': 'foo',
                   },
                 ],
@@ -553,7 +553,7 @@ describe('bucket', () => {
       expect(stack.resolve(x.toStatementJson())).toEqual({
         Action: 's3:ListBucket',
         Effect: 'Allow',
-        Principal: '*',
+        Principal: { AWS: '*' },
         Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
       });
 
@@ -574,7 +574,7 @@ describe('bucket', () => {
       expect(stack.resolve(p.toStatementJson())).toEqual({
         Action: 's3:GetObject',
         Effect: 'Allow',
-        Principal: '*',
+        Principal: { AWS: '*' },
         Resource: {
           'Fn::Join': [
             '',
@@ -605,7 +605,7 @@ describe('bucket', () => {
       expect(stack.resolve(p.toStatementJson())).toEqual({
         Action: 's3:GetObject',
         Effect: 'Allow',
-        Principal: '*',
+        Principal: { AWS: '*' },
         Resource: {
           'Fn::Join': [
             '',
@@ -670,7 +670,7 @@ describe('bucket', () => {
       expect(p.toStatementJson()).toEqual({
         Action: 's3:ListBucket',
         Effect: 'Allow',
-        Principal: '*',
+        Principal: { AWS: '*' },
         Resource: 'arn:aws:s3:::my-bucket',
       });
 
@@ -912,7 +912,7 @@ describe('bucket', () => {
               'Action': ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
               'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
               'Effect': 'Allow',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Resource': [
                 { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
                 { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']] },
@@ -929,7 +929,7 @@ describe('bucket', () => {
               'Action': ['kms:Decrypt', 'kms:DescribeKey'],
               'Effect': 'Allow',
               'Resource': '*',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
             },
           ),
@@ -1599,10 +1599,15 @@ describe('bucket', () => {
   test('urlForObject returns a token with the S3 URL of the token', () => {
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'MyBucket');
+    const bucketWithRegion = s3.Bucket.fromBucketAttributes(stack, 'RegionalBucket', {
+      bucketArn: 'arn:aws:s3:::explicit-region-bucket',
+      region: 'us-west-2',
+    });
 
     new cdk.CfnOutput(stack, 'BucketURL', { value: bucket.urlForObject() });
     new cdk.CfnOutput(stack, 'MyFileURL', { value: bucket.urlForObject('my/file.txt') });
     new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
+    new cdk.CfnOutput(stack, 'RegionBucketURL', { value: bucketWithRegion.urlForObject() });
 
     expect(stack).toMatchTemplate({
       'Resources': {
@@ -1674,6 +1679,20 @@ describe('bucket', () => {
                   'Ref': 'MyBucketF68F3FF0',
                 },
                 '/your/file.txt',
+              ],
+            ],
+          },
+        },
+        'RegionBucketURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://s3.us-west-2.',
+                {
+                  'Ref': 'AWS::URLSuffix',
+                },
+                '/explicit-region-bucket',
               ],
             ],
           },
@@ -1764,7 +1783,7 @@ describe('bucket', () => {
             {
               'Action': 's3:GetObject',
               'Effect': 'Allow',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
             },
           ],
@@ -1789,7 +1808,7 @@ describe('bucket', () => {
             {
               'Action': 's3:GetObject',
               'Effect': 'Allow',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/only/access/these/*']] },
             },
           ],
@@ -1814,7 +1833,7 @@ describe('bucket', () => {
             {
               'Action': ['s3:GetObject', 's3:PutObject'],
               'Effect': 'Allow',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
             },
           ],
@@ -1840,7 +1859,7 @@ describe('bucket', () => {
             {
               'Action': 's3:GetObject',
               'Effect': 'Allow',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
               'Condition': {
                 'IpAddress': { 'aws:SourceIp': '54.240.143.0/24' },
@@ -2366,7 +2385,6 @@ describe('bucket', () => {
         'Statement': [
           {
             'Action': [
-              's3:GetObject*',
               's3:GetBucket*',
               's3:List*',
               's3:DeleteObject*',

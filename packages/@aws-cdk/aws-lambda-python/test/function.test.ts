@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, AssetOptions, Stack } from '@aws-cdk/core';
 import { PythonFunction } from '../lib';
@@ -48,11 +48,11 @@ test('PythonFunction with defaults', () => {
   });
 
   expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler$/),
+    entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler$/),
     outputPathSuffix: '.',
   }));
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.handler',
   });
 });
@@ -65,11 +65,11 @@ test('PythonFunction with index in a subdirectory', () => {
   });
 
   expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler-sub$/),
+    entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler-sub$/),
     outputPathSuffix: '.',
   }));
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'inner/custom_index.custom_handler',
   });
 });
@@ -122,21 +122,21 @@ test('allows specifying hash type', () => {
     assetHash: 'MY_CUSTOM_HASH',
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Code: {
       S3Bucket: 'mock-bucket-name',
       S3Key: 'SOURCE_MOCK',
     },
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Code: {
       S3Bucket: 'mock-bucket-name',
       S3Key: 'OUTPUT_MOCK',
     },
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Code: {
       S3Bucket: 'mock-bucket-name',
       S3Key: 'MY_CUSTOM_HASH',

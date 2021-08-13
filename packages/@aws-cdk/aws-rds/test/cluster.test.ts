@@ -30,6 +30,7 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
+      iamAuthentication: true,
     });
 
     // THEN
@@ -40,6 +41,8 @@ describe('cluster', () => {
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+        EnableIAMDatabaseAuthentication: true,
+        CopyTagsToSnapshot: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
@@ -74,7 +77,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseCluster(stack, 'Database', {
+    const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       credentials: {
@@ -94,6 +97,28 @@ describe('cluster', () => {
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+    });
+
+    expect(cluster.instanceIdentifiers).toHaveLength(1);
+    expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
+      Ref: 'DatabaseInstance1844F58FD',
+    });
+
+    expect(cluster.instanceEndpoints).toHaveLength(1);
+    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+      hostname: {
+        'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
+      },
+      port: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
+      socketAddress: {
+        'Fn::Join': ['', [
+          { 'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+        ]],
+      },
     });
   });
 
@@ -1633,12 +1658,13 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseClusterFromSnapshot(stack, 'Database', {
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
       instanceProps: {
         vpc,
       },
       snapshotIdentifier: 'mySnapshot',
+      iamAuthentication: true,
     });
 
     // THEN
@@ -1649,6 +1675,7 @@ describe('cluster', () => {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         SnapshotIdentifier: 'mySnapshot',
+        EnableIAMDatabaseAuthentication: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
@@ -1656,7 +1683,27 @@ describe('cluster', () => {
 
     expect(stack).toCountResources('AWS::RDS::DBInstance', 2);
 
+    expect(cluster.instanceIdentifiers).toHaveLength(2);
+    expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
+      Ref: 'DatabaseInstance1844F58FD',
+    });
 
+    expect(cluster.instanceEndpoints).toHaveLength(2);
+    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+      hostname: {
+        'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
+      },
+      port: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
+      socketAddress: {
+        'Fn::Join': ['', [
+          { 'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+        ]],
+      },
+    });
   });
 
   test('reuse an existing subnet group', () => {
@@ -1900,6 +1947,65 @@ describe('cluster', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
       DBClusterIdentifier: clusterIdentifier,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot default', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: true,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot disabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+      },
+      copyTagsToSnapshot: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: false,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot enabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      copyTagsToSnapshot: true,
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: true,
     });
   });
 });

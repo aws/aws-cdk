@@ -284,6 +284,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
   public readonly secret?: secretsmanager.ISecret;
 
   /**
+   * The underlying CloudFormation resource for a database cluster.
+   */
+  private readonly cluster: CfnDBCluster;
+
+  /**
    * The VPC where the DB subnet group is created.
    */
   private readonly vpc: ec2.IVpc;
@@ -348,7 +353,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     // Create the DocDB cluster
-    const cluster = new CfnDBCluster(this, 'Resource', {
+    this.cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
       engineVersion: props.engineVersion,
       dbClusterIdentifier: props.dbClusterName,
@@ -370,16 +375,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
       storageEncrypted,
     });
 
-    cluster.applyRemovalPolicy(props.removalPolicy, {
+    this.cluster.applyRemovalPolicy(props.removalPolicy, {
       applyToUpdateReplacePolicy: true,
     });
 
-    this.clusterIdentifier = cluster.ref;
-    this.clusterResourceIdentifier = cluster.attrClusterResourceId;
+    this.clusterIdentifier = this.cluster.ref;
+    this.clusterResourceIdentifier = this.cluster.attrClusterResourceId;
 
-    const port = Token.asNumber(cluster.attrPort);
-    this.clusterEndpoint = new Endpoint(cluster.attrEndpoint, port);
-    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpoint, port);
+    const port = Token.asNumber(this.cluster.attrPort);
+    this.clusterEndpoint = new Endpoint(this.cluster.attrEndpoint, port);
+    this.clusterReadEndpoint = new Endpoint(this.cluster.attrReadEndpoint, port);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -399,7 +404,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
-        dbClusterIdentifier: cluster.ref,
+        dbClusterIdentifier: this.cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
         dbInstanceClass: databaseInstanceType(props.instanceType),
@@ -466,6 +471,17 @@ export class DatabaseCluster extends DatabaseClusterBase {
       vpcSubnets: this.vpcSubnets,
       target: this,
     });
+  }
+
+  /**
+   * Adds security groups to this cluster.
+   * @param securityGroups The security groups to add.
+   */
+  public addSecurityGroups(...securityGroups: ec2.ISecurityGroup[]): void {
+    if (this.cluster.vpcSecurityGroupIds === undefined) {
+      this.cluster.vpcSecurityGroupIds = [];
+    }
+    this.cluster.vpcSecurityGroupIds.push(...securityGroups.map(sg => sg.securityGroupId));
   }
 }
 

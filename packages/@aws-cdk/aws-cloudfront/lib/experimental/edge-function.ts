@@ -3,13 +3,11 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-// hack, as this is not exported by the Lambda module
-import { calculateFunctionHash } from '@aws-cdk/aws-lambda/lib/function-hash';
 import * as ssm from '@aws-cdk/aws-ssm';
 import {
-  ConstructNode,
+  CfnResource, ConstructNode,
   CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
-  Resource, Stack, Stage, Token,
+  Lazy, Resource, Stack, Stage, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -157,17 +155,18 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
 
     // Store the current version's ARN to be retrieved by the cross region reader below.
+    const version = edgeFunction.currentVersion;
     new ssm.StringParameter(edgeFunction, 'Parameter', {
       parameterName,
-      stringValue: edgeFunction.currentVersion.edgeArn,
+      stringValue: version.edgeArn,
     });
 
-    const edgeArn = this.createCrossRegionArnReader(parameterNamePrefix, parameterName, edgeFunction);
+    const edgeArn = this.createCrossRegionArnReader(parameterNamePrefix, parameterName, version);
 
     return { edgeFunction, edgeArn };
   }
 
-  private createCrossRegionArnReader(parameterNamePrefix: string, parameterName: string, edgeFunction: lambda.Function): string {
+  private createCrossRegionArnReader(parameterNamePrefix: string, parameterName: string, version: lambda.Version): string {
     // Prefix of the parameter ARN that applies to all EdgeFunctions.
     // This is necessary because the `CustomResourceProvider` is a singleton, and the `policyStatement`
     // must work for multiple EdgeFunctions.
@@ -196,7 +195,15 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
         Region: EdgeFunction.EDGE_REGION,
         ParameterName: parameterName,
         // This is used to determine when the function has changed, to refresh the ARN from the custom resource.
-        RefreshToken: calculateFunctionHash(edgeFunction),
+        //
+        // Use the logical id of the function version. Whenever a function version changes, the logical id must be
+        // changed for it to take effect - a good candidate for RefreshToken.
+        RefreshToken: Lazy.uncachedString({
+          produce: () => {
+            const cfn = version.node.defaultChild as CfnResource;
+            return this.stack.resolve(cfn.logicalId);
+          },
+        }),
       },
     });
 

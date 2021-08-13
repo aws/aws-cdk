@@ -1,0 +1,103 @@
+{
+  "Resources": {
+    "gohandlerdockerServiceRole70394790": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "gohandlerdockerAE04F1B8": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters4702fc8f2fac1855e6700e59222ef0ebbeaf11eba75c66af9f2e216e312b16b1S3Bucket62A8237E"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters4702fc8f2fac1855e6700e59222ef0ebbeaf11eba75c66af9f2e216e312b16b1S3VersionKey1C4F3B50"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters4702fc8f2fac1855e6700e59222ef0ebbeaf11eba75c66af9f2e216e312b16b1S3VersionKey1C4F3B50"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "gohandlerdockerServiceRole70394790",
+            "Arn"
+          ]
+        },
+        "Handler": "bootstrap",
+        "Runtime": "provided.al2"
+      },
+      "DependsOn": [
+        "gohandlerdockerServiceRole70394790"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParameters4702fc8f2fac1855e6700e59222ef0ebbeaf11eba75c66af9f2e216e312b16b1S3Bucket62A8237E": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"4702fc8f2fac1855e6700e59222ef0ebbeaf11eba75c66af9f2e216e312b16b1\""
+    },
+    "AssetParameters4702fc8f2fac1855e6700e59222ef0ebbeaf11eba75c66af9f2e216e312b16b1S3VersionKey1C4F3B50": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"4702fc8f2fac1855e6700e59222ef0ebbeaf11eba75c66af9f2e216e312b16b1\""
+    },
+    "AssetParameters4702fc8f2fac1855e6700e59222ef0ebbeaf11eba75c66af9f2e216e312b16b1ArtifactHashBE683488": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"4702fc8f2fac1855e6700e59222ef0ebbeaf11eba75c66af9f2e216e312b16b1\""
+    }
+  }
+}
