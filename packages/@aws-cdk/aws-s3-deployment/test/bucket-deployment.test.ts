@@ -491,6 +491,30 @@ test('fails if distribution paths provided but not distribution ID', () => {
 
 });
 
+test('fails if distribution paths don\'t start with "/"', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
+    originConfigs: [
+      {
+        s3OriginSource: {
+          s3BucketSource: bucket,
+        },
+        behaviors: [{ isDefaultBehavior: true }],
+      },
+    ],
+  });
+
+  // THEN
+  expect(() => new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    distribution,
+    distributionPaths: ['images/*'],
+  })).toThrow(/Distribution paths must start with "\/"/);
+});
+
 testFutureBehavior('lambda execution role gets permissions to read from the source bucket and read/write in destination', s3GrantWriteCtx, cdk.App, (app) => {
   // GIVEN
   const stack = new cdk.Stack(app);
