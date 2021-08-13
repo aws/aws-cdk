@@ -1,10 +1,9 @@
-import { arrayWith, objectLike, ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import * as path from 'path';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
-import * as path from 'path';
 import * as flink from '../lib';
 
 describe('Application', () => {
@@ -31,7 +30,7 @@ describe('Application', () => {
       applicationName: 'MyFlinkApplication',
     });
 
-    expect(stack).toHaveResource('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationName: 'MyFlinkApplication',
       RuntimeEnvironment: 'FLINK-1_11',
       ServiceExecutionRole: {
@@ -56,11 +55,11 @@ describe('Application', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResource('AWS::KinesisAnalyticsV2::Application', {
       DeletionPolicy: 'Delete',
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [{
           Action: 'sts:AssumeRole',
@@ -73,9 +72,9 @@ describe('Application', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(
+        Statement: Match.arrayWith([
           { Action: 'cloudwatch:PutMetricData', Effect: 'Allow', Resource: '*' },
           {
             Action: 'logs:DescribeLogGroups',
@@ -119,7 +118,7 @@ describe('Application', () => {
               ]],
             },
           },
-        ),
+        ]),
       },
     });
   });
@@ -132,7 +131,7 @@ describe('Application', () => {
       }),
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -158,11 +157,11 @@ describe('Application', () => {
       resources: ['*'],
     }));
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(
-          objectLike({ Action: 'custom:action', Effect: 'Allow', Resource: '*' }),
-        ),
+        Statement: Match.arrayWith([
+          Match.objectLike({ Action: 'custom:action', Effect: 'Allow', Resource: '*' }),
+        ]),
       },
     });
   });
@@ -173,7 +172,7 @@ describe('Application', () => {
       runtime: flink.Runtime.of('custom'),
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       RuntimeEnvironment: 'custom',
     });
   });
@@ -184,9 +183,9 @@ describe('Application', () => {
       removalPolicy: core.RemovalPolicy.RETAIN,
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResource('AWS::KinesisAnalyticsV2::Application', {
       DeletionPolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('granting permissions to resources', () => {
@@ -197,12 +196,12 @@ describe('Application', () => {
     const dataBucket = new s3.Bucket(stack, 'DataBucket');
     dataBucket.grantRead(app);
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: arrayWith(
-          objectLike({ Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'] }),
-        ),
+        Statement: Match.arrayWith([
+          Match.objectLike({ Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'] }),
+        ]),
       },
     });
   });
@@ -216,7 +215,7 @@ describe('Application', () => {
     const assetRef = 'AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67';
     const versionKeyRef = 'AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E';
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         ApplicationCodeConfiguration: {
           CodeContent: {
@@ -253,7 +252,7 @@ describe('Application', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         EnvironmentProperties: {
           PropertyGroups: [
@@ -275,7 +274,7 @@ describe('Application', () => {
       checkpointingEnabled: false,
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           CheckpointConfiguration: {
@@ -293,7 +292,7 @@ describe('Application', () => {
       checkpointInterval: core.Duration.minutes(5),
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           CheckpointConfiguration: {
@@ -311,7 +310,7 @@ describe('Application', () => {
       minPauseBetweenCheckpoints: core.Duration.seconds(10),
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           CheckpointConfiguration: {
@@ -329,7 +328,7 @@ describe('Application', () => {
       logLevel: flink.LogLevel.DEBUG,
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           MonitoringConfiguration: {
@@ -347,7 +346,7 @@ describe('Application', () => {
       metricsLevel: flink.MetricsLevel.PARALLELISM,
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           MonitoringConfiguration: {
@@ -365,7 +364,7 @@ describe('Application', () => {
       autoScalingEnabled: false,
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           ParallelismConfiguration: {
@@ -383,7 +382,7 @@ describe('Application', () => {
       parallelism: 2,
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           ParallelismConfiguration: {
@@ -401,7 +400,7 @@ describe('Application', () => {
       parallelismPerKpu: 2,
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           ParallelismConfiguration: {
@@ -419,7 +418,7 @@ describe('Application', () => {
       snapshotsEnabled: false,
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         ApplicationSnapshotConfiguration: {
           SnapshotsEnabled: false,
@@ -434,7 +433,7 @@ describe('Application', () => {
       snapshotsEnabled: false,
     });
 
-    expect(stack).toHaveResource('AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption', {
       ApplicationName: {
         Ref: 'FlinkApplicationC5836815',
       },
@@ -469,18 +468,18 @@ describe('Application', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResource('AWS::Logs::LogGroup', {
       Properties: {
         RetentionInDays: 731,
       },
       UpdateReplacePolicy: 'Retain',
       DeletionPolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::Logs::LogStream', {
+    Template.fromStack(stack).hasResource('AWS::Logs::LogStream', {
       UpdateReplacePolicy: 'Retain',
       DeletionPolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('logGroup setting', () => {
@@ -491,7 +490,7 @@ describe('Application', () => {
       }),
     });
 
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: 'custom',
     });
   });
