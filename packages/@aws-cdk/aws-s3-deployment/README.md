@@ -44,19 +44,35 @@ This is what happens under the hood:
    `websiteBucket`). If there is more than one source, the sources will be
    downloaded and merged pre-deployment at this step.
 
+If you are referencing the filled bucket in another construct that depends on
+the files already be there, be sure to use `deployment.deployedBucket`. This
+will ensure the bucket deployment has finished before the resource that uses
+the bucket is created:
+
+```ts
+const deployment = new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+  // ...
+  destinationBucket: websiteBucket,
+});
+
+new ConstructThatReadsFromTheBucket(this, 'Consumer', {
+  // Use 'deployment.deployedBucket' instead of 'websiteBucket' here
+  bucket: deployment.deployedBucket,
+});
+```
 
 ## Supported sources
 
 The following source types are supported for bucket deployments:
 
- - Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
- - Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
- - Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
+- Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
+- Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
+- Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
 
 To create a source from a single file, you can pass `AssetOptions` to exclude
 all but a single file:
 
- - Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
+- Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
 
 **IMPORTANT** The `aws-s3-deployment` module is only intended to be used with
 zip files from trusted sources. Directories bundled by the CDK CLI (by using
@@ -226,9 +242,6 @@ size of the AWS Lambda resource handler.
   This is inline with best practices. If you use local disk assets, this will
   happen automatically whenever you modify the asset, since the S3 key is based
   on a hash of the asset contents.
-- The `deployedBucket` property exposes the destination bucket of the deployment.
-  The bucket is instatiated using a `getAtt` call, such that any constructs that
-  utilize this bucket will add the bucket as a dependency. 
 
 ## Development
 
