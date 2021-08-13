@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -404,6 +405,42 @@ export interface SparkUIConfig {
 }
 
 /**
+ * Properties for enabling Continuous Logging for Glue Jobs.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging-enable.html
+ * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+ */
+export interface ContinuousLoggingProps {
+  /**
+   * Specify a custom CloudWatch log group name.
+   *
+   * @default LogGroup named `/aws-glue/jobs/logs-v2/`.
+   */
+  readonly logGroup?: logs.ILogGroup;
+
+  /**
+   * Specify a custom CloudWatch log stream prefix.
+   *
+   * @default the job run ID.
+   */
+  readonly logStreamPrefix?: string;
+
+  /**
+   * Enable pruning out non-useful Apache Spark driver/executor and Apache Hadoop YARN heartbeat log messages.
+   *
+   * @default true
+   */
+  readonly filter?: boolean;
+
+  /**
+   * Apply the provided conversion pattern.
+   *
+   * @default `%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n`
+   */
+  readonly conversionPattern?: string;
+}
+
+/**
  * Attributes for importing {@link Job}.
  */
 export interface JobAttributes {
@@ -541,6 +578,16 @@ export interface JobProps {
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly sparkUI?: SparkUIProps,
+
+  /**
+   * Enables Continuous Logging with the specified props.
+   *
+   * @default - Continuous Logging is disabled.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging-enable.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly continuousLogging?: ContinuousLoggingProps,
 }
 
 /**
@@ -609,6 +656,9 @@ export class Job extends JobBase {
     if (props.sparkUI) {
       this.sparkUIConfig = this.setupSparkUI(executable, this.role, defaultArguments, props.sparkUI);
     }
+    if (props.continuousLogging) {
+      this.setupContinuousLogging(this.role, defaultArguments, props.continuousLogging);
+    }
 
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
@@ -673,5 +723,22 @@ export class Job extends JobBase {
       ...props,
       bucket,
     };
+  }
+
+  private setupContinuousLogging(role: iam.IRole, args: {[key: string]: string}, props: ContinuousLoggingProps) {
+    args['--enable-continuous-cloudwatch-log'] = 'true';
+    args['--enable-continuous-log-filter'] = (props.filter?? true).toString();
+
+    if (props.logGroup) {
+      args['--continuous-log-logGroup'] = props.logGroup.logGroupName;
+      props.logGroup.grantWrite(role);
+    }
+
+    if (props.logStreamPrefix) {
+      args['--continuous-log-logStreamPrefix'] = props.logStreamPrefix;
+    }
+    if (props.conversionPattern) {
+      args['--continuous-log-conversionPattern'] = props.conversionPattern;
+    }
   }
 }

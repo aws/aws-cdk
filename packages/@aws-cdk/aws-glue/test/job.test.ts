@@ -1,6 +1,7 @@
 import * as cdkassert from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import '@aws-cdk/assert-internal/jest';
@@ -171,6 +172,102 @@ describe('Job', () => {
 
         cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
           Name: jobName,
+        }));
+      });
+    });
+
+    describe('enabling continuous logging with defaults', () => {
+      beforeEach(() => {
+        job = new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.etlScala({
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            scriptLocation,
+          }),
+          continuousLogging: {},
+        });
+      });
+
+      test('should set minimal default arguments', () => {
+        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+          DefaultArguments: {
+            '--enable-continuous-cloudwatch-log': 'true',
+            '--enable-continuous-log-filter': 'true',
+          },
+        }));
+      });
+    });
+
+    describe('enabling continuous logging with all props set', () => {
+      let logGroup;
+
+      beforeEach(() => {
+        logGroup = logs.LogGroup.fromLogGroupName(stack, 'LogGroup', 'LogGroupName');
+        job = new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.etlScala({
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            scriptLocation,
+          }),
+          continuousLogging: {
+            filter: false,
+            logStreamPrefix: 'LogStreamPrefix',
+            conversionPattern: '%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n',
+            logGroup,
+          },
+        });
+      });
+
+      test('should set all arguments', () => {
+        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+          DefaultArguments: {
+            '--enable-continuous-cloudwatch-log': 'true',
+            '--enable-continuous-log-filter': 'false',
+            '--continuous-log-logGroup': 'LogGroupName',
+            '--continuous-log-logStreamPrefix': 'LogStreamPrefix',
+            '--continuous-log-conversionPattern': '%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n',
+          },
+        }));
+      });
+
+      test('should grant cloudwatch log write permissions', () => {
+        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: [
+                  'logs:CreateLogStream',
+                  'logs:PutLogEvents',
+                ],
+                Effect: 'Allow',
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':logs:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':log-group:LogGroupName:*',
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+          Roles: [
+            {
+              Ref: 'JobServiceRole4F432993',
+            },
+          ],
         }));
       });
     });
