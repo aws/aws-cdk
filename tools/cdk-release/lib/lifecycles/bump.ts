@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as semver from 'semver';
 import { writeFile } from '../private/files';
 import { notify } from '../private/print';
-import { LifecyclesSkip, ReleaseType, Version } from '../types';
+import { LifecyclesSkip, ReleaseType, Versions } from '../types';
 
 export interface BumpOptions {
   releaseAs: ReleaseType;
@@ -15,19 +15,19 @@ export interface BumpOptions {
   silent?: boolean;
 }
 
-export async function bump(args: BumpOptions, currentVersion: Version): Promise<Version> {
+export async function bump(args: BumpOptions, currentVersion: Versions): Promise<Versions> {
   if (args.skip?.bump) {
     return currentVersion;
   }
 
-  const releaseType = getReleaseType(args.prerelease, args.releaseAs, currentVersion.version);
-  const newStableVersion = semver.inc(currentVersion.version, releaseType, args.prerelease);
+  const releaseType = getReleaseType(args.prerelease, args.releaseAs, currentVersion.stableVersion);
+  const newStableVersion = semver.inc(currentVersion.stableVersion, releaseType, args.prerelease);
   if (!newStableVersion) {
-    throw new Error('Could not increment version: ' + currentVersion.version);
+    throw new Error('Could not increment version: ' + currentVersion.stableVersion);
   }
 
-  const newVersion: Version = {
-    version: newStableVersion,
+  const newVersion: Versions = {
+    stableVersion: newStableVersion,
     alphaVersion: bumpAlphaReleaseVersion(currentVersion, releaseType),
   };
 
@@ -36,7 +36,11 @@ export async function bump(args: BumpOptions, currentVersion: Version): Promise<
     [currentVersion, newVersion],
   );
   const versionPath = path.resolve(process.cwd(), args.versionFile);
-  writeFile(args, versionPath, JSON.stringify(newVersion, undefined, 2));
+  const versionFileContents = JSON.stringify({
+    version: newVersion.stableVersion,
+    alphaVersion: newVersion.alphaVersion,
+  }, undefined, 2);
+  writeFile(args, versionPath, versionFileContents);
 
   return newVersion;
 }
@@ -108,12 +112,12 @@ function getTypePriority(type: string): number {
  * we will increment the current alpha release.
  * If the main release is not a prerelease, we use the main release version, but with an alpha tag.
  */
-function bumpAlphaReleaseVersion(currentVersion: Version, releaseType: semver.ReleaseType): string | undefined {
+function bumpAlphaReleaseVersion(currentVersion: Versions, releaseType: semver.ReleaseType): string | undefined {
   if (!currentVersion.alphaVersion) { return undefined; }
 
   const newAlphaVersion = releaseType.startsWith('pre')
     ? semver.inc(currentVersion.alphaVersion, releaseType, 'alpha')
-    : semver.inc(currentVersion.version, 'pre' + releaseType as semver.ReleaseType, 'alpha');
+    : semver.inc(currentVersion.stableVersion, 'pre' + releaseType as semver.ReleaseType, 'alpha');
 
   if (!newAlphaVersion) {
     throw new Error('Could not increment alpha version: ' + currentVersion.alphaVersion);

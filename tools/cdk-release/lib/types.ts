@@ -13,20 +13,12 @@ export type LifecyclesSkip = {
   [key in keyof Lifecycles]: boolean;
 }
 
-export interface Version {
-  version: string;
+export interface Versions {
+  stableVersion: string;
   alphaVersion?: string;
 }
 
-/* ****** Updaters ******** */
-
 export type ReleaseType = 'major' | 'minor' | 'patch';
-
-export interface ConventionalCommitType {
-  type: string;
-  section?: string;
-  hidden?: boolean;
-}
 
 /* ****** main options ******** */
 
