@@ -6,8 +6,7 @@ import { bump } from './lifecycles/bump';
 import { changelog } from './lifecycles/changelog';
 import { commit } from './lifecycles/commit';
 import { debug, debugObject } from './private/print';
-import { ReleaseOptions } from './types';
-import { resolveUpdaterObjectFromArgument } from './updaters';
+import { ReleaseOptions, Versions } from './types';
 
 module.exports = async function main(opts: ReleaseOptions): Promise<void> {
   // handle the default options
@@ -17,41 +16,28 @@ module.exports = async function main(opts: ReleaseOptions): Promise<void> {
   };
   debugObject(args, 'options are (including defaults)', args);
 
-  const packageInfo = determinePackageInfo(args);
-  debugObject(args, 'packageInfo is', packageInfo);
+  const currentVersion = readVersion(args.versionFile);
+  debugObject(args, 'Current version info', currentVersion);
 
-  const currentVersion = packageInfo.version;
-  debug(args, 'Current version is: ' + currentVersion);
-
-  const commits = await getConventionalCommitsFromGitHistory(args, `v${currentVersion}`);
+  const commits = await getConventionalCommitsFromGitHistory(args, `v${currentVersion.stableVersion}`);
   const filteredCommits = filterCommits(args, commits);
   debugObject(args, 'Found and filtered commits', filteredCommits);
 
-  const bumpResult = await bump(args, currentVersion);
-  const newVersion = bumpResult.newVersion;
-  debug(args, 'New version is: ' + newVersion);
+  const newVersion = await bump(args, currentVersion);
+  debugObject(args, 'New version is', newVersion);
 
-  const changelogResult = await changelog(args, currentVersion, newVersion, filteredCommits);
+  debug(args, 'Writing Changelog');
+  await changelog(args, currentVersion.stableVersion, newVersion.stableVersion, filteredCommits);
 
-  await commit(args, newVersion, [...bumpResult.changedFiles, ...changelogResult.changedFiles]);
+  debug(args, 'Committing result');
+  await commit(args, newVersion.stableVersion, [args.versionFile, args.changelogFile]);
 };
 
-interface PackageInfo {
-  version: string;
-  private: string | boolean | null | undefined;
-}
-
-function determinePackageInfo(args: ReleaseOptions): PackageInfo {
-  for (const packageFile of args.packageFiles ?? []) {
-    const updater = resolveUpdaterObjectFromArgument(packageFile);
-    const pkgPath = path.resolve(process.cwd(), updater.filename);
-    const contents = fs.readFileSync(pkgPath, 'utf8');
-    // we stop on the first (successful) option
-    return {
-      version: updater.updater.readVersion(contents),
-      private: typeof updater.updater.isPrivate === 'function' ? updater.updater.isPrivate(contents) : false,
-    };
-  }
-
-  throw new Error('Could not establish the version to bump!');
+export function readVersion(versionFile: string): Versions {
+  const versionPath = path.resolve(process.cwd(), versionFile);
+  const contents = JSON.parse(fs.readFileSync(versionPath, { encoding: 'utf-8' }));
+  return {
+    stableVersion: contents.version,
+    alphaVersion: contents.alphaVersion,
+  };
 }
