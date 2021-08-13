@@ -166,7 +166,7 @@ export class CodeBuildStep extends ShellStep {
    */
   public get project(): codebuild.IProject {
     if (!this._project) {
-      throw new Error('Project becomes available after the pipeline has been built');
+      throw new Error('Call pipeline.buildPipeline() before reading this property');
     }
     return this._project;
   }
