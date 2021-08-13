@@ -173,8 +173,7 @@ nodeunitShim({
           },
         ],
       });
-      cdkExpect(stack).to(countResources('AWS::EC2::InternetGateway', 1))
-        ;
+      cdkExpect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
       cdkExpect(stack).notTo(haveResource('AWS::EC2::NatGateway'));
       test.done();
     },
