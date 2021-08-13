@@ -1,5 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
+import { Token } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import { IAction, IPipeline, IStage } from '../action';
 import { Artifact } from '../artifact';
 import { CfnPipeline } from '../codepipeline.generated';
@@ -137,7 +139,19 @@ export class Stage implements IStage {
 
   private attachActionToPipeline(action: IAction): FullActionDescriptor {
     // notify the Pipeline of the new Action
-    const actionScope = new cdk.Construct(this.scope, action.actionProperties.actionName);
+    //
+    // It may be that a construct already exists with the given action name (CDK Pipelines
+    // may do this to maintain construct tree compatibility between versions).
+    //
+    // If so, we simply reuse it.
+    let actionScope = Node.of(this.scope).tryFindChild(action.actionProperties.actionName) as Construct | undefined;
+    if (!actionScope) {
+      let id = action.actionProperties.actionName;
+      if (Token.isUnresolved(id)) {
+        id = findUniqueConstructId(this.scope, action.actionProperties.provider);
+      }
+      actionScope = new cdk.Construct(this.scope, id);
+    }
     return this._pipeline._attachActionToPipeline(this, action, actionScope);
   }
 
@@ -173,4 +187,13 @@ function sanitizeArtifactName(artifactName: string): string {
   // strip out some characters that are legal in Stage and Action names,
   // but not in Artifact names
   return artifactName.replace(/[@.]/g, '');
+}
+
+function findUniqueConstructId(scope: Construct, prefix: string) {
+  let current = prefix;
+  let ctr = 1;
+  while (Node.of(scope).tryFindChild(current) !== undefined) {
+    current = `${prefix}${++ctr}`;
+  }
+  return current;
 }

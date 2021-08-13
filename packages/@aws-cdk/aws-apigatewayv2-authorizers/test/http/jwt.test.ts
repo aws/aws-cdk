@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
 import { HttpJwtAuthorizer } from '../../lib';
@@ -22,7 +22,7 @@ describe('HttpJwtAuthorizer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerType: 'JWT',
       IdentitySource: ['$request.header.Authorization'],
       JwtConfiguration: {
@@ -55,7 +55,7 @@ describe('HttpJwtAuthorizer', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ApiGatewayV2::Authorizer', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Authorizer', 1);
   });
 });
 

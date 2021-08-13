@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { WebSocketApi, WebSocketStage } from '../../lib';
 
@@ -15,7 +15,7 @@ describe('WebSocketStage', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
       ApiId: stack.resolve(api.apiId),
       StageName: 'dev',
     });
@@ -40,5 +40,23 @@ describe('WebSocketStage', () => {
 
     // THEN
     expect(imported.stageName).toEqual(stage.stageName);
+    expect(() => imported.url).toThrow();
+    expect(() => imported.callbackUrl).toThrow();
+  });
+
+  test('callback URL', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'Api');
+
+    // WHEN
+    const defaultStage = new WebSocketStage(stack, 'Stage', {
+      webSocketApi: api,
+      stageName: 'dev',
+    });
+
+    // THEN
+    expect(defaultStage.callbackUrl.endsWith('/dev')).toBe(true);
+    expect(defaultStage.callbackUrl.startsWith('https://')).toBe(true);
   });
 });

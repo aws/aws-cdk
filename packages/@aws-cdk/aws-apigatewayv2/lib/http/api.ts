@@ -84,7 +84,7 @@ export interface IHttpApi extends IApi {
  */
 export interface HttpApiProps {
   /**
-   * Name for the HTTP API resoruce
+   * Name for the HTTP API resource
    * @default - id of the HttpApi construct.
    */
   readonly apiName?: string;
@@ -209,7 +209,7 @@ export interface CorsPreflightOptions {
 }
 
 /**
- * Options for the Route with Integration resoruce
+ * Options for the Route with Integration resource
  */
 export interface AddRoutesOptions extends BatchHttpRouteOptions {
   /**
@@ -304,6 +304,7 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
       connectionId: config.connectionId,
       connectionType: config.connectionType,
       payloadFormatVersion: config.payloadFormatVersion,
+      secureServerName: config.secureServerName,
     });
     this._integrationCache.saveIntegration(scope, config, integration);
 

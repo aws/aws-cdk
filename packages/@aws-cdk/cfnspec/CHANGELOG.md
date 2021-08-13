@@ -1,3 +1,267 @@
+# CloudFormation Resource Specification v39.9.0
+
+## New Resource Types
+
+* AWS::Athena::PreparedStatement
+
+## Attribute Changes
+
+* AWS::ApiGateway::Resource ResourceId (__added__)
+* AWS::Athena::WorkGroup WorkGroupConfigurationUpdates.EngineVersion.EffectiveEngineVersion (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.SchedulerLogs.CloudWatchLogGroupArn (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.TaskLogs.CloudWatchLogGroupArn (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.WebserverLogs.CloudWatchLogGroupArn (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.WorkerLogs.CloudWatchLogGroupArn (__added__)
+
+## Property Changes
+
+* AWS::AppSync::GraphQLApi LambdaAuthorizerConfig (__added__)
+* AWS::LookoutEquipment::InferenceScheduler ModelName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LookoutEquipment::InferenceScheduler ServerSideKmsKeyId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::S3::AccessPoint Name (__added__)
+* AWS::Synthetics::Canary VisualReference (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::GraphQLApi.LambdaAuthorizerConfig (__added__)
+* AWS::SageMaker::Model.RepositoryAuthConfig (__added__)
+* AWS::Synthetics::Canary.BaseScreenshot (__added__)
+* AWS::Synthetics::Canary.VisualReference (__added__)
+* AWS::AppSync::GraphQLApi.AdditionalAuthenticationProvider LambdaAuthorizerConfig (__added__)
+* AWS::IoTSiteWise::AssetModel.TumblingWindow Offset (__added__)
+* AWS::SageMaker::Model.ImageConfig RepositoryAuthConfig (__added__)
+
+
+# CloudFormation Resource Specification v39.8.0
+
+## New Resource Types
+
+* AWS::Route53RecoveryControl::Cluster
+* AWS::Route53RecoveryControl::ControlPanel
+* AWS::Route53RecoveryControl::RoutingControl
+* AWS::Route53RecoveryControl::SafetyRule
+* AWS::Route53RecoveryReadiness::Cell
+* AWS::Route53RecoveryReadiness::ReadinessCheck
+* AWS::Route53RecoveryReadiness::RecoveryGroup
+* AWS::Route53RecoveryReadiness::ResourceSet
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DataBrew::Job DatabaseOutputs (__added__)
+* AWS::DataBrew::Job ProfileConfiguration (__added__)
+* AWS::DataSync::LocationNFS MountOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationNFS OnPremConfig.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationNFS Subdirectory.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage AccessKey.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage AgentArns.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage SecretKey.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage ServerPort.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage ServerProtocol.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage Subdirectory.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB AgentArns.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB Domain.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB MountOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB Password.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB Subdirectory.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB User.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3Outposts::Endpoint AccessType (__added__)
+* AWS::S3Outposts::Endpoint CustomerOwnedIpv4Pool (__added__)
+
+## Property Type Changes
+
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyDeprecateRule (__added__)
+* AWS::DLM::LifecyclePolicy.DeprecateRule (__added__)
+* AWS::DataBrew::Job.ColumnSelector (__added__)
+* AWS::DataBrew::Job.ColumnStatisticsConfiguration (__added__)
+* AWS::DataBrew::Job.DatabaseOutput (__added__)
+* AWS::DataBrew::Job.ParameterMap (__added__)
+* AWS::DataBrew::Job.ProfileConfiguration (__added__)
+* AWS::DataBrew::Job.StatisticOverride (__added__)
+* AWS::DataBrew::Job.StatisticsConfiguration (__added__)
+* AWS::FSx::FileSystem.AuditLogConfiguration (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule DeprecateRule (__added__)
+* AWS::DLM::LifecyclePolicy.Schedule DeprecateRule (__added__)
+* AWS::DataSync::LocationNFS.MountOptions Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationNFS.OnPremConfig AgentArns.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB.MountOptions Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::Task.Options SecurityDescriptorCopyFlags (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration AuditLogConfiguration (__added__)
+
+
+# CloudFormation Resource Specification v39.7.0
+
+## New Resource Types
+
+* AWS::Logs::ResourcePolicy
+* AWS::LookoutEquipment::InferenceScheduler
+
+## Attribute Changes
+
+* AWS::Amplify::Domain AutoSubDomainCreationPatterns.DuplicatesAllowed (__added__)
+* AWS::S3::AccessPoint Arn (__added__)
+* AWS::S3::AccessPoint Name (__added__)
+
+## Property Changes
+
+* AWS::Amplify::Domain AutoSubDomainCreationPatterns.DuplicatesAllowed (__added__)
+* AWS::Amplify::Domain SubDomainSettings.DuplicatesAllowed (__added__)
+* AWS::Cassandra::Table EncryptionSpecification (__added__)
+* AWS::EC2::TransitGateway AssociationDefaultRouteTableId (__added__)
+* AWS::EC2::TransitGateway PropagationDefaultRouteTableId (__added__)
+* AWS::EC2::TransitGateway TransitGatewayCidrBlocks (__added__)
+* AWS::EC2::TransitGateway AutoAcceptSharedAttachments.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway DefaultRouteTableAssociation.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway DefaultRouteTablePropagation.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway DnsSupport.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway VpnEcmpSupport.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::VPCCidrBlock Ipv6CidrBlock (__added__)
+* AWS::EC2::VPCCidrBlock Ipv6Pool (__added__)
+* AWS::Glue::Crawler RecrawlPolicy (__added__)
+* AWS::ImageBuilder::ContainerRecipe InstanceConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::ImageRecipe AdditionalInstanceConfiguration (__added__)
+* AWS::LookoutMetrics::Alert Action.PrimitiveType (__deleted__)
+* AWS::LookoutMetrics::Alert Action.Type (__added__)
+* AWS::LookoutMetrics::AnomalyDetector AnomalyDetectorConfig.PrimitiveType (__deleted__)
+* AWS::LookoutMetrics::AnomalyDetector AnomalyDetectorConfig.Type (__added__)
+* AWS::S3::AccessPoint Name (__deleted__)
+* AWS::S3::AccessPoint PolicyStatus (__added__)
+* AWS::SSMIncidents::ReplicationSet Regions.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::Cassandra::Table.EncryptionSpecification (__added__)
+* AWS::Glue::Crawler.RecrawlPolicy (__added__)
+* AWS::Glue::Database.DataLakePrincipal (__added__)
+* AWS::Glue::Database.PrincipalPrivileges (__added__)
+* AWS::ImageBuilder::ImageRecipe.AdditionalInstanceConfiguration (__added__)
+* AWS::ImageBuilder::ImageRecipe.ComponentParameter (__added__)
+* AWS::ImageBuilder::ImageRecipe.SystemsManagerAgent (__added__)
+* AWS::LookoutMetrics::Alert.Action (__added__)
+* AWS::LookoutMetrics::Alert.LambdaConfiguration (__added__)
+* AWS::LookoutMetrics::Alert.SNSConfiguration (__added__)
+* AWS::LookoutMetrics::AnomalyDetector.AnomalyDetectorConfig (__added__)
+* AWS::CloudWatch::Alarm.MetricDataQuery AccountId (__added__)
+* AWS::Glue::Database.DatabaseInput CreateTableDefaultPermissions (__added__)
+* AWS::Glue::Partition.SchemaReference SchameVersionId (__deleted__)
+* AWS::Glue::Partition.SchemaReference SchemaVersionId (__added__)
+* AWS::Glue::Table.SchemaReference SchameVersionId (__deleted__)
+* AWS::Glue::Table.SchemaReference SchemaVersionId (__added__)
+* AWS::ImageBuilder::ImageRecipe.ComponentConfiguration Parameters (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionDataSet FormatVersion (__added__)
+
+
+# CloudFormation Resource Specification v39.5.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker MaintenanceWindowStartTime.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::CodeDeploy::Application Tags (__added__)
+* AWS::CodeDeploy::DeploymentConfig ComputePlatform (__added__)
+* AWS::CodeDeploy::DeploymentConfig TrafficRoutingConfig (__added__)
+* AWS::CodeDeploy::DeploymentGroup BlueGreenDeploymentConfiguration (__added__)
+* AWS::CodeDeploy::DeploymentGroup ECSServices (__added__)
+* AWS::DataBrew::Job DataCatalogOutputs (__added__)
+* AWS::ServiceDiscovery::HttpNamespace Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PrivateDnsNamespace Properties (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PublicDnsNamespace Properties (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedCanary (__added__)
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedLinear (__added__)
+* AWS::CodeDeploy::DeploymentConfig.TrafficRoutingConfig (__added__)
+* AWS::CodeDeploy::DeploymentGroup.BlueGreenDeploymentConfiguration (__added__)
+* AWS::CodeDeploy::DeploymentGroup.BlueInstanceTerminationOption (__added__)
+* AWS::CodeDeploy::DeploymentGroup.DeploymentReadyOption (__added__)
+* AWS::CodeDeploy::DeploymentGroup.ECSService (__added__)
+* AWS::CodeDeploy::DeploymentGroup.GreenFleetProvisioningOption (__added__)
+* AWS::DataBrew::Job.DataCatalogOutput (__added__)
+* AWS::DataBrew::Job.DatabaseTableOutputOptions (__added__)
+* AWS::DataBrew::Job.S3TableOutputOptions (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace.PrivateDnsPropertiesMutable (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace.Properties (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace.SOA (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace.Properties (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace.PublicDnsPropertiesMutable (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace.SOA (__added__)
+* AWS::ApiGatewayV2::DomainName.DomainNameConfiguration OwnershipVerificationCertificateArn (__deleted__)
+
+
 # CloudFormation Resource Specification v39.3.0
 
 ## New Resource Types
