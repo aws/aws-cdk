@@ -378,6 +378,23 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
 });
 ```
 
+## Configuring Instance Metadata Service (IMDS)
+
+### Toggling IMDSv1
+
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
+allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS. To do this, you can use the `AutoScalingGroupImdsAspect`.
+
+The following example demonstrates how to use the `AutoScalingGroupImdsAspect` to disable IMDSv1 (thus enforcing IMDSv2) for all AutoScalingGroups in a stack:
+
+```ts
+const aspect = new autoscaling.AutoScalingGroupImdsAspect({
+  enableImdsV1: false,
+});
+
+Aspects.of(stack).add(aspect);
+```
+
 ## Future work
 
 * [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
