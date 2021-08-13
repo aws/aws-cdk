@@ -157,7 +157,7 @@
         "DistributionPaths": [
           "/images/*.png"
         ],
-        "PassThroughBucketArn": {
+        "DestinationBucketArn": {
           "Fn::GetAtt": [
             "Destination3E3DC043D",
             "Arn"

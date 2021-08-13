@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -720,6 +721,44 @@ test('s3 deployment bucket is identical to destination bucket', () => {
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
     // Since this utilizes GetAtt, we know CFN will deploy the bucket first
     // before deploying other resources that rely call the destination bucket.
-    PassThroughBucketArn: { 'Fn::GetAtt': ['DestC383B82A', 'Arn'] },
+    DestinationBucketArn: { 'Fn::GetAtt': ['DestC383B82A', 'Arn'] },
+  });
+});
+
+test('using deployment bucket references the destination bucket by means of the CustomResource', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deployment', {
+    destinationBucket: bucket,
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  });
+
+  // WHEN
+  new cdk.CfnOutput(stack, 'DestinationArn', {
+    value: deployment.deployedBucket.bucketArn,
+  });
+  new cdk.CfnOutput(stack, 'DestinationName', {
+    value: deployment.deployedBucket.bucketName,
+  });
+
+  // THEN
+  const template = SynthUtils.synthesize(stack).template;
+  expect(template.Outputs).toEqual({
+    DestinationArn: {
+      Value: { 'Fn::GetAtt': ['DeploymentCustomResource47E8B2E6', 'DestinationBucketArn'] },
+    },
+    DestinationName: {
+      Value: {
+        'Fn::Select': [0, {
+          'Fn::Split': ['/', {
+            'Fn::Select': [5, {
+              'Fn::Split': [':',
+                { 'Fn::GetAtt': ['DeploymentCustomResource47E8B2E6', 'DestinationBucketArn'] }],
+            }],
+          }],
+        }],
+      },
+    },
   });
 });

@@ -251,7 +251,7 @@ export class BucketDeployment extends CoreConstruct {
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
         // Passing through the ARN sequences dependencees on the deployment
-        PassThroughBucketArn: props.destinationBucket.bucketArn,
+        DestinationBucketArn: props.destinationBucket.bucketArn,
       },
     });
 

@@ -108,7 +108,7 @@
         },
         "RetainOnDelete": false,
         "Prune": true,
-        "PassThroughBucketArn": {
+        "DestinationBucketArn": {
           "Fn::GetAtt": [
             "Destination920A3C57",
             "Arn"
@@ -470,7 +470,7 @@
         "DestinationBucketKeyPrefix": "deploy/here/",
         "RetainOnDelete": false,
         "Prune": true,
-        "PassThroughBucketArn": {
+        "DestinationBucketArn": {
           "Fn::GetAtt": [
             "Destination281A09BDF",
             "Arn"
@@ -592,7 +592,7 @@
           "cache-control": "public, max-age=60",
           "content-type": "text/html"
         },
-        "PassThroughBucketArn": {
+        "DestinationBucketArn": {
           "Fn::GetAtt": [
             "Destination3E3DC043D",
             "Arn"
@@ -700,7 +700,7 @@
         },
         "RetainOnDelete": false,
         "Prune": false,
-        "PassThroughBucketArn": {
+        "DestinationBucketArn": {
           "Fn::GetAtt": [
             "Destination920A3C57",
             "Arn"
