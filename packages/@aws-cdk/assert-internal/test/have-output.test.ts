@@ -1,7 +1,6 @@
-import { unlink, writeFileSync } from 'fs';
-import { join } from 'path';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { unlink } from 'fs';
 import * as cxapi from '@aws-cdk/cx-api';
+import { mkStack } from './cloud-artifact';
 import '../jest';
 
 let templateFilePath: string;
@@ -181,22 +180,3 @@ afterEach(done => {
     done();
   }
 });
-
-function mkStack(template: any): cxapi.CloudFormationStackArtifact {
-  const templateFileName = 'test-have-output-template.json';
-  const stackName = 'test-have-output';
-  const assembly = new cxapi.CloudAssemblyBuilder();
-
-  assembly.addArtifact(stackName, {
-    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-    environment: cxapi.EnvironmentUtils.format('123456789012', 'bermuda-triangle-1'),
-    properties: {
-      templateFile: templateFileName,
-    },
-  });
-
-  templateFilePath = join(assembly.outdir, templateFileName);
-  writeFileSync(templateFilePath, JSON.stringify(template));
-
-  return assembly.buildAssembly().getStackByName(stackName);
-}

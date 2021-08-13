@@ -326,12 +326,12 @@ function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileS
     const fragments = [];
 
     if (!['.', '..'].includes(path.dirname(input.directory))) {
-      fragments.push(`mkdir -p "${input.directory}"`);
+      fragments.push(`mkdir -p -- "${input.directory}"`);
     }
 
     const artifact = artifacts.toCodePipeline(input.fileSet);
 
-    fragments.push(`ln -s "$CODEBUILD_SRC_DIR_${artifact.artifactName}" "${input.directory}"`);
+    fragments.push(`ln -s -- "$CODEBUILD_SRC_DIR_${artifact.artifactName}" "${input.directory}"`);
 
     return fragments.join(' && ');
   });
