@@ -1,126 +1,124 @@
-import '@aws-cdk/assert-internal/jest';
-import { doesNotThrow, equal, throws } from 'assert';
 import { Schema } from '../lib';
 
 test('boolean type', () => {
-  equal(Schema.BOOLEAN.inputString, 'boolean');
-  equal(Schema.BOOLEAN.isPrimitive, true);
+  expect(Schema.BOOLEAN.inputString).toEqual('boolean');
+  expect(Schema.BOOLEAN.isPrimitive).toEqual(true);
 });
 
 test('binary type', () => {
-  equal(Schema.BINARY.inputString, 'binary');
-  equal(Schema.BINARY.isPrimitive, true);
+  expect(Schema.BINARY.inputString).toEqual('binary');
+  expect(Schema.BINARY.isPrimitive).toEqual(true);
 });
 
 test('bigint type', () => {
-  equal(Schema.BIG_INT.inputString, 'bigint');
-  equal(Schema.BIG_INT.isPrimitive, true);
+  expect(Schema.BIG_INT.inputString).toEqual('bigint');
+  expect(Schema.BIG_INT.isPrimitive).toEqual(true);
 });
 
 test('double type', () => {
-  equal(Schema.DOUBLE.inputString, 'double');
-  equal(Schema.DOUBLE.isPrimitive, true);
+  expect(Schema.DOUBLE.inputString).toEqual('double');
+  expect(Schema.DOUBLE.isPrimitive).toEqual(true);
 });
 
 test('float type', () => {
-  equal(Schema.FLOAT.inputString, 'float');
-  equal(Schema.FLOAT.isPrimitive, true);
+  expect(Schema.FLOAT.inputString).toEqual('float');
+  expect(Schema.FLOAT.isPrimitive).toEqual(true);
 });
 
 test('integer type', () => {
-  equal(Schema.INTEGER.inputString, 'int');
-  equal(Schema.INTEGER.isPrimitive, true);
+  expect(Schema.INTEGER.inputString).toEqual('int');
+  expect(Schema.INTEGER.isPrimitive).toEqual(true);
 });
 
 test('smallint type', () => {
-  equal(Schema.SMALL_INT.inputString, 'smallint');
-  equal(Schema.SMALL_INT.isPrimitive, true);
+  expect(Schema.SMALL_INT.inputString).toEqual('smallint');
+  expect(Schema.SMALL_INT.isPrimitive).toEqual(true);
 });
 
 test('tinyint type', () => {
-  equal(Schema.TINY_INT.inputString, 'tinyint');
-  equal(Schema.TINY_INT.isPrimitive, true);
+  expect(Schema.TINY_INT.inputString).toEqual('tinyint');
+  expect(Schema.TINY_INT.isPrimitive).toEqual(true);
 });
 
 test('decimal type', () => {
-  equal(Schema.decimal(16).inputString, 'decimal(16)');
-  equal(Schema.decimal(16, 1).inputString, 'decimal(16,1)');
-  equal(Schema.decimal(16).isPrimitive, true);
-  equal(Schema.decimal(16, 1).isPrimitive, true);
+  expect(Schema.decimal(16).inputString).toEqual('decimal(16)');
+  expect(Schema.decimal(16, 1).inputString).toEqual('decimal(16,1)');
+  expect(Schema.decimal(16).isPrimitive).toEqual(true);
+  expect(Schema.decimal(16, 1).isPrimitive).toEqual(true);
 });
 // TODO: decimal bounds
 
 test('date type', () => {
-  equal(Schema.DATE.inputString, 'date');
-  equal(Schema.DATE.isPrimitive, true);
+  expect(Schema.DATE.inputString).toEqual('date');
+  expect(Schema.DATE.isPrimitive).toEqual(true);
 });
 
 test('timestamp type', () => {
-  equal(Schema.TIMESTAMP.inputString, 'timestamp');
-  equal(Schema.TIMESTAMP.isPrimitive, true);
+  expect(Schema.TIMESTAMP.inputString).toEqual('timestamp');
+  expect(Schema.TIMESTAMP.isPrimitive).toEqual(true);
 });
 
 test('string type', () => {
-  equal(Schema.STRING.inputString, 'string');
-  equal(Schema.STRING.isPrimitive, true);
+  expect(Schema.STRING.inputString).toEqual('string');
+  expect(Schema.STRING.isPrimitive).toEqual(true);
 });
 
 test('char type', () => {
-  equal(Schema.char(1).inputString, 'char(1)');
-  equal(Schema.char(1).isPrimitive, true);
+  expect(Schema.char(1).inputString).toEqual('char(1)');
+  expect(Schema.char(1).isPrimitive).toEqual(true);
 });
 
 test('char length must be test(at least 1', () => {
-  doesNotThrow(() => Schema.char(1));
-  throws(() => Schema.char(0));
-  throws(() => Schema.char(-1));
+  expect(() => Schema.char(1)).not.toThrow();
+  expect(() => Schema.char(0)).toThrow();
+  expect(() => Schema.char(-1)).toThrow();
 });
 
 test('char length must test(be <= 255', () => {
-  doesNotThrow(() => Schema.char(255));
-  throws(() => Schema.char(256));
+  expect(() => Schema.char(255)).not.toThrow();
+  expect(() => Schema.char(256)).toThrow();
 });
 
 test('varchar type', () => {
-  equal(Schema.varchar(1).inputString, 'varchar(1)');
-  equal(Schema.varchar(1).isPrimitive, true);
+  expect(Schema.varchar(1).inputString).toEqual('varchar(1)');
+  expect(Schema.varchar(1).isPrimitive).toEqual(true);
 });
 
 test('varchar length must be test(at least 1', () => {
-  doesNotThrow(() => Schema.varchar(1));
-  throws(() => Schema.varchar(0));
-  throws(() => Schema.varchar(-1));
+  expect(() => Schema.varchar(1)).not.toThrow();
+  expect(() => Schema.varchar(0)).toThrow();
+  expect(() => Schema.varchar(-1)).toThrow();
 });
 
 test('varchar length must test(be <= 65535', () => {
-  doesNotThrow(() => Schema.varchar(65535));
-  throws(() => Schema.varchar(65536));
+  expect(() => Schema.varchar(65535)).not.toThrow();
+  expect(() => Schema.varchar(65536)).toThrow();
 });
 
 test('test(array<string>', () => {
   const type = Schema.array(Schema.STRING);
-  equal(type.inputString, 'array<string>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('array<string>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('array<test(char(1)>', () => {
   const type = Schema.array(Schema.char(1));
-  equal(type.inputString, 'array<char(1)>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('array<char(1)>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('test(array<array>', () => {
   const type = Schema.array(
     Schema.array(Schema.STRING));
-  equal(type.inputString, 'array<array<string>>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('array<array<string>>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('test(array<map>', () => {
   const type = Schema.array(
     Schema.map(Schema.STRING, Schema.STRING));
-  equal(type.inputString, 'array<map<string,string>>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('array<map<string,string>>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('test(array<struct>', () => {
@@ -129,8 +127,8 @@ test('test(array<struct>', () => {
       name: 'key',
       type: Schema.STRING,
     }]));
-  equal(type.inputString, 'array<struct<key:string>>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('array<struct<key:string>>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<test(string,string>', () => {
@@ -138,8 +136,8 @@ test('map<test(string,string>', () => {
     Schema.STRING,
     Schema.STRING,
   );
-  equal(type.inputString, 'map<string,string>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('map<string,string>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<test(int,string>', () => {
@@ -147,8 +145,8 @@ test('map<test(int,string>', () => {
     Schema.INTEGER,
     Schema.STRING,
   );
-  equal(type.inputString, 'map<int,string>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('map<int,string>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<char(1),test(char(1)>', () => {
@@ -156,8 +154,8 @@ test('map<char(1),test(char(1)>', () => {
     Schema.char(1),
     Schema.char(1),
   );
-  equal(type.inputString, 'map<char(1),char(1)>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('map<char(1),char(1)>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<test(string,array>', () => {
@@ -165,8 +163,8 @@ test('map<test(string,array>', () => {
     Schema.char(1),
     Schema.array(Schema.STRING),
   );
-  equal(type.inputString, 'map<char(1),array<string>>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('map<char(1),array<string>>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<test(string,map>', () => {
@@ -176,8 +174,8 @@ test('map<test(string,map>', () => {
       Schema.STRING,
       Schema.STRING),
   );
-  equal(type.inputString, 'map<char(1),map<string,string>>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('map<char(1),map<string,string>>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<test(string,struct>', () => {
@@ -188,26 +186,26 @@ test('map<test(string,struct>', () => {
       type: Schema.STRING,
     }]),
   );
-  equal(type.inputString, 'map<char(1),struct<key:string>>');
-  equal(type.isPrimitive, false);
+  expect(type.inputString).toEqual('map<char(1),struct<key:string>>');
+  expect(type.isPrimitive).toEqual(false);
 });
 
 test('map throws if keyType is test(non-primitive', () => {
-  throws(() => Schema.map(
+  expect(() => Schema.map(
     Schema.array(Schema.STRING),
     Schema.STRING,
-  ));
-  throws(() => Schema.map(
+  )).toThrow();
+  expect(() => Schema.map(
     Schema.map(Schema.STRING, Schema.STRING),
     Schema.STRING,
-  ));
-  throws(() => Schema.map(
+  )).toThrow();
+  expect(() => Schema.map(
     Schema.struct([{
       name: 'key',
       type: Schema.STRING,
     }]),
     Schema.STRING,
-  ));
+  )).toThrow();
 });
 
 test('struct type', () => {
@@ -233,9 +231,9 @@ test('struct type', () => {
     }]),
   }]);
 
-  equal(type.isPrimitive, false);
-  equal(
-    type.inputString,
+  expect(type.isPrimitive).toEqual(false);
+  expect(type.inputString).toEqual(
     // eslint-disable-next-line max-len
-    'struct<primitive:string,with_comment:string COMMENT \'this has a comment\',array:array<string>,map:map<string,string>,nested_struct:struct<nested:string COMMENT \'nested comment\'>>');
+    'struct<primitive:string,with_comment:string COMMENT \'this has a comment\',array:array<string>,map:map<string,string>,nested_struct:struct<nested:string COMMENT \'nested comment\'>>',
+  );
 });
