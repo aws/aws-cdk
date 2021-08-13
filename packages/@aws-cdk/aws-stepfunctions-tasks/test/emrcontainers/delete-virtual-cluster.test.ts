@@ -159,5 +159,5 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       virtualClusterId: sfn.TaskInput.fromText(virtualClusterId),
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB,. Received: WAIT_FOR_TASK_TOKEN/);
+  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
 });

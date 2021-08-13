@@ -30,7 +30,7 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
   /**
    * The execution role for the job run.
    *
-   * If the execution role is provided, follow the documentation to setup the job execution role and update the role trust policy
+   * If the role is to be provided and the `virtualClusterId` is not from a JSON input path, follow the documentation to setup the job execution role and update the role trust policy
    * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
    *
    * @default - Automatically generated only when the provided `virtualClusterId` is not an encoded JSON path
@@ -86,7 +86,7 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html
  */
-export class EmrContainersStartJobRun extends sfn.TaskStateBase {
+export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.IGrantable {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -95,6 +95,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
+  public readonly grantPrincipal: iam.IPrincipal;
   private role: iam.IRole;
   private readonly logGroup?: logs.ILogGroup;
   private readonly logBucket?: s3.IBucket;
@@ -103,25 +104,13 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EmrContainersStartJobRunProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
-
     validatePatternSupported(this.integrationPattern, EmrContainersStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (props.applicationConfig) {
-      if (props.applicationConfig.length > 100) {
-        throw new Error(`Application configuration array must have 100 or fewer entries. Received ${props.applicationConfig.length}.`);
-      }
-      props.applicationConfig.forEach(function findError(config: ApplicationConfiguration) {
-        if (config === undefined || config.nestedConfig === undefined) {
-          return;
-        } else if (config.nestedConfig?.length > 100) {
-          throw new Error(`Application Configuration nested configuration array must have 100 or fewer entries. Received ${config.nestedConfig.length}`);
-        } else {
-          config.nestedConfig.forEach(element => findError(element));
-        }
-      });
+      this.validateAppConfigLength(this.props.applicationConfig);
     }
 
-    if (props.jobDriver.sparkSubmitJobDriver?.entryPoint !== undefined
+    if (props.jobDriver.sparkSubmitJobDriver?.entryPoint
       && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver?.entryPoint.value)
       && (props.jobDriver.sparkSubmitJobDriver?.entryPoint.value.length > 256
         || props.jobDriver.sparkSubmitJobDriver?.entryPoint.value.length < 1)) {
@@ -129,14 +118,19 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
-      && !this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)
-      && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value)
+      && this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value) === false
+      && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)) {
+      throw new Error(`Entry point arguments must be a string array. Received ${props.jobDriver.sparkSubmitJobDriver.entryPointArguments.type}`);
+    }
+
+    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
       && (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length > 10280
-          || props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length < 1)) {
+        || props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length < 1)
+      && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value)) {
       throw new Error(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
     }
 
-    if (props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters !== undefined
+    if (props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters
       && (props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length > 102400
         || props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length < 1)) {
       throw new Error(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length}.`);
@@ -150,6 +144,10 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
     this.logGroup = this.props.monitoring?.logGroup ?? this.props.monitoring?.logging ? new logs.LogGroup(this, 'Monitoring Log Group') : undefined;
     this.logBucket = this.props.monitoring?.logBucket ?? this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined;
     this.role = this.props.executionRole ?? this.createJobExecutionRole();
+    this.grantPrincipal = this.role;
+
+    this.grantMonitoringPolicies();
+
     this.taskPolicies = this.createPolicyStatements();
   }
 
@@ -174,16 +172,16 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
         ConfigurationOverrides: {
           ApplicationConfiguration: cdk.listMapper(this.applicationConfigPropertyToJson)(this.props.applicationConfig),
           MonitoringConfiguration: {
-            CloudWatchMonitoringConfiguration: {
+            CloudWatchMonitoringConfiguration: this.logGroup ? {
               LogGroupName: this.logGroup?.logGroupName, // automatically generated name https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-logs/loggroup.html#aws_logs_LogGroup_synopsis
               LogStreamNamePrefix: this.props.monitoring?.logStreamNamePrefix,
-            },
+            } : undefined,
             PersistentAppUI: (this.props.monitoring?.persistentAppUI === false)
               ? 'DISABLED'
               : 'ENABLED',
-            S3MonitoringConfiguration: {
+            S3MonitoringConfiguration: this.logBucket ? {
               LogUri: this.logBucket?.s3UrlForObject(), // automatically generated unique name https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-s3.Bucket.html#bucketname
-            },
+            } : undefined,
           },
           Tags: this.props.tags ? this.renderTags(this.props.tags) : undefined,
         },
@@ -200,6 +198,25 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
       Properties: property.properties ? cdk.objectToCloudFormation(property.properties) : undefined,
       Configurations: property.nestedConfig ? cdk.listMapper(this.applicationConfigPropertyToJson)(property.nestedConfig) : undefined,
     };
+  }
+
+  private validateAppConfigPropertiesLength(appConfig: ApplicationConfiguration) {
+    if (appConfig.properties === undefined) {
+      return;
+    } else if (Object.keys(appConfig.properties).length > 100) {
+      throw new Error(`Application configuration properties must have 100 or fewer entries. Received ${appConfig.properties.length}`);
+    }
+  }
+
+  private validateAppConfigLength(config?: ApplicationConfiguration[]) {
+    if (config === undefined) {
+      return;
+    } else if (config.length > 100) {
+      throw new Error(`Application configuration array must have 100 or fewer entries. Received ${config.length}`);
+    } else {
+      config.forEach(element => this.validateAppConfigPropertiesLength(element));
+      config.forEach(element => this.validateAppConfigLength(element.nestedConfig));
+    }
   }
 
   private isArrayOfStrings(value: any): boolean {
@@ -219,20 +236,22 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
       ),
     });
 
-    jobExecutionRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        resources: ['*'],
-        actions: [
-          's3:PutObject',
-          's3:GetObject',
-          's3:ListBucket',
-        ],
-      }),
-    );
+    this.grantMonitoringPolicies();
 
-    jobExecutionRole.addToPrincipalPolicy(
+    this.updateRoleTrustPolicy(jobExecutionRole);
+
+    return jobExecutionRole;
+  }
+
+  private grantMonitoringPolicies() {
+
+    this.logBucket?.grantReadWrite(this.role);
+
+    this.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
-        resources: ['arn:aws:logs:*:*:*'],
+        resources: [
+          'arn:aws:logs:*:*:*',
+        ],
         actions: [
           'logs:PutLogEvents',
           'logs:CreateLogStream',
@@ -241,12 +260,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
         ],
       }),
     );
-
-    this.updateRoleTrustPolicy(jobExecutionRole);
-
-    return jobExecutionRole;
   }
-
   /**
    * If an execution role is not provided by user, the automatically generated job execution role must create a trust relationship
    * between itself and the identity of the EMR managed service account in order to run jobs on the Kubernetes namespace.
@@ -275,7 +289,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
 
     const cliLayer = new awscli.AwsCliLayer(this, 'awsclilayer');
     const shellCliLambda = new lambda.SingletonFunction(this, 'Call Update-Role-Trust-Policy', {
-      uuid: this.renderSingletonUuid(),
+      uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8757C',
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'utils/role-policy')),
@@ -318,16 +332,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase {
       serviceToken: provider.serviceToken,
     });
   }
-
-  /**
-   * Generates a UUID for a lambda singleton in update-role-trust-policy
-   **/
-  private renderSingletonUuid() {
-    const uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8757C';
-
-    return uuid;
-  }
-
 
   private createPolicyStatements(): iam.PolicyStatement[] {
     const policyStatements = [
@@ -504,6 +508,7 @@ export interface ApplicationConfiguration {
 
   /**
    * The classification within a configuration.
+   *
    * Length Constraints: Minimum length of 1. Maximum length of 1024.
    */
   readonly classification: Classification;
@@ -518,6 +523,7 @@ export interface ApplicationConfiguration {
 
   /**
    * A set of properties specified within a configuration classification.
+   *
    * Map Entries: Maximum number of 100 items.
    *
    * @default - No properties

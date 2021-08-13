@@ -712,25 +712,27 @@ new tasks.EmrModifyInstanceGroupByName(this, 'Task', {
 Step Functions supports Amazon EMR on EKS through the service integration pattern.
 The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in the parameters that are used.
 
-[Setting up](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) the EKS cluster is required.
-
 [Read more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html) about the differences when using these service integrations.
+
+[Setting up](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) the EKS cluster is required.
 
 ### Create Virtual Cluster
 
 The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
 
 The EKS cluster containing the Kubernetes namespace where the virtual cluster will be mapped can be passed in from the task input.
+
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
-new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
 });
 ```
 
 The EKS cluster can also be passed in directly.
+
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
@@ -740,7 +742,7 @@ const eksCluster = new eks.Cluster(this, 'EKS cluster', {
   version: eks.KubernetesVersion.V1_20,
 });
 
-new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromCluster(eksCluster),
 });
 ```
@@ -751,10 +753,9 @@ By default, the Kubernetes namespace that a virtual cluster maps to is "default"
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
-new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
   eksNamespace: 'specified-namespace',
-  virtualClusterName: 'emr-containers-virtual-cluster'
 });
 ```
 
@@ -775,6 +776,22 @@ new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
 
 The [StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_StartJobRun.html) API starts a job run. A job is a unit of work that you submit to Amazon EMR on EKS for execution. The work performed by the job can be defined by a Spark jar, PySpark script, or SparkSQL query. A job run is an execution of the job on the virtual cluster.
 
+**Required** Setup:
+
+ - If not done already, follow the EMR on EKS [setting up steps](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) and [create an EKS Cluster](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-eks-readme.html#quick-start).
+ - Enable [Cluster access](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-cluster-access.html)
+ - Enable [IAM Role access](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-enable-IAM.html)
+
+**Optional** Setup:
+
+*NOTE*: These actions will be done automatically only *if* the virtual cluster ID is supplied from the task input.
+
+ - **Optional** - Create a [Job Execution Role](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html)
+ - **Optional** - Update the [Role Trust Policy](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html) of the Job Execution Role.
+ - **Optional** - Attach [IAM policies](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-iam.html) to give users access to EMR on EKS. This can also be done in the CDK via ``grantPrincipal.addToPrincipalPolicy()``.
+
+The job can be configured with spark submit parameters for the instances, memory, and cores in each job.
+
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -786,11 +803,13 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
   jobDriver: {
     sparkSubmitJobDriver: {
       entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
     },
   },
 });
 ```
+
+If needed, monitoring can be enabled if ``monitoring.logging`` is set true. Automatically generates S3 bucket and CloudWatch logs resources.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
@@ -811,6 +830,8 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
   },
 });
 ```
+
+Otherwise, providing monitoring with existing log groups and log buckets is available.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
@@ -838,14 +859,32 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 });
 ```
 
-**Required** Setup for Full Example:
+Configuring the job can also be done via application configuration instead of spark submit parameters.
 
- - If not done already, follow the EMR on EKS [setting up steps](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) and [create an EKS Cluster](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-eks-cluster.html).
- - Create a [Job Execution Role](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html).
- - Update the [Role Trust Policy](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html) of the Job Execution Role.
- - **Optional** - Attach [IAM policies](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-iam.html) to give users access to EMR on EKS.
- 
-**Full Example** 
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobName: 'EMR-Containers-Job',
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+  },
+  applicationConfig: [{
+    classification: tasks.Classification.SPARK_DEFAULTS,
+    properties: {
+      'spark.executor.instances': '1',
+      'spark.executor.memory': '512M',
+    },
+  }],
+});
+```
+
+Users can provide their own existing Job Execution Role by importing the resource ARN.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
@@ -860,20 +899,9 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
   jobDriver: {
     sparkSubmitJobDriver: {
       entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-      entryPointArguments: sfn.TaskInput.fromObject(['2']),
-      sparkSubmitParameters: '--conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false',
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
     },
   },
-  monitoring: {
-    logging: true,
-  },
-  applicationConfig: [{
-    classification: tasks.Classification.SPARK_DEFAULTS,
-    properties: {
-      'spark.executor.instances': '1',
-      'spark.executor.memory': '512M',
-    },
-  }],
 });
 ```
 

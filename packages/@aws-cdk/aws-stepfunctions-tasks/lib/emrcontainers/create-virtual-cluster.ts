@@ -115,7 +115,7 @@ export class EmrContainersEksCreateVirtualCluster extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('emr-containers', 'createVirtualCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        Name: this.props.virtualClusterName ?? sfn.JsonPath.stringAt('$$.Execution.Id'),
+        Name: this.props.virtualClusterName ?? sfn.JsonPath.stringAt('$$.Execution.Id').slice(0, 62), // Name must be less than 64 in length
         ContainerProvider: {
           Id: this.props.eksCluster.clusterName,
           Info: {
@@ -140,6 +140,7 @@ export class EmrContainersEksCreateVirtualCluster extends sfn.TaskStateBase {
         resources: [
           cdk.Stack.of(this).formatArn({
             service: 'iam',
+            region: '',
             resource: 'role/aws-service-role/emr-containers.amazonaws.com',
             resourceName: 'AWSServiceRoleForAmazonEMRContainers',
           }),

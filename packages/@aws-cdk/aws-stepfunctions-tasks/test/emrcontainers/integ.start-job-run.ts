@@ -14,13 +14,12 @@ import { Classification, ReleaseLabel } from '../../lib/emrcontainers/start-job-
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-start-job-run-integ');
+const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test');
 
 const startJobRunJob = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-  virtualClusterId: sfn.TaskInput.fromText('llr8lezdxlonrv3orxvufp9p0'),
+  virtualClusterId: sfn.TaskInput.fromText('kdc1nynmnfs810uq6r0ymfm04'),
   releaseLabel: ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
-  // executionRole: iam.Role.fromRoleArn(this, 'Job-Execution-Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
   jobDriver: {
     sparkSubmitJobDriver: {
       entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),

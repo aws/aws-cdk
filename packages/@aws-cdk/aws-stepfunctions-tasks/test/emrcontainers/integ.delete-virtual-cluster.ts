@@ -15,7 +15,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-delete-virtual-cluster-integ');
 
 const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'EMR Containers Delete Virtual Cluster', {
-  virtualClusterId: sfn.TaskInput.fromText('vw3r6z4u49g1er15j0kni2zk1'),
+  virtualClusterId: sfn.TaskInput.fromText('kdc1nynmnfs810uq6r0ymfm04'),
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
 });
 
