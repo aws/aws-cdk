@@ -95,14 +95,14 @@
     "VpcPublicSubnet1NATGateway4D7517AA": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VpcPublicSubnet1EIPD7E02669",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
         },
         "Tags": [
           {
@@ -835,7 +835,7 @@
   },
   "Parameters": {
     "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
       "Default": "/aws/service/bottlerocket/aws-ecs-1/x86_64/latest/image_id"
     }
   }
