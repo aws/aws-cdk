@@ -699,6 +699,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly kubectlMemory?: Size;
   public abstract readonly prune: boolean;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
+  public abstract readonly awsAuth: AwsAuth;
 
   private _spotInterruptHandler?: HelmChart;
 
@@ -1842,6 +1843,10 @@ class ImportedCluster extends ClusterBase {
       throw new Error('"openIdConnectProvider" is not defined for this imported cluster');
     }
     return this.props.openIdConnectProvider;
+  }
+
+  public get awsAuth(): AwsAuth {
+    throw new Error('"awsAuth" supported in imported cluster');
   }
 }
 

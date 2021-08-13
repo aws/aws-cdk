@@ -20,7 +20,13 @@ export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: a
     extraArgs.push(`--apiserver-endpoint '${clusterEndpoint}'`);
     extraArgs.push(`--b64-cluster-ca '${clusterCertificateAuthorityData}'`);
   } catch (e) {
-    // ignore
+    /**
+     * Errors are ignored here.
+     * apiserver-endpoint and b64-cluster-ca arguments are added in #12659 to make nodes join the cluster faster.
+     * As these are not necessary arguments, we don't need to pass these arguments when they don't exist.
+     *
+     * @see https://github.com/aws/aws-cdk/pull/12659
+     */
   }
 
   extraArgs.push(`--use-max-pods ${options.useMaxPods ?? true}`);
