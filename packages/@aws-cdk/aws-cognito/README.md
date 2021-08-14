@@ -337,6 +337,23 @@ layer](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) to configure
 If an email address contains non-ASCII characters, it will be encoded using the [punycode
 encoding](https://en.wikipedia.org/wiki/Punycode) when generating the template for Cloudformation.
 
+### Device Tracking
+
+User pools can be configured to track devices that users have logged in to.
+Read more at [Device Tracking](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html)
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  // ...
+  deviceConfiguration: {
+    challengeRequiredOnNewDevice: true,
+    deviceOnlyRememberedOnUserPrompt: true,
+  },
+});
+```
+
+The default is to not track devices.
+
 ### Lambda Triggers
 
 User pools can be configured such that AWS Lambda functions can be triggered when certain user operations or actions
