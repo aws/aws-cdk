@@ -1364,6 +1364,7 @@ nodeunitShim({
 
     test.done();
   },
+
   'can configure role to import' (test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1378,11 +1379,11 @@ nodeunitShim({
       autoScalingGroupName: 'MyAsg',
       role: importedRole,
     });
-
     const asg = autoscaling.AutoScalingGroup.fromAutoScalingGroupAttributes(stack, 'MyASG-Ref', { autoScalingGroupName: 'MyAsg', grantPrincipal: importedRole });
 
     // THEN
     test.equal(asg.grantPrincipal, importedRole);
+
     test.done();
   },
 });
