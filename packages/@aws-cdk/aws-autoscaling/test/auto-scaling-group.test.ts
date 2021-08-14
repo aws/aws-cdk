@@ -1372,17 +1372,18 @@ nodeunitShim({
     const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/HelloFriend');
 
     // WHEN
-    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+    const asg1 = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       autoScalingGroupName: 'MyAsg',
       role: importedRole,
     });
-    const asg = autoscaling.AutoScalingGroup.fromAutoScalingGroupAttributes(stack, 'MyASG-Ref', { autoScalingGroupName: 'MyAsg', grantPrincipal: importedRole });
+    const asg2 = autoscaling.AutoScalingGroup.fromAutoScalingGroupAttributes(stack, 'MyASG-Ref', { autoScalingGroupName: 'MyAsg', grantPrincipal: importedRole });
 
     // THEN
-    test.equal(asg.grantPrincipal, importedRole);
+    test.equal(asg1.autoScalingGroupName, asg2.autoScalingGroupName);
+    test.equal(asg1.role, asg2.grantPrincipal);
 
     test.done();
   },
