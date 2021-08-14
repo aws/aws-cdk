@@ -36,6 +36,22 @@ export interface BucketDeploymentProps {
   readonly destinationKeyPrefix?: string;
 
   /**
+   * If this is set, matching files or objects will be excluded from the command
+   *
+   * @default - No files are excluded
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
+   */
+  readonly exclude?: string
+
+  /**
+   * If this is set, matching files or objects will be included with the command
+   *
+   * @default - No files are excluded
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
+   */
+  readonly include?: string
+
+  /**
    * If this is set to false, files in the destination bucket that
    * do not exist in the asset, will NOT be deleted during deployment (create/update).
    *
@@ -245,6 +261,8 @@ export class BucketDeployment extends CoreConstruct {
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
         Prune: props.prune ?? true,
+        Exclude: props.exclude,
+        Include: props.include,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,

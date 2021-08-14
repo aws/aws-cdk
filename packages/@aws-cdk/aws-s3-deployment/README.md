@@ -138,6 +138,31 @@ new BucketDeployment(this, 'HTMLBucketDeployment', {
 });
 ```
 
+## Exclude and Include Filters
+
+When deploying your files to the destination bucket, you can specify exclude and include filters. These files will not be deployed to the destination bucket. In addition, if the file already exists in the destination bucket, it will not be deleted if you are using the `prune` option:
+
+```ts
+new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFiles', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  exclude: '*.txt'
+});
+```
+
+This can also be leveraged to exclude entire directories.  In some cases, you may want to exclude all files from a directory while adding back in a smaller number of files from that directory.  In those cases, you can use the `include` option alongside the `exclude` option.
+
+```ts
+new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFilesWithInclusionFilter', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  exclude: 'build/*',
+  include: 'build/config.json'
+});
+```
+
+These filters follow the same format that is used for the AWS CLI.  See the CLI documentation for information on [Using Include and Exclude Filters](https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters).
+
 ## Objects metadata
 
 You can specify metadata to be set on all the objects in your deployment.
