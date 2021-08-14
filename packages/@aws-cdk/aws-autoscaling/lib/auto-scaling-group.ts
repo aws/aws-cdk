@@ -393,8 +393,8 @@ export interface AutoScalingGroupAttributes {
   /**
    * AutoScalingGroup's name
    */
-
   readonly autoScalingGroupName: string;
+
   /**
    * AutoScalingGroup's role
    */
