@@ -387,6 +387,20 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
 }
 
 /**
+ * Properties that reference an external AutoScalingGroup
+ */
+export interface AutoScalingGroupAttributes {
+  /**
+   * AutoScalingGroup's name
+   */
+  readonly autoScalingGroupName: string;
+  /**
+   * AutoScalingGroup's role
+   */
+  readonly grantPrincipal: iam.IRole;
+}
+
+/**
  * Configure whether the AutoScalingGroup waits for signals
  *
  * If you do configure waiting for signals, you should make sure the instances
@@ -830,20 +844,6 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public addUserData(..._commands: string[]): void {
     // do nothing
   }
-}
-
-/**
- * Properties that reference an external AutoScalingGroup
- */
-export interface AutoScalingGroupAttributes {
-  /**
-   * AutoScalingGroup's name
-   */
-  readonly autoScalingGroupName: string;
-  /**
-   * AutoScalingGroup's role
-   */
-  readonly grantPrincipal: iam.IRole;
 }
 
 /**
