@@ -831,7 +831,19 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
     // do nothing
   }
 }
-
+/**
+ * Properties that reference an external AutoScalingGroup
+ */
+export interface AutoScalingGroupAttributes {
+  /**
+   * AutoScalingGroup's name
+   */
+  readonly autoScalingGroupName: string;
+  /**
+   * AutoScalingGroup's role
+   */
+  readonly grantPrincipal: iam.IRole;
+}
 /**
  * A Fleet represents a managed set of EC2 instances
  *
@@ -861,6 +873,23 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       public readonly osType = ec2.OperatingSystemType.UNKNOWN;
     }
 
+    return new Import(scope, id);
+  }
+
+  /**
+   * Imports an existing autoscaling group.
+   */
+  public static fromAutoScalingGroupAttributes(scope: Construct, id: string, attrs: AutoScalingGroupAttributes): IAutoScalingGroup {
+    class Import extends AutoScalingGroupBase {
+      public autoScalingGroupName = attrs.autoScalingGroupName
+      public autoScalingGroupArn = Stack.of(this).formatArn({
+        service: 'autoscaling',
+        resource: 'autoScalingGroup:*:autoScalingGroupName',
+        resourceName: attrs.autoScalingGroupName,
+      });
+      public readonly osType = ec2.OperatingSystemType.UNKNOWN;
+      public readonly grantPrincipal = attrs.grantPrincipal;
+    }
     return new Import(scope, id);
   }
 
