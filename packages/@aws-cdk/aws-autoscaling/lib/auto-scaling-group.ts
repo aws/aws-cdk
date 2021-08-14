@@ -831,6 +831,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
     // do nothing
   }
 }
+
 /**
  * Properties that reference an external AutoScalingGroup
  */
@@ -844,6 +845,7 @@ export interface AutoScalingGroupAttributes {
    */
   readonly grantPrincipal: iam.IRole;
 }
+
 /**
  * A Fleet represents a managed set of EC2 instances
  *
