@@ -1379,10 +1379,12 @@ nodeunitShim({
       autoScalingGroupName: 'MyAsg',
       role: importedRole,
     });
-    const asg2 = autoscaling.AutoScalingGroup.fromAutoScalingGroupAttributes(stack, 'MyASG-Ref', { autoScalingGroupName: 'MyAsg', grantPrincipal: importedRole });
+    const asg2 = autoscaling.AutoScalingGroup.fromAutoScalingGroupAttributes(stack, 'MyASG-Ref', {
+      autoScalingGroupName: 'MyAsg',
+      grantPrincipal: importedRole,
+    });
 
     // THEN
-    test.equal(asg1.autoScalingGroupName, asg2.autoScalingGroupName);
     test.equal(asg1.role, asg2.grantPrincipal);
 
     test.done();
