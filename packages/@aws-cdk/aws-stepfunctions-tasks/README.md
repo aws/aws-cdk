@@ -205,7 +205,7 @@ const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
 });
 ```
 
-You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`. 
+You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`.
 Here is an example of starting an Athena query that is dynamically created using the task input:
 
 ```ts
@@ -1163,4 +1163,17 @@ const task2 = new tasks.SqsSendMessage(this, 'Send2', {
     field2: sfn.JsonPath.stringAt('$.field2'),
   }),
 });
+```
+
+It is also possible to specify message attributes, either from the task input, or using literal values:
+
+```ts
+const queue = new sqs.Queue(this, 'Queue');
+
+const task1 = new tasks.SqsSendMessage(this, 'Send1', {
+  queue,
+  messageBody: '...',
+  messageAttributes: tasks.SqsMessageAttributes.fromJsonPathAt('$.Attributes'),
+});
+
 ```
