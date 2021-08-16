@@ -2,8 +2,8 @@ import { IOpenIdConnectProvider, ISamlProvider, IRole } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Resource, IResource, Stack, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { IOpenIdConnectProvider } from '../../aws-iam/lib/oidc-provider';
-import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IUserPool } from './cognito/generated';
+import { CfnIdentityPool, CfnIdentityPoolRoleAttachment } from './cognito.generated';
+import { IUserPool } from './user-pool';
 import { UserPoolClientOptions } from './user-pool-client';
 
 export interface IIdentityPool extends IResource {
@@ -34,7 +34,7 @@ export interface IdentityPoolProps {
   /**
    * The Default Role to be assumed by Authenticated Users
    */
-  readonly roleMappings?: IdentityPoolRoleMapping;
+  readonly roleMappings?: IdentityPoolRoleMapping[];
 
   /**
    * The name of the Identity Pool
@@ -285,7 +285,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     }
 
     class ImportedIdentityPool extends Resource implements IIdentityPool {
-      public readonly identityPoolId = pool.resourceName;
+      public readonly identityPoolId = pool.resourceName || '';
       public readonly identityPoolArn = identityPoolArn;
 
       constructor() {
@@ -312,7 +312,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
 
   constructor(scope: Construct, id: string, props:IdentityPoolProps) {
     super(scope, id);
-    const cfnPool = new CfnIdentityPool(scope, id, {
+    const cfnPool = new CfnIdentityPool(this, id, {
       allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
       allowClassicFlow: props.allowClassicFlow,
       identityPoolName: props.identityPoolName,
@@ -332,10 +332,10 @@ export class IdentityPool extends Resource implements IIdentityPool {
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
 
-    const cfnRoleAttachment = new CfnIdentityPoolRoleAttachment(scope, id, {
+    const cfnRoleAttachment = new CfnIdentityPoolRoleAttachment(this, id, {
       identityPoolId: this.identityPoolId,
       roles: this.createDefaultRoles(props),
-      roleMappings:
+      roleMappings: this.createRoleMappings(props.roleMappings)
     });
     cfnRoleAttachment.node.addDependency(cfnPool);
   }
@@ -373,7 +373,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   private createCognitoStreamOptions(options?: CognitoStreamOptions): CfnIdentityPool.CognitoStreamsProperty | undefined {
     if (!options) return undefined;
-    const property: CfnIdentityPool.CognitoStreamsProperty = {
+    const property: any = {
       roleArn: options.role ? options.role.roleArn : undefined,
       streamName: options.streamName
     }
@@ -381,7 +381,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (options.hasOwnProperty('enableStreamingStatus')) {
       property.streamingStatus = options.enableStreamingStatus ? 'ENABLED' : 'DISABLED';
     }
-    return property;
+    return property as CfnIdentityPool.CognitoStreamsProperty;
   }
 
   /**
@@ -422,29 +422,32 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Creates Role Mappings for Identity Pool Role Attachment
    */
-  private createRoleMappings(props?: IdentityPoolRoleMapping): CfnIdentityPoolRoleAttachment.RoleMappingProperty | undefined {
-    if (!props) return undefined;
-    const roleMapping: CfnIdentityPoolRoleAttachment.RoleMappingProperty = {
-      ambiguousRoleResolution: props.resolveAmbiguousRoles ? 'AuthenticatedRole' : 'Deny',
-      type: props.useToken ? 'Token' : 'Rules',
-      identityProvider: props.providerUrl
-    }
-    if (roleMapping.type === 'Token') return roleMapping;
+  private createRoleMappings(props?: IdentityPoolRoleMapping[]): { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty } | undefined {
+    if (!props || !props.length) return undefined;
+    return props.reduce((acc, prop) => {
+      let roleMapping: any = {
+        ambiguousRoleResolution: prop.resolveAmbiguousRoles ? 'AuthenticatedRole' : 'Deny',
+        type: prop.useToken ? 'Token' : 'Rules',
+        identityProvider: prop.providerUrl
+      }
+      if (roleMapping.type === 'Token') return roleMapping;
 
-    if (!props.rules) {
-      throw new Error('IdentityPoolRoleMapping.rules is required when useToken is false');
-    }
+      if (!prop.rules) {
+        throw new Error('IdentityPoolRoleMapping.rules is required when useToken is false');
+      }
 
-    roleMapping.rulesConfiguration = {
-      rules: props.rules.map(rule => {
-        return {
-          claim: rule.claim,
-          value: rule.claimValue,
-          matchType: rule.matchType || RoleMappingMatchType.EQUALS,
-          roleArn: rule.mappedRole.roleArn
-        }
-      })
-    }
-    return roleMapping;
+      roleMapping.rulesConfiguration = {
+        rules: prop.rules.map(rule => {
+          return {
+            claim: rule.claim,
+            value: rule.claimValue,
+            matchType: rule.matchType || RoleMappingMatchType.EQUALS,
+            roleArn: rule.mappedRole.roleArn
+          }
+        })
+      }
+      acc[prop.providerUrl] = roleMapping;
+      return acc;
+    }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });
   }
 }
