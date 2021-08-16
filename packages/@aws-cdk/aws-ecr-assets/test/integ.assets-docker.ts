@@ -1,14 +1,9 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as assets from '../lib';
 
-const app = new cdk.App({
-  context: {
-    [cxapi.DOCKER_IGNORE_SUPPORT]: true,
-  },
-});
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-assets-docker');
 
 const asset = new assets.DockerImageAsset(stack, 'DockerImage', {
