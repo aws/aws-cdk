@@ -2,11 +2,8 @@ import * as cloudformation from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties common to all CloudFormation actions
@@ -540,7 +537,7 @@ class SingletonPolicy extends Construct implements iam.IGrantable {
   private statements: { [key: string]: iam.PolicyStatement } = {};
 
   private constructor(private readonly role: iam.IRole) {
-    super(role as unknown as cdk.Construct, SingletonPolicy.UUID);
+    super(role as unknown as Construct, SingletonPolicy.UUID);
     this.grantPrincipal = role;
   }
 
