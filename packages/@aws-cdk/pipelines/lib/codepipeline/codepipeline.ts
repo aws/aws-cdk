@@ -830,7 +830,7 @@ enum CodeBuildProjectType {
 
 function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
   const names = node.ancestorPath(parent).map(n => n.id);
-  return names.map(sanitizeName).join('.');
+  return names.map(sanitizeName).join('.').substr(0, 100); // Cannot exceed 100 chars
 }
 
 function sanitizeName(x: string): string {
