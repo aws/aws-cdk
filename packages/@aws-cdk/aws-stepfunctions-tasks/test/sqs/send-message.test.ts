@@ -1,7 +1,7 @@
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { SqsSendMessage } from '../../lib/sqs/send-message';
+import { SqsMessageAttributes, SqsMessageAttributeValue, SqsSendMessage } from '../../lib/sqs/send-message';
 
 describe('SqsSendMessage', () => {
   let stack: cdk.Stack;
@@ -212,6 +212,120 @@ describe('SqsSendMessage', () => {
         MessageBody: {
           queueArn: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
         },
+      },
+    });
+  });
+
+  test('message attributes', () => {
+    // WHEN
+    const task = new SqsSendMessage(stack, 'SendMessage', {
+      queue,
+      messageBody: sfn.TaskInput.fromText('a simple message'),
+      messageAttributes: SqsMessageAttributes.fromObject({
+        binary: SqsMessageAttributeValue.fromBase64(Buffer.from('binary-value').toString('base64')),
+        number: SqsMessageAttributeValue.fromNumber(1337),
+        string: SqsMessageAttributeValue.fromString('string-value'),
+      }),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::sqs:sendMessage',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        QueueUrl: { Ref: 'Queue4A7E3555' },
+        MessageBody: 'a simple message',
+        MessageAttributes: {
+          binary: { DataType: 'Binary', BinaryValue: Buffer.from('binary-value').toString('base64') },
+          number: { DataType: 'Number', StringValue: '1337' },
+          string: { DataType: 'String', StringValue: 'string-value' },
+        },
+      },
+    });
+  });
+
+  test('message attributes with references', () => {
+    // WHEN
+    const task = new SqsSendMessage(stack, 'SendMessage', {
+      queue,
+      messageBody: sfn.TaskInput.fromText('a simple message'),
+      messageAttributes: SqsMessageAttributes.fromObject({
+        external: SqsMessageAttributeValue.fromJsonPathAt('$.Attribute'),
+        binary: SqsMessageAttributeValue.base64FromJsonPathAt('$.Binary'),
+        number: SqsMessageAttributeValue.numberFromJsonPathAt('$.Number'),
+        string: SqsMessageAttributeValue.stringFromJsonPathAt('$.String'),
+      }),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::sqs:sendMessage',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        QueueUrl: { Ref: 'Queue4A7E3555' },
+        MessageBody: 'a simple message',
+        MessageAttributes: {
+          'external.$': '$.Attribute',
+          'binary': { 'DataType': 'Binary', 'BinaryValue.$': '$.Binary' },
+          'number': { 'DataType': 'Number', 'StringValue.$': '$.Number' },
+          'string': { 'DataType': 'String', 'StringValue.$': '$.String' },
+        },
+      },
+    });
+  });
+
+  test('message attributes from reference', () => {
+    // WHEN
+    const task = new SqsSendMessage(stack, 'SendMessage', {
+      queue,
+      messageBody: sfn.TaskInput.fromText('a simple message'),
+      messageAttributes: SqsMessageAttributes.fromJsonPathAt('$.MessageAttributes'),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::sqs:sendMessage',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        'QueueUrl': { Ref: 'Queue4A7E3555' },
+        'MessageBody': 'a simple message',
+        'MessageAttributes.$': '$.MessageAttributes',
       },
     });
   });

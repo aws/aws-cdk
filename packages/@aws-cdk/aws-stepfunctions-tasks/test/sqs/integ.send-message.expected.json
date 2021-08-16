@@ -80,7 +80,7 @@
               {
                 "Ref": "showmethemessages8D16BBDB"
               },
-              "\",\"MessageBody\":\"sending message over\"}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+              "\",\"MessageBody\":\"sending message over\",\"MessageAttributes\":{\"binary\":{\"DataType\":\"Binary\",\"BinaryValue\":\"YmluYXJ5LXZhbHVl\"},\"number\":{\"DataType\":\"Number\",\"StringValue\":\"1337\"},\"string\":{\"DataType\":\"String\",\"StringValue\":\"attribute-value\"}}}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
             ]
           ]
         }

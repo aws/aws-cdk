@@ -81,7 +81,7 @@ interface FieldHandlers {
   handleBoolean(key: string, x: boolean): {[key: string]: boolean};
 }
 
-export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
+export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited = new Set<object>()): object | undefined {
   // If the argument received is not actually an object (string, number, boolean, undefined, ...) or null
   // just return it as is as there's nothing to be rendered. This should only happen in the original call to
   // recurseObject as any recursive calls to it are checking for typeof value === 'object' && value !== null
@@ -90,10 +90,10 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
   }
 
   // Avoiding infinite recursion
-  if (visited.includes(obj)) { return {}; }
+  if (visited.has(obj)) { return {}; }
 
   // Marking current object as visited for the current recursion path
-  visited.push(obj);
+  visited.add(obj);
 
   const ret: any = {};
   for (const [key, value] of Object.entries(obj)) {
@@ -114,7 +114,7 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
 
   // Removing from visited after leaving the current recursion path
   // Allowing it to be visited again if it's not causing a recursion (circular reference)
-  visited.pop();
+  visited.delete(obj);
 
   return ret;
 }
@@ -122,7 +122,7 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
 /**
  * Render an array that may or may not contain a string list token
  */
-function recurseArray(key: string, arr: any[], handlers: FieldHandlers, visited: object[] = []): {[key: string]: any[] | string} {
+function recurseArray(key: string, arr: any[], handlers: FieldHandlers, visited = new Set<object>()): {[key: string]: any[] | string} {
   if (isStringArray(arr)) {
     const path = jsonPathStringList(arr);
     if (path !== undefined) {

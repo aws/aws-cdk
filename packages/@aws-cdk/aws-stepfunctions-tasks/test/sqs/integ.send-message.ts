@@ -1,7 +1,7 @@
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { SqsSendMessage } from '../../lib/sqs/send-message';
+import { SqsMessageAttributes, SqsMessageAttributeValue, SqsSendMessage } from '../../lib/sqs/send-message';
 
 /*
  * Creates a state machine with a task state to send a message to an SQS
@@ -25,6 +25,11 @@ const queue = new sqs.Queue(stack, 'show-me-the-messages');
 const sendMessageTask = new SqsSendMessage(stack, 'send message to sqs', {
   queue,
   messageBody: sfn.TaskInput.fromText('sending message over'),
+  messageAttributes: SqsMessageAttributes.fromObject({
+    binary: SqsMessageAttributeValue.fromBase64(Buffer.from('binary-value').toString('base64')),
+    number: SqsMessageAttributeValue.fromNumber(1337),
+    string: SqsMessageAttributeValue.fromString('attribute-value'),
+  }),
 });
 
 const finalStatus = new sfn.Pass(stack, 'Final step');
