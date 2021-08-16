@@ -13,6 +13,18 @@ import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
+ * Options to control asset hashing of `DockerImageAsset`
+ */
+export interface DockerImageAssetHashOptions {
+  /**
+   * Do not use `buildArgs` while calculating the asset hash
+   *
+   * @default false
+   */
+  readonly skipBuildArgs?: boolean;
+}
+
+/**
  * Options for DockerImageAsset
  */
 export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerprintOptions {
@@ -54,6 +66,13 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default 'Dockerfile'
    */
   readonly file?: string;
+
+  /**
+   * Options to control whicgh parameters get hashed to generate asset hash.
+   *
+   * @default - hash all parameters
+   */
+  readonly hashOptions?: DockerImageAssetHashOptions;
 }
 
 /**
@@ -151,7 +170,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     // include build context in "extra" so it will impact the hash
     const extraHash: { [field: string]: any } = {};
     if (props.extraHash) { extraHash.user = props.extraHash; }
-    if (props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
+    if (!props.hashOptions?.skipBuildArgs && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
     if (props.target) { extraHash.target = props.target; }
     if (props.file) { extraHash.file = props.file; }
     if (props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
