@@ -42,7 +42,7 @@ describe('deploy', () => {
   test('fails when no valid stack names are given', async () => {
     // GIVEN
     const toolkit = defaultToolkitSetup();
-    
+
     // WHEN
     await expect(() => toolkit.deploy({ selector: { patterns: ['Test-Stack-D'] } })).rejects.toThrow('No stacks match the name(s) Test-Stack-D');
   });

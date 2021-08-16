@@ -436,7 +436,7 @@ export class CdkToolkit {
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
   private async validateStacks(stacks: StackCollection, stackNames: string[]) {
-    if (stacks.stackCount == 0){
+    if (stacks.stackCount == 0) {
       throw new Error(`No stacks match the name(s) ${stackNames}`);
     }
 
