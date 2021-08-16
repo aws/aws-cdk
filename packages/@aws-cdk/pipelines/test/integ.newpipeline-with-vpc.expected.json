@@ -671,7 +671,7 @@
                 "Name": "aws_aws-cdk",
                 "OutputArtifacts": [
                   {
-                    "Name": "aws_aws-cdk_Source"
+                    "Name": "aws_aws_cdk_Source"
                   }
                 ],
                 "RunOrder": 1
@@ -696,7 +696,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "aws_aws-cdk_Source"
+                    "Name": "aws_aws_cdk_Source"
                   }
                 ],
                 "Name": "Synth",

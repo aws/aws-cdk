@@ -82,6 +82,11 @@ export class ApiMapping extends Resource implements IApiMapping {
    */
   public readonly mappingKey?: string;
 
+  /**
+   * API domain name
+   */
+  public readonly domainName: IDomainName;
+
   constructor(scope: Construct, id: string, props: ApiMappingProps) {
     super(scope, id);
 
@@ -121,5 +126,6 @@ export class ApiMapping extends Resource implements IApiMapping {
 
     this.apiMappingId = resource.ref;
     this.mappingKey = props.apiMappingKey;
+    this.domainName = props.domainName;
   }
 }

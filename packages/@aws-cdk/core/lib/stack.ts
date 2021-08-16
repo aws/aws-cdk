@@ -780,7 +780,7 @@ export class Stack extends Construct implements ITaggable {
       const numberOfResources = Object.keys(resources).length;
 
       if (numberOfResources > this.maxResources) {
-        throw new Error(`Number of resources: ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
+        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
       } else if (numberOfResources >= (this.maxResources * 0.8)) {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
