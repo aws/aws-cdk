@@ -790,7 +790,7 @@ The [StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API
  - **Optional** - Update the [Role Trust Policy](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html) of the Job Execution Role.
  - **Optional** - Attach [IAM policies](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-iam.html) to give users access to EMR on EKS. This can also be done in the CDK via ``grantPrincipal.addToPrincipalPolicy()``.
 
-The job can be configured with spark submit parameters for the instances, memory, and cores in each job.
+The job can be configured with spark submit parameters such as the instances, memory, and cores in each job.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
@@ -805,56 +805,6 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
       entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
       sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
     },
-  },
-});
-```
-
-If needed, monitoring can be enabled if ``monitoring.logging`` is set true. Automatically generates S3 bucket and CloudWatch logs resources.
-
-```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
-new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
-  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
-  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
-  jobDriver: {
-    sparkSubmitJobDriver: {
-      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
-    },
-  },
-  monitoring: {
-    logging: true,
-  },
-});
-```
-
-Otherwise, providing monitoring with existing log groups and log buckets is available.
-
-```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
-const logGroup = new logs.LogGroup(this, 'Log Group');
-const logBucket = new s3.Bucket(this, 'S3 Bucket')
-
-new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
-  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
-  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
-  jobDriver: {
-    sparkSubmitJobDriver: {
-      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
-    },
-  },
-  monitoring: {
-    logGroup: this.logGroup,
-    logBucket: this.logBucket,
   },
 });
 ```
@@ -881,6 +831,56 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
       'spark.executor.memory': '512M',
     },
   }],
+});
+```
+
+If needed, monitoring a job can be enabled if ``monitoring.logging`` is set true. Automatically generates S3 bucket and CloudWatch logs resources.
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+  monitoring: {
+    logging: true,
+  },
+});
+```
+
+Otherwise, providing monitoring for jobs with existing log groups and log buckets is also available.
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+const logGroup = new logs.LogGroup(this, 'Log Group');
+const logBucket = new s3.Bucket(this, 'S3 Bucket')
+
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+  monitoring: {
+    logGroup: this.logGroup,
+    logBucket: this.logBucket,
+  },
 });
 ```
 

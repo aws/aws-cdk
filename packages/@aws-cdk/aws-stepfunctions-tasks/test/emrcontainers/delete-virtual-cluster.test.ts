@@ -121,9 +121,7 @@ test('Valid policy statements are passed to the state machine with a REQUEST_RES
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
-        Action: [
-          'emr-containers:DeleteVirtualCluster',
-        ],
+        Action: 'emr-containers:DeleteVirtualCluster',
       }],
     },
   });
@@ -145,8 +143,8 @@ test('Valid policy statements are passed to the state machine with a RUN_JOB cal
     PolicyDocument: {
       Statement: [{
         Action: [
-          'emr-containers:DescribeVirtualCluster',
           'emr-containers:DeleteVirtualCluster',
+          'emr-containers:DescribeVirtualCluster',
         ],
       }],
     },

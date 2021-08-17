@@ -118,21 +118,22 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
-      && this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value) === false
-      && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array. Received ${props.jobDriver.sparkSubmitJobDriver.entryPointArguments.type}`);
+      && this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value) === false) {
+      throw new Error(`Entry point arguments must be a string array. Received ${props.jobDriver.sparkSubmitJobDriver.entryPointArguments.type}.`);
     }
 
-    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
-      && (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length > 10280
-        || props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length < 1)
-      && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
+    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments) {
+      if ((typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.type === 'string'
+        && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value))
+        || (props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length > 10280
+          || props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length < 1)) {
+        throw new Error(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
+      }
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters
-      && (props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length > 102400
-        || props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length < 1)) {
+      && (props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters.length > 102400
+        || props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters.length < 1)) {
       throw new Error(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length}.`);
     }
 
@@ -171,7 +172,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         },
         ConfigurationOverrides: {
           ApplicationConfiguration: cdk.listMapper(this.applicationConfigPropertyToJson)(this.props.applicationConfig),
-          MonitoringConfiguration: {
+          MonitoringConfiguration: this.props.monitoring ? {
             CloudWatchMonitoringConfiguration: this.logGroup ? {
               LogGroupName: this.logGroup?.logGroupName, // automatically generated name https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-logs/loggroup.html#aws_logs_LogGroup_synopsis
               LogStreamNamePrefix: this.props.monitoring?.logStreamNamePrefix,
@@ -182,9 +183,9 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
             S3MonitoringConfiguration: this.logBucket ? {
               LogUri: this.logBucket?.s3UrlForObject(), // automatically generated unique name https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-s3.Bucket.html#bucketname
             } : undefined,
-          },
-          Tags: this.props.tags ? this.renderTags(this.props.tags) : undefined,
+          } : undefined,
         },
+        ...(this.props.tags ? this.renderTags(this.props.tags) : undefined),
       }),
     };
   }
@@ -200,11 +201,11 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     };
   }
 
-  private validateAppConfigPropertiesLength(appConfig: ApplicationConfiguration) {
-    if (appConfig.properties === undefined) {
+  private validateAppConfigPropertiesLength(appConfig?: ApplicationConfiguration) {
+    if (appConfig?.properties === undefined) {
       return;
     } else if (Object.keys(appConfig.properties).length > 100) {
-      throw new Error(`Application configuration properties must have 100 or fewer entries. Received ${appConfig.properties.length}`);
+      throw new Error(`Application configuration properties must have 100 or fewer entries. Received ${Object.keys(appConfig.properties).length}`);
     }
   }
 
@@ -214,8 +215,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     } else if (config.length > 100) {
       throw new Error(`Application configuration array must have 100 or fewer entries. Received ${config.length}`);
     } else {
-      config.forEach(element => this.validateAppConfigPropertiesLength(element));
       config.forEach(element => this.validateAppConfigLength(element.nestedConfig));
+      config.forEach(element => this.validateAppConfigPropertiesLength(element));
     }
   }
 
@@ -223,7 +224,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     return Array.isArray(value) && value.every(item => typeof item === 'string');
   }
 
-  private renderTags(tags?: { [key: string]: any }): { [key: string]: any } {
+  private renderTags(tags?: { [key: string]: any } | undefined): { [key: string]: any } {
     return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
@@ -236,7 +237,20 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       ),
     });
 
-    this.grantMonitoringPolicies();
+    this.logBucket?.grantReadWrite(jobExecutionRole);
+    this.logGroup?.grantWrite(jobExecutionRole);
+
+    jobExecutionRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        resources: [
+          'arn:aws:logs:*:*:*',
+        ],
+        actions: [
+          'logs:DescribeLogGroups',
+          'logs:DescribeLogStreams',
+        ],
+      }),
+    );
 
     this.updateRoleTrustPolicy(jobExecutionRole);
 
@@ -246,6 +260,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
   private grantMonitoringPolicies() {
 
     this.logBucket?.grantReadWrite(this.role);
+    this.logGroup?.grantWrite(this.role);
 
     this.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
@@ -253,8 +268,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
           'arn:aws:logs:*:*:*',
         ],
         actions: [
-          'logs:PutLogEvents',
-          'logs:CreateLogStream',
           'logs:DescribeLogGroups',
           'logs:DescribeLogStreams',
         ],
@@ -515,6 +528,7 @@ export interface ApplicationConfiguration {
 
   /**
    * A list of additional configurations to apply within a configuration object.
+   *
    * Array Members: Maximum number of 100 items.
    *
    * @default - No other configurations

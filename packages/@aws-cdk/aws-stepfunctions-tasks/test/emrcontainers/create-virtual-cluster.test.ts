@@ -52,6 +52,11 @@ test('Invoke emr-containers CreateVirtualCluster without required properties', (
       Name: emrContainersVirtualClusterName,
       ContainerProvider: {
         Id: clusterId,
+        Info: {
+          EksInfo: {
+            Namespace: 'default',
+          },
+        },
         Type: 'EKS',
       },
     },
@@ -130,6 +135,11 @@ test('Create virtual cluster with clusterId from payload', () => {
       Name: emrContainersVirtualClusterName,
       ContainerProvider: {
         'Id.$': '$.ClusterId',
+        'Info': {
+          EksInfo: {
+            Namespace: 'default',
+          },
+        },
         'Type': 'EKS',
       },
     },
@@ -167,7 +177,14 @@ test('Create virtual cluster with an existing EKS cluster', () => {
     Parameters: {
       Name: emrContainersVirtualClusterName,
       ContainerProvider: {
-        Id: eksCluster.clusterName,
+        Id: {
+          Ref: 'EKSClusterEDAD5FD1',
+        },
+        Info: {
+          EksInfo: {
+            Namespace: 'default',
+          },
+        },
         Type: 'EKS',
       },
     },
@@ -191,9 +208,7 @@ test('Permitted role actions included for CreateVirtualCluster if service integr
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
-        Action: [
-          'emr-containers:CreateVirtualCluster',
-        ],
+        Action: 'emr-containers:CreateVirtualCluster',
       },
       {
         Action: 'iam:CreateServiceLinkedRole',
@@ -228,7 +243,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
     new EmrContainersEksCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
       virtualClusterName: emrContainersVirtualClusterName,
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/);
 });
@@ -238,7 +253,7 @@ test('Task throws if RUN_JOB is supplied as service integration pattern', () => 
     new EmrContainersEksCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
       virtualClusterName: emrContainersVirtualClusterName,
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+      integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: RUN_JOB/);
 });
