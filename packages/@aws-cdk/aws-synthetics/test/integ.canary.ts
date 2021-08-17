@@ -29,7 +29,7 @@ new synthetics.Canary(stack, 'MyCanary', {
   }),
   schedule: synthetics.Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
 });
 
 new synthetics.Canary(stack, 'MyCanaryOne', {
@@ -38,7 +38,7 @@ new synthetics.Canary(stack, 'MyCanaryOne', {
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
 });
 
 new synthetics.Canary(stack, 'MyCanaryTwo', {
@@ -47,7 +47,7 @@ new synthetics.Canary(stack, 'MyCanaryTwo', {
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
 });
 
 new synthetics.Canary(stack, 'MyPythonCanary', {

@@ -18,6 +18,8 @@
  */
 export class Runtime {
   /**
+   * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
+   * 
    * `syn-1.0` includes the following:
    *
    * - Synthetics library 1.0
@@ -31,6 +33,8 @@ export class Runtime {
   public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0', RuntimeFamily.NODEJS);
 
   /**
+   * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
+   * 
    * `syn-nodejs-2.0` includes the following:
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 3.3.0
@@ -42,6 +46,8 @@ export class Runtime {
 
 
   /**
+   * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
+   * 
    * `syn-nodejs-2.1` includes the following:
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 3.3.0
@@ -52,6 +58,8 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_2_1 = new Runtime('syn-nodejs-2.1', RuntimeFamily.NODEJS);
 
   /**
+   * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
+   * 
    * `syn-nodejs-2.2` includes the following:
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 3.3.0
@@ -80,6 +88,16 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.1
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_1 = new Runtime('syn-nodejs-puppeteer-3.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-3.1` includes the following:
+   * - Lambda runtime Node.js 12.x
+   * - Puppeteer-core version 5.5.0
+   * - Chromium version 88.0.4298.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.2
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_2 = new Runtime('syn-nodejs-puppeteer-3.1', RuntimeFamily.NODEJS);
 
   /**
    * `syn-python-selenium-1.0` includes the following:
