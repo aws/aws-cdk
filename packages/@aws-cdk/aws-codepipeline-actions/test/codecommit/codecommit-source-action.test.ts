@@ -1,4 +1,4 @@
-import { arrayWith, countResources, expect, haveResourceLike, not, objectLike } from '@aws-cdk/assert-internal';
+import { ABSENT, arrayWith, countResources, expect, haveResourceLike, not, objectLike } from '@aws-cdk/assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -34,6 +34,91 @@ nodeunitShim({
       }));
 
       expect(stack).to(countResources('AWS::Events::Rule', 1));
+
+      test.done();
+    },
+
+    'cross-account CodeCommit Repository Source does not use target role in source stack'(test: Test) {
+      // Test for https://github.com/aws/aws-cdk/issues/15639
+      const app = new App();
+      const sourceStack = new Stack(app, 'SourceStack', { env: { account: '1234', region: 'north-pole' } });
+      const targetStack = new Stack(app, 'TargetStack', { env: { account: '5678', region: 'north-pole' } });
+
+      const repo = new codecommit.Repository(sourceStack, 'MyRepo', {
+        repositoryName: 'my-repo',
+      });
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(targetStack, 'MyPipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({ actionName: 'Source', repository: repo, output: sourceOutput }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({ actionName: 'Build', project: new codebuild.PipelineProject(targetStack, 'MyProject'), input: sourceOutput }),
+            ],
+          },
+        ],
+      });
+
+      // THEN - creates a Rule in the source stack targeting the pipeline stack's event bus using a generated role
+      expect(sourceStack).to(haveResourceLike('AWS::Events::Rule', {
+        EventPattern: {
+          source: ['aws.codecommit'],
+          resources: [
+            { 'Fn::GetAtt': ['MyRepoF4F48043', 'Arn'] },
+          ],
+        },
+        Targets: [{
+          RoleARN: ABSENT,
+          Arn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { 'Ref': 'AWS::Partition' },
+              ':events:north-pole:5678:event-bus/default',
+            ]],
+          },
+        }],
+      }));
+
+      // THEN - creates a Rule in the pipeline stack using the role to start the pipeline
+      expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': [
+            'aws.codecommit',
+          ],
+          'resources': [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':codecommit:north-pole:1234:my-repo',
+                ],
+              ],
+            },
+          ],
+        },
+        'Targets': [
+          {
+            'Arn': {
+              'Fn::Join': ['', [
+                'arn:',
+                { 'Ref': 'AWS::Partition' },
+                ':codepipeline:north-pole:5678:',
+                { 'Ref': 'MyPipelineAED38ECF' },
+              ]],
+            },
+            'RoleArn': { 'Fn::GetAtt': ['MyPipelineEventsRoleFAB99F32', 'Arn'] },
+          },
+        ],
+      }));
 
       test.done();
     },
