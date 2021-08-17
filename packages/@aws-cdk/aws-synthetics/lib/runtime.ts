@@ -90,7 +90,7 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_1 = new Runtime('syn-nodejs-puppeteer-3.1', RuntimeFamily.NODEJS);
 
   /**
-   * `syn-nodejs-puppeteer-3.1` includes the following:
+   * `syn-nodejs-puppeteer-3.2` includes the following:
    * - Lambda runtime Node.js 12.x
    * - Puppeteer-core version 5.5.0
    * - Chromium version 88.0.4298.0
