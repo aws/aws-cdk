@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from '@aws-cdk/core';
-import { RuntimeFamily } from './canary';
+import { RuntimeFamily } from './runtime';
 
 /**
  * The code the canary should execute
