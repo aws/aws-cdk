@@ -146,7 +146,7 @@ When deploying your files to the destination bucket, you can specify exclude and
 new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFiles', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
-  exclude: '*.txt'
+  exclude: ['*.txt']
 });
 ```
 
@@ -156,8 +156,8 @@ This can also be leveraged to exclude entire directories.  In some cases, you ma
 new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFilesWithInclusionFilter', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
-  exclude: 'build/*',
-  include: 'build/config.json'
+  exclude: ['build/*', 'test/*'],
+  include: ['build/config.json']
 });
 ```
 
