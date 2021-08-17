@@ -183,7 +183,7 @@ describe('external assets', () => {
 
     const expectAllSpawns = mockSpawn(
       { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
-      { commandLine: ['sometool'], stdout: externalTag },
+      { commandLine: ['sometool'], stdout: externalTag, cwd: '/external/cdk.out' },
       { commandLine: ['docker', 'tag', externalTag, '12345.amazonaws.com/repo:ghijkl'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:ghijkl'] },
     );
