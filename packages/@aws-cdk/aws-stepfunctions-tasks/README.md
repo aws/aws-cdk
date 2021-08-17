@@ -776,19 +776,16 @@ new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
 
 The [StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_StartJobRun.html) API starts a job run. A job is a unit of work that you submit to Amazon EMR on EKS for execution. The work performed by the job can be defined by a Spark jar, PySpark script, or SparkSQL query. A job run is an execution of the job on the virtual cluster.
 
-**Required** Setup:
+Required setup:
 
  - If not done already, follow the EMR on EKS [setting up steps](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) and [create an EKS Cluster](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-eks-readme.html#quick-start).
  - Enable [Cluster access](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-cluster-access.html)
  - Enable [IAM Role access](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-enable-IAM.html)
 
-**Optional** Setup:
+The following actions must be performed if the virtual cluster ID is supplied from the task input. Otherwise, if it is supplied statically in the state machine definition, these actions will be done automatically.
 
-*NOTE*: These actions will be done automatically only *if* the virtual cluster ID is supplied from the task input.
-
- - **Optional** - Create a [Job Execution Role](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html)
- - **Optional** - Update the [Role Trust Policy](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html) of the Job Execution Role.
- - **Optional** - Attach [IAM policies](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-iam.html) to give users access to EMR on EKS. This can also be done in the CDK via ``grantPrincipal.addToPrincipalPolicy()``.
+ - Create an [IAM role](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-iam.Role.html)
+ - Update the [Role Trust Policy](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html) of the Job Execution Role.
 
 The job can be configured with spark submit parameters such as the instances, memory, and cores in each job.
 
@@ -834,7 +831,7 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 });
 ```
 
-If needed, monitoring a job can be enabled if ``monitoring.logging`` is set true. Automatically generates S3 bucket and CloudWatch logs resources.
+If needed, monitoring a job can be enabled if `monitoring.logging` is set true. Automatically generates S3 bucket and CloudWatch logs resources.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';

@@ -414,7 +414,6 @@ test('Invoke EMR Containers Start Job Run with Job Execution Role', () => {
 
 test('Task throws if Application Configuration array is larger than 100', () => {
   const struct = { classification: Classification.SPARK };
-  // fiil 101 indexes in the array with an application configuration
   const appConfig: ApplicationConfiguration[] = new Array(101).fill(struct);
 
   expect(() => {
@@ -433,7 +432,6 @@ test('Task throws if Application Configuration array is larger than 100', () => 
 
 test('Task throws if Application Configuration nested configuration array is larger than 100', () => {
   const struct = { classification: Classification.SPARK };
-  // fiil 101 indexes in the array with an application configuration
   let appConfig: ApplicationConfiguration[] = new Array(101).fill(struct);
 
   // add a nested configuration array with 101 elements
