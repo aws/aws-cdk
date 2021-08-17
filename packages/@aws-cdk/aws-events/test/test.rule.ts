@@ -1,3 +1,4 @@
+/* eslint-disable object-curly-newline */
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -417,6 +418,55 @@ export = {
     test.done();
   },
 
+  'in cross-account scenario, target role is only used in target account'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const ruleStack = new cdk.Stack(app, 'RuleStack', { env: { account: '1234', region: 'us-east-1' } });
+    const targetStack = new cdk.Stack(app, 'TargeTStack', { env: { account: '5678', region: 'us-east-1' } });
+
+    const rule = new Rule(ruleStack, 'EventRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(1)),
+    });
+
+    const role = new iam.Role(targetStack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('nobody'),
+    });
+
+    // a plain string should just be stringified (i.e. double quotes added and escaped)
+    rule.addTarget({
+      bind: () => ({
+        id: '',
+        arn: 'ARN2',
+        role,
+        targetResource: role, // Not really but good enough
+      }),
+    });
+
+    // THEN
+    expect(ruleStack).to(haveResourceLike('AWS::Events::Rule', {
+      Targets: [
+        {
+          Arn: { 'Fn::Join': ['', [
+            'arn:',
+            { 'Ref': 'AWS::Partition' },
+            ':events:us-east-1:5678:event-bus/default',
+          ]] },
+        },
+      ],
+    }));
+    expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
+      'Targets': [
+        {
+          'Arn': 'ARN2',
+          'Id': 'Target0',
+          'RoleArn': { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
   'asEventRuleTarget can use the ruleArn and a uniqueId of the rule'(test: Test) {
     const stack = new cdk.Stack();
 
@@ -618,7 +668,7 @@ export = {
 
       test.throws(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /You need to provide a concrete account for the source stack when using cross-account or cross-region events/);
+      }, /You need to provide a concrete region/);
 
       test.done();
     },
@@ -843,7 +893,7 @@ export = {
       const resource = EventBus.fromEventBusArn(sourceStack, 'TargetEventBus', `arn:aws:events:${targetRegion}:${targetAccount}:event-bus/default`);
       test.throws(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /Cannot create a cross-account or cross-region rule with an imported resource/);
+      }, /Cannot create a cross-account or cross-region rule for an imported resource/);
 
       test.done();
     },

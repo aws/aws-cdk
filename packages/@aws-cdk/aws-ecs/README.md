@@ -141,15 +141,13 @@ purpose-built by AWS for running containers. You can launch Amazon ECS container
 
 The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `c5.large` Linux instances running with `Bottlerocket` AMI.
 
-Note that you must specify either a `machineImage` or `machineImageType`, at least one, not both.
-
 The following example adds Bottlerocket capacity to the cluster:
 
 ```ts
 cluster.addCapacity('bottlerocket-asg', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('c5.large'),
-  machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+  machineImage: new ecs.BottleRocketImage(),
 });
 ```
 
@@ -214,7 +212,7 @@ some supporting containers which are used to support the main container,
 doings things like upload logs or metrics to monitoring services.
 
 To run a task or service with Amazon EC2 launch type, use the `Ec2TaskDefinition`. For AWS Fargate tasks/services, use the
-`FargateTaskDefinition`. For AWS ECS Anywhere use the `ExternalTaskDefinition`. These classes 
+`FargateTaskDefinition`. For AWS ECS Anywhere use the `ExternalTaskDefinition`. These classes
 provide simplified APIs that only contain properties relevant for each specific launch type.
 
 For a `FargateTaskDefinition`, specify the task size (`memoryLimitMiB` and `cpu`):
@@ -736,7 +734,7 @@ const service = new ecs.Ec2Service(stack, 'Service', {
 });
 ```
 
-With `bridge` or `host` network modes, only `SRV` DNS record types are supported. 
+With `bridge` or `host` network modes, only `SRV` DNS record types are supported.
 By default, `SRV` DNS record types will target the default container and default
 port. However, you may target a different container and port on the same ECS task:
 
@@ -893,7 +891,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
 
 To enable using the inference accelerators in the containers, add `inferenceAcceleratorResources`
 field and set it to a list of device names used for the inference accelerators. Each value in the
-list should match a `DeviceName` for an `InferenceAccelerator` specified in the task definition. 
+list should match a `DeviceName` for an `InferenceAccelerator` specified in the task definition.
 
 ```ts
 const inferenceAcceleratorResources = ['device1'];
@@ -909,7 +907,7 @@ taskDefinition.addContainer('cont', {
 
 Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite for the exec command
 to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
-[Install Session Manager plugin for AWS CLI] (https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
+[Install Session Manager plugin for AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
 
 To enable the ECS Exec feature for your containers, set the boolean flag `enableExecuteCommand` to `true` in
 your `Ec2Service` or `FargateService`.
@@ -927,11 +925,11 @@ const service = new ecs.Ec2Service(stack, 'Service', {
 You can enable sending logs of your execute session commands to a CloudWatch log group or S3 bucket by configuring
 the `executeCommandConfiguration` property for your cluster. The default configuration will send the
 logs to the CloudWatch Logs using the `awslogs` log driver that is configured in your task definition. Please note,
-when using your own `logConfiguration` the log group or S3 Bucket specified must already be created. 
+when using your own `logConfiguration` the log group or S3 Bucket specified must already be created.
 
 To encrypt data using your own KMS Customer Key (CMK), you must create a CMK and provide the key in the `kmsKey` field
 of the `executeCommandConfiguration`. To use this key for encrypting CloudWatch log data or S3 bucket, make sure to associate the key
-to these resources on creation. 
+to these resources on creation.
 
 ```ts
 const kmsKey = new kms.Key(stack, 'KmsKey');
