@@ -491,10 +491,11 @@ test('Task throws if Entry Point Arguments is not an string array that is betwee
   const entryPointArgs = sfn.TaskInput.fromObject(new Array(10281).fill('x', 10281));
   const entryPointArgsNone = sfn.TaskInput.fromObject([]);
   const entryPointNumbers = sfn.TaskInput.fromObject(new Array(1).fill(1));
+  const entryPointJson = sfn.TaskInput.fromJsonPathAt('$.Job');
 
   // THEN
   expect(() => {
-    new EmrContainersStartJobRun(stack, 'String array Task', {
+    new EmrContainersStartJobRun(stack, 'String array error Task', {
       virtualClusterId: sfn.TaskInput.fromText(clusterId),
       releaseLabel: ReleaseLabel.EMR_6_2_0,
       jobDriver: {
@@ -505,6 +506,21 @@ test('Task throws if Entry Point Arguments is not an string array that is betwee
       },
     });
   }).toThrow(`Entry point arguments must be a string array. Received ${entryPointNumbers.type}.`);
+
+
+  // THEN
+  expect(() => {
+    new EmrContainersStartJobRun(stack, 'JSON Path error Task', {
+      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('job-location'),
+          entryPointArguments: entryPointJson,
+        },
+      },
+    });
+  }).toThrow(`Entry point arguments must be a string array. Received ${entryPointJson.type}.`);
 
   // THEN
   expect(() => {

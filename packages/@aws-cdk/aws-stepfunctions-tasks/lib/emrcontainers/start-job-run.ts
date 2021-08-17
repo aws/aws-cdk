@@ -117,18 +117,18 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       throw new Error(`Entry point must be between 1 and 256 characters in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPoint.value.length}.`);
     }
 
-    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
-      && this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value) === false) {
-      throw new Error(`Entry point arguments must be a string array. Received ${props.jobDriver.sparkSubmitJobDriver.entryPointArguments.type}.`);
+    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments) {
+      if (!this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)
+      || (typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.type === 'string'
+      && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value))) {
+        throw new Error(`Entry point arguments must be a string array. Received ${props.jobDriver.sparkSubmitJobDriver.entryPointArguments.type}.`);
+      }
     }
 
-    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments) {
-      if ((typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.type === 'string'
-        && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value))
-        || (props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length > 10280
+    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
+        && (props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length > 10280
           || props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length < 1)) {
-        throw new Error(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
-      }
+      throw new Error(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters

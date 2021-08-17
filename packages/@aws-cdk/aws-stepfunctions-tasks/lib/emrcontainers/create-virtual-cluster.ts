@@ -125,10 +125,14 @@ export class EmrContainersEksCreateVirtualCluster extends sfn.TaskStateBase {
           },
           Type: ContainerProviderTypes.EKS,
         },
-        Tags: this.props.tags,
+        ...(this.props.tags ? this.renderTags(this.props.tags) : undefined),
       }),
     };
   };
+
+  private renderTags(tags?: { [key: string]: any } | undefined): { [key: string]: any } {
+    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
+  }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
     return [
