@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.119.0](https://github.com/aws/aws-cdk/compare/v1.118.0...v1.119.0) (2021-08-17)
+
+
+### Features
+
+* **apigatewayv2:** http api - domain url for a stage ([#15973](https://github.com/aws/aws-cdk/issues/15973)) ([bb5d587](https://github.com/aws/aws-cdk/commit/bb5d5874098b4b1047a29b6697e5e3a65f349ff0)), closes [#15801](https://github.com/aws/aws-cdk/issues/15801)
+* **assets:** exclude "cdk.out" from docker assets ([#16034](https://github.com/aws/aws-cdk/issues/16034)) ([84a831a](https://github.com/aws/aws-cdk/commit/84a831ab804244d426321504fc0971d74f6181fd)), closes [#14841](https://github.com/aws/aws-cdk/issues/14841) [#14841](https://github.com/aws/aws-cdk/issues/14841) [#14842](https://github.com/aws/aws-cdk/issues/14842)
+* **aws-apigateway:** import existing usage plan ([#15771](https://github.com/aws/aws-cdk/issues/15771)) ([97fc290](https://github.com/aws/aws-cdk/commit/97fc29032c05edb7914c48efee0124be0126a5c4)), closes [#12677](https://github.com/aws/aws-cdk/issues/12677)
+* **cfnspec:** cloudformation spec v39.9.0 ([#15987](https://github.com/aws/aws-cdk/issues/15987)) ([e0d6181](https://github.com/aws/aws-cdk/commit/e0d61810ab78f7cab1af53bce82c60790a814f71))
+
+
+### Bug Fixes
+
+* **core:** asset bundling fails for non-existent user ([#15313](https://github.com/aws/aws-cdk/issues/15313)) ([bf5882f](https://github.com/aws/aws-cdk/commit/bf5882f8def0676bbfaee7c2ff4fab6bf39df281)), closes [#15415](https://github.com/aws/aws-cdk/issues/15415) [#15415](https://github.com/aws/aws-cdk/issues/15415)
+* **ec2:** opaque error when insufficient NAT EIPs are configured ([#16040](https://github.com/aws/aws-cdk/issues/16040)) ([a308cac](https://github.com/aws/aws-cdk/commit/a308cacf1fc48e24311caec246b768ffe6ae9153)), closes [#16039](https://github.com/aws/aws-cdk/issues/16039)
+* **events:** cross-account event targets that have a Role are broken ([#15717](https://github.com/aws/aws-cdk/issues/15717)) ([f570c94](https://github.com/aws/aws-cdk/commit/f570c94a7bc99cd5bebc96ee388d152220f9f613)), closes [#15639](https://github.com/aws/aws-cdk/issues/15639)
+* **pipelines:** repos with dashes cannot be used as additionalInputs ([#16017](https://github.com/aws/aws-cdk/issues/16017)) ([400a59d](https://github.com/aws/aws-cdk/commit/400a59d19ee63fbd9318da34760b4ed8c9ba99b9)), closes [#15753](https://github.com/aws/aws-cdk/issues/15753)
+* **s3-deployment:** BucketDeployment doesn't validate that distribution paths start with "/" ([#15865](https://github.com/aws/aws-cdk/issues/15865)) ([f8d8795](https://github.com/aws/aws-cdk/commit/f8d8795a610c3f49e31967001695caa648730d6d)), closes [#9317](https://github.com/aws/aws-cdk/issues/9317)
+
 ## [1.118.0](https://github.com/aws/aws-cdk/compare/v1.117.0...v1.118.0) (2021-08-10)
 
 
