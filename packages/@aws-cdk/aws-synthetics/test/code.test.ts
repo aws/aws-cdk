@@ -38,7 +38,7 @@ describe(synthetics.Code.fromInline, () => {
 });
 
 describe(synthetics.Code.fromAsset, () => {
-  test('fromAsset works', () => {
+  test('fromAsset works for node runtimes', () => {
     // GIVEN
     const stack = new Stack(new App(), 'canaries');
 
@@ -58,6 +58,30 @@ describe(synthetics.Code.fromAsset, () => {
         Handler: 'canary.handler',
         S3Bucket: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS).s3Location?.bucketName),
         S3Key: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS).s3Location?.objectKey),
+      },
+    });
+  });
+
+  test('fromAsset works for python runtimes', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+
+    // WHEN
+    const directoryAsset = synthetics.Code.fromAsset(path.join(__dirname, 'canaries'));
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'canary.handler',
+        code: directoryAsset,
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Code: {
+        Handler: 'canary.handler',
+        S3Bucket: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.PYTHON).s3Location?.bucketName),
+        S3Key: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.PYTHON).s3Location?.objectKey),
       },
     });
   });
@@ -108,15 +132,25 @@ describe(synthetics.Code.fromAsset, () => {
       .toThrowError(`Asset must be a .zip file or a directory (${assetPath})`);
   });
 
-  test('fails if "nodejs/node_modules" folder structure not used', () => {
+  test('fails if node runtime and "nodejs/node_modules" folder structure not used', () => {
     // GIVEN
     const stack = new Stack(new App(), 'canaries');
 
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS))
-      .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)`);
+      .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
   });
+
+  test('fails if python runtime and "python" folder structure not used', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+
+    // THEN
+    const assetPath = path.join(__dirname, 'canaries', 'python');
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.PYTHON))
+      .toThrowError(`https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
+  })
 
   test('fails if handler is specified incorrectly', () => {
     // GIVEN
@@ -125,7 +159,7 @@ describe(synthetics.Code.fromAsset, () => {
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'incorrect.handler', synthetics.RuntimeFamily.NODEJS))
-      .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/incorrect.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html#CloudWatch_Synthetics_Canaries_write_from_scratch)`);
+      .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/incorrect.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
   });
 });
 
