@@ -48,7 +48,7 @@ test('PythonFunction with defaults', () => {
   });
 
   expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler$/),
+    entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler$/),
     outputPathSuffix: '.',
   }));
 
@@ -65,7 +65,7 @@ test('PythonFunction with index in a subdirectory', () => {
   });
 
   expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler-sub$/),
+    entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler-sub$/),
     outputPathSuffix: '.',
   }));
 
