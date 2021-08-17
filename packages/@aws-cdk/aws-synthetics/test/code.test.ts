@@ -3,6 +3,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
+import { RuntimeFamily } from '../lib';
 
 describe(synthetics.Code.fromInline, () => {
   test('fromInline works', () => {
@@ -16,7 +17,7 @@ describe(synthetics.Code.fromInline, () => {
       };`);
 
     // THEN
-    expect(inline.bind(stack, 'index.handler').inlineCode).toEqual(`
+    expect(inline.bind(stack, 'index.handler', RuntimeFamily.NODEJS).inlineCode).toEqual(`
       exports.handler = async () => {
         console.log(\'hello world\');
       };`);
@@ -32,7 +33,7 @@ describe(synthetics.Code.fromInline, () => {
     const stack = new Stack(new App(), 'canaries');
 
     // THEN
-    expect(() => synthetics.Code.fromInline('code').bind(stack, 'canary.handler'))
+    expect(() => synthetics.Code.fromInline('code').bind(stack, 'canary.handler', RuntimeFamily.NODEJS))
       .toThrowError('The handler for inline code must be "index.handler" (got "canary.handler")');
   });
 });
@@ -172,7 +173,7 @@ describe(synthetics.Code.fromBucket, () => {
 
     // WHEN
     const code = synthetics.Code.fromBucket(bucket, 'code.js');
-    const codeConfig = code.bind(stack, 'code.handler');
+    const codeConfig = code.bind(stack, 'code.handler', RuntimeFamily.NODEJS);
 
     // THEN
     expect(codeConfig.s3Location?.bucketName).toEqual(bucket.bucketName);

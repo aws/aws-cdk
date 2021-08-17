@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { Construct } from 'constructs';
 import { RuntimeFamily } from './runtime';
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The code the canary should execute
@@ -156,7 +156,7 @@ export class InlineCode extends Code {
     }
   }
 
-  public bind(_scope: Construct, handler: string): CodeConfig {
+  public bind(_scope: Construct, handler: string, _family: RuntimeFamily): CodeConfig {
 
     if (handler !== 'index.handler') {
       throw new Error(`The handler for inline code must be "index.handler" (got "${handler}")`);
@@ -176,7 +176,7 @@ export class S3Code extends Code {
     super();
   }
 
-  public bind(_scope: Construct, _handler: string): CodeConfig {
+  public bind(_scope: Construct, _handler: string, _family: RuntimeFamily): CodeConfig {
     return {
       s3Location: {
         bucketName: this.bucket.bucketName,

@@ -147,6 +147,7 @@ new synthetics.Canary(this, 'Bucket Canary', {
 > ├── python/
 >     ├── <filename>.py
 > ```
+>
 > See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
 
 ### Alarms
