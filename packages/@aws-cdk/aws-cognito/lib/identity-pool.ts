@@ -419,10 +419,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   private configureUserPools(props: IdentityPoolProps): CfnIdentityPool.CognitoIdentityProviderProperty[] | undefined {
     if (!props.userPools) return undefined;
-    return props.userPools.map(pool => {
+    let providers = [];
+    props.userPools.forEach(pool => {
       const client = this.configureUserPoolClient(pool, props.defaultClientOptions);
-      return this.configureIdentityProviders(pool, client, props.disableServerSideTokenCheck)
-    }, this).flat(Infinity);
+      providers = [...providers, ...this.configureIdentityProviders(pool, client, props.disableServerSideTokenCheck)];
+    }, this);
+    return providers;
   }
 
   /**
