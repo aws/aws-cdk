@@ -149,8 +149,8 @@ describe(synthetics.Code.fromAsset, () => {
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'python');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.PYTHON))
-      .toThrowError(`https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
-  })
+      .toThrowError(`The canary resource requires that the handler is present at "python/canary.py" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
+  });
 
   test('fails if handler is specified incorrectly', () => {
     // GIVEN

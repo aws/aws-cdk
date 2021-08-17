@@ -1,7 +1,7 @@
 /**
  * All known Lambda runtime families.
  */
- export enum RuntimeFamily {
+export enum RuntimeFamily {
   /**
    * All Lambda runtimes that depend on Node.js.
    */
@@ -19,7 +19,7 @@
 export class Runtime {
   /**
    * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
-   * 
+   *
    * `syn-1.0` includes the following:
    *
    * - Synthetics library 1.0
@@ -34,7 +34,7 @@ export class Runtime {
 
   /**
    * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
-   * 
+   *
    * `syn-nodejs-2.0` includes the following:
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 3.3.0
@@ -47,7 +47,7 @@ export class Runtime {
 
   /**
    * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
-   * 
+   *
    * `syn-nodejs-2.1` includes the following:
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 3.3.0
@@ -59,7 +59,7 @@ export class Runtime {
 
   /**
    * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
-   * 
+   *
    * `syn-nodejs-2.2` includes the following:
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 3.3.0
@@ -104,15 +104,15 @@ export class Runtime {
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0
    * - Chromium version 83.0.4103.0
-   * 
+   *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html
    */
-   public static readonly SYNTHETICS_PYTHON_SELENIUM_1_0 = new Runtime('syn-python-selenium-1.0', RuntimeFamily.PYTHON);
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_0 = new Runtime('syn-python-selenium-1.0', RuntimeFamily.PYTHON);
 
-   /**
+  /**
     * @param name The name of the runtime version
     * @param family The Lambda runtime family
     */
-   public constructor(public readonly name: string, public readonly family: RuntimeFamily) {
-   }
+  public constructor(public readonly name: string, public readonly family: RuntimeFamily) {
+  }
 }

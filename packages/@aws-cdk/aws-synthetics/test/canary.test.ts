@@ -185,8 +185,8 @@ test('Python runtime can be specified', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     RuntimeVersion: 'syn-python-selenium-1.0',
-  })
-})
+  });
+});
 
 test('environment variables can be specified', () => {
   // GIVEN
