@@ -23,9 +23,9 @@ if sys.argv[2] == "cp" and not sys.argv[4].startswith("s3://"):
 if sys.argv[2] == "sync":
     contentsIdx = 3
     if '--include' in sys.argv:
-      contentsIdx += 2
+      contentsIdx += sys.argv.count("--include") * 2
     if '--exclude' in sys.argv:
-      contentsIdx += 2
+      contentsIdx += sys.argv.count("--exclude") * 2
     if '--delete' in sys.argv:
       contentsIdx += 1
     sys.argv[contentsIdx] = "contents.zip"

@@ -49,8 +49,8 @@ def handler(event, context):
             user_metadata       = props.get('UserMetadata', {})
             system_metadata     = props.get('SystemMetadata', {})
             prune               = props.get('Prune', 'true').lower() == 'true'
-            exclude             = props.get('Exclude', '')
-            include             = props.get('Include', '')
+            exclude             = props.get('Exclude', [])
+            include             = props.get('Include', [])
 
             default_distribution_path = dest_bucket_prefix
             if not default_distribution_path.endswith("/"):
@@ -142,10 +142,12 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
       s3_command.append("--delete")
 
     if exclude:
-      s3_command.extend(["--exclude", exclude])
+      for filter in exclude:
+        s3_command.extend(["--exclude", filter])
 
     if include:
-      s3_command.extend(["--include", include])
+      for filter in include:
+        s3_command.extend(["--include", filter])
 
     s3_command.extend([contents_dir, s3_dest])
     s3_command.extend(create_metadata_args(user_metadata, system_metadata))

@@ -36,20 +36,22 @@ export interface BucketDeploymentProps {
   readonly destinationKeyPrefix?: string;
 
   /**
-   * If this is set, matching files or objects will be excluded from the command
+   * If this is set, matching files or objects will be excluded from the deployment. If
+   * no include or exclude filters are used, all files will be included with the deployment.
    *
-   * @default - No files are excluded
+   * @default - No exclude filters are included
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
-  readonly exclude?: string
+  readonly exclude?: string[]
 
   /**
-   * If this is set, matching files or objects will be included with the command
+   * If this is set, matching files or objects will be included with the deployment. If
+   * no include or exclude filters are used, all files will be included with the deployment.
    *
-   * @default - No files are excluded
+   * @default - No include filters are included
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
-  readonly include?: string
+  readonly include?: string[]
 
   /**
    * If this is set to false, files in the destination bucket that

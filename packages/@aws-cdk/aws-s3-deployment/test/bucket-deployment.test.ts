@@ -699,11 +699,11 @@ test('deploy with excluded files from destination', () => {
   new s3deploy.BucketDeployment(stack, 'Deploy', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
-    exclude: 'sample.js',
+    exclude: ['sample.js'],
   });
 
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
-    Exclude: 'sample.js',
+    Exclude: ['sample.js'],
   });
 });
 
@@ -717,11 +717,11 @@ test('deploy with included files from destination', () => {
   new s3deploy.BucketDeployment(stack, 'Deploy', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
-    include: 'sample.js',
+    include: ['sample.js'],
   });
 
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
-    Include: 'sample.js',
+    Include: ['sample.js'],
   });
 });
 
@@ -735,13 +735,33 @@ test('deploy with excluded and included files from destination', () => {
   new s3deploy.BucketDeployment(stack, 'Deploy', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
-    exclude: 'sample/*',
-    include: 'sample/include.json',
+    exclude: ['sample/*'],
+    include: ['sample/include.json'],
   });
 
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
-    Exclude: 'sample/*',
-    Include: 'sample/include.json',
+    Exclude: ['sample/*'],
+    Include: ['sample/include.json'],
+  });
+});
+
+test('deploy with multiple exclude and include filters', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    exclude: ['sample/*', 'another/*'],
+    include: ['sample/include.json', 'another/include.json'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Exclude: ['sample/*', 'another/*'],
+    Include: ['sample/include.json', 'another/include.json'],
   });
 });
 
