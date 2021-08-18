@@ -545,6 +545,13 @@ export interface PostgresEngineFeatures {
    * @default false
    */
   readonly s3Import?: boolean;
+
+  /**
+   * Whether this version of the Aurora Postgres cluster engine supports the S3 data export feature.
+   *
+   * @default false
+   */
+  readonly s3Export?: boolean;
 }
 
 /**
