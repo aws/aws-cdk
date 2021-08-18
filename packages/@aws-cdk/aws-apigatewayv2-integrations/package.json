@@ -71,7 +71,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/assert-internal": "0.0.0",
     "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/aws-events-targets": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@types/jest": "^26.0.24",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -115,5 +118,10 @@
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "awslint": {
+    "exclude": [
+      "duration-prop-type:@aws-cdk/aws-apigatewayv2-integrations.SqsReceiveMessageIntegrationProps.visibilityTimeout"
+    ]
   }
 }

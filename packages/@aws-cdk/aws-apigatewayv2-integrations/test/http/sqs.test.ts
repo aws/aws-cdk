@@ -4,15 +4,14 @@ import { IRole, Role } from '@aws-cdk/aws-iam';
 import { Queue } from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
-  DurationMappingExpression,
-  MappingExpression,
-  QueueMappingExpression,
-  SQSAttribute,
-  SQSDeleteMessageIntegration,
-  SQSPurgeQueueIntegration,
-  SQSReceiveMessageIntegration,
-  SQSSendMessageIntegration,
+  AttributeListMappingExpression,
+  SqsAttribute,
+  SqsDeleteMessageIntegration,
+  SqsPurgeQueueIntegration,
+  SqsReceiveMessageIntegration,
+  SqsSendMessageIntegration,
 } from '../../lib/http/aws-proxy';
+import { ArrayMappingExpression, DurationMappingExpression, Mapping, QueueMappingExpression, StringMappingExpression } from '../../lib/http/mapping-expression';
 
 describe('SQS Integrations', () => {
   describe('SendMessage', () => {
@@ -23,9 +22,9 @@ describe('SQS Integrations', () => {
       );
       new HttpRoute(stack, 'Route', {
         httpApi: api,
-        integration: new SQSSendMessageIntegration({
+        integration: new SqsSendMessageIntegration({
           queue,
-          body: MappingExpression.staticValue('message'),
+          body: StringMappingExpression.fromValue('message'),
           role,
         }),
         routeKey: HttpRouteKey.with('/sendMessage'),
@@ -50,16 +49,16 @@ describe('SQS Integrations', () => {
       );
       new HttpRoute(stack, 'Full', {
         httpApi: api,
-        integration: new SQSSendMessageIntegration({
-          body: MappingExpression.staticValue('message-body'),
+        integration: new SqsSendMessageIntegration({
+          body: StringMappingExpression.fromValue('message-body'),
           queue,
           role,
-          attributes: MappingExpression.staticValue('some-attributes'),
-          deduplicationId: MappingExpression.staticValue('$request.id'),
+          attributes: StringMappingExpression.fromValue('some-attributes'),
+          deduplicationId: StringMappingExpression.fromValue('$request.id'),
           delay: DurationMappingExpression.fromDuration(Duration.seconds(4)),
-          groupId: MappingExpression.staticValue('the-group'),
+          groupId: StringMappingExpression.fromValue('the-group'),
           region: 'us-east-1',
-          systemAttributes: MappingExpression.staticValue('system-attrs'),
+          systemAttributes: StringMappingExpression.fromValue('system-attrs'),
         }),
         routeKey: HttpRouteKey.DEFAULT,
       });
@@ -92,7 +91,7 @@ describe('SQS Integrations', () => {
       new HttpRoute(stack, 'Route', {
         httpApi: api,
         routeKey: HttpRouteKey.with('/messages'),
-        integration: new SQSReceiveMessageIntegration({
+        integration: new SqsReceiveMessageIntegration({
           queue,
           role,
         }),
@@ -116,13 +115,13 @@ describe('SQS Integrations', () => {
 
       new HttpRoute(stack, 'Route', {
         httpApi: api,
-        integration: new SQSReceiveMessageIntegration({
+        integration: new SqsReceiveMessageIntegration({
           role,
           queue,
-          attributeNames: [SQSAttribute.ALL],
-          maxNumberOfMessages: 2,
-          messageAttributeNames: ['Attribute1'],
-          receiveRequestAttemptId: 'rra-id',
+          attributeNames: AttributeListMappingExpression.fromAttributeList([SqsAttribute.ALL]),
+          maxNumberOfMessages: StringMappingExpression.fromValue('2'),
+          messageAttributeNames: ArrayMappingExpression.fromValue(['Attribute1']),
+          receiveRequestAttemptId: StringMappingExpression.fromValue('rra-id'),
           visibilityTimeout: DurationMappingExpression.fromDuration(Duration.seconds(30)),
           waitTime: DurationMappingExpression.fromDuration(Duration.seconds(4)),
           region: 'eu-central-1',
@@ -137,9 +136,9 @@ describe('SQS Integrations', () => {
         CredentialsArn: 'arn:aws:iam::123456789012:role/sqs-receive',
         RequestParameters: {
           QueueUrl: makeQueueUrl('us-west-1', '123456789012', 'receive-queue.fifo'),
-          AttributeNames: ['All'],
-          MaxNumberOfMessages: 2,
-          MessageAttributeNames: ['Attribute1'],
+          AttributeNames: '["All"]',
+          MaxNumberOfMessages: '2',
+          MessageAttributeNames: '["Attribute1"]',
           ReceiveRequestAttemptId: 'rra-id',
           VisibilityTimeout: '30',
           WaitTimeSeconds: '4',
@@ -157,9 +156,9 @@ describe('SQS Integrations', () => {
       new HttpRoute(stack, 'Route', {
         httpApi: api,
         routeKey: HttpRouteKey.with('/delete'),
-        integration: new SQSDeleteMessageIntegration({
+        integration: new SqsDeleteMessageIntegration({
           queue,
-          receiptHandle: '$request.body',
+          receiptHandle: StringMappingExpression.fromMapping(Mapping.fromRequestBody()),
           role,
         }),
       });
@@ -181,9 +180,9 @@ describe('SQS Integrations', () => {
       );
       new HttpRoute(stack, 'Route', {
         httpApi: api,
-        integration: new SQSDeleteMessageIntegration({
+        integration: new SqsDeleteMessageIntegration({
           queue,
-          receiptHandle: 'MbZj6wDWli%2BJvwwJaBV%2B3dcjk2YW2vA3%2BSTFFljT',
+          receiptHandle: StringMappingExpression.fromValue('MbZj6wDWli%2BJvwwJaBV%2B3dcjk2YW2vA3%2BSTFFljT'),
           role,
           region: 'eu-west-1',
         }),
@@ -212,7 +211,7 @@ describe('SQS Integrations', () => {
       new HttpRoute(stack, 'Route', {
         httpApi: api,
         routeKey: HttpRouteKey.with('/purge'),
-        integration: new SQSPurgeQueueIntegration({
+        integration: new SqsPurgeQueueIntegration({
           queue,
           role,
         }),
@@ -234,7 +233,7 @@ describe('SQS Integrations', () => {
       );
       new HttpRoute(stack, 'Route', {
         httpApi: api,
-        integration: new SQSPurgeQueueIntegration({
+        integration: new SqsPurgeQueueIntegration({
           queue,
           role,
           region: 'us-east-2',
