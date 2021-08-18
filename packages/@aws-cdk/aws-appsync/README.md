@@ -960,7 +960,7 @@ To add fields for these subscriptions, we can simply run the `addSubscription` f
 to the schema's `Subscription` type.
 
 ```ts
-api.addSubscription('addedFilm', new appsync.ResolvableField({
+api.addSubscription('addedFilm', new appsync.Field({
   returnType: film.attribute(),
   args: { id: appsync.GraphqlType.id({ isRequired: true }) },
   directive: [appsync.Directive.subscribe('addFilm')],
