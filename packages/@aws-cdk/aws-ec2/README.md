@@ -824,6 +824,12 @@ new ec2.Instance(this, 'Instance', {
 
     // Optional, how long the installation is expected to take (5 minutes by default)
     timeout: Duration.minutes(30),
+
+    // Optional, whether to include the --url argument when running cfn-init and cfn-signal commands (false by default)
+    includeUrl: true
+
+    // Optional, whether to include the --role argument when running cfn-init and cfn-signal commands (false by default)
+    includeRole: true
   },
 });
 ```
