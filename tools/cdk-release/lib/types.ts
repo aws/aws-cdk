@@ -9,47 +9,24 @@ export interface Lifecycles {
   tag?: string;
 }
 
-type LifecyclesSkip = {
+export type LifecyclesSkip = {
   [key in keyof Lifecycles]: boolean;
 }
 
-/* ****** Updaters ******** */
-
-export interface UpdaterModule {
-  isPrivate?: (contents: string) => string | boolean | null | undefined;
-  readVersion(contents: string): string;
-  writeVersion(contents: string, version: string): string;
-}
-
-export interface ArgUpdater {
-  filename: string;
-  type?: string;
-  updater?: UpdaterModule | string;
-}
-
-export type ArgFile = string | ArgUpdater;
-
-export interface Updater {
-  filename: string;
-  updater: UpdaterModule;
+export interface Versions {
+  stableVersion: string;
+  alphaVersion?: string;
 }
 
 export type ReleaseType = 'major' | 'minor' | 'patch';
-
-export interface ConventionalCommitType {
-  type: string;
-  section?: string;
-  hidden?: boolean;
-}
 
 /* ****** main options ******** */
 
 export interface ReleaseOptions {
   releaseAs: ReleaseType;
   skip?: LifecyclesSkip;
-  packageFiles?: ArgFile[];
-  bumpFiles?: ArgFile[];
-  infile?: string;
+  versionFile: string;
+  changelogFile: string;
   prerelease?: string;
   scripts?: Lifecycles;
   dryRun?: boolean;
