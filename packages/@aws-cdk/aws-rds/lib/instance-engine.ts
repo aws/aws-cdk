@@ -247,6 +247,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_2_32 = MariaDbEngineVersion.of('10.2.32', '10.2');
   /** Version "10.2.37". */
   public static readonly VER_10_2_37 = MariaDbEngineVersion.of('10.2.37', '10.2');
+  /** Version "10.2.39". */
+  public static readonly VER_10_2_39 = MariaDbEngineVersion.of('10.2.39', '10.2');
 
   /** Version "10.3" (only a major version, without a specific minor version). */
   public static readonly VER_10_3 = MariaDbEngineVersion.of('10.3', '10.3');
