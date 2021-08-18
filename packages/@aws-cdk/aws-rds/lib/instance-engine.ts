@@ -464,6 +464,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_31 = MysqlEngineVersion.of('5.7.31', '5.7');
   /** Version "5.7.33". */
   public static readonly VER_5_7_33 = MysqlEngineVersion.of('5.7.33', '5.7');
+  /** Version "5.7.34". */
+  public static readonly VER_5_7_34 = MysqlEngineVersion.of('5.7.34', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
