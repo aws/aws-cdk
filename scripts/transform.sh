@@ -42,10 +42,7 @@ if [ "$run_tests" == "true" ]; then
   runtarget="$runtarget+test"
 fi
 if [ "$extract_snippets" == "true" ]; then
-  # ToDo: handle the 'extract' option here
-  # (right now, it fails because jsii-rosetta can't be found in the copied packages)
   runtarget="$runtarget+extract"
-#  echo "Warning: the --extract option is currently ignored by the 'transform' script"
 fi
 
 export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTIONS:-}"
