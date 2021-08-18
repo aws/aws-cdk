@@ -297,6 +297,11 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
    * Set/replace the target group's health check
    */
   public configureHealthCheck(healthCheck: HealthCheck) {
+    if (healthCheck.interval && healthCheck.timeout) {
+      if (healthCheck.interval.toMilliseconds() <= healthCheck.timeout.toMilliseconds()) {
+        throw new Error(`Healthcheck interval ${healthCheck.interval.toHumanString()} must be greater than the timeout ${healthCheck.timeout.toHumanString()}`);
+      }
+    }
     this.healthCheck = healthCheck;
   }
 

@@ -281,4 +281,45 @@ describe('tests', () => {
       }).toThrow(/Slow start duration value must be between 30 and 900 seconds./);
     });
   });
+
+  test('Interval equal to timeout', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      tg.configureHealthCheck({
+        interval: cdk.Duration.seconds(60),
+        timeout: cdk.Duration.seconds(60),
+      });
+    }).toThrow(/Healthcheck interval 1 minute must be greater than the timeout 1 minute/);
+  });
+
+  test('Interval smaller than timeout', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      tg.configureHealthCheck({
+        interval: cdk.Duration.seconds(60),
+        timeout: cdk.Duration.seconds(120),
+      });
+    }).toThrow(/Healthcheck interval 1 minute must be greater than the timeout 2 minutes/);
+  });
+
 });
