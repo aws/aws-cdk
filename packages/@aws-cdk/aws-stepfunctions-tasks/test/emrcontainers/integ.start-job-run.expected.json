@@ -96,10 +96,17 @@
               }
             },
             {
-              "Action": [
-                "logs:DescribeLogGroups",
-                "logs:DescribeLogStreams"
-              ],
+              "Action": "logs:DescribeLogStreams",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "EMRContainersStartJobRunMonitoringLogGroup882D450C",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "logs:DescribeLogGroups",
               "Effect": "Allow",
               "Resource": "arn:aws:logs:*:*:*"
             }
@@ -144,7 +151,7 @@
             "Arn"
           ]
         },
-        "Create": "{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"kdc1nynmnfs810uq6r0ymfm04\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}",
+        "Create": "{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"frv3my91yzjr1g0ha2h91obx3\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}",
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
@@ -653,7 +660,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":/virtualclusters/kdc1nynmnfs810uq6r0ymfm04"
+                    ":/virtualclusters/frv3my91yzjr1g0ha2h91obx3"
                   ]
                 ]
               }
@@ -680,7 +687,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":/virtualclusters/kdc1nynmnfs810uq6r0ymfm04/jobruns/*"
+                    ":/virtualclusters/frv3my91yzjr1g0ha2h91obx3/jobruns/*"
                   ]
                 ]
               }
@@ -713,7 +720,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::emr-containers:startJobRun.sync\",\"Parameters\":{\"VirtualClusterId\":\"kdc1nynmnfs810uq6r0ymfm04\",\"Name\":\"EMR-Containers-Job\",\"ExecutionRoleArn\":\"",
+              ":states:::emr-containers:startJobRun.sync\",\"Parameters\":{\"VirtualClusterId\":\"frv3my91yzjr1g0ha2h91obx3\",\"Name\":\"EMR-Containers-Job\",\"ExecutionRoleArn\":\"",
               {
                 "Fn::GetAtt": [
                   "EMRContainersStartJobRunJobExecutionRole40B8DD81",

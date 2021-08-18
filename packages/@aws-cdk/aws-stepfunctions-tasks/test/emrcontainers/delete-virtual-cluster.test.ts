@@ -122,12 +122,32 @@ test('Valid policy statements are passed to the state machine with a REQUEST_RES
     PolicyDocument: {
       Statement: [{
         Action: 'emr-containers:DeleteVirtualCluster',
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':emr-containers:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              `:virtualclusters/${virtualClusterId}`,
+            ],
+          ],
+        },
       }],
     },
   });
 });
 
-test('Valid policy statements are passed to the state machine with a RUN_JOB call', () => {
+test('Valid policy statements and resources are passed to the state machine with a RUN_JOB call', () => {
   // WHEN
   const task = new EmrContainersDeleteVirtualCluster(stack, 'Task', {
     virtualClusterId: sfn.TaskInput.fromText(virtualClusterId),
@@ -146,6 +166,70 @@ test('Valid policy statements are passed to the state machine with a RUN_JOB cal
           'emr-containers:DeleteVirtualCluster',
           'emr-containers:DescribeVirtualCluster',
         ],
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':emr-containers:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              `:virtualclusters/${virtualClusterId}`,
+            ],
+          ],
+        },
+      }],
+    },
+  });
+});
+
+test('Valid policy statements and resources are passed when the virtual cluster ID is from a payload', () => {
+  // WHEN
+  const task = new EmrContainersDeleteVirtualCluster(stack, 'Task', {
+    virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.ClusterId'),
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [{
+        Action: [
+          'emr-containers:DeleteVirtualCluster',
+          'emr-containers:DescribeVirtualCluster',
+        ],
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':emr-containers:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':virtualclusters/*',
+            ],
+          ],
+        },
       }],
     },
   });

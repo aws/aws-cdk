@@ -118,23 +118,27 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       throw new Error(`Entry point must be between 1 and 256 characters in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPoint.value.length}.`);
     }
 
-    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments) {
-      if (!this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)
-      || (typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.type === 'string'
-      && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value))) {
-        throw new Error(`Entry point arguments must be a string array. Received ${props.jobDriver.sparkSubmitJobDriver.entryPointArguments.type}.`);
-      }
+    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
+       && (typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value === 'string'
+       && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value))) {
+      throw new Error(`Entry point arguments must be a string array. Received ${typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value}.`);
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
+      && !this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)) {
+      throw new Error(`Entry point arguments must be a string array. Received ${typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value}.`);
+    }
+
+    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
+      && this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)
         && (props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length > 10280
           || props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length < 1)) {
       throw new Error(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters
-      && (props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters.length > 102400
-        || props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters.length < 1)) {
+      && (props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length > 102400
+        || props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length < 1)) {
       throw new Error(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length}.`);
     }
 
@@ -226,7 +230,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
   }
 
   private renderTags(tags?: { [key: string]: any } | undefined): { [key: string]: any } {
-    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
+    return tags ? { Tags: Object.entries(tags).map(([key, value]) => ({ Key: key, Value: value })) } : {};
   }
 
   // https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
@@ -240,6 +244,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
 
     this.logBucket?.grantReadWrite(jobExecutionRole);
     this.logGroup?.grantWrite(jobExecutionRole);
+    this.logGroup?.grant(jobExecutionRole, 'logs:DescribeLogStreams');
 
     jobExecutionRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
@@ -248,7 +253,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         ],
         actions: [
           'logs:DescribeLogGroups',
-          'logs:DescribeLogStreams',
         ],
       }),
     );
@@ -262,6 +266,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
 
     this.logBucket?.grantReadWrite(this.role);
     this.logGroup?.grantWrite(this.role);
+    this.logGroup?.grant(this.role, 'logs:DescribeLogStreams');
 
     this.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
@@ -270,11 +275,11 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         ],
         actions: [
           'logs:DescribeLogGroups',
-          'logs:DescribeLogStreams',
         ],
       }),
     );
   }
+
   /**
    * If an execution role is not provided by user, the automatically generated job execution role must create a trust relationship
    * between itself and the identity of the EMR managed service account in order to run jobs on the Kubernetes namespace.

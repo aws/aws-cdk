@@ -800,7 +800,7 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
   jobDriver: {
     sparkSubmitJobDriver: {
       entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
     },
   },
 });
@@ -881,7 +881,7 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 });
 ```
 
-Users can provide their own existing Job Execution Role by importing the resource ARN.
+Users can provide their own existing Job Execution Role.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';

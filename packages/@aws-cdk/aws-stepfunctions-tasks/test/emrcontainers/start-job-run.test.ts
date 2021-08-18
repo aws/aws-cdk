@@ -2,6 +2,8 @@
 
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { EmrContainersStartJobRun, ReleaseLabel, ApplicationConfiguration, Classification } from '../../lib/emrcontainers/start-job-run';
@@ -21,348 +23,586 @@ beforeEach(() => {
   clusterId = 'clusterId';
 });
 
-test('Invoke EMR Containers Start Job Run with Request/Response integration pattern', () => {
+describe('Invoke EMR Containers Start Job Run with ', () => {
+  test('Request/Response integration pattern', () => {
 
-  // WHEN
-  const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-    virtualClusterId: sfn.TaskInput.fromText(clusterId),
-    releaseLabel: ReleaseLabel.EMR_6_2_0,
-    jobDriver: {
-      sparkSubmitJobDriver: {
-        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-        sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
-      },
-    },
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::emr-containers:startJobRun',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      VirtualClusterId: clusterId,
-      ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-      JobDriver: {
-        SparkSubmitJobDriver: {
-          EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-          SparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
         },
       },
-      ConfigurationOverrides: {},
-      ExecutionRoleArn: {
-        'Fn::GetAtt': [
-          'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-          'Arn',
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:startJobRun',
+          ],
         ],
       },
-    },
-  });
-});
-
-test('Invoke EMR Containers Start Job Run with .sync integration pattern', () => {
-
-  // WHEN
-  const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-    virtualClusterId: sfn.TaskInput.fromText(clusterId),
-    releaseLabel: ReleaseLabel.EMR_6_2_0,
-    jobDriver: {
-      sparkSubmitJobDriver: {
-        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-        sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
-      },
-    },
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
+      End: true,
+      Parameters: {
+        VirtualClusterId: clusterId,
+        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
+            SparkSubmitParameters: '--conf spark.executor.instances=2',
           },
-          ':states:::emr-containers:startJobRun.sync',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      VirtualClusterId: clusterId,
-      ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-      JobDriver: {
-        SparkSubmitJobDriver: {
-          EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-          SparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
+        },
+        ConfigurationOverrides: {},
+        ExecutionRoleArn: {
+          'Fn::GetAtt': [
+            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
+            'Arn',
+          ],
         },
       },
-      ConfigurationOverrides: {},
-      ExecutionRoleArn: {
-        'Fn::GetAtt': [
-          'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-          'Arn',
-        ],
-      },
-    },
-  });
-});
-
-test('Invoke EMR Containers Start Job Run with virtual cluster id from payload', () => {
-
-  // WHEN
-  const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-    virtualClusterId: sfn.TaskInput.fromDataAt('$.ClusterId'),
-    releaseLabel: ReleaseLabel.EMR_6_2_0,
-    executionRole: iam.Role.fromRoleArn(stack, 'Job Execution Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
-    jobDriver: {
-      sparkSubmitJobDriver: {
-        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-        sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
-      },
-    },
+    });
   });
 
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::emr-containers:startJobRun.sync',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      'VirtualClusterId.$': '$.ClusterId',
-      'ReleaseLabel': ReleaseLabel.EMR_6_2_0.label,
-      'JobDriver': {
-        SparkSubmitJobDriver: {
-          EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-          SparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
+  test('.sync integration pattern', () => {
+
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
         },
       },
-      'ConfigurationOverrides': {},
-      'ExecutionRoleArn': 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
-    },
-  });
-});
+    });
 
-test('Invoke EMR Containers Start Job Run with Tags', () => {
-
-  // WHEN
-  const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-    virtualClusterId: sfn.TaskInput.fromText(clusterId),
-    releaseLabel: ReleaseLabel.EMR_6_2_0,
-    jobDriver: {
-      sparkSubmitJobDriver: {
-        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-        sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
-      },
-    },
-    tags: {
-      key: 'value',
-    },
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::emr-containers:startJobRun.sync',
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:startJobRun.sync',
+          ],
         ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      VirtualClusterId: clusterId,
-      ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-      JobDriver: {
-        SparkSubmitJobDriver: {
-          EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-          SparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
+      },
+      End: true,
+      Parameters: {
+        VirtualClusterId: clusterId,
+        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
+            SparkSubmitParameters: '--conf spark.executor.instances=2',
+          },
+        },
+        ConfigurationOverrides: {},
+        ExecutionRoleArn: {
+          'Fn::GetAtt': [
+            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
+            'Arn',
+          ],
         },
       },
-      ConfigurationOverrides: {},
-      ExecutionRoleArn: {
-        'Fn::GetAtt': [
-          'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-          'Arn',
-        ],
-      },
-      Tags: [{
-        Key: 'key',
-        Value: 'value',
-      }],
-    },
-  });
-});
-
-
-test('Invoke EMR Containers Start Job Run with Application Configuration', () => {
-
-  // WHEN
-  const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-    virtualClusterId: sfn.TaskInput.fromText(clusterId),
-    releaseLabel: ReleaseLabel.EMR_6_2_0,
-    jobDriver: {
-      sparkSubmitJobDriver: {
-        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-        sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
-      },
-    },
-    applicationConfig: [{
-      classification: Classification.SPARK_DEFAULTS,
-      properties: {
-        'spark.executor.instances': '1',
-        'spark.executor.memory': '512M',
-      },
-    }],
+    });
   });
 
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::emr-containers:startJobRun.sync',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      VirtualClusterId: clusterId,
-      ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-      JobDriver: {
-        SparkSubmitJobDriver: {
-          EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-          SparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
+  test('virtual cluster id from payload', () => {
+
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      virtualClusterId: sfn.TaskInput.fromDataAt('$.ClusterId'),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      executionRole: iam.Role.fromRoleArn(stack, 'Job Execution Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
         },
       },
-      ConfigurationOverrides: {
-        ApplicationConfiguration: [{
-          Classification: Classification.SPARK_DEFAULTS.classificationStatement,
-          Properties: {
-            'spark.executor.instances': '1',
-            'spark.executor.memory': '512M',
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:startJobRun.sync',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        'VirtualClusterId.$': '$.ClusterId',
+        'ReleaseLabel': ReleaseLabel.EMR_6_2_0.label,
+        'JobDriver': {
+          SparkSubmitJobDriver: {
+            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
+            SparkSubmitParameters: '--conf spark.executor.instances=2',
           },
+        },
+        'ConfigurationOverrides': {},
+        'ExecutionRoleArn': 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
+      },
+    });
+  });
+
+  test('Tags', () => {
+
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
+        },
+      },
+      tags: {
+        key: 'value',
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:startJobRun.sync',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        VirtualClusterId: clusterId,
+        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
+            SparkSubmitParameters: '--conf spark.executor.instances=2',
+          },
+        },
+        ConfigurationOverrides: {},
+        ExecutionRoleArn: {
+          'Fn::GetAtt': [
+            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
+            'Arn',
+          ],
+        },
+        Tags: [{
+          Key: 'key',
+          Value: 'value',
         }],
       },
-      ExecutionRoleArn: {
-        'Fn::GetAtt': [
-          'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-          'Arn',
+    });
+  });
+
+
+  test('Application Configuration', () => {
+
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
+        },
+      },
+      applicationConfig: [{
+        classification: Classification.SPARK_DEFAULTS,
+        properties: {
+          'spark.executor.instances': '1',
+          'spark.executor.memory': '512M',
+        },
+      }],
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:startJobRun.sync',
+          ],
         ],
       },
+      End: true,
+      Parameters: {
+        VirtualClusterId: clusterId,
+        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
+            SparkSubmitParameters: '--conf spark.executor.instances=2',
+          },
+        },
+        ConfigurationOverrides: {
+          ApplicationConfiguration: [{
+            Classification: Classification.SPARK_DEFAULTS.classificationStatement,
+            Properties: {
+              'spark.executor.instances': '1',
+              'spark.executor.memory': '512M',
+            },
+          }],
+        },
+        ExecutionRoleArn: {
+          'Fn::GetAtt': [
+            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
+            'Arn',
+          ],
+        },
 
-    },
+      },
+    });
   });
 });
 
-test('Invoke EMR Containers Start Job Run with Monitoring', () => {
-  // WHEN
-  const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-    virtualClusterId: sfn.TaskInput.fromText(clusterId),
-    releaseLabel: ReleaseLabel.EMR_6_2_0,
-    jobDriver: {
-      sparkSubmitJobDriver: {
-        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-        sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
-      },
-    },
-    monitoring: {
-      logging: true,
-    },
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::emr-containers:startJobRun.sync',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      VirtualClusterId: clusterId,
-      ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-      JobDriver: {
-        SparkSubmitJobDriver: {
-          EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-          SparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
+describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
+  test('generated automatically', () => {
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
         },
       },
-      ConfigurationOverrides: {
-        MonitoringConfiguration: {
-          CloudWatchMonitoringConfiguration: {
-            LogGroupName: {
-              Ref: 'EMRContainersStartJobRunMonitoringLogGroup882D450C',
-            },
-          },
-          PersistentAppUI: 'ENABLED',
-          S3MonitoringConfiguration: {
-            LogUri: {
-              'Fn::Join': [
-                '',
-                [
-                  's3://',
-                  {
-                    Ref: 'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
-                  },
+      monitoring: {
+        logging: true,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+              's3:PutObject*',
+              's3:Abort*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
+                  'Arn',
                 ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'EMRContainersStartJobRunMonitoringLogGroup882D450C',
+                'Arn',
               ],
             },
           },
-        },
+          {
+            Action: 'logs:DescribeLogStreams',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'EMRContainersStartJobRunMonitoringLogGroup882D450C',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 'logs:DescribeLogGroups',
+            Effect: 'Allow',
+            Resource: 'arn:aws:logs:*:*:*',
+          },
+        ],
+        Version: '2012-10-17',
       },
-      ExecutionRoleArn: {
-        'Fn::GetAtt': [
-          'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-          'Arn',
+      PolicyName: 'EMRContainersStartJobRunJobExecutionRoleDefaultPolicyCDBDF13E',
+      Roles: [
+        {
+          Ref: 'EMRContainersStartJobRunJobExecutionRole40B8DD81',
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:startJobRun.sync',
+          ],
         ],
       },
-    },
+      End: true,
+      Parameters: {
+        VirtualClusterId: clusterId,
+        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
+            SparkSubmitParameters: '--conf spark.executor.instances=2',
+          },
+        },
+        ConfigurationOverrides: {
+          MonitoringConfiguration: {
+            CloudWatchMonitoringConfiguration: {
+              LogGroupName: {
+                Ref: 'EMRContainersStartJobRunMonitoringLogGroup882D450C',
+              },
+            },
+            PersistentAppUI: 'ENABLED',
+            S3MonitoringConfiguration: {
+              LogUri: {
+                'Fn::Join': [
+                  '',
+                  [
+                    's3://',
+                    {
+                      Ref: 'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
+                    },
+                  ],
+                ],
+              },
+            },
+          },
+        },
+        ExecutionRoleArn: {
+          'Fn::GetAtt': [
+            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
+            'Arn',
+          ],
+        },
+      },
+    });
+  });
+
+  test('provided from user', () => {
+    // WHEN
+
+    const logGroup = new logs.LogGroup(stack, 'Log Group');
+    const s3Bucket = new s3.Bucket(stack, 'Bucket');
+    const prefixName = 'prefix';
+
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
+        },
+      },
+      monitoring: {
+        logBucket: s3Bucket,
+        logGroup: logGroup,
+        logStreamNamePrefix: 'prefix',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+              's3:PutObject*',
+              's3:Abort*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'EMRContainersStartJobRunMonitoringLogGroup882D450C',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 'logs:DescribeLogStreams',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'EMRContainersStartJobRunMonitoringLogGroup882D450C',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 'logs:DescribeLogGroups',
+            Effect: 'Allow',
+            Resource: 'arn:aws:logs:*:*:*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'EMRContainersStartJobRunJobExecutionRoleDefaultPolicyCDBDF13E',
+      Roles: [
+        {
+          Ref: 'EMRContainersStartJobRunJobExecutionRole40B8DD81',
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:startJobRun.sync',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        VirtualClusterId: clusterId,
+        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
+            SparkSubmitParameters: '--conf spark.executor.instances=2',
+          },
+        },
+        ConfigurationOverrides: {
+          MonitoringConfiguration: {
+            CloudWatchMonitoringConfiguration: {
+              LogGroupName: {
+                Ref: 'EMRContainersStartJobRunMonitoringLogGroup882D450C',
+              },
+              LogStreamNamePrefix: prefixName,
+            },
+            PersistentAppUI: 'ENABLED',
+            S3MonitoringConfiguration: {
+              LogUri: {
+                'Fn::Join': [
+                  '',
+                  [
+                    's3://',
+                    {
+                      Ref: 'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
+                    },
+                  ],
+                ],
+              },
+            },
+          },
+        },
+        ExecutionRoleArn: {
+          'Fn::GetAtt': [
+            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
+            'Arn',
+          ],
+        },
+      },
+    });
   });
 });
 
@@ -376,7 +616,7 @@ test('Invoke EMR Containers Start Job Run with Job Execution Role', () => {
     jobDriver: {
       sparkSubmitJobDriver: {
         entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-        sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
+        sparkSubmitParameters: '--conf spark.executor.instances=2',
       },
     },
   });
@@ -403,7 +643,7 @@ test('Invoke EMR Containers Start Job Run with Job Execution Role', () => {
       JobDriver: {
         SparkSubmitJobDriver: {
           EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-          SparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor cores=2 --conf spark.driver.cores=1',
+          SparkSubmitParameters: '--conf spark.executor.instances=2',
         },
       },
       ConfigurationOverrides: {},
@@ -452,6 +692,28 @@ test('Task throws if Application Configuration nested configuration array is lar
   }).toThrow(`Application configuration array must have 100 or fewer entries. Received ${appConfig.length}`);
 });
 
+test('Task throws if Application Configuration properties is larger than 100 entries', () => {
+  let properties: { [key: string]: string } = {};
+  for (let index = 0; index <= 100; index++) {
+    const prop = `${index}`;
+    properties[prop] = 'value';
+  }
+  const appConfig: ApplicationConfiguration = { classification: Classification.SPARK, properties: properties };
+
+  expect(() => {
+    new EmrContainersStartJobRun(stack, 'Task', {
+      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('job-location'),
+        },
+      },
+      applicationConfig: [appConfig],
+    });
+  }).toThrow(`Application configuration properties must have 100 or fewer entries. Received ${appConfig.properties ? Object.keys(appConfig.properties).length : undefined}`);
+});
+
 test('Task throws if Entry Point is not between 1 to 256 characters in length', () => {
 
   // WHEN
@@ -489,7 +751,7 @@ test('Task throws if Entry Point Arguments is not an string array that is betwee
   const entryPointArgs = sfn.TaskInput.fromObject(new Array(10281).fill('x', 10281));
   const entryPointArgsNone = sfn.TaskInput.fromObject([]);
   const entryPointNumbers = sfn.TaskInput.fromObject(new Array(1).fill(1));
-  const entryPointJson = sfn.TaskInput.fromJsonPathAt('$.Job');
+  const entryPointJson = sfn.TaskInput.fromText('x');
 
   // THEN
   expect(() => {
@@ -503,7 +765,7 @@ test('Task throws if Entry Point Arguments is not an string array that is betwee
         },
       },
     });
-  }).toThrow(`Entry point arguments must be a string array. Received ${entryPointNumbers.type}.`);
+  }).toThrow(`Entry point arguments must be a string array. Received ${typeof entryPointNumbers.value}.`);
 
 
   // THEN
@@ -518,7 +780,7 @@ test('Task throws if Entry Point Arguments is not an string array that is betwee
         },
       },
     });
-  }).toThrow(`Entry point arguments must be a string array. Received ${entryPointJson.type}.`);
+  }).toThrow(`Entry point arguments must be a string array. Received ${typeof entryPointJson.value}.`);
 
   // THEN
   expect(() => {
@@ -552,7 +814,7 @@ test('Task throws if Entry Point Arguments is not an string array that is betwee
 test('Task throws if Spark Submit Parameters is NOT between 1 characters and 102400 characters in length', () => {
 
   // WHEN
-  const sparkSubmitParam = 'x'.repeat(10 * 101 * 101 * 2);
+  const sparkSubmitParam = 'x'.repeat(102401);
 
   // THEN
   expect(() => {
@@ -587,7 +849,7 @@ test('Task throws if an execution role is undefined and the virtual cluster ID i
   }).toThrow('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
 });
 
-test('Permitted role actions with Start Job Run for SYNC integration pattern', () => {
+test('Permitted role actions and resources with Start Job Run for SYNC integration pattern', () => {
   // WHEN
   const task = new EmrContainersStartJobRun(stack, 'Task', {
     virtualClusterId: sfn.TaskInput.fromText(clusterId),
@@ -669,46 +931,81 @@ test('Permitted role actions with Start Job Run for SYNC integration pattern', (
       }],
     },
   });
+});
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'logs:DescribeLogGroups',
-            'logs:DescribeLogStreams',
-          ],
-          Effect: 'Allow',
-          Resource: 'arn:aws:logs:*:*:*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
-    PolicyName: 'TaskJobExecutionRoleDefaultPolicy6FE2FE84',
-    Roles: [
-      {
-        Ref: 'TaskJobExecutionRole5D5BBA5A',
+test('Permitted role actions and resources with Start Job Run from payload', () => {
+  // WHEN
+  const task = new EmrContainersStartJobRun(stack, 'Task', {
+    virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.ClusterId'),
+    releaseLabel: ReleaseLabel.EMR_6_2_0,
+    executionRole: iam.Role.fromRoleArn(stack, 'Job Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
+    jobDriver: {
+      sparkSubmitJobDriver: {
+        entryPoint: sfn.TaskInput.fromText('job-location'),
       },
-    ],
-  });
-
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [{
-        Action: 'emr-containers:DescribeVirtualCluster',
-        Resource: '*',
-      }],
     },
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   });
 
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  // THEN
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
-        Action: 'lambda:InvokeFunction',
+        Action: 'emr-containers:StartJobRun',
+        Condition: {
+          StringEquals: {
+            'emr-containers:ExecutionRoleArn': 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
+          },
+        },
         Resource: {
-          'Fn::GetAtt': [
-            'SingletonLambda8693BB64968944B69AAFB0CC9EB8757CB6182A5B',
-            'Arn',
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':emr-containers:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':/virtualclusters/*',
+            ],
+          ],
+        },
+      },
+      {
+        Action: [
+          'emr-containers:DescribeJobRun',
+          'emr-containers:CancelJobRun',
+        ],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':emr-containers:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':/virtualclusters/*',
+            ],
           ],
         },
       }],
@@ -772,28 +1069,26 @@ test('Permitted role actions for Start Job Run with REQUEST/RESPONSE integration
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'logs:DescribeLogGroups',
-            'logs:DescribeLogStreams',
-          ],
-          Effect: 'Allow',
-          Resource: 'arn:aws:logs:*:*:*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
-    PolicyName: 'TaskJobExecutionRoleDefaultPolicy6FE2FE84',
-    Roles: [
-      {
-        Ref: 'TaskJobExecutionRole5D5BBA5A',
+});
+
+test('Permitted IAM policy actions for EMR Containers SDK call for Describe Virtual Cluster', () => {
+  // WHEN
+  const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+    virtualClusterId: sfn.TaskInput.fromText(clusterId),
+    releaseLabel: ReleaseLabel.EMR_6_2_0,
+    jobDriver: {
+      sparkSubmitJobDriver: {
+        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+        sparkSubmitParameters: '--conf spark.executor.instances=2',
       },
-    ],
+    },
   });
 
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  // THEN
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
@@ -802,7 +1097,27 @@ test('Permitted role actions for Start Job Run with REQUEST/RESPONSE integration
       }],
     },
   });
+});
 
+test('Permitted IAM policy permissions for Custom Resource Lambda', () => {
+
+  // WHEN
+  const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+    virtualClusterId: sfn.TaskInput.fromText(clusterId),
+    releaseLabel: ReleaseLabel.EMR_6_2_0,
+    jobDriver: {
+      sparkSubmitJobDriver: {
+        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+        sparkSubmitParameters: '--conf spark.executor.instances=2',
+      },
+    },
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  // THEN
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{

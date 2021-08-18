@@ -115,7 +115,10 @@ export class EmrContainersEksCreateVirtualCluster extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('emr-containers', 'createVirtualCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        Name: this.props.virtualClusterName ?? sfn.JsonPath.stringAt('$$.Execution.Id').slice(0, 62), // Name must be less than 64 in length
+        Name: this.props.virtualClusterName ?? `States.Format(
+        '$$.Execution.Name',
+        '$$.StateMachine.Name',
+        '$$.State.Name')`,
         ContainerProvider: {
           Id: this.props.eksCluster.clusterName,
           Info: {
@@ -131,7 +134,7 @@ export class EmrContainersEksCreateVirtualCluster extends sfn.TaskStateBase {
   };
 
   private renderTags(tags?: { [key: string]: any } | undefined): { [key: string]: any } {
-    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
+    return tags ? { Tags: Object.entries(tags).map(([key, value]) => ({ Key: key, Value: value })) } : {};
   }
 
   private createPolicyStatements(): iam.PolicyStatement[] {

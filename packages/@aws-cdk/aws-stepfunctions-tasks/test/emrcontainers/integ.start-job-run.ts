@@ -17,7 +17,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test');
 
 const startJobRunJob = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-  virtualClusterId: sfn.TaskInput.fromText('kdc1nynmnfs810uq6r0ymfm04'),
+  virtualClusterId: sfn.TaskInput.fromText('frv3my91yzjr1g0ha2h91obx3'),
   releaseLabel: ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
   jobDriver: {

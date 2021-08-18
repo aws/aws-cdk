@@ -20,10 +20,9 @@ beforeEach(() => {
   clusterId = 'test-eks';
 });
 
-test('Invoke emr-containers CreateVirtualCluster without required properties', () => {
+test('Invoke emr-containers CreateVirtualCluster with only required properties', () => {
   // WHEN
   const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
-    virtualClusterName: emrContainersVirtualClusterName,
     eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
@@ -49,7 +48,10 @@ test('Invoke emr-containers CreateVirtualCluster without required properties', (
     },
     End: true,
     Parameters: {
-      Name: emrContainersVirtualClusterName,
+      Name: `States.Format(
+        '$$.Execution.Name',
+        '$$.StateMachine.Name',
+        '$$.State.Name')`,
       ContainerProvider: {
         Id: clusterId,
         Info: {
@@ -68,7 +70,7 @@ test('Invoke emr-containers CreateVirtualCluster with all required/non-required 
   const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
     virtualClusterName: emrContainersVirtualClusterName,
     eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-    eksNamespace: 'default',
+    eksNamespace: 'namespace',
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -98,7 +100,7 @@ test('Invoke emr-containers CreateVirtualCluster with all required/non-required 
         Id: clusterId,
         Info: {
           EksInfo: {
-            Namespace: 'default',
+            Namespace: 'namespace',
           },
         },
         Type: 'EKS',
@@ -191,6 +193,55 @@ test('Create virtual cluster with an existing EKS cluster', () => {
   });
 });
 
+test('Invoke emr-containers CreateVirtualCluster with Tags', () => {
+  // WHEN
+  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+    eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+    virtualClusterName: emrContainersVirtualClusterName,
+    tags: {
+      key: 'value',
+    },
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::emr-containers:createVirtualCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: emrContainersVirtualClusterName,
+      ContainerProvider: {
+        Id: clusterId,
+        Info: {
+          EksInfo: {
+            Namespace: 'default',
+          },
+        },
+        Type: 'EKS',
+      },
+      Tags: [{
+        Key: 'key',
+        Value: 'value',
+      }],
+    },
+  });
+});
 
 test('Permitted role actions included for CreateVirtualCluster if service integration pattern is REQUEST_RESPONSE', () => {
   // WHEN

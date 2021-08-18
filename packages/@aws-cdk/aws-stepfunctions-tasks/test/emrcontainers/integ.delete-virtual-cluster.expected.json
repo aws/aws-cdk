@@ -55,7 +55,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":/virtualclusters/kdc1nynmnfs810uq6r0ymfm04"
+                    ":virtualclusters/frv3my91yzjr1g0ha2h91obx3"
                   ]
                 ]
               }
@@ -88,7 +88,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::emr-containers:deleteVirtualCluster.sync\",\"Parameters\":{\"Id\":\"kdc1nynmnfs810uq6r0ymfm04\"}}},\"TimeoutSeconds\":90}"
+              ":states:::emr-containers:deleteVirtualCluster.sync\",\"Parameters\":{\"Id\":\"frv3my91yzjr1g0ha2h91obx3\"}}},\"TimeoutSeconds\":90}"
             ]
           ]
         }
