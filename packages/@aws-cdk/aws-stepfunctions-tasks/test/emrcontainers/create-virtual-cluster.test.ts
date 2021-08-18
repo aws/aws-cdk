@@ -20,226 +20,228 @@ beforeEach(() => {
   clusterId = 'test-eks';
 });
 
-test('Invoke emr-containers CreateVirtualCluster with only required properties', () => {
-  // WHEN
-  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
-    eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  });
+describe('Invoke emr-containers CreateVirtualCluster with ', () => {
+  test('only required properties', () => {
+    // WHEN
+    const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+      eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
 
-  new sfn.StateMachine(stack, 'SM', {
-    definition: task,
-  });
+    new sfn.StateMachine(stack, 'SM', {
+      definition: task,
+    });
 
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::emr-containers:createVirtualCluster',
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:createVirtualCluster',
+          ],
         ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      Name: `States.Format(
-        '$$.Execution.Name',
-        '$$.StateMachine.Name',
-        '$$.State.Name')`,
-      ContainerProvider: {
-        Id: clusterId,
-        Info: {
-          EksInfo: {
-            Namespace: 'default',
-          },
-        },
-        Type: 'EKS',
       },
-    },
-  });
-});
-
-test('Invoke emr-containers CreateVirtualCluster with all required/non-required properties', () => {
-  // WHEN
-  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
-    virtualClusterName: emrContainersVirtualClusterName,
-    eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-    eksNamespace: 'namespace',
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  });
-
-  new sfn.StateMachine(stack, 'SM', {
-    definition: task,
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
+      End: true,
+      Parameters: {
+        Name: `States.Format(
+          '$$.Execution.Name',
+          '$$.StateMachine.Name',
+          '$$.State.Name')`,
+        ContainerProvider: {
+          Id: clusterId,
+          Info: {
+            EksInfo: {
+              Namespace: 'default',
+            },
           },
-          ':states:::emr-containers:createVirtualCluster',
+          Type: 'EKS',
+        },
+      },
+    });
+  });
+
+  test('all required/non-required properties', () => {
+    // WHEN
+    const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+      virtualClusterName: emrContainersVirtualClusterName,
+      eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+      eksNamespace: 'namespace',
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    new sfn.StateMachine(stack, 'SM', {
+      definition: task,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:createVirtualCluster',
+          ],
         ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      Name: emrContainersVirtualClusterName,
-      ContainerProvider: {
-        Id: clusterId,
-        Info: {
-          EksInfo: {
-            Namespace: 'namespace',
-          },
-        },
-        Type: 'EKS',
       },
-    },
-  });
-});
-
-test('Create virtual cluster with clusterId from payload', () => {
-  // WHEN
-  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
-    virtualClusterName: emrContainersVirtualClusterName,
-    eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.ClusterId')),
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
+      End: true,
+      Parameters: {
+        Name: emrContainersVirtualClusterName,
+        ContainerProvider: {
+          Id: clusterId,
+          Info: {
+            EksInfo: {
+              Namespace: 'namespace',
+            },
           },
-          ':states:::emr-containers:createVirtualCluster',
+          Type: 'EKS',
+        },
+      },
+    });
+  });
+
+  test('clusterId from payload', () => {
+    // WHEN
+    const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+      virtualClusterName: emrContainersVirtualClusterName,
+      eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.ClusterId')),
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:createVirtualCluster',
+          ],
         ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      Name: emrContainersVirtualClusterName,
-      ContainerProvider: {
-        'Id.$': '$.ClusterId',
-        'Info': {
-          EksInfo: {
-            Namespace: 'default',
-          },
-        },
-        'Type': 'EKS',
       },
-    },
-  });
-});
-
-test('Create virtual cluster with an existing EKS cluster', () => {
-  // WHEN
-  const eksCluster = new eks.Cluster(stack, 'EKS Cluster', {
-    version: eks.KubernetesVersion.V1_20,
-  });
-
-  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
-    virtualClusterName: emrContainersVirtualClusterName,
-    eksCluster: EksClusterInput.fromCluster(eksCluster),
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
+      End: true,
+      Parameters: {
+        Name: emrContainersVirtualClusterName,
+        ContainerProvider: {
+          'Id.$': '$.ClusterId',
+          'Info': {
+            EksInfo: {
+              Namespace: 'default',
+            },
           },
-          ':states:::emr-containers:createVirtualCluster',
+          'Type': 'EKS',
+        },
+      },
+    });
+  });
+
+  test('with an existing EKS cluster', () => {
+    // WHEN
+    const eksCluster = new eks.Cluster(stack, 'EKS Cluster', {
+      version: eks.KubernetesVersion.V1_20,
+    });
+
+    const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+      virtualClusterName: emrContainersVirtualClusterName,
+      eksCluster: EksClusterInput.fromCluster(eksCluster),
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:createVirtualCluster',
+          ],
         ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      Name: emrContainersVirtualClusterName,
-      ContainerProvider: {
-        Id: {
-          Ref: 'EKSClusterEDAD5FD1',
-        },
-        Info: {
-          EksInfo: {
-            Namespace: 'default',
-          },
-        },
-        Type: 'EKS',
       },
-    },
-  });
-});
-
-test('Invoke emr-containers CreateVirtualCluster with Tags', () => {
-  // WHEN
-  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
-    eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-    virtualClusterName: emrContainersVirtualClusterName,
-    tags: {
-      key: 'value',
-    },
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  });
-
-  new sfn.StateMachine(stack, 'SM', {
-    definition: task,
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
+      End: true,
+      Parameters: {
+        Name: emrContainersVirtualClusterName,
+        ContainerProvider: {
+          Id: {
+            Ref: 'EKSClusterEDAD5FD1',
           },
-          ':states:::emr-containers:createVirtualCluster',
+          Info: {
+            EksInfo: {
+              Namespace: 'default',
+            },
+          },
+          Type: 'EKS',
+        },
+      },
+    });
+  });
+
+  test('Tags', () => {
+    // WHEN
+    const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+      eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+      virtualClusterName: emrContainersVirtualClusterName,
+      tags: {
+        key: 'value',
+      },
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    new sfn.StateMachine(stack, 'SM', {
+      definition: task,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:createVirtualCluster',
+          ],
         ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      Name: emrContainersVirtualClusterName,
-      ContainerProvider: {
-        Id: clusterId,
-        Info: {
-          EksInfo: {
-            Namespace: 'default',
-          },
-        },
-        Type: 'EKS',
       },
-      Tags: [{
-        Key: 'key',
-        Value: 'value',
-      }],
-    },
+      End: true,
+      Parameters: {
+        Name: emrContainersVirtualClusterName,
+        ContainerProvider: {
+          Id: clusterId,
+          Info: {
+            EksInfo: {
+              Namespace: 'default',
+            },
+          },
+          Type: 'EKS',
+        },
+        Tags: [{
+          Key: 'key',
+          Value: 'value',
+        }],
+      },
+    });
   });
 });
 

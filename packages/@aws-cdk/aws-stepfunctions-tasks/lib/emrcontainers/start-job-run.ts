@@ -30,7 +30,7 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
   /**
    * The execution role for the job run.
    *
-   * If `virtualClusterId` is from a JSON input path, an execution role must be provided. 
+   * If `virtualClusterId` is from a JSON input path, an execution role must be provided.
    * If an execution role is provided, follow the documentation to update the role trust policy.
    * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html
    *
