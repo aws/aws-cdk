@@ -1326,6 +1326,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_13_00_5598_27_V1 = SqlServerEngineVersion.of('13.00.5598.27.v1', '13.00');
   /** Version "13.00.5820.21.v1". */
   public static readonly VER_13_00_5820_21_V1 = SqlServerEngineVersion.of('13.00.5820.21.v1', '13.00');
+  /** Version "13.00.5850.14.v1". */
+  public static readonly VER_13_00_5850_14_V1 = SqlServerEngineVersion.of('13.00.5850.14.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
