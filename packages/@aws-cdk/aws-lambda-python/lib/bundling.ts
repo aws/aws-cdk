@@ -100,7 +100,7 @@ export function bundle(options: BundlingOptions): lambda.Code {
 
   const image = cdk.DockerImage.fromBuild(stagedir, {
     buildArgs: {
-      IMAGE: runtime.bundlingDockerImage.image,
+      IMAGE: runtime.bundlingImage.image,
     },
     file: dockerfile,
   });
