@@ -1,9 +1,10 @@
+import * as path from 'path';
 import * as stream from 'stream';
 import * as fs from 'fs-extra';
-import { ConventionalCommit } from '../conventional-commits';
+import { ConventionalCommit, filterCommits } from '../conventional-commits';
 import { writeFile } from '../private/files';
-import { notify, debug, debugObject } from '../private/print';
-import { LifecyclesSkip } from '../types';
+import { notify, debug } from '../private/print';
+import { ExperimentalChanges, LifecyclesSkip, PackageInfo, Versions } from '../types';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -18,25 +19,66 @@ export interface ChangelogOptions {
   verbose?: boolean;
   silent?: boolean;
 
+  changelogExperimentalChanges?: ExperimentalChanges;
   changeLogHeader?: string;
   includeDateInChangelog?: boolean;
   releaseCommitMessageFormat?: string;
 }
 
-export interface ChangelogResult {
-  readonly contents: string;
-  readonly changedFiles: string[];
+export type ChangelogResult = { [changelogFile: string]: string };
+
+export async function writeChangelogs(
+  args: ChangelogOptions,
+  currentVersion: Versions,
+  newVersion: Versions,
+  commits: ConventionalCommit[],
+  packages: PackageInfo[],
+): Promise<ChangelogResult> {
+
+  if (args.skip?.changelog) {
+    return {};
+  }
+
+  const experimentalChangesTreatment = args.changelogExperimentalChanges ?? 'include';
+  const experimentalPackages = packages.filter(p => p.experimental);
+  const stableCommits = filterCommits(commits, { excludePackages: experimentalPackages.map(p => p.simplifiedName) });
+
+  if (experimentalChangesTreatment === 'include') {
+    const contents = await changelog(args, currentVersion.stableVersion, newVersion.stableVersion, commits);
+    return { [args.changelogFile]: contents };
+  } else if (experimentalChangesTreatment === 'strip') {
+    const contents = await changelog(args, currentVersion.stableVersion, newVersion.stableVersion, stableCommits);
+    return { [args.changelogFile]: contents };
+  } else if (experimentalChangesTreatment === 'separate') {
+    if (!currentVersion.alphaVersion || !newVersion.alphaVersion) {
+      throw new Error('unable to create "separate" changelogs without alpha package versions');
+    }
+
+    const changelogResults: ChangelogResult = {};
+
+    experimentalPackages.forEach(async (pkg) => {
+      const pkgCommits = filterCommits(commits, { includePackages: [pkg.simplifiedName] });
+      const pkgChangelog = path.join(pkg.location, args.changelogFile);
+      const pkgArgs = {
+        ...args,
+        changelogFile: pkgChangelog,
+      };
+      const contents = await changelog(pkgArgs, currentVersion.alphaVersion!, newVersion.alphaVersion!, pkgCommits);
+      changelogResults[pkgChangelog] = contents;
+    });
+
+    const contents = await changelog(args, currentVersion.stableVersion, newVersion.stableVersion, stableCommits);
+    changelogResults[args.changelogFile] = contents;
+    return changelogResults;
+  } else {
+    throw new Error(`unsupported experimentalChanges type: ${args.changelogExperimentalChanges}`);
+  }
 }
 
 export async function changelog(
   args: ChangelogOptions, currentVersion: string, newVersion: string, commits: ConventionalCommit[],
-): Promise<ChangelogResult> {
-  if (args.skip?.changelog) {
-    return {
-      contents: '',
-      changedFiles: [],
-    };
-  }
+): Promise<string> {
+
   createChangelogIfMissing(args);
 
   // find the position of the last release and remove header
@@ -50,9 +92,8 @@ export async function changelog(
   const presetConfig = await conventionalChangelogPresetLoader({
     name: 'conventional-changelog-conventionalcommits',
   });
-  debugObject(args, 'conventionalChangelogPresetLoader returned', presetConfig);
 
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     // convert an array of commits into a Stream,
     // which conventionalChangelogWriter expects
     const commitsStream = new stream.Stream.Readable({
@@ -118,10 +159,7 @@ export async function changelog(
       } else {
         writeFile(args, args.changelogFile, args.changeLogHeader + '\n' + (content + oldContent).replace(/\n+$/, '\n'));
       }
-      return resolve({
-        contents: content,
-        changedFiles: [args.changelogFile],
-      });
+      return resolve(content);
     });
   });
 }

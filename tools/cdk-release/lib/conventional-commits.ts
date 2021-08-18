@@ -1,7 +1,4 @@
-import * as fs from 'fs-extra';
 import { ReleaseOptions } from './types';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const lerna_project = require('@lerna/project');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const conventionalCommitsParser = require('conventional-commits-parser');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -95,31 +92,29 @@ export async function getConventionalCommitsFromGitHistory(args: ReleaseOptions,
 }
 
 /**
- * Filters commits based on the criteria in `args`
- * (right now, the only criteria is whether to remove commits that relate to experimental packages).
- *
- * @param args configuration
- * @param commits the array of Conventional Commits to filter
- * @returns an array of ConventionalCommit objects which is a subset of `commits`
- *   (possibly exactly equal to `commits`)
+ * Options for filterCommits
  */
-export function filterCommits(args: ReleaseOptions, commits: ConventionalCommit[]): ConventionalCommit[] {
-  if (!args.stripExperimentalChanges) {
-    return commits;
-  }
+export interface FilterCommitsOptions {
+  /**
+   * Scopes matching these simplified package names (and variants) will be excluded from the commits returned.
+   * Package names should be provided as simplified package names (e.g., 'aws-foo' for '@aws-cdk/aws-foo')
+   **/
+  excludePackages?: string[];
+  /**
+   * If provided, scopes matching these names (and variants) will be the *only commits* considered.
+   * Package names should be provided as simplified package names (e.g., 'aws-foo' for '@aws-cdk/aws-foo')
+   **/
+  includePackages?: string[];
+}
 
-  // a get a list of packages from our monorepo
-  const project = new lerna_project.Project();
-  const packages = project.getPackagesSync();
-  const experimentalPackageNames: string[] = packages
-    .filter((pkg: any) => {
-      const pkgJson = fs.readJsonSync(pkg.manifestLocation);
-      return pkgJson.name.startsWith('@aws-cdk/')
-        && (pkgJson.maturity === 'experimental' || pkgJson.maturity === 'developer-preview');
-    })
-    .map((pkg: any) => pkg.name.substr('@aws-cdk/'.length));
-
-  const experimentalScopes = flatMap(experimentalPackageNames, (pkgName) => [
+/**
+ * Filters commits based on package scopes and inclusion/exclusion criteria.
+ *
+ * @param commits the array of Conventional Commits to filter
+ * @param opts filtering options; if none are provided, all commits are returned.
+ */
+export function filterCommits(commits: ConventionalCommit[], opts: FilterCommitsOptions = {}): ConventionalCommit[] {
+  const createScopeVariations = (names: string[]) => flatMap(names, (pkgName) => [
     pkgName,
     ...(pkgName.startsWith('aws-')
       ? [
@@ -134,7 +129,12 @@ export function filterCommits(args: ReleaseOptions, commits: ConventionalCommit[
     ),
   ]);
 
-  return commits.filter(commit => !commit.scope || !experimentalScopes.includes(commit.scope));
+  const excludeScopes = createScopeVariations(opts.excludePackages ?? []);
+  const includeScopes = createScopeVariations(opts.includePackages ?? []);
+
+  return commits
+    .filter(commit => includeScopes.length === 0 || (commit.scope && includeScopes.includes(commit.scope)))
+    .filter(commit => excludeScopes.length === 0 || !commit.scope || !excludeScopes.includes(commit.scope));
 }
 
 function flatMap<T, U>(xs: T[], fn: (x: T) => U[]): U[] {

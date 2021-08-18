@@ -30,9 +30,6 @@ async function main() {
   };
 
   const majorVersion = semver.major(ver.version);
-  if (majorVersion > 1) {
-    opts.stripExperimentalChanges = true;
-  }
 
   const forTesting = process.env.BUMP_CANDIDATE || false;
   if (forTesting) {
@@ -67,6 +64,10 @@ async function main() {
     // this is incredible, but passing this option to standard-version actually makes it crash!
     // good thing we're getting rid of it...
     opts.verbose = !!process.env.VERBOSE;
+    if (majorVersion > 1) {
+      // NOTE - Once we start publishing alpha modules independently, this needs to be flipped to 'separate'
+      opts.changelogExperimentalChanges = 'strip';
+    }
     // Rename some options to match cdk-release inputs (replaces bumpFiles, packageFiles, and infile)
     opts.versionFile = ver.versionFile;
     opts.changelogFile = ver.changelogFile;
