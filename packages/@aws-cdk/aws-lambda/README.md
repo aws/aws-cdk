@@ -78,6 +78,9 @@ new DockerImageFunction(this, 'ECRFunction', {
 });
 ```
 
+The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
+configurations. See their docs for more information.
+
 ## Execution Role
 
 Lambda functions assume an IAM role during execution. In CDK by default, Lambda
