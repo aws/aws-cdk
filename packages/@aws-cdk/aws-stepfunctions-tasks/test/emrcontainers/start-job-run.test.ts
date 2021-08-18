@@ -10,13 +10,6 @@ import { EmrContainersStartJobRun, ReleaseLabel, ApplicationConfiguration, Class
 
 let stack: Stack;
 let clusterId: string;
-/**
- * To do for testing
- * 1. Need to test without default properties AND also test for required properties- DONE
- * 2. Need to test ALL supported integration patterns and throw errors when needed - DONE
- * 3. Need to finish testing for all policy statements - DONE
- * 4. Need to test for validation errors - DONE
- */
 
 beforeEach(() => {
   stack = new Stack();
@@ -141,21 +134,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::emr-containers:startJobRun.sync',
-          ],
-        ],
-      },
-      End: true,
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         'VirtualClusterId.$': '$.ClusterId',
         'ReleaseLabel': ReleaseLabel.EMR_6_2_0.label,
@@ -189,21 +168,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::emr-containers:startJobRun.sync',
-          ],
-        ],
-      },
-      End: true,
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         VirtualClusterId: clusterId,
         ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
@@ -251,21 +216,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::emr-containers:startJobRun.sync',
-          ],
-        ],
-      },
-      End: true,
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         VirtualClusterId: clusterId,
         ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
@@ -290,7 +241,38 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             'Arn',
           ],
         },
+      },
+    });
+  });
 
+  test('Job Execution Role', () => {
+
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      executionRole: iam.Role.fromRoleArn(stack, 'Job Execution Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
+        },
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        VirtualClusterId: clusterId,
+        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
+            SparkSubmitParameters: '--conf spark.executor.instances=2',
+          },
+        },
+        ConfigurationOverrides: {},
+        ExecutionRoleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
       },
     });
   });
@@ -390,21 +372,7 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::emr-containers:startJobRun.sync',
-          ],
-        ],
-      },
-      End: true,
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         VirtualClusterId: clusterId,
         ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
@@ -547,21 +515,7 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::emr-containers:startJobRun.sync',
-          ],
-        ],
-      },
-      End: true,
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         VirtualClusterId: clusterId,
         ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
@@ -606,248 +560,206 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
   });
 });
 
-test('Invoke EMR Containers Start Job Run with Job Execution Role', () => {
+describe('Task throws if ', () => {
+  test('Application Configuration array is larger than 100', () => {
+    // WHEN
+    const struct = { classification: Classification.SPARK };
+    const appConfig: ApplicationConfiguration[] = new Array(101).fill(struct);
 
-  // WHEN
-  const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-    virtualClusterId: sfn.TaskInput.fromText(clusterId),
-    releaseLabel: ReleaseLabel.EMR_6_2_0,
-    executionRole: iam.Role.fromRoleArn(stack, 'Job Execution Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
-    jobDriver: {
-      sparkSubmitJobDriver: {
-        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-        sparkSubmitParameters: '--conf spark.executor.instances=2',
-      },
-    },
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
+    // THEN
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'Task', {
+        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText('job-location'),
           },
-          ':states:::emr-containers:startJobRun.sync',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      VirtualClusterId: clusterId,
-      ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-      JobDriver: {
-        SparkSubmitJobDriver: {
-          EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-          SparkSubmitParameters: '--conf spark.executor.instances=2',
         },
-      },
-      ConfigurationOverrides: {},
-      ExecutionRoleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
-    },
+        applicationConfig: appConfig,
+      });
+    }).toThrow(`Application configuration array must have 100 or fewer entries. Received ${appConfig.length}`);
+  });
+
+  test('Application Configuration nested configuration array is larger than 100', () => {
+    // WHEN
+    const struct = { classification: Classification.SPARK };
+    let appConfig: ApplicationConfiguration[] = new Array(101).fill(struct);
+
+    const nestedConfigStruct = { classification: Classification.SPARK, nestedConfig: appConfig };
+    appConfig[0] = nestedConfigStruct;
+
+    // THEN
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'Task', {
+        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText('job-location'),
+          },
+        },
+        applicationConfig: appConfig,
+      });
+    }).toThrow(`Application configuration array must have 100 or fewer entries. Received ${appConfig.length}`);
+  });
+
+  test('Application Configuration properties is larger than 100 entries', () => {
+    // WHEN
+    const properties: { [key: string]: string } = {};
+    for (let index = 0; index <= 100; index++) {
+      const prop = `${index}`;
+      properties[prop] = 'value';
+    }
+    const appConfig: ApplicationConfiguration = { classification: Classification.SPARK, properties: properties };
+
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'Task', {
+        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText('job-location'),
+          },
+        },
+        applicationConfig: [appConfig],
+      });
+    }).toThrow(`Application configuration properties must have 100 or fewer entries. Received ${appConfig.properties ? Object.keys(appConfig.properties).length : undefined}`);
+  });
+
+  test('Entry Point is not between 1 to 256 characters in length', () => {
+    // WHEN
+    const entryPointString = 'x'.repeat(257);
+
+    // THEN
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'Start Job Run Task', {
+        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText(entryPointString),
+          },
+        },
+      });
+    }).toThrow(`Entry point must be between 1 and 256 characters in length. Received ${entryPointString.length}.`);
+
+    // THEN
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'Task', {
+        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText(''),
+          },
+        },
+      });
+    }).toThrow('Entry point must be between 1 and 256 characters in length. Received 0.');
+  });
+
+  test('Entry Point Arguments is not an string array that is between 1 and 10280 entries in length', () => {
+    // WHEN
+    const entryPointArgs = sfn.TaskInput.fromObject(new Array(10281).fill('x', 10281));
+    const entryPointArgsNone = sfn.TaskInput.fromObject([]);
+    const entryPointNumbers = sfn.TaskInput.fromObject(new Array(1).fill(1));
+    const entryPointJson = sfn.TaskInput.fromText('x');
+
+    // THEN
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'String array error Task', {
+        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText('job-location'),
+            entryPointArguments: entryPointNumbers,
+          },
+        },
+      });
+    }).toThrow(`Entry point arguments must be a string array. Received ${typeof entryPointNumbers.value}.`);
+
+    // THEN
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'JSON Path error Task', {
+        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText('job-location'),
+            entryPointArguments: entryPointJson,
+          },
+        },
+      });
+    }).toThrow(`Entry point arguments must be a string array. Received ${typeof entryPointJson.value}.`);
+
+    // THEN
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'Greater than 256 Task', {
+        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText('job-location'),
+            entryPointArguments: entryPointArgs,
+          },
+        },
+      });
+    }).toThrow(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${entryPointArgs.value.length}.`);
+
+    // THEN
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'Less than 1 Task', {
+        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText('job-location'),
+            entryPointArguments: entryPointArgsNone,
+          },
+        },
+      });
+    }).toThrow(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${entryPointArgsNone.value.length}.`);
+  });
+
+  test('Spark Submit Parameters is NOT between 1 characters and 102400 characters in length', () => {
+    // WHEN
+    const sparkSubmitParam = 'x'.repeat(102401);
+
+    // THEN
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'Spark Submit Parameter Task', {
+        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText('job-location'),
+            sparkSubmitParameters: sparkSubmitParam,
+          },
+        },
+      });
+    }).toThrow(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${sparkSubmitParam.length}.`);
+  });
+
+  test('an execution role is undefined and the virtual cluster ID is not a concrete value', () => {
+    // WHEN
+    const jsonPath = '$.ClusterId';
+
+    // THEN
+    expect(() => {
+      new EmrContainersStartJobRun(stack, 'Task', {
+        virtualClusterId: sfn.TaskInput.fromJsonPathAt(jsonPath),
+        releaseLabel: ReleaseLabel.EMR_6_2_0,
+        jobDriver: {
+          sparkSubmitJobDriver: {
+            entryPoint: sfn.TaskInput.fromText('job-location'),
+          },
+        },
+      });
+    }).toThrow('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
   });
 });
 
-test('Task throws if Application Configuration array is larger than 100', () => {
-  const struct = { classification: Classification.SPARK };
-  const appConfig: ApplicationConfiguration[] = new Array(101).fill(struct);
-
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('job-location'),
-        },
-      },
-      applicationConfig: appConfig,
-    });
-  }).toThrow(`Application configuration array must have 100 or fewer entries. Received ${appConfig.length}`);
-});
-
-test('Task throws if Application Configuration nested configuration array is larger than 100', () => {
-  const struct = { classification: Classification.SPARK };
-  let appConfig: ApplicationConfiguration[] = new Array(101).fill(struct);
-
-  // add a nested configuration array with 101 elements
-  const nestedConfigStruct = { classification: Classification.SPARK, nestedConfig: appConfig };
-  appConfig[0] = nestedConfigStruct;
-
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('job-location'),
-        },
-      },
-      applicationConfig: appConfig,
-    });
-  }).toThrow(`Application configuration array must have 100 or fewer entries. Received ${appConfig.length}`);
-});
-
-test('Task throws if Application Configuration properties is larger than 100 entries', () => {
-  let properties: { [key: string]: string } = {};
-  for (let index = 0; index <= 100; index++) {
-    const prop = `${index}`;
-    properties[prop] = 'value';
-  }
-  const appConfig: ApplicationConfiguration = { classification: Classification.SPARK, properties: properties };
-
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('job-location'),
-        },
-      },
-      applicationConfig: [appConfig],
-    });
-  }).toThrow(`Application configuration properties must have 100 or fewer entries. Received ${appConfig.properties ? Object.keys(appConfig.properties).length : undefined}`);
-});
-
-test('Task throws if Entry Point is not between 1 to 256 characters in length', () => {
-
-  // WHEN
-  const entryPointString = 'x'.repeat(257);
-
-  // THEN
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'Start Job Run Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText(entryPointString),
-        },
-      },
-    });
-  }).toThrow(`Entry point must be between 1 and 256 characters in length. Received ${entryPointString.length}.`);
-
-  // THEN
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText(''),
-        },
-      },
-    });
-  }).toThrow('Entry point must be between 1 and 256 characters in length. Received 0.');
-});
-
-test('Task throws if Entry Point Arguments is not an string array that is between 1 and 10280 entries in length', () => {
-  // WHEN
-  const entryPointArgs = sfn.TaskInput.fromObject(new Array(10281).fill('x', 10281));
-  const entryPointArgsNone = sfn.TaskInput.fromObject([]);
-  const entryPointNumbers = sfn.TaskInput.fromObject(new Array(1).fill(1));
-  const entryPointJson = sfn.TaskInput.fromText('x');
-
-  // THEN
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'String array error Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('job-location'),
-          entryPointArguments: entryPointNumbers,
-        },
-      },
-    });
-  }).toThrow(`Entry point arguments must be a string array. Received ${typeof entryPointNumbers.value}.`);
-
-
-  // THEN
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'JSON Path error Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('job-location'),
-          entryPointArguments: entryPointJson,
-        },
-      },
-    });
-  }).toThrow(`Entry point arguments must be a string array. Received ${typeof entryPointJson.value}.`);
-
-  // THEN
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'Greater than 256 Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('job-location'),
-          entryPointArguments: entryPointArgs,
-        },
-      },
-    });
-  }).toThrow(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${entryPointArgs.value.length}.`);
-
-  // THEN
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'Less than 1 Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('job-location'),
-          entryPointArguments: entryPointArgsNone,
-        },
-      },
-    });
-  }).toThrow(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${entryPointArgsNone.value.length}.`);
-});
-
-test('Task throws if Spark Submit Parameters is NOT between 1 characters and 102400 characters in length', () => {
-
-  // WHEN
-  const sparkSubmitParam = 'x'.repeat(102401);
-
-  // THEN
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'Spark Submit Parameter Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('job-location'),
-          sparkSubmitParameters: sparkSubmitParam,
-        },
-      },
-    });
-  }).toThrow(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${sparkSubmitParam.length}.`);
-});
-
-test('Task throws if an execution role is undefined and the virtual cluster ID is not a concrete value', () => {
-  // WHEN
-  const jsonPath = '$.ClusterId';
-
-  // THEN
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'Task', {
-      virtualClusterId: sfn.TaskInput.fromJsonPathAt(jsonPath),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('job-location'),
-        },
-      },
-    });
-  }).toThrow('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
-});
 
 test('Permitted role actions and resources with Start Job Run for SYNC integration pattern', () => {
   // WHEN

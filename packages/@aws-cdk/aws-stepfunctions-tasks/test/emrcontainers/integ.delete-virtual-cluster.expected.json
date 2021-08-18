@@ -55,7 +55,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":virtualclusters/frv3my91yzjr1g0ha2h91obx3"
+                    ":/virtualclusters/frv3my91yzjr1g0ha2h91obx3"
                   ]
                 ]
               }

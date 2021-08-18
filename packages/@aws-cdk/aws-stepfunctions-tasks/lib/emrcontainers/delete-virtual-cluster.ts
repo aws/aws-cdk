@@ -62,6 +62,7 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
     return [new iam.PolicyStatement({
       resources: [
         cdk.Stack.of(this).formatArn({
+          arnFormat: cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
           service: 'emr-containers',
           resource: 'virtualclusters',
           resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? '*' : this.props.virtualClusterId.value,

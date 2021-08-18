@@ -91,7 +91,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::emr-containers:createVirtualCluster\",\"Parameters\":{\"Name\":\"emr-containers-test-cluster\",\"ContainerProvider\":{\"Id\":\"test-eks\",\"Info\":{\"EksInfo\":{\"Namespace\":\"spark\"}},\"Type\":\"EKS\"}}}},\"TimeoutSeconds\":30}"
+              ":states:::emr-containers:createVirtualCluster\",\"Parameters\":{\"Name.$\":\"$$.Execution.Name\",\"ContainerProvider\":{\"Id\":\"test-eks\",\"Info\":{\"EksInfo\":{\"Namespace\":\"spark\"}},\"Type\":\"EKS\"}}}},\"TimeoutSeconds\":30}"
             ]
           ]
         }

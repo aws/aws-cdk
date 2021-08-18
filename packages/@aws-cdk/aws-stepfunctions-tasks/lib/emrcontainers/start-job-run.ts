@@ -357,8 +357,9 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       new iam.PolicyStatement({
         resources: [
           cdk.Stack.of(this).formatArn({
+            arnFormat: cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
             service: 'emr-containers',
-            resource: '/virtualclusters',
+            resource: 'virtualclusters',
             resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? '*' : this.props.virtualClusterId.value, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
           }),
         ],
@@ -376,8 +377,9 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         new iam.PolicyStatement({
           resources: [
             cdk.Stack.of(this).formatArn({
+              arnFormat: cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
               service: 'emr-containers',
-              resource: '/virtualclusters',
+              resource: 'virtualclusters',
               resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? '*' : `${this.props.virtualClusterId.value}/jobruns/*`, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
             }),
           ],

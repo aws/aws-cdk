@@ -7,13 +7,6 @@ import { EmrContainersEksCreateVirtualCluster, EksClusterInput } from '../../lib
 const emrContainersVirtualClusterName = 'EMR Containers Virtual Cluster';
 let stack: Stack;
 let clusterId: string;
-/**
- * To do for testing
- * 1. Needs to test with(default) and without EksInfo and ContainerInfo, make sure it works without it - FINISHED
- * 2. Needs to test ALL supported integration patterns and throw errors when needed - Finished
- * 3. Need to finish testing for all policy statements - Finished
- * 4. Need to test with both input formats: task input and cluster input - Finished
- */
 
 beforeEach(() => {
   stack = new Stack();
@@ -49,11 +42,8 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
       },
       End: true,
       Parameters: {
-        Name: `States.Format(
-          '$$.Execution.Name',
-          '$$.StateMachine.Name',
-          '$$.State.Name')`,
-        ContainerProvider: {
+        'Name.$': '$$.Execution.Name',
+        'ContainerProvider': {
           Id: clusterId,
           Info: {
             EksInfo: {
@@ -80,21 +70,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::emr-containers:createVirtualCluster',
-          ],
-        ],
-      },
-      End: true,
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         Name: emrContainersVirtualClusterName,
         ContainerProvider: {
@@ -119,21 +95,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::emr-containers:createVirtualCluster',
-          ],
-        ],
-      },
-      End: true,
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         Name: emrContainersVirtualClusterName,
         ContainerProvider: {
@@ -162,21 +124,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::emr-containers:createVirtualCluster',
-          ],
-        ],
-      },
-      End: true,
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         Name: emrContainersVirtualClusterName,
         ContainerProvider: {
@@ -210,21 +158,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::emr-containers:createVirtualCluster',
-          ],
-        ],
-      },
-      End: true,
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         Name: emrContainersVirtualClusterName,
         ContainerProvider: {

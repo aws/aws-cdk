@@ -15,7 +15,6 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-create-virtual-cluster-integ');
 
 const createVirtualClusterJob = new EmrContainersEksCreateVirtualCluster(stack, 'Create a Virtual Cluster Job', {
-  virtualClusterName: 'emr-containers-test-cluster',
   eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('test-eks')),
   eksNamespace: 'spark',
   integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
