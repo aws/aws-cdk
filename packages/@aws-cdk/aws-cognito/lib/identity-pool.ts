@@ -1,25 +1,45 @@
 import { randomBytes } from 'crypto';
 import { IOpenIdConnectProvider, ISamlProvider, IRole } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Resource, IResource, Stack, ArnFormat } from '@aws-cdk/core';
+import { Resource, IResource, Stack, ArnFormat, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIdentityPool, CfnIdentityPoolRoleAttachment } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 
+/**
+ * Represents a Cognito IdentityPool
+ */
 export interface IIdentityPool extends IResource {
   /**
    * The id of the Identity Pool in the format REGION:GUID
+   * @attribute
    */
   readonly identityPoolId: string;
 
   /**
    * The ARN of the Identity Pool
+   * @attribute
    */
   readonly identityPoolArn: string;
+
+  /**
+   * Name of the Identity Pool
+   * @attribute
+   */
+  readonly identityPoolName: string
 }
 
+/**
+ * Props for the IdentityPool construct
+ */
 export interface IdentityPoolProps {
+
+  /**
+   * The name of the Identity Pool
+   * @default - automatically generated name by CloudFormation at deploy time
+   */
+  readonly identityPoolName?: string;
 
   /**
    * The Default Role to be assumed by Authenticated Users
@@ -33,36 +53,31 @@ export interface IdentityPoolProps {
 
   /**
    * The Default Role to be assumed by Authenticated Users
+   * @default - no Role Mappings
    */
   readonly roleMappings?: IdentityPoolRoleMapping[];
 
   /**
-   * The name of the Identity Pool
-   * @default - automatically generated name by CloudFormation at deploy time
-   */
-  readonly identityPoolName?: string;
-
-  /**
    * The User Pools associated with this Identity Pool
-   * @default undefined - no User Pools Associated
+   * @default - no User Pools Associated
    */
   readonly userPools?: IUserPool[];
 
   /**
    * The OpenIdConnect Provider associated with this Identity Pool
-   * @default undefined - no OpenIdConnectProvider
+   * @default - no OpenIdConnectProvider
    */
   readonly openIdConnectProviders?: IOpenIdConnectProvider[];
 
   /**
    * The Security Assertion Markup Language Provider associated with this Identity Pool
-   * @default undefined - no SamlProvider
+   * @default - no SamlProvider
    */
   readonly samlProviders?: ISamlProvider[];
 
   /**
    * The Developer Provider Name to associate with this Identity Pool
-   * @default undefined - no Custom Provider
+   * @default - no Custom Provider
    */
   readonly customProvider?: string;
 
@@ -87,32 +102,32 @@ export interface IdentityPoolProps {
 
   /**
    * Enables the Basic (Classic) authentication flow
-   * @default undefined
+   * @default - Classic Flow not allowed
    */
   readonly allowClassicFlow?: boolean;
 
   /**
    * The configuration options to be applied to the identity pool.
-   * @default undefined - No push sync config
+   * @default - No push sync config
    */
   readonly pushSyncConfig?: PushSyncConfig;
 
   /**
    * The configuration options for Amazon Cognito streams.
-   * @default undefined - No Cognito stream options
+   * @default - No Cognito stream options
    */
   readonly streamOptions?: CognitoStreamOptions;
 
   /**
    * Set a lambda function to respond to events in Amazon Cognito
    *  @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-events.html
-   * @default undefined - No Sync Triggers
+   * @default - No Sync Triggers
    */
   readonly syncTrigger?: IFunction;
 
   /**
    * Supported login providers for using directly in identity pool without using OpnIdConnect or a user pool.
-   * @default undefined
+   * @default - No Supported Login Providers passed directly to Identity Pool
    */
   readonly supportedLoginProviders?: SupportedLoginProviders
 }
@@ -135,7 +150,7 @@ export interface CognitoStreamOptions {
 
   /**
    * The role Amazon Cognito can assume to publish to the stream. This role must grant access to Amazon Cognito (cognito-sync) to invoke PutRecord on your Amazon Cognito stream.
-   * @default undefined
+   * @default - No role set for Cognito Streams
    */
   readonly role?: IRole;
 }
@@ -152,7 +167,7 @@ export interface PushSyncConfig {
 
   /**
    * An IAM role configured to allow Amazon Cognito to call Amazon SNS on behalf of the developer.
-   * @default undefined
+   * @default - No role set for Push Sync
    */
   readonly role?: IRole
 }
@@ -183,11 +198,15 @@ export interface IdentityPoolRoleMapping {
 
   /**
    * The claim and value that must be matched in order to assume the role. Required if useToken is false
+   * @default - No Rule Mapping Rule
    */
   readonly rules?: RoleMappingRule[];
 
 }
 
+/**
+ * Types of matches allowed for Role Mapping
+ */
 export enum RoleMappingMatchType {
   /**
    * The Claim from the token must equal the given value in order for a match
@@ -202,7 +221,7 @@ export enum RoleMappingMatchType {
   /**
    * The Claim from the token must start with the given value in order for a match
    */
-  StartsWith = 'StartsWith',
+  STARTS_WITH = 'StartsWith',
 
   /**
    * The Claim from the token must not equal the given value in order for a match
@@ -210,6 +229,9 @@ export enum RoleMappingMatchType {
   NOTEQUAL = 'NotEqual',
 }
 
+/**
+ * Represents an Identity Pool Role Attachment Role Mapping Rule
+ */
 export interface RoleMappingRule {
   /**
    * The key sent in the token by the federated identity provider.
@@ -234,26 +256,50 @@ export interface RoleMappingRule {
 }
 
 /**
- * Keys for SupportedLoginProvider
+ * Keys for SupportedLoginProvider - correspond to client id's of respective federation identity providers
  */
 export enum SupportedLoginProviderType {
+  /** Facebook Provider type */
   FACEBOOK = 'graph.facebook.com',
+  /** Google Provider Type */
   GOOGLE = 'accounts.google.com',
+  /** Amazon Provider Type */
   AMAZON = 'www.amazon.com',
+  /** Apple Provider Type */
   APPLE = 'appleid.apple.com',
+  /** Twitter Provider Type */
   TWITTER = 'api.twitter.com'
 }
 
 /**
- * Supported login providers for using directly in identity pool without using OpnIdConnect or a user pool. String values are id's associated with provider. Separate multiple fields with a semicolon
+ * Supported login providers for using directly in identity pool without using OpenIdConnect or a user pool. String values are id's associated with provider. Separate multiple fields with a semicolon
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
  */
 export interface SupportedLoginProviders {
-  facebook?: string
-  google?: string
-  amazon?: string
-  apple?: string
-  twitter?: string
+  /** Id for Facebook Identity Federation
+   * @default - No Facebook Login Provider used without OpenIdConnect or a User Pool
+  */
+  readonly facebook?: string
+
+  /** Id for Google Identity Federation
+   * @default - No Google Login Provider used without OpenIdConnect or a User Pool
+  */
+  readonly google?: string
+
+  /** Id for Facebook Identity Federation
+   * @default -  No Amazon Login Provider used without OpenIdConnect or a User Pool
+  */
+  readonly amazon?: string
+
+  /** Id for Apple Identity Federation
+   * @default - No Apple Login Provider used without OpenIdConnect or a User Pool
+  */
+  readonly apple?: string
+
+  /** Id and Secret separated by a semicolon for Twitter Identity Federation
+   * @default - No Twitter Login Provider used without OpenIdConnect or a User Pool
+  */
+  readonly twitter?: string
 }
 
 /**
@@ -287,12 +333,13 @@ export class IdentityPool extends Resource implements IIdentityPool {
     class ImportedIdentityPool extends Resource implements IIdentityPool {
       public readonly identityPoolId = pool.resourceName || '';
       public readonly identityPoolArn = identityPoolArn;
-
+      public readonly identityPoolName: string
       constructor() {
         super(scope, id, {
           account: pool.account,
           region: pool.region,
         });
+        this.identityPoolName = this.physicalName;
       }
     }
     return new ImportedIdentityPool();
@@ -310,6 +357,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   public readonly identityPoolArn: string;
 
+  /**
+   * The ARN of the Identity Pool
+   * @attribute
+   */
+  public readonly identityPoolName: string;
 
   /**
    * The Identity Pool Cloud Formation Construct
@@ -322,8 +374,10 @@ export class IdentityPool extends Resource implements IIdentityPool {
   private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = []
 
   constructor(scope: Construct, private id: string, props:IdentityPoolProps) {
-    super(scope, id);
-
+    super(scope, id, {
+      physicalName: props.identityPoolName || Lazy.string({ produce: () => this.node.uniqueId }),
+    });
+    this.identityPoolName = this.physicalName;
     const providers = this.configureUserPools(props);
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
 
