@@ -1,6 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { SamlMetadataDocument, SamlProvider } from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 import {
   ClientVpnRoute,
@@ -11,7 +11,12 @@ import {
 let stack: Stack;
 let vpc: ec2.IVpc;
 beforeEach(() => {
-  stack = new Stack();
+  const app = new App({
+    context: {
+      '@aws-cdk/core:newStyleStackSynthesis': false,
+    },
+  });
+  stack = new Stack(app);
   vpc = new ec2.Vpc(stack, 'Vpc');
 });
 
