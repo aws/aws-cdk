@@ -7,7 +7,7 @@ scriptdir=$(cd $(dirname $0) && pwd)
 # to the root folder's node_modules/.bin. This allows yarn to find the executables
 # it needs (e.g., jsii-rosetta) for the build.
 createSymlinks() {
-  find . ! -path . -type d -maxdepth 1 \
+  find . ! -path "$1" -type d -maxdepth 1 \
     -exec mkdir -p {}/node_modules \; \
     -exec ln -sf "${scriptdir}"/../node_modules/.bin {}/node_modules \;
 }
@@ -47,12 +47,12 @@ fi
 
 export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTIONS:-}"
 
-INDIVIDUAL_PACKAGES_FOLDER=${scriptdir}/../packages/individual-packages
+individual_packages_folder=${scriptdir}/../packages/individual-packages
 # copy & build the packages that are individually released from 'aws-cdk-lib'
-cd "$INDIVIDUAL_PACKAGES_FOLDER"
+cd "$individual_packages_folder"
 ../../tools/individual-pkg-gen/bin/individual-pkg-gen
 
-createSymlinks "$INDIVIDUAL_PACKAGES_FOLDER"
+createSymlinks "$individual_packages_folder"
 
 if [ "$skip_build" != "true" ]; then
   PHASE=transform yarn lerna run --stream $runtarget
