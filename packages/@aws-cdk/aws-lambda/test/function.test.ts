@@ -2112,6 +2112,7 @@ describe('function', () => {
             imageUri: 'ecr image uri',
             cmd: ['cmd', 'param1'],
             entrypoint: ['entrypoint', 'param2'],
+            workingDirectory: '/some/path',
           },
         }),
         handler: lambda.Handler.FROM_IMAGE,
@@ -2122,6 +2123,7 @@ describe('function', () => {
         ImageConfig: {
           Command: ['cmd', 'param1'],
           EntryPoint: ['entrypoint', 'param2'],
+          WorkingDirectory: '/some/path',
         },
       });
     });
