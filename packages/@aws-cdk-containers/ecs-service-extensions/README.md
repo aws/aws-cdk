@@ -19,6 +19,7 @@ The `Service` construct provided by this module can be extended with optional `S
 - [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
+- EventsQueue to allow your service to consume messages from an SQS Queue which is populated by the SNS Topics that it is subscribed to
 - [Community Extensions](#community-extensions), providing support for advanced use cases
 
 The `ServiceExtension` class is an abstract class which you can also implement in
@@ -321,13 +322,41 @@ const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', 
 
 ```
 
+### EventsQueue Extension
+
+This service extension creates a default SQS Queue `eventsQueue` for the service (if not provided) and accepts a list of SNS Topics that the `eventsQueue` can subscribe to. The service extension creates the topic subscriptions and sets up permissions for the service to consume messages from the SQS Queue.
+
+```ts
+const topicSubscription = {
+  topic: new sns.Topic(stack, 'my-topic'),
+};
+
+nameDescription.add(new EventsQueue({
+  topicSubscriptions: [topicSubscription],
+}));
+```
+
+For setting up a topic-specific queue subscription, you can provide a custom queue in the `topicSubscription`. The extension will set up a topic subscription for the provided queue instead of the default `eventsQueue` of the service.
+
+```ts
+const topicSubscription = {
+  topic: new sns.Topic(stack, 'my-topic'),
+  queue: new sqs.Queue(stack, 'my-queue', {
+    // ...queue props
+  }),
+};
+
+nameDescription.add(new EventsQueue({
+  topicSubscriptions: [topicSubscription],
+}));
+```
+
 ## Community Extensions
 
 We encourage the development of Community Service Extensions that support
 advanced features. Here are some useful extensions that we have reviewed:
 
 - [ListenerRulesExtension](https://www.npmjs.com/package/@wheatstalk/ecs-service-extension-listener-rules) for more precise control over Application Load Balancer rules
-- SubscribeExtension to allow the service to create SQS Queues to subscribe and consume messages published to SNS Topics 
 
 > Please submit a pull request so that we can review your service extension and
 > list it here.
