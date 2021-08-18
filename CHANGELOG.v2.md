@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.18](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.17...v2.0.0-rc.18) (2021-08-18)
+
+
+### Features
+
+* **aws-apigateway:** import existing usage plan ([#15771](https://github.com/aws/aws-cdk/issues/15771)) ([97fc290](https://github.com/aws/aws-cdk/commit/97fc29032c05edb7914c48efee0124be0126a5c4)), closes [#12677](https://github.com/aws/aws-cdk/issues/12677)
+* **aws-elbv2:** ALB target group routing algorithms ([#15622](https://github.com/aws/aws-cdk/issues/15622)) ([6b32b2f](https://github.com/aws/aws-cdk/commit/6b32b2fb0c6ed2a21eb929e39930c6c9cf668dae)), closes [#15160](https://github.com/aws/aws-cdk/issues/15160)
+* **cfnspec:** cloudformation spec v39.9.0 ([#15987](https://github.com/aws/aws-cdk/issues/15987)) ([e0d6181](https://github.com/aws/aws-cdk/commit/e0d61810ab78f7cab1af53bce82c60790a814f71))
+* **cognito:** add support for token revocation in UserPoolClient ([#15317](https://github.com/aws/aws-cdk/issues/15317)) ([8cb0e97](https://github.com/aws/aws-cdk/commit/8cb0e97ea663e0447af77842e1a8efa8aee917eb)), closes [#15126](https://github.com/aws/aws-cdk/issues/15126)
+* **pipelines:** add `synthCodeBuildDefaults` ([#15627](https://github.com/aws/aws-cdk/issues/15627)) ([04b8d40](https://github.com/aws/aws-cdk/commit/04b8d400b2653aff4f48709e8b420c6adb996ef5))
+
+
+### Bug Fixes
+
+* **core:** asset bundling fails for non-existent user ([#15313](https://github.com/aws/aws-cdk/issues/15313)) ([bf5882f](https://github.com/aws/aws-cdk/commit/bf5882f8def0676bbfaee7c2ff4fab6bf39df281)), closes [#15415](https://github.com/aws/aws-cdk/issues/15415) [#15415](https://github.com/aws/aws-cdk/issues/15415)
+* **ec2:** "clientVpnEndoint" => "clientVpnEndpoint" ([#14902](https://github.com/aws/aws-cdk/issues/14902)) ([c3b872a](https://github.com/aws/aws-cdk/commit/c3b872ad47ff3bdf2c841aa195b6fa6922c03769)), closes [#13810](https://github.com/aws/aws-cdk/issues/13810)
+* **pipelines:** repos with dashes cannot be used as additionalInputs ([#16017](https://github.com/aws/aws-cdk/issues/16017)) ([400a59d](https://github.com/aws/aws-cdk/commit/400a59d19ee63fbd9318da34760b4ed8c9ba99b9)), closes [#15753](https://github.com/aws/aws-cdk/issues/15753)
+
 ## [2.0.0-rc.17](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.16...v2.0.0-rc.17) (2021-08-11)
 
 
