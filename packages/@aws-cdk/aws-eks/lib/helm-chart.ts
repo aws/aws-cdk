@@ -1,4 +1,3 @@
-import { Policy, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { CustomResource, Duration, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -115,26 +114,9 @@ export class HelmChart extends CoreConstruct {
     // default to create new namespace
     const createNamespace = props.createNamespace ?? true;
 
-    let chartAssetPolicy: Policy | undefined = undefined;
+    props.chartAsset?.grantRead(provider.handlerRole);
 
-    if (props.chartAsset) {
-      chartAssetPolicy = new Policy(this, 'ChartAssetPolicy', {
-        roles: [provider.handlerRole],
-        statements: [new PolicyStatement({
-          actions: [
-            's3:GetObject*',
-            's3:GetBucket*',
-            's3:List*',
-          ],
-          resources: [
-            props.chartAsset.bucket.bucketArn,
-            props.chartAsset.bucket.arnForObjects('*'),
-          ],
-        })],
-      });
-    }
-
-    const cr = new CustomResource(this, 'Resource', {
+    new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
@@ -142,7 +124,7 @@ export class HelmChart extends CoreConstruct {
         RoleArn: provider.roleArn, // TODO: bake into the provider's environment
         Release: props.release ?? Names.uniqueId(this).slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
-        ChartAsset: props.chartAsset ? props.chartAsset.s3ObjectUrl : undefined,
+        ChartAssetURL: props.chartAsset ? props.chartAsset.s3ObjectUrl : undefined,
         Version: props.version,
         Wait: wait || undefined, // props are stringified so we encode “false” as undefined
         Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer
@@ -152,9 +134,5 @@ export class HelmChart extends CoreConstruct {
         CreateNamespace: createNamespace || undefined,
       },
     });
-
-    if (chartAssetPolicy) {
-      cr.node.addDependency(chartAssetPolicy);
-    }
   }
 }

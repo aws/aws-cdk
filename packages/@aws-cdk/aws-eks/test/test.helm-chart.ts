@@ -55,7 +55,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, {
-        ChartAsset: {
+        ChartAssetURL: {
           'Fn::Join': [
             '',
             [

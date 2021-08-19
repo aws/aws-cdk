@@ -15,6 +15,17 @@ os.environ['PATH'] = '/opt/helm:/opt/awscli:' + os.environ['PATH']
 outdir = os.environ.get('TEST_OUTDIR', '/tmp')
 kubeconfig = os.path.join(outdir, 'kubeconfig')
 
+def get_chart_asset_from_url(chart_asset_url):
+    chart_zip = os.path.join(outdir, 'chart.zip')
+    shutil.rmtree(chart_zip, ignore_errors=True)
+    subprocess.check_call(['aws', 's3', 'cp', chart_asset_url, chart_zip])
+    chart_dir = os.path.join(outdir, 'chart')
+    shutil.rmtree(chart_dir, ignore_errors=True)
+    os.mkdir(chart_dir)
+    with zipfile.ZipFile(chart_zip, 'r') as zip_ref:
+        zip_ref.extractall(chart_dir)
+    return chart_dir
+
 def helm_handler(event, context):
     logger.info(json.dumps(event))
 
@@ -26,7 +37,7 @@ def helm_handler(event, context):
     role_arn     = props['RoleArn']
     release      = props['Release']
     chart        = props['Chart']
-    chart_asset  = props.get('ChartAsset', None)
+    chart_asset_url = props.get('ChartAssetURL', None)
     version      = props.get('Version', None)
     wait         = props.get('Wait', False)
     timeout      = props.get('Timeout', None)
@@ -50,18 +61,11 @@ def helm_handler(event, context):
         with open(values_file, "w") as f:
             f.write(json.dumps(values, indent=2))
 
-    if not request_type == "Delete" and chart_asset is not None and chart_asset.startswith('s3://'):
-        chart_zip = os.path.join(outdir, 'chart.zip')
-        shutil.rmtree('chart.zip', ignore_errors=True)
-        subprocess.check_call(['aws', 's3', 'cp', chart_asset, chart_zip])
-        chart_dir = os.path.join(outdir, 'chart')
-        shutil.rmtree('chart', ignore_errors=True)
-        os.mkdir(chart_dir)
-        with zipfile.ZipFile(chart_zip, 'r') as zip_ref:
-            zip_ref.extractall(chart_dir)
-        chart = chart_dir
-
     if request_type == 'Create' or request_type == 'Update':
+        if chart_asset_url != None and chart_asset_url.startswith('s3://') and repository == None:
+            assert(version==None) # future work: support versions from s3 assets
+            chart = get_chart_asset_from_url(chart_asset_url, outdir)
+
         helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
     elif request_type == "Delete":
         try:
