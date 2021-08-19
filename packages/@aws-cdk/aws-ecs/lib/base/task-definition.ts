@@ -70,7 +70,7 @@ export interface CommonTaskDefinitionProps {
   readonly family?: string;
 
   /**
-   * The name of the IAM task execution role that grants the ECS agent to call AWS APIs on your behalf.
+   * The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs on your behalf.
    *
    * The role will be used to retrieve container images from ECR and create CloudWatch log groups.
    *
@@ -647,7 +647,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Returns the container that match the provided containerName.
    */
-  private findContainer(containerName: string): ContainerDefinition | undefined {
+  public findContainer(containerName: string): ContainerDefinition | undefined {
     return this.containers.find(c => c.containerName === containerName);
   }
 
