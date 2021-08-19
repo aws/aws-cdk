@@ -18,7 +18,7 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
   /**
    * The ID of the virtual cluster where the job will be run
    */
-  readonly virtualClusterId: sfn.TaskInput;
+  readonly virtualCluster: VirtualClusterInput;
 
   /**
    * The name of the job run.
@@ -180,7 +180,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
           MonitoringConfiguration: this.props.monitoring ? {
             CloudWatchMonitoringConfiguration: this.logGroup ? {
               LogGroupName: this.logGroup.logGroupName,
-              LogStreamNamePrefix: this.props.monitoring?.logStreamNamePrefix,
+              LogStreamNamePrefix: this.props.monitoring!.logStreamNamePrefix,
             } : undefined,
             PersistentAppUI: (this.props.monitoring?.persistentAppUI === false)
               ? 'DISABLED'
