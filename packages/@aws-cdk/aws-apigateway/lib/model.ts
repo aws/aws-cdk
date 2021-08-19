@@ -30,7 +30,7 @@ export interface IModel {
  * }
  *
  * @see https://docs.amazonaws.cn/en_us/apigateway/latest/developerguide/models-mappings.html#models-mappings-models
- * @deprecated You should use @see Model.EMPTY_MODEL
+ * @deprecated You should use Model.EMPTY_MODEL
  */
 export class EmptyModel implements IModel {
   public readonly modelId = 'Empty';
@@ -51,7 +51,7 @@ export class EmptyModel implements IModel {
  *     "message" : { "type" : "string" }
  *   }
  * }
- * @deprecated You should use @see Model.ERROR_MODEL
+ * @deprecated You should use Model.ERROR_MODEL
  */
 export class ErrorModel implements IModel {
   public readonly modelId = 'Error';
