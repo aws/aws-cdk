@@ -119,8 +119,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
-       && (typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value === 'string'
-       && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value))) {
+       && typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value === 'string'
+       && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)) {
       throw new Error(`Entry point arguments must be a string array. Received ${typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value}.`);
     }
 

@@ -1,5 +1,3 @@
-
-
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -137,14 +135,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         'VirtualClusterId.$': '$.ClusterId',
-        'ReleaseLabel': ReleaseLabel.EMR_6_2_0.label,
-        'JobDriver': {
-          SparkSubmitJobDriver: {
-            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-            SparkSubmitParameters: '--conf spark.executor.instances=2',
-          },
-        },
-        'ConfigurationOverrides': {},
         'ExecutionRoleArn': 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
       },
     });
@@ -170,21 +160,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        VirtualClusterId: clusterId,
-        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-        JobDriver: {
-          SparkSubmitJobDriver: {
-            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-            SparkSubmitParameters: '--conf spark.executor.instances=2',
-          },
-        },
-        ConfigurationOverrides: {},
-        ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-            'Arn',
-          ],
-        },
         Tags: [{
           Key: 'key',
           Value: 'value',
@@ -218,14 +193,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        VirtualClusterId: clusterId,
-        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-        JobDriver: {
-          SparkSubmitJobDriver: {
-            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-            SparkSubmitParameters: '--conf spark.executor.instances=2',
-          },
-        },
         ConfigurationOverrides: {
           ApplicationConfiguration: [{
             Classification: Classification.SPARK_DEFAULTS.classificationStatement,
@@ -234,12 +201,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               'spark.executor.memory': '512M',
             },
           }],
-        },
-        ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-            'Arn',
-          ],
         },
       },
     });
@@ -263,15 +224,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        VirtualClusterId: clusterId,
-        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-        JobDriver: {
-          SparkSubmitJobDriver: {
-            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-            SparkSubmitParameters: '--conf spark.executor.instances=2',
-          },
-        },
-        ConfigurationOverrides: {},
         ExecutionRoleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
       },
     });
@@ -374,14 +326,6 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        VirtualClusterId: clusterId,
-        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-        JobDriver: {
-          SparkSubmitJobDriver: {
-            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-            SparkSubmitParameters: '--conf spark.executor.instances=2',
-          },
-        },
         ConfigurationOverrides: {
           MonitoringConfiguration: {
             CloudWatchMonitoringConfiguration: {
@@ -404,12 +348,6 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
               },
             },
           },
-        },
-        ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-            'Arn',
-          ],
         },
       },
     });
@@ -434,7 +372,7 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
       monitoring: {
         logBucket: s3Bucket,
         logGroup: logGroup,
-        logStreamNamePrefix: 'prefix',
+        logStreamNamePrefix: prefixName,
       },
     });
 
@@ -517,14 +455,6 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        VirtualClusterId: clusterId,
-        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-        JobDriver: {
-          SparkSubmitJobDriver: {
-            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-            SparkSubmitParameters: '--conf spark.executor.instances=2',
-          },
-        },
         ConfigurationOverrides: {
           MonitoringConfiguration: {
             CloudWatchMonitoringConfiguration: {
@@ -533,7 +463,6 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
               },
               LogStreamNamePrefix: prefixName,
             },
-            PersistentAppUI: 'ENABLED',
             S3MonitoringConfiguration: {
               LogUri: {
                 'Fn::Join': [
@@ -608,8 +537,7 @@ describe('Task throws if ', () => {
     // WHEN
     const properties: { [key: string]: string } = {};
     for (let index = 0; index <= 100; index++) {
-      const prop = `${index}`;
-      properties[prop] = 'value';
+      properties[index.toString()] = 'value';
     }
     const appConfig: ApplicationConfiguration = { classification: Classification.SPARK, properties: properties };
 
@@ -624,7 +552,7 @@ describe('Task throws if ', () => {
         },
         applicationConfig: [appConfig],
       });
-    }).toThrow(`Application configuration properties must have 100 or fewer entries. Received ${appConfig.properties ? Object.keys(appConfig.properties).length : undefined}`);
+    }).toThrow(`Application configuration properties must have 100 or fewer entries. Received ${Object.keys(properties).length}`);
   });
 
   test('Entry Point is not between 1 to 256 characters in length', () => {

@@ -43,7 +43,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
       End: true,
       Parameters: {
         'Name.$': '$$.Execution.Name',
-        'ContainerProvider': {
+        ContainerProvider: {
           Id: clusterId,
           Info: {
             EksInfo: {
@@ -80,7 +80,6 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
               Namespace: 'namespace',
             },
           },
-          Type: 'EKS',
         },
       },
     });
@@ -89,7 +88,6 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
   test('clusterId from payload', () => {
     // WHEN
     const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
-      virtualClusterName: emrContainersVirtualClusterName,
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.ClusterId')),
       integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
@@ -97,15 +95,8 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        Name: emrContainersVirtualClusterName,
         ContainerProvider: {
           'Id.$': '$.ClusterId',
-          'Info': {
-            EksInfo: {
-              Namespace: 'default',
-            },
-          },
-          'Type': 'EKS',
         },
       },
     });
@@ -118,7 +109,6 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     });
 
     const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
-      virtualClusterName: emrContainersVirtualClusterName,
       eksCluster: EksClusterInput.fromCluster(eksCluster),
       integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
@@ -126,17 +116,10 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        Name: emrContainersVirtualClusterName,
         ContainerProvider: {
           Id: {
             Ref: 'EKSClusterEDAD5FD1',
           },
-          Info: {
-            EksInfo: {
-              Namespace: 'default',
-            },
-          },
-          Type: 'EKS',
         },
       },
     });
@@ -146,7 +129,6 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     // WHEN
     const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-      virtualClusterName: emrContainersVirtualClusterName,
       tags: {
         key: 'value',
       },
@@ -160,16 +142,6 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        Name: emrContainersVirtualClusterName,
-        ContainerProvider: {
-          Id: clusterId,
-          Info: {
-            EksInfo: {
-              Namespace: 'default',
-            },
-          },
-          Type: 'EKS',
-        },
         Tags: [{
           Key: 'key',
           Value: 'value',
