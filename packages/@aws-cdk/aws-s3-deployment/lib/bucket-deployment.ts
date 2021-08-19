@@ -36,19 +36,24 @@ export interface BucketDeploymentProps {
   readonly destinationKeyPrefix?: string;
 
   /**
-   * If this is set, matching files or objects will be excluded from the deployment. If
-   * no include or exclude filters are used, all files will be included with the deployment.
+   * If this is set, matching files or objects will be excluded from the deployment's sync
+   * command. This can be used to exclude a file from being pruned in the destination bucket.
    *
-   * @default - No exclude filters are included
+   * If you want to just exclude files from the deployment package (which excludes these files
+   * evaluated when invalidating the asset), you should leverage the `exclude` property of
+   * `AssetOptions` when defining your source.
+   *
+   * @default - No exclude filters are used
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
   readonly exclude?: string[]
 
   /**
-   * If this is set, matching files or objects will be included with the deployment. If
-   * no include or exclude filters are used, all files will be included with the deployment.
+   * If this is set, matching files or objects will be included with the deployment's sync
+   * command. Since all files from the deployment package are included by default, this property
+   * is usually leveraged alongside an `exclude` filter.
    *
-   * @default - No include filters are included
+   * @default - No include filters are used and all files are included with the sync command
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
   readonly include?: string[]

@@ -140,24 +140,22 @@ new BucketDeployment(this, 'HTMLBucketDeployment', {
 
 ## Exclude and Include Filters
 
-When deploying your files to the destination bucket, you can specify exclude and include filters. These files will not be deployed to the destination bucket. In addition, if the file already exists in the destination bucket, it will not be deleted if you are using the `prune` option:
+There are two points at which filters are evaluated in a deployment: asset bundling and the actual deployment. If you simply want to exclude files in the asset bundling process, you should leverage the `exclude` property of `AssetOptions` when defining your source:
+
+```ts
+new BucketDeployment(this, 'HTMLBucketDeployment', {
+  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
+  destinationBucket: bucket,
+});
+```
+
+If you want to specify filters to be used in the deployment process, you can use the `exclude` and `include` filters on `BucketDeployment`.  If excluded, these files will not be deployed to the destination bucket. In addition, if the file already exists in the destination bucket, it will not be deleted if you are using the `prune` option:
 
 ```ts
 new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFiles', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
   exclude: ['*.txt']
-});
-```
-
-This can also be leveraged to exclude entire directories.  In some cases, you may want to exclude all files from a directory while adding back in a smaller number of files from that directory.  In those cases, you can use the `include` option alongside the `exclude` option.
-
-```ts
-new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFilesWithInclusionFilter', {
-  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-  destinationBucket,
-  exclude: ['build/*'],
-  include: ['build/config.json']
 });
 ```
 
