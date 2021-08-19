@@ -28,4 +28,5 @@ for template in $templates; do
     pip install -r requirements.txt
 
     cdk synth
+    pytest
 done
