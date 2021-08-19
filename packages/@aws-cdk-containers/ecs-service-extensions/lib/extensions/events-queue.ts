@@ -50,21 +50,6 @@ export interface TopicSubscriptionProps {
 }
 
 /**
- * A structure to record the subscriptions created by the extension.
- */
-export interface Subscription {
-  /**
-   * The list of topics that the `subscriptionQueue` is subscribed to.
-   */
-  readonly topics: sns.ITopic[];
-
-  /**
-   * The subscription queue for the list of topics.
-   */
-  readonly subscriptionQueue: sqs.IQueue;
-}
-
-/**
  * Settings for the hook which mutates the application container
  * to add the subscription queue URLs to its environment.
  */
@@ -101,20 +86,12 @@ export class SubscribeMutatingHook extends ContainerMutatingHook {
  * that the `eventsQueue` subscribes to. It creates the topic subscriptions and sets up permissions
  * for the service to consume messages from the SQS Queues.
  *
- * The created subscriptions can be accessed using `subscriptions` field of the extension and the
- * default queue for this service can be accessed using the getter `<extension>.eventsQueue`.
+ * The default queue for this service can be accessed using the getter `<extension>.eventsQueue`.
  */
 export class EventsQueue extends ServiceExtension {
-  /** The subscriptions created by the extension.
-   * @default undefined
-   */
-  public readonly subscriptions: Subscription[] = [];
-
   private _eventsQueue!: sqs.IQueue;
 
   private environment: { [key: string]: string } = {};
-
-  private deadLetterQueues: sqs.IQueue[] = [];
 
   private props?: EventsQueueProps;
 
@@ -141,7 +118,6 @@ export class EventsQueue extends ServiceExtension {
       const deadLetterQueue = new sqs.Queue(this.scope, 'EventsDeadLetterQueue', {
         retentionPeriod: cdk.Duration.days(14),
       });
-      this.deadLetterQueues.push(deadLetterQueue);
 
       this._eventsQueue = new sqs.Queue(this.scope, 'EventsQueue', {
         deadLetterQueue: {
@@ -165,7 +141,7 @@ export class EventsQueue extends ServiceExtension {
     const container = this.parentService.serviceDescription.get('service-container') as Container;
 
     if (!container) {
-      throw new Error('Subscribe extension requires an application extension');
+      throw new Error('EventsQueue extension requires an application extension');
     }
 
     container.addContainerMutatingHook(new SubscribeMutatingHook({
@@ -179,50 +155,27 @@ export class EventsQueue extends ServiceExtension {
    * @param taskDefinition The created task definition
    */
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
+    this._eventsQueue.grantConsumeMessages(taskDefinition.taskRole);
     if (this.props?.topicSubscriptions) {
-      for (const subs of this.subscriptions) {
-        subs.subscriptionQueue.grantConsumeMessages(taskDefinition.taskRole);
+      for (const subs of this.props.topicSubscriptions) {
+        subs.queue?.grantConsumeMessages(taskDefinition.taskRole);
       }
-    } else {
-      this._eventsQueue.grantConsumeMessages(taskDefinition.taskRole);
-    }
-
-    for (const deadLetterQueue of this.deadLetterQueues) {
-      deadLetterQueue.grantConsumeMessages(taskDefinition.taskRole);
     }
   }
 
   /**
-   * This is a helper method that creates a SNS Subscription for a topic and the queue that subscribes to it.
-   * It also adds the subscription info to the `subscriptions` of the extension class.
+   * This helper method creates a SNS Subscription for a topic and the queue that subscribes to it.
+   *
    * @param topicSubscriptions List of TopicSubscriptions
    */
   private addTopicSubscriptions(topicSubscriptions: TopicSubscriptionProps[]) {
-    // `eventsQueueSubscriptions` collects all the SNS Topics that subscribe to the `eventsQueue`
-    const eventsQueueSubscriptions = [];
-
-    // If the `topicSubscription` contains a queue, we set up a subscription using the user-provided queue otherwise we
-    // add the topic to the `eventsQueueSubscriptions`
     for (const topicSubscription of topicSubscriptions) {
       if (topicSubscription.queue) {
-        const topicName = topicSubscription.topic.node.id;
-        this.environment[`${this.parentService.id.toUpperCase()}_${topicName.toUpperCase()}_QUEUE_URI`] = topicSubscription.queue.queueUrl;
-
         topicSubscription.topic.addSubscription(new subscription.SqsSubscription(topicSubscription.queue));
-        this.subscriptions?.push({
-          topics: [topicSubscription.topic],
-          subscriptionQueue: topicSubscription.queue,
-        });
       } else {
         topicSubscription.topic.addSubscription(new subscription.SqsSubscription(this._eventsQueue));
-        eventsQueueSubscriptions.push(topicSubscription.topic);
       }
     }
-    // Finally adding the subscription with all eventsQueue-subscribed topics and the `eventsQueue`
-    this.subscriptions?.push({
-      topics: eventsQueueSubscriptions,
-      subscriptionQueue: this._eventsQueue,
-    });
   }
 
   public get eventsQueue() : sqs.IQueue {

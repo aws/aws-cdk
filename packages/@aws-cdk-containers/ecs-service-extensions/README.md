@@ -331,9 +331,16 @@ const topicSubscription = {
   topic: new sns.Topic(stack, 'my-topic'),
 };
 
-nameDescription.add(new EventsQueue({
+const myServiceDescription = nameDescription.add(new EventsQueue({
+  // Provide a custom queue for the service. If a queue is not provided, a default queue is created for the service
+  eventsQueue: myCustomQueue,
+  // Provide list of topics the you want the `eventsQueue` to subscribe to
   topicSubscriptions: [topicSubscription],
 }));
+
+// To access the `eventsQueue` for the service, use the `eventsQueue` getter for the extension
+const myEventsQueueExtension = myServiceDescription.extensions['events-queue'] as EventsQueue;
+const myEventsQueue = myEventsQueueExtension.eventsQueue;
 ```
 
 For setting up a topic-specific queue subscription, you can provide a custom queue in the `topicSubscription`. The extension will set up a topic subscription for the provided queue instead of the default `eventsQueue` of the service.
@@ -341,12 +348,12 @@ For setting up a topic-specific queue subscription, you can provide a custom que
 ```ts
 const topicSubscription = {
   topic: new sns.Topic(stack, 'my-topic'),
-  queue: new sqs.Queue(stack, 'my-queue', {
-    // ...queue props
-  }),
+  // `myTopicQueue` will subscribe to the `topic` instead of `eventsQueue`
+  queue: myTopicQueue,
 };
 
 nameDescription.add(new EventsQueue({
+  eventsQueue: myCustomQueue,
   topicSubscriptions: [topicSubscription],
 }));
 ```

@@ -70,22 +70,6 @@ export = {
               ],
             },
           },
-          {
-            Action: [
-              'sqs:ReceiveMessage',
-              'sqs:ChangeMessageVisibility',
-              'sqs:GetQueueUrl',
-              'sqs:DeleteMessage',
-              'sqs:GetQueueAttributes',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'EventsDeadLetterQueue404572C7',
-                'Arn',
-              ],
-            },
-          },
         ],
         Version: '2012-10-17',
       },
@@ -250,22 +234,6 @@ export = {
             Resource: {
               'Fn::GetAtt': [
                 'EventsQueueB96EB0D2',
-                'Arn',
-              ],
-            },
-          },
-          {
-            Action: [
-              'sqs:ReceiveMessage',
-              'sqs:ChangeMessageVisibility',
-              'sqs:GetQueueUrl',
-              'sqs:DeleteMessage',
-              'sqs:GetQueueAttributes',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'EventsDeadLetterQueue404572C7',
                 'Arn',
               ],
             },
@@ -448,7 +416,7 @@ export = {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'myQueue4FDFF71C',
+                'defQueue1F91A65B',
                 'Arn',
               ],
             },
@@ -464,7 +432,7 @@ export = {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'defQueue1F91A65B',
+                'myQueue4FDFF71C',
                 'Arn',
               ],
             },
@@ -511,12 +479,6 @@ export = {
               Name: 'MY-SERVICE_QUEUE_URI',
               Value: {
                 Ref: 'defQueue1F91A65B',
-              },
-            },
-            {
-              Name: 'MY-SERVICE_TOPIC1_QUEUE_URI',
-              Value: {
-                Ref: 'myQueue4FDFF71C',
               },
             },
           ],
