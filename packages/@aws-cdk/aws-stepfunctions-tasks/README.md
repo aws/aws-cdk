@@ -65,6 +65,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Start Job Run](#start-job-run)
   - [EKS](#eks)
     - [Call](#call)
+  - [EventBridge](#eventbridge)
+    - [Put Events](#put-events)
   - [Glue](#glue)
   - [Glue DataBrew](#glue-databrew)
   - [Lambda](#lambda)
@@ -204,6 +206,28 @@ const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   payload: sfn.TaskInput.fromJsonPathAt('$.input'),
   invocationType: tasks.LambdaInvocationType.EVENT,
+});
+```
+
+You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`. 
+Here is an example of starting an Athena query that is dynamically created using the task input:
+
+```ts
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Athena Start Query', {
+  queryString: sfn.JsonPath.stringAt("States.Format('select contacts where year={};', $.year)"),
+  queryExecutionContext: {
+    databaseName: 'interactions',
+  },
+  resultConfiguration: {
+    encryptionConfiguration: {
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
+    },
+    outputLocation: {
+      bucketName: 'mybucket',
+      objectKey: 'myprefix',
+    },
+  },
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
 });
 ```
 
@@ -933,6 +957,41 @@ new tasks.EksCall(stack, 'Call a EKS Endpoint', {
 });
 ```
 
+## EventBridge
+
+Step Functions supports Amazon EventBridge through the service integration pattern.
+The service integration APIs correspond to Amazon EventBridge APIs.
+
+[Read more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-eventbridge.html) about the differences when using these service integrations.
+
+### Put Events
+
+Send events to an EventBridge bus.
+Corresponds to the [`put-events`](https://docs.aws.amazon.com/step-functions/latest/dg/connect-eventbridge.html) API in Step Functions Connector.
+
+The following code snippet includes a Task state that uses events:putevents to send an event to the default bus.
+
+```ts
+import * as events from '@aws-cdk/aws-events';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+const myEventBus = events.EventBus(stack, 'EventBus', {
+  eventBusName: 'MyEventBus1',
+});
+
+new tasks.EventBridgePutEvents(stack, 'Send an event to EventBridge', {
+  entries: [{
+    detail: sfn.TaskInput.fromObject({
+      Message: 'Hello from Step Functions!',
+    }),
+    eventBus: myEventBus,
+    detailType: 'MessageFromStepFunctions',
+    source: 'step.functions',
+  }],
+});
+```
+
 ## Glue
 
 Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html) through the service integration pattern.
@@ -1084,7 +1143,7 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
   },
   resourceConfig: {
     instanceCount: 1,
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+    instanceType: new ec2.InstanceType(JsonPath.stringAt('$.InstanceType')),
     volumeSize: cdk.Size.gibibytes(50),
   }, // optional: default is 1 instance of EC2 `M4.XLarge` with `10GB` volume
   stoppingCondition: {
@@ -1190,7 +1249,23 @@ const topic = new sns.Topic(this, 'Topic');
 const task1 = new tasks.SnsPublish(this, 'Publish1', {
   topic,
   integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  message: sfn.TaskInput.fromJsonPathAt('$.state.message'),
+  message: sfn.TaskInput.fromDataAt('$.state.message'),
+  messageAttributes: {
+    place: {
+      value: sfn.JsonPath.stringAt('$.place'),
+    },
+    pic: {
+      // BINARY must be explicitly set
+      type: MessageAttributeDataType.BINARY,
+      value: sfn.JsonPath.stringAt('$.pic'),
+    },
+    people: {
+      value: 4,
+    },
+    handles: {
+      value: ['@kslater', '@jjf', null, '@mfanning'],
+    },
+
 });
 
 // Combine a field from the execution data with

@@ -4,10 +4,7 @@
  * but it's considered Names, and we want to migrate to Jest).
  */
 
-// import the various CDK assertion helpers
-import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
-// always import our Jest-specific helpers
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -40,13 +37,13 @@ describe('Example Resource', () => {
     test('creates a CFN WaitConditionHandle resource', () => {
       // you can simply assert that a resource of a given type
       // was generated in the resulting template
-      expect(stack).toHaveResource('AWS::CloudFormation::WaitConditionHandle');
+      Template.fromStack(stack).resourceCountIs('AWS::CloudFormation::WaitConditionHandle', 1);
     });
 
     describe('creates a CFN WaitCondition resource', () => {
       test('with count = 0 and timeout = 10', () => {
         // you can also assert the properties of the resulting resource
-        expect(stack).toHaveResource('AWS::CloudFormation::WaitCondition', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::WaitCondition', {
           'Count': 0,
           'Timeout': '10',
           'Handle': {
@@ -59,19 +56,19 @@ describe('Example Resource', () => {
             'Ref': 'ExampleResourceWaitConditionHandle9C53A8D3',
           },
           // this is how you can check a given property is _not_ set
-          'RandomProperty': ABSENT,
+          'RandomProperty': Match.absentProperty(),
         });
       });
 
       test('with retention policy = Retain', () => {
-        // haveResource asserts _all_ properties of a resource,
-        // while haveResourceLike only those that you provide
-        expect(stack).toHaveResourceLike('AWS::CloudFormation::WaitCondition', {
+        // hasResource asserts _all_ properties of a resource,
+        // while hasResourceProperties only those within the 'Property' block
+        Template.fromStack(stack).hasResource('AWS::CloudFormation::WaitCondition', {
           'DeletionPolicy': 'Retain',
           'UpdateReplacePolicy': 'Retain',
         // by default, haveResource and haveResourceLike only assert the properties of a resource -
         // here's how you make them look at the entire resource definition
-        }, ResourcePart.CompleteDefinition);
+        });
       });
     });
 
@@ -91,11 +88,12 @@ describe('Example Resource', () => {
 
       exampleResource.grantRead(role);
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
               'Action': 's3:Get*',
+              'Effect': 'Allow',
               'Resource': {
                 'Fn::Join': ['', [
                   'arn:',
@@ -131,7 +129,7 @@ describe('Example Resource', () => {
     });
 
     test('correctly fills out the subnetIds property of the created VPC endpoint', () => {
-      expect(stack).toHaveResourceLike('AWS::EC2::VPCEndpoint', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         'SubnetIds': [
           { 'Ref': 'VpcPrivateSubnet1Subnet536B997A' },
           { 'Ref': 'VpcPrivateSubnet2Subnet3788AAA1' },

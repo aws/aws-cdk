@@ -224,6 +224,12 @@ with 3 API mapping resources across different APIs and Stages.
 | api | beta  |   `https://${domainName}/bar`  |
 | apiDemo | $default  |   `https://${domainName}/demo`  |
 
+You can retrieve the full domain URL with mapping key using the `domainUrl` property as so -
+
+```ts
+const demoDomainUrl = apiDemo.defaultStage.domainUrl; // returns "https://example.com/demo"
+```
+
 ### Managing access
 
 API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
@@ -309,6 +315,15 @@ new WebSocketStage(stack, 'mystage', {
   stageName: 'dev',
   autoDeploy: true,
 });
+```
+
+To retrieve a websocket URL and a callback URL:
+
+```ts
+const webSocketURL = webSocketStage.url;
+// wss://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}
+const callbackURL = webSocketStage.callbackUrl;
+// https://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}
 ```
 
 To add any other route:
