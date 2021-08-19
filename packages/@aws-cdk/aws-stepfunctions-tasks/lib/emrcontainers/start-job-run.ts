@@ -179,18 +179,18 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
           ApplicationConfiguration: cdk.listMapper(this.applicationConfigPropertyToJson)(this.props.applicationConfig),
           MonitoringConfiguration: this.props.monitoring ? {
             CloudWatchMonitoringConfiguration: this.logGroup ? {
-              LogGroupName: this.logGroup?.logGroupName, // automatically generated name https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-logs/loggroup.html#aws_logs_LogGroup_synopsis
+              LogGroupName: this.logGroup.logGroupName,
               LogStreamNamePrefix: this.props.monitoring?.logStreamNamePrefix,
             } : undefined,
             PersistentAppUI: (this.props.monitoring?.persistentAppUI === false)
               ? 'DISABLED'
               : 'ENABLED',
             S3MonitoringConfiguration: this.logBucket ? {
-              LogUri: this.logBucket?.s3UrlForObject(), // automatically generated unique name https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-s3.Bucket.html#bucketname
+              LogUri: this.logBucket.s3UrlForObject(),
             } : undefined,
           } : undefined,
         },
-        ...(this.props.tags ? this.renderTags(this.props.tags) : undefined),
+        Tags: this.renderTags(this.props.tags),
       }),
     };
   }
@@ -229,9 +229,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     return Array.isArray(value) && value.every(item => typeof item === 'string');
   }
 
-  private renderTags(tags?: { [key: string]: any } | undefined): { [key: string]: any } {
-    return tags ? { Tags: Object.entries(tags).map(([key, value]) => ({ Key: key, Value: value })) } : {};
-  }
+  private renderTags(tags?: { [key: string]: any }): { Key: string, Value: string }[] {
+    return tags ? Object.entries(tags).map(([key, value]) => ({ Key: key, Value: value })) : [];
 
   // https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
   private createJobExecutionRole(): iam.Role {

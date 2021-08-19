@@ -18,7 +18,6 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     // WHEN
     const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
 
     new sfn.StateMachine(stack, 'SM', {
@@ -89,7 +88,6 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     // WHEN
     const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.ClusterId')),
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
 
     // THEN
@@ -110,7 +108,6 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
 
     const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
       eksCluster: EksClusterInput.fromCluster(eksCluster),
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
 
     // THEN
@@ -132,7 +129,6 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
       tags: {
         key: 'value',
       },
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
 
     new sfn.StateMachine(stack, 'SM', {
@@ -156,7 +152,6 @@ test('Permitted role actions included for CreateVirtualCluster if service integr
   const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
     virtualClusterName: emrContainersVirtualClusterName,
     eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
   new sfn.StateMachine(stack, 'SM', {

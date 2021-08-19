@@ -16,7 +16,6 @@ describe('Invoke EMR Containers Delete Virtual cluster with ', () => {
     // WHEN
     const task = new EmrContainersDeleteVirtualCluster(stack, 'Task', {
       virtualClusterId: sfn.TaskInput.fromText(virtualClusterId),
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
 
     // THEN
@@ -74,7 +73,6 @@ describe('Invoke EMR Containers Delete Virtual cluster with ', () => {
     // WHEN
     const task = new EmrContainersDeleteVirtualCluster(stack, 'Task', {
       virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId'),
-      integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     });
 
     // THEN
@@ -91,7 +89,6 @@ describe('Valid policy statements and resources are passed ', () => {
     // WHEN
     const task = new EmrContainersDeleteVirtualCluster(stack, 'Task', {
       virtualClusterId: sfn.TaskInput.fromText(virtualClusterId),
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     });
 
     new sfn.StateMachine(stack, 'SM', {
