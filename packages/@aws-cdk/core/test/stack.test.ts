@@ -60,7 +60,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Number of resources: 1000 is greater than allowed maximum of 500');
+    }).toThrow('Number of resources in stack \'MyStack\': 1000 is greater than allowed maximum of 500');
 
 
   });
@@ -82,7 +82,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Number of resources: 200 is greater than allowed maximum of 100');
+    }).toThrow('Number of resources in stack \'MyStack\': 200 is greater than allowed maximum of 100');
 
 
   });
