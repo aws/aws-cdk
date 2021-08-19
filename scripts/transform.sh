@@ -3,6 +3,15 @@
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
 
+# Creates a symlink in each individual package's node_modules folder pointing
+# to the root folder's node_modules/.bin. This allows yarn to find the executables
+# it needs (e.g., jsii-rosetta) for the build.
+createSymlinks() {
+  find . ! -path "$1" -type d -maxdepth 1 \
+    -exec mkdir -p {}/node_modules \; \
+    -exec ln -sf "${scriptdir}"/../node_modules/.bin {}/node_modules \;
+}
+
 runtarget="build"
 run_tests="true"
 extract_snippets="false"
@@ -33,17 +42,18 @@ if [ "$run_tests" == "true" ]; then
   runtarget="$runtarget+test"
 fi
 if [ "$extract_snippets" == "true" ]; then
-  # ToDo: handle the 'extract' option here
-  # (right now, it fails because jsii-rosetta can't be found in the copied packages)
-#  runtarget="$runtarget+extract"
-  echo "Warning: the --extract option is currently ignored by the 'transform' script"
+  runtarget="$runtarget+extract"
 fi
 
 export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTIONS:-}"
 
+individual_packages_folder=${scriptdir}/../packages/individual-packages
 # copy & build the packages that are individually released from 'aws-cdk-lib'
-cd ${scriptdir}/../packages/individual-packages
+cd "$individual_packages_folder"
 ../../tools/individual-pkg-gen/bin/individual-pkg-gen
+
+createSymlinks "$individual_packages_folder"
+
 if [ "$skip_build" != "true" ]; then
   PHASE=transform yarn lerna run --stream $runtarget
 fi
