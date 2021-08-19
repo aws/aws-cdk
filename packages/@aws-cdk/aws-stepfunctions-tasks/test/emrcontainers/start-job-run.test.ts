@@ -4,14 +4,26 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import { EmrContainersStartJobRun, ReleaseLabel, ApplicationConfiguration, Classification } from '../../lib/emrcontainers/start-job-run';
+import { EmrContainersStartJobRun, VirtualClusterInput, ReleaseLabel, ApplicationConfiguration, Classification } from '../../lib/emrcontainers/start-job-run';
 
 let stack: Stack;
 let clusterId: string;
+let defaultTask: EmrContainersStartJobRun;
+
 
 beforeEach(() => {
   stack = new Stack();
   clusterId = 'clusterId';
+  defaultTask = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+    virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+    releaseLabel: ReleaseLabel.EMR_6_2_0,
+    jobDriver: {
+      sparkSubmitJobDriver: {
+        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+        sparkSubmitParameters: '--conf spark.executor.instances=2',
+      },
+    },
+  });
 });
 
 describe('Invoke EMR Containers Start Job Run with ', () => {
@@ -19,7 +31,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
 
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       releaseLabel: ReleaseLabel.EMR_6_2_0,
       jobDriver: {
         sparkSubmitJobDriver: {
@@ -68,20 +80,8 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
 
   test('.sync integration pattern', () => {
 
-    // WHEN
-    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-          sparkSubmitParameters: '--conf spark.executor.instances=2',
-        },
-      },
-    });
-
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(defaultTask.toStateJson())).toEqual({
       Type: 'Task',
       Resource: {
         'Fn::Join': [
@@ -120,7 +120,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
 
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-      virtualClusterId: sfn.TaskInput.fromDataAt('$.ClusterId'),
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.ClusterId')),
       releaseLabel: ReleaseLabel.EMR_6_2_0,
       executionRole: iam.Role.fromRoleArn(stack, 'Job Execution Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
       jobDriver: {
@@ -144,7 +144,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
 
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       releaseLabel: ReleaseLabel.EMR_6_2_0,
       jobDriver: {
         sparkSubmitJobDriver: {
@@ -173,7 +173,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
 
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       releaseLabel: ReleaseLabel.EMR_6_2_0,
       jobDriver: {
         sparkSubmitJobDriver: {
@@ -210,7 +210,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
 
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       releaseLabel: ReleaseLabel.EMR_6_2_0,
       executionRole: iam.Role.fromRoleArn(stack, 'Job Execution Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
       jobDriver: {
@@ -234,7 +234,7 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
   test('generated automatically', () => {
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       releaseLabel: ReleaseLabel.EMR_6_2_0,
       jobDriver: {
         sparkSubmitJobDriver: {
@@ -355,13 +355,12 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
 
   test('provided from user', () => {
     // WHEN
-
-    const logGroup = new logs.LogGroup(stack, 'Log Group');
-    const s3Bucket = new s3.Bucket(stack, 'Bucket');
+    const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Monitoring Group', 'provided log group');
+    const s3Bucket = s3.Bucket.fromBucketName(stack, 'Monitoring Bucket', 'provided bucket');;
     const prefixName = 'prefix';
 
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       releaseLabel: ReleaseLabel.EMR_6_2_0,
       jobDriver: {
         sparkSubmitJobDriver: {
@@ -458,9 +457,7 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
         ConfigurationOverrides: {
           MonitoringConfiguration: {
             CloudWatchMonitoringConfiguration: {
-              LogGroupName: {
-                Ref: 'EMRContainersStartJobRunMonitoringLogGroup882D450C',
-              },
+              LogGroupName: 'provided log group',
               LogStreamNamePrefix: prefixName,
             },
             S3MonitoringConfiguration: {
@@ -470,7 +467,7 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
                   [
                     's3://',
                     {
-                      Ref: 'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
+                      Ref: 'provided bucket',
                     },
                   ],
                 ],
@@ -498,7 +495,7 @@ describe('Task throws if ', () => {
     // THEN
     expect(() => {
       new EmrContainersStartJobRun(stack, 'Task', {
-        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -521,7 +518,7 @@ describe('Task throws if ', () => {
     // THEN
     expect(() => {
       new EmrContainersStartJobRun(stack, 'Task', {
-        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -543,7 +540,7 @@ describe('Task throws if ', () => {
 
     expect(() => {
       new EmrContainersStartJobRun(stack, 'Task', {
-        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -562,7 +559,7 @@ describe('Task throws if ', () => {
     // THEN
     expect(() => {
       new EmrContainersStartJobRun(stack, 'Start Job Run Task', {
-        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -575,7 +572,7 @@ describe('Task throws if ', () => {
     // THEN
     expect(() => {
       new EmrContainersStartJobRun(stack, 'Task', {
-        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -596,7 +593,7 @@ describe('Task throws if ', () => {
     // THEN
     expect(() => {
       new EmrContainersStartJobRun(stack, 'String array error Task', {
-        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -610,7 +607,7 @@ describe('Task throws if ', () => {
     // THEN
     expect(() => {
       new EmrContainersStartJobRun(stack, 'JSON Path error Task', {
-        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -624,7 +621,7 @@ describe('Task throws if ', () => {
     // THEN
     expect(() => {
       new EmrContainersStartJobRun(stack, 'Greater than 256 Task', {
-        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -638,7 +635,7 @@ describe('Task throws if ', () => {
     // THEN
     expect(() => {
       new EmrContainersStartJobRun(stack, 'Less than 1 Task', {
-        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -657,7 +654,7 @@ describe('Task throws if ', () => {
     // THEN
     expect(() => {
       new EmrContainersStartJobRun(stack, 'Spark Submit Parameter Task', {
-        virtualClusterId: sfn.TaskInput.fromText(clusterId),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -676,7 +673,7 @@ describe('Task throws if ', () => {
     // THEN
     expect(() => {
       new EmrContainersStartJobRun(stack, 'Task', {
-        virtualClusterId: sfn.TaskInput.fromJsonPathAt(jsonPath),
+        virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt(jsonPath)),
         releaseLabel: ReleaseLabel.EMR_6_2_0,
         jobDriver: {
           sparkSubmitJobDriver: {
@@ -690,20 +687,10 @@ describe('Task throws if ', () => {
 
 
 test('Permitted role actions and resources with Start Job Run for SYNC integration pattern', () => {
-  // WHEN
-  const task = new EmrContainersStartJobRun(stack, 'Task', {
-    virtualClusterId: sfn.TaskInput.fromText(clusterId),
-    releaseLabel: ReleaseLabel.EMR_6_2_0,
-    jobDriver: {
-      sparkSubmitJobDriver: {
-        entryPoint: sfn.TaskInput.fromText('job-location'),
-      },
-    },
-    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-  });
+
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definition: defaultTask,
   });
 
   // THEN
@@ -776,7 +763,7 @@ test('Permitted role actions and resources with Start Job Run for SYNC integrati
 test('Permitted role actions and resources with Start Job Run from payload', () => {
   // WHEN
   const task = new EmrContainersStartJobRun(stack, 'Task', {
-    virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.ClusterId'),
+    virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.ClusterId')),
     releaseLabel: ReleaseLabel.EMR_6_2_0,
     executionRole: iam.Role.fromRoleArn(stack, 'Job Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
     jobDriver: {
@@ -856,7 +843,7 @@ test('Permitted role actions and resources with Start Job Run from payload', () 
 test('Permitted role actions for Start Job Run with REQUEST/RESPONSE integration pattern', () => {
   // WHEN
   const task = new EmrContainersStartJobRun(stack, 'Task', {
-    virtualClusterId: sfn.TaskInput.fromText(clusterId),
+    virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
     releaseLabel: ReleaseLabel.EMR_6_2_0,
     jobDriver: {
       sparkSubmitJobDriver: {
@@ -911,21 +898,17 @@ test('Permitted role actions for Start Job Run with REQUEST/RESPONSE integration
 
 });
 
-test('Permitted IAM policy actions for EMR Containers SDK call for Describe Virtual Cluster', () => {
-  // WHEN
-  const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-    virtualClusterId: sfn.TaskInput.fromText(clusterId),
-    releaseLabel: ReleaseLabel.EMR_6_2_0,
-    jobDriver: {
-      sparkSubmitJobDriver: {
-        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-        sparkSubmitParameters: '--conf spark.executor.instances=2',
-      },
-    },
-  });
+test('Custom resource has correct Namespace, environment, cli layer, and permissions', () => {
+
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definition: defaultTask,
+  });
+});
+
+test('Permitted IAM policy actions for EMR Containers SDK call for Describe Virtual Cluster', () => {
+  new sfn.StateMachine(stack, 'SM', {
+    definition: defaultTask,
   });
 
   // THEN
@@ -943,7 +926,7 @@ test('Permitted IAM policy permissions for Custom Resource Lambda', () => {
 
   // WHEN
   const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
-    virtualClusterId: sfn.TaskInput.fromText(clusterId),
+    virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
     releaseLabel: ReleaseLabel.EMR_6_2_0,
     jobDriver: {
       sparkSubmitJobDriver: {
@@ -976,7 +959,7 @@ test('Permitted IAM policy permissions for Custom Resource Lambda', () => {
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new EmrContainersStartJobRun(stack, 'Task', {
-      virtualClusterId: sfn.TaskInput.fromText(clusterId),
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       releaseLabel: ReleaseLabel.EMR_6_2_0,
       jobDriver: {
         sparkSubmitJobDriver: {

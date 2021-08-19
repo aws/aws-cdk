@@ -143,7 +143,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     }
 
     if (props.executionRole === undefined
-      && sfn.JsonPath.isEncodedJsonPath(props.virtualClusterId.value)) {
+      && sfn.JsonPath.isEncodedJsonPath(props.virtualCluster.id)) {
       throw new Error('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
     }
 
@@ -164,7 +164,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     return {
       Resource: integrationResourceArn('emr-containers', 'startJobRun', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        VirtualClusterId: this.props.virtualClusterId.value,
+        VirtualClusterId: this.props.virtualCluster.id,
         Name: this.props.jobName,
         ExecutionRoleArn: this.role.roleArn,
         ReleaseLabel: this.props.releaseLabel.label,
@@ -177,7 +177,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         },
         ConfigurationOverrides: {
           ApplicationConfiguration: cdk.listMapper(this.applicationConfigPropertyToJson)(this.props.applicationConfig),
-          MonitoringConfiguration: this.props.monitoring ? {
+          MonitoringConfiguration: {
             CloudWatchMonitoringConfiguration: this.logGroup ? {
               LogGroupName: this.logGroup.logGroupName,
               LogStreamNamePrefix: this.props.monitoring!.logStreamNamePrefix,
@@ -188,7 +188,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
             S3MonitoringConfiguration: this.logBucket ? {
               LogUri: this.logBucket.s3UrlForObject(),
             } : undefined,
-          } : undefined,
+          },
         },
         Tags: this.renderTags(this.props.tags),
       }),
@@ -231,6 +231,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
 
   private renderTags(tags?: { [key: string]: any }): { Key: string, Value: string }[] {
     return tags ? Object.entries(tags).map(([key, value]) => ({ Key: key, Value: value })) : [];
+  }
 
   // https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
   private createJobExecutionRole(): iam.Role {
@@ -295,7 +296,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         service: 'EMRcontainers',
         action: 'describeVirtualCluster',
         parameters: {
-          id: this.props.virtualClusterId.value,
+          id: this.props.virtualCluster.id,
         },
         outputPaths: ['virtualCluster.containerProvider.info.eksInfo.namespace', 'virtualCluster.containerProvider.id'],
         physicalResourceId: cr.PhysicalResourceId.of('id'),
@@ -359,7 +360,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
             arnFormat: cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
             service: 'emr-containers',
             resource: 'virtualclusters',
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? '*' : this.props.virtualClusterId.value, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualCluster.id) ? '*' : this.props.virtualCluster.id, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
           }),
         ],
         actions: ['emr-containers:StartJobRun'],
@@ -379,7 +380,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
               arnFormat: cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
               service: 'emr-containers',
               resource: 'virtualclusters',
-              resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualClusterId.value) ? '*' : `${this.props.virtualClusterId.value}/jobruns/*`, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
+              resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualCluster.id) ? '*' : `${this.props.virtualCluster.id}/jobruns/*`, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
             }),
           ],
           actions: [

@@ -42,7 +42,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
       End: true,
       Parameters: {
         'Name.$': '$$.Execution.Name',
-        ContainerProvider: {
+        'ContainerProvider': {
           Id: clusterId,
           Info: {
             EksInfo: {

@@ -1,9 +1,11 @@
-//import * as iam from '@aws-cdk/aws-iam';
-import * as emrcontainers from '@aws-cdk/aws-emrcontainers';
+import * as eks from '@aws-cdk/aws-eks';
+import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { EmrContainersStartJobRun } from '../../lib';
-import { Classification, ReleaseLabel, VirtualClusterInput } from '../../lib/emrcontainers/start-job-run';
+import {
+  Classification, VirtualClusterInput, EksClusterInput, EmrContainersDeleteVirtualCluster,
+  EmrContainersEksCreateVirtualCluster, EmrContainersStartJobRun, ReleaseLabel,
+} from '../../lib';
 
 /**
  * Stack verification steps:
@@ -15,25 +17,23 @@ import { Classification, ReleaseLabel, VirtualClusterInput } from '../../lib/emr
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test');
+const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-all-services-integ');
 
-const createVirtualCluster = new emrcontainers.CfnVirtualCluster(stack, 'Create a virtual cluster', {
-  containerProvider: {
-    id: 'test-eks',
-    info: {
-      eksInfo: {
-        namespace: 'spark2',
-      },
-    },
-    type: 'EKS',
-  },
-  name: 'Virtual Cluster Name',
+const eksCluster = eks.Cluster.fromClusterAttributes(stack, 'EKS Cluster', {
+  clusterName: 'test-eks',
+});
+
+const createVirtualCluster = new EmrContainersEksCreateVirtualCluster(stack, 'Create a virtual Cluster', {
+  eksNamespace: 'spark2',
+  eksCluster: EksClusterInput.fromCluster(eksCluster),
+  resultPath: '$.cluster',
 });
 
 const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
-  virtualCluster: VirtualClusterInput.fromVirtualClusterId(createVirtualCluster.attrId),
+  virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.cluster.Id')),
   releaseLabel: ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
+  executionRole: iam.Role.fromRoleArn(stack, 'Job-Execution-Role', 'arn:aws:iam::070850498885:role/Job-Execution-Role'),
   jobDriver: {
     sparkSubmitJobDriver: {
       entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
@@ -43,6 +43,7 @@ const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   },
   monitoring: {
     logging: true,
+    persistentAppUI: true,
   },
   applicationConfig: [{
     classification: Classification.SPARK_DEFAULTS,
@@ -51,13 +52,22 @@ const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
       'spark.executor.memory': '512M',
     },
   }],
+  resultPath: '$.job',
 });
 
-const chain = sfn.Chain.start(startJobRunJob);
+
+const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'Delete a Virtual Cluster', {
+  virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.job.VirtualClusterId'),
+});
+
+const chain = sfn.Chain
+  .start(createVirtualCluster)
+  .next(startJobRunJob)
+  .next(deleteVirtualCluster);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,
-  timeout: cdk.Duration.seconds(1000),
+  timeout: cdk.Duration.minutes(20),
 });
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {
