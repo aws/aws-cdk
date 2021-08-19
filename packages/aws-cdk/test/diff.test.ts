@@ -121,16 +121,6 @@ test('throws an error during diffs on stack with error metadata', async () => {
   })).rejects.toThrow(/Found errors/);
 });
 
-test('throws an error if no valid stack names given', async () => {
-  const buffer = new StringWritable();
-
-  // WHEN
-  await expect(() => toolkit.diff({
-    stackNames: ['X', 'Y', 'Z'],
-    stream: buffer,
-  })).rejects.toThrow('No stacks match the name(s) X,Y,Z');
-});
-
 class StringWritable extends Writable {
   public data: string;
   private readonly _decoder: NodeStringDecoder;
