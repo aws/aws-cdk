@@ -141,6 +141,31 @@ describe('code-first implementation through GraphQL Api functions`', () => {
       Definition: `${out}`,
     });
   });
+
+  test('addSubscription allows for adding fields but not resolvable fields', () => {
+    const ds = api.addNoneDataSource('DS');
+
+    // WHEN
+    api.addMutation('addId', new appsync.ResolvableField({
+      returnType: t.required_id,
+      args: { id: t.required_id },
+      dataSource: ds,
+    }));
+    api.addSubscription('addedId', new appsync.Field({
+      returnType: t.required_id,
+      args: { id: t.required_id },
+      directives: [appsync.Directive.subscribe('addId')],
+    }));
+
+    const schemaDef = 'schema {\n  mutation: Mutation\n  subscription: Subscription\n}\n';
+    const mutationDef = 'type Mutation {\n  addId(id: ID!): ID!\n}\n';
+    const subscriptionDef = 'type Subscription {\n  addedId(id: ID!): ID!\n  @aws_subscribe(mutations: ["addId"])\n}\n';
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
+      Definition: `${schemaDef}${mutationDef}${subscriptionDef}`,
+    });
+  });
 });
 
 describe('code-first implementation through Schema functions`', () => {
