@@ -7,7 +7,7 @@ scriptdir=$(cd $(dirname $0) && pwd)
 # to the root folder's node_modules/.bin. This allows yarn to find the executables
 # it needs (e.g., jsii-rosetta) for the build.
 createSymlinks() {
-  find . ! -path "$1" -type d -maxdepth 1 \
+  find "$1" ! -path "$1" -type d -maxdepth 1 \
     -exec mkdir -p {}/node_modules \; \
     -exec ln -sf "${scriptdir}"/../node_modules/.bin {}/node_modules \;
 }
