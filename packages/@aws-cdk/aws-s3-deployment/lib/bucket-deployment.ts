@@ -196,8 +196,15 @@ export class BucketDeployment extends CoreConstruct {
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
-    if (props.distributionPaths && !props.distribution) {
-      throw new Error('Distribution must be specified if distribution paths are specified');
+    if (props.distributionPaths) {
+      if (!props.distribution) {
+        throw new Error('Distribution must be specified if distribution paths are specified');
+      }
+      if (!cdk.Token.isUnresolved(props.distributionPaths)) {
+        if (!props.distributionPaths.every(distributionPath => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
+          throw new Error('Distribution paths must start with "/"');
+        }
+      }
     }
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
