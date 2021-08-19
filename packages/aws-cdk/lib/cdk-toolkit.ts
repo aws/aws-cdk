@@ -397,7 +397,7 @@ export class CdkToolkit {
       defaultBehavior: DefaultSelection.OnlySingle,
     });
 
-    await this.validateStacks(stacks, selector.patterns);
+    await this.validateStacks(stacks);
 
     return stacks;
   }
@@ -415,7 +415,7 @@ export class CdkToolkit {
       ? allStacks.filter(art => art.validateOnSynth ?? false)
       : new StackCollection(assembly, []);
 
-    await this.validateStacks(selectedForDiff.concat(autoValidateStacks), stackNames);
+    await this.validateStacks(selectedForDiff.concat(autoValidateStacks));
 
     return selectedForDiff;
   }
@@ -435,11 +435,7 @@ export class CdkToolkit {
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
-  private async validateStacks(stacks: StackCollection, stackNames: string[]) {
-    if (stacks.stackCount == 0) {
-      throw new Error(`No stacks match the name(s) ${stackNames}`);
-    }
-
+  private async validateStacks(stacks: StackCollection) {
     stacks.processMetadataMessages({
       ignoreErrors: this.props.ignoreErrors,
       strict: this.props.strict,
