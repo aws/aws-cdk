@@ -21,7 +21,14 @@ if sys.argv[2] == "cp" and not sys.argv[4].startswith("s3://"):
     sys.argv[4] = "archive.zip"
 
 if sys.argv[2] == "sync":
-    sys.argv[4 if '--delete' in sys.argv else 3] = "contents.zip"
+    contentsIdx = 3
+    if '--include' in sys.argv:
+      contentsIdx += sys.argv.count("--include") * 2
+    if '--exclude' in sys.argv:
+      contentsIdx += sys.argv.count("--exclude") * 2
+    if '--delete' in sys.argv:
+      contentsIdx += 1
+    sys.argv[contentsIdx] = "contents.zip"
 
 with open("./aws.out", "a") as myfile:
     myfile.write(json.dumps(sys.argv[1:]) + "\n")
