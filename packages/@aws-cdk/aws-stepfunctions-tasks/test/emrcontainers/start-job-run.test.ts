@@ -236,9 +236,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual(expect.not.objectContaining({
-      Type: 'AWS::CloudFormation::CustomResource',
-    }));
+    expect(stack).not.toHaveResource('AWS::CloudFormation::CustomResource');
   });
 
   test('Virtual Cluster Input from virtualClusterId', () => {
@@ -407,8 +405,8 @@ describe('Invoke EMR Containers Start Job Run with Monitoring ', () => {
 
   test('provided from user', () => {
     // WHEN
-    const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Monitoring Group', 'provided log group');
-    const s3Bucket = s3.Bucket.fromBucketName(stack, 'Monitoring Bucket', 'provided bucket');;
+    const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Monitoring Group', 'providedloggroup');
+    const s3Bucket = s3.Bucket.fromBucketName(stack, 'Monitoring Bucket', 'providedbucket');;
     const prefixName = 'prefix';
 
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
@@ -1080,50 +1078,6 @@ test('Custom resource is created that has correct EKS namespace, environment, AW
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
-    Code: {
-      S3Bucket: {
-        Ref: 'AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3BucketA4134174',
-      },
-      S3Key: {
-        'Fn::Join': [
-          '',
-          [
-            {
-              'Fn::Select': [
-                0,
-                {
-                  'Fn::Split': [
-                    '||',
-                    {
-                      Ref: 'AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3VersionKey8D410D66',
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              'Fn::Select': [
-                1,
-                {
-                  'Fn::Split': [
-                    '||',
-                    {
-                      Ref: 'AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3VersionKey8D410D66',
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        ],
-      },
-    },
-    Role: {
-      'Fn::GetAtt': [
-        'SingletonLambda8693BB64968944B69AAFB0CC9EB8757CServiceRoleF99BDB4C',
-        'Arn',
-      ],
-    },
     Environment: {
       Variables: {
         eksNamespace: {
@@ -1169,5 +1123,3 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
 });
-
-

@@ -30,7 +30,7 @@ const createVirtualCluster = new EmrContainersEksCreateVirtualCluster(stack, 'Cr
   resultPath: '$.cluster',
 });
 
-const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
+const startJobRun = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.cluster.Id')),
   releaseLabel: ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
@@ -63,7 +63,7 @@ const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'Delet
 
 const chain = sfn.Chain
   .start(createVirtualCluster)
-  .next(startJobRunJob)
+  .next(startJobRun)
   .next(deleteVirtualCluster);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {

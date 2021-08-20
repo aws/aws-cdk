@@ -16,7 +16,7 @@ import { Classification, ReleaseLabel, VirtualClusterInput } from '../../lib/emr
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test');
 
-const createVirtualCluster = new cdk.CfnResource(stack, 'Create-a-virtual-cluster', {
+const virtualCluster = new cdk.CfnResource(stack, 'Virtual Cluster', {
   type: 'AWS::EMRContainers::VirtualCluster',
   properties: {
     ContainerProvider: {
