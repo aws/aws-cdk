@@ -653,7 +653,7 @@ nodeunitShim({
 
       //THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: 'com.amazonaws.cn-northwest-1.ecs',
+        ServiceName: 'com.amazonaws.cn-north-1.ecs',
       }));
 
       test.done();
