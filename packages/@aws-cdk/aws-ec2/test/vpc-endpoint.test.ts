@@ -607,5 +607,73 @@ nodeunitShim({
       }));
       test.done();
     },
+    'test vpc interface endpoint with cn.com.amazonaws prefix can be created correctly in cn-north-1'(test: Test) {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-north-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('ECR Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECR,
+      });
+
+      //THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'cn.com.amazonaws.cn-north-1.ecr.api',
+      }));
+
+      test.done();
+    },
+    'test vpc interface endpoint with cn.com.amazonaws prefix can be created correctly in cn-northwest-1'(test: Test) {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-northwest-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('Lambda Endpoint', {
+        service: InterfaceVpcEndpointAwsService.LAMBDA,
+      });
+
+      //THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'cn.com.amazonaws.cn-northwest-1.lambda',
+      }));
+
+      test.done();
+    },
+    'test vpc interface endpoint without cn.com.amazonaws prefix can be created correctly in cn-north-1'(test: Test) {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-north-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('ECS Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECS,
+      });
+
+      //THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.cn-northwest-1.ecs',
+      }));
+
+      test.done();
+    },
+    'test vpc interface endpoint without cn.com.amazonaws prefix can be created correctly in cn-northwest-1'(test: Test) {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-northwest-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('Glue Endpoint', {
+        service: InterfaceVpcEndpointAwsService.GLUE,
+      });
+
+      //THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.cn-northwest-1.glue',
+      }));
+
+      test.done();
+    },
   },
 });

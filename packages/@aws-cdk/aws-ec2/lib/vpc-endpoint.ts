@@ -326,8 +326,31 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     const region = Lazy.uncachedString({
       produce: (context) => Stack.of(context.scope).region,
     });
-    this.name = `${prefix || 'com.amazonaws'}.${region}.${name}`;
+    const regionPrefix =Lazy.uncachedString({
+      produce: (context) => {
+        const regionName = Stack.of(context.scope).region;
+        return this.getDefaultEndpointPrefix(name, regionName);
+      },
+    });
+
+    this.name = `${prefix || regionPrefix}.${region}.${name}`;
     this.port = port || 443;
+  }
+
+  /**
+   * Get the endpoint prefix for the service in the specified region
+   * because the prefix for some of the services in cn-north-1 and cn-northwest-1 are different
+   */
+  private getDefaultEndpointPrefix(name: string, region: string) {
+    const VPC_ENDPOINT_SERVICE_EXCEPTIONS: { [region: string]: string[] } = {
+      'cn-north-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra', 'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder', 'iotsitewise.api', 'iotsitewise.data', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'synthetics', 'transcribe.cn', 'transcribestreaming', 'transfer', 'xray'],
+      'cn-northwest-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra', 'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'synthetics', 'transcribe.cn', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
+    };
+    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS.hasOwnProperty(region) && VPC_ENDPOINT_SERVICE_EXCEPTIONS[region].includes(name)) {
+      return 'cn.com.amazonaws';
+    } else {
+      return 'com.amazonaws';
+    }
   }
 }
 
