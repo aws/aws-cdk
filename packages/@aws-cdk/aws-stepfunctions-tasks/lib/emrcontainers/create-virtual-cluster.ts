@@ -115,7 +115,7 @@ export class EmrContainersEksCreateVirtualCluster extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('emr-containers', 'createVirtualCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        Name: this.props.virtualClusterName ?? sfn.JsonPath.stringAt('States.Format(\'{}/{}\', $$.Execution.Name, $$.StateMachine.Name)'),
+        Name: this.props.virtualClusterName ?? sfn.JsonPath.stringAt('States.Format(\'{}/{}\', $$.Execution.Name, $$.State.Name)'),
         ContainerProvider: {
           Id: this.props.eksCluster.clusterName,
           Info: {
