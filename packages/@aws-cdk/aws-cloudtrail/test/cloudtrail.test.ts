@@ -299,11 +299,59 @@ describe('cloudtrail', () => {
         });
       });
 
+      test('enabled implicitly by LogGroup', () => {
+        const stack = getTestStack();
+        const cloudWatchLogGroup = new LogGroup(stack, 'MyLogGroup', {
+          retention: RetentionDays.FIVE_DAYS,
+        });
+        new Trail(stack, 'MyAmazingCloudTrail', {
+          cloudWatchLogGroup,
+        });
+
+        expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+          RetentionInDays: 5,
+        });
+
+        expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+          CloudWatchLogsLogGroupArn: stack.resolve(cloudWatchLogGroup.logGroupArn),
+        });
+
+        expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [{
+              Resource: stack.resolve(cloudWatchLogGroup.logGroupArn),
+            }],
+          },
+        });
+      });
+
+      test('enabled implicitly by LogRetention', () => {
+        const stack = getTestStack();
+
+        new Trail(stack, 'MyAmazingCloudTrail', {
+          cloudWatchLogsRetention: RetentionDays.FIVE_DAYS,
+        });
+
+        expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+          RetentionInDays: 5,
+        });
+
+        expect(stack).toHaveResource('AWS::CloudTrail::Trail');
+
+        expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [{
+              Effect: 'Allow',
+              Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
+            }],
+          },
+        });
+      });
+
       test('disabled', () => {
         const stack = getTestStack();
         const t = new Trail(stack, 'MyAmazingCloudTrail', {
           sendToCloudWatchLogs: false,
-          cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
         });
         expect(t.logGroup).toBeUndefined();
         expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
