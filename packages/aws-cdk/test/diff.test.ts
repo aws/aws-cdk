@@ -96,6 +96,16 @@ test('exits with 1 with diffs and fail set to true', async () => {
   expect(exitCode).toBe(1);
 });
 
+test('throws an error if no valid stack names given', async () => {
+  const buffer = new StringWritable();
+
+  // WHEN
+  await expect(() => toolkit.diff({
+    stackNames: ['X', 'Y', 'Z'],
+    stream: buffer,
+  })).rejects.toThrow('No stacks match the name(s) X,Y,Z');
+});
+
 test('exits with 1 with diff in first stack, but not in second stack and fail set to true', async () => {
   // GIVEN
   const buffer = new StringWritable();
