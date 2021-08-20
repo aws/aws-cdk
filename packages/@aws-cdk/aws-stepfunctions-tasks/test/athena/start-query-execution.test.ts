@@ -153,4 +153,48 @@ describe('Start Query Execution', () => {
       },
     });
   });
+
+  // No preset execution context
+  test('missing executioncontext', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = new AthenaStartQueryExecution(stack, 'Query', {
+      queryString: 'CREATE DATABASE database',
+      clientRequestToken: 'unique-client-request-token',
+      resultConfiguration: {
+        outputLocation: {
+          bucketName: 'query-results-bucket',
+          objectKey: 'folder',
+        },
+      },
+    });
+
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::athena:startQueryExecution',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        QueryString: 'CREATE DATABASE database',
+        ClientRequestToken: 'unique-client-request-token',
+        ResultConfiguration: {
+          OutputLocation: 's3://query-results-bucket/folder/',
+        },
+      },
+    });
+  });
 });

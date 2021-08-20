@@ -183,40 +183,35 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
+
+    let renderedObject = {
+      Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
+      Parameters: {
+        QueryString: this.props.queryString,
+        ClientRequestToken: this.props.clientRequestToken,
+        QueryExecutionContext: {
+          Catalog: this.props.queryExecutionContext?.catalogName,
+          Database: this.props.queryExecutionContext?.databaseName,
+        },
+        ResultConfiguration: {
+          EncryptionConfiguration: this.renderEncryption(),
+        },
+        WorkGroup: this.props?.workGroup,
+      },
+    };
+
     if (this.props.resultConfiguration?.outputLocation) {
-      return {
-        Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          QueryString: this.props.queryString,
-          ClientRequestToken: this.props.clientRequestToken,
-          QueryExecutionContext: {
-            Catalog: this.props.queryExecutionContext?.catalogName,
-            Database: this.props.queryExecutionContext?.databaseName,
-          },
-          ResultConfiguration: {
-            EncryptionConfiguration: this.renderEncryption(),
-            OutputLocation: `s3://${this.props.resultConfiguration?.outputLocation?.bucketName}/${this.props.resultConfiguration?.outputLocation?.objectKey}/`,
-          },
-          WorkGroup: this.props.workGroup,
-        }),
+      const customResultConfiguration = {
+        OutputLocation: `s3://${this.props.resultConfiguration?.outputLocation?.bucketName}/${this.props.resultConfiguration?.outputLocation?.objectKey}/`,
       };
-    } else {
-      return {
-        Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          QueryString: this.props.queryString,
-          ClientRequestToken: this.props.clientRequestToken,
-          QueryExecutionContext: {
-            Catalog: this.props.queryExecutionContext?.catalogName,
-            Database: this.props.queryExecutionContext?.databaseName,
-          },
-          ResultConfiguration: {
-            EncryptionConfiguration: this.renderEncryption(),
-          },
-          WorkGroup: this.props.workGroup,
-        }),
-      };
+      renderedObject.Parameters.ResultConfiguration = Object.assign(renderedObject.Parameters.ResultConfiguration, customResultConfiguration);
     }
+
+    if (!renderedObject.Parameters.QueryExecutionContext.Catalog && !renderedObject.Parameters.QueryExecutionContext.Database) {
+      delete renderedObject.Parameters.QueryExecutionContext;
+    }
+
+    return { Resource: renderedObject.Resource, Parameters: sfn.FieldUtils.renderObject(renderedObject.Parameters) };
   }
 }
 
