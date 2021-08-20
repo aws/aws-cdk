@@ -53,6 +53,9 @@ def helm_handler(event, context):
         '--kubeconfig', kubeconfig
     ])
 
+    if os.path.isfile(kubeconfig):
+        os.chmod(kubeconfig, 0o600)
+
     # Write out the values to a file and include them with the install and upgrade
     values_file = None
     if not request_type == "Delete" and not values_text is None:
