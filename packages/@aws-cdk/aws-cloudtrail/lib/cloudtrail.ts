@@ -60,6 +60,7 @@ export interface TrailProps {
   /**
    * If CloudTrail pushes logs to CloudWatch Logs in addition to S3.
    * Disabled for cost out of the box.
+   * Enabled if cloudWatchLogGroup or cloudWatchLogsRetention is provided.
    *
    * @default false
    */
@@ -235,7 +236,7 @@ export class Trail extends Resource {
 
     let logsRole: iam.IRole | undefined;
 
-    if (props.sendToCloudWatchLogs) {
+    if (props.sendToCloudWatchLogs || props.cloudWatchLogGroup || props.cloudWatchLogsRetention) {
       if (props.cloudWatchLogGroup) {
         this.logGroup = props.cloudWatchLogGroup;
       } else {
