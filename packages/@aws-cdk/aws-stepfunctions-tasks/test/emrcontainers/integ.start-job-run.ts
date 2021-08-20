@@ -33,7 +33,7 @@ const virtualCluster = new cdk.CfnResource(stack, 'Virtual Cluster', {
 });
 
 const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
-  virtualCluster: VirtualClusterInput.fromVirtualClusterId(cdk.Token.asString(createVirtualCluster.getAtt('Id'))),
+  virtualCluster: VirtualClusterInput.fromVirtualClusterId(createVirtualCluster.getAtt('Id').toString()),
   releaseLabel: ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
   jobDriver: {
