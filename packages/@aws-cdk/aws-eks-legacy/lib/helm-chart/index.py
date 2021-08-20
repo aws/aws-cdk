@@ -18,7 +18,6 @@ kubeconfig = os.path.join(outdir, 'kubeconfig')
 CFN_SUCCESS = "SUCCESS"
 CFN_FAILED = "FAILED"
 
-
 def handler(event, context):
 
     def cfn_error(message=None):
