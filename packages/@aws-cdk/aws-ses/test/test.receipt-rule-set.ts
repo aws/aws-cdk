@@ -30,6 +30,12 @@ export = {
     // WHEN
     new ReceiptRuleSet(stack, 'RuleSet', {
       dropSpam: true,
+      rules: [
+        {
+          scanEnabled: true,
+          recipients: ['foo@example.com'],
+        },
+      ],
     });
 
     // THEN
@@ -50,6 +56,20 @@ export = {
         ],
         Enabled: true,
         ScanEnabled: true,
+      },
+    }));
+
+    expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
+      Rule: {
+        Enabled: true,
+        Recipients: [
+          'foo@example.com',
+        ],
+        ScanEnabled: true,
+      },
+      // All "regular" rules should come after the drop spam rule
+      After: {
+        Ref: 'RuleSetDropSpamRule5809F51B',
       },
     }));
 
