@@ -190,7 +190,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
             } : undefined,
           },
         },
-        Tags: this.renderTags(this.props.tags),
+        Tags: this.props.tags,
       }),
     };
   }
@@ -227,10 +227,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
 
   private isArrayOfStrings(value: any): boolean {
     return Array.isArray(value) && value.every(item => typeof item === 'string');
-  }
-
-  private renderTags(tags?: { [key: string]: any }): { Key: string, Value: string }[] {
-    return tags ? Object.entries(tags).map(([key, value]) => ({ Key: key, Value: value })) : [];
   }
 
   // https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html

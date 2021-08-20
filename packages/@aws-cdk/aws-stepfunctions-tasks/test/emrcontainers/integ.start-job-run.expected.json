@@ -1,6 +1,21 @@
 {
   "Resources": {
-    "EMRContainersStartJobRunMonitoringLogGroup882D450C": {
+    "Createavirtualcluster": {
+      "Type": "AWS::EMRContainers::VirtualCluster",
+      "Properties": {
+        "ContainerProvider": {
+          "Id": "test-eks",
+          "Info": {
+            "EksInfo": {
+              "Namespace": "spark2"
+            }
+          },
+          "Type": "EKS"
+        },
+        "Name": "Virtual-Cluster-Name"
+      }
+    },
+    "StartaJobRunMonitoringLogGroupD033B7AF": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
         "RetentionInDays": 731
@@ -8,12 +23,12 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "EMRContainersStartJobRunMonitoringBucket8BB3FC54": {
+    "StartaJobRunMonitoringBucket899C33D9": {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "EMRContainersStartJobRunJobExecutionRole40B8DD81": {
+    "StartaJobRunJobExecutionRole157B6BE1": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -44,7 +59,7 @@
         }
       }
     },
-    "EMRContainersStartJobRunJobExecutionRoleDefaultPolicyCDBDF13E": {
+    "StartaJobRunJobExecutionRoleDefaultPolicyEA7882C0": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -62,7 +77,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "EMRContainersStartJobRunMonitoringBucket8BB3FC54",
+                    "StartaJobRunMonitoringBucket899C33D9",
                     "Arn"
                   ]
                 },
@@ -72,7 +87,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "EMRContainersStartJobRunMonitoringBucket8BB3FC54",
+                          "StartaJobRunMonitoringBucket899C33D9",
                           "Arn"
                         ]
                       },
@@ -90,7 +105,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "EMRContainersStartJobRunMonitoringLogGroup882D450C",
+                  "StartaJobRunMonitoringLogGroupD033B7AF",
                   "Arn"
                 ]
               }
@@ -100,7 +115,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "EMRContainersStartJobRunMonitoringLogGroup882D450C",
+                  "StartaJobRunMonitoringLogGroupD033B7AF",
                   "Arn"
                 ]
               }
@@ -113,15 +128,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "EMRContainersStartJobRunJobExecutionRoleDefaultPolicyCDBDF13E",
+        "PolicyName": "StartaJobRunJobExecutionRoleDefaultPolicyEA7882C0",
         "Roles": [
           {
-            "Ref": "EMRContainersStartJobRunJobExecutionRole40B8DD81"
+            "Ref": "StartaJobRunJobExecutionRole157B6BE1"
           }
         ]
       }
     },
-    "EMRContainersStartJobRunGetEksClusterInfoCustomResourcePolicy59A231FB": {
+    "StartaJobRunGetEksClusterInfoCustomResourcePolicy7AA7B106": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -134,7 +149,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "EMRContainersStartJobRunGetEksClusterInfoCustomResourcePolicy59A231FB",
+        "PolicyName": "StartaJobRunGetEksClusterInfoCustomResourcePolicy7AA7B106",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -142,7 +157,7 @@
         ]
       }
     },
-    "EMRContainersStartJobRunGetEksClusterInfoE11EB993": {
+    "StartaJobRunGetEksClusterInfoD0E31373": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
@@ -151,16 +166,30 @@
             "Arn"
           ]
         },
-        "Create": "{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"frv3my91yzjr1g0ha2h91obx3\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}",
+        "Create": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"",
+              {
+                "Fn::GetAtt": [
+                  "Createavirtualcluster",
+                  "Id"
+                ]
+              },
+              "\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}"
+            ]
+          ]
+        },
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "EMRContainersStartJobRunGetEksClusterInfoCustomResourcePolicy59A231FB"
+        "StartaJobRunGetEksClusterInfoCustomResourcePolicy7AA7B106"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "EMRContainersStartJobRunawsclilayerB42D57FE": {
+    "StartaJobRunawsclilayer110EEF0B": {
       "Type": "AWS::Lambda::LayerVersion",
       "Properties": {
         "Content": {
@@ -204,7 +233,7 @@
         "Description": "/opt/awscli/aws"
       }
     },
-    "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleD12CFCFD": {
+    "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -235,7 +264,7 @@
         ]
       }
     },
-    "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy280C9AB2": {
+    "StartaJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy95FB1565": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -253,15 +282,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy280C9AB2",
+        "PolicyName": "StartaJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy95FB1565",
         "Roles": [
           {
-            "Ref": "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleD12CFCFD"
+            "Ref": "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464"
           }
         ]
       }
     },
-    "EMRContainersStartJobRunCustomResourceProviderframeworkonEvent98F54BA8": {
+    "StartaJobRunCustomResourceProviderframeworkonEventAC961165": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -304,11 +333,11 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleD12CFCFD",
+            "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464",
             "Arn"
           ]
         },
-        "Description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/EMR Containers Start Job Run/CustomResourceProvider)",
+        "Description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/Start a Job Run/CustomResourceProvider)",
         "Environment": {
           "Variables": {
             "USER_ON_EVENT_FUNCTION_ARN": {
@@ -324,16 +353,16 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy280C9AB2",
-        "EMRContainersStartJobRunCustomResourceProviderframeworkonEventServiceRoleD12CFCFD"
+        "StartaJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy95FB1565",
+        "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464"
       ]
     },
-    "EMRContainersStartJobRunCustomResource1F296E66": {
+    "StartaJobRunCustomResource3BD90664": {
       "Type": "AWS::CloudFormation::CustomResource",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
-            "EMRContainersStartJobRunCustomResourceProviderframeworkonEvent98F54BA8",
+            "StartaJobRunCustomResourceProviderframeworkonEventAC961165",
             "Arn"
           ]
         }
@@ -485,7 +514,7 @@
                     ":cluster/",
                     {
                       "Fn::GetAtt": [
-                        "EMRContainersStartJobRunGetEksClusterInfoE11EB993",
+                        "StartaJobRunGetEksClusterInfoD0E31373",
                         "virtualCluster.containerProvider.id"
                       ]
                     }
@@ -501,7 +530,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "EMRContainersStartJobRunJobExecutionRole40B8DD81",
+                  "StartaJobRunJobExecutionRole157B6BE1",
                   "Arn"
                 ]
               }
@@ -568,25 +597,25 @@
           "Variables": {
             "eksNamespace": {
               "Fn::GetAtt": [
-                "EMRContainersStartJobRunGetEksClusterInfoE11EB993",
+                "StartaJobRunGetEksClusterInfoD0E31373",
                 "virtualCluster.containerProvider.info.eksInfo.namespace"
               ]
             },
             "eksClusterId": {
               "Fn::GetAtt": [
-                "EMRContainersStartJobRunGetEksClusterInfoE11EB993",
+                "StartaJobRunGetEksClusterInfoD0E31373",
                 "virtualCluster.containerProvider.id"
               ]
             },
             "roleName": {
-              "Ref": "EMRContainersStartJobRunJobExecutionRole40B8DD81"
+              "Ref": "StartaJobRunJobExecutionRole157B6BE1"
             }
           }
         },
         "Handler": "index.handler",
         "Layers": [
           {
-            "Ref": "EMRContainersStartJobRunawsclilayerB42D57FE"
+            "Ref": "StartaJobRunawsclilayer110EEF0B"
           }
         ],
         "MemorySize": 256,
@@ -637,7 +666,7 @@
                 "StringEquals": {
                   "emr-containers:ExecutionRoleArn": {
                     "Fn::GetAtt": [
-                      "EMRContainersStartJobRunJobExecutionRole40B8DD81",
+                      "StartaJobRunJobExecutionRole157B6BE1",
                       "Arn"
                     ]
                   }
@@ -660,7 +689,13 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":/virtualclusters/frv3my91yzjr1g0ha2h91obx3"
+                    ":/virtualclusters/",
+                    {
+                      "Fn::GetAtt": [
+                        "Createavirtualcluster",
+                        "Id"
+                      ]
+                    }
                   ]
                 ]
               }
@@ -687,7 +722,14 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":/virtualclusters/frv3my91yzjr1g0ha2h91obx3/jobruns/*"
+                    ":/virtualclusters/",
+                    {
+                      "Fn::GetAtt": [
+                        "Createavirtualcluster",
+                        "Id"
+                      ]
+                    },
+                    "/jobruns/*"
                   ]
                 ]
               }
@@ -716,24 +758,31 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"EMR Containers Start Job Run\",\"States\":{\"EMR Containers Start Job Run\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              "{\"StartAt\":\"Start a Job Run\",\"States\":{\"Start a Job Run\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::emr-containers:startJobRun.sync\",\"Parameters\":{\"VirtualClusterId\":\"frv3my91yzjr1g0ha2h91obx3\",\"Name\":\"EMR-Containers-Job\",\"ExecutionRoleArn\":\"",
+              ":states:::emr-containers:startJobRun.sync\",\"Parameters\":{\"VirtualClusterId\":\"",
               {
                 "Fn::GetAtt": [
-                  "EMRContainersStartJobRunJobExecutionRole40B8DD81",
+                  "Createavirtualcluster",
+                  "Id"
+                ]
+              },
+              "\",\"Name\":\"EMR-Containers-Job\",\"ExecutionRoleArn\":\"",
+              {
+                "Fn::GetAtt": [
+                  "StartaJobRunJobExecutionRole157B6BE1",
                   "Arn"
                 ]
               },
               "\",\"ReleaseLabel\":\"emr-6.2.0-latest\",\"JobDriver\":{\"SparkSubmitJobDriver\":{\"EntryPoint\":\"local:///usr/lib/spark/examples/src/main/python/pi.py\",\"EntryPointArguments\":[\"2\"],\"SparkSubmitParameters\":\"--conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false\"}},\"ConfigurationOverrides\":{\"ApplicationConfiguration\":[{\"Classification\":\"spark-defaults\",\"Properties\":{\"spark.executor.instances\":\"1\",\"spark.executor.memory\":\"512M\"}}],\"MonitoringConfiguration\":{\"CloudWatchMonitoringConfiguration\":{\"LogGroupName\":\"",
               {
-                "Ref": "EMRContainersStartJobRunMonitoringLogGroup882D450C"
+                "Ref": "StartaJobRunMonitoringLogGroupD033B7AF"
               },
               "\"},\"PersistentAppUI\":\"ENABLED\",\"S3MonitoringConfiguration\":{\"LogUri\":\"s3://",
               {
-                "Ref": "EMRContainersStartJobRunMonitoringBucket8BB3FC54"
+                "Ref": "StartaJobRunMonitoringBucket899C33D9"
               },
               "\"}}}}}},\"TimeoutSeconds\":1000}"
             ]

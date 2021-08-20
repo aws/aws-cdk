@@ -41,7 +41,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
       },
       End: true,
       Parameters: {
-        'Name.$': '$$.Execution.Name',
+        'Name.$': "States.Format('{}/{}', $$.Execution.Name, $$.StateMachine.Name)",
         'ContainerProvider': {
           Id: clusterId,
           Info: {
@@ -138,10 +138,9 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        Tags: [{
-          Key: 'key',
-          Value: 'value',
-        }],
+        Tags: {
+          key: 'value',
+        },
       },
     });
   });

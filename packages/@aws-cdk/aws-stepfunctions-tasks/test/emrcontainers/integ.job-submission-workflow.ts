@@ -24,6 +24,7 @@ const eksCluster = eks.Cluster.fromClusterAttributes(stack, 'EKS Cluster', {
 });
 
 const createVirtualCluster = new EmrContainersEksCreateVirtualCluster(stack, 'Create a virtual Cluster', {
+  virtualClusterName: 'Virtual-Cluster-Name',
   eksNamespace: 'spark2',
   eksCluster: EksClusterInput.fromCluster(eksCluster),
   resultPath: '$.cluster',

@@ -1,5 +1,4 @@
 //import * as iam from '@aws-cdk/aws-iam';
-import * as emrcontainers from '@aws-cdk/aws-emrcontainers';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { EmrContainersStartJobRun } from '../../lib';
@@ -17,21 +16,24 @@ import { Classification, ReleaseLabel, VirtualClusterInput } from '../../lib/emr
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test');
 
-const createVirtualCluster = new emrcontainers.CfnVirtualCluster(stack, 'Create a virtual cluster', {
-  containerProvider: {
-    id: 'test-eks',
-    info: {
-      eksInfo: {
-        namespace: 'spark2',
+const createVirtualCluster = new cdk.CfnResource(stack, 'Create-a-virtual-cluster', {
+  type: 'AWS::EMRContainers::VirtualCluster',
+  properties: {
+    ContainerProvider: {
+      Id: 'test-eks',
+      Info: {
+        EksInfo: {
+          Namespace: 'spark2',
+        },
       },
+      Type: 'EKS',
     },
-    type: 'EKS',
+    Name: 'Virtual-Cluster-Name',
   },
-  name: 'Virtual Cluster Name',
 });
 
 const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
-  virtualCluster: VirtualClusterInput.fromVirtualClusterId(createVirtualCluster.attrId),
+  virtualCluster: VirtualClusterInput.fromVirtualClusterId(cdk.Token.asString(createVirtualCluster.getAtt('Id'))),
   releaseLabel: ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
   jobDriver: {
