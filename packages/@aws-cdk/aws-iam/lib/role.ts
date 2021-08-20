@@ -338,6 +338,8 @@ export class Role extends Resource implements IRole {
       throw new Error('Role description must be no longer than 1000 characters.');
     }
 
+    validateRolePath(props.path);
+
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: UniqueStringSet.from(() => this.managedPolicies.map(p => p.managedPolicyArn)),
@@ -450,6 +452,7 @@ export class Role extends Resource implements IRole {
     for (const policy of Object.values(this.inlinePolicies)) {
       errors.push(...policy.validateForIdentityPolicy());
     }
+
     return errors;
   }
 }
@@ -495,6 +498,20 @@ function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
   const doc = new PolicyDocument();
   doc.addStatements(statement);
   return doc;
+}
+
+function validateRolePath(path?: string) {
+  if (path === undefined || Token.isUnresolved(path)) {
+    return;
+  }
+
+  const validRolePath = /^(\/|\/[\u0021-\u007F]+\/)$/;
+
+  if (path.length == 0 || path.length > 512) {
+    throw new Error(`role path is set to ${path}, but the length must be >= 1 and <= 512.`);
+  } else if (!validRolePath.test(path)) {
+    throw new Error(`role path is set to ${path}, but must match ${validRolePath.toString()}.`);
+  }
 }
 
 function validateMaxSessionDuration(duration?: number) {

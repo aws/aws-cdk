@@ -234,6 +234,49 @@ describe('IAM role', () => {
     });
   });
 
+  describe('role path', () => {
+    test('can be used to specify the path', () => {
+      const stack = new Stack();
+
+      new Role(stack, 'MyRole', { path: '/', assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+
+      expect(stack).toHaveResource('AWS::IAM::Role', {
+        Path: '/',
+      });
+    });
+
+    test('must be between 1 chars and 512 chars', () => {
+      const stack = new Stack();
+
+      const assumedBy = new ServicePrincipal('bla');
+
+      new Role(stack, 'MyRole1', { assumedBy, path: '/' });
+      new Role(stack, 'MyRole2', { assumedBy, path: '/p/a/t/h/' });
+
+      const expected = (val: any) => `role path is set to ${val}, but the length must be >= 1 and <= 512.`;
+      expect(() => new Role(stack, 'MyRole3', { assumedBy, path: '' }))
+        .toThrow(expected(''));
+      expect(() => new Role(stack, 'MyRole4', { assumedBy, path: '/' + Array(512).join('a') + '/' }))
+        .toThrow(expected('/' + Array(512).join('a') + '/'));
+    });
+
+    test('must match regular expression', () => {
+      const stack = new Stack();
+
+      const assumedBy = new ServicePrincipal('bla');
+
+      const expected = (val: any) => `role path is set to ${val}, but must match /^(\\/|\\/[\\u0021-\\u007F]+\\/)$/.`;
+      expect(() => new Role(stack, 'MyRole1', { assumedBy, path: 'aaa' }))
+        .toThrow(expected('aaa'));
+      expect(() => new Role(stack, 'MyRole2', { assumedBy, path: '/a' }))
+        .toThrow(expected('/a'));
+      expect(() => new Role(stack, 'MyRole3', { assumedBy, path: '/\u0020/' }))
+        .toThrow(expected('/\u0020/'));
+      expect(() => new Role(stack, 'MyRole4', { assumedBy, path: '/\u0080/' }))
+        .toThrow(expected('/\u0080/'));
+    });
+  });
+
   describe('maxSessionDuration', () => {
 
     test('is not specified by default', () => {
