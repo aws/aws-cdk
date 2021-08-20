@@ -7,6 +7,9 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 It uses the [.NET Core CLI](https://docs.microsoft.com/dotnet/articles/core/) to compile and execute your project.
 
+## Tutorial  
+See [this useful workshop](https://cdkworkshop.com/40-dotnet.html) on working with the AWS CDK for C# projects.
+
 ## Useful commands
 
 * `dotnet build src` compile this app
