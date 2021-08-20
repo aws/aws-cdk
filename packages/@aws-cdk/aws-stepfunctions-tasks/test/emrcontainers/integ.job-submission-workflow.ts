@@ -1,3 +1,4 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -9,8 +10,10 @@ import {
 
 /**
  * Stack verification steps:
- * Everything in the link below must be setup before running the state machine.
- * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html
+ * Everything in the links below must be setup for the EKS Cluster and Execution Role before running the state machine.
+ * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-cluster-access.html
+ * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-enable-IAM.html
+ * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html
  *
  * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
  * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED
@@ -19,13 +22,21 @@ import {
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-all-services-integ');
 
-const eksCluster = eks.Cluster.fromClusterAttributes(stack, 'EKS Cluster', {
-  clusterName: 'test-eks',
+const eksCluster = new eks.Cluster(stack, 'integration-test-eks-cluster', {
+  version: eks.KubernetesVersion.V1_21,
+  defaultCapacity: 3,
+  defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+});
+
+const jobExecutionRole = new iam.Role(stack, 'JobExecutionRole', {
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal('emr-containers.amazonaws.com'),
+    new iam.ServicePrincipal('states.amazonaws.com'),
+  ),
 });
 
 const createVirtualCluster = new EmrContainersEksCreateVirtualCluster(stack, 'Create a virtual Cluster', {
   virtualClusterName: 'Virtual-Cluster-Name',
-  eksNamespace: 'spark2',
   eksCluster: EksClusterInput.fromCluster(eksCluster),
   resultPath: '$.cluster',
 });
@@ -34,7 +45,7 @@ const startJobRun = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.cluster.Id')),
   releaseLabel: ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
-  executionRole: iam.Role.fromRoleArn(stack, 'Job-Execution-Role', 'arn:aws:iam::070850498885:role/Job-Execution-Role'),
+  executionRole: iam.Role.fromRoleArn(stack, 'Job-Execution-Role', jobExecutionRole.roleArn),
   jobDriver: {
     sparkSubmitJobDriver: {
       entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),

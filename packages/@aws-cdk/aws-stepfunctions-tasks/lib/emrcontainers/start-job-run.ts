@@ -436,7 +436,7 @@ export interface JobDriver {
    *
    * @default - No spark submit job driver parameters specified.
    */
-  readonly sparkSubmitJobDriver?: SparkSubmitJobDriver;
+  readonly sparkSubmitJobDriver: SparkSubmitJobDriver;
 }
 
 /**
