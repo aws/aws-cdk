@@ -49,6 +49,8 @@ def handler(event, context):
             user_metadata       = props.get('UserMetadata', {})
             system_metadata     = props.get('SystemMetadata', {})
             prune               = props.get('Prune', 'true').lower() == 'true'
+            exclude             = props.get('Exclude', [])
+            include             = props.get('Include', [])
 
             default_distribution_path = dest_bucket_prefix
             if not default_distribution_path.endswith("/"):
@@ -100,7 +102,7 @@ def handler(event, context):
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune)
+            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include)
 
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths)
@@ -114,7 +116,7 @@ def handler(event, context):
 
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
-def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune):
+def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include):
     # create a temporary working directory
     workdir=tempfile.mkdtemp()
     logger.info("| workdir: %s" % workdir)
@@ -138,6 +140,14 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune):
 
     if prune:
       s3_command.append("--delete")
+
+    if exclude:
+      for filter in exclude:
+        s3_command.extend(["--exclude", filter])
+
+    if include:
+      for filter in include:
+        s3_command.extend(["--include", filter])
 
     s3_command.extend([contents_dir, s3_dest])
     s3_command.extend(create_metadata_args(user_metadata, system_metadata))
