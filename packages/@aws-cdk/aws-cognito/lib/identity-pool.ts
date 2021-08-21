@@ -450,16 +450,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
-   * Configures and returns new User Pool Client that will implement Identity Providers in Identity Pool
-   */
-  private configureUserPoolClient(userPool: IUserPool, options?: UserPoolClientOptions): UserPoolClient {
-    return userPool.addClient('UserPoolClientFor' + userPool.userPoolId, options);
-  }
-
-  /**
    * Configure CognitoIdentityProviders for a User Pools
    */
-  private configureIdentityProviders(
+   private configureIdentityProviders(
     userPool: IUserPool,
     client: IUserPoolClient,
     disableServerSideTokenCheck?: boolean,
@@ -471,6 +464,13 @@ export class IdentityPool extends Resource implements IIdentityPool {
         serverSideTokenCheck: disableServerSideTokenCheck ? false : true,
       };
     });
+  }
+
+  /**
+   * Configures and returns new User Pool Client that will implement Identity Providers in Identity Pool
+   */
+  private configureUserPoolClient(userPool: IUserPool, options?: UserPoolClientOptions): UserPoolClient {
+    return userPool.addClient('UserPoolClientFor' + userPool.userPoolId, options);
   }
 
   /**
