@@ -1,9 +1,11 @@
 import { Template } from '@aws-cdk/assertions';
 import { Role, ServicePrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument } from '@aws-cdk/aws-iam';
+import { Function } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { IdentityPool } from '../lib/identity-pool';
 import { UserPool } from '../lib/user-pool';
 import { UserPoolIdentityProvider } from '../lib/user-pool-idp';
+
 describe('Identity Pool', () => {
   test('minimal setup', () => {
     const stack = new Stack();
@@ -207,6 +209,76 @@ describe('Identity Pool', () => {
           Ref: 'Provider2281708E',
         },
       ],
+    });
+  });
+
+  test('pushSync, cognito events and streams, supported login providers', () => {
+    const stack = new Stack();
+    const authRole = new Role(stack, 'authRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const unauthRole = new Role(stack, 'unauthRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const pushSyncRole = new Role(stack, 'pushSyncRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const streamRole = new Role(stack, 'streamRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    new IdentityPool(stack, 'TestIdentityPoolPushSyncStreamsEventsEtc', {
+      authenticatedRole: authRole,
+      unauthenticatedRole: unauthRole,
+      allowUnauthenticatedIdentities: true,
+      identityPoolName: 'my-id-pool',
+      pushSyncConfig: {
+        applicationArns: ['my::application::arn'],
+        role: pushSyncRole,
+      },
+      streamOptions: {
+        streamName: 'my-stream',
+        enableStreamingStatus: true,
+        role: streamRole,
+      },
+      supportedLoginProviders: {
+        amazon: 'my-app.amazon.com',
+        google: 'my-app.google.com',
+      },
+      syncTrigger: Function.fromFunctionArn(stack, 'my-event-function', 'my::lambda::arn'),
+    });
+    const temp = Template.fromStack(stack);
+    temp.resourceCountIs('AWS::IAM::Role', 4);
+    temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
+      AllowUnauthenticatedIdentities: true,
+      CognitoEvents: {
+        SyncTrigger: 'my::lambda::arn',
+      },
+      CognitoStreams: {
+        RoleArn: {
+          'Fn::GetAtt': [
+            'streamRoleFD11C7FD',
+            'Arn',
+          ],
+        },
+        StreamName: 'my-stream',
+        StreamingStatus: 'ENABLED',
+      },
+      IdentityPoolName: 'my-id-pool',
+      PushSync: {
+        ApplicationArns: [
+          'my::application::arn',
+        ],
+        RoleArn: {
+          'Fn::GetAtt': [
+            'pushSyncRole90B6639A',
+            'Arn',
+          ],
+        },
+      },
+      SupportedLoginProviders: {
+        'www.amazon.com': 'my-app.amazon.com',
+        'accounts.google.com': 'my-app.google.com',
+      },
     });
   });
 });
