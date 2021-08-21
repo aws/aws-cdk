@@ -1,7 +1,6 @@
-import { randomBytes } from 'crypto';
 import { IOpenIdConnectProvider, ISamlProvider, IRole } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Resource, IResource, Stack, ArnFormat, Lazy } from '@aws-cdk/core';
+import { Resource, IResource, Stack, ArnFormat, Lazy, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIdentityPool, CfnIdentityPoolRoleAttachment } from './cognito.generated';
 import { IUserPool } from './user-pool';
@@ -431,7 +430,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     unauthenticatedRole?: IRole,
     mappings?: IdentityPoolRoleMapping[],
   ): void {
-    const name = this.id + 'RoleAttachment-' + randomBytes(5).toString('hex');
+    const name = this.id + 'RoleAttachment-' + this.generateRandomName();
     let roles: any = undefined, roleMappings: any = undefined;
     if (authenticatedRole || unauthenticatedRole) {
       roles = {};
@@ -452,7 +451,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Configure CognitoIdentityProviders for a User Pools
    */
-   private configureIdentityProviders(
+  private configureIdentityProviders(
     userPool: IUserPool,
     client: IUserPoolClient,
     disableServerSideTokenCheck?: boolean,
@@ -470,7 +469,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * Configures and returns new User Pool Client that will implement Identity Providers in Identity Pool
    */
   private configureUserPoolClient(userPool: IUserPool, options?: UserPoolClientOptions): UserPoolClient {
-    return userPool.addClient('UserPoolClientFor' + userPool.userPoolId, options);
+    return userPool.addClient('UserPoolClientFor' + options?.userPoolClientName || this.generateRandomName(), options);
   }
 
   /**
@@ -585,5 +584,13 @@ export class IdentityPool extends Resource implements IIdentityPool {
       acc[prop.providerUrl] = roleMapping;
       return acc;
     }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });
+  }
+
+  private generateRandomName(): string {
+    const name = Names.uniqueId(this);
+    if (name.length > 20) {
+      return name.substring(0, 20);
+    }
+    return name;
   }
 }

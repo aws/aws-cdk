@@ -3,16 +3,17 @@ import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { IdentityPool } from '../lib/identity-pool';
 import { UserPool } from '../lib/user-pool';
-describe('Identity Pool', () => {
-  const stack = new Stack();
-  const authRole = new Role(stack, 'authRole', {
-    assumedBy: new ServicePrincipal('service.amazonaws.com'),
-  });
-  const unauthRole = new Role(stack, 'unauthRole', {
-    assumedBy: new ServicePrincipal('service.amazonaws.com'),
-  });
-  test('minimal setup', () => {
+import { UserPoolIdentityProvider } from '../lib/user-pool-idp';
 
+describe('Identity Pool', () => {
+  test('minimal setup', () => {
+    const stack = new Stack();
+    const authRole = new Role(stack, 'authRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const unauthRole = new Role(stack, 'unauthRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
     new IdentityPool(stack, 'TestIdentityPool', {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
@@ -61,15 +62,95 @@ describe('Identity Pool', () => {
   });
 
   test('user pools are properly configured', () => {
+    const stack = new Stack();
+    const authRole = new Role(stack, 'authRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const unauthRole = new Role(stack, 'unauthRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const poolProvider = UserPoolIdentityProvider.fromProviderName(stack, 'poolProvider', 'poolProvider');
+    const otherPoolProvider = UserPoolIdentityProvider.fromProviderName(stack, 'otherPoolProvider', 'otherPoolProvider');
     const pool = new UserPool(stack, 'Pool');
-    const otherPool = new UserPool(stack, 'OtherPool')
-
-    const userPools = [pool, otherPool]
-    new IdentityPool(stack, 'TestIdentityPool', {
+    const otherPool = new UserPool(stack, 'OtherPool');
+    pool.registerIdentityProvider(poolProvider);
+    otherPool.registerIdentityProvider(otherPoolProvider);
+    const userPools = [pool];
+    const idPool = new IdentityPool(stack, 'TestIdentityPoolUserPools', {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
-      userPools 
+      userPools,
     });
+    idPool.addUserPool(otherPool, undefined, true);
     const temp = Template.fromStack(stack);
-  })
+    temp.resourceCountIs('AWS::Cognito::UserPool', 2);
+    temp.resourceCountIs('AWS::Cognito::UserPoolClient', 2);
+    temp.hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      UserPoolId: {
+        Ref: 'PoolD3F588B8',
+      },
+      AllowedOAuthFlows: [
+        'implicit',
+        'code',
+      ],
+      AllowedOAuthFlowsUserPoolClient: true,
+      AllowedOAuthScopes: [
+        'profile',
+        'phone',
+        'email',
+        'openid',
+        'aws.cognito.signin.user.admin',
+      ],
+      CallbackURLs: [
+        'https://example.com',
+      ],
+      SupportedIdentityProviders: [
+        'poolProvider',
+        'COGNITO',
+      ],
+    });
+    temp.hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      UserPoolId: {
+        Ref: 'OtherPool7DA7F2F7',
+      },
+      AllowedOAuthFlows: [
+        'implicit',
+        'code',
+      ],
+      AllowedOAuthFlowsUserPoolClient: true,
+      AllowedOAuthScopes: [
+        'profile',
+        'phone',
+        'email',
+        'openid',
+        'aws.cognito.signin.user.admin',
+      ],
+      CallbackURLs: [
+        'https://example.com',
+      ],
+      SupportedIdentityProviders: [
+        'otherPoolProvider',
+        'COGNITO',
+      ],
+    });
+    temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
+      AllowUnauthenticatedIdentities: false,
+      CognitoIdentityProviders: [
+        {
+          ClientId: {
+            Ref: 'PoolUserPoolClientForundefinedBF6BDE57',
+          },
+          ProviderName: 'poolProvider',
+          ServerSideTokenCheck: true,
+        },
+        {
+          ClientId: {
+            Ref: 'OtherPoolUserPoolClientForundefined1B97829F',
+          },
+          ProviderName: 'otherPoolProvider',
+          ServerSideTokenCheck: false,
+        },
+      ],
+    });
+  });
 });
