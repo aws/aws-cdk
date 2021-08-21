@@ -2,11 +2,11 @@ import { Template } from '@aws-cdk/assertions';
 import { Role, ServicePrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument } from '@aws-cdk/aws-iam';
 import { Function } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import { IdentityPool } from '../lib/identity-pool';
+import { IdentityPool, SupportedLoginProviderType } from '../lib/identity-pool';
 import { UserPool } from '../lib/user-pool';
 import { UserPoolIdentityProvider } from '../lib/user-pool-idp';
 
-describe('Identity Pool', () => {
+describe('identity pool', () => {
   test('minimal setup', () => {
     const stack = new Stack();
     const authRole = new Role(stack, 'authRole', {
@@ -69,6 +69,8 @@ describe('Identity Pool', () => {
         account: '1234567891011',
       },
     });
+    expect(() => IdentityPool.fromIdentityPoolId(stack, 'idPoolIdError', 'idPool')).toThrowError('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
+    expect(() => IdentityPool.fromIdentityPoolArn(stack, 'idPoolArnError', 'arn:aws:cognito-identity:my-region:1234567891011:identitypool\/your-region:idPool/')).toThrowError('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
     const idPool = IdentityPool.fromIdentityPoolId(stack, 'staticIdPool', 'my-region:idPool');
 
     expect(idPool.identityPoolId).toEqual('my-region:idPool');
@@ -280,5 +282,42 @@ describe('Identity Pool', () => {
         'accounts.google.com': 'my-app.google.com',
       },
     });
+  });
+});
+
+describe('role mappings', () => {
+  test('using token', () => {
+    const stack = new Stack();
+    const authRole = new Role(stack, 'authRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const unauthRole = new Role(stack, 'unauthRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    new IdentityPool(stack, 'TestIdentityPoolUserPools', {
+      authenticatedRole: authRole,
+      unauthenticatedRole: unauthRole,
+      roleMappings: [{
+        providerUrl: SupportedLoginProviderType.AMAZON,
+        useToken: true,
+      }],
+    });
+  });
+
+  test('rules type without rules throws', () => {
+    const stack = new Stack();
+    const authRole = new Role(stack, 'authRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const unauthRole = new Role(stack, 'unauthRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    expect(() => new IdentityPool(stack, 'TestIdentityPoolUserPools', {
+      authenticatedRole: authRole,
+      unauthenticatedRole: unauthRole,
+      roleMappings: [{
+        providerUrl: SupportedLoginProviderType.AMAZON,
+      }],
+    })).toThrowError('IdentityPoolRoleMapping.rules is required when useToken is false');
   });
 });

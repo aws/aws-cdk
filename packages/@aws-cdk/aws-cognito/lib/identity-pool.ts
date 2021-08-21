@@ -325,12 +325,15 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   public static fromIdentityPoolArn(scope: Construct, id: string, identityPoolArn: string): IIdentityPool {
     const pool = Stack.of(scope).splitArn(identityPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
-    if (!pool.resourceName) {
+    const res = pool.resourceName || '';
+    if (!res) {
       throw new Error('Invalid Identity Pool ARN');
     }
-
+    const idParts = res.split(':');
+    if (!(idParts.length === 2)) throw new Error('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
+    if (idParts[0] !== pool.region) throw new Error('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
     class ImportedIdentityPool extends Resource implements IIdentityPool {
-      public readonly identityPoolId = pool.resourceName || '';
+      public readonly identityPoolId = res;
       public readonly identityPoolArn = identityPoolArn;
       public readonly identityPoolName: string
       constructor() {
@@ -565,27 +568,28 @@ export class IdentityPool extends Resource implements IIdentityPool {
         type: prop.useToken ? 'Token' : 'Rules',
         identityProvider: prop.providerUrl,
       };
-      if (roleMapping.type === 'Token') return roleMapping;
+      if (roleMapping.type === 'Rules') {
+        if (!prop.rules) {
+          throw new Error('IdentityPoolRoleMapping.rules is required when useToken is false');
+        }
 
-      if (!prop.rules) {
-        throw new Error('IdentityPoolRoleMapping.rules is required when useToken is false');
-      }
-
-      roleMapping.rulesConfiguration = {
-        rules: prop.rules.map(rule => {
-          return {
-            claim: rule.claim,
-            value: rule.claimValue,
-            matchType: rule.matchType || RoleMappingMatchType.EQUALS,
-            roleArn: rule.mappedRole.roleArn,
-          };
-        }),
+        roleMapping.rulesConfiguration = {
+          rules: prop.rules.map(rule => {
+            return {
+              claim: rule.claim,
+              value: rule.claimValue,
+              matchType: rule.matchType || RoleMappingMatchType.EQUALS,
+              roleArn: rule.mappedRole.roleArn,
+            };
+          }),
+        };
       };
       acc[prop.providerUrl] = roleMapping;
       return acc;
     }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });
   }
 
+  /** Generate random name when construct name is not present */
   private generateRandomName(): string {
     const name = Names.uniqueId(this);
     if (name.length > 20) {
