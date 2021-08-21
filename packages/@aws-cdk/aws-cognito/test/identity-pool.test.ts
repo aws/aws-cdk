@@ -1,8 +1,18 @@
 import { Template } from '@aws-cdk/assertions';
-import { Role, ServicePrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument } from '@aws-cdk/aws-iam';
+import {
+  Role,
+  ServicePrincipal,
+  AnyPrincipal,
+  OpenIdConnectProvider,
+  SamlProvider,
+  SamlMetadataDocument,
+  Effect,
+  PolicyDocument,
+  PolicyStatement,
+} from '@aws-cdk/aws-iam';
 import { Function } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import { IdentityPool, SupportedLoginProviderType } from '../lib/identity-pool';
+import { IdentityPool, SupportedLoginProviderType, RoleMappingMatchType } from '../lib/identity-pool';
 import { UserPool } from '../lib/user-pool';
 import { UserPoolIdentityProvider } from '../lib/user-pool-idp';
 
@@ -294,13 +304,39 @@ describe('role mappings', () => {
     const unauthRole = new Role(stack, 'unauthRole', {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
     });
-    new IdentityPool(stack, 'TestIdentityPoolUserPools', {
+    new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
       roleMappings: [{
         providerUrl: SupportedLoginProviderType.AMAZON,
         useToken: true,
       }],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      IdentityPoolId: {
+        Ref: 'TestIdentityPoolRoleMappingTokenE6CC49E0',
+      },
+      RoleMappings: {
+        'www.amazon.com': {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: 'www.amazon.com',
+          Type: 'Token',
+        },
+      },
+      Roles: {
+        authenticated: {
+          'Fn::GetAtt': [
+            'authRoleB7A6401B',
+            'Arn',
+          ],
+        },
+        unauthenticated: {
+          'Fn::GetAtt': [
+            'unauthRole8318277E',
+            'Arn',
+          ],
+        },
+      },
     });
   });
 
@@ -312,12 +348,112 @@ describe('role mappings', () => {
     const unauthRole = new Role(stack, 'unauthRole', {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
     });
-    expect(() => new IdentityPool(stack, 'TestIdentityPoolUserPools', {
+    expect(() => new IdentityPool(stack, 'TestIdentityPoolRoleMappingErrors', {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
       roleMappings: [{
         providerUrl: SupportedLoginProviderType.AMAZON,
       }],
     })).toThrowError('IdentityPoolRoleMapping.rules is required when useToken is false');
+  });
+
+  test('role mapping with rules configuration', () => {
+    const stack = new Stack();
+    const authRole = new Role(stack, 'authRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const unauthRole = new Role(stack, 'unauthRole', {
+      assumedBy: new ServicePrincipal('noservice.amazonaws.com'),
+    });
+    const adminRole = new Role(stack, 'adminRole', {
+      assumedBy: new ServicePrincipal('admin.amazonaws.com'),
+    });
+    const nonAdminRole = new Role(stack, 'nonAdminRole', {
+      assumedBy: new AnyPrincipal(),
+      inlinePolicies: {
+        DenyAll: new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              effect: Effect.DENY,
+              actions: ['update:*', 'put:*', 'delete:*'],
+              resources: ['*'],
+            }),
+          ],
+        }),
+      },
+    });
+    new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
+      authenticatedRole: authRole,
+      unauthenticatedRole: unauthRole,
+      roleMappings: [{
+        providerUrl: SupportedLoginProviderType.AMAZON,
+        resolveAmbiguousRoles: true,
+        rules: [
+          {
+            claim: 'custom:admin',
+            claimValue: 'admin',
+            mappedRole: adminRole,
+          },
+          {
+            claim: 'custom:admin',
+            claimValue: 'admin',
+            matchType: RoleMappingMatchType.NOTEQUAL,
+            mappedRole: nonAdminRole,
+          },
+        ],
+      }],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      IdentityPoolId: {
+        Ref: 'TestIdentityPoolRoleMappingRulesA841EAFB',
+      },
+      RoleMappings: {
+        'www.amazon.com': {
+          AmbiguousRoleResolution: 'AuthenticatedRole',
+          IdentityProvider: 'www.amazon.com',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'custom:admin',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': [
+                    'adminRoleC345D70B',
+                    'Arn',
+                  ],
+                },
+                Value: 'admin',
+              },
+              {
+                Claim: 'custom:admin',
+                MatchType: 'NotEqual',
+                RoleARN: {
+                  'Fn::GetAtt': [
+                    'nonAdminRole43C19D5C',
+                    'Arn',
+                  ],
+                },
+                Value: 'admin',
+              },
+            ],
+          },
+          Type: 'Rules',
+        },
+      },
+      Roles: {
+        authenticated: {
+          'Fn::GetAtt': [
+            'authRoleB7A6401B',
+            'Arn',
+          ],
+        },
+        unauthenticated: {
+          'Fn::GetAtt': [
+            'unauthRole8318277E',
+            'Arn',
+          ],
+        },
+      },
+    });
   });
 });
