@@ -404,7 +404,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
 
-    this.addRoleAttachment(props.authenticatedRole, props.unauthenticatedRole, props.roleMappings);
+    this.configureRoleAttachment(props.authenticatedRole, props.unauthenticatedRole, ...(props.roleMappings || []));
   }
 
   /**
@@ -426,12 +426,26 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
-   * Adds Role Attachments to Identity Pool
+   * Adds Role Mappings to Identity Pool
   */
-  public addRoleAttachment(
+  public addRoleMappings(...mappings: IdentityPoolRoleMapping[]): void {
+    if (!mappings || !mappings.length) return;
+    const roleMappings = this.configureRoleMappings(...mappings);
+    
+    const attachment = new CfnIdentityPoolRoleAttachment(this, name, {
+      identityPoolId: this.identityPoolId,
+      roleMappings,
+    });
+    attachment.node.addDependency(this.cfnIdentityPool);
+  }
+
+  /**
+   * Configure Role Attachments For Identity Pool
+   */
+  private configureRoleAttachment(
     authenticatedRole?: IRole,
     unauthenticatedRole?: IRole,
-    mappings?: IdentityPoolRoleMapping[],
+    ...mappings: IdentityPoolRoleMapping[]
   ): void {
     const name = this.id + 'RoleAttachment-' + this.generateRandomName();
     let roles: any = undefined, roleMappings: any = undefined;
@@ -441,7 +455,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       if (unauthenticatedRole) roles.unauthenticated = unauthenticatedRole.roleArn;
     }
     if (mappings) {
-      roleMappings = this.configureRoleMappings(mappings);
+      roleMappings = this.configureRoleMappings(...mappings);
     }
     const attachment = new CfnIdentityPoolRoleAttachment(this, name, {
       identityPoolId: this.identityPoolId,
@@ -560,7 +574,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Configures Role Mappings for Identity Pool Role Attachment
    */
-  private configureRoleMappings(props?: IdentityPoolRoleMapping[]): { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty } | undefined {
+  private configureRoleMappings(...props: IdentityPoolRoleMapping[]): { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty } | undefined {
     if (!props || !props.length) return undefined;
     return props.reduce((acc, prop) => {
       let roleMapping: any = {

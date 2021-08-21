@@ -2,6 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import {
   Role,
   ServicePrincipal,
+  ArnPrincipal,
   AnyPrincipal,
   OpenIdConnectProvider,
   SamlProvider,
@@ -382,7 +383,10 @@ describe('role mappings', () => {
         }),
       },
     });
-    new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
+    const facebookRole = new Role(stack, 'facebookRole', {
+      assumedBy: new ArnPrincipal('arn:aws:iam::123456789012:user/FacebookUser'),
+    });
+    const idPool = new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
       roleMappings: [{
@@ -403,6 +407,17 @@ describe('role mappings', () => {
         ],
       }],
     });
+    idPool.addRoleMappings({
+      providerUrl: SupportedLoginProviderType.FACEBOOK,
+      rules: [
+        {
+          claim: 'iss',
+          claimValue: 'https://graph.facebook.com',
+          mappedRole: facebookRole,
+        },
+      ],
+    });
+
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
         Ref: 'TestIdentityPoolRoleMappingRulesA841EAFB',
@@ -439,6 +454,26 @@ describe('role mappings', () => {
           },
           Type: 'Rules',
         },
+        'graph.facebook.com': {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: 'graph.facebook.com',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'iss',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': [
+                    'facebookRoleC345D70B',
+                    'Arn',
+                  ],
+                },
+                Value: 'https://graph.facebook.com',
+              },
+            ],
+          },
+        },
+        Type: 'Rules',
       },
       Roles: {
         authenticated: {
