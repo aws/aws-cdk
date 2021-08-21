@@ -1,0 +1,468 @@
+{
+  "Resources": {
+      "authRoleB7A6401B": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "service.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "unauthRole8318277E": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "service.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "pushSyncRole90B6639A": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "service.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "streamRoleFD11C7FD": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "service.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "adminRoleC345D70B": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "admin.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "nonAdminRole43C19D5C": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": "*"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "Policies": [
+            {
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": [
+                      "update:*",
+                      "put:*",
+                      "delete:*"
+                    ],
+                    "Effect": "Deny",
+                    "Resource": "*"
+                  }
+                ],
+                "Version": "2012-10-17"
+              },
+              "PolicyName": "DenyAll"
+            }
+          ]
+        }
+      },
+      "PoolD3F588B8": {
+        "Type": "AWS::Cognito::UserPool",
+        "Properties": {
+          "AccountRecoverySetting": {
+            "RecoveryMechanisms": [
+              {
+                "Name": "verified_phone_number",
+                "Priority": 1
+              },
+              {
+                "Name": "verified_email",
+                "Priority": 2
+              }
+            ]
+          },
+          "AdminCreateUserConfig": {
+            "AllowAdminCreateUserOnly": true
+          },
+          "EmailVerificationMessage": "The verification code to your new account is {####}",
+          "EmailVerificationSubject": "Verify your new account",
+          "SmsVerificationMessage": "The verification code to your new account is {####}",
+          "VerificationMessageTemplate": {
+            "DefaultEmailOption": "CONFIRM_WITH_CODE",
+            "EmailMessage": "The verification code to your new account is {####}",
+            "EmailSubject": "Verify your new account",
+            "SmsMessage": "The verification code to your new account is {####}"
+          }
+        },
+        "UpdateReplacePolicy": "Retain",
+        "DeletionPolicy": "Retain"
+      },
+      "PoolUserPoolClientForundefinedBF6BDE57": {
+        "Type": "AWS::Cognito::UserPoolClient",
+        "Properties": {
+          "UserPoolId": {
+            "Ref": "PoolD3F588B8"
+          },
+          "AllowedOAuthFlows": [
+            "implicit",
+            "code"
+          ],
+          "AllowedOAuthFlowsUserPoolClient": true,
+          "AllowedOAuthScopes": [
+            "profile",
+            "phone",
+            "email",
+            "openid",
+            "aws.cognito.signin.user.admin"
+          ],
+          "CallbackURLs": [
+            "https://example.com"
+          ],
+          "SupportedIdentityProviders": [
+            "poolProvider",
+            "COGNITO"
+          ]
+        }
+      },
+      "OtherPool7DA7F2F7": {
+        "Type": "AWS::Cognito::UserPool",
+        "Properties": {
+          "AccountRecoverySetting": {
+            "RecoveryMechanisms": [
+              {
+                "Name": "verified_phone_number",
+                "Priority": 1
+              },
+              {
+                "Name": "verified_email",
+                "Priority": 2
+              }
+            ]
+          },
+          "AdminCreateUserConfig": {
+            "AllowAdminCreateUserOnly": true
+          },
+          "EmailVerificationMessage": "The verification code to your new account is {####}",
+          "EmailVerificationSubject": "Verify your new account",
+          "SmsVerificationMessage": "The verification code to your new account is {####}",
+          "VerificationMessageTemplate": {
+            "DefaultEmailOption": "CONFIRM_WITH_CODE",
+            "EmailMessage": "The verification code to your new account is {####}",
+            "EmailSubject": "Verify your new account",
+            "SmsMessage": "The verification code to your new account is {####}"
+          }
+        },
+        "UpdateReplacePolicy": "Retain",
+        "DeletionPolicy": "Retain"
+      },
+      "OpenId76D94D20": {
+        "Type": "Custom::AWSCDKOpenIdConnectProvider",
+        "Properties": {
+          "ServiceToken": {
+            "Fn::GetAtt": [
+              "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0",
+              "Arn"
+            ]
+          },
+          "ClientIDList": [
+            "client1",
+            "client2"
+          ],
+          "ThumbprintList": [
+            "thumbprint"
+          ],
+          "Url": "https://example.com"
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      },
+      "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                }
+              }
+            ]
+          },
+          "ManagedPolicyArns": [
+            {
+              "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            }
+          ],
+          "Policies": [
+            {
+              "PolicyName": "Inline",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Resource": "*",
+                    "Action": [
+                      "iam:CreateOpenIDConnectProvider",
+                      "iam:DeleteOpenIDConnectProvider",
+                      "iam:UpdateOpenIDConnectProviderThumbprint",
+                      "iam:AddClientIDToOpenIDConnectProvider",
+                      "iam:RemoveClientIDFromOpenIDConnectProvider"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0": {
+        "Type": "AWS::Lambda::Function",
+        "Properties": {
+          "Code": {
+            "S3Bucket": {
+              "Ref": "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3BucketF7BC1777"
+            },
+            "S3Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3VersionKey1C340B30"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3VersionKey1C340B30"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+          },
+          "Timeout": 900,
+          "MemorySize": 128,
+          "Handler": "__entrypoint__.handler",
+          "Role": {
+            "Fn::GetAtt": [
+              "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65",
+              "Arn"
+            ]
+          },
+          "Runtime": "nodejs12.x"
+        },
+        "DependsOn": [
+          "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+        ]
+      },
+      "Provider2281708E": {
+        "Type": "AWS::IAM::SAMLProvider",
+        "Properties": {
+          "SamlMetadataDocument": "document"
+        }
+      },
+      "identitypool51BC8967": {
+        "Type": "AWS::Cognito::IdentityPool",
+        "Properties": {
+          "AllowUnauthenticatedIdentities": true,
+          "AllowClassicFlow": true,
+          "CognitoEvents": {
+            "SyncTrigger": "my::lambda::arn"
+          },
+          "CognitoIdentityProviders": [
+            {
+              "ClientId": {
+                "Ref": "PoolUserPoolClientForundefinedBF6BDE57"
+              },
+              "ProviderName": "poolProvider",
+              "ServerSideTokenCheck": true
+            }
+          ],
+          "CognitoStreams": {
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "streamRoleFD11C7FD",
+                "Arn"
+              ]
+            },
+            "StreamName": "my-stream",
+            "StreamingStatus": "ENABLED"
+          },
+          "DeveloperProviderName": "https://my-custom-provider.com",
+          "IdentityPoolName": "my-id-pool",
+          "OpenIdConnectProviderARNs": [
+            {
+              "Ref": "OpenId76D94D20"
+            }
+          ],
+          "PushSync": {
+            "ApplicationArns": [
+              "my::application::arn"
+            ],
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "pushSyncRole90B6639A",
+                "Arn"
+              ]
+            }
+          },
+          "SamlProviderARNs": [
+            {
+              "Ref": "Provider2281708E"
+            }
+          ],
+          "SupportedLoginProviders": {
+            "www.amazon.com": "my-app.amazon.com",
+            "accounts.google.com": "my-app.google.com"
+          }
+        }
+      },
+      "identitypoolidentitypoolRoleAttachmentintegidentitypoolideEB777A31": {
+        "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+        "Properties": {
+          "IdentityPoolId": {
+            "Ref": "identitypool51BC8967"
+          },
+          "RoleMappings": {
+            "www.amazon.com": {
+              "AmbiguousRoleResolution": "AuthenticatedRole",
+              "IdentityProvider": "www.amazon.com",
+              "RulesConfiguration": {
+                "Rules": [
+                  {
+                    "Claim": "custom:admin",
+                    "MatchType": "Equals",
+                    "RoleARN": {
+                      "Fn::GetAtt": [
+                        "adminRoleC345D70B",
+                        "Arn"
+                      ]
+                    },
+                    "Value": "admin"
+                  },
+                  {
+                    "Claim": "custom:admin",
+                    "MatchType": "NotEqual",
+                    "RoleARN": {
+                      "Fn::GetAtt": [
+                        "nonAdminRole43C19D5C",
+                        "Arn"
+                      ]
+                    },
+                    "Value": "admin"
+                  }
+                ]
+              },
+              "Type": "Rules"
+            }
+          },
+          "Roles": {
+            "authenticated": {
+              "Fn::GetAtt": [
+                "authRoleB7A6401B",
+                "Arn"
+              ]
+            },
+            "unauthenticated": {
+              "Fn::GetAtt": [
+                "unauthRole8318277E",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "DependsOn": [
+          "identitypool51BC8967"
+        ]
+      }
+  },
+  "Parameters": {
+    "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3BucketF7BC1777": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"b7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4\""
+    },
+    "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3VersionKey1C340B30": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"b7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4\""
+    },
+    "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4ArtifactHashD6EA1BC7": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"b7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4\""
+    }
+  }
+}
