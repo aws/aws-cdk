@@ -70,7 +70,7 @@ describe('Identity Pool', () => {
     const idPool = IdentityPool.fromIdentityPoolId(stack, 'staticIdPool', 'my-region:idPool');
 
     expect(idPool.identityPoolId).toEqual('my-region:idPool');
-    expect(idPool.identityPoolArn).toMatch(/cognito-identity:my-region:1234567891011:identitypool\/idPool/);
+    expect(idPool.identityPoolArn).toMatch(/cognito-identity:my-region:1234567891011:identitypool\/my-region:idPool/);
   });
 
   test('user pools are properly configured', () => {
@@ -166,7 +166,7 @@ describe('Identity Pool', () => {
     });
   });
 
-  test('openId and Saml providers are properly configured', () => {
+  test('openId, saml, classicFlow, customProviders', () => {
     const stack = new Stack();
     const authRole = new Role(stack, 'authRole', {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
@@ -179,14 +179,34 @@ describe('Identity Pool', () => {
       clientIds: ['client1', 'client2'],
       thumbprints: ['thumbprint'],
     });
-    const saml =  new SamlProvider(stack, 'Provider', {
+    const saml = new SamlProvider(stack, 'Provider', {
       metadataDocument: SamlMetadataDocument.fromXml('document'),
     });
-    const idPool = new IdentityPool(stack, 'TestIdentityPoolUserPools', {
+    new IdentityPool(stack, 'TestIdentityPoolCustomProviders', {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
       openIdConnectProviders: [openId],
       samlProviders: [saml],
+      customProvider: 'https://my-custom-provider.com',
+      allowClassicFlow: true,
     });
-  })
+    const temp = Template.fromStack(stack);
+    temp.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 1);
+    temp.resourceCountIs('AWS::IAM::SAMLProvider', 1);
+    temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
+      AllowUnauthenticatedIdentities: false,
+      AllowClassicFlow: true,
+      DeveloperProviderName: 'https://my-custom-provider.com',
+      OpenIdConnectProviderARNs: [
+        {
+          Ref: 'OpenId76D94D20',
+        },
+      ],
+      SamlProviderARNs: [
+        {
+          Ref: 'Provider2281708E',
+        },
+      ],
+    });
+  });
 });
