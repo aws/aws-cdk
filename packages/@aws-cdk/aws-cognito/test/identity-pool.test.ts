@@ -1,10 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
-import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Role, ServicePrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { IdentityPool } from '../lib/identity-pool';
 import { UserPool } from '../lib/user-pool';
 import { UserPoolIdentityProvider } from '../lib/user-pool-idp';
-
 describe('Identity Pool', () => {
   test('minimal setup', () => {
     const stack = new Stack();
@@ -59,6 +58,19 @@ describe('Identity Pool', () => {
         },
       },
     });
+  });
+
+  test('from static', () => {
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'my-region',
+        account: '1234567891011',
+      },
+    });
+    const idPool = IdentityPool.fromIdentityPoolId(stack, 'staticIdPool', 'my-region:idPool');
+
+    expect(idPool.identityPoolId).toEqual('my-region:idPool');
+    expect(idPool.identityPoolArn).toMatch(/cognito-identity:my-region:1234567891011:identitypool\/idPool/);
   });
 
   test('user pools are properly configured', () => {
@@ -153,4 +165,28 @@ describe('Identity Pool', () => {
       ],
     });
   });
+
+  test('openId and Saml providers are properly configured', () => {
+    const stack = new Stack();
+    const authRole = new Role(stack, 'authRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const unauthRole = new Role(stack, 'unauthRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const openId = new OpenIdConnectProvider(stack, 'OpenId', {
+      url: 'https://example.com',
+      clientIds: ['client1', 'client2'],
+      thumbprints: ['thumbprint'],
+    });
+    const saml =  new SamlProvider(stack, 'Provider', {
+      metadataDocument: SamlMetadataDocument.fromXml('document'),
+    });
+    const idPool = new IdentityPool(stack, 'TestIdentityPoolUserPools', {
+      authenticatedRole: authRole,
+      unauthenticatedRole: unauthRole,
+      openIdConnectProviders: [openId],
+      samlProviders: [saml],
+    });
+  })
 });
