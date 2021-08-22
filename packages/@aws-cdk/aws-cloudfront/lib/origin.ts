@@ -230,9 +230,9 @@ function validateCustomHeaders(customHeaders: Record<string, string>) {
   });
 
   if (prohibitedHeadersKeysMatches.length !== 0) {
-    throw new Error(`You can’t configure CloudFront to add any of the following headers to requests that it sends to your origin: ${prohibitedHeaderKeys.join(', ')}. Got ${customHeaderKeys.join(', ')}`);
+    throw new Error(`You can’t configure CloudFront to add any of the following headers to requests that it sends to your origin: ${prohibitedHeaderKeys.join(', ')}. Got: ${customHeaderKeys.join(', ')}.`);
   }
   if (prohibitedHeaderPrefixMatches.length !== 0) {
-    throw new Error(`You can’t configure CloudFront to add any of the following headers that contain following prefixes: ${prohibitedHeaderKeyPrefixes.join(', ')}. Got ${customHeaderKeys.join(', ')}`);
+    throw new Error(`You can’t configure CloudFront to add any of the following headers that contain following prefixes: ${prohibitedHeaderKeyPrefixes.join(', ')}. Got: ${customHeaderKeys.join(', ')}`);
   }
 }
