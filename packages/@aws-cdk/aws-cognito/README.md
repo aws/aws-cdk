@@ -36,9 +36,12 @@ other AWS services.
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## Table of Contents
+
 - [Identity Pools](#identity-pools)
   - [Authenticated and Unauthenticated Identities](#authenticated-and-unauthenticated-identities)
   - [Federated Identity Providers](#federated-identity-providers)
+    - [Using User Pool](#associating-provider-through-a-user-pool)
+    - [Directly](#associating-a-provider-directly)
   - [Supported Login Providers](#supported-login-providers)
   - [OpenIdConnect and Saml](#openid-connect-and-saml)
   - [Custom Providers](#custom-providers)
@@ -64,10 +67,14 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Domains](#domains)
 
 ## Identity Pools
+
 Identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.
 
 Identity pools can be used in conjunction with Cognito User Pools or by accessing external federated identity providers directly.
+
+
 ### Authenticated and Unauthenticated Identities
+
 Identity pools define two types of identities: authenticated and unauthenticated. Every identity in your identity pool is either authenticated or unauthenticated. Authenticated identities belong to users who are authenticated by a public login provider (Amazon Cognito user pools, Login with Amazon, Sign in with Apple, Facebook, Google, SAML, or any OpenID Connect Providers) or a developer provider (your own backend authentication process). Unauthenticated identities typically belong to guest users.
 
 A basic Identity Pool with minimal configuration consists of two roles: one to apply to authenticated identities and one to apply to unauthenticated identities:
@@ -78,10 +85,14 @@ new cognito.IdentityPool(this, 'myidentitypool', {
   unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
 });
 ```
+
+
 ### Federated Identity Providers
+
 You can associate identity providers with an Identity Pool by first associating them with a Cognito User Pool or by associating the provider directly with the identity pool.
 
 #### Associating a Provider Through a User Pool
+
 ```ts
 const userpool = new cognito.UserPool(this, 'Pool');
 
@@ -121,7 +132,8 @@ const userPoolClient = identityPool.addUserPool(userpool, {
 });
 ```
 
-### Supported Login Providers
+#### Associating a Provider Directly
+
 You can associate with one or more [external identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html) directly with an identity pool using `IdentityPoolProps.supportedLoginProviders`:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {

@@ -472,8 +472,8 @@ describe('role mappings', () => {
               },
             ],
           },
+          Type: 'Rules',
         },
-        Type: 'Rules',
       },
       Roles: {
         authenticated: {

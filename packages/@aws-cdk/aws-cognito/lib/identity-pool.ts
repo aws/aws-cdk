@@ -430,8 +430,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
   */
   public addRoleMappings(...mappings: IdentityPoolRoleMapping[]): void {
     if (!mappings || !mappings.length) return;
+    const name = this.id + 'RoleAttachment-' + this.generateRandomName();
     const roleMappings = this.configureRoleMappings(...mappings);
-    
+
     const attachment = new CfnIdentityPoolRoleAttachment(this, name, {
       identityPoolId: this.identityPoolId,
       roleMappings,
@@ -574,7 +575,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Configures Role Mappings for Identity Pool Role Attachment
    */
-  private configureRoleMappings(...props: IdentityPoolRoleMapping[]): { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty } | undefined {
+  private configureRoleMappings(
+    ...props: IdentityPoolRoleMapping[]
+  ): { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty } | undefined {
     if (!props || !props.length) return undefined;
     return props.reduce((acc, prop) => {
       let roleMapping: any = {
