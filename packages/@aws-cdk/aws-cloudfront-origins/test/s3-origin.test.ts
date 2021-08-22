@@ -168,4 +168,72 @@ describe('With website-configured bucket', () => {
       },
     });
   });
+
+  test('throw an error if Custom Headers keys are not permitted', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // case sensitive
+    expect(() => {
+      new cloudfront.Distribution(stack, 'Distribution1', {
+        defaultBehavior: {
+          origin: new S3Origin(bucket, {
+            customHeaders: {
+              Host: 'bad',
+              Cookie: 'bad',
+              Connection: 'bad',
+              TS: 'bad',
+            },
+          }),
+        },
+      });
+    }).toThrow(/You can’t configure CloudFront to add any of the following headers to requests that it sends to your origin: (.*?)/);
+
+    // case insensitive
+    expect(() => {
+      new cloudfront.Distribution(stack, 'Distribution2', {
+        defaultBehavior: {
+          origin: new S3Origin(bucket, {
+            customHeaders: {
+              hOst: 'bad',
+              cOOkIe: 'bad',
+              Connection: 'bad',
+              Ts: 'bad',
+            },
+          }),
+        },
+      });
+    }).toThrow(/You can’t configure CloudFront to add any of the following headers to requests that it sends to your origin: (.*?)/);
+  });
+
+  test('throw an error if Custom Headers are pre-fixed with non-permitted keys', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // case sensitive
+    expect(() => {
+      new cloudfront.Distribution(stack, 'Distribution1', {
+        defaultBehavior: {
+          origin: new S3Origin(bucket, {
+            customHeaders: {
+              'X-Amz-dummy': 'bad',
+              'X-Edge-dummy': 'bad',
+            },
+          }),
+        },
+      });
+    }).toThrow(/You can’t configure CloudFront to add any of the following headers that contain following prefixes: (.*?)/);
+
+    // case insensitive
+    expect(() => {
+      new cloudfront.Distribution(stack, 'Distribution2', {
+        defaultBehavior: {
+          origin: new S3Origin(bucket, {
+            customHeaders: {
+              'x-amZ-dummy': 'bad',
+              'x-eDgE-dummy': 'bad',
+            },
+          }),
+        },
+      });
+    }).toThrow(/You can’t configure CloudFront to add any of the following headers that contain following prefixes: (.*?)/);
+  });
 });
