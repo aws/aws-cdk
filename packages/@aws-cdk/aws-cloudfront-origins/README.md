@@ -33,7 +33,7 @@ CloudFront's redirect and error handling will be used. In the latter case, the O
 underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
 URLs and not S3 URLs directly. Alternatively, a custom origin access identity can be passed to the S3 origin in the properties.
 
-### Custom Headers
+### Adding Custom Headers
 
 You can configure CloudFront to add custom headers to the requests that it sends to your origin. These custom headers enable you to send and gather information from your origin that you don’t get with typical viewer requests. These headers can even be customized for each origin. CloudFront supports custom headers for both for custom and Amazon S3 origins.
 
