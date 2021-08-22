@@ -326,14 +326,14 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     const region = Lazy.uncachedString({
       produce: (context) => Stack.of(context.scope).region,
     });
-    const regionPrefix =Lazy.uncachedString({
+    const defaultEndpointPrefix =Lazy.uncachedString({
       produce: (context) => {
         const regionName = Stack.of(context.scope).region;
         return this.getDefaultEndpointPrefix(name, regionName);
       },
     });
 
-    this.name = `${prefix || regionPrefix}.${region}.${name}`;
+    this.name = `${prefix || defaultEndpointPrefix}.${region}.${name}`;
     this.port = port || 443;
   }
 
