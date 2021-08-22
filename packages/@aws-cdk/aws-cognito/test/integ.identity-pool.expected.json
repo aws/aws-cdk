@@ -121,6 +121,23 @@
         ]
       }
     },
+    "facebookRole9D649CD8": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "arn:aws:iam::123456789012:user/FacebookUser"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
     "PoolD3F588B8": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
@@ -392,7 +409,7 @@
         }
       }
     },
-    "identitypoolidentitypoolRoleAttachmentintegidentitypoolideEB777A31": {
+    "identitypoolidentitypoolRoleAttachment62d9a17e11894BDF25": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
         "IdentityPoolId": {
@@ -450,11 +467,11 @@
         "identitypool51BC8967"
       ]
     },
-    "TestIdentityPoolRoleMappingRulesTestIdentityPoolRoleMappingRulesRoleMappingAttachment674791d0dfF5FED021": {
+    "identitypoolidentitypoolRoleMappingAttachment06b669a25c6A8293D0": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
         "IdentityPoolId": {
-          "Ref": "TestIdentityPoolRoleMappingRulesA841EAFB"
+          "Ref": "identitypool51BC8967"
         },
         "RoleMappings": {
           "graph.facebook.com": {
@@ -480,7 +497,7 @@
         }
       },
       "DependsOn": [
-        "TestIdentityPoolRoleMappingRulesA841EAFB"
+        "identitypool51BC8967"
       ]
     }
   },
