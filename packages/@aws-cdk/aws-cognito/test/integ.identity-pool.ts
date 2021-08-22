@@ -2,6 +2,7 @@ import {
   Role,
   ServicePrincipal,
   AnyPrincipal,
+  ArnPrincipal,
   OpenIdConnectProvider,
   SamlProvider,
   SamlMetadataDocument,
@@ -46,6 +47,9 @@ const nonAdminRole = new Role(stack, 'nonAdminRole', {
     }),
   },
 });
+const facebookRole = new Role(stack, 'facebookRole', {
+  assumedBy: new ArnPrincipal('arn:aws:iam::123456789012:user/FacebookUser'),
+});
 const poolProvider = UserPoolIdentityProvider.fromProviderName(stack, 'poolProvider', 'poolProvider');
 const otherPoolProvider = UserPoolIdentityProvider.fromProviderName(stack, 'otherPoolProvider', 'otherPoolProvider');
 const pool = new UserPool(stack, 'Pool');
@@ -62,7 +66,7 @@ const saml = new SamlProvider(stack, 'Provider', {
   metadataDocument: SamlMetadataDocument.fromXml('document'),
 });
 
-new IdentityPool(stack, 'identitypool', {
+const idPool = new IdentityPool(stack, 'identitypool', {
   authenticatedRole: authRole,
   unauthenticatedRole: unauthRole,
   userPools,
@@ -103,5 +107,15 @@ new IdentityPool(stack, 'identitypool', {
       },
     ],
   }],
+});
+idPool.addRoleMappings({
+  providerUrl: SupportedLoginProviderType.FACEBOOK,
+  rules: [
+    {
+      claim: 'iss',
+      claimValue: 'https://graph.facebook.com',
+      mappedRole: facebookRole,
+    },
+  ],
 });
 app.synth();

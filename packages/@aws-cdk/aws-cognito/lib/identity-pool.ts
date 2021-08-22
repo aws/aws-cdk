@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import { IOpenIdConnectProvider, ISamlProvider, IRole } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Resource, IResource, Stack, ArnFormat, Lazy, Names } from '@aws-cdk/core';
@@ -377,7 +378,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
 
   constructor(scope: Construct, private id: string, props:IdentityPoolProps) {
     super(scope, id, {
-      physicalName: props.identityPoolName || Lazy.string({ produce: () => this.node.uniqueId }),
+      physicalName: props.identityPoolName || Lazy.string({ produce: () => this.generateUniqueId() }),
     });
     this.identityPoolName = this.physicalName;
     const providers = this.configureUserPools(props);
@@ -430,7 +431,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   */
   public addRoleMappings(...mappings: IdentityPoolRoleMapping[]): void {
     if (!mappings || !mappings.length) return;
-    const name = this.id + 'RoleAttachment-' + this.generateRandomName();
+    const name = this.id + 'RoleMappingAttachment-' + this.generateRandomName();
     const roleMappings = this.configureRoleMappings(...mappings);
 
     const attachment = new CfnIdentityPoolRoleAttachment(this, name, {
@@ -607,11 +608,15 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /** Generate random name when construct name is not present */
-  private generateRandomName(): string {
+  private generateUniqueId(): string {
     const name = Names.uniqueId(this);
     if (name.length > 20) {
       return name.substring(0, 20);
     }
     return name;
+  }
+
+  private generateRandomName(bytes: number = 5): string {
+    return randomBytes(bytes).toString('hex');
   }
 }

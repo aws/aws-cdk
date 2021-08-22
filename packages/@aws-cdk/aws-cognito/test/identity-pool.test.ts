@@ -417,8 +417,9 @@ describe('role mappings', () => {
         },
       ],
     });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+    const temp = Template.fromStack(stack);
+    temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 2);
+    temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
         Ref: 'TestIdentityPoolRoleMappingRulesA841EAFB',
       },
@@ -454,26 +455,6 @@ describe('role mappings', () => {
           },
           Type: 'Rules',
         },
-        'graph.facebook.com': {
-          AmbiguousRoleResolution: 'Deny',
-          IdentityProvider: 'graph.facebook.com',
-          RulesConfiguration: {
-            Rules: [
-              {
-                Claim: 'iss',
-                MatchType: 'Equals',
-                RoleARN: {
-                  'Fn::GetAtt': [
-                    'facebookRoleC345D70B',
-                    'Arn',
-                  ],
-                },
-                Value: 'https://graph.facebook.com',
-              },
-            ],
-          },
-          Type: 'Rules',
-        },
       },
       Roles: {
         authenticated: {
@@ -487,6 +468,33 @@ describe('role mappings', () => {
             'unauthRole8318277E',
             'Arn',
           ],
+        },
+      },
+    });
+    temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      IdentityPoolId: {
+        Ref: 'TestIdentityPoolRoleMappingRulesA841EAFB',
+      },
+      RoleMappings: {
+        'graph.facebook.com': {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: 'graph.facebook.com',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'iss',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': [
+                    'facebookRole9D649CD8',
+                    'Arn',
+                  ],
+                },
+                Value: 'https://graph.facebook.com',
+              },
+            ],
+          },
+          Type: 'Rules',
         },
       },
     });
