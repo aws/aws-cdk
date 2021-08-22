@@ -13,15 +13,43 @@ import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
- * Options to control asset hashing of `DockerImageAsset`
+ * Options to control invalidation of `DockerImageAsset` asset hashes
  */
-export interface DockerImageAssetHashOptions {
+export interface DockerImageAssetInvalidationOptions {
   /**
-   * Do not use `buildArgs` while calculating the asset hash
+   * Use `extraHash` while calculating the asset hash
    *
-   * @default false
+   * @default true
    */
-  readonly skipBuildArgs?: boolean;
+  readonly extraHash?: boolean;
+
+  /**
+   * Use `buildArgs` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly buildArgs?: boolean;
+
+  /**
+   * Use `target` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly target?: boolean;
+
+  /**
+   * Use `file` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly file?: boolean;
+
+  /**
+   * Use `repositoryName` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly repositoryName?: boolean;
 }
 
 /**
@@ -68,11 +96,11 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
   readonly file?: string;
 
   /**
-   * Options to control whicgh parameters get hashed to generate asset hash.
+   * Options to control which parameters are used to invalidate the asset hash.
    *
    * @default - hash all parameters
    */
-  readonly hashOptions?: DockerImageAssetHashOptions;
+  readonly invalidation?: DockerImageAssetInvalidationOptions;
 }
 
 /**
@@ -169,11 +197,11 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
 
     // include build context in "extra" so it will impact the hash
     const extraHash: { [field: string]: any } = {};
-    if (props.extraHash) { extraHash.user = props.extraHash; }
-    if (!props.hashOptions?.skipBuildArgs && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
-    if (props.target) { extraHash.target = props.target; }
-    if (props.file) { extraHash.file = props.file; }
-    if (props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
+    if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
+    if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
+    if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
+    if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
+    if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the

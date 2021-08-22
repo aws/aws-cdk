@@ -63,8 +63,8 @@ describe('image asset', () => {
       buildArgs: {
         a: 'b',
       },
-      hashOptions: {
-        skipBuildArgs: true,
+      invalidation: {
+        buildArgs: false,
       },
     });
     new DockerImageAsset(stack, 'Image2', {
@@ -72,8 +72,8 @@ describe('image asset', () => {
       buildArgs: {
         a: 'c',
       },
-      hashOptions: {
-        skipBuildArgs: true,
+      invalidation: {
+        buildArgs: false,
       },
     });
     new DockerImageAsset(stack, 'Image3', {

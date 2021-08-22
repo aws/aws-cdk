@@ -60,8 +60,8 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
   buildArgs: {
     HTTP_PROXY: 'http://10.20.30.2:1234'
   },
-  hashOptions: {
-    skipBuildArgs: true
+  invalidation: {
+    buildArgs: false
   }
 });
 ```
