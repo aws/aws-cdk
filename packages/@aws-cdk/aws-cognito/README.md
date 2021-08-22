@@ -40,7 +40,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [Identity Pools](#identity-pools)
   - [Authenticated and Unauthenticated Identities](#authenticated-and-unauthenticated-identities)
   - [Federated Identity Providers](#federated-identity-providers)
-    - [Using User Pool](#associating-provider-through-a-user-pool)
+    - [Using User Pool](#associating-a-provider-through-a-user-pool)
     - [Directly](#associating-a-provider-directly)
   - [Supported Login Providers](#supported-login-providers)
   - [OpenIdConnect and Saml](#openid-connect-and-saml)
