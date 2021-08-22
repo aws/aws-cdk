@@ -284,8 +284,11 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug('Initiating execution of changeset %s on stack %s', changeSet.Id, deployName);
     await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
     // eslint-disable-next-line max-len
+    const changeSetLength: number = (changeSetDescription.Changes ?? []).length;
     const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, stackArtifact, {
-      resourcesTotal: (changeSetDescription.Changes ?? []).length,
+      // +2 for the COMPLETE event emitted from updates.
+      // +1 for the COMPLETE event emitted from creates.
+      resourcesTotal: cloudFormationStack.exists ? changeSetLength + 2 : changeSetLength + 1,
       progress: options.progress,
       changeSetCreationTime: changeSetDescription.CreationTime,
     }).start();

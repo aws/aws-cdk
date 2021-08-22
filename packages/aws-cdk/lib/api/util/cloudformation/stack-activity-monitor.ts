@@ -384,9 +384,7 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
   protected readonly stream: NodeJS.WriteStream;
 
   constructor(protected readonly props: PrinterProps) {
-    // +1 because the stack also emits a "COMPLETE" event at the end, and that wasn't
-    // counted yet. This makes it line up with the amount of events we expect.
-    this.resourcesTotal = props.resourcesTotal ? props.resourcesTotal + 1 : undefined;
+    this.resourcesTotal = props.resourcesTotal ? props.resourcesTotal : undefined;
 
     // How many digits does this number take to represent?
     this.resourceDigits = this.resourcesTotal ? Math.ceil(Math.log10(this.resourcesTotal)) : 0;
@@ -524,7 +522,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     this.stream.write(
       util.format(
         ' %s%s | %s | %s | %s %s%s%s\n',
-        (progress !== false ? ` ${this.progress()} |` : ''),
+        (progress !== false ? ` ${this.progress()} | ` : ''),
         new Date(e.Timestamp).toLocaleTimeString(),
         color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').substr(0, STATUS_WIDTH))), // pad left and trim
         padRight(this.props.resourceTypeColumnWidth, e.ResourceType || ''),
