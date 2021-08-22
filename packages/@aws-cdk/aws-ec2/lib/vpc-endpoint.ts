@@ -340,25 +340,25 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   /**
    * Get the endpoint prefix for the service in the specified region
    * because the prefix for some of the services in cn-north-1 and cn-northwest-1 are different
-   * 
+   *
    * For future maintenance， the vpc endpoint services could be fetched using AWS CLI Commmand:
    * aws ec2 describe-vpc-endpoint-services
    */
   private getDefaultEndpointPrefix(name: string, region: string) {
     const VPC_ENDPOINT_SERVICE_EXCEPTIONS: { [region: string]: string[] } = {
-      'cn-north-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra', 
-    'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 
-    'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder', 
-    'iotsitewise.api', 'iotsitewise.data', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 
-    'rds', 'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 
-    'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'synthetics', 'transcribe.cn', 
-    'transcribestreaming', 'transfer', 'xray'],
-      'cn-northwest-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra', 
-    'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 
-    'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder', 
-    'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data', 's3', 
-    'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 
-    'states', 'sts', 'synthetics', 'transcribe.cn', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
+      'cn-north-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra',
+        'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr',
+        'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder',
+        'iotsitewise.api', 'iotsitewise.data', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring',
+        'rds', 'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime',
+        'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'synthetics', 'transcribe.cn',
+        'transcribestreaming', 'transfer', 'xray'],
+      'cn-northwest-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra',
+        'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr',
+        'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder',
+        'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data', 's3',
+        'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs',
+        'states', 'sts', 'synthetics', 'transcribe.cn', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
     };
     if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region] && VPC_ENDPOINT_SERVICE_EXCEPTIONS[region].includes(name)) {
       return 'cn.com.amazonaws';
