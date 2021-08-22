@@ -346,7 +346,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
       'cn-north-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra', 'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder', 'iotsitewise.api', 'iotsitewise.data', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'synthetics', 'transcribe.cn', 'transcribestreaming', 'transfer', 'xray'],
       'cn-northwest-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra', 'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'synthetics', 'transcribe.cn', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
     };
-    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS.hasOwnProperty(region) && VPC_ENDPOINT_SERVICE_EXCEPTIONS[region].includes(name)) {
+    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region] && VPC_ENDPOINT_SERVICE_EXCEPTIONS[region].includes(name)) {
       return 'cn.com.amazonaws';
     } else {
       return 'com.amazonaws';
