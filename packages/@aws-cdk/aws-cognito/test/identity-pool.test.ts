@@ -245,7 +245,7 @@ describe('identity pool', () => {
       allowUnauthenticatedIdentities: true,
       identityPoolName: 'my-id-pool',
       pushSyncConfig: {
-        applicationArns: ['my::application::arn'],
+        applicationArns: ['arn::my::application'],
         role: pushSyncRole,
       },
       streamOptions: {
@@ -254,17 +254,17 @@ describe('identity pool', () => {
         role: streamRole,
       },
       supportedLoginProviders: {
-        amazon: 'my-app.amazon.com',
-        google: 'my-app.google.com',
+        amazon: 'amzn1.application.12312k3j234j13rjiwuenf',
+        google: '12345678012.apps.googleusercontent.com',
       },
-      syncTrigger: Function.fromFunctionArn(stack, 'my-event-function', 'my::lambda::arn'),
+      syncTrigger: Function.fromFunctionArn(stack, 'my-event-function', 'arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger'),
     });
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 4);
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
       AllowUnauthenticatedIdentities: true,
       CognitoEvents: {
-        SyncTrigger: 'my::lambda::arn',
+        SyncTrigger: 'arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger',
       },
       CognitoStreams: {
         RoleArn: {
@@ -279,7 +279,7 @@ describe('identity pool', () => {
       IdentityPoolName: 'my-id-pool',
       PushSync: {
         ApplicationArns: [
-          'my::application::arn',
+          'arn::my::application',
         ],
         RoleArn: {
           'Fn::GetAtt': [
@@ -289,8 +289,8 @@ describe('identity pool', () => {
         },
       },
       SupportedLoginProviders: {
-        'www.amazon.com': 'my-app.amazon.com',
-        'accounts.google.com': 'my-app.google.com',
+        'www.amazon.com': 'amzn1.application.12312k3j234j13rjiwuenf',
+        'accounts.google.com': '12345678012.apps.googleusercontent.com',
       },
     });
   });

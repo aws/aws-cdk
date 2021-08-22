@@ -41,7 +41,12 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Federated Identity Providers](#federated-identity-providers)
   - [Supported Login Providers](#supported-login-providers)
   - [OpenIdConnect and Saml](#openid-connect-and-saml)
+  - [Custom Providers](#custom-providers)
   - [Role Mapping](#role-mapping)
+  - [Authentication Flow](#authentication-flow)
+  - [Cognito Sync](#cognito-sync)
+  - [Server Side Token Check](#server-side-token-check)
+  - [Importing Identity Pools](#importing-identity-pools)
 - [User Pools](#user-pools)
   - [Sign Up](#sign-up)
   - [Sign In](#sign-in)
@@ -152,6 +157,19 @@ new cognito.IdentityPool(this, 'myidentitypool', {
   samlProviders: [ samlProvider ],
 });
 ```
+
+### Custom Providers
+You can also customize your identity pool's behavior further using customized [developer authenticated identities](https://docs.aws.amazon.com/cognito/latest/developerguide/developer-authenticated-identities.html). With developer authenticated identities, you can register and authenticate users via your own existing authentication process, while still using Amazon Cognito to synchronize user data and access AWS resources.
+
+Like the supported external providers, though, you can only associate one custom provider directly with the identity pool, so to add more you'd need to integrate them with OpenIdConnect or another provider.
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  customProvider: 'my-custom-provider.example.com',
+});
+```
 ### Role Mapping
 In addition to setting default roles for authenticated and unauthenticated users, you can also use identity pools to define rules to choose the role for each user based on claims in the user's ID token by using Role Mapping. When using role mapping, it's important to be aware of some of the permissions your role will need. You can find an in depth review of roles and role mapping [here](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html).
 
@@ -195,6 +213,65 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 You can also add role mappings after instantiation with the Identity Pool's `addRoleMappings` method:
 ```ts
 identityPool.addRoleMappings(myAddedRoleMapping1, myAddedRoleMapping2, myAddedRoleMapping3);
+```
+### Authentication Flow
+Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html) defaults to the enhanced, simplified flow. If you prefer to use the Classic (basic) Authentication Flow, you can do so using `IdentityPoolProps.allowClassicFlow`
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  allowClassicFlow: true,
+});
+```
+### Cognito Sync
+It's now recommended to integrate [AWS AppSync](https://aws.amazon.com/appsync/) for synchronizing app data across devices, but you can still implement [Cognito Sync](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sync.html) features like [Push Sync](https://docs.aws.amazon.com/cognito/latest/developerguide/push-sync.html), [Cognito Events](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-events.html), and [Cognito Streams](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-streams.html) and configured them as part of an Identity Pool:
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  pushSyncConfig: {
+    applicationArns: ['arn::my::application'],
+    role: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-push-sync-role'),
+  },
+  streamOptions: {
+    streamName: 'my-stream',
+    enableStreamingStatus: true,
+    role: streamRole,
+  },
+  syncTrigger: Function.fromFunctionArn('arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger'),
+});
+```
+### Server Side Token Check
+With the `IdentityPool` CDK Construct, by default the pool is configured to check with the integrated user pools to make sure that the user has not been globally signed out or deleted before the identity pool provides an OIDC token or AWS credentials for the user. 
+
+If the user is signed out or deleted, the identity pool will return a 400 Not Authorized error. You can disable this setting, however, in several ways.
+
+Setting `IdentityPoolProps.disableServerSideTokenCheck` to true will change the default behavior to no server side token check:
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  disableServerSideTokenCheck: true
+});
+```
+You can also turn off server side token check for individual user pools setting the third argument of the Identity Pool's `addUserPool` method to true:
+```ts
+identityPool.addUserPool(userpool, {
+  userPoolClientName: 'my-user-pool-client',
+  disableOath: true,
+  refreshTokenValidity: Duration.days(14),
+}, true);
+```
+
+### Importing Identity Pools
+You can import existing identity pools into your stack using Identity Pool static methods with the Identity Pool Id or Arn:
+```ts
+IdentityPool.fromIdentityPoolId(this, 'my-imported-identity-pool', 'us-east-1:dj2823ryiwuhef937');
+
+IdentityPool.fromIdentityPoolArn(this, 'my-imported-identity-pool', 'arn:aws:cognito-identity:us-east-1:123456789012:identitypool/us-east-1:dj2823ryiwuhef937');
 ```
 
 ## User Pools
