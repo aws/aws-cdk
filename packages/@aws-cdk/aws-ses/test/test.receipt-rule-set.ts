@@ -30,12 +30,6 @@ export = {
     // WHEN
     new ReceiptRuleSet(stack, 'RuleSet', {
       dropSpam: true,
-      rules: [
-        {
-          scanEnabled: true,
-          recipients: ['foo@example.com'],
-        },
-      ],
     });
 
     // THEN
@@ -59,6 +53,27 @@ export = {
       },
     }));
 
+    expect(stack).to(haveResource('AWS::Lambda::Function'));
+
+    test.done();
+  },
+
+  'drop spam rule should always appear first'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new ReceiptRuleSet(stack, 'RuleSet', {
+      dropSpam: true,
+      rules: [
+        {
+          scanEnabled: true,
+          recipients: ['foo@example.com'],
+        },
+      ],
+    });
+
+    // THEN
     expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
       Rule: {
         Enabled: true,
