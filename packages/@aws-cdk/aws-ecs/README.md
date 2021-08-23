@@ -854,7 +854,7 @@ cluster.addAsgCapacityProvider(capacityProvider);
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
 taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample',
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   memoryReservationMiB: 256,
 });
 

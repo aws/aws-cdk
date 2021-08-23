@@ -740,7 +740,7 @@ With services account you can provide Kubernetes Pods access to AWS resources.
 
 ```ts
 // add service account
-const sa = cluster.addServiceAccount('MyServiceAccount');
+const serviceAccount = cluster.addServiceAccount('MyServiceAccount');
 
 const bucket = new Bucket(this, 'Bucket');
 bucket.grantReadWrite(serviceAccount);
@@ -750,7 +750,7 @@ const mypod = cluster.addManifest('mypod', {
   kind: 'Pod',
   metadata: { name: 'mypod' },
   spec: {
-    serviceAccountName: sa.serviceAccountName
+    serviceAccountName: serviceAccount.serviceAccountName
     containers: [
       {
         name: 'hello',
@@ -763,13 +763,13 @@ const mypod = cluster.addManifest('mypod', {
 });
 
 // create the resource after the service account.
-mypod.node.addDependency(sa);
+mypod.node.addDependency(serviceAccount);
 
 // print the IAM role arn for this service account
-new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
+new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: serviceAccount.role.roleArn })
 ```
 
-Note that using `sa.serviceAccountName` above **does not** translate into a resource dependency.
+Note that using `serviceAccount.serviceAccountName` above **does not** translate into a resource dependency.
 This is why an explicit dependency is needed. See <https://github.com/aws/aws-cdk/issues/9910> for more details.
 
 You can also add service accounts to existing clusters.
@@ -788,7 +788,7 @@ const cluster = eks.Cluster.fromClusterAttributes({
   kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
 });
 
-const sa = cluster.addServiceAccount('MyServiceAccount');
+const serviceAccount = cluster.addServiceAccount('MyServiceAccount');
 
 const bucket = new Bucket(this, 'Bucket');
 bucket.grantReadWrite(serviceAccount);
