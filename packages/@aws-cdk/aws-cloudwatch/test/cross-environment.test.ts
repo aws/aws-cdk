@@ -146,7 +146,6 @@ describe('cross environment', () => {
 
     test('metric can render in a different account', () => {
       // GIVEN
-
       const b = new Metric({
         namespace: 'Test',
         metricName: 'ACount',
