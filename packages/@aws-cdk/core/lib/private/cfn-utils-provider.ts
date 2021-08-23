@@ -1,4 +1,4 @@
-import { Construct } from '../construct-compat';
+import { Construct } from 'constructs';
 import { CustomResource } from '../custom-resource';
 import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
 import { CfnUtilsResourceType } from './cfn-utils-provider/consts';
