@@ -360,7 +360,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs',
         'states', 'sts', 'synthetics', 'transcribe.cn', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
     };
-    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region] && VPC_ENDPOINT_SERVICE_EXCEPTIONS[region].includes(name)) {
+    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
       return 'cn.com.amazonaws';
     } else {
       return 'com.amazonaws';
