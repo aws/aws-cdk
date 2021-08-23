@@ -13,6 +13,7 @@ os.environ['PATH'] = '/opt/kubectl:/opt/awscli:' + os.environ['PATH']
 outdir = os.environ.get('TEST_OUTDIR', '/tmp')
 kubeconfig = os.path.join(outdir, 'kubeconfig')
 
+
 def get_handler(event, context):
     logger.info(json.dumps(event))
 
@@ -29,6 +30,9 @@ def get_handler(event, context):
         '--name', cluster_name,
         '--kubeconfig', kubeconfig
     ])
+
+    if os.path.isfile(kubeconfig):
+        os.chmod(kubeconfig, 0o600)
 
     object_type         = props['ObjectType']
     object_name         = props['ObjectName']
