@@ -39,7 +39,7 @@ describe('exec', () => {
       stderr: Buffer.from('stderr'),
       stdout: Buffer.from('stdout'),
       pid: 123,
-      output: ['stdout', 'stderr'],
+      output: [Buffer.from('stdout'), Buffer.from('stderr')],
       signal: null,
     });
 
@@ -65,7 +65,7 @@ describe('exec', () => {
       stderr: Buffer.from('error occured'),
       stdout: Buffer.from('stdout'),
       pid: 123,
-      output: ['stdout', 'stderr'],
+      output: [Buffer.from('stdout'), Buffer.from('stderr')],
       signal: null,
     });
 
@@ -81,7 +81,7 @@ describe('exec', () => {
       stderr: Buffer.from('stderr'),
       stdout: Buffer.from('stdout'),
       pid: 123,
-      output: ['stdout', 'stderr'],
+      output: [Buffer.from('stdout'), Buffer.from('stderr')],
       signal: null,
     });
 

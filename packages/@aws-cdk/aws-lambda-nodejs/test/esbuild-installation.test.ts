@@ -19,7 +19,7 @@ test('checks global version if local detection fails', () => {
     stderr: Buffer.from('stderr'),
     stdout: Buffer.from('global-version'),
     pid: 123,
-    output: ['stdout', 'stderr'],
+    output: [Buffer.from('stdout'), Buffer.from('stderr')],
     signal: null,
   });
 
@@ -40,7 +40,7 @@ test('returns undefined on error', () => {
     stderr: Buffer.from('stderr'),
     stdout: Buffer.from('stdout'),
     pid: 123,
-    output: ['stdout', 'stderr'],
+    output: [Buffer.from('stdout'), Buffer.from('stderr')],
     signal: null,
   });
 
