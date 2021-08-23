@@ -675,5 +675,56 @@ nodeunitShim({
 
       test.done();
     },
+    'test vpc interface endpoint for transcribe can be created correctly in none china regions'(test: Test) {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('Transcribe Endpoint', {
+        service: InterfaceVpcEndpointAwsService.TRANSCRIBE,
+      });
+
+      //THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-east-1.transcribe',
+      }));
+
+      test.done();
+    },
+    'test vpc interface endpoint for transcribe can be created correctly in cn-north-1'(test: Test) {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-north-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('Transcribe Endpoint', {
+        service: InterfaceVpcEndpointAwsService.TRANSCRIBE,
+      });
+
+      //THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'cn.com.amazonaws.cn-north-1.transcribe.cn',
+      }));
+
+      test.done();
+    },
+    'test vpc interface endpoint for transcribe can be created correctly in cn-northwest-1'(test: Test) {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-northwest-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('Transcribe Endpoint', {
+        service: InterfaceVpcEndpointAwsService.TRANSCRIBE,
+      });
+
+      //THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'cn.com.amazonaws.cn-northwest-1.transcribe.cn',
+      }));
+
+      test.done();
+    },
   },
 });

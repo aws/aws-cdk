@@ -332,8 +332,14 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         return this.getDefaultEndpointPrefix(name, regionName);
       },
     });
+    const defaultEndpointSuffix = Lazy.uncachedString({
+      produce: (context) => {
+        const regionName = Stack.of(context.scope).region;
+        return this.getDefaultEndpointSuffix(name, regionName);
+      },
+    });
 
-    this.name = `${prefix || defaultEndpointPrefix}.${region}.${name}`;
+    this.name = `${prefix || defaultEndpointPrefix}.${region}.${name}${defaultEndpointSuffix}`;
     this.port = port || 443;
   }
 
@@ -351,19 +357,41 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder',
         'iotsitewise.api', 'iotsitewise.data', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring',
         'rds', 'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime',
-        'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'synthetics', 'transcribe.cn',
+        'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'synthetics', 'transcribe',
         'transcribestreaming', 'transfer', 'xray'],
       'cn-northwest-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra',
         'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr',
         'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder',
         'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data', 's3',
         'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs',
-        'states', 'sts', 'synthetics', 'transcribe.cn', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
+        'states', 'sts', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
     };
     if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
       return 'cn.com.amazonaws';
     } else {
       return 'com.amazonaws';
+    }
+  }
+
+  /**
+   * Get the endpoint suffix for the service in the specified region.
+   * In cn-north-1 and cn-northwest-1, the vpc endpoint of transcribe is:
+   *   cn.com.amazonaws.cn-north-1.transcribe.cn
+   *   cn.com.amazonaws.cn-northwest-1.transcribe.cn
+   * so suffix '.cn' should be return in these scenarios.
+   *
+   * For future maintenance， the vpc endpoint services could be fetched using AWS CLI Commmand:
+   * aws ec2 describe-vpc-endpoint-services
+   */
+  private getDefaultEndpointSuffix(name: string, region: string) {
+    const VPC_ENDPOINT_SERVICE_EXCEPTIONS: { [region: string]: string[] } = {
+      'cn-north-1': ['transcribe'],
+      'cn-northwest-1': ['transcribe'],
+    };
+    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
+      return '.cn';
+    } else {
+      return '';
     }
   }
 }
