@@ -17,10 +17,10 @@
   },
   "peerDependencies": {
     "aws-cdk-lib": "%cdk-version%",
-    "constructs": "^3.0.4"
+    "constructs": "%constructs-version%"
   },
   "dependencies": {
     "aws-cdk-lib": "%cdk-version%",
-    "constructs": "^3.0.4"
+    "constructs": "%constructs-version%"
   }
 }
