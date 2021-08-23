@@ -14,10 +14,6 @@ import { topologicalSort } from '../private/toposort';
 import { DeployCdkStackAction } from './actions';
 import { CdkPipeline } from './pipeline';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Construction properties for a CdkStage
  */
@@ -71,7 +67,7 @@ export interface CdkStageProps {
  * You don't need to instantiate this class directly. Use
  * `cdkPipeline.addStage()` instead.
  */
-export class CdkStage extends CoreConstruct {
+export class CdkStage extends Construct {
   private _nextSequentialRunOrder = 1; // Must start at 1 eh
   private _manualApprovalCounter = 1;
   private readonly pipelineStage: codepipeline.IStage;
