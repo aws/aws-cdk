@@ -67,6 +67,9 @@ async function main() {
     // this is incredible, but passing this option to standard-version actually makes it crash!
     // good thing we're getting rid of it...
     opts.verbose = !!process.env.VERBOSE;
+    // Rename some options to match cdk-release inputs (replaces bumpFiles, packageFiles, and infile)
+    opts.versionFile = ver.versionFile;
+    opts.changelogFile = ver.changelogFile;
     console.error("🎉 Calling our 'cdk-release' package to make the bump");
     console.error("ℹ️ Set the LEGACY_BUMP env variable to use the old 'standard-version' bump instead");
     const cdkRelease = require('cdk-release');

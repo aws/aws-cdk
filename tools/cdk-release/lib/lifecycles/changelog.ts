@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import { ConventionalCommit } from '../conventional-commits';
 import { writeFile } from '../private/files';
 import { notify, debug, debugObject } from '../private/print';
-import { ReleaseOptions } from '../types';
+import { LifecyclesSkip } from '../types';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -11,13 +11,25 @@ const conventionalChangelogWriter = require('conventional-changelog-writer');
 
 const START_OF_LAST_RELEASE_PATTERN = /(^#+ \[?[0-9]+\.[0-9]+\.[0-9]+|<a name=)/m;
 
+export interface ChangelogOptions {
+  skip?: LifecyclesSkip;
+  changelogFile: string;
+  dryRun?: boolean;
+  verbose?: boolean;
+  silent?: boolean;
+
+  changeLogHeader?: string;
+  includeDateInChangelog?: boolean;
+  releaseCommitMessageFormat?: string;
+}
+
 export interface ChangelogResult {
   readonly contents: string;
   readonly changedFiles: string[];
 }
 
 export async function changelog(
-  args: ReleaseOptions, currentVersion: string, newVersion: string, commits: ConventionalCommit[],
+  args: ChangelogOptions, currentVersion: string, newVersion: string, commits: ConventionalCommit[],
 ): Promise<ChangelogResult> {
   if (args.skip?.changelog) {
     return {
@@ -28,7 +40,7 @@ export async function changelog(
   createChangelogIfMissing(args);
 
   // find the position of the last release and remove header
-  let oldContent = args.dryRun ? '' : fs.readFileSync(args.infile!, 'utf-8');
+  let oldContent = args.dryRun ? '' : fs.readFileSync(args.changelogFile, 'utf-8');
   const oldContentStart = oldContent.search(START_OF_LAST_RELEASE_PATTERN);
   if (oldContentStart !== -1) {
     oldContent = oldContent.substring(oldContentStart);
@@ -100,24 +112,23 @@ export async function changelog(
       content += buffer.toString();
     });
     changelogStream.on('end', function () {
-      notify(args, 'outputting changes to %s', [args.infile]);
+      notify(args, 'outputting changes to %s', [args.changelogFile]);
       if (args.dryRun) {
         debug(args, `\n---\n${content.trim()}\n---\n`);
       } else {
-        writeFile(args, args.infile!, args.changeLogHeader + '\n' + (content + oldContent).replace(/\n+$/, '\n'));
+        writeFile(args, args.changelogFile, args.changeLogHeader + '\n' + (content + oldContent).replace(/\n+$/, '\n'));
       }
       return resolve({
         contents: content,
-        changedFiles: [args.infile!],
+        changedFiles: [args.changelogFile],
       });
     });
   });
 }
 
-function createChangelogIfMissing(args: ReleaseOptions) {
-  if (!fs.existsSync(args.infile!)) {
-    notify(args, 'created %s', [args.infile]);
-    // args.outputUnreleased = true
-    writeFile(args, args.infile!, '\n');
+function createChangelogIfMissing(args: ChangelogOptions) {
+  if (!fs.existsSync(args.changelogFile)) {
+    notify(args, 'created %s', [args.changelogFile]);
+    writeFile(args, args.changelogFile, '\n');
   }
 }
