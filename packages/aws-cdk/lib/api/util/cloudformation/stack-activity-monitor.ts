@@ -384,7 +384,7 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
   protected readonly stream: NodeJS.WriteStream;
 
   constructor(protected readonly props: PrinterProps) {
-    this.resourcesTotal = props.resourcesTotal ? props.resourcesTotal : undefined;
+    this.resourcesTotal = props.resourcesTotal ? props.resourcesTotal + 1 : undefined;
 
     // How many digits does this number take to represent?
     this.resourceDigits = this.resourcesTotal ? Math.ceil(Math.log10(this.resourcesTotal)) : 0;
