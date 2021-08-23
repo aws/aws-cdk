@@ -326,7 +326,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     const region = Lazy.uncachedString({
       produce: (context) => Stack.of(context.scope).region,
     });
-    const defaultEndpointPrefix =Lazy.uncachedString({
+    const defaultEndpointPrefix = Lazy.uncachedString({
       produce: (context) => {
         const regionName = Stack.of(context.scope).region;
         return this.getDefaultEndpointPrefix(name, regionName);
