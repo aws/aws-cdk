@@ -388,11 +388,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
       'cn-north-1': ['transcribe'],
       'cn-northwest-1': ['transcribe'],
     };
-    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
-      return '.cn';
-    } else {
-      return '';
-    }
+    return VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name) ? '.cn' : '';
   }
 }
 

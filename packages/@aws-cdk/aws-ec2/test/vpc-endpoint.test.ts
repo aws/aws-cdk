@@ -675,7 +675,7 @@ nodeunitShim({
 
       test.done();
     },
-    'test vpc interface endpoint for transcribe can be created correctly in none china regions'(test: Test) {
+    'test vpc interface endpoint for transcribe can be created correctly in non-china regions'(test: Test) {
       //GIVEN
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
       const vpc = new Vpc(stack, 'VPC');
