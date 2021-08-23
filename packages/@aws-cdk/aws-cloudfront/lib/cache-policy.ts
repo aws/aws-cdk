@@ -234,7 +234,7 @@ export class CacheHeaderBehavior {
     return new CacheHeaderBehavior('whitelist', headers);
   }
 
-  /** If the no headers will be passed, or an allow list of headers. */
+  /** If no headers will be passed, or an allow list of headers. */
   public readonly behavior: string;
   /** The headers for the allow/deny list, if applicable. */
   public readonly headers?: string[];
