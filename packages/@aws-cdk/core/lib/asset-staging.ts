@@ -424,16 +424,6 @@ export class AssetStaging extends Construct {
     // Chmod the bundleDir to full access.
     fs.chmodSync(bundleDir, 0o777);
 
-    let user: string;
-    if (options.user) {
-      user = options.user;
-    } else { // Default to current user
-      const userInfo = os.userInfo();
-      user = userInfo.uid !== -1 // uid is -1 on Windows
-        ? `${userInfo.uid}:${userInfo.gid}`
-        : '1000:1000';
-    }
-
     // Always mount input and output dir
     const volumes = [
       {
@@ -453,6 +443,16 @@ export class AssetStaging extends Construct {
 
       localBundling = options.local?.tryBundle(bundleDir, options);
       if (!localBundling) {
+        let user: string;
+        if (options.user) {
+          user = options.user;
+        } else { // Default to current user
+          const userInfo = os.userInfo();
+          user = userInfo.uid !== -1 // uid is -1 on Windows
+            ? `${userInfo.uid}:${userInfo.gid}`
+            : '1000:1000';
+        }
+
         options.image.run({
           command: options.command,
           user,
