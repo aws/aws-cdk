@@ -1,3 +1,30 @@
+# CloudFormation Resource Specification v39.10.0
+
+## New Resource Types
+
+* AWS::WAFv2::LoggingConfiguration
+
+## Attribute Changes
+
+* AWS::EC2::EgressOnlyInternetGateway Id (__added__)
+* AWS::S3::AccessPoint Alias (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::DomainName OwnershipVerificationCertificateArn (__added__)
+* AWS::CodeBuild::Project ResourceAccessRole (__added__)
+* AWS::CodeBuild::Project Visibility (__added__)
+
+## Property Type Changes
+
+* AWS::Elasticsearch::Domain.ColdStorageOptions (__added__)
+* AWS::IoTAnalytics::Datastore.CustomerManagedS3Storage (__added__)
+* AWS::IoTAnalytics::Datastore.IotSiteWiseMultiLayerStorage (__added__)
+* AWS::ApiGatewayV2::DomainName.DomainNameConfiguration OwnershipVerificationCertificateArn (__added__)
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig ColdStorageOptions (__added__)
+* AWS::IoTAnalytics::Datastore.DatastoreStorage IotSiteWiseMultiLayerStorage (__added__)
+
+
 # CloudFormation Resource Specification v39.9.0
 
 ## New Resource Types
