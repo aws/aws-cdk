@@ -160,7 +160,7 @@ test('Local bundling', () => {
     stderr: Buffer.from('stderr'),
     stdout: Buffer.from('go version go1.15 linux/amd64'),
     pid: 123,
-    output: ['stdout', 'stderr'],
+    output: [Buffer.from('stdout'), Buffer.from('stderr')],
     signal: null,
   });
 
