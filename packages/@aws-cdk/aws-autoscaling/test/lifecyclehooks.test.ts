@@ -94,15 +94,6 @@ nodeunitShim({
       DefaultResult: 'ABANDON',
     }));
 
-    // Lifecycle Hook has a dependency on the policy object
-    /* expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
-      DependsOn: [
-        'ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB',
-        'ASGLifecycleHookTransitionRole3AAA6BB7',
-      ],
-    }, ResourcePart.CompleteDefinition));
-    */
-
     expect(stack).to(haveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
