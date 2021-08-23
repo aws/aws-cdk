@@ -114,7 +114,7 @@
           ]
         },
         "Name": "canary-integ",
-        "RuntimeVersion": "syn-nodejs-puppeteer-3.1",
+        "RuntimeVersion": "syn-nodejs-puppeteer-3.2",
         "Schedule": {
           "DurationInSeconds": "0",
           "Expression": "rate(1 minute)"
@@ -281,7 +281,7 @@
           ]
         },
         "Name": "assetcanary-one",
-        "RuntimeVersion": "syn-nodejs-puppeteer-3.1",
+        "RuntimeVersion": "syn-nodejs-puppeteer-3.2",
         "Schedule": {
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
@@ -448,7 +448,7 @@
           ]
         },
         "Name": "assetcanary-two",
-        "RuntimeVersion": "syn-nodejs-puppeteer-3.1",
+        "RuntimeVersion": "syn-nodejs-puppeteer-3.2",
         "Schedule": {
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
