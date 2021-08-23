@@ -444,8 +444,6 @@ export enum InstanceClass {
 
   /**
    * Standard instances based on Intel (Ice Lake), 6th generation.
-   *
-   * @stability stable
    */
   STANDARD6_INTEL = 'm6i',
 
