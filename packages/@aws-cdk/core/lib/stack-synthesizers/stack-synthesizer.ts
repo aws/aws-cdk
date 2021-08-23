@@ -1,8 +1,7 @@
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { addStackArtifactToAssembly } from './_shared';
-import { IStackSynthesizer } from './types';
+import { IStackSynthesizer, ISynthesisSession } from './types';
 
 /**
  * Base class for implementing an IStackSynthesizer
