@@ -28,6 +28,8 @@ represents the amount of errors reported by that Lambda function:
 const errors = fn.metricErrors();
 ```
 
+`Metric` objects can be account and region aware. You can specify `account` and `region` as properties of the metric, or use the `metric.attachTo(Construct)` method. `metric.attachTo()` will automatically copy the `region` and `account` fields of the `Construct`, which can come from anywhere in the Construct tree.
+
 You can also instantiate `Metric` objects to reference any
 [published metric](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html)
 that's not exposed using a convenience method on the CDK construct.
@@ -160,7 +162,7 @@ The most important properties to set while creating an Alarms are:
 - `evaluationPeriods`: how many consecutive periods the metric has to be
   breaching the the threshold for the alarm to trigger.
 
-To create a cross-account alarm, make sure you have enabled [cross-account functionality](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html) in CloudWatch. Then, set the `account` property in the `Metric` object either manually or via the `metric.attachTo()` function.
+To create a cross-account alarm, make sure you have enabled [cross-account functionality](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html) in CloudWatch. Then, set the `account` property in the `Metric` object either manually or via the `metric.attachTo()` method.
 
 ### Alarm Actions
 
