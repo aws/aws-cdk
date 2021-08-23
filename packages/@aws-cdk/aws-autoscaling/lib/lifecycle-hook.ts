@@ -46,8 +46,10 @@ export interface BasicLifecycleHookProps {
 
   /**
    * The target of the lifecycle hook
+   *
+   * @default: No target.
    */
-  readonly notificationTarget: ILifecycleHookTarget;
+  readonly notificationTarget?: ILifecycleHookTarget;
 
   /**
    * The role that allows publishing to the notification target
@@ -101,7 +103,13 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
     });
 
-    const targetProps = props.notificationTarget.bind(this, this);
+    let targetProps = undefined;
+
+    if (props.notificationTarget) {
+      targetProps = props.notificationTarget.bind(this, this);
+    }
+
+    const notificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;
 
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
@@ -110,7 +118,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       lifecycleHookName: this.physicalName,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,
-      notificationTargetArn: targetProps.notificationTargetArn,
+      notificationTargetArn: notificationTargetArn,
       roleArn: this.role.roleArn,
     });
 
