@@ -89,7 +89,6 @@ describe('cluster table', () => {
       username: 'username',
       password: cdk.SecretValue.plainText('INSECURE_NOT_FOR_PRODUCTION'),
     });
-    const privileges = [redshift.Privilege.INSERT, redshift.Privilege.DROP];
     const table = redshift.Table.fromTableAttributes(stack, 'Table', {
       tableName,
       tableColumns,
@@ -97,14 +96,10 @@ describe('cluster table', () => {
       databaseName: 'databaseName',
     });
 
-    privileges.forEach(privilege => table.grant(user, privilege));
+    table.grant(user, redshift.TableAction.INSERT);
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-      username: 'username',
-      tablePrivileges: JSON.stringify([
-        { tableName, privileges: [redshift.Privilege[redshift.Privilege.INSERT]] },
-        { tableName, privileges: [redshift.Privilege[redshift.Privilege.DROP]] },
-      ]),
+      handler: 'grant-user-table-privileges',
     });
   });
 

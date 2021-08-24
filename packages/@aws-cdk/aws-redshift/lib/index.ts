@@ -3,6 +3,7 @@ export * from './parameter-group';
 export * from './database-props';
 export * from './database-secret';
 export * from './endpoint';
+export * from './privileges';
 export * from './subnet-group';
 export * from './table';
 export * from './user';

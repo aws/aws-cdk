@@ -2,55 +2,15 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { DatabaseQuery } from './database-query';
 import { DatabaseProps } from './database-props';
+import { DatabaseQuery } from './database-query';
 import { DatabaseSecret } from './database-secret';
+import { TableAction, UserTablePrivileges } from './privileges';
+import { ITable } from './table';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-
-/**
- * An action that a Redshift user can be granted privilege to perform on a resource.
- */
-export enum Privilege {
-  /**
-   * Grants privilege to select data from a table or view using a SELECT statement.
-   */
-  SELECT,
-
-  /**
-   * Grants privilege to load data into a table using an INSERT statement or a COPY statement.
-   */
-  INSERT,
-
-  /**
-   * Grants privilege to update a table column using an UPDATE statement.
-   */
-  UPDATE,
-
-  /**
-   * Grants privilege to delete a data row from a table.
-   */
-  DELETE,
-
-  /**
-   * Grants privilege to drop a table.
-   */
-  DROP,
-
-  /**
-   * Grants privilege to create a foreign key constraint.
-   *
-   * You need to grant this privilege on both the referenced table and the referencing table; otherwise, the user can't create the constraint.
-   */
-  REFERENCES,
-
-  /**
-   * Grants all available privileges at once to the specified user or user group.
-   */
-  ALL
-}
 
 /**
  * Properties for configuring a Redshift user.
@@ -58,6 +18,9 @@ export enum Privilege {
 export interface UserProps extends DatabaseProps {
   /**
    * The name of the user.
+   *
+   * For valid values, see: https://docs.aws.amazon.com/redshift/latest/dg/r_names.html
+   * TODO: validation?
    *
    * @default - a name is generated
    */
@@ -105,7 +68,7 @@ export interface IUser extends cdk.IConstruct {
   /**
    * Grant this user privilege to access a table.
    */
-  addPrivilege(tableName: string, ...privileges: Privilege[]): void;
+  addTablePrivileges(table: ITable, ...actions: TableAction[]): void;
 }
 
 /**
@@ -125,11 +88,6 @@ export interface UserAttributes extends DatabaseProps {
   readonly password: cdk.SecretValue;
 }
 
-interface TablePrivilege {
-  readonly tableName: string;
-  readonly privileges: Privilege[];
-}
-
 abstract class UserBase extends CoreConstruct implements IUser {
   abstract readonly username: string;
   abstract readonly password: cdk.SecretValue;
@@ -139,41 +97,19 @@ abstract class UserBase extends CoreConstruct implements IUser {
   /**
    * The tables that user will have access to
    */
-  private tablePrivileges: TablePrivilege[] = [];
-
-  private privileges?: DatabaseQuery;
+  private privileges?: UserTablePrivileges;
 
   protected abstract readonly databaseProps: DatabaseProps;
 
-  addPrivilege(tableName: string, ...privileges: Privilege[]): void {
-    this.tablePrivileges.push({ tableName, privileges });
+  addTablePrivileges(table: ITable, ...actions: TableAction[]): void {
     if (!this.privileges) {
-      this.createPrivileges();
+      this.privileges = new UserTablePrivileges(this, 'TablePrivileges', {
+        ...this.databaseProps,
+        user: this,
+      });
     }
-  }
 
-  private createPrivileges(): void {
-    this.privileges = new DatabaseQuery(this, 'Grant Privileges', {
-      ...this.databaseProps,
-      handler: 'grant-privileges',
-      properties: {
-        username: this.username,
-        tablePrivileges: cdk.Lazy.string({
-          produce: () => JSON.stringify(
-            this.tablePrivileges.map(({ tableName, privileges }) => {
-              if (privileges.includes(Privilege.ALL)) {
-                privileges = [Privilege.ALL];
-              }
-              if (privileges.includes(Privilege.UPDATE) || privileges.includes(Privilege.DELETE)) {
-                privileges.push(Privilege.SELECT);
-              }
-              const privilegeSet = new Set(privileges);
-              return { tableName, privileges: Array.from(privilegeSet).map(privilege => Privilege[privilege]) };
-            }),
-          ),
-        }),
-      },
-    });
+    this.privileges.addPrivileges(table, ...actions);
   }
 }
 

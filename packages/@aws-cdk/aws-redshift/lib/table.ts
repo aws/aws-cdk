@@ -1,9 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { DatabaseQuery } from './database-query';
 import { DatabaseProps } from './database-props';
-import { IUser, Privilege } from './user';
+import { DatabaseQuery } from './database-query';
+import { TableAction } from './privileges';
+import { IUser } from './user';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -75,7 +76,7 @@ export interface ITable extends cdk.IConstruct {
   /**
    * Grant a user privilege to access this table.
    */
-  grant(user: IUser, ...privileges: Privilege[]): void;
+  grant(user: IUser, ...actions: TableAction[]): void;
 }
 
 /**
@@ -108,8 +109,8 @@ abstract class TableBase extends CoreConstruct implements ITable {
   abstract readonly tableColumns: Column[];
   abstract readonly cluster: ICluster;
   abstract readonly databaseName: string;
-  grant(user: IUser, ...privileges: Privilege[]) {
-    user.addPrivilege(this.tableName, ...privileges);
+  grant(user: IUser, ...actions: TableAction[]) {
+    user.addTablePrivileges(this, ...actions);
   }
 }
 

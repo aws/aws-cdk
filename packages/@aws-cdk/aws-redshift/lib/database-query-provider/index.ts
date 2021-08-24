@@ -2,13 +2,13 @@
 import * as AWSLambda from 'aws-lambda';
 import { handler as createTable } from './create-table';
 import { handler as createUser } from './create-user';
-import { handler as grantPrivileges } from './grant-privileges';
+import { handler as grantUserTablePrivileges } from './grant-user-table-privileges';
 import { getResourceProperty } from './util';
 
 const HANDLERS: { [key: string]: ((event: AWSLambda.CloudFormationCustomResourceEvent) => Promise<any>) } = {
   'create-table': createTable,
   'create-user': createUser,
-  'grant-privileges': grantPrivileges,
+  'grant-user-table-privileges': grantUserTablePrivileges,
 };
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {

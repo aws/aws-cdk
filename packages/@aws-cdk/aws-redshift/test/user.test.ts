@@ -9,6 +9,7 @@ describe('cluster user', () => {
   let stack: cdk.Stack;
   let vpc: ec2.Vpc;
   let cluster: redshift.ICluster;
+  const databaseName = 'databaseName';
   let databaseProps: redshift.DatabaseProps;
 
   beforeEach(() => {
@@ -25,8 +26,8 @@ describe('cluster user', () => {
       publiclyAccessible: true,
     });
     databaseProps = {
-      cluster: cluster,
-      databaseName: 'databaseName',
+      cluster,
+      databaseName,
     };
   });
 
@@ -155,74 +156,6 @@ describe('cluster user', () => {
     });
   });
 
-  describe('table privileges', () => {
-    it('adding table privilege creates custom resource', () => {
-      const user = new redshift.User(stack, 'User', databaseProps);
-
-      user.addPrivilege('tableName', redshift.Privilege.INSERT);
-      user.addPrivilege('tableName2', redshift.Privilege.SELECT, redshift.Privilege.DROP);
-
-      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-        username: {
-          'Fn::GetAtt': [
-            'UserFDDCDD17',
-            'username',
-          ],
-        },
-        tablePrivileges: '[{"tableName":"tableName","privileges":["INSERT"]},{"tableName":"tableName2","privileges":["SELECT","DROP"]}]',
-      });
-    });
-
-    it('table privileges are deduplicated', () => {
-      const user = new redshift.User(stack, 'User', databaseProps);
-
-      user.addPrivilege('tableName', redshift.Privilege.INSERT, redshift.Privilege.INSERT);
-
-      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-        username: {
-          'Fn::GetAtt': [
-            'UserFDDCDD17',
-            'username',
-          ],
-        },
-        tablePrivileges: '[{"tableName":"tableName","privileges":["INSERT"]}]',
-      });
-    });
-
-    it('table privileges are removed when ALL specified', () => {
-      const user = new redshift.User(stack, 'User', databaseProps);
-
-      user.addPrivilege('tableName', redshift.Privilege.ALL, redshift.Privilege.INSERT);
-
-      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-        username: {
-          'Fn::GetAtt': [
-            'UserFDDCDD17',
-            'username',
-          ],
-        },
-        tablePrivileges: '[{"tableName":"tableName","privileges":["ALL"]}]',
-      });
-    });
-
-    it('SELECT table privilege is added when UPDATE or DELETE is specified', () => {
-      const user = new redshift.User(stack, 'User', databaseProps);
-
-      user.addPrivilege('tableName', redshift.Privilege.UPDATE);
-      user.addPrivilege('tableName2', redshift.Privilege.DELETE);
-
-      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-        username: {
-          'Fn::GetAtt': [
-            'UserFDDCDD17',
-            'username',
-          ],
-        },
-        tablePrivileges: '[{"tableName":"tableName","privileges":["UPDATE","SELECT"]},{"tableName":"tableName2","privileges":["DELETE","SELECT"]}]',
-      });
-    });
-  });
-
   it('destroys user on deletion by default', () => {
     new redshift.User(stack, 'User', databaseProps);
 
@@ -257,6 +190,26 @@ describe('cluster user', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       KmsKeyId: stack.resolve(encryptionKey.keyArn),
+    });
+  });
+
+  it('addTablePrivileges grants access to table', () => {
+    const user = redshift.User.fromUserAttributes(stack, 'User', {
+      ...databaseProps,
+      username: 'username',
+      password: cdk.SecretValue.plainText('INSECURE_NOT_FOR_PRODUCTION'),
+    });
+    const table = redshift.Table.fromTableAttributes(stack, 'Table', {
+      tableName: 'tableName',
+      tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+      cluster,
+      databaseName: 'databaseName',
+    });
+
+    user.addTablePrivileges(table, redshift.TableAction.INSERT);
+
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      handler: 'grant-user-table-privileges',
     });
   });
 });

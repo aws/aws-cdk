@@ -4,7 +4,7 @@ import { ClusterProps, executeStatement, getClusterPropsFromEvent, getResourcePr
 
 interface TablePrivilege {
   readonly tableName: string;
-  readonly privileges: string[];
+  readonly actions: string[];
 }
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -28,14 +28,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 }
 
 async function revokePrivileges(username: string, tablePrivileges: TablePrivilege[], clusterProps: ClusterProps) {
-  await Promise.all(tablePrivileges.map(({ tableName, privileges }) => {
-    return executeStatement(`REVOKE ${privileges.join(', ')} ON ${tableName} FROM ${username}`, clusterProps);
+  await Promise.all(tablePrivileges.map(({ tableName, actions }) => {
+    return executeStatement(`REVOKE ${actions.join(', ')} ON ${tableName} FROM ${username}`, clusterProps);
   }));
 }
 
 async function grantPrivileges(username: string, tablePrivileges: TablePrivilege[], clusterProps: ClusterProps) {
-  await Promise.all(tablePrivileges.map(({ tableName, privileges }) => {
-    return executeStatement(`GRANT ${privileges.join(', ')} ON ${tableName} TO ${username}`, clusterProps);
+  await Promise.all(tablePrivileges.map(({ tableName, actions }) => {
+    return executeStatement(`GRANT ${actions.join(', ')} ON ${tableName} TO ${username}`, clusterProps);
   }));
 }
 

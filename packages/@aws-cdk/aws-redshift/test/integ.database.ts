@@ -38,6 +38,6 @@ const table = new redshift.Table(stack, 'Table', {
   ...databaseProps,
   tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
 });
-table.grant(user, redshift.Privilege.INSERT, redshift.Privilege.DELETE);
+table.grant(user, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
 
 app.synth();
