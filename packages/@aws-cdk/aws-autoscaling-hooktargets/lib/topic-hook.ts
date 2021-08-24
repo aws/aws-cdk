@@ -10,7 +10,11 @@ export class TopicHook implements autoscaling.ILifecycleHookTarget {
   }
 
   public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    this.topic.grantPublish(lifecycleHook.role);
-    return { notificationTargetArn: this.topic.topicArn };
+    if (lifecycleHook.role) {
+      this.topic.grantPublish(lifecycleHook.role);
+      return { notificationTargetArn: this.topic.topicArn };
+    } else {
+      throw new Error('bad');
+    }
   }
 }
