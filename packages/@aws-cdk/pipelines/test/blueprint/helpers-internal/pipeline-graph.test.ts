@@ -3,7 +3,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as cdkp from '../../../lib';
 import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
-import { AppWithOutput, OneStackApp, TestApp } from '../../testhelpers/test-app';
+import { AppWithOutput, AppWithExposedStacks, OneStackApp, TestApp } from '../../testhelpers/test-app';
 
 let app: TestApp;
 
@@ -111,6 +111,61 @@ describe('blueprint with wave and stage', () => {
     expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
       'Gogogo',
       'Stack',
+    ]);
+  });
+
+  test('changeSetApproval gets added inside stack graph', () => {
+    // GIVEN
+    const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
+    const stack = appWithExposedStacks.stacks[0];
+    blueprint.waves[0].addStage(appWithExposedStacks, {
+      changeSetApproval: [{
+        step: new cdkp.ManualApprovalStep('Manual Approval'),
+        stacks: [stack],
+      }],
+    });
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint).graph;
+
+    // THEN
+    expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack1')).toEqual([
+      'Prepare',
+      'Manual Approval',
+      'Deploy',
+    ]);
+  });
+
+  test('changeSetApproval can be added on multiple stacks in a stage', () => {
+    // GIVEN
+    const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
+    const stack1 = appWithExposedStacks.stacks[0];
+    const stack2 = appWithExposedStacks.stacks[1];
+    blueprint.waves[0].addStage(appWithExposedStacks, {
+      changeSetApproval: [{
+        step: new cdkp.ManualApprovalStep('Manual Approval'),
+        stacks: [stack1, stack2],
+      }],
+    });
+    // WHEN
+    const graph = new PipelineGraph(blueprint).graph;
+
+    // THEN
+    expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack1')).toEqual([
+      'Prepare',
+      'Manual Approval',
+      'Deploy',
+    ]);
+
+    expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack2')).toEqual([
+      'Prepare',
+      'Manual Approval',
+      'Deploy',
+    ]);
+
+    expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack3')).toEqual([
+      'Prepare',
+      'Deploy',
     ]);
   });
 });

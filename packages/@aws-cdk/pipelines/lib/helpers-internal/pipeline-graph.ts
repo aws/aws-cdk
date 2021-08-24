@@ -135,6 +135,7 @@ export class PipelineGraph {
     for (const stack of stage.stacks) {
       const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
       const prepareNode: AGraphNode | undefined = this.prepareStep ? GraphNode.of('Prepare', { type: 'prepare', stack }) : undefined;
+      const changeSetNode: AGraphNode | undefined = stack.changeSetApproval ? GraphNode.of(stack.changeSetApproval.id, { type: 'step', step: stack.changeSetApproval }) : undefined;
       const deployNode: AGraphNode = GraphNode.of('Deploy', {
         type: 'execute',
         stack,
@@ -147,7 +148,13 @@ export class PipelineGraph {
       let firstDeployNode;
       if (prepareNode) {
         stackGraph.add(prepareNode);
-        deployNode.dependOn(prepareNode);
+        if (changeSetNode) {
+          stackGraph.add(changeSetNode);
+          changeSetNode.dependOn(prepareNode);
+          deployNode.dependOn(changeSetNode);
+        } else {
+          deployNode.dependOn(prepareNode);
+        }
         firstDeployNode = prepareNode;
       } else {
         firstDeployNode = deployNode;

@@ -3,7 +3,7 @@ import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { isStackArtifact } from '../private/cloud-assembly-internals';
 import { pipelineSynth } from '../private/construct-internals';
 import { StackDeployment } from './stack-deployment';
-import { Step } from './step';
+import { ChangeSetApproval, Step } from './step';
 
 /**
  * Properties for a `StageDeployment`
@@ -29,6 +29,13 @@ export interface StageDeploymentProps {
    * @default - No additional steps
    */
   readonly post?: Step[];
+
+  /**
+   * Instructions for additional steps that are run between Prepare and Deploy in specific stacks
+   *
+   * @default - No additional instructions
+   */
+  readonly changeSetApproval?: ChangeSetApproval[];
 }
 
 /**
@@ -56,6 +63,19 @@ export class StageDeployment {
     for (const artifact of assembly.stacks) {
       const step = StackDeployment.fromArtifact(artifact);
       stepFromArtifact.set(artifact, step);
+    }
+    if (props.changeSetApproval) {
+      for (const approval of props.changeSetApproval) {
+        for (const stack of approval.stacks) {
+          // getStackByName will throw if stack does not exist
+          const stackArtifact = assembly.getStackByName(stack.stackName);
+          const thisStep = stepFromArtifact.get(stackArtifact);
+          if (!thisStep) {
+            throw new Error('Logic error: we just added a step for this artifact but it disappeared.');
+          }
+          thisStep.addChangeSetApproval(approval.step);
+        }
+      }
     }
 
     for (const artifact of assembly.stacks) {
@@ -95,12 +115,18 @@ export class StageDeployment {
    */
   public readonly post: Step[];
 
+  /**
+   * Instructions for additional steps that are run between Prepare and Deploy in specific stacks
+   */
+  public readonly changeSetApproval: ChangeSetApproval[];
+
   private constructor(
     /** The stacks deployed in this stage */
     public readonly stacks: StackDeployment[], props: StageDeploymentProps = {}) {
     this.stageName = props.stageName ?? '';
     this.pre = props.pre ?? [];
     this.post = props.post ?? [];
+    this.changeSetApproval = props.changeSetApproval ?? [];
   }
 
   /**

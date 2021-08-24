@@ -4,6 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { isAssetManifest } from '../private/cloud-assembly-internals';
 import { AssetType } from './asset-type';
+import { Step } from './step';
 
 /**
  * Properties for a `StackDeployment`
@@ -191,6 +192,11 @@ export class StackDeployment {
    */
   public readonly absoluteTemplatePath: string;
 
+  /**
+   * Instructions for additional steps that are run between Prepare and Deploy in specific stacks
+   */
+  public changeSetApproval?: Step;
+
   private constructor(props: StackDeploymentProps) {
     this.stackArtifactId = props.stackArtifactId;
     this.constructPath = props.constructPath;
@@ -219,6 +225,17 @@ export class StackDeployment {
    */
   public addStackDependency(stackDeployment: StackDeployment) {
     this.stackDependencies.push(stackDeployment);
+  }
+
+  /**
+   * Add a changeSet approval step to this stack
+   * //Question: Should we allow for multiple steps between Prepare and Deploy?
+   */
+  public addChangeSetApproval(step: Step) {
+    if (this.changeSetApproval) {
+      throw new Error('changeSetApproval may not be updated more than once');
+    }
+    this.changeSetApproval = step;
   }
 }
 
