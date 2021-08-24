@@ -8,7 +8,12 @@ describe('Portfolio', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
-    stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+    stack = new cdk.Stack(app);
   });
 
   describe('portfolio creation and importing', () => {
