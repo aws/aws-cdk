@@ -9,7 +9,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "service.amazonaws.com"
+                "AWS": "*"
               }
             }
           ],
@@ -26,24 +26,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "service.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "pushSyncRole90B6639A": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "service.amazonaws.com"
+                "AWS": "*"
               }
             }
           ],
@@ -60,77 +43,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "service.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "adminRoleC345D70B": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "admin.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "nonAdminRole43C19D5C": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
                 "AWS": "*"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Policies": [
-          {
-            "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": [
-                    "update:*",
-                    "put:*",
-                    "delete:*"
-                  ],
-                  "Effect": "Deny",
-                  "Resource": "*"
-                }
-              ],
-              "Version": "2012-10-17"
-            },
-            "PolicyName": "DenyAll"
-          }
-        ]
-      }
-    },
-    "facebookRole9D649CD8": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": "arn:aws:iam::123456789012:user/FacebookUser"
               }
             }
           ],
@@ -191,7 +104,6 @@
           "https://example.com"
         ],
         "SupportedIdentityProviders": [
-          "poolProvider",
           "COGNITO"
         ]
       }
@@ -227,32 +139,36 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "OpenId76D94D20": {
-      "Type": "Custom::AWSCDKOpenIdConnectProvider",
+    "OtherPoolUserPoolClientForundefined1B97829F": {
+      "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0",
-            "Arn"
-          ]
+        "UserPoolId": {
+          "Ref": "OtherPool7DA7F2F7"
         },
-        "ClientIDList": [
-          "client1",
-          "client2"
+        "AllowedOAuthFlows": [
+          "implicit",
+          "code"
         ],
-        "ThumbprintList": [
-          "thumbprint"
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin"
         ],
-        "Url": "https://example.com"
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+        "CallbackURLs": [
+          "https://example.com"
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ]
+      }
     },
-    "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65": {
+    "NewFunctionServiceRole7E725CC7": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
               "Action": "sts:AssumeRole",
@@ -261,97 +177,43 @@
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
-            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-          }
-        ],
-        "Policies": [
-          {
-            "PolicyName": "Inline",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
                 {
-                  "Effect": "Allow",
-                  "Resource": "*",
-                  "Action": [
-                    "iam:CreateOpenIDConnectProvider",
-                    "iam:DeleteOpenIDConnectProvider",
-                    "iam:UpdateOpenIDConnectProviderThumbprint",
-                    "iam:AddClientIDToOpenIDConnectProvider",
-                    "iam:RemoveClientIDFromOpenIDConnectProvider"
-                  ]
-                }
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
-            }
+            ]
           }
         ]
       }
     },
-    "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0": {
+    "NewFunction51951D87": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3BucketF7BC1777"
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3VersionKey1C340B30"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3VersionKey1C340B30"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
+          "ZipFile": "exports.handler = e => e"
         },
-        "Timeout": 900,
-        "MemorySize": 128,
-        "Handler": "__entrypoint__.handler",
         "Role": {
           "Fn::GetAtt": [
-            "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65",
+            "NewFunctionServiceRole7E725CC7",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x"
       },
       "DependsOn": [
-        "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+        "NewFunctionServiceRole7E725CC7"
       ]
-    },
-    "Provider2281708E": {
-      "Type": "AWS::IAM::SAMLProvider",
-      "Properties": {
-        "SamlMetadataDocument": "document"
-      }
     },
     "identitypool51BC8967": {
       "Type": "AWS::Cognito::IdentityPool",
@@ -359,17 +221,14 @@
         "AllowUnauthenticatedIdentities": true,
         "AllowClassicFlow": true,
         "CognitoEvents": {
-          "SyncTrigger": "my::lambda::arn"
-        },
-        "CognitoIdentityProviders": [
-          {
-            "ClientId": {
-              "Ref": "PoolUserPoolClientForundefinedBF6BDE57"
-            },
-            "ProviderName": "poolProvider",
-            "ServerSideTokenCheck": true
+          "SyncTrigger": {
+            "Fn::GetAtt": [
+              "NewFunction51951D87",
+              "Arn"
+            ]
           }
-        ],
+        },
+        "CognitoIdentityProviders": [],
         "CognitoStreams": {
           "RoleArn": {
             "Fn::GetAtt": [
@@ -380,73 +239,18 @@
           "StreamName": "my-stream",
           "StreamingStatus": "ENABLED"
         },
-        "DeveloperProviderName": "https://my-custom-provider.com",
         "IdentityPoolName": "my-id-pool",
-        "OpenIdConnectProviderARNs": [
-          {
-            "Ref": "OpenId76D94D20"
-          }
-        ],
-        "PushSync": {
-          "ApplicationArns": [
-            "my::application::arn"
-          ],
-          "RoleArn": {
-            "Fn::GetAtt": [
-              "pushSyncRole90B6639A",
-              "Arn"
-            ]
-          }
-        },
-        "SamlProviderARNs": [
-          {
-            "Ref": "Provider2281708E"
-          }
-        ],
         "SupportedLoginProviders": {
-          "www.amazon.com": "my-app.amazon.com",
-          "accounts.google.com": "my-app.google.com"
+          "www.amazon.com": "amzn1.application.12312k3j234j13rjiwuenf",
+          "accounts.google.com": "12345678012.apps.googleusercontent.com"
         }
       }
     },
-    "identitypoolidentitypoolRoleAttachment62d9a17e11894BDF25": {
+    "identitypoolidentitypoolRoleAttachment731EB931": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
         "IdentityPoolId": {
           "Ref": "identitypool51BC8967"
-        },
-        "RoleMappings": {
-          "www.amazon.com": {
-            "AmbiguousRoleResolution": "AuthenticatedRole",
-            "IdentityProvider": "www.amazon.com",
-            "RulesConfiguration": {
-              "Rules": [
-                {
-                  "Claim": "custom:admin",
-                  "MatchType": "Equals",
-                  "RoleARN": {
-                    "Fn::GetAtt": [
-                      "adminRoleC345D70B",
-                      "Arn"
-                    ]
-                  },
-                  "Value": "admin"
-                },
-                {
-                  "Claim": "custom:admin",
-                  "MatchType": "NotEqual",
-                  "RoleARN": {
-                    "Fn::GetAtt": [
-                      "nonAdminRole43C19D5C",
-                      "Arn"
-                    ]
-                  },
-                  "Value": "admin"
-                }
-              ]
-            },
-            "Type": "Rules"
-          }
         },
         "Roles": {
           "authenticated": {
@@ -466,53 +270,6 @@
       "DependsOn": [
         "identitypool51BC8967"
       ]
-    },
-    "identitypoolidentitypoolRoleMappingAttachment06b669a25c6A8293D0": {
-      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
-      "Properties": {
-        "IdentityPoolId": {
-          "Ref": "identitypool51BC8967"
-        },
-        "RoleMappings": {
-          "graph.facebook.com": {
-            "AmbiguousRoleResolution": "Deny",
-            "IdentityProvider": "graph.facebook.com",
-            "RulesConfiguration": {
-              "Rules": [
-                {
-                  "Claim": "iss",
-                  "MatchType": "Equals",
-                  "RoleARN": {
-                    "Fn::GetAtt": [
-                      "facebookRole9D649CD8",
-                      "Arn"
-                    ]
-                  },
-                  "Value": "https://graph.facebook.com"
-                }
-              ]
-            },
-            "Type": "Rules"
-          }
-        }
-      },
-      "DependsOn": [
-        "identitypool51BC8967"
-      ]
-    }
-  },
-  "Parameters": {
-    "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3BucketF7BC1777": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"b7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4\""
-    },
-    "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3VersionKey1C340B30": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"b7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4\""
-    },
-    "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4ArtifactHashD6EA1BC7": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"b7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4\""
     }
   }
 }

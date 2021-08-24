@@ -202,7 +202,7 @@ describe('identity pool', () => {
       unauthenticatedRole: unauthRole,
       openIdConnectProviders: [openId],
       samlProviders: [saml],
-      customProvider: 'https://my-custom-provider.com',
+      customProvider: 'my-custom-provider.com',
       allowClassicFlow: true,
     });
     const temp = Template.fromStack(stack);
@@ -211,7 +211,7 @@ describe('identity pool', () => {
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
       AllowUnauthenticatedIdentities: false,
       AllowClassicFlow: true,
-      DeveloperProviderName: 'https://my-custom-provider.com',
+      DeveloperProviderName: 'my-custom-provider.com',
       OpenIdConnectProviderARNs: [
         {
           Ref: 'OpenId76D94D20',

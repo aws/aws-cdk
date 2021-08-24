@@ -374,7 +374,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * List of Identity Providers added in constructor for use with property overrides
    */
-  private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = []
+  private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = [];
 
   constructor(scope: Construct, private id: string, props:IdentityPoolProps) {
     super(scope, id, {
@@ -383,7 +383,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
     this.identityPoolName = this.physicalName;
     const providers = this.configureUserPools(props);
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
-
     this.cfnIdentityPool = new CfnIdentityPool(this, id, {
       allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
       allowClassicFlow: props.allowClassicFlow,
@@ -431,11 +430,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
   */
   public addRoleMappings(...mappings: IdentityPoolRoleMapping[]): void {
     if (!mappings || !mappings.length) return;
-    const name = this.id + 'RoleMappingAttachment-' + this.generateRandomName();
+    const name = this.id + 'RoleMappingAttachment';
     const roleMappings = this.configureRoleMappings(...mappings);
 
     const attachment = new CfnIdentityPoolRoleAttachment(this, name, {
       identityPoolId: this.identityPoolId,
+      roles: {},
       roleMappings,
     });
     attachment.node.addDependency(this.cfnIdentityPool);
@@ -449,7 +449,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     unauthenticatedRole?: IRole,
     ...mappings: IdentityPoolRoleMapping[]
   ): void {
-    const name = this.id + 'RoleAttachment-' + this.generateRandomName();
+    const name = this.id + 'RoleAttachment';
     let roles: any = undefined, roleMappings: any = undefined;
     if (authenticatedRole || unauthenticatedRole) {
       roles = {};
