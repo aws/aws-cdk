@@ -405,6 +405,32 @@
           ],
           "Version": "2012-10-17"
         },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+              ]
+            ]
+          }
+        ],
         "Tags": [
           {
             "Key": "Name",
@@ -485,7 +511,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "c6g.large",
         "IamInstanceProfile": {
@@ -504,11 +530,11 @@
             "Fn::Join": [
               "",
               [
-                "#!/bin/bash\necho ECS_CLUSTER=",
+                "\n[settings.ecs]\ncluster = \"",
                 {
                   "Ref": "EcsCluster97242B84"
                 },
-                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                "\""
               ]
             ]
           }
@@ -840,9 +866,9 @@
     }
   },
   "Parameters": {
-    "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended/image_id"
+    "SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id"
     }
   }
 }
