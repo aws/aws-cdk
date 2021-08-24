@@ -72,10 +72,10 @@ export async function getConventionalCommitsFromGitHistory(args: ReleaseOptions,
   const ret = new Array<any>();
   return new Promise((resolve, reject) => {
     const conventionalCommitsStream = gitRawCommits({
+      // Raw body (subject + body) + '\n-hash-\n' + commit hash
       format: '%B%n-hash-%n%H',
       // our tags have the 'v' prefix
       from: gitTag,
-      // path: options.path,
     }).pipe(conventionalCommitsParser());
 
     conventionalCommitsStream.on('data', function (data: any) {
