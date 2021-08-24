@@ -30,7 +30,7 @@ async function waitForStatementComplete(statementId: string): Promise<void> {
   });
   const statement = await redshiftData.describeStatement({ Id: statementId }).promise();
   if (statement.Status !== 'FINISHED' && statement.Status !== 'FAILED' && statement.Status !== 'ABORTED') {
-    return await waitForStatementComplete(statementId);
+    return waitForStatementComplete(statementId);
   } else if (statement.Status === 'FINISHED') {
     return;
   } else {
