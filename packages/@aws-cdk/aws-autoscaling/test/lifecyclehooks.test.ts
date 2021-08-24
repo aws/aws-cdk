@@ -10,12 +10,13 @@ nodeunitShim({
   'we can add a lifecycle hook to an ASG'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-      vpc,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      machineImage: new ec2.AmazonLinuxImage(),
-    });
+    const asg = newASG(stack);
+    //const vpc = new ec2.Vpc(stack, 'VPC');
+    //const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+    //  vpc,
+    //  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    //  machineImage: new ec2.AmazonLinuxImage(),
+    //});
 
     // WHEN
     asg.addLifecycleHook('Transition', {
@@ -75,12 +76,14 @@ nodeunitShim({
   'we can add a lifecycle hook to an ASG without specifying notificationTargetArn'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-      vpc,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      machineImage: new ec2.AmazonLinuxImage(),
-    });
+    //const vpc = new ec2.Vpc(stack, 'VPC');
+    //const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+    //  vpc,
+    //  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    //  machineImage: new ec2.AmazonLinuxImage(),
+    //});
+
+    const asg = newASG(stack);
 
     // WHEN
     asg.addLifecycleHook('Transition', {
@@ -94,7 +97,7 @@ nodeunitShim({
       DefaultResult: 'ABANDON',
     }));
 
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    /*expect(stack).to(haveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -107,18 +110,61 @@ nodeunitShim({
           },
         ],
       },
-    }));
+    }));*/
 
     test.done();
   },
 });
 
+nodeunitShim({
+  'adding a lifecycle hook with a role to an ASG without specifying notificationTargetArn throws an error'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = newASG(stack);
+    const myrole = new iam.Role(stack, 'MyRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    });
+    // const vpc = new ec2.Vpc(stack, 'VPC');
+    //const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+    //  vpc,
+    //  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    //  machineImage: new ec2.AmazonLinuxImage(),
+    // });
+
+    // WHEN
+    test.throws(() => {
+      asg.addLifecycleHook('Transition', {
+        lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+        defaultResult: autoscaling.DefaultResult.ABANDON,
+        role: myrole,
+      });
+    // THEN
+    }, /'notificationTarget' parameter required when 'role' parameter is specified/);
+
+    test.done();
+  },
+});
+
+
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
   public bind(_scope: constructs.Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    lifecycleHook.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['action:Work'],
-      resources: ['*'],
-    }));
+    if (lifecycleHook.role) {
+      lifecycleHook.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['action:Work'],
+        resources: ['*'],
+      }));
+    }
+
     return { notificationTargetArn: 'target:arn' };
   }
+}
+
+function newASG(stack: cdk.Stack) {
+  const vpc = new ec2.Vpc(stack, 'VPC');
+
+  return new autoscaling.AutoScalingGroup(stack, 'ASG', {
+    vpc,
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+  });
 }
