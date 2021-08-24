@@ -1,9 +1,23 @@
+//import * as targets from '@aws-cdk/aws-autoscaling-hooktargets';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as autoscaling from '../lib';
+//import { Topic } from '@aws-cdk/aws-sns';
 
+class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
+  public bind(_scope: constructs.Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
+    if (lifecycleHook.role) {
+      lifecycleHook.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['action:Work'],
+        resources: ['*'],
+      }));
+    }
+
+    return { notificationTargetArn: 'target:arn' };
+  }
+}
 
 export class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -21,12 +35,14 @@ export class TestStack extends cdk.Stack {
       healthCheck: autoscaling.HealthCheck.ec2(),
     });
 
+    //const topic = new Topic(this, 'topic', {});
+
     // no roleArn or notificationTarget
     new autoscaling.LifecycleHook(this, 'LCHookNoRoleNoTarget', {
       autoScalingGroup: asg,
       lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
       defaultResult: autoscaling.DefaultResult.CONTINUE,
-      lifecycleHookName: 'TerminateLifecycleHook',
+      lifecycleHookName: 'LCHookNoRoleNoTarget',
       heartbeatTimeout: cdk.Duration.minutes(3),
     });
 
@@ -35,7 +51,7 @@ export class TestStack extends cdk.Stack {
       autoScalingGroup: asg,
       lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
       defaultResult: autoscaling.DefaultResult.CONTINUE,
-      lifecycleHookName: 'TerminateLifecycleHook2',
+      lifecycleHookName: 'LCHookNoRoleTarget',
       heartbeatTimeout: cdk.Duration.minutes(3),
     });
 
@@ -50,12 +66,12 @@ export class TestStack extends cdk.Stack {
     });*/
 
     new autoscaling.LifecycleHook(this, 'LCHookRoleTarget', {
-      notificationTarget: new FakeNotificationTarget(),
+      //notificationTarget: new targets.TopicHook(topic),
       role: myrole,
       autoScalingGroup: asg,
       lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
       defaultResult: autoscaling.DefaultResult.CONTINUE,
-      lifecycleHookName: 'TerminateLifecycleHook2',
+      lifecycleHookName: 'LCHookRoleTarget',
       heartbeatTimeout: cdk.Duration.minutes(3),
     });
   }
@@ -66,16 +82,3 @@ const app = new cdk.App();
 new TestStack(app, 'integ-no-role-arn-hook');
 
 app.synth();
-
-class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
-  public bind(_scope: constructs.Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    if (lifecycleHook.role) {
-      lifecycleHook.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['action:Work'],
-        resources: ['*'],
-      }));
-    }
-
-    return { notificationTargetArn: 'target:arn' };
-  }
-}
