@@ -557,6 +557,14 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@jsii/check-node@1.33.0":
+  version "1.33.0"
+  resolved "https://registry.yarnpkg.com/@jsii/check-node/-/check-node-1.33.0.tgz#55d75cbef1c84e2012c67ab8d6de63f773be4a9b"
+  integrity sha512-Bajxa09dhkuQ8bM1ve6qtm2oFNhW9/+GaKRh4Deewsk/G86ovLXI/rRS6TfCsSw4E0TGPFWzWy0tBeJuEDo7sw==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.3.5"
+
 "@jsii/spec@^1.31.0":
   version "1.31.0"
   resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-1.31.0.tgz#9298dc163fdae0bab4006b817592235a29922871"
@@ -2682,6 +2690,14 @@ chalk@^4.0.0, chalk@^4.1.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.1.tgz#c80b3fab28bf6371e6863325eee67e618b77e6ad"
   integrity sha512-diHzdDKxcU+bAsUboHLPEDQiw0qEe0qd7SYUn3HgcFlWgbDcfLGswOHYeGrHKzG9z6UYf01d9VFMfZxPM1xZSg==
+  dependencies:
+    ansi-styles "^4.1.0"
+    supports-color "^7.1.0"
+
+chalk@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
+  integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
