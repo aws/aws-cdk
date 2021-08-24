@@ -460,7 +460,7 @@ manual or automated gates to your pipeline. We recommend putting manual approval
 the set of `post` steps.
 
 The following example shows both an automated approval in the form of a `ShellStep`, and
-a manual approvel in the form of a `ManualApprovalStep` added to the pipeline. Both must
+a manual approval in the form of a `ManualApprovalStep` added to the pipeline. Both must
 pass in order to promote from the `PreProd` to the `Prod` environment:
 
 ```ts
@@ -478,6 +478,17 @@ pipeline.addStage(prod, {
   pre: [
     new ManualApprovalStep('PromoteToProd'),
   ],
+});
+```
+
+You can also approve changeSets between a stacks `prepare` and `deploy` phases. To achieve this, you can specify a `changeSetApproval` property on a `Stage`:
+
+```ts
+pipeline.addStage(prod, {
+  changeSetApproval: [{
+    step: new ManualApprovalStep('CheckChangeSet'),
+    stacks: [ProdStack1, ProdStack2],
+  }],
 });
 ```
 
