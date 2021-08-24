@@ -6,10 +6,6 @@ import { CustomResource, Duration, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import * as cr from '../../../lib';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 export interface S3AssertProps {
   /**
    * The s3 bucket to query.
@@ -34,7 +30,7 @@ export interface S3AssertProps {
  *
  * Code is written in Python because why not.
  */
-export class S3Assert extends CoreConstruct {
+export class S3Assert extends Construct {
 
   constructor(scope: Construct, id: string, props: S3AssertProps) {
     super(scope, id);
@@ -51,7 +47,7 @@ export class S3Assert extends CoreConstruct {
   }
 }
 
-class S3AssertProvider extends CoreConstruct {
+class S3AssertProvider extends Construct {
 
   /**
    * Returns the singleton provider.
