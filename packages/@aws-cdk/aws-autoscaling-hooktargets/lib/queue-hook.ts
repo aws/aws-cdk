@@ -14,7 +14,7 @@ export class QueueHook implements autoscaling.ILifecycleHookTarget {
       this.queue.grantSendMessages(lifecycleHook.role);
       return { notificationTargetArn: this.queue.queueArn };
     } else {
-      throw new Error('bad');
+      throw new Error('This `QueueHook` has an undefined `role`');
     }
   }
 }

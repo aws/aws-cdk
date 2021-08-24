@@ -14,7 +14,7 @@ export class TopicHook implements autoscaling.ILifecycleHookTarget {
       this.topic.grantPublish(lifecycleHook.role);
       return { notificationTargetArn: this.topic.topicArn };
     } else {
-      throw new Error('bad');
+      throw new Error('This `TopicHook` has an undefined `role`');
     }
   }
 }

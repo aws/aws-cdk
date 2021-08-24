@@ -31,8 +31,12 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
     // Topic's grantPublish() is in a base class that does not know there is a kms key, and so does not
     // grant appropriate permissions to the kms key. We do that here to ensure the correct permissions
     // are in place.
-    this.encryptionKey?.grant(lifecycleHook.role, 'kms:Decrypt', 'kms:GenerateDataKey');
-    topic.addSubscription(new subs.LambdaSubscription(this.fn));
-    return new TopicHook(topic).bind(scope, lifecycleHook);
+    if (lifecycleHook.role) {
+      this.encryptionKey?.grant(lifecycleHook.role, 'kms:Decrypt', 'kms:GenerateDataKey');
+      topic.addSubscription(new subs.LambdaSubscription(this.fn));
+      return new TopicHook(topic).bind(scope, lifecycleHook);
+    } else {
+      throw new Error('This `FunctionHook` has an undefined `role`');
+    }
   }
 }
