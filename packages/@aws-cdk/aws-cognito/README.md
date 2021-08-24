@@ -45,6 +45,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Multi-factor Authentication](#multi-factor-authentication-mfa)
     - [Account Recovery Settings](#account-recovery-settings)
   - [Emails](#emails)
+  - [Device Tracking](#device-tracking)
   - [Lambda Triggers](#lambda-triggers)
     - [Trigger Permissions](#trigger-permissions)
   - [Import](#importing-user-pools)
@@ -345,7 +346,7 @@ Read more at [Device Tracking](https://docs.aws.amazon.com/cognito/latest/develo
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   // ...
-  deviceConfiguration: {
+  deviceTracking: {
     challengeRequiredOnNewDevice: true,
     deviceOnlyRememberedOnUserPrompt: true,
   },

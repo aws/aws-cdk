@@ -1390,13 +1390,13 @@ describe('User Pool', () => {
   });
 });
 
-test('device configurations are configured correctly', () => {
+test('device tracking is configured correctly', () => {
   // GIVEN
   const stack = new Stack();
 
   // WHEN
   new UserPool(stack, 'Pool', {
-    deviceConfiguration: {
+    deviceTracking: {
       challengeRequiredOnNewDevice: true,
       deviceOnlyRememberedOnUserPrompt: true,
     },
