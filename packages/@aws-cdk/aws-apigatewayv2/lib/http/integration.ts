@@ -74,31 +74,9 @@ export class PayloadFormatVersion {
   }
 }
 
-export interface IMappingKey {
-  key: string;
-};
-
 export interface IMappingValue {
-  value: string;
+  readonly value: string;
 };
-
-export class MappingKey implements IMappingKey {
-  public static custom(mappingKey: string) {return new MappingKey(mappingKey); }
-  protected constructor(public readonly key: string) {}
-}
-
-export class HttpMappingKey extends MappingKey {
-  public static appendHeader(name: string) { return new MappingKey(`append:header.${name}`); }
-  public static overwriteHeader(name: string) { return new MappingKey(`overwrite:header.${name}`); }
-  public static removeHeader(name: string) { return new MappingKey(`remove:header.${name}`); }
-  public static appendQueryString(name: string) {return new MappingKey(`append:querystring.${name}`); }
-  public static overwriteQueryString(name: string) { return new MappingKey(`overwrite:querystring.${name}`); }
-  public static removeQueryString(name: string) { return new MappingKey(`remove:querystring.${name}`); }
-  public static overwritePath() { return new MappingKey('overwrite:path'); }
-  protected constructor(public readonly k: string) {
-    super(k);
-  }
-}
 
 export class MappingValue implements IMappingValue {
   public static readonly NONE = new MappingValue('');
@@ -113,18 +91,48 @@ export class MappingValue implements IMappingValue {
   protected constructor(public readonly value: string) {}
 }
 
-export interface ParameterMappingProps {
-  readonly key: IMappingKey,
-  readonly value: IMappingValue,
-};
-
 export class ParameterMapping {
   public readonly mappings: {[key: string]: string}
-  constructor(params: ParameterMappingProps[]) {
+  constructor() {
     this.mappings = {};
-    params.forEach(param => {
-      this.mappings[param.key.key] = param.value.value;
-    });
+  }
+
+  public appendHeader(name: string, value: MappingValue): ParameterMapping {
+    this.mappings[`append:header.${name}`] = value.value;
+    return this;
+  }
+
+  public overwriteHeader(name: string, value: MappingValue): ParameterMapping {
+    this.mappings[`overwrite:header.${name}`] = value.value;
+    return this;
+  }
+
+  public removeHeader(name: string): ParameterMapping {
+    this.mappings[`remove:header.${name}`] = '';
+    return this;
+  }
+
+  public appendQueryString(name: string, value: MappingValue): ParameterMapping {
+    this.mappings[`append:querystring.${name}`] = value.value;
+    return this;
+  }
+  public overwriteQueryString(name: string, value: MappingValue): ParameterMapping {
+    this.mappings[`overwrite:querystring.${name}`] = value.value;
+    return this;
+  }
+  public removeQueryString(name: string): ParameterMapping {
+    this.mappings[`remove:querystring.${name}`] = '';
+    return this;
+  }
+
+  public overwritePath(value: MappingValue): ParameterMapping {
+    this.mappings['overwrite:path'] = value.value;
+    return this;
+  }
+
+  public custom(key: string, value:string): ParameterMapping {
+    this.mappings[key] = value;
+    return this;
   }
 }
 
