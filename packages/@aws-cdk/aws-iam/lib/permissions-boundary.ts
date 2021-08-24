@@ -1,5 +1,5 @@
-import { CfnResource } from '@aws-cdk/core';
-import { Node, IConstruct } from 'constructs';
+import { Aspects, CfnResource } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { CfnRole, CfnUser } from './iam.generated';
 import { IManagedPolicy } from './managed-policy';
 
@@ -31,7 +31,7 @@ export class PermissionsBoundary {
    * closest to the Role wins.
    */
   public apply(boundaryPolicy: IManagedPolicy) {
-    Node.of(this.scope).applyAspect({
+    Aspects.of(this.scope).add({
       visit(node: IConstruct) {
         if (node instanceof CfnRole || node instanceof CfnUser) {
           node.permissionsBoundary = boundaryPolicy.managedPolicyArn;
@@ -49,7 +49,7 @@ export class PermissionsBoundary {
    * Remove previously applied Permissions Boundaries
    */
   public clear() {
-    Node.of(this.scope).applyAspect({
+    Aspects.of(this.scope).add({
       visit(node: IConstruct) {
         if (node instanceof CfnRole || node instanceof CfnUser) {
           node.permissionsBoundary = undefined;
