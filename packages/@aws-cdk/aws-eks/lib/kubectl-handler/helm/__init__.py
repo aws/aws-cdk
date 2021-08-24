@@ -12,6 +12,7 @@ os.environ['PATH'] = '/opt/helm:/opt/awscli:' + os.environ['PATH']
 outdir = os.environ.get('TEST_OUTDIR', '/tmp')
 kubeconfig = os.path.join(outdir, 'kubeconfig')
 
+
 def helm_handler(event, context):
     logger.info(json.dumps(event))
 
@@ -37,6 +38,9 @@ def helm_handler(event, context):
         '--name', cluster_name,
         '--kubeconfig', kubeconfig
     ])
+
+    if os.path.isfile(kubeconfig):
+        os.chmod(kubeconfig, 0o600)
 
     # Write out the values to a file and include them with the install and upgrade
     values_file = None

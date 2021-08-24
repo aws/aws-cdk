@@ -154,11 +154,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open source operating system that is
 purpose-built by AWS for running containers. You can launch Amazon ECS container instances with the Bottlerocket AMI.
 
-> **NOTICE**: The Bottlerocket AMI is in developer preview release for Amazon ECS and is subject to change.
-
 The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `c5.large` Linux instances running with `Bottlerocket` AMI.
-
-Note that you must specify either a `machineImage` or `machineImageType`, at least one, not both.
 
 The following example adds Bottlerocket capacity to the cluster:
 
@@ -166,7 +162,7 @@ The following example adds Bottlerocket capacity to the cluster:
 cluster.addCapacity('bottlerocket-asg', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('c5.large'),
-  machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+  machineImage: new ecs.BottleRocketImage(),
 });
 ```
 
@@ -183,7 +179,16 @@ cluster.addCapacity('graviton-cluster', {
   instanceType: new ec2.InstanceType('c6g.large'),
   machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
 });
+```
 
+Bottlerocket is also supported:
+
+```ts
+cluster.addCapacity('graviton-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c6g.large'),
+  machineImage: ecs.MachineImageType.BOTTLEROCKET,
+});
 ```
 
 ### Spot Instances
@@ -873,7 +878,7 @@ cluster.addAsgCapacityProvider(capacityProvider);
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
 taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample',
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   memoryReservationMiB: 256,
 });
 
@@ -926,7 +931,7 @@ taskDefinition.addContainer('cont', {
 
 Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite for the exec command
 to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
-[Install Session Manager plugin for AWS CLI] (https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
+[Install Session Manager plugin for AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
 
 To enable the ECS Exec feature for your containers, set the boolean flag `enableExecuteCommand` to `true` in
 your `Ec2Service` or `FargateService`.
