@@ -10,11 +10,7 @@ export class QueueHook implements autoscaling.ILifecycleHookTarget {
   }
 
   public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    if (lifecycleHook.role) {
-      this.queue.grantSendMessages(lifecycleHook.role);
-      return { notificationTargetArn: this.queue.queueArn };
-    } else {
-      throw new Error('this lifecycle hook has an undefined role');
-    }
+    this.queue.grantSendMessages(lifecycleHook.role);
+    return { notificationTargetArn: this.queue.queueArn };
   }
 }
