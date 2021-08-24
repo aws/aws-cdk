@@ -146,9 +146,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
-    const ami = this.cachedInContext
-      ? ssm.StringParameter.valueFromLookup(scope, this.amiParameterName)
-      : ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
 
     const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
@@ -261,9 +259,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
-    const ami = this.cachedInContext
-      ? ssm.StringParameter.valueFromLookup(scope, this.amiParameterName)
-      : ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
 
     const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
@@ -346,9 +342,7 @@ export class BottleRocketImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
-    const ami = this.cachedInContext
-      ? ssm.StringParameter.valueFromLookup(scope, this.amiParameterName)
-      : ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
 
     return {
       imageId: ami,
@@ -356,4 +350,10 @@ export class BottleRocketImage implements ec2.IMachineImage {
       userData: ec2.UserData.custom(''),
     };
   }
+}
+
+function lookupImage(scope: CoreConstruct, cachedInContext: boolean | undefined, parameterName: string) {
+  return cachedInContext
+    ? ssm.StringParameter.valueFromLookup(scope, parameterName)
+    : ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
 }

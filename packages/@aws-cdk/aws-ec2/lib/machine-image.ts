@@ -233,9 +233,7 @@ class GenericSsmParameterImage implements IMachineImage {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = this.props.cachedInContext
-      ? ssm.StringParameter.valueFromLookup(scope, this.parameterName)
-      : ssm.StringParameter.valueForTypedStringParameter(scope, this.parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const imageId = lookupImage(scope, this.props.cachedInContext, this.parameterName);
 
     const osType = this.props.os ?? OperatingSystemType.LINUX;
     return {
@@ -403,9 +401,7 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = this.cachedInContext
-      ? ssm.StringParameter.valueFromLookup(scope, this.parameterName)
-      : ssm.StringParameter.valueForTypedStringParameter(scope, this.parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName);
 
     const osType = OperatingSystemType.LINUX;
     return {
@@ -677,4 +673,10 @@ export interface LookupMachineImageProps {
    * @default - Empty user data appropriate for the platform type
    */
   readonly userData?: UserData;
+}
+
+function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string) {
+  return cachedInContext
+    ? ssm.StringParameter.valueFromLookup(scope, parameterName)
+    : ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
 }
