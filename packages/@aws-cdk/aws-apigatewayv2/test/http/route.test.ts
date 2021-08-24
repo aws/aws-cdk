@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
@@ -17,7 +17,7 @@ describe('HttpRoute', () => {
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'GET /books',
       Target: {
@@ -34,7 +34,7 @@ describe('HttpRoute', () => {
       AuthorizationType: 'NONE',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ApiId: stack.resolve(httpApi.apiId),
     });
   });
@@ -49,7 +49,7 @@ describe('HttpRoute', () => {
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
@@ -76,7 +76,7 @@ describe('HttpRoute', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
   });
 
   test('integration can be used across HttpApis', () => {
@@ -113,8 +113,8 @@ describe('HttpRoute', () => {
     });
 
     // THEN
-    expect(stack1).toCountResources('AWS::ApiGatewayV2::Integration', 1);
-    expect(stack2).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+    Template.fromStack(stack1).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
+    Template.fromStack(stack2).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
   });
 
   test('route defined in a separate stack does not create cycles', () => {
@@ -134,8 +134,8 @@ describe('HttpRoute', () => {
     });
 
     // THEN
-    expect(stack1).toCountResources('AWS::ApiGatewayV2::Integration', 0);
-    expect(stack2).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+    Template.fromStack(stack1).resourceCountIs('AWS::ApiGatewayV2::Integration', 0);
+    Template.fromStack(stack2).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
   });
 
   test('throws when path not start with /', () => {
@@ -190,7 +190,7 @@ describe('HttpRoute', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'HTTP_PROXY',
       ConnectionId: 'some-connection-id',
       ConnectionType: 'VPC_LINK',
@@ -202,7 +202,7 @@ describe('HttpRoute', () => {
       },
     });
 
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink');
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 0);
   });
 
   test('configures private integration correctly when parameter mappings are passed', () => {
@@ -259,16 +259,16 @@ describe('HttpRoute', () => {
       authorizer,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
       IntegrationUri: 'some-uri',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer');
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Authorizer', 1);
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       AuthorizerId: stack.resolve(authorizer.bind({ scope: stack, route: route }).authorizerId),
       AuthorizationType: 'JWT',
     });
@@ -288,7 +288,7 @@ describe('HttpRoute', () => {
       authorizationScopes: ['read:books'],
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       AuthorizationScopes: ['read:books'],
     });
   });

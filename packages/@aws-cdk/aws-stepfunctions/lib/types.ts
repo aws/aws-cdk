@@ -46,6 +46,11 @@ export class Errors {
   public static readonly ALL = 'States.ALL';
 
   /**
+   * A Task State failed to heartbeat for a time longer than the “HeartbeatSeconds” value.
+   */
+  public static readonly HEARTBEAT_TIMEOUT = 'States.HeartbeatTimeout';
+
+  /**
    * A Task State either ran longer than the “TimeoutSeconds” value, or
    * failed to heartbeat for a time longer than the “HeartbeatSeconds” value.
    */

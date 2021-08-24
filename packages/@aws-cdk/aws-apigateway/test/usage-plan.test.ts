@@ -176,6 +176,26 @@ describe('usage plan', () => {
       }, ResourcePart.Properties);
     });
 
+
+    test('imported', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const usagePlan: apigateway.IUsagePlan = apigateway.UsagePlan.fromUsagePlanId(stack, 'my-usage-plan', 'imported-id');
+      const apiKey: apigateway.ApiKey = new apigateway.ApiKey(stack, 'my-api-key');
+
+      // WHEN
+      usagePlan.addApiKey(apiKey);
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ApiGateway::UsagePlanKey', {
+        KeyId: {
+          Ref: 'myapikey1B052F70',
+        },
+        KeyType: 'API_KEY',
+        UsagePlanId: 'imported-id',
+      }, ResourcePart.Properties);
+    });
+
     test('multiple keys', () => {
       // GIVEN
       const stack = new cdk.Stack();

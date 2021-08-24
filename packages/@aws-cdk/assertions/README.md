@@ -17,24 +17,24 @@
 
 Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 
-The `TemplateAssertions` class includes a set of methods for writing assertions against CloudFormation templates. Use one of the `TemplateAssertions.fromXxx()` static methods to create an instance of this class.
+The `Template` class includes a set of methods for writing assertions against CloudFormation templates. Use one of the `Template.fromXxx()` static methods to create an instance of this class.
 
-To create `TemplateAssertions` from CDK stack, start off with:
+To create `Template` from CDK stack, start off with:
 
 ```ts
 import { Stack } from '@aws-cdk/core';
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 
 const stack = new Stack(...)
 ...
-const assert = TemplateAssertions.fromStack(stack);
+const assert = Template.fromStack(stack);
 ```
 
 Alternatively, assertions can be run on an existing CloudFormation template -
 
 ```ts
 const template = fs.readFileSync('/path/to/template/file');
-const assert = TemplateAssertions.fromString(template);
+const assert = Template.fromString(template);
 ```
 
 ## Full Template Match
@@ -52,6 +52,17 @@ assert.templateMatches({
   },
 });
 ```
+
+The `Template` class also supports [snapshot
+testing](https://jestjs.io/docs/snapshot-testing) using jest.
+
+```ts
+// using jest
+expect(Template.fromStack(stack)).toMatchSnapshot();
+```
+
+For non-javascript languages, the `toJSON()` can be called to get an in-memory object
+of the template.
 
 ## Counting Resources
 
