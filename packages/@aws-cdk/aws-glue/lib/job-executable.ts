@@ -25,6 +25,11 @@ export class GlueVersion {
   public static readonly V2_0 = new GlueVersion('2.0');
 
   /**
+   * Glue version using Spark 3.1.1 and Python 3.7
+   */
+  public static readonly V3_0 = new GlueVersion('3.0');
+
+  /**
    * Custom Glue version
    * @param version custom version
    */
@@ -397,6 +402,9 @@ export class JobExecutable {
     }
     if (config.extraJarsFirst && [GlueVersion.V0_9, GlueVersion.V1_0].includes(config.glueVersion)) {
       throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support extraJarsFirst`);
+    }
+    if (config.pythonVersion === PythonVersion.TWO && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(config.glueVersion)) {
+      throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support PythonVersion ${config.pythonVersion}`);
     }
     this.config = config;
   }

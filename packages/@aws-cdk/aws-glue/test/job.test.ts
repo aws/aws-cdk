@@ -15,6 +15,8 @@ describe('GlueVersion', () => {
 
   test('.V2_0', () => expect(glue.GlueVersion.V2_0.name).toEqual('2.0'));
 
+  test('.V3_0', () => expect(glue.GlueVersion.V3_0.name).toEqual('3.0'));
+
   test('of(customVersion) sets name correctly', () => expect(glue.GlueVersion.of('CustomVersion').name).toEqual('CustomVersion'));
 });
 
@@ -148,7 +150,7 @@ describe('Job', () => {
         job = new glue.Job(stack, 'JobWithRole', {
           executable: glue.JobExecutable.etlPython({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.TWO,
+            pythonVersion: PythonVersion.THREE,
             scriptLocation,
           }),
           role,
@@ -477,7 +479,7 @@ describe('Job', () => {
           description: 'test job',
           executable: glue.JobExecutable.streamingPython({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.TWO,
+            pythonVersion: PythonVersion.THREE,
             scriptLocation,
           }),
           workerType: glue.WorkerType.G_2X,
@@ -504,7 +506,7 @@ describe('Job', () => {
           Command: {
             Name: 'gluestreaming',
             ScriptLocation: 's3://bucketName/script',
-            PythonVersion: '2',
+            PythonVersion: '3',
           },
           Role: {
             'Fn::GetAtt': [
@@ -555,7 +557,6 @@ describe('Job', () => {
           }),
         });
 
-        // check the job using the role
         cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Job', {
           Command: {
             Name: 'pythonshell',
@@ -580,7 +581,7 @@ describe('Job', () => {
         expect(() => new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.shellPython({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.TWO,
+            pythonVersion: PythonVersion.THREE,
             scriptLocation,
           }),
           sparkUI: {},
@@ -620,7 +621,7 @@ describe('Job', () => {
         new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.etlPython({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.TWO,
+            pythonVersion: PythonVersion.THREE,
             scriptLocation,
           }),
         });
@@ -631,7 +632,7 @@ describe('Job', () => {
           Command: {
             Name: 'glueetl',
             ScriptLocation: scriptLocation,
-            PythonVersion: '2',
+            PythonVersion: '3',
           },
           Role: {
             'Fn::GetAtt': [
@@ -649,7 +650,7 @@ describe('Job', () => {
         new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.etlPython({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.TWO,
+            pythonVersion: PythonVersion.THREE,
             extraJarsFirst: true,
             scriptLocation,
             extraPythonFiles,
@@ -663,7 +664,7 @@ describe('Job', () => {
           Command: {
             Name: 'glueetl',
             ScriptLocation: scriptLocation,
-            PythonVersion: '2',
+            PythonVersion: '3',
           },
           Role: {
             'Fn::GetAtt': [

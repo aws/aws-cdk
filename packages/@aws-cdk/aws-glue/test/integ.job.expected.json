@@ -107,7 +107,7 @@
       "Properties": {
         "Command": {
           "Name": "glueetl",
-          "PythonVersion": "2",
+          "PythonVersion": "3",
           "ScriptLocation": {
             "Fn::Join": [
               "",
@@ -252,7 +252,7 @@
       "Properties": {
         "Command": {
           "Name": "gluestreaming",
-          "PythonVersion": "2",
+          "PythonVersion": "3",
           "ScriptLocation": {
             "Fn::Join": [
               "",
@@ -397,7 +397,7 @@
       "Properties": {
         "Command": {
           "Name": "pythonshell",
-          "PythonVersion": "2",
+          "PythonVersion": "3",
           "ScriptLocation": {
             "Fn::Join": [
               "",
@@ -542,7 +542,7 @@
       "Properties": {
         "Command": {
           "Name": "glueetl",
-          "PythonVersion": "2",
+          "PythonVersion": "3",
           "ScriptLocation": {
             "Fn::Join": [
               "",
