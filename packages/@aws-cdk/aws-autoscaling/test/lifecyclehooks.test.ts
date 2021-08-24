@@ -7,7 +7,7 @@ import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
 nodeunitShim({
-  'we can add a lifecycle hook to an ASG'(test: Test) {
+  'we can add a lifecycle hook with no role and with a notifcationTarget to an ASG'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const asg = newASG(stack);
@@ -73,7 +73,7 @@ nodeunitShim({
 });
 
 nodeunitShim({
-  'we can add a lifecycle hook to an ASG without specifying notificationTargetArn'(test: Test) {
+  'we can add a lifecycle hook to an ASG with no role and with no notificationTargetArn'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     //const vpc = new ec2.Vpc(stack, 'VPC');
@@ -117,7 +117,42 @@ nodeunitShim({
 });
 
 nodeunitShim({
-  'adding a lifecycle hook with a role to an ASG without specifying notificationTargetArn throws an error'(test: Test) {
+  'we can add a lifecycle hook to an ASG with a role and with a notificationTargetArn'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = newASG(stack);
+    const myrole = new iam.Role(stack, 'MyRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    });
+    // const vpc = new ec2.Vpc(stack, 'VPC');
+    //const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+    //  vpc,
+    //  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    //  machineImage: new ec2.AmazonLinuxImage(),
+    // });
+
+    // WHEN
+    asg.addLifecycleHook('Transition', {
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      defaultResult: autoscaling.DefaultResult.ABANDON,
+      notificationTarget: new FakeNotificationTarget(),
+      role: myrole,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: 'target:arn',
+      LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING',
+      DefaultResult: 'ABANDON',
+    }));
+
+    test.done();
+  },
+});
+
+
+nodeunitShim({
+  'adding a lifecycle hook with a role and with no notificationTarget to an ASG throws an error'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const asg = newASG(stack);
