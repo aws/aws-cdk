@@ -955,7 +955,7 @@ new CodePipeline(this, 'Pipeline', {
         resources: ['*'],
         conditions: {
           StringEquals: {
-            'iam:ResourceTag/aws-cdk:bootstrap-role': 'deploy',
+            'iam:ResourceTag/aws-cdk:bootstrap-role': 'lookup',
           },
         },
       }),
