@@ -1,8 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
-import * as autoscaling from '../lib';
-import * as constructs from 'constructs';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
+import * as autoscaling from '../lib';
 
 
 export class TestStack extends cdk.Stack {
