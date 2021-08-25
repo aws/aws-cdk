@@ -6,11 +6,12 @@ const a = new Metric({ namespace: 'Test', metricName: 'ACount' });
 
 let stack1: Stack;
 let stack2: Stack;
+let stack3: Stack;
 describe('cross environment', () => {
   beforeEach(() => {
     stack1 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '1234' } });
     stack2 = new Stack(undefined, undefined, { env: { region: 'mars', account: '5678' } });
-
+    stack3 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '0000' } });
   });
 
   describe('in graphs', () => {
@@ -111,6 +112,70 @@ describe('cross environment', () => {
       }).toThrow(/Cannot create an Alarm in region 'mars' based on metric 'ACount' in 'pluto'/);
 
 
+    });
+
+    test('metric attached to stack3 will render in stack1', () => {
+      //Cross-account metrics are supported in Alarms
+
+      // GIVEN
+      new Alarm(stack1, 'Alarm', {
+        threshold: 1,
+        evaluationPeriods: 1,
+        metric: a.attachTo(stack3),
+      });
+
+      // THEN
+      Template.fromStack(stack1).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Metrics: [
+          {
+            AccountId: '0000',
+            Id: 'm1',
+            MetricStat: {
+              Metric: {
+                MetricName: 'ACount',
+                Namespace: 'Test',
+              },
+              Period: 300,
+              Stat: 'Average',
+            },
+            ReturnData: true,
+          },
+        ],
+      });
+    });
+
+    test('metric can render in a different account', () => {
+      // GIVEN
+      const b = new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        account: '0000',
+      });
+
+      new Alarm(stack1, 'Alarm', {
+        threshold: 1,
+        evaluationPeriods: 1,
+        metric: b,
+      });
+
+      // THEN
+      Template.fromStack(stack1).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Metrics: [
+          {
+            AccountId: '0000',
+            Id: 'm1',
+            MetricStat: {
+              Metric: {
+                MetricName: 'ACount',
+                Namespace: 'Test',
+              },
+              Period: 300,
+              Stat: 'Average',
+            },
+            ReturnData: true,
+          },
+        ],
+      });
     });
   });
 });
