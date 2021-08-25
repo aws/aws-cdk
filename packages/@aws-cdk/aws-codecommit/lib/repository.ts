@@ -140,15 +140,6 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   ): notifications.INotificationRule;
 
   /**
-   * Defines a CodeStar Notification rule which triggers when a comment is made on a commit.
-   */
-  notifyOnCommitComment(
-    id: string,
-    target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
-  ): notifications.INotificationRule;
-
-  /**
    * Defines a CodeStar Notification rule which triggers when a comment is made on a pull request.
    */
   notifyOnPullRequestComment(
@@ -377,17 +368,6 @@ abstract class RepositoryBase extends Resource implements IRepository {
       ...options,
       source: this,
       targets: [target],
-    });
-  }
-
-  public notifyOnCommitComment(
-    id: string,
-    target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
-  ): notifications.INotificationRule {
-    return this.notifyOn(id, target, {
-      ...options,
-      events: [RepositoryNotificationEvents.COMMIT_COMMENT],
     });
   }
 
