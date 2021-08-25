@@ -116,7 +116,6 @@ nodeunitShim({
   },
 });
 
-
 nodeunitShim({
   'adding a lifecycle hook with a role and with no notificationTarget to an ASG throws an error'(test: Test) {
     // GIVEN

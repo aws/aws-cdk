@@ -177,5 +177,4 @@ describe('given an AutoScalingGroup', () => {
     // THEN
     }).toThrow(/This `TopicHook` has an undefined `role`/);
   });
-
 });

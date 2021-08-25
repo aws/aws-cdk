@@ -54,7 +54,7 @@ export interface BasicLifecycleHookProps {
   /**
    * The role that allows publishing to the notification target
    *
-   * @default - A role is automatically created.
+   * @default - No role
    */
   readonly role?: iam.IRole;
 }
@@ -75,8 +75,10 @@ export interface LifecycleHookProps extends BasicLifecycleHookProps {
 export interface ILifecycleHook extends IResource {
   /**
    * The role for the lifecycle hook to execute
+   *
+   * @default: no role
    */
-  readonly role: iam.IRole | undefined;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -85,8 +87,10 @@ export interface ILifecycleHook extends IResource {
 export class LifecycleHook extends Resource implements ILifecycleHook {
   /**
    * The role that allows the ASG to publish to the notification target
+   *
+   * @default: no role
    */
-  public readonly role: iam.IRole | undefined;
+  public readonly role?: iam.IRole;
 
   /**
    * The name of this lifecycle hook
@@ -118,9 +122,9 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       }
     }
 
-    const targetProps = props.notificationTarget? props.notificationTarget.bind(this, this) : undefined;
+    const targetProps = props.notificationTarget ? props.notificationTarget.bind(this, this) : undefined;
     const notificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;
-    const roleArn = this.role? this.role.roleArn : undefined;
+    const roleArn = this.role ? this.role.roleArn : undefined;
 
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
