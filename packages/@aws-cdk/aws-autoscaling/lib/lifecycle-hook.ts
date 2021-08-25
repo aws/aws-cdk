@@ -99,7 +99,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       physicalName: props.lifecycleHookName,
     });
 
-    let targetProps = undefined;
+    //let targetProps = undefined;
 
     if (props.role) {
       this.role = props.role;
@@ -109,7 +109,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       }
     } else {
       if (props.notificationTarget) {
-        // specify a default role to not break users
+        // specify a default role to not break users who provide a notificationTarget but no role
         this.role = new iam.Role(this, 'Role', {
           assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
         });
@@ -118,7 +118,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       }
     }
 
-    targetProps = props.notificationTarget? props.notificationTarget.bind(this, this) : undefined;
+    const targetProps = props.notificationTarget? props.notificationTarget.bind(this, this) : undefined;
 
     const notificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;
     const roleArn = this.role? this.role.roleArn : undefined;

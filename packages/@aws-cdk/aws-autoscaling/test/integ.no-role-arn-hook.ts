@@ -1,9 +1,23 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as autoscaling from '../lib';
 
+export class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
+  constructor(private readonly topic: sns.ITopic) {
+  }
+
+  public bind(_scope: constructs.Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
+    if (lifecycleHook.role) {
+      this.topic.grantPublish(lifecycleHook.role);
+      return { notificationTargetArn: this.topic.topicArn };
+    } else {
+      throw new Error('This `TopicHook` has an undefined `role`');
+    }
+  }
+}
 
 export class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -11,8 +25,10 @@ export class TestStack extends cdk.Stack {
 
     let vpc = new ec2.Vpc(this, 'myVpcAuto', {});
     const myrole = new iam.Role(this, 'MyRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
     });
+    const topic = new sns.Topic(this, 'topic', {});
+    const topic2 = new sns.Topic(this, 'topic2', {});
 
     const asg = new autoscaling.AutoScalingGroup(this, 'ASG', {
       vpc,
@@ -21,41 +37,33 @@ export class TestStack extends cdk.Stack {
       healthCheck: autoscaling.HealthCheck.ec2(),
     });
 
-    // no roleArn or notificationTarget
+    // no role or notificationTarget
     new autoscaling.LifecycleHook(this, 'LCHookNoRoleNoTarget', {
       autoScalingGroup: asg,
       lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
       defaultResult: autoscaling.DefaultResult.CONTINUE,
-      lifecycleHookName: 'TerminateLifecycleHook',
+      lifecycleHookName: 'LCHookNoRoleNoTarget',
       heartbeatTimeout: cdk.Duration.minutes(3),
     });
 
+    // no role with notificationTarget
     new autoscaling.LifecycleHook(this, 'LCHookNoRoleTarget', {
-      notificationTarget: new FakeNotificationTarget(),
+      notificationTarget: new FakeNotificationTarget(topic),
       autoScalingGroup: asg,
       lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
       defaultResult: autoscaling.DefaultResult.CONTINUE,
-      lifecycleHookName: 'TerminateLifecycleHook2',
+      lifecycleHookName: 'LCHookNoRoleTarget',
       heartbeatTimeout: cdk.Duration.minutes(3),
     });
 
-    // Role and No target causes error
-    /*new autoscaling.LifecycleHook(this, 'LCHookRoleNoTarget', {
-      notificationTarget: new FakeNotificationTarget(),
-      autoScalingGroup: asg,
-      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
-      defaultResult: autoscaling.DefaultResult.CONTINUE,
-      lifecycleHookName: 'TerminateLifecycleHook2',
-      heartbeatTimeout: cdk.Duration.minutes(3),
-    });*/
-
+    // role with target
     new autoscaling.LifecycleHook(this, 'LCHookRoleTarget', {
-      notificationTarget: new FakeNotificationTarget(),
+      notificationTarget: new FakeNotificationTarget(topic2),
       role: myrole,
       autoScalingGroup: asg,
       lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
       defaultResult: autoscaling.DefaultResult.CONTINUE,
-      lifecycleHookName: 'TerminateLifecycleHook2',
+      lifecycleHookName: 'LCHookRoleTarget',
       heartbeatTimeout: cdk.Duration.minutes(3),
     });
   }
@@ -63,19 +71,6 @@ export class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new TestStack(app, 'integ-no-role-arn-hook');
+new TestStack(app, 'integ-hook');
 
 app.synth();
-
-class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
-  public bind(_scope: constructs.Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    if (lifecycleHook.role) {
-      lifecycleHook.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['action:Work'],
-        resources: ['*'],
-      }));
-    }
-
-    return { notificationTargetArn: 'target:arn' };
-  }
-}
