@@ -9,10 +9,10 @@ set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
 
 # Creates a symlink in each individual package's node_modules folder pointing
-# to the root folder's node_modules/.bin. This allows yarn to find the executables
+# to the root folder's node_modules/.bin. This allows Yarn to find the executables
 # it needs (e.g., jsii-rosetta) for the build.
 #
-# The reason yarn doesn't find the executables in the first place is that they are
+# The reason Yarn doesn't find the executables in the first place is that they are
 # not dependencies of each individual package -- nor should they be. They can't be
 # found in the lerna workspace, either, since it only includes the individual
 # packages. A possible solution that doesn't involve using this workaround function
