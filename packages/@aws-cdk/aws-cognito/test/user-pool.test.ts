@@ -1390,6 +1390,27 @@ describe('User Pool', () => {
   });
 });
 
+test('device tracking is configured correctly', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    deviceTracking: {
+      challengeRequiredOnNewDevice: true,
+      deviceOnlyRememberedOnUserPrompt: true,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    DeviceConfiguration: {
+      ChallengeRequiredOnNewDevice: true,
+      DeviceOnlyRememberedOnUserPrompt: true,
+    },
+  });
+});
+
 
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
