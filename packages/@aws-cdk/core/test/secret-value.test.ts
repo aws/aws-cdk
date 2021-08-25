@@ -1,5 +1,5 @@
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, SecretValue, Stack } from '../lib';
+import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, SecretValue, Stack, Token } from '../lib';
 
 nodeunitShim({
   'plainText'(test: Test) {
@@ -29,6 +29,30 @@ nodeunitShim({
     test.done();
   },
 
+  'secretsManager with secret-id from token'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.secretsManager(Token.asString({ Ref: 'secret-id' }), {
+      jsonField: 'json-key',
+      versionStage: 'version-stage',
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(v), {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          { Ref: 'secret-id' },
+          ':SecretString:json-key:version-stage:}}',
+        ],
+      ],
+    });
+    test.done();
+  },
+
   'secretsManager with defaults'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -38,6 +62,27 @@ nodeunitShim({
 
     // THEN
     test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:::}}');
+    test.done();
+  },
+
+  'secretsManager with defaults, secret-id from token'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.secretsManager(Token.asString({ Ref: 'secret-id' }));
+
+    // THEN
+    test.deepEqual(stack.resolve(v), {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          { Ref: 'secret-id' },
+          ':SecretString:::}}',
+        ],
+      ],
+    });
     test.done();
   },
 
