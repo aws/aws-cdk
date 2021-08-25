@@ -193,9 +193,19 @@ export class StackDeployment {
   public readonly absoluteTemplatePath: string;
 
   /**
-   * Instructions for additional steps that are run between Prepare and Deploy in specific stacks
+   * Steps that take place before stack is prepared. If your pipeline engine disables 'prepareStep', then this will happen before stack deploys
    */
-  public changeSetApproval?: Step;
+  public readonly pre: Step[] = [];
+
+  /**
+   * Steps that take place after stack is prepared but before stack deploys. Your pipeline engine may not disable `prepareStep`.
+   */
+  public readonly changeSet: Step[] = [];
+
+  /**
+   * Steps to execute after stack deploys
+   */
+  public readonly post: Step[] = [];
 
   private constructor(props: StackDeploymentProps) {
     this.stackArtifactId = props.stackArtifactId;
@@ -228,14 +238,15 @@ export class StackDeployment {
   }
 
   /**
-   * Add a changeSet approval step to this stack
-   * //Question: Should we allow for multiple steps between Prepare and Deploy?
+   * Adds steps to each phase of the stack
+   * @param pre steps executed before stack.prepare
+   * @param changeSet steps executed after stack.prepare and before stack.deploy
+   * @param post steps executed after stack.deploy
    */
-  public addChangeSetApproval(step: Step) {
-    if (this.changeSetApproval) {
-      throw new Error('changeSetApproval may not be updated more than once');
-    }
-    this.changeSetApproval = step;
+  public addStackSteps(pre: Step[], changeSet: Step[], post: Step[]) {
+    this.pre.push(...pre);
+    this.changeSet.push(...changeSet);
+    this.post.push(...post);
   }
 }
 

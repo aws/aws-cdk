@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { StageDeployment } from './stage-deployment';
-import { ChangeSetApproval, Step } from './step';
+import { StackSteps, Step } from './step';
 
 /**
  * Construction properties for a `Wave`
@@ -93,11 +93,11 @@ export interface AddStageOpts {
   readonly post?: Step[];
 
   /**
-   * Instructions for additional steps that are run between Prepare and Deploy in specific stacks
+   * Instructions for stack level steps
    *
    * @default - No additional instructions
    */
-  readonly changeSetApproval?: ChangeSetApproval[];
+  readonly stackSteps?: StackSteps[];
 }
 
 /**

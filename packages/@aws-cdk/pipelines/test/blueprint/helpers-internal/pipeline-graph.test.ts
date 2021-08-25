@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import '@aws-cdk/assert-internal/jest';
 import * as cdkp from '../../../lib';
+import { ManualApprovalStep } from '../../../lib';
 import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
 import { AppWithOutput, AppWithExposedStacks, OneStackApp, TestApp } from '../../testhelpers/test-app';
@@ -114,14 +115,20 @@ describe('blueprint with wave and stage', () => {
     ]);
   });
 
-  test('changeSetApproval gets added inside stack graph', () => {
+  test('pre, changeSet, and post are added correctly inside stack graph', () => {
     // GIVEN
     const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
     const stack = appWithExposedStacks.stacks[0];
     blueprint.waves[0].addStage(appWithExposedStacks, {
-      changeSetApproval: [{
-        step: new cdkp.ManualApprovalStep('Manual Approval'),
-        stacks: [stack],
+      stackSteps: [{
+        stack,
+        pre: [new cdkp.ManualApprovalStep('Step1'), new cdkp.ManualApprovalStep('Step2'), new cdkp.ManualApprovalStep('Step3')],
+      }, {
+        stack,
+        changeSet: [new cdkp.ManualApprovalStep('Manual Approval')],
+      }, {
+        stack,
+        post: [new cdkp.ManualApprovalStep('Post Approval')],
       }],
     });
 
@@ -130,42 +137,13 @@ describe('blueprint with wave and stage', () => {
 
     // THEN
     expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack1')).toEqual([
+      'Step1',
+      'Step2',
+      'Step3',
       'Prepare',
       'Manual Approval',
       'Deploy',
-    ]);
-  });
-
-  test('changeSetApproval can be added on multiple stacks in a stage', () => {
-    // GIVEN
-    const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
-    const stack1 = appWithExposedStacks.stacks[0];
-    const stack2 = appWithExposedStacks.stacks[1];
-    blueprint.waves[0].addStage(appWithExposedStacks, {
-      changeSetApproval: [{
-        step: new cdkp.ManualApprovalStep('Manual Approval'),
-        stacks: [stack1, stack2],
-      }],
-    });
-    // WHEN
-    const graph = new PipelineGraph(blueprint).graph;
-
-    // THEN
-    expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack1')).toEqual([
-      'Prepare',
-      'Manual Approval',
-      'Deploy',
-    ]);
-
-    expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack2')).toEqual([
-      'Prepare',
-      'Manual Approval',
-      'Deploy',
-    ]);
-
-    expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack3')).toEqual([
-      'Prepare',
-      'Deploy',
+      'Post Approval',
     ]);
   });
 });
@@ -207,6 +185,54 @@ describe('options for other engines', () => {
     // if "prepareStep" was true (default), the "Stack" node would have "Prepare" and "Deploy"
     // since "prepareStep" is false, it only has "Deploy".
     expect(childrenAt(graph.graph, 'Alpha', 'Stack')).toStrictEqual(['Deploy']);
+  });
+
+  test('"prepareStep: false" will not impact "pre" stack steps', () => {
+    // GIVEN
+    const blueprint = new Blueprint(app, 'Bp', {
+      synth: new cdkp.ShellStep('Synth', {
+        commands: ['build'],
+      }),
+    });
+    const appWithExposedStacks = new AppWithExposedStacks(app, 'Alpha');
+    blueprint.addStage(appWithExposedStacks, {
+      stackSteps: [{
+        stack: appWithExposedStacks.stacks[0],
+        pre: [new ManualApprovalStep('PreCheck')],
+      }],
+    });
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint, {
+      prepareStep: false,
+    });
+
+    // THEN
+    expect(childrenAt(graph.graph, 'Alpha', 'Stack1')).toEqual([
+      'PreCheck',
+      'Deploy'
+    ])
+  });
+
+  test('specifying changeSet step with "prepareStep: false" will throw', () => {
+    // GIVEN
+    const blueprint = new Blueprint(app, 'Bp', {
+      synth: new cdkp.ShellStep('Synth', {
+        commands: ['build'],
+      }),
+    });
+    const appWithExposedStacks = new AppWithExposedStacks(app, 'Alpha');
+    blueprint.addStage(appWithExposedStacks, {
+      stackSteps: [{
+        stack: appWithExposedStacks.stacks[0],
+        changeSet: [new ManualApprovalStep('ChangeSetApproval')],
+      }],
+    })
+
+    // THEN
+    expect(() => new PipelineGraph(blueprint, {
+      prepareStep: false,
+    })).toThrow('Your pipeline engine does not support changeSet steps');
   });
 });
 

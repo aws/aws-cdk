@@ -77,16 +77,33 @@ export abstract class Step implements IFileSetProducer {
 }
 
 /**
- * Instructions for additional steps that are run between Prepare and Deploy in specific stacks
+ * Instructions for additional steps that are run at stack level
  */
-export interface ChangeSetApproval {
+export interface StackSteps {
   /**
-   * The step to run
+   * The stack you want the steps to run in
    */
-  readonly step: Step,
+  readonly stack: Stack;
 
   /**
-   * The stacks you want the step to run in
+   * Steps that execute before stack is prepared
+   *
+   * @default - no additional steps
    */
-  readonly stacks: Stack[];
+  readonly pre?: Step[];
+
+  /**
+   * Steps that execute after stack is prepared but before stack is deployed
+   *
+   * @default - no additional steps
+   */
+  readonly changeSet?: Step[];
+
+  /**
+   * Steps that execute after stack is deployed
+   *
+   * @default - no additional steps
+   */
+  readonly post?: Step[];
+
 }

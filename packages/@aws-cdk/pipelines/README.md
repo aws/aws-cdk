@@ -481,13 +481,19 @@ pipeline.addStage(prod, {
 });
 ```
 
-You can also approve changeSets between a stacks `prepare` and `deploy` phases. To achieve this, you can specify a `changeSetApproval` property on a `Stage`:
+You can also specify steps to be executed at the stack level. To achieve this, you can specify the stack and step via the `stackSteps` property: 
 
 ```ts
 pipeline.addStage(prod, {
-  changeSetApproval: [{
-    step: new ManualApprovalStep('CheckChangeSet'),
-    stacks: [ProdStack1, ProdStack2],
+  stackSteps: [{
+    stack: prod.stack1,
+    pre: [new ManualApprovalStep('Pre-Stack Check')], // Executed before stack is prepared
+  }, {
+    stack: prod.stack1,
+    changeSet: [new ManualApprovalStep('ChangeSet Approval')], // Executed after stack is prepared but before the stack is deployed
+  }, {
+    stack: prod.stack1,
+    post: [new ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
   }],
 });
 ```

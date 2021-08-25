@@ -134,13 +134,15 @@ export class PipelineGraph {
 
     for (const stack of stage.stacks) {
       const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
+      const preNodeChain = stack.pre.length > 0 ? this.addNodeChain(stack.pre, stackGraph) : undefined;
       const prepareNode: AGraphNode | undefined = this.prepareStep ? GraphNode.of('Prepare', { type: 'prepare', stack }) : undefined;
-      const changeSetNode: AGraphNode | undefined = stack.changeSetApproval ? GraphNode.of(stack.changeSetApproval.id, { type: 'step', step: stack.changeSetApproval }) : undefined;
+      const changeSetNodeChain = stack.changeSet.length > 0 ? this.addNodeChain(stack.changeSet, stackGraph) : undefined;
       const deployNode: AGraphNode = GraphNode.of('Deploy', {
         type: 'execute',
         stack,
         captureOutputs: this.queries.stackOutputsReferenced(stack).length > 0,
       });
+      const postNodeChain = stack.post.length > 0 ? this.addNodeChain(stack.post, stackGraph) : undefined;
 
       retGraph.add(stackGraph);
 
@@ -148,16 +150,34 @@ export class PipelineGraph {
       let firstDeployNode;
       if (prepareNode) {
         stackGraph.add(prepareNode);
-        if (changeSetNode) {
-          stackGraph.add(changeSetNode);
-          changeSetNode.dependOn(prepareNode);
-          deployNode.dependOn(changeSetNode);
+        if (preNodeChain) {
+          prepareNode.dependOn(preNodeChain.tail);
+          firstDeployNode = preNodeChain.head;
+        } else {
+          firstDeployNode = deployNode;
+        }
+        if (changeSetNodeChain) {
+          changeSetNodeChain.head.dependOn(prepareNode);
+          deployNode.dependOn(changeSetNodeChain.tail);
         } else {
           deployNode.dependOn(prepareNode);
         }
-        firstDeployNode = prepareNode;
       } else {
-        firstDeployNode = deployNode;
+        // ChangeSet steps do not work if there is no prepare step
+        if (changeSetNodeChain) {
+          throw new Error('Your pipeline engine does not support changeSet steps');
+        }
+        // No prepare node, so 'pre' steps happen before deploy
+        if (preNodeChain) {
+          deployNode.dependOn(preNodeChain.tail);
+          firstDeployNode = preNodeChain.head;
+        } else {
+          firstDeployNode = deployNode;
+        }
+      }
+
+      if (postNodeChain) {
+        postNodeChain.head.dependOn(deployNode);
       }
 
       stackGraphs.set(stack, stackGraph);
@@ -206,6 +226,27 @@ export class PipelineGraph {
     this.addPrePost(stage.pre, stage.post, retGraph);
 
     return retGraph;
+  }
+
+  /**
+   * Takes a list of steps and creates nodes for each of them. Each node depends on the one that came before it.
+   *
+   * @returns an object with the head and tail nodes of the chain
+   */
+  private addNodeChain(steps: Step[], graph: AGraph): {head: AGraphNode, tail: AGraphNode} {
+    // If there is only one step, no need to create chain
+    // If multiple steps, create dependency chain and return first node
+    const headNode: AGraphNode = GraphNode.of(steps[0].id, { type: 'step', step: steps[0] });
+    graph.add(headNode);
+
+    var currentNode = headNode;
+    for (let i = 1; i < steps.length; i++) {
+      const nextNode: AGraphNode = GraphNode.of(steps[i].id, { type: 'step', step: steps[i] });
+      graph.add(nextNode);
+      nextNode.dependOn(currentNode);
+      currentNode = nextNode;
+    }
+    return { head: headNode, tail: currentNode };
   }
 
   private addPrePost(pre: Step[], post: Step[], parent: AGraph) {

@@ -3,7 +3,7 @@ import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { isStackArtifact } from '../private/cloud-assembly-internals';
 import { pipelineSynth } from '../private/construct-internals';
 import { StackDeployment } from './stack-deployment';
-import { ChangeSetApproval, Step } from './step';
+import { StackSteps, Step } from './step';
 
 /**
  * Properties for a `StageDeployment`
@@ -31,11 +31,11 @@ export interface StageDeploymentProps {
   readonly post?: Step[];
 
   /**
-   * Instructions for additional steps that are run between Prepare and Deploy in specific stacks
+   * Instructions for additional steps that are run at the stack level
    *
    * @default - No additional instructions
    */
-  readonly changeSetApproval?: ChangeSetApproval[];
+  readonly stackSteps?: StackSteps[];
 }
 
 /**
@@ -64,17 +64,15 @@ export class StageDeployment {
       const step = StackDeployment.fromArtifact(artifact);
       stepFromArtifact.set(artifact, step);
     }
-    if (props.changeSetApproval) {
-      for (const approval of props.changeSetApproval) {
-        for (const stack of approval.stacks) {
-          // getStackByName will throw if stack does not exist
-          const stackArtifact = assembly.getStackByName(stack.stackName);
-          const thisStep = stepFromArtifact.get(stackArtifact);
-          if (!thisStep) {
-            throw new Error('Logic error: we just added a step for this artifact but it disappeared.');
-          }
-          thisStep.addChangeSetApproval(approval.step);
+    if (props.stackSteps) {
+      for (const stackstep of props.stackSteps) {
+        assembly.getStackArtifact(stackstep.stack.artifactId);
+        const stackArtifact = assembly.getStackByName(stackstep.stack.stackName);
+        const thisStep = stepFromArtifact.get(stackArtifact);
+        if (!thisStep) {
+          throw new Error('Logic error: we just added a step for this artifact but it disappeared.');
         }
+        thisStep.addStackSteps(stackstep.pre ?? [], stackstep.changeSet ?? [], stackstep.post ?? []);
       }
     }
 
@@ -116,9 +114,9 @@ export class StageDeployment {
   public readonly post: Step[];
 
   /**
-   * Instructions for additional steps that are run between Prepare and Deploy in specific stacks
+   * Instructions for additional steps that are run at stack level
    */
-  public readonly changeSetApproval: ChangeSetApproval[];
+  public readonly stackSteps: StackSteps[];
 
   private constructor(
     /** The stacks deployed in this stage */
@@ -126,7 +124,7 @@ export class StageDeployment {
     this.stageName = props.stageName ?? '';
     this.pre = props.pre ?? [];
     this.post = props.post ?? [];
-    this.changeSetApproval = props.changeSetApproval ?? [];
+    this.stackSteps = props.stackSteps ?? [];
   }
 
   /**
