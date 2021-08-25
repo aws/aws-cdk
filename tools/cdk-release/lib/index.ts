@@ -28,10 +28,10 @@ module.exports = async function main(opts: ReleaseOptions): Promise<void> {
   const commits = await getConventionalCommitsFromGitHistory(args, `v${currentVersion.stableVersion}`);
 
   debug(args, 'Writing Changelog');
-  const changelogResults = await writeChangelogs(args, currentVersion, newVersion, commits, getProjectPackageInfo());
+  const changelogResults = await writeChangelogs(args, currentVersion, newVersion, commits, getProjectPackageInfos());
 
   debug(args, 'Committing result');
-  await commit(args, newVersion.stableVersion, [args.versionFile, ...Object.keys(changelogResults)]);
+  await commit(args, newVersion.stableVersion, [args.versionFile, ...changelogResults.map(r => r.filePath)]);
 };
 
 function readVersion(versionFile: string): Versions {
@@ -43,18 +43,18 @@ function readVersion(versionFile: string): Versions {
   };
 }
 
-export function getProjectPackageInfo(): PackageInfo[] {
+function getProjectPackageInfos(): PackageInfo[] {
   const packages = lerna_project.Project.getPackagesSync();
 
   return packages.map((pkg: any) => {
-    const pkgJson = fs.readJsonSync(pkg.manifestLocation);
-    const experimental = pkgJson.name.startsWith('@aws-cdk/')
-      && (pkgJson.maturity === 'experimental' || pkgJson.maturity === 'developer-preview');
+    const maturity = pkg.get('maturity');
+    const unstable = pkg.name.startsWith('@aws-cdk/')
+      && (maturity === 'experimental' || maturity === 'developer-preview');
 
     return {
       simplifiedName: pkg.name.replace(/^@aws-cdk\//, ''),
       location: pkg.location,
-      experimental,
+      unstable,
     };
   });
 }

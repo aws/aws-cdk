@@ -100,6 +100,7 @@ export interface FilterCommitsOptions {
    * Package names should be provided as simplified package names (e.g., 'aws-foo' for '@aws-cdk/aws-foo')
    **/
   excludePackages?: string[];
+
   /**
    * If provided, scopes matching these names (and variants) will be the *only commits* considered.
    * Package names should be provided as simplified package names (e.g., 'aws-foo' for '@aws-cdk/aws-foo')
@@ -114,7 +115,16 @@ export interface FilterCommitsOptions {
  * @param opts filtering options; if none are provided, all commits are returned.
  */
 export function filterCommits(commits: ConventionalCommit[], opts: FilterCommitsOptions = {}): ConventionalCommit[] {
-  const createScopeVariations = (names: string[]) => flatMap(names, (pkgName) => [
+  const excludeScopes = createScopeVariations(opts.excludePackages ?? []);
+  const includeScopes = createScopeVariations(opts.includePackages ?? []);
+
+  return commits
+    .filter(commit => includeScopes.length === 0 || (commit.scope && includeScopes.includes(commit.scope)))
+    .filter(commit => excludeScopes.length === 0 || !commit.scope || !excludeScopes.includes(commit.scope));
+}
+
+function createScopeVariations(names: string[]) {
+  return flatMap(names, (pkgName) => [
     pkgName,
     ...(pkgName.startsWith('aws-')
       ? [
@@ -128,13 +138,6 @@ export function filterCommits(commits: ConventionalCommit[], opts: FilterCommits
       : []
     ),
   ]);
-
-  const excludeScopes = createScopeVariations(opts.excludePackages ?? []);
-  const includeScopes = createScopeVariations(opts.includePackages ?? []);
-
-  return commits
-    .filter(commit => includeScopes.length === 0 || (commit.scope && includeScopes.includes(commit.scope)))
-    .filter(commit => excludeScopes.length === 0 || !commit.scope || !excludeScopes.includes(commit.scope));
 }
 
 function flatMap<T, U>(xs: T[], fn: (x: T) => U[]): U[] {

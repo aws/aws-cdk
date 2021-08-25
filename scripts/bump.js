@@ -29,8 +29,6 @@ async function main() {
     }
   };
 
-  const majorVersion = semver.major(ver.version);
-
   const forTesting = process.env.BUMP_CANDIDATE || false;
   if (forTesting) {
     opts.skip.commit = true;
@@ -42,6 +40,8 @@ async function main() {
     opts.prerelease = ver.prerelease || 'rc';
     console.error(`BUMP_CANDIDATE is set, so bumping version for testing (with the "${opts.prerelease}" prerelease tag)`);
   }
+
+  const majorVersion = semver.major(ver.version);
 
   const useLegacyBump = process.env.LEGACY_BUMP || false;
   if (useLegacyBump) {
@@ -66,7 +66,7 @@ async function main() {
     opts.verbose = !!process.env.VERBOSE;
     if (majorVersion > 1) {
       // NOTE - Once we start publishing alpha modules independently, this needs to be flipped to 'separate'
-      opts.changelogExperimentalChanges = 'strip';
+      opts.experimentalChangesTreatment = 'strip';
     }
     // Rename some options to match cdk-release inputs (replaces bumpFiles, packageFiles, and infile)
     opts.versionFile = ver.versionFile;

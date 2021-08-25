@@ -20,13 +20,15 @@ export interface Versions {
 
 export type ReleaseType = 'major' | 'minor' | 'patch';
 
-/**
- * How to handle experimental changes in the changelog.
- * - include: experimental changes are included in the main changelog (this is the default)
- * - strip: remove all experimental changes from the changelog
- * - separate: write experimental changes to individual changelogs, and into a separate section of the main changelog.
- */
-export type ExperimentalChanges = 'include' | 'strip' | 'separate';
+/** How to handle experimental changes in the changelog. */
+export enum ExperimentalChangesTreatment {
+  /** experimental changes are included in the main changelog (this is the default) */
+  INCLUDE = 'include',
+  /** remove all experimental changes from the changelog */
+  STRIP = 'strip',
+  /** write experimental changes to individual changelogs, and into a separate section of the main changelog. */
+  SEPARATE = 'separate'
+};
 
 export interface ReleaseOptions {
   releaseAs: ReleaseType;
@@ -44,7 +46,7 @@ export interface ReleaseOptions {
    * How to handle experimental changes in the changelog.
    * @default 'include'
    */
-  changelogExperimentalChanges?: ExperimentalChanges;
+  experimentalChangesTreatment?: ExperimentalChangesTreatment;
   changeLogHeader?: string;
   includeDateInChangelog?: boolean;
   releaseCommitMessageFormat?: string;
@@ -53,5 +55,5 @@ export interface ReleaseOptions {
 export interface PackageInfo {
   simplifiedName: string;
   location: string;
-  experimental: boolean;
+  unstable: boolean;
 }
