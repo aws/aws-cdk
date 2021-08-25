@@ -76,7 +76,7 @@ export interface ILifecycleHook extends IResource {
   /**
    * The role for the lifecycle hook to execute
    *
-   * @default: no role
+   * @default: No role
    */
   readonly role?: iam.IRole;
 }
@@ -88,7 +88,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
   /**
    * The role that allows the ASG to publish to the notification target
    *
-   * @default: no role
+   * @default: No role
    */
   public readonly role?: iam.IRole;
 
