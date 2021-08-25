@@ -15,20 +15,8 @@ scriptdir=$(cd $(dirname $0) && pwd)
 # The reason Yarn doesn't find the executables in the first place is that they are
 # not dependencies of each individual package -- nor should they be. They can't be
 # found in the lerna workspace, either, since it only includes the individual
-# packages. A possible solution that doesn't involve using this workaround function
-# is to add more packages to the workspace, which includes at least awslint and all
-# the tools/* packages, but potentially more, such as cloudformation-diff,
-# cloud-assembly-schema and others, which are dependencies of one or more of the
-# tools packages.
-#
-# In addition, we need to copy aws-cdk-lib inside individual-packages/ and remove
-# all @aws-cdk/* packages from its devDependencies section. Otherwise, the build
-# process for the experimental packages will include 250+ packages altogether,
-# making the build time unworkable.
-#
-# Finally, we will need to restrict the build command only to the packages inside
-# individual-packages/, which may be achieved with yarn 2 commands such as
-# yarn workspaces foreach <commandName>, available with the workspace-tools plugin.
+# packages. For potential alternatives to try out in the future, see
+# https://github.com/cdklabs/cdk-ops/issues/1636
 createSymlinks() {
   find "$1" ! -path "$1" -type d -maxdepth 1 \
     -exec mkdir -p {}/node_modules \; \
