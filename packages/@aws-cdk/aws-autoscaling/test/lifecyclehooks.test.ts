@@ -11,12 +11,6 @@ nodeunitShim({
     // GIVEN
     const stack = new cdk.Stack();
     const asg = newASG(stack);
-    //const vpc = new ec2.Vpc(stack, 'VPC');
-    //const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-    //  vpc,
-    //  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-    //  machineImage: new ec2.AmazonLinuxImage(),
-    //});
 
     // WHEN
     asg.addLifecycleHook('Transition', {
@@ -76,13 +70,6 @@ nodeunitShim({
   'we can add a lifecycle hook to an ASG with no role and with no notificationTargetArn'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    //const vpc = new ec2.Vpc(stack, 'VPC');
-    //const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-    //  vpc,
-    //  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-    //  machineImage: new ec2.AmazonLinuxImage(),
-    //});
-
     const asg = newASG(stack);
 
     // WHEN
@@ -97,21 +84,6 @@ nodeunitShim({
       DefaultResult: 'ABANDON',
     }));
 
-    /*expect(stack).to(haveResource('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'autoscaling.amazonaws.com',
-            },
-          },
-        ],
-      },
-    }));*/
-
     test.done();
   },
 });
@@ -124,12 +96,6 @@ nodeunitShim({
     const myrole = new iam.Role(stack, 'MyRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
-    // const vpc = new ec2.Vpc(stack, 'VPC');
-    //const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-    //  vpc,
-    //  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-    //  machineImage: new ec2.AmazonLinuxImage(),
-    // });
 
     // WHEN
     asg.addLifecycleHook('Transition', {
@@ -159,12 +125,6 @@ nodeunitShim({
     const myrole = new iam.Role(stack, 'MyRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
-    // const vpc = new ec2.Vpc(stack, 'VPC');
-    //const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-    //  vpc,
-    //  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-    //  machineImage: new ec2.AmazonLinuxImage(),
-    // });
 
     // WHEN
     test.throws(() => {

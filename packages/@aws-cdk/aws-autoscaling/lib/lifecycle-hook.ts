@@ -119,7 +119,6 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     }
 
     const targetProps = props.notificationTarget? props.notificationTarget.bind(this, this) : undefined;
-
     const notificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;
     const roleArn = this.role? this.role.roleArn : undefined;
 
