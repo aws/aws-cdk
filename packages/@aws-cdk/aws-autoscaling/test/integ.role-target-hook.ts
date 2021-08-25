@@ -62,6 +62,6 @@ export class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new TestStack(app, 'integ-hook');
+new TestStack(app, 'integ-role-target-hook');
 
 app.synth();

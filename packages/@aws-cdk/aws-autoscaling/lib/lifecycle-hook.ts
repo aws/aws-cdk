@@ -88,7 +88,8 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
   /**
    * The role that allows the ASG to publish to the notification target
    *
-   * @default: No role
+   * @default: A default role is created if `notificationTarget` is specified.
+   * Otherwise, no role is created.
    */
   public readonly role?: iam.IRole;
 
@@ -102,8 +103,6 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     super(scope, id, {
       physicalName: props.lifecycleHookName,
     });
-
-    //let targetProps = undefined;
 
     if (props.role) {
       this.role = props.role;
