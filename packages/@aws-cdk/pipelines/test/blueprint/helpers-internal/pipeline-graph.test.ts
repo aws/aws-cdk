@@ -210,8 +210,8 @@ describe('options for other engines', () => {
     // THEN
     expect(childrenAt(graph.graph, 'Alpha', 'Stack1')).toEqual([
       'PreCheck',
-      'Deploy'
-    ])
+      'Deploy',
+    ]);
   });
 
   test('specifying changeSet step with "prepareStep: false" will throw', () => {
@@ -227,7 +227,7 @@ describe('options for other engines', () => {
         stack: appWithExposedStacks.stacks[0],
         changeSet: [new ManualApprovalStep('ChangeSetApproval')],
       }],
-    })
+    });
 
     // THEN
     expect(() => new PipelineGraph(blueprint, {
