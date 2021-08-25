@@ -209,7 +209,7 @@ function validateIntInRangeOrUndefined(name: string, min: number, max: number, v
 
 /**
  * Throws an error if custom header assignment is prohibited by CloudFront.
- * @link: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/add-origin-custom-headers.html
+ * @link: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/add-origin-custom-headers.html#add-origin-custom-headers-denylist
  */
 function validateCustomHeaders(customHeaders: Record<string, string>) {
   const customHeaderKeys = Object.keys(customHeaders);
@@ -230,9 +230,9 @@ function validateCustomHeaders(customHeaders: Record<string, string>) {
   });
 
   if (prohibitedHeadersKeysMatches.length !== 0) {
-    throw new Error(`You can’t configure CloudFront to add any of the following headers to requests that it sends to your origin: ${prohibitedHeaderKeys.join(', ')}. Got: ${customHeaderKeys.join(', ')}.`);
+    throw new Error(`The following headers cannot be configured as custom origin headers: ${prohibitedHeadersKeysMatches.join(', ')}`);
   }
   if (prohibitedHeaderPrefixMatches.length !== 0) {
-    throw new Error(`You can’t configure CloudFront to add any of the following headers that contain following prefixes: ${prohibitedHeaderKeyPrefixes.join(', ')}. Got: ${customHeaderKeys.join(', ')}`);
+    throw new Error(`The following headers cannot be used as prefixes for custom origin headers: ${prohibitedHeaderPrefixMatches.join(', ')}`);
   }
 }
