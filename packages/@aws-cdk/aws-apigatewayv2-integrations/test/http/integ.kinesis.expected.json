@@ -1,0 +1,165 @@
+{
+  "Resources": {
+    "IntegKinesisApi890BF27F": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "IntegKinesisApi",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "IntegKinesisApiDefaultStage245E3852": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegKinesisApi890BF27F"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true
+      }
+    },
+    "IntegKinesisApiANYHttpIntegrationc304c3d15ebb729a043fc95e653032645012054C": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegKinesisApi890BF27F"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "CredentialsArn": {
+          "Fn::GetAtt": [
+            "Role1ABCC5F0",
+            "Arn"
+          ]
+        },
+        "IntegrationSubtype": "Kinesis-PutRecord",
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "StreamName": {
+            "Ref": "Stream790BDEE4"
+          },
+          "Data": "$request.body",
+          "PartitionKey": "1"
+        }
+      }
+    },
+    "IntegKinesisApiANY248F7340": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegKinesisApi890BF27F"
+        },
+        "RouteKey": "ANY /",
+        "AuthorizationType": "NONE",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "IntegKinesisApiANYHttpIntegrationc304c3d15ebb729a043fc95e653032645012054C"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "Stream790BDEE4": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "ShardCount": 1,
+        "RetentionPeriodHours": 24,
+        "StreamEncryption": {
+          "Fn::If": [
+            "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            {
+              "Ref": "AWS::NoValue"
+            },
+            {
+              "EncryptionType": "KMS",
+              "KeyId": "alias/aws/kinesis"
+            }
+          ]
+        }
+      }
+    },
+    "Role1ABCC5F0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "RoleDefaultPolicy5FFB7DAB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "kinesis:PutRecord",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Stream790BDEE4",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "RoleDefaultPolicy5FFB7DAB",
+        "Roles": [
+          {
+            "Ref": "Role1ABCC5F0"
+          }
+        ]
+      }
+    }
+  },
+  "Conditions": {
+    "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+      "Fn::Or": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "cn-north-1"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "cn-northwest-1"
+          ]
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "ApiUrl": {
+      "Value": {
+        "Fn::GetAtt": [
+          "IntegKinesisApi890BF27F",
+          "ApiEndpoint"
+        ]
+      }
+    },
+    "StreamName": {
+      "Value": {
+        "Ref": "Stream790BDEE4"
+      }
+    }
+  }
+}
