@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.19](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.18...v2.0.0-rc.19) (2021-08-25)
+
+
+### Features
+
+* **assets:** exclude "cdk.out" from docker assets ([#16034](https://github.com/aws/aws-cdk/issues/16034)) ([84a831a](https://github.com/aws/aws-cdk/commit/84a831ab804244d426321504fc0971d74f6181fd)), closes [#14841](https://github.com/aws/aws-cdk/issues/14841) [#14841](https://github.com/aws/aws-cdk/issues/14841) [#14842](https://github.com/aws/aws-cdk/issues/14842)
+* **aws-stepfunctions:** add support to heartbeat error inside catch block ([#16078](https://github.com/aws/aws-cdk/issues/16078)) ([2372b3c](https://github.com/aws/aws-cdk/commit/2372b3c360d13fb0224fc981a7bb1ae318581265)), closes [#16084](https://github.com/aws/aws-cdk/issues/16084)
+* **cfnspec:** cloudformation spec v39.10.0 ([#16114](https://github.com/aws/aws-cdk/issues/16114)) ([7e0ad5d](https://github.com/aws/aws-cdk/commit/7e0ad5d17b30150922d0dfd81f42da11fadb8beb))
+* **cfnspec:** cloudformation spec v40.0.0 ([#16183](https://github.com/aws/aws-cdk/issues/16183)) ([b059124](https://github.com/aws/aws-cdk/commit/b059124b238e27751217cbdaaa01c38b00e80fc9))
+* **ecs:** add support for Bottlerocket on ARM64 ([#15454](https://github.com/aws/aws-cdk/issues/15454)) ([cd280a8](https://github.com/aws/aws-cdk/commit/cd280a8f4f46eb50be3a25d80c00a807881832c4)), closes [#14466](https://github.com/aws/aws-cdk/issues/14466)
+* **s3-deployment:** exclude and include filters ([#16054](https://github.com/aws/aws-cdk/issues/16054)) ([d42e89e](https://github.com/aws/aws-cdk/commit/d42e89e01034dcba08c8f8ac0390a743143c4531)), closes [#14362](https://github.com/aws/aws-cdk/issues/14362) [#14362](https://github.com/aws/aws-cdk/issues/14362)
+
+
+### Bug Fixes
+
+* KubectlHandler - insecure kubeconfig warning ([#16063](https://github.com/aws/aws-cdk/issues/16063)) ([82dd282](https://github.com/aws/aws-cdk/commit/82dd2822a86431d0aa0be896550d421810b80c67)), closes [#14560](https://github.com/aws/aws-cdk/issues/14560)
+* **cfnspec:** changes to resource-level documentation not supported ([#16170](https://github.com/aws/aws-cdk/issues/16170)) ([82e4b4f](https://github.com/aws/aws-cdk/commit/82e4b4f07be202e2d6c6afa4f9ed0d9d6146f0a8))
+* **cli:** 'deploy' and 'diff' silently does nothing when given unknown stack name ([#16073](https://github.com/aws/aws-cdk/issues/16073)) ([f35b032](https://github.com/aws/aws-cdk/commit/f35b032cea4354992d3320e78c1ed0e2878a3fe7)), closes [#15866](https://github.com/aws/aws-cdk/issues/15866)
+* **cli:** Python init template does not work in directory with '-' ([#15939](https://github.com/aws/aws-cdk/issues/15939)) ([3b2c790](https://github.com/aws/aws-cdk/commit/3b2c790c2b7d210868576540feab4e088376ab6c)), closes [#15938](https://github.com/aws/aws-cdk/issues/15938)
+* **cli:** unknown command pytest in build container fails integration tests ([#16134](https://github.com/aws/aws-cdk/issues/16134)) ([0f7c0b4](https://github.com/aws/aws-cdk/commit/0f7c0b421327f1ffed28de79692191af187f23ca)), closes [#15939](https://github.com/aws/aws-cdk/issues/15939)
+* **ec2:** opaque error when insufficient NAT EIPs are configured ([#16040](https://github.com/aws/aws-cdk/issues/16040)) ([a308cac](https://github.com/aws/aws-cdk/commit/a308cacf1fc48e24311caec246b768ffe6ae9153)), closes [#16039](https://github.com/aws/aws-cdk/issues/16039)
+* **events:** cross-account event targets that have a Role are broken ([#15717](https://github.com/aws/aws-cdk/issues/15717)) ([f570c94](https://github.com/aws/aws-cdk/commit/f570c94a7bc99cd5bebc96ee388d152220f9f613)), closes [#15639](https://github.com/aws/aws-cdk/issues/15639)
+* **s3-deployment:** BucketDeployment doesn't validate that distribution paths start with "/" ([#15865](https://github.com/aws/aws-cdk/issues/15865)) ([f8d8795](https://github.com/aws/aws-cdk/commit/f8d8795a610c3f49e31967001695caa648730d6d)), closes [#9317](https://github.com/aws/aws-cdk/issues/9317)
+* **ses:** drop spam rule appears in the incorrect order ([#16146](https://github.com/aws/aws-cdk/issues/16146)) ([677fedc](https://github.com/aws/aws-cdk/commit/677fedcc5351b8b5346970fac03e5e342f36265b)), closes [#16091](https://github.com/aws/aws-cdk/issues/16091)
+
+
+### Reverts
+
+* **cli:** 'deploy' and 'diff' silently does nothing when given unknown stack name ([#16125](https://github.com/aws/aws-cdk/issues/16125)) ([f2d77d3](https://github.com/aws/aws-cdk/commit/f2d77d336d535ef718813b4ed6b88b5d2af05cb9)), closes [aws/aws-cdk#16073](https://github.com/aws/aws-cdk/issues/16073)
+
 ## [2.0.0-rc.18](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.17...v2.0.0-rc.18) (2021-08-18)
 
 
