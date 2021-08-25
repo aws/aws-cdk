@@ -209,7 +209,7 @@ function validateIntInRangeOrUndefined(name: string, min: number, max: number, v
 
 /**
  * Throws an error if custom header assignment is prohibited by CloudFront.
- * @link: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/add-origin-custom-headers.html#add-origin-custom-headers-use-cases
+ * @link: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/add-origin-custom-headers.html
  */
 function validateCustomHeaders(customHeaders: Record<string, string>) {
   const customHeaderKeys = Object.keys(customHeaders);
