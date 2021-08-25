@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto"
+            "Value": "integ-role-target-hook/myVpcAuto"
           }
         ]
       }
@@ -35,7 +35,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet1"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet1"
           }
         ]
       }
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet1"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet1"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet1"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet1"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet1"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet1"
           }
         ]
       }
@@ -132,7 +132,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet2"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet2"
           }
         ]
       }
@@ -146,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet2"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet2"
           }
         ]
       }
@@ -184,7 +184,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet2"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet2"
           }
         ]
       }
@@ -204,7 +204,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet2"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet2"
           }
         ]
       }
@@ -229,7 +229,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet3"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet3"
           }
         ]
       }
@@ -243,7 +243,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet3"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet3"
           }
         ]
       }
@@ -281,7 +281,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet3"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet3"
           }
         ]
       }
@@ -301,7 +301,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PublicSubnet3"
+            "Value": "integ-role-target-hook/myVpcAuto/PublicSubnet3"
           }
         ]
       }
@@ -326,7 +326,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PrivateSubnet1"
+            "Value": "integ-role-target-hook/myVpcAuto/PrivateSubnet1"
           }
         ]
       }
@@ -340,7 +340,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PrivateSubnet1"
+            "Value": "integ-role-target-hook/myVpcAuto/PrivateSubnet1"
           }
         ]
       }
@@ -388,7 +388,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PrivateSubnet2"
+            "Value": "integ-role-target-hook/myVpcAuto/PrivateSubnet2"
           }
         ]
       }
@@ -402,7 +402,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PrivateSubnet2"
+            "Value": "integ-role-target-hook/myVpcAuto/PrivateSubnet2"
           }
         ]
       }
@@ -450,7 +450,7 @@
           },
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PrivateSubnet3"
+            "Value": "integ-role-target-hook/myVpcAuto/PrivateSubnet3"
           }
         ]
       }
@@ -464,7 +464,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto/PrivateSubnet3"
+            "Value": "integ-role-target-hook/myVpcAuto/PrivateSubnet3"
           }
         ]
       }
@@ -498,7 +498,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/myVpcAuto"
+            "Value": "integ-role-target-hook/myVpcAuto"
           }
         ]
       }
@@ -563,7 +563,7 @@
     "ASGInstanceSecurityGroup0525485D": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "integ-hook/ASG/InstanceSecurityGroup",
+        "GroupDescription": "integ-role-target-hook/ASG/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -574,7 +574,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/ASG"
+            "Value": "integ-role-target-hook/ASG"
           }
         ],
         "VpcId": {
@@ -610,7 +610,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-hook/ASG"
+            "Value": "integ-role-target-hook/ASG"
           }
         ]
       }
@@ -664,7 +664,7 @@
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "integ-hook/ASG"
+            "Value": "integ-role-target-hook/ASG"
           }
         ],
         "VPCZoneIdentifier": [
