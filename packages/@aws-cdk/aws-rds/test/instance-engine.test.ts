@@ -274,12 +274,12 @@ nodeunitShim({
       test.done();
     },
 
-    'returns s3 import feature if the version supports it'(test: Test) {
-      const engineNewerVersion = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
+    'returns s3 import/export feature if the version supports it'(test: Test) {
+      const engineNewerVersion = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13_3 });
 
       const engineConfig = engineNewerVersion.bindToInstance(new cdk.Stack(), {});
       test.equals(engineConfig.features?.s3Import, 's3Import');
-      test.equals(engineConfig.features?.s3Export, undefined);
+      test.equals(engineConfig.features?.s3Export, 's3Export');
 
       test.done();
     },
