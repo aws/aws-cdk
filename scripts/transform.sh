@@ -1,11 +1,22 @@
 #!/bin/bash
 
+# To run this script in development, first build the following packages:
+#     packages/@aws-cdk/assert
+#     packages/aws-cdk-lib
+#     tools/individual-pkg-gen
+
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
 
 # Creates a symlink in each individual package's node_modules folder pointing
-# to the root folder's node_modules/.bin. This allows yarn to find the executables
+# to the root folder's node_modules/.bin. This allows Yarn to find the executables
 # it needs (e.g., jsii-rosetta) for the build.
+#
+# The reason Yarn doesn't find the executables in the first place is that they are
+# not dependencies of each individual package -- nor should they be. They can't be
+# found in the lerna workspace, either, since it only includes the individual
+# packages. For potential alternatives to try out in the future, see
+# https://github.com/cdklabs/cdk-ops/issues/1636
 createSymlinks() {
   find "$1" ! -path "$1" -type d -maxdepth 1 \
     -exec mkdir -p {}/node_modules \; \
