@@ -161,7 +161,6 @@ describe('given an AutoScalingGroup', () => {
     }).toThrow(/This `QueueHook` has an undefined `role`/);
   });
 
-
   test('Cannot bind a TopicHook with an undefined role', () => {
     // GIVEN
     const topic = new sns.Topic(stack, 'topic', {});
