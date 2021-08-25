@@ -66,8 +66,7 @@ export class StageDeployment {
     }
     if (props.stackSteps) {
       for (const stackstep of props.stackSteps) {
-        assembly.getStackArtifact(stackstep.stack.artifactId);
-        const stackArtifact = assembly.getStackByName(stackstep.stack.stackName);
+        const stackArtifact = assembly.getStackArtifact(stackstep.stack.artifactId);
         const thisStep = stepFromArtifact.get(stackArtifact);
         if (!thisStep) {
           throw new Error('Logic error: we just added a step for this artifact but it disappeared.');
