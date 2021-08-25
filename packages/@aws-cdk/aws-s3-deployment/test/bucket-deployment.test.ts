@@ -225,7 +225,7 @@ test('honors passed asset options', () => {
       ],
     },
     SourceBucketNames: [{
-      Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3BucketB41AE64D',
+      Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3Bucket02009982',
     }],
     SourceObjectKeys: [{
       'Fn::Join': [
@@ -238,7 +238,7 @@ test('honors passed asset options', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
+                    Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
                   },
                 ],
               },
@@ -251,7 +251,7 @@ test('honors passed asset options', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
+                    Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
                   },
                 ],
               },
@@ -325,6 +325,7 @@ test('system metadata is correctly transformed', () => {
     websiteRedirectLocation: 'example',
     cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
     expires: expiration,
+    accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
   });
 
   // THEN
@@ -340,9 +341,46 @@ test('system metadata is correctly transformed', () => {
       'expires': expiration.date.toUTCString(),
       'sse-c-copy-source': 'rot13',
       'website-redirect': 'example',
+      'acl': 'bucket-owner-full-control',
     },
   });
 });
+
+// type checking structure that forces to update it if BucketAccessControl changes
+// see `--acl` here: https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
+const accessControlMap: Record<s3.BucketAccessControl, string> = {
+  [s3.BucketAccessControl.PRIVATE]: 'private',
+  [s3.BucketAccessControl.PUBLIC_READ]: 'public-read',
+  [s3.BucketAccessControl.PUBLIC_READ_WRITE]: 'public-read-write',
+  [s3.BucketAccessControl.AUTHENTICATED_READ]: 'authenticated-read',
+  [s3.BucketAccessControl.AWS_EXEC_READ]: 'aws-exec-read',
+  [s3.BucketAccessControl.BUCKET_OWNER_READ]: 'bucket-owner-read',
+  [s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL]: 'bucket-owner-full-control',
+  [s3.BucketAccessControl.LOG_DELIVERY_WRITE]: 'log-delivery-write',
+};
+
+test.each(Object.entries(accessControlMap) as [s3.BucketAccessControl, string][])(
+  'system metadata acl %s is correctly transformed',
+  (accessControl, systemMetadataKeyword) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+      destinationBucket: bucket,
+      accessControl: accessControl,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
+      SystemMetadata: {
+        acl: systemMetadataKeyword,
+      },
+    });
+  },
+);
 
 test('expires type has correct values', () => {
   expect(cdk.Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
@@ -451,6 +489,30 @@ test('fails if distribution paths provided but not distribution ID', () => {
     distributionPaths: ['/images/*'],
   })).toThrow(/Distribution must be specified if distribution paths are specified/);
 
+});
+
+test('fails if distribution paths don\'t start with "/"', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
+    originConfigs: [
+      {
+        s3OriginSource: {
+          s3BucketSource: bucket,
+        },
+        behaviors: [{ isDefaultBehavior: true }],
+      },
+    ],
+  });
+
+  // THEN
+  expect(() => new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    distribution,
+    distributionPaths: ['images/*'],
+  })).toThrow(/Distribution paths must start with "\/"/);
 });
 
 testFutureBehavior('lambda execution role gets permissions to read from the source bucket and read/write in destination', s3GrantWriteCtx, cdk.App, (app) => {
@@ -624,6 +686,82 @@ test('deploy without deleting missing files from destination', () => {
 
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
     Prune: false,
+  });
+});
+
+test('deploy with excluded files from destination', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    exclude: ['sample.js'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Exclude: ['sample.js'],
+  });
+});
+
+test('deploy with included files from destination', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    include: ['sample.js'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Include: ['sample.js'],
+  });
+});
+
+test('deploy with excluded and included files from destination', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    exclude: ['sample/*'],
+    include: ['sample/include.json'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Exclude: ['sample/*'],
+    Include: ['sample/include.json'],
+  });
+});
+
+test('deploy with multiple exclude and include filters', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    exclude: ['sample/*', 'another/*'],
+    include: ['sample/include.json', 'another/include.json'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Exclude: ['sample/*', 'another/*'],
+    Include: ['sample/include.json', 'another/include.json'],
   });
 });
 

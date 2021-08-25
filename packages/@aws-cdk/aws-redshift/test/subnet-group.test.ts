@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { ClusterSubnetGroup } from '../lib';
@@ -17,7 +17,7 @@ test('creates a subnet group from minimal properties', () => {
     vpc,
   });
 
-  expect(stack).toHaveResource('AWS::Redshift::ClusterSubnetGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::ClusterSubnetGroup', {
     Description: 'MyGroup',
     SubnetIds: [
       { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
@@ -33,7 +33,7 @@ describe('subnet selection', () => {
       vpc,
     });
 
-    expect(stack).toHaveResource('AWS::Redshift::ClusterSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::ClusterSubnetGroup', {
       Description: 'MyGroup',
       SubnetIds: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
@@ -49,7 +49,7 @@ describe('subnet selection', () => {
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
 
-    expect(stack).toHaveResource('AWS::Redshift::ClusterSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::ClusterSubnetGroup', {
       Description: 'MyGroup',
       SubnetIds: [
         { Ref: 'VPCPublicSubnet1SubnetB4246D30' },

@@ -53,6 +53,17 @@ assert.templateMatches({
 });
 ```
 
+The `Template` class also supports [snapshot
+testing](https://jestjs.io/docs/snapshot-testing) using jest.
+
+```ts
+// using jest
+expect(Template.fromStack(stack)).toMatchSnapshot();
+```
+
+For non-javascript languages, the `toJSON()` can be called to get an in-memory object
+of the template.
+
 ## Counting Resources
 
 This module allows asserting the number of resources of a specific type found
@@ -96,11 +107,23 @@ By default, the `hasResource()` and `hasResourceProperties()` APIs perform deep
 partial object matching. This behavior can be configured using matchers.
 See subsequent section on [special matchers](#special-matchers).
 
+## Other Sections
+
+Similar to the `hasResource()` and `findResources()`, we have equivalent methods
+to check and find other sections of the CloudFormation resources.
+
+* Outputs - `hasOutput()` and `findOutputs()`
+* Mapping - `hasMapping()` and `findMappings()`
+
+All of the defaults and behaviour documented for `hasResource()` and
+`findResources()` apply to these methods.
+
 ## Special Matchers
 
-The expectation provided to the `hasResourceXXX()` methods, besides carrying
-literal values, as seen in the above examples, can also have special matchers
-encoded. 
+The expectation provided to the `hasXXX()` and `findXXX()` methods, besides
+carrying literal values, as seen in the above examples, also accept special
+matchers. 
+
 They are available as part of the `Match` class.
 
 ### Object Matchers
