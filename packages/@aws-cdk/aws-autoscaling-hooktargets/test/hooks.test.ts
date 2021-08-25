@@ -125,4 +125,57 @@ describe('given an AutoScalingGroup', () => {
     });
   });
 
+  test('Cannot bind a FunctionHook with an undefined role', () => {
+    // GIVEN
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.index',
+    });
+    const lambdaHook = new hooks.FunctionHook(fn);
+    const lcHook = new autoscaling.LifecycleHook(stack, 'LCHook', {
+      autoScalingGroup: asg,
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
+    });
+
+    // WHEN
+    expect(() => {
+      lambdaHook.bind(stack, lcHook);
+    // THEN
+    }).toThrow(/This `FunctionHook` has an undefined `role`/);
+  });
+
+  test('Cannot bind a QueueHook with an undefined role', () => {
+    // GIVEN
+    const queue = new sqs.Queue(stack, 'Queue');
+    const queueHook = new hooks.QueueHook(queue);
+    const lcHook = new autoscaling.LifecycleHook(stack, 'LCHook', {
+      autoScalingGroup: asg,
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
+    });
+
+    // WHEN
+    expect(() => {
+      queueHook.bind(stack, lcHook);
+    // THEN
+    }).toThrow(/This `QueueHook` has an undefined `role`/);
+  });
+
+
+  test('Cannot bind a TopicHook with an undefined role', () => {
+    // GIVEN
+    const topic = new sns.Topic(stack, 'topic', {});
+    const topicHook = new hooks.TopicHook(topic);
+    const lcHook = new autoscaling.LifecycleHook(stack, 'LCHook', {
+      autoScalingGroup: asg,
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
+    });
+
+    // WHEN
+    expect(() => {
+      topicHook.bind(stack, lcHook);
+    // THEN
+    }).toThrow(/This `TopicHook` has an undefined `role`/);
+  });
+
 });

@@ -14,7 +14,7 @@ export class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget 
       this.topic.grantPublish(lifecycleHook.role);
       return { notificationTargetArn: this.topic.topicArn };
     } else {
-      throw new Error('This `TopicHook` has an undefined `role`');
+      throw new Error('This `FakeNotificationTarget` has an undefined `role`');
     }
   }
 }
@@ -41,9 +41,6 @@ export class TestStack extends cdk.Stack {
     new autoscaling.LifecycleHook(this, 'LCHookNoRoleNoTarget', {
       autoScalingGroup: asg,
       lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
-      defaultResult: autoscaling.DefaultResult.CONTINUE,
-      lifecycleHookName: 'LCHookNoRoleNoTarget',
-      heartbeatTimeout: cdk.Duration.minutes(3),
     });
 
     // no role with notificationTarget
@@ -51,9 +48,6 @@ export class TestStack extends cdk.Stack {
       notificationTarget: new FakeNotificationTarget(topic),
       autoScalingGroup: asg,
       lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
-      defaultResult: autoscaling.DefaultResult.CONTINUE,
-      lifecycleHookName: 'LCHookNoRoleTarget',
-      heartbeatTimeout: cdk.Duration.minutes(3),
     });
 
     // role with target
@@ -62,9 +56,6 @@ export class TestStack extends cdk.Stack {
       role: myrole,
       autoScalingGroup: asg,
       lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
-      defaultResult: autoscaling.DefaultResult.CONTINUE,
-      lifecycleHookName: 'LCHookRoleTarget',
-      heartbeatTimeout: cdk.Duration.minutes(3),
     });
   }
 }
