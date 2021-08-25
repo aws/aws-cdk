@@ -120,6 +120,7 @@ export abstract class OriginBase implements IOrigin {
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
     validateIntInRangeOrUndefined('connectionAttempts', 1, 3, props.connectionAttempts, false);
+    validateCustomHeaders(props.customHeaders);
 
     this.domainName = domainName;
     this.originPath = this.validateOriginPath(props.originPath);
@@ -167,7 +168,6 @@ export abstract class OriginBase implements IOrigin {
 
   private renderCustomHeaders(): CfnDistribution.OriginCustomHeaderProperty[] | undefined {
     if (!this.customHeaders || Object.entries(this.customHeaders).length === 0) { return undefined; }
-    validateCustomHeaders(this.customHeaders);
     return Object.entries(this.customHeaders).map(([headerName, headerValue]) => {
       return { headerName, headerValue };
     });
@@ -211,7 +211,8 @@ function validateIntInRangeOrUndefined(name: string, min: number, max: number, v
  * Throws an error if custom header assignment is prohibited by CloudFront.
  * @link: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/add-origin-custom-headers.html#add-origin-custom-headers-denylist
  */
-function validateCustomHeaders(customHeaders: Record<string, string>) {
+function validateCustomHeaders(customHeaders?: Record<string, string>) {
+  if (!customHeaders || Object.entries(customHeaders).length === 0) { return; }
   const customHeaderKeys = Object.keys(customHeaders);
   const prohibitedHeaderKeys = [
     'Cache-Control', 'Connection', 'Content-Length', 'Cookie', 'Host', 'If-Match', 'If-Modified-Since', 'If-None-Match', 'If-Range', 'If-Unmodified-Since',
