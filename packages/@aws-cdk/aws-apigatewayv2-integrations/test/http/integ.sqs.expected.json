@@ -17,7 +17,7 @@
         "AutoDeploy": true
       }
     },
-    "IntegrationApiANYsendHttpIntegration5f02048fd1a3a67da15f859bfb823cc5F76953EE": {
+    "IntegrationApiPOSTmessageHttpIntegratione815734e0bae601a490fc354f818edb53B58A0ED": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -38,17 +38,17 @@
           },
           "MessageBody": "$request.body",
           "DelaySeconds": "10",
-          "MessageAttributes": "foo=bar"
+          "MessageAttributes": "{\"foo\":{\"DataType\":\"String\",\"StringValue\":\"bar\"}}"
         }
       }
     },
-    "IntegrationApiANYsend16EED58D": {
+    "IntegrationApiPOSTmessageC639435F": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
           "Ref": "IntegrationApi17ACB35A"
         },
-        "RouteKey": "ANY /send",
+        "RouteKey": "POST /message",
         "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
@@ -56,14 +56,14 @@
             [
               "integrations/",
               {
-                "Ref": "IntegrationApiANYsendHttpIntegration5f02048fd1a3a67da15f859bfb823cc5F76953EE"
+                "Ref": "IntegrationApiPOSTmessageHttpIntegratione815734e0bae601a490fc354f818edb53B58A0ED"
               }
             ]
           ]
         }
       }
     },
-    "IntegrationApiANYreadHttpIntegration3d326b64c07f0058b18cb7a853955f03DF93A99E": {
+    "IntegrationApiGETmessageHttpIntegration78ac6bbd3060bdd0aa49beb18eb95640D617AC9C": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -81,17 +81,19 @@
         "RequestParameters": {
           "QueueUrl": {
             "Ref": "Queue4A7E3555"
-          }
+          },
+          "AttributeNames": "[\"foo\"]",
+          "MessageAttributeNames": "[\"All\"]"
         }
       }
     },
-    "IntegrationApiANYreadC01DF64C": {
+    "IntegrationApiGETmessageF2DC1C99": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
           "Ref": "IntegrationApi17ACB35A"
         },
-        "RouteKey": "ANY /read",
+        "RouteKey": "GET /message",
         "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
@@ -99,12 +101,104 @@
             [
               "integrations/",
               {
-                "Ref": "IntegrationApiANYreadHttpIntegration3d326b64c07f0058b18cb7a853955f03DF93A99E"
+                "Ref": "IntegrationApiGETmessageHttpIntegration78ac6bbd3060bdd0aa49beb18eb95640D617AC9C"
               }
             ]
           ]
         }
       }
+    },
+    "IntegrationApiDELETEmessagemessageIdHttpIntegrationaf3cbbc00ccd6e8a76d43b462b789a532366D023": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegrationApi17ACB35A"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "CredentialsArn": {
+          "Fn::GetAtt": [
+            "SQSRole496249D8",
+            "Arn"
+          ]
+        },
+        "IntegrationSubtype": "SQS-DeleteMessage",
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "QueueUrl": {
+            "Ref": "Queue4A7E3555"
+          },
+          "ReceiptHandle": "$request.path.messageId"
+        }
+      }
+    },
+    "IntegrationApiDELETEmessagemessageIdED3C4EC9": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegrationApi17ACB35A"
+        },
+        "RouteKey": "DELETE /message/{messageId+}",
+        "AuthorizationType": "NONE",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "IntegrationApiDELETEmessagemessageIdHttpIntegrationaf3cbbc00ccd6e8a76d43b462b789a532366D023"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "IntegrationApiDELETEmessageHttpIntegrationa18f4f421437676e6c10b3913ea994eaB730BF70": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegrationApi17ACB35A"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "CredentialsArn": {
+          "Fn::GetAtt": [
+            "SQSRole496249D8",
+            "Arn"
+          ]
+        },
+        "IntegrationSubtype": "SQS-PurgeQueue",
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "QueueUrl": {
+            "Ref": "Queue4A7E3555"
+          }
+        }
+      }
+    },
+    "IntegrationApiDELETEmessage40CC134C": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "IntegrationApi17ACB35A"
+        },
+        "RouteKey": "DELETE /message",
+        "AuthorizationType": "NONE",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "IntegrationApiDELETEmessageHttpIntegrationa18f4f421437676e6c10b3913ea994eaB730BF70"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "Queue4A7E3555": {
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "SQSRole496249D8": {
       "Type": "AWS::IAM::Role",
@@ -123,10 +217,31 @@
         }
       }
     },
-    "Queue4A7E3555": {
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+    "SQSRoleDefaultPolicy25EA27EB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Queue4A7E3555",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "SQSRoleDefaultPolicy25EA27EB",
+        "Roles": [
+          {
+            "Ref": "SQSRole496249D8"
+          }
+        ]
+      }
     }
   },
   "Outputs": {

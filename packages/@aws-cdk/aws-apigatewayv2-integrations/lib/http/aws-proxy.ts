@@ -1,8 +1,6 @@
 import { HttpIntegrationSubtype, HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, IntegrationCredentials, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
-import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { IStream } from '@aws-cdk/aws-kinesis';
-import { IStateMachine } from '@aws-cdk/aws-stepfunctions';
-import { ArrayMappingExpression, DateMappingExpression, DurationMappingExpression, EventBusMappingExpression, Mapping, QueueMappingExpression, StringMappingExpression } from './mapping-expression';
+import { IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { ArrayMappingExpression, DateMappingExpression, DurationMappingExpression, EventBusMappingExpression, Mapping, QueueMappingExpression, SqsAttributeListMappingExpression, StateMachineMappingExpression, StreamMappingExpression, StringMappingExpression } from './mapping-expression';
 
 interface AwsServiceIntegrationProps {
   /**
@@ -125,10 +123,11 @@ export interface SqsSendMessageIntegrationProps extends SqsIntegrationProps {
   readonly delay?: DurationMappingExpression,
   /**
    * Attributes of the message.
+   *
    * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-metadata.html#sqs-message-attributes
    * @default - undefined
    */
-  readonly attributes?: ArrayMappingExpression;
+  readonly attributes?: SqsAttributeListMappingExpression;
   /**
    * The token used for deduplication of sent messages.
    * This parameter applies only to FIFO (first-in-first-out) queues.
@@ -185,7 +184,7 @@ export class SqsSendMessageIntegration
 /**
  * The available SQS Attributes.
  */
-export enum SqsAttribute {
+export enum SqsMessageAttribute {
   /** All */
   ALL = 'All',
   /** Policy */
@@ -231,14 +230,14 @@ export enum SqsAttribute {
 /**
  * A list of SqsAttributes, either a fixed value or mapped from the request.
  */
-export class AttributeListMappingExpression {
+export class SqsMessageAttributeListMappingExpression {
   /**
    * Use a fixed value.
    *
    * @param attributeNames the value
    */
-  static fromAttributeList(attributeNames: Array<SqsAttribute>) {
-    return new AttributeListMappingExpression(JSON.stringify(attributeNames));
+  static fromAttributeList(attributeNames: Array<SqsMessageAttribute>) {
+    return new SqsMessageAttributeListMappingExpression(JSON.stringify(attributeNames));
   }
   /**
    * Use a mapping to set the value.
@@ -246,7 +245,7 @@ export class AttributeListMappingExpression {
    * @param mapping how to map the value
    */
   static fromMapping(mapping: Mapping) {
-    return new AttributeListMappingExpression(mapping.expression);
+    return new SqsMessageAttributeListMappingExpression(mapping.expression);
   }
   /**
    * @param mapping the mapping value
@@ -266,7 +265,7 @@ export interface SqsReceiveMessageIntegrationProps extends SqsIntegrationProps {
    * The attributes to return.
    * @default - undefined
    */
-  readonly attributeNames?: AttributeListMappingExpression;
+  readonly attributeNames?: ArrayMappingExpression;
   /**
    * The maximum number of messages to receive.
    * Valid values: 1 to 10.
@@ -277,7 +276,7 @@ export interface SqsReceiveMessageIntegrationProps extends SqsIntegrationProps {
    * The message attributes to return
    * @default - undefined
    */
-  readonly messageAttributeNames?: ArrayMappingExpression;
+  readonly messageAttributeNames?: SqsMessageAttributeListMappingExpression;
   /**
    * The token used for deduplication of ReceiveMessage calls.
    * Only applicable to FIFO queues.
@@ -401,27 +400,27 @@ export interface KinesisPutRecordIntegrationProps extends AwsServiceIntegrationP
   /**
    * The name of the stream to put the data record into.
    */
-  readonly stream: IStream;
+  readonly stream: StreamMappingExpression;
   /**
    * The data blob to put into the record, which is base64-encoded when the blob is serialized.
    */
-  readonly data: string;
+  readonly data: StringMappingExpression;
   /**
    * Determines which shard in the stream the data record is assigned to.
    */
-  readonly partitionKey: string;
+  readonly partitionKey: StringMappingExpression;
   /**
    * Guarantees strictly increasing sequence numbers, for puts from the same client and to the same
    * partition key.
    * @default - undefined
    */
-  readonly sequenceNumberForOrdering?: string;
+  readonly sequenceNumberForOrdering?: StringMappingExpression;
   /**
    * The hash value used to explicitly determine the shard the data record is assigned to by
    * overriding the partition key hash.
    * @default - undefined
    */
-  readonly explicitHashKey?: string;
+  readonly explicitHashKey?: StringMappingExpression;
 }
 
 /**
@@ -442,11 +441,11 @@ export class KinesisPutRecordIntegration
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
       credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
-        StreamName: this.props.stream.streamName,
-        Data: this.props.data,
-        PartitionKey: this.props.partitionKey,
-        SequenceNumberForOrdering: this.props.sequenceNumberForOrdering,
-        ExplicitHashKey: this.props.explicitHashKey,
+        StreamName: this.props.stream.mapping,
+        Data: this.props.data.mapping,
+        PartitionKey: this.props.partitionKey.mapping,
+        SequenceNumberForOrdering: this.props.sequenceNumberForOrdering?.mapping,
+        ExplicitHashKey: this.props.explicitHashKey?.mapping,
         Region: this.props.region,
       },
     };
@@ -460,22 +459,22 @@ export interface StepFunctionsStartExecutionIntegrationProps extends AwsServiceI
   /**
    * The StateMachine to execute.
    */
-  readonly stateMachine: IStateMachine;
+  readonly stateMachine: StateMachineMappingExpression;
   /**
    * The name of the execution.
    * @default - undefined
    */
-  readonly name?: string;
+  readonly name?: StringMappingExpression;
   /**
    * The string that contains the JSON input data for the execution.
    * @default - no input
    */
-  readonly input?: string;
+  readonly input?: StringMappingExpression;
   /**
    * Passes the AWS X-Ray trace header.
    * @default - undefined
    */
-  readonly traceHeader?: string;
+  readonly traceHeader?: StringMappingExpression;
 }
 
 /**
@@ -496,9 +495,9 @@ export class StepFunctionsStartExecutionIntegration
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
       credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
-        StateMachineArn: this.props.stateMachine.stateMachineArn,
-        Name: this.props.name,
-        Input: this.props.input,
+        StateMachineArn: this.props.stateMachine.mapping,
+        Name: this.props.name?.mapping,
+        Input: this.props.input?.mapping,
         Region: this.props.region,
       },
     };
@@ -517,20 +516,16 @@ export class StepFunctionsStartSyncExecutionIntegration
     const role = this.props.role ?? new Role(options.scope, 'Role', {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['states:StartSyncExecution'],
-      resources: [this.props.stateMachine.stateMachineArn],
-    }));
     return {
       type: this.integrationType,
       subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STARTSYNCEXECUTION,
       payloadFormatVersion: this.payloadFormatVersion,
       credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
-        StateMachineArn: this.props.stateMachine.stateMachineArn,
-        Name: this.props.name,
-        Input: this.props.input,
-        TraceHeader: this.props.traceHeader,
+        StateMachineArn: this.props.stateMachine.mapping,
+        Name: this.props.name?.mapping,
+        Input: this.props.input?.mapping,
+        TraceHeader: this.props.traceHeader?.mapping,
         Region: this.props.region,
       },
     };
@@ -544,17 +539,17 @@ export interface StepFunctionsStopExecutionIntegrationProps extends AwsServiceIn
   /**
    * The Amazon Resource Name (ARN) of the execution to stop.
    */
-  readonly executionArn: string;
+  readonly executionArn: StringMappingExpression;
   /**
    * A more detailed explanation of the cause of the failure.
    * @default - undefined
    */
-  readonly cause?: string;
+  readonly cause?: StringMappingExpression;
   /**
    * The error code of the failure.
    * @default - undefined
    */
-  readonly error?: string;
+  readonly error?: StringMappingExpression;
 }
 
 /**
@@ -575,9 +570,9 @@ export class StepFunctionsStopExecutionIntegration
       payloadFormatVersion: this.payloadFormatVersion,
       credentials: IntegrationCredentials.fromRole(role),
       requestParameters: {
-        ExecutionArn: this.props.executionArn,
-        Cause: this.props.cause,
-        Error: this.props.error,
+        ExecutionArn: this.props.executionArn.mapping,
+        Cause: this.props.cause?.mapping,
+        Error: this.props.error?.mapping,
         Region: this.props.region,
       },
     };

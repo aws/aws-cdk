@@ -1,5 +1,7 @@
 import { IEventBus } from '@aws-cdk/aws-events';
+import { IStream } from '@aws-cdk/aws-kinesis';
 import { IQueue } from '@aws-cdk/aws-sqs';
+import { IStateMachine } from '@aws-cdk/aws-stepfunctions';
 import { Duration } from '@aws-cdk/core';
 
 /** Represents a mapping from the request onto the parameters for an integration */
@@ -52,6 +54,14 @@ export class Mapping {
    */
   static fromStateVariable(variable: string) {
     return new Mapping(`$stageVariables.${variable}`);
+  }
+  /**
+   * Supply a custom expression.
+   *
+   * @param expression the expression to map
+   */
+  static fromCustomExpression(expression: string) {
+    return new Mapping(expression);
   }
   /**
    * @param expression the value of the mapping expression
@@ -215,6 +225,93 @@ export class QueueMappingExpression {
   private constructor(readonly mapping: string) { }
 }
 
+/** An SQS Message Attribute definition */
+export interface ISqsAttribute {
+  /** The object representing the message attribute */
+  readonly json: object;
+}
+
+/** Represents a String-valued message attribute */
+export class SqsStringAttribute implements ISqsAttribute {
+  readonly json: object;
+  /**
+   * @param name the attribute name
+   * @param value the attribute value
+   */
+  constructor(name: string, value: string) {
+    this.json = {
+      [name]: {
+        DataType: 'String',
+        StringValue: value,
+      },
+    };
+  }
+}
+
+/** Represents a numeric message attribute */
+export class SqsNumberAttribute implements ISqsAttribute {
+  /** The object representing the message attribute */
+  readonly json: object;
+  /**
+   * @param name the attribute name
+   * @param value the attribute value
+   */
+  constructor(name: string, value: number) {
+    this.json = {
+      [name]: {
+        DataType: 'Number',
+        StringValue: value.toString(10),
+      },
+    };
+  }
+}
+
+/** Represents a binary message attribute */
+export class SqsBinaryAttribute implements ISqsAttribute {
+  /** The object representing the message attribute */
+  readonly json: object;
+  /**
+   * @param name the attribute name
+   * @param value the base64 encoded attribute value
+   */
+  constructor(name: string, value: string) {
+    this.json = {
+      [name]: {
+        DataType: 'Binary',
+        BinaryValue: value,
+      },
+    };
+  }
+}
+
+/**
+ * Maps a list of message attributes, either from static values or mapped from the request.
+ */
+export class SqsAttributeListMappingExpression {
+  /**
+   * Use a fixed value
+   *
+   * @param list the fixed value
+   */
+  static fromSqsAttributeList(list: Array<ISqsAttribute>) {
+    return new SqsAttributeListMappingExpression(JSON.stringify(list.reduce((acc, attribute) => {
+      return Object.assign(acc, attribute.json);
+    }, {})));
+  }
+  /**
+   * Use a mapping to set the value.
+   *
+   * @param mapping how to map the value
+   */
+  static fromMapping(mapping: Mapping) {
+    return new SqsAttributeListMappingExpression(mapping.expression);
+  }
+  /**
+   * @param mapping the mapping value
+   */
+  private constructor(readonly mapping: string) { }
+}
+
 /**
  * A Duration-valued property, either a fixed value or mapped from the request.
  */
@@ -234,6 +331,58 @@ export class DurationMappingExpression {
    */
   static fromMapping(mapping: Mapping) {
     return new DurationMappingExpression(mapping.expression);
+  }
+  /**
+   * @param mapping the mapping value
+   */
+  private constructor(readonly mapping: string) { }
+}
+
+/**
+ * A Stream-value property, either from a fixed value or mapped from the request.
+ */
+export class StreamMappingExpression {
+  /**
+   * Use a fixed value.
+   *
+   * @param stream the fixed value
+   */
+  static fromStream(stream: IStream) {
+    return new StreamMappingExpression(stream.streamName);
+  }
+  /**
+   * Use a mapping to set the value.
+   *
+   * @param mapping how to map the value
+   */
+  static fromMapping(mapping: Mapping) {
+    return new StreamMappingExpression(mapping.expression);
+  }
+  /**
+   * @param mapping the mapping value
+   */
+  private constructor(readonly mapping: string) { }
+}
+
+/**
+ * A StateMachine-value property, either from a fixed value or mapped from the request.
+ */
+export class StateMachineMappingExpression {
+  /**
+   * Use a fixed value.
+   *
+   * @param stateMachine the fixed value
+   */
+  static fromStateMachine(stateMachine: IStateMachine) {
+    return new StateMachineMappingExpression(stateMachine.stateMachineArn);
+  }
+  /**
+   * Use a mapping to set the value.
+   *
+   * @param mapping how to map the value
+   */
+  static fromMapping(mapping: Mapping) {
+    return new StateMachineMappingExpression(mapping.expression);
   }
   /**
    * @param mapping the mapping value

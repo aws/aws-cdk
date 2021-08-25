@@ -3,6 +3,7 @@ import { HttpApi, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { Role } from '@aws-cdk/aws-iam';
 import { Stream } from '@aws-cdk/aws-kinesis';
 import { Stack } from '@aws-cdk/core';
+import { Mapping, StreamMappingExpression, StringMappingExpression } from '../../lib';
 import { KinesisPutRecordIntegration } from '../../lib/http/aws-proxy';
 
 describe('Kinesis Integration', () => {
@@ -11,14 +12,15 @@ describe('Kinesis Integration', () => {
       const stack = new Stack();
       const httpApi = new HttpApi(stack, 'API');
       const stream = Stream.fromStreamArn(stack, 'Stream', 'arn:aws:kinesis:::stream/Minimum');
+      const streamMapping = StreamMappingExpression.fromStream(stream);
       const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/put');
       new HttpRoute(stack, 'Route', {
         httpApi,
         routeKey: HttpRouteKey.DEFAULT,
         integration: new KinesisPutRecordIntegration({
-          stream,
-          partitionKey: 'key',
-          data: '$request.body',
+          stream: streamMapping,
+          partitionKey: StringMappingExpression.fromValue('key'),
+          data: StringMappingExpression.fromMapping(Mapping.fromRequestBody()),
           role,
         }),
       });
@@ -38,16 +40,18 @@ describe('Kinesis Integration', () => {
       const stack = new Stack();
       const httpApi = new HttpApi(stack, 'API');
       const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/kinesis-put');
-      const stream = Stream.fromStreamArn(stack, 'Stream', 'arn:aws:kinesis:::stream/Integration');
+      const stream = StreamMappingExpression.fromStream(
+        Stream.fromStreamArn(stack, 'Stream', 'arn:aws:kinesis:::stream/Integration'),
+      );
       new HttpRoute(stack, 'Route', {
         httpApi,
         routeKey: HttpRouteKey.DEFAULT,
         integration: new KinesisPutRecordIntegration({
           stream,
-          data: '$request.body',
-          partitionKey: 'key',
-          sequenceNumberForOrdering: 'sequence',
-          explicitHashKey: 'hashKey',
+          data: StringMappingExpression.fromMapping(Mapping.fromRequestBody()),
+          partitionKey: StringMappingExpression.fromValue('key'),
+          sequenceNumberForOrdering: StringMappingExpression.fromValue('sequence'),
+          explicitHashKey: StringMappingExpression.fromValue('hashKey'),
           role,
           region: 'eu-north-1',
         }),

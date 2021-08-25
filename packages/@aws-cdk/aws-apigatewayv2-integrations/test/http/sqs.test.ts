@@ -4,14 +4,14 @@ import { IRole, Role } from '@aws-cdk/aws-iam';
 import { Queue } from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
-  AttributeListMappingExpression,
-  SqsAttribute,
+  SqsMessageAttributeListMappingExpression,
+  SqsMessageAttribute,
   SqsDeleteMessageIntegration,
   SqsPurgeQueueIntegration,
   SqsReceiveMessageIntegration,
   SqsSendMessageIntegration,
 } from '../../lib/http/aws-proxy';
-import { ArrayMappingExpression, DurationMappingExpression, Mapping, QueueMappingExpression, StringMappingExpression } from '../../lib/http/mapping-expression';
+import { ArrayMappingExpression, DurationMappingExpression, Mapping, QueueMappingExpression, SqsAttributeListMappingExpression, SqsStringAttribute, StringMappingExpression } from '../../lib/http/mapping-expression';
 
 describe('SQS Integrations', () => {
   describe('SendMessage', () => {
@@ -53,7 +53,7 @@ describe('SQS Integrations', () => {
           body: StringMappingExpression.fromValue('message-body'),
           queue,
           role,
-          attributes: StringMappingExpression.fromValue('some-attributes'),
+          attributes: SqsAttributeListMappingExpression.fromSqsAttributeList([new SqsStringAttribute('some-attributes', 'value')]),
           deduplicationId: StringMappingExpression.fromValue('$request.id'),
           delay: DurationMappingExpression.fromDuration(Duration.seconds(4)),
           groupId: StringMappingExpression.fromValue('the-group'),
@@ -71,7 +71,7 @@ describe('SQS Integrations', () => {
         RequestParameters: {
           QueueUrl: makeQueueUrl('us-east-1', '123456789012', 'queue'),
           DelaySeconds: '4',
-          MessageAttributes: 'some-attributes',
+          MessageAttributes: '{"some-attributes":{"DataType":"String","StringValue":"value"}}',
           MessageBody: 'message-body',
           MessageDeduplicationId: '$request.id',
           MessageGroupId: 'the-group',
@@ -118,7 +118,7 @@ describe('SQS Integrations', () => {
         integration: new SqsReceiveMessageIntegration({
           role,
           queue,
-          attributeNames: AttributeListMappingExpression.fromAttributeList([SqsAttribute.ALL]),
+          attributeNames: SqsMessageAttributeListMappingExpression.fromAttributeList([SqsMessageAttribute.ALL]),
           maxNumberOfMessages: StringMappingExpression.fromValue('2'),
           messageAttributeNames: ArrayMappingExpression.fromValue(['Attribute1']),
           receiveRequestAttemptId: StringMappingExpression.fromValue('rra-id'),

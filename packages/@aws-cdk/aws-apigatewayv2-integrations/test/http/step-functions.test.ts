@@ -3,6 +3,7 @@ import { HttpApi, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { IRole, Role } from '@aws-cdk/aws-iam';
 import { StateMachine } from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
+import { Mapping, StateMachineMappingExpression, StringMappingExpression } from '../../lib';
 import { StepFunctionsStartExecutionIntegration, StepFunctionsStartSyncExecutionIntegration, StepFunctionsStopExecutionIntegration } from '../../lib/http/aws-proxy';
 
 describe('Step Functions integrations', () => {
@@ -14,11 +15,12 @@ describe('Step Functions integrations', () => {
         'StateMachine',
         'arn:aws:states:eu-central-2:123456789012:stateMachine:minimum',
       );
+      const stateMachineMapping = StateMachineMappingExpression.fromStateMachine(stateMachine);
       new HttpRoute(stack, 'Route', {
         httpApi,
         routeKey: HttpRouteKey.DEFAULT,
         integration: new StepFunctionsStartExecutionIntegration({
-          stateMachine,
+          stateMachine: stateMachineMapping,
           role,
         }),
       });
@@ -40,14 +42,15 @@ describe('Step Functions integrations', () => {
         'StateMachine',
         'arn:aws:states:us-west-1:123456789012:stateMachine:my-state-machine',
       );
+      const stateMachineMapping = StateMachineMappingExpression.fromStateMachine(stateMachine);
       new HttpRoute(stack, 'Route', {
         httpApi,
         routeKey: HttpRouteKey.DEFAULT,
         integration: new StepFunctionsStartExecutionIntegration({
           role,
-          stateMachine,
-          name: 'execution-name',
-          input: '$request.body',
+          stateMachine: stateMachineMapping,
+          name: StringMappingExpression.fromValue('execution-name'),
+          input: StringMappingExpression.fromMapping(Mapping.fromRequestBody()),
           region: 'us-west-2',
         }),
       });
@@ -77,11 +80,12 @@ describe('Step Functions integrations', () => {
         'StateMachine',
         'arn:aws:states:eu-central-2:123456789012:stateMachine:minimum',
       );
+      const stateMachineMapping = StateMachineMappingExpression.fromStateMachine(stateMachine);
       new HttpRoute(stack, 'Route', {
         httpApi,
         routeKey: HttpRouteKey.DEFAULT,
         integration: new StepFunctionsStartSyncExecutionIntegration({
-          stateMachine,
+          stateMachine: stateMachineMapping,
           role,
         }),
       });
@@ -105,15 +109,16 @@ describe('Step Functions integrations', () => {
         'StateMachine',
         'arn:aws:states:us-west-2:123456789012:stateMachine:sync',
       );
+      const stateMachineMapping = StateMachineMappingExpression.fromStateMachine(stateMachine);
       new HttpRoute(stack, 'Route', {
         httpApi,
         routeKey: HttpRouteKey.DEFAULT,
         integration: new StepFunctionsStartSyncExecutionIntegration({
           role,
-          stateMachine,
-          name: 'execution',
-          input: '{}',
-          traceHeader: '$request.headers["X-My-Trace-ID"]',
+          stateMachine: stateMachineMapping,
+          name: StringMappingExpression.fromValue('execution'),
+          input: StringMappingExpression.fromValue('{}'),
+          traceHeader: StringMappingExpression.fromMapping(Mapping.fromRequestHeader('X-My-Trace-ID')),
           region: 'us-east-2',
         }),
       });
@@ -127,7 +132,7 @@ describe('Step Functions integrations', () => {
           StateMachineArn: 'arn:aws:states:us-west-2:123456789012:stateMachine:sync',
           Name: 'execution',
           Input: '{}',
-          TraceHeader: '$request.headers["X-My-Trace-ID"]',
+          TraceHeader: '$request.header.X-My-Trace-ID',
           Region: 'us-east-2',
         },
       });
@@ -141,7 +146,9 @@ describe('Step Functions integrations', () => {
         httpApi,
         routeKey: HttpRouteKey.DEFAULT,
         integration: new StepFunctionsStopExecutionIntegration({
-          executionArn: 'arn:aws:states:us-east-2:123456789012:executions:state:my-execution',
+          executionArn: StringMappingExpression.fromValue(
+            'arn:aws:states:us-east-2:123456789012:executions:state:my-execution',
+          ),
           role,
         }),
       });
@@ -164,9 +171,11 @@ describe('Step Functions integrations', () => {
         httpApi,
         routeKey: HttpRouteKey.DEFAULT,
         integration: new StepFunctionsStopExecutionIntegration({
-          executionArn: 'arn:aws:states:us-east-2:123456789012:executions:state:my-execution',
-          error: '$request.body.error',
-          cause: '$request.body.cause',
+          executionArn: StringMappingExpression.fromValue(
+            'arn:aws:states:us-east-2:123456789012:executions:state:my-execution',
+          ),
+          error: StringMappingExpression.fromMapping(Mapping.fromRequestBody('error')),
+          cause: StringMappingExpression.fromMapping(Mapping.fromRequestBody('cause')),
           role,
           region: 'eu-west-2',
         }),
