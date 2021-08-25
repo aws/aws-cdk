@@ -186,7 +186,7 @@ describe('With website-configured bucket', () => {
           }),
         },
       });
-    }).toThrow(/You can’t configure CloudFront to add any of the following headers to requests that it sends to your origin: (.*?)/);
+    }).toThrow(/The following headers cannot be configured as custom origin headers: (.*?)/);
 
     // case insensitive
     expect(() => {
@@ -202,7 +202,7 @@ describe('With website-configured bucket', () => {
           }),
         },
       });
-    }).toThrow(/You can’t configure CloudFront to add any of the following headers to requests that it sends to your origin: (.*?)/);
+    }).toThrow(/The following headers cannot be configured as custom origin headers: (.*?)/);
   });
 
   test('throw an error if Custom Headers are pre-fixed with non-permitted keys', () => {
@@ -220,7 +220,7 @@ describe('With website-configured bucket', () => {
           }),
         },
       });
-    }).toThrow(/You can’t configure CloudFront to add any of the following headers that contain following prefixes: (.*?)/);
+    }).toThrow(/The following headers cannot be used as prefixes for custom origin headers: (.*?)/);
 
     // case insensitive
     expect(() => {
@@ -234,6 +234,6 @@ describe('With website-configured bucket', () => {
           }),
         },
       });
-    }).toThrow(/You can’t configure CloudFront to add any of the following headers that contain following prefixes: (.*?)/);
+    }).toThrow(/The following headers cannot be used as prefixes for custom origin headers: (.*?)/);
   });
 });
