@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.120.0](https://github.com/aws/aws-cdk/compare/v1.119.0...v1.120.0) (2021-08-26)
+
+
+### Features
+
+* **assertions:** queries and assertions against the Outputs and Mappings sections ([#15892](https://github.com/aws/aws-cdk/issues/15892)) ([90f95e1](https://github.com/aws/aws-cdk/commit/90f95e10f4dd9e4992731d6262dcfc767b65ab3f))
+* **aws-stepfunctions:** add support to heartbeat error inside catch block ([#16078](https://github.com/aws/aws-cdk/issues/16078)) ([2372b3c](https://github.com/aws/aws-cdk/commit/2372b3c360d13fb0224fc981a7bb1ae318581265)), closes [#16084](https://github.com/aws/aws-cdk/issues/16084)
+* **cfnspec:** cloudformation spec v39.10.0 ([#16114](https://github.com/aws/aws-cdk/issues/16114)) ([7e0ad5d](https://github.com/aws/aws-cdk/commit/7e0ad5d17b30150922d0dfd81f42da11fadb8beb))
+* **cfnspec:** cloudformation spec v40.0.0 ([#16183](https://github.com/aws/aws-cdk/issues/16183)) ([b059124](https://github.com/aws/aws-cdk/commit/b059124b238e27751217cbdaaa01c38b00e80fc9))
+* **cloudwatch:** add support for cross-account alarms ([#16007](https://github.com/aws/aws-cdk/issues/16007)) ([e547ba0](https://github.com/aws/aws-cdk/commit/e547ba0d1491af0abe703132fa06fe786ffd7070)), closes [#15959](https://github.com/aws/aws-cdk/issues/15959)
+* **codecommit:** make Repository a source for CodeStar Notifications ([#15739](https://github.com/aws/aws-cdk/issues/15739)) ([ae34d4a](https://github.com/aws/aws-cdk/commit/ae34d4a69a5073d8f0175b5282fa8bf92139fab5))
+* **cognito:** user pools - device tracking ([#16055](https://github.com/aws/aws-cdk/issues/16055)) ([64019bb](https://github.com/aws/aws-cdk/commit/64019bbf090e156261feb626a5a4bd7ff4f26545)), closes [#15013](https://github.com/aws/aws-cdk/issues/15013)
+* **docdb:** cluster - deletion protection ([#15216](https://github.com/aws/aws-cdk/issues/15216)) ([0f7beb2](https://github.com/aws/aws-cdk/commit/0f7beb29be18d809052f4d46e415a0394c9299ab))
+* **ecs:** add support for Bottlerocket on ARM64 ([#15454](https://github.com/aws/aws-cdk/issues/15454)) ([cd280a8](https://github.com/aws/aws-cdk/commit/cd280a8f4f46eb50be3a25d80c00a807881832c4)), closes [#14466](https://github.com/aws/aws-cdk/issues/14466)
+* **lambda:** nodejs14.x supports inline code ([#16131](https://github.com/aws/aws-cdk/issues/16131)) ([305f683](https://github.com/aws/aws-cdk/commit/305f683e86cca221705c0138572faa38043396eb))
+* **rds:** support 's3export' for Postgres database instances ([#16124](https://github.com/aws/aws-cdk/issues/16124)) ([1d54a45](https://github.com/aws/aws-cdk/commit/1d54a456cd5e2ff65251097f9a684e1ac200cc52)), closes [#14546](https://github.com/aws/aws-cdk/issues/14546) [#10370](https://github.com/aws/aws-cdk/issues/10370) [#14546](https://github.com/aws/aws-cdk/issues/14546)
+* **s3-deployment:** exclude and include filters ([#16054](https://github.com/aws/aws-cdk/issues/16054)) ([d42e89e](https://github.com/aws/aws-cdk/commit/d42e89e01034dcba08c8f8ac0390a743143c4531)), closes [#14362](https://github.com/aws/aws-cdk/issues/14362) [#14362](https://github.com/aws/aws-cdk/issues/14362)
+
+
+### Bug Fixes
+
+* **apigatewayv2:** http api - disallow empty string as domain name ([#16044](https://github.com/aws/aws-cdk/issues/16044)) ([9c39bcb](https://github.com/aws/aws-cdk/commit/9c39bcb970fc791e94d199b962cc006fca1a3320))
+* **appsync:** addSubscription only allows for field type ([#16097](https://github.com/aws/aws-cdk/issues/16097)) ([000d151](https://github.com/aws/aws-cdk/commit/000d151bec2215aa530819c3cf2c8c432352fec3)), closes [#10078](https://github.com/aws/aws-cdk/issues/10078) [#16071](https://github.com/aws/aws-cdk/issues/16071)
+* **cfnspec:** changes to resource-level documentation not supported ([#16170](https://github.com/aws/aws-cdk/issues/16170)) ([82e4b4f](https://github.com/aws/aws-cdk/commit/82e4b4f07be202e2d6c6afa4f9ed0d9d6146f0a8))
+* **cli:** 'deploy' and 'diff' silently does nothing when given unknown stack name ([#16073](https://github.com/aws/aws-cdk/issues/16073)) ([f35b032](https://github.com/aws/aws-cdk/commit/f35b032cea4354992d3320e78c1ed0e2878a3fe7)), closes [#15866](https://github.com/aws/aws-cdk/issues/15866)
+* **cli:** Python init template does not work in directory with '-' ([#15939](https://github.com/aws/aws-cdk/issues/15939)) ([3b2c790](https://github.com/aws/aws-cdk/commit/3b2c790c2b7d210868576540feab4e088376ab6c)), closes [#15938](https://github.com/aws/aws-cdk/issues/15938)
+* **cli:** unknown command pytest in build container fails integration tests ([#16134](https://github.com/aws/aws-cdk/issues/16134)) ([0f7c0b4](https://github.com/aws/aws-cdk/commit/0f7c0b421327f1ffed28de79692191af187f23ca)), closes [#15939](https://github.com/aws/aws-cdk/issues/15939)
+* **resourcegroups:** ResourceGroup not using TagType.STANDARD, causes deploy failure ([#16211](https://github.com/aws/aws-cdk/issues/16211)) ([cdee1af](https://github.com/aws/aws-cdk/commit/cdee1af03c34a1c08988e672bae6edc2538a8877)), closes [#12986](https://github.com/aws/aws-cdk/issues/12986)
+* **s3:** bucket is not emptied before update when the name changes ([#16203](https://github.com/aws/aws-cdk/issues/16203)) ([b1d69d7](https://github.com/aws/aws-cdk/commit/b1d69d7b06cd2a2ae8f578e217bdf7fef50a0163)), closes [#14011](https://github.com/aws/aws-cdk/issues/14011)
+* **ses:** drop spam rule appears in the incorrect order ([#16146](https://github.com/aws/aws-cdk/issues/16146)) ([677fedc](https://github.com/aws/aws-cdk/commit/677fedcc5351b8b5346970fac03e5e342f36265b)), closes [#16091](https://github.com/aws/aws-cdk/issues/16091)
+* **sqs:** unable to import a FIFO queue when the queue ARN is a token ([#15976](https://github.com/aws/aws-cdk/issues/15976)) ([a1a65bc](https://github.com/aws/aws-cdk/commit/a1a65bc9a38b06ec51dff462e52b1beb8d421a56)), closes [#12466](https://github.com/aws/aws-cdk/issues/12466)
+* **ssm:** StringParameter.fromStringParameterAttributes cannot accept version as a numeric Token ([#16048](https://github.com/aws/aws-cdk/issues/16048)) ([eb54cd4](https://github.com/aws/aws-cdk/commit/eb54cd416a48708898e30986058491e21125b2f7)), closes [#11913](https://github.com/aws/aws-cdk/issues/11913)
+* (aws-ec2): fix vpc endpoint incorrect issue in China region ([#16139](https://github.com/aws/aws-cdk/issues/16139)) ([0d0db38](https://github.com/aws/aws-cdk/commit/0d0db38e3cdb557b4a641c5993068400847cc7df)), closes [#9864](https://github.com/aws/aws-cdk/issues/9864)
+* KubectlHandler - insecure kubeconfig warning ([#16063](https://github.com/aws/aws-cdk/issues/16063)) ([82dd282](https://github.com/aws/aws-cdk/commit/82dd2822a86431d0aa0be896550d421810b80c67)), closes [#14560](https://github.com/aws/aws-cdk/issues/14560)
+
+
+### Reverts
+
+* **cli:** 'deploy' and 'diff' silently does nothing when given unknown stack name ([#16125](https://github.com/aws/aws-cdk/issues/16125)) ([f2d77d3](https://github.com/aws/aws-cdk/commit/f2d77d336d535ef718813b4ed6b88b5d2af05cb9)), closes [aws/aws-cdk#16073](https://github.com/aws/aws-cdk/issues/16073)
+* temporarily transfer [@skinny85](https://github.com/skinny85) module ownership ([#16206](https://github.com/aws/aws-cdk/issues/16206)) ([e678f10](https://github.com/aws/aws-cdk/commit/e678f104df4fb0377c6ad5c8abc4132433363871))
+
 ## [1.119.0](https://github.com/aws/aws-cdk/compare/v1.118.0...v1.119.0) (2021-08-17)
 
 
