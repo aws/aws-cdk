@@ -484,6 +484,57 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 });
 ```
 
+### Set capacityProviderStrategies for QueueProcessingFargateService
+
+```ts
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+cluster.enableFargateCapacityProviders();
+
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  capacityProviderStrategies: [
+    {
+      capacityProvider: 'FARGATE_SPOT',
+      weight: 2,
+    },
+    {
+      capacityProvider: 'FARGATE',
+      weight: 1,
+    },
+  ],
+});
+```
+
+### Set capacityProviderStrategies for QueueProcessingEc2Service
+
+```ts
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+});
+const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  capacityProviderStrategies: [
+    {
+      capacityProvider: capacityProvider.capacityProviderName,
+    },
+  ],
+});
+```
+
 ### Select specific vpc subnets for ApplicationLoadBalancedFargateService
 
 ```ts
