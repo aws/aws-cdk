@@ -1358,7 +1358,10 @@ export class SqlServerEngineVersion {
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
   /** Version "15.00.4043.16.v1". */
   public static readonly VER_15_00_4043_16_V1 = SqlServerEngineVersion.of('15.00.4043.16.v1', '15.00');
-  /** Version "15.00.4043.23.v1". */
+  /**
+   * Version "15.00.4043.23.v1".
+   * @deprecated This version is erroneous. You might be looking for {@link SqlServerEngineVersion.VER_15_00_4073_23_V1}, instead.
+   */
   public static readonly VER_15_00_4043_23_V1 = SqlServerEngineVersion.of('15.00.4043.23.v1', '15.00');
   /** Version "15.00.4073.23.v1". */
   public static readonly VER_15_00_4073_23_V1 = SqlServerEngineVersion.of('15.00.4073.23.v1', '15.00');
