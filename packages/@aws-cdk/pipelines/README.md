@@ -488,11 +488,10 @@ pipeline.addStage(prod, {
   stackSteps: [{
     stack: prod.stack1,
     pre: [new ManualApprovalStep('Pre-Stack Check')], // Executed before stack is prepared
-  }, {
-    stack: prod.stack1,
     changeSet: [new ManualApprovalStep('ChangeSet Approval')], // Executed after stack is prepared but before the stack is deployed
+    post: [new ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
   }, {
-    stack: prod.stack1,
+    stack: prod.stack2,
     post: [new ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
   }],
 });

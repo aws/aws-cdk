@@ -134,50 +134,39 @@ export class PipelineGraph {
 
     for (const stack of stage.stacks) {
       const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
-      const preNodeChain = stack.pre.length > 0 ? this.addNodeChain(stack.pre, stackGraph) : undefined;
       const prepareNode: AGraphNode | undefined = this.prepareStep ? GraphNode.of('Prepare', { type: 'prepare', stack }) : undefined;
-      const changeSetNodeChain = stack.changeSet.length > 0 ? this.addNodeChain(stack.changeSet, stackGraph) : undefined;
       const deployNode: AGraphNode = GraphNode.of('Deploy', {
         type: 'execute',
         stack,
         captureOutputs: this.queries.stackOutputsReferenced(stack).length > 0,
       });
-      const postNodeChain = stack.post.length > 0 ? this.addNodeChain(stack.post, stackGraph) : undefined;
 
       retGraph.add(stackGraph);
-
       stackGraph.add(deployNode);
+
+      // node or node collection that represents first point of contact in each stack
       let firstDeployNode;
       if (prepareNode) {
         stackGraph.add(prepareNode);
-        if (preNodeChain) {
-          prepareNode.dependOn(preNodeChain.tail);
-          firstDeployNode = preNodeChain.head;
-        } else {
-          firstDeployNode = deployNode;
-        }
-        if (changeSetNodeChain) {
-          changeSetNodeChain.head.dependOn(prepareNode);
-          deployNode.dependOn(changeSetNodeChain.tail);
-        } else {
-          deployNode.dependOn(prepareNode);
-        }
+        deployNode.dependOn(prepareNode);
+        firstDeployNode = prepareNode;
       } else {
-        // ChangeSet steps do not work if there is no prepare step
-        if (changeSetNodeChain) {
-          throw new Error('Your pipeline engine does not support changeSet steps');
-        }
-        // No prepare node, so 'pre' steps happen before deploy
-        if (preNodeChain) {
-          deployNode.dependOn(preNodeChain.tail);
-          firstDeployNode = preNodeChain.head;
+        firstDeployNode = deployNode;
+      }
+
+      // add changeset steps at the stack level
+      if (stack.changeSet.length > 0) {
+        if (prepareNode) {
+          this.addChangeSet(stack.changeSet, prepareNode, deployNode, stackGraph);
         } else {
-          firstDeployNode = deployNode;
+          throw new Error('Your pipeline engine does not support changeSet steps');
         }
       }
 
-      if (postNodeChain) {
-        postNodeChain.head.dependOn(deployNode);
+      // add pre and post steps at the stack level
+      const preNodes = this.addPrePost(stack.pre, stack.post, stackGraph);
+      if (preNodes.nodes.length > 0) {
+        firstDeployNode = preNodes;
       }
 
       stackGraphs.set(stack, stackGraph);
@@ -228,37 +217,28 @@ export class PipelineGraph {
     return retGraph;
   }
 
-  /**
-   * Takes a list of steps and creates nodes for each of them. Each node depends on the one that came before it.
-   *
-   * @returns an object with the head and tail nodes of the chain
-   */
-  private addNodeChain(steps: Step[], graph: AGraph): {head: AGraphNode, tail: AGraphNode} {
-    // If there is only one step, no need to create chain
-    // If multiple steps, create dependency chain and return first node
-    const headNode: AGraphNode = GraphNode.of(steps[0].id, { type: 'step', step: steps[0] });
-    graph.add(headNode);
-
-    var currentNode = headNode;
-    for (let i = 1; i < steps.length; i++) {
-      const nextNode: AGraphNode = GraphNode.of(steps[i].id, { type: 'step', step: steps[i] });
-      graph.add(nextNode);
-      nextNode.dependOn(currentNode);
-      currentNode = nextNode;
+  private addChangeSet(changeSet: Step[], prepareNode: AGraphNode, deployNode: AGraphNode, graph: AGraph) {
+    for (const c of changeSet) {
+      const changeSetNode: AGraphNode = GraphNode.of(c.id, { type: 'step', step: c });
+      graph.add(changeSetNode);
+      changeSetNode.dependOn(prepareNode);
+      deployNode.dependOn(changeSetNode);
     }
-    return { head: headNode, tail: currentNode };
   }
 
   private addPrePost(pre: Step[], post: Step[], parent: AGraph) {
     const currentNodes = new GraphNodeCollection(parent.nodes);
+    const preNodes = new GraphNodeCollection(new Array<AGraphNode>());
     for (const p of pre) {
       const preNode = this.addAndRecurse(p, parent);
       currentNodes.dependOn(preNode);
+      preNodes.nodes.push(preNode!);
     }
     for (const p of post) {
       const postNode = this.addAndRecurse(p, parent);
       postNode?.dependOn(...currentNodes.nodes);
     }
+    return preNodes;
   }
 
   private topLevelGraph(name: string): AGraph {

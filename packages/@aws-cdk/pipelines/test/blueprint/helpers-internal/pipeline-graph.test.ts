@@ -123,11 +123,7 @@ describe('blueprint with wave and stage', () => {
       stackSteps: [{
         stack,
         pre: [new cdkp.ManualApprovalStep('Step1'), new cdkp.ManualApprovalStep('Step2'), new cdkp.ManualApprovalStep('Step3')],
-      }, {
-        stack,
         changeSet: [new cdkp.ManualApprovalStep('Manual Approval')],
-      }, {
-        stack,
         post: [new cdkp.ManualApprovalStep('Post Approval')],
       }],
     });
