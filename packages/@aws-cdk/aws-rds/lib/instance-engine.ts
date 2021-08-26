@@ -247,6 +247,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_2_32 = MariaDbEngineVersion.of('10.2.32', '10.2');
   /** Version "10.2.37". */
   public static readonly VER_10_2_37 = MariaDbEngineVersion.of('10.2.37', '10.2');
+  /** Version "10.2.39". */
+  public static readonly VER_10_2_39 = MariaDbEngineVersion.of('10.2.39', '10.2');
 
   /** Version "10.3" (only a major version, without a specific minor version). */
   public static readonly VER_10_3 = MariaDbEngineVersion.of('10.3', '10.3');
@@ -462,6 +464,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_31 = MysqlEngineVersion.of('5.7.31', '5.7');
   /** Version "5.7.33". */
   public static readonly VER_5_7_33 = MysqlEngineVersion.of('5.7.33', '5.7');
+  /** Version "5.7.34". */
+  public static readonly VER_5_7_34 = MysqlEngineVersion.of('5.7.34', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -1330,6 +1334,10 @@ export class SqlServerEngineVersion {
   public static readonly VER_13_00_5598_27_V1 = SqlServerEngineVersion.of('13.00.5598.27.v1', '13.00');
   /** Version "13.00.5820.21.v1". */
   public static readonly VER_13_00_5820_21_V1 = SqlServerEngineVersion.of('13.00.5820.21.v1', '13.00');
+  /** Version "13.00.5850.14.v1". */
+  public static readonly VER_13_00_5850_14_V1 = SqlServerEngineVersion.of('13.00.5850.14.v1', '13.00');
+  /** Version "13.00.5882.1.v1". */
+  public static readonly VER_13_00_5882_1_V1 = SqlServerEngineVersion.of('13.00.5882.1.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -1358,8 +1366,13 @@ export class SqlServerEngineVersion {
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
   /** Version "15.00.4043.16.v1". */
   public static readonly VER_15_00_4043_16_V1 = SqlServerEngineVersion.of('15.00.4043.16.v1', '15.00');
-  /** Version "15.00.4043.23.v1". */
+  /**
+   * Version "15.00.4043.23.v1".
+   * @deprecated This version is erroneous. You might be looking for {@link SqlServerEngineVersion.VER_15_00_4073_23_V1}, instead.
+   */
   public static readonly VER_15_00_4043_23_V1 = SqlServerEngineVersion.of('15.00.4043.23.v1', '15.00');
+  /** Version "15.00.4073.23.v1". */
+  public static readonly VER_15_00_4073_23_V1 = SqlServerEngineVersion.of('15.00.4073.23.v1', '15.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
