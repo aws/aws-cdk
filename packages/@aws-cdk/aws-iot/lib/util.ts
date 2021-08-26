@@ -1,8 +1,34 @@
-export { generatePolicyName } from '@aws-cdk/aws-iam/lib/util';
-import { Stack } from '@aws-cdk/core';
+import { DefaultTokenResolver, Tokenization, Stack, StringConcat } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 import { CertificateAttributes } from './certificate';
 import { ThingAttributes } from './thing';
+
+const MAX_POLICY_NAME_LEN = 128;
+/**
+ * Returns a string composed of the last n characters of str.
+ * If str is shorter than n, returns str.
+ *
+ * @param str the string to return the last n characters of
+ * @param n how many characters to return
+ */
+function lastNCharacters(str: string, n: number) {
+  const startIndex = Math.max(str.length - n, 0);
+  return str.substring(startIndex, str.length);
+}
+/**
+ * Used to generate a unique policy name based on the policy resource construct.
+ * The logical ID of the resource is a great candidate as long as it doesn't exceed
+ * 128 characters, so we take the last 128 characters (in order to make sure the hash
+ * is there).
+ */
+export function generatePolicyName(scope: IConstruct, logicalId: string): string {
+  // as logicalId is itself a Token, resolve it first
+  const resolvedLogicalId = Tokenization.resolve(logicalId, {
+    scope,
+    resolver: new DefaultTokenResolver(new StringConcat()),
+  });
+  return lastNCharacters(resolvedLogicalId, MAX_POLICY_NAME_LEN);
+}
 
 export function parsePolicyArn(construct: IConstruct, policyName: string): string {
   return parseArn(construct, 'policy', policyName);
