@@ -4,7 +4,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Container, Environment, EventsQueue, Service, ServiceDescription } from '../lib';
+import { Container, Environment, QueueExtension, Service, ServiceDescription, TopicSubscription } from '../lib';
 
 export = {
   'should only create a default queue when no input props are provided'(test: Test) {
@@ -25,7 +25,7 @@ export = {
     }));
 
     // WHEN
-    serviceDescription.add(new EventsQueue());
+    serviceDescription.add(new QueueExtension());
 
     new Service(stack, 'my-service', {
       environment,
@@ -137,14 +137,14 @@ export = {
     }));
 
     // WHEN
-    const topicSubscription1 = {
+    const topicSubscription1 = new TopicSubscription({
       topic: new sns.Topic(stack, 'topic1'),
-    };
-    const topicSubscription2 = {
+    });
+    const topicSubscription2 = new TopicSubscription({
       topic: new sns.Topic(stack, 'topic2'),
-    };
-    serviceDescription.add(new EventsQueue({
-      topicSubscriptions: [topicSubscription1, topicSubscription2],
+    });
+    serviceDescription.add(new QueueExtension({
+      subscriptions: [topicSubscription1, topicSubscription2],
     }));
 
     new Service(stack, 'my-service', {
@@ -326,15 +326,15 @@ export = {
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
 
-    const topicSubscription1 = {
+    const topicSubscription1 = new TopicSubscription({
       topic: new sns.Topic(stack, 'topic1'),
       queue: new sqs.Queue(stack, 'myQueue'),
-    };
-    const topicSubscription2 = {
+    });
+    const topicSubscription2 = new TopicSubscription({
       topic: new sns.Topic(stack, 'topic2'),
-    };
-    serviceDescription.add(new EventsQueue({
-      topicSubscriptions: [topicSubscription1, topicSubscription2],
+    });
+    serviceDescription.add(new QueueExtension({
+      subscriptions: [topicSubscription1, topicSubscription2],
       eventsQueue: new sqs.Queue(stack, 'defQueue'),
     }));
 

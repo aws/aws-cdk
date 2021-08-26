@@ -12,27 +12,36 @@ import { ContainerMutatingHook, ServiceExtension } from './extension-interfaces'
 import { Construct } from '@aws-cdk/core';
 
 /**
+ * An interface that will be implemented by all the resources that can be subscribed to.
+ */
+export interface ISubscribable {
+  /**
+   * All classes implementing this interface must also implement the `subscribe()` method
+   */
+  subscribe(): void;
+}
+
+/**
  * The settings for the EventsQueue extension.
  */
-export interface EventsQueueProps {
+export interface QueueProps {
   /**
-   * The list of topic subscriptions for this service.
+   * The list of subscriptions for this service.
    *
    * @default none
    */
-  readonly topicSubscriptions?: TopicSubscriptionProps[];
+  readonly subscriptions?: ISubscribable[];
 
   /**
    * The user-provided default queue for this service.
-   * If the `eventsQueue` is not provided, a default SQS Queue is created for the service.
    *
-   * @default none
+   * @default If the `eventsQueue` is not provided, a default SQS Queue is created for the service.
    */
   readonly eventsQueue?: sqs.IQueue;
 }
 
 /**
- * The topic-specific settings for creating the subscription queues.
+ * The topic-specific settings for creating the queue subscriptions.
  */
 export interface TopicSubscriptionProps {
   /**
@@ -50,10 +59,30 @@ export interface TopicSubscriptionProps {
 }
 
 /**
+ * The `TopicSubscription` class represents a resource that can be subscribed to by the service queues.
+ */
+export class TopicSubscription implements ISubscribable {
+  public readonly topic: sns.ITopic;
+
+  public readonly queue?: sqs.IQueue;
+
+  constructor(props: TopicSubscriptionProps) {
+    this.topic = props.topic;
+    this.queue = props.queue;
+  }
+
+  public subscribe() {
+    if (this.queue) {
+      this.topic.addSubscription(new subscription.SqsSubscription(this.queue));
+    }
+  }
+}
+
+/**
  * Settings for the hook which mutates the application container
  * to add the subscription queue URLs to its environment.
  */
-export interface ContainerMutatingProps {
+interface ContainerMutatingProps {
   /**
    * The queue name and URLs to be added to the container environment.
    */
@@ -64,7 +93,7 @@ export interface ContainerMutatingProps {
  * This hook modifies the application container's environment to
  * add the queue URLs for the subscription queues of the service.
  */
-export class SubscribeMutatingHook extends ContainerMutatingHook {
+class QueueExtensionMutatingHook extends ContainerMutatingHook {
   private environment: { [key: string]: string };
 
   constructor(props: ContainerMutatingProps) {
@@ -82,29 +111,31 @@ export class SubscribeMutatingHook extends ContainerMutatingHook {
 }
 
 /**
- * This extension creates a default `eventsQueue` for the service (if not provided) and accepts a list of SNS Topics
- * that the `eventsQueue` subscribes to. It creates the topic subscriptions and sets up permissions
+ * This extension creates a default `eventsQueue` for the service (if not provided) and accepts a list of objects of
+ * type `ISubscribable` that the `eventsQueue` subscribes to. It creates the subscriptions and sets up permissions
  * for the service to consume messages from the SQS Queues.
  *
  * The default queue for this service can be accessed using the getter `<extension>.eventsQueue`.
  */
-export class EventsQueue extends ServiceExtension {
+export class QueueExtension extends ServiceExtension {
   private _eventsQueue!: sqs.IQueue;
+
+  private subscriptionQueues: sqs.IQueue[] = [];
 
   private environment: { [key: string]: string } = {};
 
-  private props?: EventsQueueProps;
+  private props?: QueueProps;
 
-  constructor(props?: EventsQueueProps) {
-    super('events-queue');
+  constructor(props?: QueueProps) {
+    super('queue');
 
     this.props = props;
   }
 
   /**
-   * This hook creates (if required) and sets the default queue `eventsQueue` and other topic-specific queues
-   * according to the provided `topicSubscriptions`. It creates SNS Subscriptions for the topics and also adds the
-   * queue URLs to the environment.
+   * This hook creates (if required) and sets the default queue `eventsQueue`. It also sets up the subscriptions for
+   * the provided `ISubscribable` objects.
+   *
    * @param service The parent service which this extension has been added to
    * @param scope The scope that this extension should create resources in
    */
@@ -112,30 +143,35 @@ export class EventsQueue extends ServiceExtension {
     this.parentService = service;
     this.scope = scope;
 
-    if (this.props?.eventsQueue) {
-      this._eventsQueue = this.props.eventsQueue;
-    } else {
+    let eventsQueue = this.props?.eventsQueue;
+    if (!eventsQueue) {
       const deadLetterQueue = new sqs.Queue(this.scope, 'EventsDeadLetterQueue', {
         retentionPeriod: cdk.Duration.days(14),
       });
 
-      this._eventsQueue = new sqs.Queue(this.scope, 'EventsQueue', {
+      eventsQueue = new sqs.Queue(this.scope, 'EventsQueue', {
         deadLetterQueue: {
           queue: deadLetterQueue,
           maxReceiveCount: 3,
         },
       });
     }
+    this._eventsQueue = eventsQueue;
+
     this.environment[`${this.parentService.id.toUpperCase()}_QUEUE_URI`] = this._eventsQueue.queueUrl;
 
-    if (this.props?.topicSubscriptions) {
-      this.addTopicSubscriptions(this.props.topicSubscriptions);
+    if (this.props?.subscriptions) {
+      for (const subs of this.props.subscriptions) {
+        if (subs instanceof TopicSubscription) {
+          this.addTopicSubscriptions(subs as TopicSubscription);
+        }
+      }
     }
   }
 
   /**
    * Add hooks to the main application extension so that it is modified to
-   * add the queue URLs to the container environment.
+   * add the events queue URL to the container environment.
    */
   public addHooks() {
     const container = this.parentService.serviceDescription.get('service-container') as Container;
@@ -144,7 +180,7 @@ export class EventsQueue extends ServiceExtension {
       throw new Error('EventsQueue extension requires an application extension');
     }
 
-    container.addContainerMutatingHook(new SubscribeMutatingHook({
+    container.addContainerMutatingHook(new QueueExtensionMutatingHook({
       environment: this.environment,
     }));
   }
@@ -156,11 +192,10 @@ export class EventsQueue extends ServiceExtension {
    */
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     this._eventsQueue.grantConsumeMessages(taskDefinition.taskRole);
-    if (this.props?.topicSubscriptions) {
-      for (const subs of this.props.topicSubscriptions) {
-        subs.queue?.grantConsumeMessages(taskDefinition.taskRole);
-      }
+    for (const queue of this.subscriptionQueues) {
+      queue.grantConsumeMessages(taskDefinition.taskRole);
     }
+
   }
 
   /**
@@ -168,13 +203,12 @@ export class EventsQueue extends ServiceExtension {
    *
    * @param topicSubscriptions List of TopicSubscriptions
    */
-  private addTopicSubscriptions(topicSubscriptions: TopicSubscriptionProps[]) {
-    for (const topicSubscription of topicSubscriptions) {
-      if (topicSubscription.queue) {
-        topicSubscription.topic.addSubscription(new subscription.SqsSubscription(topicSubscription.queue));
-      } else {
-        topicSubscription.topic.addSubscription(new subscription.SqsSubscription(this._eventsQueue));
-      }
+  private addTopicSubscriptions(topicSubscription: TopicSubscription) {
+    if (topicSubscription.queue) {
+      topicSubscription.subscribe();
+      this.subscriptionQueues.push(topicSubscription.queue);
+    } else {
+      topicSubscription.topic.addSubscription(new subscription.SqsSubscription(this._eventsQueue));
     }
   }
 

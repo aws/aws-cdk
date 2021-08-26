@@ -322,39 +322,37 @@ const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', 
 
 ```
 
-### EventsQueue Extension
+## Queue Extension
 
-This service extension creates a default SQS Queue `eventsQueue` for the service (if not provided) and accepts a list of SNS Topics that the `eventsQueue` can subscribe to. The service extension creates the topic subscriptions and sets up permissions for the service to consume messages from the SQS Queue.
+This service extension creates a default SQS Queue `eventsQueue` for the service (if not provided) and accepts a list of `ISubscribable` objects that the `eventsQueue` can subscribe to. The service extension creates the subscriptions and sets up permissions for the service to consume messages from the SQS Queue.
+
+### Setting up SNS Topic Subscriptions for SQS Queues
+
+You can use this extension to set up SNS Topic subscriptions for the `eventsQueue`. To do this, create a new object of type `TopicSubscription` for every SNS Topic you want the `eventsQueue` to subscribe to and provide it as input to the service extension.
 
 ```ts
-const topicSubscription = {
-  topic: new sns.Topic(stack, 'my-topic'),
-};
-
-const myServiceDescription = nameDescription.add(new EventsQueue({
-  // Provide a custom queue for the service. If a queue is not provided, a default queue is created for the service
-  eventsQueue: myCustomQueue,
-  // Provide list of topics the you want the `eventsQueue` to subscribe to
-  topicSubscriptions: [topicSubscription],
+const myServiceDescription = nameDescription.add(new QueueExtension({
+  // Provide list of topic subscriptions that you want the `eventsQueue` to subscribe to
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+  }],
 }));
 
 // To access the `eventsQueue` for the service, use the `eventsQueue` getter for the extension
-const myEventsQueueExtension = myServiceDescription.extensions['events-queue'] as EventsQueue;
-const myEventsQueue = myEventsQueueExtension.eventsQueue;
+const myQueueExtension = myServiceDescription.extensions['queue'] as QueueExtension;
+const myEventsQueue = myQueueExtension.eventsQueue;
 ```
 
-For setting up a topic-specific queue subscription, you can provide a custom queue in the `topicSubscription`. The extension will set up a topic subscription for the provided queue instead of the default `eventsQueue` of the service.
+For setting up a topic-specific queue subscription, you can provide a custom queue in the `TopicSubscription` object along with the SNS Topic. The extension will set up a topic subscription for the provided queue instead of the default `eventsQueue` of the service.
 
 ```ts
-const topicSubscription = {
-  topic: new sns.Topic(stack, 'my-topic'),
-  // `myTopicQueue` will subscribe to the `topic` instead of `eventsQueue`
-  queue: myTopicQueue,
-};
-
-nameDescription.add(new EventsQueue({
-  eventsQueue: myCustomQueue,
-  topicSubscriptions: [topicSubscription],
+nameDescription.add(new QueueExtension({
+  queue: myEventsQueue,
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+    // `myTopicQueue` will subscribe to the `my-topic` instead of `eventsQueue`
+    queue: myTopicQueue,
+  }],
 }));
 ```
 
