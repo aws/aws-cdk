@@ -59,7 +59,7 @@ export interface TopicSubscriptionProps {
 }
 
 /**
- * The `TopicSubscription` class represents a resource that can be subscribed to by the service queues.
+ * The `TopicSubscription` class represents an SNS Topic resource that can be subscribed to by the service queues.
  */
 export class TopicSubscription implements ISubscribable {
   public readonly topic: sns.ITopic;
@@ -80,7 +80,7 @@ export class TopicSubscription implements ISubscribable {
 
 /**
  * Settings for the hook which mutates the application container
- * to add the subscription queue URLs to its environment.
+ * to add the events queue URL to its environment.
  */
 interface ContainerMutatingProps {
   /**
@@ -91,7 +91,7 @@ interface ContainerMutatingProps {
 
 /**
  * This hook modifies the application container's environment to
- * add the queue URLs for the subscription queues of the service.
+ * add the queue URL for the events queue of the service.
  */
 class QueueExtensionMutatingHook extends ContainerMutatingHook {
   private environment: { [key: string]: string };
@@ -177,7 +177,7 @@ export class QueueExtension extends ServiceExtension {
     const container = this.parentService.serviceDescription.get('service-container') as Container;
 
     if (!container) {
-      throw new Error('EventsQueue extension requires an application extension');
+      throw new Error('Queue Extension requires an application extension');
     }
 
     container.addContainerMutatingHook(new QueueExtensionMutatingHook({
@@ -201,7 +201,7 @@ export class QueueExtension extends ServiceExtension {
   /**
    * This helper method creates a SNS Subscription for a topic and the queue that subscribes to it.
    *
-   * @param topicSubscriptions List of TopicSubscriptions
+   * @param topicSubscription TopicSubscription
    */
   private addTopicSubscriptions(topicSubscription: TopicSubscription) {
     if (topicSubscription.queue) {
