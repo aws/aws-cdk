@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
+import '@jsii/check-node/run';
 import * as colors from 'colors/safe';
 import * as yargs from 'yargs';
 
@@ -114,8 +115,8 @@ async function parseCommandLineArguments() {
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
-      .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false }))
-    .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false })
+      .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
+      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })

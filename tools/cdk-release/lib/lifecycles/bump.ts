@@ -1,31 +1,48 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import * as semver from 'semver';
 import { writeFile } from '../private/files';
 import { notify } from '../private/print';
-import { ReleaseOptions, ReleaseType } from '../types';
-import { resolveUpdaterObjectFromArgument } from '../updaters/index';
+import { LifecyclesSkip, ReleaseType, Versions } from '../types';
 
-export interface BumpResult {
-  readonly newVersion: string;
-  readonly changedFiles: string[];
+export interface BumpOptions {
+  releaseAs: ReleaseType;
+  skip?: LifecyclesSkip;
+  versionFile: string;
+  prerelease?: string;
+
+  dryRun?: boolean;
+  verbose?: boolean;
+  silent?: boolean;
 }
 
-export async function bump(args: ReleaseOptions, currentVersion: string): Promise<BumpResult> {
+export async function bump(args: BumpOptions, currentVersion: Versions): Promise<Versions> {
   if (args.skip?.bump) {
-    return {
-      newVersion: currentVersion,
-      changedFiles: [],
-    };
+    return currentVersion;
   }
 
-  const releaseType = getReleaseType(args.prerelease, args.releaseAs, currentVersion);
-  const newVersion = semver.inc(currentVersion, releaseType, args.prerelease);
-  if (!newVersion) {
-    throw new Error('Could not increment version: ' + currentVersion);
+  const releaseType = getReleaseType(args.prerelease, args.releaseAs, currentVersion.stableVersion);
+  const newStableVersion = semver.inc(currentVersion.stableVersion, releaseType, args.prerelease);
+  if (!newStableVersion) {
+    throw new Error('Could not increment version: ' + currentVersion.stableVersion);
   }
-  const changedFiles = updateBumpFiles(args, newVersion);
-  return { newVersion, changedFiles };
+
+  const newVersion: Versions = {
+    stableVersion: newStableVersion,
+    alphaVersion: bumpAlphaReleaseVersion(currentVersion, releaseType),
+  };
+
+  notify(args,
+    'bumping version in ' + args.versionFile + ' from %s to %s',
+    [currentVersion, newVersion],
+  );
+  const versionPath = path.resolve(process.cwd(), args.versionFile);
+  const versionFileContents = JSON.stringify({
+    version: newVersion.stableVersion,
+    alphaVersion: newVersion.alphaVersion,
+  }, undefined, 2);
+  writeFile(args, versionPath, versionFileContents);
+
+  return newVersion;
 }
 
 function getReleaseType(prerelease: string | undefined, expectedReleaseType: ReleaseType, currentVersion: string): semver.ReleaseType {
@@ -89,34 +106,21 @@ function getTypePriority(type: string): number {
 }
 
 /**
- * attempt to update the version number in provided `bumpFiles`
- * @param args config object
- * @param newVersion version number to update to.
- * @return the collection of file paths that were actually changed
+ * https://github.com/aws/aws-cdk/issues/15581
+ * We version any alpha modules in one of two ways, depending on the main/stable release.
+ * If the main release is itself a prerelease (e.g., 2.0.0-rc.17),
+ * we will increment the current alpha release.
+ * If the main release is not a prerelease, we use the main release version, but with an alpha tag.
  */
-function updateBumpFiles(args: ReleaseOptions, newVersion: string): string[] {
-  const ret = new Array<string>();
+function bumpAlphaReleaseVersion(currentVersion: Versions, releaseType: semver.ReleaseType): string | undefined {
+  if (!currentVersion.alphaVersion) { return undefined; }
 
-  for (const bumpFile of (args.bumpFiles ?? [])) {
-    const updater = resolveUpdaterObjectFromArgument(bumpFile);
-    if (!updater) {
-      continue;
-    }
-    const configPath = path.resolve(process.cwd(), updater.filename);
-    const stat = fs.lstatSync(configPath);
-    if (!stat.isFile()) {
-      continue;
-    }
-    const contents = fs.readFileSync(configPath, 'utf8');
-    notify(args,
-      'bumping version in ' + updater.filename + ' from %s to %s',
-      [updater.updater.readVersion(contents), newVersion],
-    );
-    writeFile(args, configPath,
-      updater.updater.writeVersion(contents, newVersion),
-    );
-    ret.push(updater.filename);
+  const newAlphaVersion = releaseType.startsWith('pre')
+    ? semver.inc(currentVersion.alphaVersion, releaseType, 'alpha')
+    : semver.inc(currentVersion.stableVersion, 'pre' + releaseType as semver.ReleaseType, 'alpha');
+
+  if (!newAlphaVersion) {
+    throw new Error('Could not increment alpha version: ' + currentVersion.alphaVersion);
   }
-
-  return ret;
+  return newAlphaVersion;
 }
