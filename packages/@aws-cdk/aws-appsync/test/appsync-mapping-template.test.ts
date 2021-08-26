@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -42,7 +42,7 @@ describe('Lambda Mapping Templates', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
       FieldName: 'allPosts',
       RequestMappingTemplate: invokeMT,
     });
@@ -60,7 +60,7 @@ describe('Lambda Mapping Templates', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
       FieldName: 'relatedPosts',
       RequestMappingTemplate: batchMT,
     });

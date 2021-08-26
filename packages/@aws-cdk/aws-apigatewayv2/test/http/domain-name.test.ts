@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-// import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
 import { DomainName, HttpApi } from '../../lib';
@@ -19,7 +18,7 @@ describe('DomainName', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::DomainName', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::DomainName', {
       DomainName: 'example.com',
       DomainNameConfigurations: [
         {
@@ -28,6 +27,22 @@ describe('DomainName', () => {
         },
       ],
     });
+  });
+
+  test('throws when domainName is empty string', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const t = () => {
+      new DomainName(stack, 'DomainName', {
+        domainName: '',
+        certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      });
+    };
+
+    // THEN
+    expect(t).toThrow(/empty string for domainName not allowed/);
   });
 
   test('import domain name correctly', () => {
@@ -74,7 +89,7 @@ describe('DomainName', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::DomainName', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::DomainName', {
       DomainName: 'example.com',
       DomainNameConfigurations: [
         {
@@ -83,7 +98,7 @@ describe('DomainName', () => {
         },
       ],
     });
-    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::ApiMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
       ApiId: {
         Ref: 'ApiF70053CD',
       },
@@ -110,7 +125,7 @@ describe('DomainName', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::DomainName', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::DomainName', {
       DomainName: 'example.com',
       DomainNameConfigurations: [
         {
@@ -120,7 +135,7 @@ describe('DomainName', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::ApiMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
       ApiId: {
         Ref: 'ApiF70053CD',
       },

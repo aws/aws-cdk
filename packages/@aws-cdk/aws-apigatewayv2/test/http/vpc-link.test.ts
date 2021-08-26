@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { VpcLink } from '../../lib';
@@ -16,7 +16,7 @@ describe('VpcLink', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'MyLink',
       SubnetIds: [
         {
@@ -56,7 +56,7 @@ describe('VpcLink', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'VpcLink',
       SubnetIds: [
         {
@@ -104,7 +104,7 @@ describe('VpcLink', () => {
     vpcLink.addSubnets(subnet);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'VpcLink',
       SubnetIds: [
         {
@@ -136,7 +136,7 @@ describe('VpcLink', () => {
     vpcLink.addSecurityGroups(sg1, sg2, sg3);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'VpcLink',
       SubnetIds: [
         {
@@ -183,6 +183,6 @@ describe('VpcLink', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink');
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 0);
   });
 });
