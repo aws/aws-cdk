@@ -1,4 +1,5 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
@@ -23,7 +24,7 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
   constructor(private readonly fn: lambda.IFunction, private readonly encryptionKey?: kms.IKey) {
   }
 
-  public bind(scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
+  public bind(scope: Construct, lifecycleHook: autoscaling.LifecycleHook): autoscaling.LifecycleHookTargetConfig {
     const topic = new sns.Topic(scope, 'Topic', {
       masterKey: this.encryptionKey,
     });
@@ -31,12 +32,14 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
     // Topic's grantPublish() is in a base class that does not know there is a kms key, and so does not
     // grant appropriate permissions to the kms key. We do that here to ensure the correct permissions
     // are in place.
-    if (lifecycleHook.role) {
-      this.encryptionKey?.grant(lifecycleHook.role, 'kms:Decrypt', 'kms:GenerateDataKey');
-      topic.addSubscription(new subs.LambdaSubscription(this.fn));
-      return new TopicHook(topic).bind(scope, lifecycleHook);
-    } else {
-      throw new Error('This `FunctionHook` has an undefined `role`');
+    if (!lifecycleHook.role) {
+      lifecycleHook.role = new iam.Role(lifecycleHook, 'Role', {
+        assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
+      });
     }
+
+    this.encryptionKey?.grant(lifecycleHook.role, 'kms:Decrypt', 'kms:GenerateDataKey');
+    topic.addSubscription(new subs.LambdaSubscription(this.fn));
+    return new TopicHook(topic).bind(scope, lifecycleHook);
   }
 }

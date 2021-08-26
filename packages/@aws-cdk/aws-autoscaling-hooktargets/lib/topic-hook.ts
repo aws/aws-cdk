@@ -20,6 +20,5 @@ export class TopicHook implements autoscaling.ILifecycleHookTarget {
     this.topic.grantPublish(lifecycleHook.role);
 
     return { notificationTargetArn: this.topic.topicArn };
-
   }
 }
