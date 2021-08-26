@@ -1,4 +1,5 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Construct } from '@aws-cdk/core';
 
@@ -9,12 +10,15 @@ export class QueueHook implements autoscaling.ILifecycleHookTarget {
   constructor(private readonly queue: sqs.IQueue) {
   }
 
-  public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    if (lifecycleHook.role) {
-      this.queue.grantSendMessages(lifecycleHook.role);
-      return { notificationTargetArn: this.queue.queueArn };
-    } else {
-      throw new Error('This `QueueHook` has an undefined `role`');
+  public bind(_scope: Construct, lifecycleHook: autoscaling.LifecycleHook): autoscaling.LifecycleHookTargetConfig {
+    if (!lifecycleHook.role) {
+      lifecycleHook.role = new iam.Role(lifecycleHook, 'Role', {
+        assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
+      });
     }
+
+    this.queue.grantSendMessages(lifecycleHook.role);
+
+    return { notificationTargetArn: this.queue.queueArn };
   }
 }

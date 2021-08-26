@@ -125,7 +125,7 @@ describe('given an AutoScalingGroup', () => {
     });
   });
 
-  test('Cannot bind a FunctionHook with an undefined role', () => {
+  /*test('Cannot bind a FunctionHook with an undefined role', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
@@ -175,5 +175,5 @@ describe('given an AutoScalingGroup', () => {
       topicHook.bind(stack, lcHook);
     // THEN
     }).toThrow(/This `TopicHook` has an undefined `role`/);
-  });
+  });*/
 });

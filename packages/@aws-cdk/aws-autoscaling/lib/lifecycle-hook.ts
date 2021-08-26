@@ -78,7 +78,7 @@ export interface ILifecycleHook extends IResource {
    *
    * @default: No role
    */
-  readonly role?: iam.IRole;
+  role?: iam.IRole;
 }
 
 /**
@@ -91,7 +91,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
    * @default: A default role is created if `notificationTarget` is specified.
    * Otherwise, no role is created.
    */
-  public readonly role?: iam.IRole;
+  public role?: iam.IRole;
 
   /**
    * The name of this lifecycle hook
@@ -110,7 +110,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       if (!props.notificationTarget) {
         throw new Error("'notificationTarget' parameter required when 'role' parameter is specified");
       }
-    } else {
+    } /*else {
       if (props.notificationTarget) {
         // specify a default role to not break users who provide a notificationTarget but no role
         this.role = new iam.Role(this, 'Role', {
@@ -119,7 +119,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       } else {
         this.role = undefined;
       }
-    }
+    }*/
 
     const targetProps = props.notificationTarget ? props.notificationTarget.bind(this, this) : undefined;
     const notificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;

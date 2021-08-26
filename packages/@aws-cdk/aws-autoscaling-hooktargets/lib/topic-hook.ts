@@ -1,4 +1,5 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import { Construct } from '@aws-cdk/core';
 
@@ -9,12 +10,16 @@ export class TopicHook implements autoscaling.ILifecycleHookTarget {
   constructor(private readonly topic: sns.ITopic) {
   }
 
-  public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    if (lifecycleHook.role) {
-      this.topic.grantPublish(lifecycleHook.role);
-      return { notificationTargetArn: this.topic.topicArn };
-    } else {
-      throw new Error('This `TopicHook` has an undefined `role`');
+  public bind(_scope: Construct, lifecycleHook: autoscaling.LifecycleHook): autoscaling.LifecycleHookTargetConfig {
+    if (!lifecycleHook.role) {
+      lifecycleHook.role = new iam.Role(lifecycleHook, 'Role', {
+        assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
+      });
     }
+
+    this.topic.grantPublish(lifecycleHook.role);
+
+    return { notificationTargetArn: this.topic.topicArn };
+
   }
 }
