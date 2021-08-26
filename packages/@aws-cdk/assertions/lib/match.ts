@@ -99,7 +99,7 @@ class LiteralMatch extends Matcher {
       return new ObjectMatch(this.name, this.pattern, { partial: this.partialObjects }).test(actual);
     }
 
-    const result = new MatchResult();
+    const result = new MatchResult(actual);
     if (typeof this.pattern !== typeof actual) {
       result.push(this, [], `Expected type ${typeof this.pattern} but received ${getType(actual)}`);
       return result;
@@ -152,16 +152,16 @@ class ArrayMatch extends Matcher {
 
   public test(actual: any): MatchResult {
     if (!Array.isArray(actual)) {
-      return new MatchResult().push(this, [], `Expected type array but received ${getType(actual)}`);
+      return new MatchResult(actual).push(this, [], `Expected type array but received ${getType(actual)}`);
     }
     if (!this.partial && this.pattern.length !== actual.length) {
-      return new MatchResult().push(this, [], `Expected array of length ${this.pattern.length} but received ${actual.length}`);
+      return new MatchResult(actual).push(this, [], `Expected array of length ${this.pattern.length} but received ${actual.length}`);
     }
 
     let patternIdx = 0;
     let actualIdx = 0;
 
-    const result = new MatchResult();
+    const result = new MatchResult(actual);
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
       const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
@@ -220,10 +220,10 @@ class ObjectMatch extends Matcher {
 
   public test(actual: any): MatchResult {
     if (typeof actual !== 'object' || Array.isArray(actual)) {
-      return new MatchResult().push(this, [], `Expected type object but received ${getType(actual)}`);
+      return new MatchResult(actual).push(this, [], `Expected type object but received ${getType(actual)}`);
     }
 
-    const result = new MatchResult();
+    const result = new MatchResult(actual);
     if (!this.partial) {
       for (const a of Object.keys(actual)) {
         if (!(a in this.pattern)) {
