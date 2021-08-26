@@ -26,7 +26,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **apigatewayv2:** http api - disallow empty string as domain name ([#16044](https://github.com/aws/aws-cdk/issues/16044)) ([9c39bcb](https://github.com/aws/aws-cdk/commit/9c39bcb970fc791e94d199b962cc006fca1a3320))
 * **appsync:** addSubscription only allows for field type ([#16097](https://github.com/aws/aws-cdk/issues/16097)) ([000d151](https://github.com/aws/aws-cdk/commit/000d151bec2215aa530819c3cf2c8c432352fec3)), closes [#10078](https://github.com/aws/aws-cdk/issues/10078) [#16071](https://github.com/aws/aws-cdk/issues/16071)
 * **cfnspec:** changes to resource-level documentation not supported ([#16170](https://github.com/aws/aws-cdk/issues/16170)) ([82e4b4f](https://github.com/aws/aws-cdk/commit/82e4b4f07be202e2d6c6afa4f9ed0d9d6146f0a8))
-* **cli:** 'deploy' and 'diff' silently does nothing when given unknown stack name ([#16073](https://github.com/aws/aws-cdk/issues/16073)) ([f35b032](https://github.com/aws/aws-cdk/commit/f35b032cea4354992d3320e78c1ed0e2878a3fe7)), closes [#15866](https://github.com/aws/aws-cdk/issues/15866)
 * **cli:** Python init template does not work in directory with '-' ([#15939](https://github.com/aws/aws-cdk/issues/15939)) ([3b2c790](https://github.com/aws/aws-cdk/commit/3b2c790c2b7d210868576540feab4e088376ab6c)), closes [#15938](https://github.com/aws/aws-cdk/issues/15938)
 * **cli:** unknown command pytest in build container fails integration tests ([#16134](https://github.com/aws/aws-cdk/issues/16134)) ([0f7c0b4](https://github.com/aws/aws-cdk/commit/0f7c0b421327f1ffed28de79692191af187f23ca)), closes [#15939](https://github.com/aws/aws-cdk/issues/15939)
 * **resourcegroups:** ResourceGroup not using TagType.STANDARD, causes deploy failure ([#16211](https://github.com/aws/aws-cdk/issues/16211)) ([cdee1af](https://github.com/aws/aws-cdk/commit/cdee1af03c34a1c08988e672bae6edc2538a8877)), closes [#12986](https://github.com/aws/aws-cdk/issues/12986)
@@ -38,10 +37,6 @@ All notable changes to this project will be documented in this file. See [standa
 * KubectlHandler - insecure kubeconfig warning ([#16063](https://github.com/aws/aws-cdk/issues/16063)) ([82dd282](https://github.com/aws/aws-cdk/commit/82dd2822a86431d0aa0be896550d421810b80c67)), closes [#14560](https://github.com/aws/aws-cdk/issues/14560)
 
 
-### Reverts
-
-* **cli:** 'deploy' and 'diff' silently does nothing when given unknown stack name ([#16125](https://github.com/aws/aws-cdk/issues/16125)) ([f2d77d3](https://github.com/aws/aws-cdk/commit/f2d77d336d535ef718813b4ed6b88b5d2af05cb9)), closes [aws/aws-cdk#16073](https://github.com/aws/aws-cdk/issues/16073)
-* temporarily transfer [@skinny85](https://github.com/skinny85) module ownership ([#16206](https://github.com/aws/aws-cdk/issues/16206)) ([e678f10](https://github.com/aws/aws-cdk/commit/e678f104df4fb0377c6ad5c8abc4132433363871))
 
 ## [1.119.0](https://github.com/aws/aws-cdk/compare/v1.118.0...v1.119.0) (2021-08-17)
 
