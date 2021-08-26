@@ -10,7 +10,12 @@ export enum RuntimeFamily {
   /**
    * All lambda runtimes that depend on Python.
    */
-  PYTHON
+  PYTHON,
+
+  /**
+   * Any future runtime family.
+   */
+  OTHER,
 }
 
 /**

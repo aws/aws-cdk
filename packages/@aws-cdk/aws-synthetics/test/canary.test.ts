@@ -239,7 +239,7 @@ test('Runtime can be customized', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: new synthetics.Runtime('fancy-future-runtime-1337.42', synthetics.RuntimeFamily.PYTHON),
+    runtime: new synthetics.Runtime('fancy-future-runtime-1337.42', synthetics.RuntimeFamily.OTHER),
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),

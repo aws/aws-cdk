@@ -132,12 +132,13 @@ export class AssetCode extends Code {
       if (!fs.lstatSync(this.assetPath).isDirectory()) {
         throw new Error(`Asset must be a .zip file or a directory (${this.assetPath})`);
       }
-      const nodeFilename = `${handler.split('.')[0]}.js`;
-      const pythonFilename = `${handler.split('.')[0]}.py`;
-      if (family == RuntimeFamily.NODEJS && !fs.existsSync(path.join(this.assetPath, 'nodejs', 'node_modules', nodeFilename))) {
+      const filename = handler.split('.')[0];
+      const nodeFilename = `${filename}.js`;
+      const pythonFilename = `${filename}.py`;
+      if (family === RuntimeFamily.NODEJS && !fs.existsSync(path.join(this.assetPath, 'nodejs', 'node_modules', nodeFilename))) {
         throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
       }
-      if (family == RuntimeFamily.PYTHON && !fs.existsSync(path.join(this.assetPath, 'python', pythonFilename))) {
+      if (family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(this.assetPath, 'python', pythonFilename))) {
         throw new Error(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
       }
     }

@@ -44,12 +44,12 @@ def verify_request(method, url, post_data=None, headers={}):
 
 def main():
 
-    url1 = 'https://kaizen3031593.github.io/'
-    method1 = 'GET'
-    postData1 = ""
-    headers1 = {}
+    url = 'https://example.com/'
+    method = 'GET'
+    postData = ""
+    headers = {}
 
-    verify_request(method1, url1, None, headers1)
+    verify_request(method, url, None, headers)
 
     logger.info("Canary successfully executed")
 
