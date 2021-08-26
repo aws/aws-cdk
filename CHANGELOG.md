@@ -9,7 +9,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **assertions:** queries and assertions against the Outputs and Mappings sections ([#15892](https://github.com/aws/aws-cdk/issues/15892)) ([90f95e1](https://github.com/aws/aws-cdk/commit/90f95e10f4dd9e4992731d6262dcfc767b65ab3f))
 * **stepfunctions:** add support to heartbeat error inside catch block ([#16078](https://github.com/aws/aws-cdk/issues/16078)) ([2372b3c](https://github.com/aws/aws-cdk/commit/2372b3c360d13fb0224fc981a7bb1ae318581265)), closes [#16084](https://github.com/aws/aws-cdk/issues/16084)
-* **cfnspec:** cloudformation spec v39.10.0 ([#16114](https://github.com/aws/aws-cdk/issues/16114)) ([7e0ad5d](https://github.com/aws/aws-cdk/commit/7e0ad5d17b30150922d0dfd81f42da11fadb8beb))
 * **cfnspec:** cloudformation spec v40.0.0 ([#16183](https://github.com/aws/aws-cdk/issues/16183)) ([b059124](https://github.com/aws/aws-cdk/commit/b059124b238e27751217cbdaaa01c38b00e80fc9))
 * **cloudwatch:** add support for cross-account alarms ([#16007](https://github.com/aws/aws-cdk/issues/16007)) ([e547ba0](https://github.com/aws/aws-cdk/commit/e547ba0d1491af0abe703132fa06fe786ffd7070)), closes [#15959](https://github.com/aws/aws-cdk/issues/15959)
 * **codecommit:** make Repository a source for CodeStar Notifications ([#15739](https://github.com/aws/aws-cdk/issues/15739)) ([ae34d4a](https://github.com/aws/aws-cdk/commit/ae34d4a69a5073d8f0175b5282fa8bf92139fab5))
@@ -33,8 +32,8 @@ All notable changes to this project will be documented in this file. See [standa
 * **ses:** drop spam rule appears in the incorrect order ([#16146](https://github.com/aws/aws-cdk/issues/16146)) ([677fedc](https://github.com/aws/aws-cdk/commit/677fedcc5351b8b5346970fac03e5e342f36265b)), closes [#16091](https://github.com/aws/aws-cdk/issues/16091)
 * **sqs:** unable to import a FIFO queue when the queue ARN is a token ([#15976](https://github.com/aws/aws-cdk/issues/15976)) ([a1a65bc](https://github.com/aws/aws-cdk/commit/a1a65bc9a38b06ec51dff462e52b1beb8d421a56)), closes [#12466](https://github.com/aws/aws-cdk/issues/12466)
 * **ssm:** StringParameter.fromStringParameterAttributes cannot accept version as a numeric Token ([#16048](https://github.com/aws/aws-cdk/issues/16048)) ([eb54cd4](https://github.com/aws/aws-cdk/commit/eb54cd416a48708898e30986058491e21125b2f7)), closes [#11913](https://github.com/aws/aws-cdk/issues/11913)
-* (aws-ec2): fix vpc endpoint incorrect issue in China region ([#16139](https://github.com/aws/aws-cdk/issues/16139)) ([0d0db38](https://github.com/aws/aws-cdk/commit/0d0db38e3cdb557b4a641c5993068400847cc7df)), closes [#9864](https://github.com/aws/aws-cdk/issues/9864)
-* KubectlHandler - insecure kubeconfig warning ([#16063](https://github.com/aws/aws-cdk/issues/16063)) ([82dd282](https://github.com/aws/aws-cdk/commit/82dd2822a86431d0aa0be896550d421810b80c67)), closes [#14560](https://github.com/aws/aws-cdk/issues/14560)
+* **ec2:** fix vpc endpoint incorrect issue in China region ([#16139](https://github.com/aws/aws-cdk/issues/16139)) ([0d0db38](https://github.com/aws/aws-cdk/commit/0d0db38e3cdb557b4a641c5993068400847cc7df)), closes [#9864](https://github.com/aws/aws-cdk/issues/9864)
+* **eks:** insecure kubeconfig warning ([#16063](https://github.com/aws/aws-cdk/issues/16063)) ([82dd282](https://github.com/aws/aws-cdk/commit/82dd2822a86431d0aa0be896550d421810b80c67)), closes [#14560](https://github.com/aws/aws-cdk/issues/14560)
 
 
 
