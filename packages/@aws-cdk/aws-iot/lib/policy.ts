@@ -136,7 +136,7 @@ export class Policy extends Resource implements IPolicy {
   }
 
   /**
-   * Adds a statement ot the policy document.
+   * Adds a statement to the policy document.
    */
   public addStatements(...statement: PolicyStatement[]) {
     this.document.addStatements(...statement);
@@ -174,7 +174,7 @@ export class Policy extends Resource implements IPolicy {
   protected validate(): string[] {
     const errors = super.validate();
     if (this.document.isEmpty) {
-      errors.push('Policy document is empty. You must add statements ot the policy');
+      errors.push('Policy document is empty. You must add statements to the policy');
     }
     errors.push(...this.document.validateForAnyPolicy());
     return errors;

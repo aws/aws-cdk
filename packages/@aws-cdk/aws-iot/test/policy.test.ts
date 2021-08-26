@@ -1,16 +1,19 @@
-
-import { expect, haveResource } from '@aws-cdk/assert';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as iot from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'all defaults'(test: Test) {
-    const stack = new Stack();
+let stack: Stack;
 
+beforeEach(() => {
+  stack = new Stack();
+});
+
+describe('IoT Policy', () => {
+  test('all defaults', () => {
+    // WHEN
     new iot.Policy(stack, 'MyIotPolicy', {
       statements: [new iot.PolicyStatement({
         actions: ['iot:Connect'],
@@ -18,7 +21,8 @@ nodeunitShim({
       })],
     });
 
-    expect(stack).to(haveResource('AWS::IoT::Policy', {
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Policy', {
       'PolicyName': 'MyIotPolicyCB76D4D8',
       'PolicyDocument': {
         'Version': '2012-10-17',
@@ -30,12 +34,10 @@ nodeunitShim({
           },
         ],
       },
-    }));
-    test.done();
-  },
-  'specify statements'(test: Test) {
-    const stack = new Stack();
-
+    });
+  });
+  test('specify statements', () => {
+    // WHEN
     new iot.Policy(stack, 'MyIotPolicy', {
       statements: [new iot.PolicyStatement({
         actions: ['iot:Connect'],
@@ -43,7 +45,8 @@ nodeunitShim({
       })],
     });
 
-    expect(stack).to(haveResource('AWS::IoT::Policy', {
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Policy', {
       'PolicyName': 'MyIotPolicyCB76D4D8',
       'PolicyDocument': {
         'Version': '2012-10-17',
@@ -55,11 +58,10 @@ nodeunitShim({
           },
         ],
       },
-    }));
-    test.done();
-  },
-  'specify policyName'(test: Test) {
-    const stack = new Stack();
+    });
+  });
+  test('specify policyName', () => {
+    // WHEN
     new iot.Policy(stack, 'MyIotPolicy', {
       policyName: 'policyName',
       statements: [new iot.PolicyStatement({
@@ -67,13 +69,14 @@ nodeunitShim({
         resources: ['arn:aws:iot:us-east-1:123456789012:client/myClientId'],
       })],
     });
-    expect(stack).to(haveResource('AWS::IoT::Policy', {
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Policy', {
       'PolicyName': 'policyName',
-    }));
-    test.done();
-  },
-  'specify document'(test: Test) {
-    const stack = new Stack();
+    });
+  });
+  test('specify document', () => {
+    // WHEN
     new iot.Policy(stack, 'MyIotPolicy', {
       document: new iot.PolicyDocument({
         statements: [new iot.PolicyStatement({
@@ -82,7 +85,9 @@ nodeunitShim({
         })],
       }),
     });
-    expect(stack).to(haveResource('AWS::IoT::Policy', {
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Policy', {
       'PolicyName': 'MyIotPolicyCB76D4D8',
       'PolicyDocument': {
         'Version': '2012-10-17',
@@ -94,29 +99,25 @@ nodeunitShim({
           },
         ],
       },
-    }));
-    test.done();
-  },
-  'fromPolicyName'(test: Test) {
-    // GIVEN
-    const stack2 = new Stack();
-
+    });
+  });
+  test('fromPolicyName', () => {
     // WHEN
-    const imported = iot.Policy.fromPolicyName(stack2, 'Imported', 'MyIotPolicy');
+    const imported = iot.Policy.fromPolicyName(stack, 'Imported', 'MyIotPolicy');
 
     // THEN
-    test.deepEqual(imported.policyName, 'MyIotPolicy');
-    test.done();
-  },
-  'can provide statements after creation'(test: Test) {
-    const stack = new Stack();
+    expect(imported.policyName).toEqual('MyIotPolicy');
+  });
+  test('can provide statements after creation', () => {
+    // WHEN
     const policy = new iot.Policy(stack, 'MyIotPolicy');
     policy.addStatements(new iot.PolicyStatement({
       actions: ['iot:Connect'],
       resources: ['arn:aws:iot:us-east-1:123456789012:client/myClientId'],
     }));
 
-    expect(stack).to(haveResource('AWS::IoT::Policy', {
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Policy', {
       'PolicyName': 'MyIotPolicyCB76D4D8',
       'PolicyDocument': {
         'Version': '2012-10-17',
@@ -128,11 +129,10 @@ nodeunitShim({
           },
         ],
       },
-    }));
-    test.done();
-  },
-  'can attach policy to certificate'(test: Test) {
-    const stack = new Stack();
+    });
+  });
+  test('can attach policy to certificate', () => {
+    // WHEN
     const statement = new iot.PolicyStatement();
     statement.addActions('iot:Connect');
     statement.addAllResources();
@@ -147,55 +147,66 @@ nodeunitShim({
 
     policy.attachToCertificate(cert);
 
-    expect(stack).to(haveResource('AWS::IoT::PolicyPrincipalAttachment', {
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::PolicyPrincipalAttachment', {
       'PolicyName': 'MyIotPolicyCB76D4D8',
       'Principal': { 'Fn::GetAtt': ['MyCertificate41357985', 'Arn'] },
-    }));
-    test.done();
-  },
-  'provides policy name'(test: Test) {
-    const stack = new Stack();
+    });
+  });
+  test('provides policy name', () => {
+    // WHEN
     const policy = new iot.Policy(stack, 'MyIotPolicy', {
       policyName: 'MyPolicyName',
     });
-    test.deepEqual(policy.policyName, 'MyPolicyName');
-    test.done();
-  },
-  'provides policy arn'(test: Test) {
-    const stack = new Stack();
+
+    // THEN
+    expect(policy.policyName).toEqual('MyPolicyName');
+  });
+  test('provides policy arn', () => {
+    // WHEN
     const policy = new iot.Policy(stack, 'MyIotPolicy');
-    test.deepEqual(stack.resolve(policy.policyArn), {
+
+    // THEN
+    expect(stack.resolve(policy.policyArn)).toEqual({
       'Fn::GetAtt': ['MyIotPolicyCB76D4D8', 'Arn'],
     });
-    test.done();
-  },
-  'fails if policy document is missing actions'(test: Test) {
+  });
+  test('fails if policy document is missing actions', () => {
+    // WHEN
     const app = new App();
-    const stack = new Stack(app, 'MyStack');
+    stack = new Stack(app, 'MyStack');
     new iot.Policy(stack, 'MyIotPolicy', {
       statements: [new iot.PolicyStatement({})],
     });
-    test.throws(() => { app.synth(); }, /An IoT PolicyStatement must specify at least one 'action'./);
-    test.done();
-  },
-  'fails if policy document is missing resources'(test: Test) {
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrowError(/An IoT PolicyStatement must specify at least one 'action'./);
+  });
+  test('fails if policy document is missing resources', () => {
+    // WHEN
     const app = new App();
-    const stack = new Stack(app, 'MyStack');
+    stack = new Stack(app, 'MyStack');
     new iot.Policy(stack, 'MyIotPolicy', {
       statements: [new iot.PolicyStatement({
         actions: ['iot:Connect'],
       })],
     });
-    test.throws(() => { app.synth(); }, /An IoT PolicyStatement must specify at least one 'resource'./);
-    test.done();
-  },
-  'reading policyName forces a Policy to materialize'(test: Test) {
-    const app = new App();
-    const stack = new Stack(app, 'MyStack');
-    const policy = new iot.Policy(stack, 'MyIotPolicy');
-    Array.isArray(policy.policyName);
-    test.throws(() => { app.synth(); }, /You must add statements ot the policy/);
-    test.done();
-  },
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrowError(/An IoT PolicyStatement must specify at least one 'resource'./);
+  });
+  test('reading policyName forces a Policy to materialize', () => {
+    // WHEN
+    // THEN
+    expect(() => {
+      const app = new App();
+      stack = new Stack(app, 'MyStack');
+      const policy = new iot.Policy(stack, 'MyIotPolicy');
+      Array.isArray(policy.policyName);
+      app.synth();
+    }).toThrowError(/You must add statements to the policy/);
+  });
 });
-

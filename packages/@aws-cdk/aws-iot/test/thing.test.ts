@@ -1,37 +1,34 @@
-
-import '@aws-cdk/assert/jest';
-import { expect, haveResource } from '@aws-cdk/assert';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as iot from '../lib';
 
-// to make it easy to copy & paste from output:
-/* eslint-disable quote-props */
+let stack: Stack;
 
-nodeunitShim({
-  'default properties'(test: Test) {
-    const stack = new Stack();
+beforeEach(() => {
+  stack = new Stack();
+});
 
+describe('IoT Thing', () => {
+  test('default properties', () => {
+    // WHEN
     new iot.Thing(stack, 'MyThing');
 
-    expect(stack).to(haveResource('AWS::IoT::Thing'));
-    test.done();
-  },
-  'specify thing name'(test: Test) {
-    const stack = new Stack();
-
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::IoT::Thing', 1);
+  });
+  test('specify name', () => {
+    // WHEN
     new iot.Thing(stack, 'MyThing', {
       thingName: 'thingOne',
     });
 
-    expect(stack).to(haveResource('AWS::IoT::Thing', {
-      'ThingName': 'thingOne',
-    }));
-    test.done();
-  },
-  'specify thing attributes'(test: Test) {
-    const stack = new Stack();
-
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Thing', {
+      ThingName: 'thingOne',
+    });
+  });
+  test('specify thing attributes', () => {
+    // WHEN
     new iot.Thing(stack, 'MyThing', {
       attributePayload: {
         attributes: {
@@ -40,34 +37,32 @@ nodeunitShim({
       },
     });
 
-    expect(stack).to(haveResource('AWS::IoT::Thing', {
-      'AttributePayload': {
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Thing', {
+      AttributePayload: {
         Attributes: {
           hello: 'world',
         },
       },
-    }));
-    test.done();
-  },
-  'throws when given too many attributes'(test: Test) {
-    const stack = new Stack();
-
-    test.throws(() => new iot.Thing(stack, 'MyThing', {
-      attributePayload: {
-        attributes: {
-          one: 'attribute',
-          two: 'attribute',
-          three: 'attribute',
-          four: 'attribute',
+    });
+  });
+  test('throws when given too many attributes', () => {
+    // WHEN
+    expect(() => {
+      new iot.Thing(stack, 'MyThing', {
+        attributePayload: {
+          attributes: {
+            one: 'attribute',
+            two: 'attribute',
+            three: 'attribute',
+            four: 'attribute',
+          },
         },
-      },
-    }), /Invalid thing attributes/);
-
-    test.done();
-  },
-  'attachCertificate()'(test: Test) {
-    const stack = new Stack();
-
+      });
+    }).toThrowError(/Invalid thing attributes/);
+  });
+  test('attachCertificate()', () => {
+    // WHEN
     const cert = new iot.Certificate(stack, 'MyCertificate', {
       status: iot.CertificateStatus.ACTIVE,
       certificateSigningRequest: 'csr',
@@ -76,21 +71,18 @@ nodeunitShim({
     const thing = new iot.Thing(stack, 'MyThing');
     thing.attachCertificate(cert);
 
-    expect(stack).to(haveResource('AWS::IoT::ThingPrincipalAttachment', {
-      'ThingName': 'MyThing0C5333DD',
-      'Principal': { 'Fn::GetAtt': ['MyCertificate41357985', 'Arn'] },
-    }));
-    test.done();
-  },
-  'fromThingName'(test: Test) {
-    // GIVEN
-    const stack2 = new Stack();
-
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::ThingPrincipalAttachment', {
+      ThingName: 'MyThing0C5333DD',
+      Principal: { 'Fn::GetAtt': ['MyCertificate41357985', 'Arn'] },
+    });
+  });
+  test('fromThingName()', () => {
     // WHEN
-    const imported = iot.Thing.fromThingName(stack2, 'Imported', 'thingOne');
+    const imported = iot.Thing.fromThingName(stack, 'Imported', 'thingOne');
 
     // THEN
-    test.deepEqual(stack2.resolve(imported.thingArn), {
+    expect(stack.resolve(imported.thingArn)).toEqual({
       'Fn::Join':
         ['',
           ['arn:',
@@ -101,19 +93,14 @@ nodeunitShim({
             { Ref: 'AWS::AccountId' },
             ':thing/thingOne']],
     });
-    test.deepEqual(imported.thingName, 'thingOne');
-    test.done();
-  },
-  'fromThingArn'(test: Test) {
-    // GIVEN
-    const stack2 = new Stack();
-
+    expect(imported.thingName).toEqual('thingOne');
+  });
+  test('fromThingArn', () => {
     // WHEN
-    const imported = iot.Certificate.fromCertificateArn(stack2, 'Imported', 'arn:aws:iot:us-east-2:*:thing/thingTwo');
+    const imported = iot.Certificate.fromCertificateArn(stack, 'Imported', 'arn:aws:iot:us-east-2:*:thing/thingTwo');
 
     // THEN
-    test.deepEqual(imported.certificateArn, 'arn:aws:iot:us-east-2:*:thing/thingTwo');
-    test.deepEqual(imported.certificateId, 'thingTwo');
-    test.done();
-  },
+    expect(imported.certificateArn).toEqual('arn:aws:iot:us-east-2:*:thing/thingTwo');
+    expect(imported.certificateId).toEqual('thingTwo');
+  });
 });

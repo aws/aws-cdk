@@ -1,4 +1,3 @@
-import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import { PolicyDocument, PolicyStatement } from '../lib';
 

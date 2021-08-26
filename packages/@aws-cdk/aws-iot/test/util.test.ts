@@ -1,14 +1,16 @@
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { parseCertificateArn, parseCertificateId, parsePolicyArn } from '../lib/util';
 
-nodeunitShim({
-  certificateArnFromId: {
-    'produce arn from certificate id'(test: Test) {
-      const stack = new cdk.Stack();
+let stack: cdk.Stack;
+beforeEach(() => {
+  stack = new cdk.Stack();
+});
+describe('utils', () => {
+  describe('parseCertificateArn', () => {
+    test('produce arn from certificate id', () => {
       const certificateId = 'hello';
 
-      test.deepEqual(stack.resolve(parseCertificateArn(stack, { certificateId })), {
+      expect(stack.resolve(parseCertificateArn(stack, { certificateId }))).toEqual({
         'Fn::Join':
           ['',
             ['arn:',
@@ -19,23 +21,20 @@ nodeunitShim({
               { Ref: 'AWS::AccountId' },
               ':cert/hello']],
       });
+    });
+  });
 
-      test.done();
-    },
-  },
-  certificateIdFromArn: {
-    'produce certificate id when given arn'(test: Test) {
-      const stack = new cdk.Stack();
+  describe('parseCertificateId', () => {
+    test('produce certificate id when given arn', () => {
       const certificateArn = 'arn:aws:iot:us-east-1:123456789012:cert/hello';
-      test.deepEqual(parseCertificateId(stack, { certificateArn }), 'hello');
-      test.done();
-    },
-  },
-  policyArnFromId: {
-    'produce arn from policy name'(test: Test) {
-      const stack = new cdk.Stack();
+      expect(parseCertificateId(stack, { certificateArn })).toEqual('hello');
+    });
+  });
+
+  describe('parsePolicyArn', () => {
+    test('produce arn from policy name', () => {
       const policyName = 'hello';
-      test.deepEqual(stack.resolve(parsePolicyArn(stack, policyName)), {
+      expect(stack.resolve(parsePolicyArn(stack, policyName))).toEqual({
         'Fn::Join':
           ['',
             ['arn:',
@@ -46,7 +45,6 @@ nodeunitShim({
               { Ref: 'AWS::AccountId' },
               ':policy/hello']],
       });
-      test.done();
-    },
-  },
+    });
+  });
 });

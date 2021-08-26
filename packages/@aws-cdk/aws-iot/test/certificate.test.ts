@@ -1,76 +1,71 @@
-
-import '@aws-cdk/assert/jest';
-import { expect, haveResource } from '@aws-cdk/assert';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as iot from '../lib';
 
-// to make it easy to copy & paste from output:
-/* eslint-disable quote-props */
+// GIVEN
+let stack: Stack;
+beforeEach(() => {
+  stack = new Stack();
+});
 
-nodeunitShim({
-  'default properties'(test: Test) {
-    const stack = new Stack();
-
+describe('IoT Certificate', () => {
+  test('default properties', () => {
+    // WHEN
     new iot.Certificate(stack, 'MyCertificate', {
       caCertificatePem: 'pem',
     });
 
-    expect(stack).to(haveResource('AWS::IoT::Certificate', {
-      'Status': 'INACTIVE',
-      'CACertificatePem': 'pem',
-      'CertificateMode': 'DEFAULT',
-    }));
-    test.done();
-  },
-  'specify status'(test: Test) {
-    const stack = new Stack();
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Certificate', {
+      Status: 'INACTIVE',
+      CACertificatePem: 'pem',
+      CertificateMode: 'DEFAULT',
+    });
+  });
 
+  test('specify status', () => {
+    // WHEN
     new iot.Certificate(stack, 'MyCertificate', {
       status: iot.CertificateStatus.ACTIVE,
       certificateSigningRequest: 'csr',
     });
 
-    expect(stack).to(haveResource('AWS::IoT::Certificate', {
-      'Status': 'ACTIVE',
-      'CertificateSigningRequest': 'csr',
-    }));
-    test.done();
-  },
-  'specify certificate mode'(test: Test) {
-    const stack = new Stack();
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Certificate', {
+      Status: 'ACTIVE',
+      CertificateSigningRequest: 'csr',
+    });
+  });
 
+  test('specify certificate mode', () => {
+    // WHEN
     new iot.Certificate(stack, 'MyCertificate', {
       certificateMode: iot.CertificateMode.SNI_ONLY,
       certificatePem: 'pem',
     });
 
-    expect(stack).to(haveResource('AWS::IoT::Certificate', {
-      'Status': 'INACTIVE',
-      'CertificateMode': 'SNI_ONLY',
-      'CertificatePem': 'pem',
-    }));
-    test.done();
-  },
-  'throws if pem provided to SNI_ONLY certificate'(test: Test) {
-    const stack = new Stack();
-
-    test.throws(() => new iot.Certificate(stack, 'MyCertificate', {
-      caCertificatePem: 'pem',
-      certificateMode: iot.CertificateMode.SNI_ONLY,
-    }), /Certificate invalid./);
-
-    test.done();
-  },
-  'throws when nothing provided'(test: Test) {
-    const stack = new Stack();
-
-    test.throws(() => new iot.Certificate(stack, 'MyCertificate'), /Certificate invalid./);
-
-    test.done();
-  },
-  'attachPolicy()'(test: Test) {
-    const stack = new Stack();
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Certificate', {
+      Status: 'INACTIVE',
+      CertificateMode: 'SNI_ONLY',
+      CertificatePem: 'pem',
+    });
+  });
+  test('throws if pem provided to SNI_ONLY certificate', () => {
+    expect(() => {
+      new iot.Certificate(stack, 'MyCertificate', {
+        caCertificatePem: 'pem',
+        certificateMode: iot.CertificateMode.SNI_ONLY,
+      });
+    }).toThrowError(/Certificate invalid./);
+  });
+  test('throws when nothing provided', () => {
+    expect(() => {
+      new iot.Certificate(stack, 'MyCertificate');
+    }).toThrowError(/Certificate invalid./);
+  });
+  test('attachPolicy()', () => {
+    // WHEN
     const statement = new iot.PolicyStatement();
     statement.addActions('iot:Connect');
     statement.addAllResources();
@@ -86,15 +81,16 @@ nodeunitShim({
 
     cert.attachPolicy(policy);
 
-    expect(stack).to(haveResource('AWS::IoT::PolicyPrincipalAttachment', {
-      'PolicyName': 'MyIotPolicyCB76D4D8',
-      'Principal': { 'Fn::GetAtt': ['MyCertificate41357985', 'Arn'] },
-    }));
-    test.done();
-  },
-  'attachThing()'(test: Test) {
-    const stack = new Stack();
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::PolicyPrincipalAttachment', {
+      PolicyName: 'MyIotPolicyCB76D4D8',
+      Principal: { 'Fn::GetAtt': ['MyCertificate41357985', 'Arn'] },
+    });
+  });
 
+  test('attachThing()', () => {
+
+    // WHEN
     const cert = new iot.Certificate(stack, 'MyCertificate', {
       status: iot.CertificateStatus.ACTIVE,
       certificateSigningRequest: 'csr',
@@ -104,54 +100,38 @@ nodeunitShim({
 
     cert.attachThing(thing);
 
-    expect(stack).to(haveResource('AWS::IoT::ThingPrincipalAttachment', {
-      'ThingName': 'MyThing0C5333DD',
-      'Principal': { 'Fn::GetAtt': ['MyCertificate41357985', 'Arn'] },
-    }));
-    test.done();
-  },
-  'fromCertificateId'(test: Test) {
-    // GIVEN
-    const stack2 = new Stack();
-
-    // WHEN
-    const imported = iot.Certificate.fromCertificateId(stack2, 'Imported', '1234567890');
-
     // THEN
-    test.deepEqual(stack2.resolve(imported.certificateArn), {
-      'Fn::Join':
-        ['',
-          ['arn:',
-            { Ref: 'AWS::Partition' },
-            ':iot:',
-            { Ref: 'AWS::Region' },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':cert/1234567890']],
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::ThingPrincipalAttachment', {
+      ThingName: 'MyThing0C5333DD',
+      Principal: { 'Fn::GetAtt': ['MyCertificate41357985', 'Arn'] },
     });
-    test.deepEqual(imported.certificateId, '1234567890');
-    test.done();
-  },
-  'fromCertificateArn'(test: Test) {
-    // GIVEN
-    const stack2 = new Stack();
+  });
 
+  test('fromCertificateId', () => {
     // WHEN
-    const imported = iot.Certificate.fromCertificateArn(stack2, 'Imported', 'arn:aws:iot::us-east-2:*:cert/1234567890');
+    const imported = iot.Certificate.fromCertificateId(stack, 'Imported', '1234567890');
+    // THEN
+    expect(imported.certificateArn.includes('1234567890')).toEqual(true);
+  });
+  test('fromCertificateArn', () => {
+    // WHEN
+    const imported = iot.Certificate.fromCertificateArn(
+      stack,
+      'Imported',
+      'arn:aws:iot::us-east-2:*:cert/1234567890');
 
     // THEN
-    test.deepEqual(imported.certificateArn, 'arn:aws:iot::us-east-2:*:cert/1234567890');
-    test.deepEqual(imported.certificateId, '1234567890');
-    test.done();
-  },
-  'provides certificate arn'(test: Test) {
-    const stack = new Stack();
+    expect(imported.certificateArn).toEqual('arn:aws:iot::us-east-2:*:cert/1234567890');
+    expect(imported.certificateId).toEqual('1234567890');
+  });
+  test('provides certificate ARN', () => {
+    // WHEN
     const cert = new iot.Certificate(stack, 'MyIotCertificate', {
       certificateSigningRequest: 'csr',
     });
-    test.deepEqual(stack.resolve(cert.certificateArn), {
+    // THEN
+    expect(stack.resolve(cert.certificateArn)).toEqual({
       'Fn::GetAtt': ['MyIotCertificate84152F23', 'Arn'],
     });
-    test.done();
-  },
+  });
 });
