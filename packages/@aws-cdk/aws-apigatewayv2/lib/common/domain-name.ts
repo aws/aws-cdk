@@ -84,6 +84,10 @@ export class DomainName extends Resource implements IDomainName {
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
 
+    if (props.domainName === '') {
+      throw new Error('empty string for domainName not allowed');
+    }
+
     const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,
       domainNameConfigurations: [

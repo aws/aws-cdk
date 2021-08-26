@@ -6,10 +6,25 @@ const s3 = new S3();
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   switch (event.RequestType) {
     case 'Create':
-    case 'Update':
       return;
+    case 'Update':
+      return onUpdate(event);
     case 'Delete':
-      return onDelete(event);
+      return onDelete(event.ResourceProperties?.BucketName);
+  }
+}
+
+async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
+  const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
+  const oldBucketName = updateEvent.OldResourceProperties?.BucketName;
+  const newBucketName = updateEvent.ResourceProperties?.BucketName;
+  const bucketNameHasChanged = newBucketName != null && oldBucketName != null && newBucketName !== oldBucketName;
+
+  /* If the name of the bucket has changed, CloudFormation will try to delete the bucket
+     and create a new one with the new name. So we have to delete the contents of the
+     bucket so that this operation does not fail. */
+  if (bucketNameHasChanged) {
+    return onDelete(oldBucketName);
   }
 }
 
@@ -23,7 +38,7 @@ async function emptyBucket(bucketName: string) {
   const contents = [...listedObjects.Versions ?? [], ...listedObjects.DeleteMarkers ?? []];
   if (contents.length === 0) {
     return;
-  };
+  }
 
   const records = contents.map((record: any) => ({ Key: record.Key, VersionId: record.VersionId }));
   await s3.deleteObjects({ Bucket: bucketName, Delete: { Objects: records } }).promise();
@@ -33,8 +48,7 @@ async function emptyBucket(bucketName: string) {
   }
 }
 
-async function onDelete(deleteEvent: AWSLambda.CloudFormationCustomResourceDeleteEvent) {
-  const bucketName = deleteEvent.ResourceProperties?.BucketName;
+async function onDelete(bucketName?: string) {
   if (!bucketName) {
     throw new Error('No BucketName was provided.');
   }

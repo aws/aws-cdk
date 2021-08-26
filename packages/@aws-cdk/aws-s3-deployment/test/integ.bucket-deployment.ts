@@ -46,6 +46,13 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false,
     });
 
+    new s3deploy.BucketDeployment(this, 'DeployMeWithExcludedFilesOnDestination', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket,
+      exclude: ['*.gif'],
+      retainOnDelete: false,
+    });
+
   }
 }
 
