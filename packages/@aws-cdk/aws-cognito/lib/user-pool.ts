@@ -430,6 +430,26 @@ export enum AccountRecovery {
 }
 
 /**
+ * Device tracking settings
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+ */
+export interface DeviceTracking {
+  /**
+   * Indicates whether a challenge is required on a new device. Only applicable to a new device.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+   * @default false
+   */
+  readonly challengeRequiredOnNewDevice: boolean;
+
+  /**
+   * If true, a device is only remembered on user prompt.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+   * @default false
+   */
+  readonly deviceOnlyRememberedOnUserPrompt: boolean;
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -581,6 +601,12 @@ export interface UserPoolProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Device tracking settings
+   * @default - see defaults on each property of DeviceTracking.
+   */
+  readonly deviceTracking?: DeviceTracking;
 }
 
 /**
@@ -787,6 +813,7 @@ export class UserPool extends UserPoolBase {
         caseSensitive: props.signInCaseSensitive,
       }),
       accountRecoverySetting: this.accountRecovery(props),
+      deviceConfiguration: props.deviceTracking,
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
 

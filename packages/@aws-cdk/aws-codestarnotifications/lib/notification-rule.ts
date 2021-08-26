@@ -62,7 +62,7 @@ export interface NotificationRuleProps extends NotificationRuleOptions {
 
   /**
    * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
-   * Currently, Supported sources include pipelines in AWS CodePipeline and build projects in AWS CodeBuild in this L2 constructor.
+   * Currently, Supported sources include pipelines in AWS CodePipeline, build projects in AWS CodeBuild, and repositories in AWS CodeCommit in this L2 constructor.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codestarnotifications-notificationrule.html#cfn-codestarnotifications-notificationrule-resource
    */
   readonly source: INotificationRuleSource;
