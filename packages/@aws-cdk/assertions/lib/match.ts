@@ -55,6 +55,14 @@ export abstract class Match {
   public static objectEquals(pattern: {[key: string]: any}): Matcher {
     return new ObjectMatch('objectEquals', pattern, { partial: false });
   }
+
+  /**
+   * Matches any target which does NOT follow the specified pattern.
+   * @param pattern the pattern to NOT match
+   */
+  public static not(pattern: any): Matcher {
+    return new NotMatch('not', pattern);
+  }
 }
 
 /**
@@ -82,7 +90,6 @@ class LiteralMatch extends Matcher {
 
     super();
     this.partialObjects = options.partialObjects ?? false;
-    this.name = 'exact';
 
     if (Matcher.isMatcher(this.pattern)) {
       throw new Error('LiteralMatch cannot directly contain another matcher. ' +
@@ -99,7 +106,7 @@ class LiteralMatch extends Matcher {
       return new ObjectMatch(this.name, this.pattern, { partial: this.partialObjects }).test(actual);
     }
 
-    const result = new MatchResult();
+    const result = new MatchResult(actual);
     if (typeof this.pattern !== typeof actual) {
       result.push(this, [], `Expected type ${typeof this.pattern} but received ${getType(actual)}`);
       return result;
@@ -143,25 +150,20 @@ class ArrayMatch extends Matcher {
 
     super();
     this.partial = options.subsequence ?? true;
-    if (this.partial) {
-      this.name = 'arrayWith';
-    } else {
-      this.name = 'arrayEquals';
-    }
   }
 
   public test(actual: any): MatchResult {
     if (!Array.isArray(actual)) {
-      return new MatchResult().push(this, [], `Expected type array but received ${getType(actual)}`);
+      return new MatchResult(actual).push(this, [], `Expected type array but received ${getType(actual)}`);
     }
     if (!this.partial && this.pattern.length !== actual.length) {
-      return new MatchResult().push(this, [], `Expected array of length ${this.pattern.length} but received ${actual.length}`);
+      return new MatchResult(actual).push(this, [], `Expected array of length ${this.pattern.length} but received ${actual.length}`);
     }
 
     let patternIdx = 0;
     let actualIdx = 0;
 
-    const result = new MatchResult();
+    const result = new MatchResult(actual);
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
       const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
@@ -211,19 +213,14 @@ class ObjectMatch extends Matcher {
 
     super();
     this.partial = options.partial ?? true;
-    if (this.partial) {
-      this.name = 'objectLike';
-    } else {
-      this.name = 'objectEquals';
-    }
   }
 
   public test(actual: any): MatchResult {
     if (typeof actual !== 'object' || Array.isArray(actual)) {
-      return new MatchResult().push(this, [], `Expected type object but received ${getType(actual)}`);
+      return new MatchResult(actual).push(this, [], `Expected type object but received ${getType(actual)}`);
     }
 
-    const result = new MatchResult();
+    const result = new MatchResult(actual);
     if (!this.partial) {
       for (const a of Object.keys(actual)) {
         if (!(a in this.pattern)) {
@@ -250,6 +247,26 @@ class ObjectMatch extends Matcher {
       result.compose(`/${patternKey}`, inner);
     }
 
+    return result;
+  }
+}
+
+class NotMatch extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: {[key: string]: any}) {
+
+    super();
+  }
+
+  public test(actual: any): MatchResult {
+    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
+
+    const innerResult = matcher.test(actual);
+    const result = new MatchResult(actual);
+    if (innerResult.failCount === 0) {
+      result.push(this, [], `Found unexpected match: ${JSON.stringify(actual, undefined, 2)}`);
+    }
     return result;
   }
 }
