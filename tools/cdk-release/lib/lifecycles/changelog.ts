@@ -42,18 +42,18 @@ export async function writeChangelogs(opts: WriteChangelogOptions): Promise<Chan
     return [];
   }
 
-  const experimentalChangesTreatment = opts.experimentalChangesTreatment ?? 'include';
+  const experimentalChangesTreatment = opts.experimentalChangesTreatment ?? ExperimentalChangesTreatment.INCLUDE;
   const alphaPackages = opts.packages.filter(p => p.alpha);
   const stableCommits = filterCommits(opts.commits, { excludePackages: alphaPackages.map(p => p.name) });
 
   switch (experimentalChangesTreatment) {
     case ExperimentalChangesTreatment.INCLUDE:
-      const includeContents = await changelog(opts, opts.currentVersion.stableVersion, opts.newVersion.stableVersion, opts.commits);
-      return [{ filePath: opts.changelogFile, fileContents: includeContents }];
+      const allContents = await changelog(opts, opts.currentVersion.stableVersion, opts.newVersion.stableVersion, opts.commits);
+      return [{ filePath: opts.changelogFile, fileContents: allContents }];
 
     case ExperimentalChangesTreatment.STRIP:
-      const stripContents = await changelog(opts, opts.currentVersion.stableVersion, opts.newVersion.stableVersion, stableCommits);
-      return [{ filePath: opts.changelogFile, fileContents: stripContents }];
+      const strippedContents = await changelog(opts, opts.currentVersion.stableVersion, opts.newVersion.stableVersion, stableCommits);
+      return [{ filePath: opts.changelogFile, fileContents: strippedContents }];
 
     case ExperimentalChangesTreatment.SEPARATE:
       if (!opts.currentVersion.alphaVersion || !opts.newVersion.alphaVersion) {

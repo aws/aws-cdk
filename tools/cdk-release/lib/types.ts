@@ -45,7 +45,7 @@ export interface ReleaseOptions {
 
   /**
    * How to handle experimental changes in the changelog.
-   * @default 'include'
+   * @default ExperimentalChangesTreatment.INCLUDE
    */
   experimentalChangesTreatment?: ExperimentalChangesTreatment;
   changeLogHeader?: string;
