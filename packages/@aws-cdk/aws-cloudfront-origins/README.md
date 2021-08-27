@@ -33,6 +33,24 @@ CloudFront's redirect and error handling will be used. In the latter case, the O
 underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
 URLs and not S3 URLs directly. Alternatively, a custom origin access identity can be passed to the S3 origin in the properties.
 
+### Adding Custom Headers
+
+You can configure CloudFront to add custom headers to the requests that it sends to your origin. These custom headers enable you to send and gather information from your origin that you don’t get with typical viewer requests. These headers can even be customized for each origin. CloudFront supports custom headers for both for custom and Amazon S3 origins.
+
+```ts
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as origins from '@aws-cdk/aws-cloudfront-origins';
+
+const myBucket = new s3.Bucket(this, 'myBucket');
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.S3Origin(myBucket, {
+    customHeaders: {
+      Foo: 'bar',
+    },
+  })},
+});
+```
+
 ## ELBv2 Load Balancer
 
 An Elastic Load Balancing (ELB) v2 load balancer may be used as an origin. In order for a load balancer to serve as an origin, it must be publicly
