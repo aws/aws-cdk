@@ -238,6 +238,35 @@ target array. Out of order will be recorded as a match failure.
 Alternatively, the `Match.arrayEquals()` API can be used to assert that the target is
 exactly equal to the pattern array.
 
+### Not Matcher
+
+The not matcher inverts the search pattern and matches all patterns in the path that does
+not match the pattern specified.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Flob", "Cat"]
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: Match.not(['Flob']),
+});
+
+// The following will throw an assertion error
+assert.hasResourceProperties('Foo::Bar', Match.objectLike({
+  Fred: Match.not(['Flob', 'Cat']);
+}});
+```
+
 ## Strongly typed languages
 
 Some of the APIs documented above, such as `templateMatches()` and
