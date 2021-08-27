@@ -2,7 +2,6 @@ import { CfnDistribution, IOrigin, OriginBase, OriginBindConfig, OriginBindOptio
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { IBucket } from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
 
 /** Used for testing common Origin functionality */
@@ -11,10 +10,6 @@ export class TestOrigin extends OriginBase {
   protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
     return { originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY };
   }
-}
-
-export class TestS3Origin extends OriginBase {
-  constructor(bucket: IBucket, props: OriginProps = {}) { super(bucket.bucketRegionalDomainName, props); }
 }
 
 export class TestOriginGroup implements IOrigin {

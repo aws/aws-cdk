@@ -1,7 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
-import { Bucket } from '@aws-cdk/aws-s3';
 import { App, Stack, Duration } from '@aws-cdk/core';
-import { TestOrigin, TestS3Origin } from './test-origin';
+import { TestOrigin } from './test-origin';
 
 let app: App;
 let stack: Stack;
@@ -61,11 +60,9 @@ test.each(['us-east-1', 'ap-southeast-2', 'eu-west-3', 'me-south-1'])
 });
 
 test('throw an error if Custom Headers keys are not permitted', () => {
-  const bucket = new Bucket(stack, 'Bucket');
-
   // case sensitive
   expect(() => {
-    new TestS3Origin(bucket, {
+    new TestOrigin('example.com', {
       customHeaders: {
         Host: 'bad',
         Cookie: 'bad',
@@ -77,7 +74,7 @@ test('throw an error if Custom Headers keys are not permitted', () => {
 
   // case insensitive
   expect(() => {
-    new TestS3Origin(bucket, {
+    new TestOrigin('example.com', {
       customHeaders: {
         hOst: 'bad',
         cOOkIe: 'bad',
@@ -89,11 +86,9 @@ test('throw an error if Custom Headers keys are not permitted', () => {
 });
 
 test('throw an error if Custom Headers are pre-fixed with non-permitted keys', () => {
-  const bucket = new Bucket(stack, 'Bucket');
-
   // case sensitive
   expect(() => {
-    new TestS3Origin(bucket, {
+    new TestOrigin('example.com', {
       customHeaders: {
         'X-Amz-dummy': 'bad',
         'X-Edge-dummy': 'bad',
@@ -103,7 +98,7 @@ test('throw an error if Custom Headers are pre-fixed with non-permitted keys', (
 
   // case insensitive
   expect(() => {
-    new TestS3Origin(bucket, {
+    new TestOrigin('example.com', {
       customHeaders: {
         'x-amZ-dummy': 'bad',
         'x-eDgE-dummy': 'bad',
