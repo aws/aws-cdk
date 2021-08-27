@@ -139,17 +139,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       console.log("foo2");
     const targetProps = props.notificationTarget ? props.notificationTarget.bind(this, this) : undefined;
     const notificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;
-    //const roleArn = this._role ? this.role.roleArn : undefined;
-    // this rework is horrible; it's null by default, only so that we can check if it was assigned (if it's still null then it wasn't)
-    // and so if it wasn't assigned (to undefined), we need to set it
-    let roleArn = null;
-
-    try { this.role; } catch (e) { roleArn = undefined; }
-      console.log("foo3");
-
-      if (roleArn === null) {
-        roleArn = this.role.roleArn;
-      }
+    const roleArn = this._role ? this.role.roleArn : undefined;
       console.log("foo4");
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
@@ -165,16 +155,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     // A LifecycleHook resource is going to do a permissions test upon creation,
     // so we have to make sure the role has full permissions before creating the
     // lifecycle hook.
-    //if (this.role) {
-     // resource.node.addDependency(this.role);
-    //}
-
-    let role = true;
-
-    try { this.role }
-    catch (e) { role = false; }
-
-    if (role) {
+    if (this._role) {
       resource.node.addDependency(this.role);
     }
 
