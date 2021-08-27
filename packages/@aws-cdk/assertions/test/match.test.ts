@@ -237,7 +237,7 @@ describe('Matchers', () => {
       expectFailure(matcher, ['foo', 'bar'], [msg]);
     });
 
-    test('nested', () => {
+    test('as a nested matcher', () => {
       matcher = Match.exact({
         foo: { bar: Match.not([1, 2]) },
       });
@@ -254,6 +254,31 @@ describe('Matchers', () => {
         '  1,',
         '  2',
         '] at /foo/bar',
+      ].join('\n');
+      expectFailure(matcher, {
+        foo: { bar: [1, 2] },
+      }, [msg]);
+    });
+
+    test('with nested matcher', () => {
+      matcher = Match.not({
+        foo: { bar: Match.arrayWith([1]) },
+      });
+
+      expectPass(matcher, {
+        foo: { bar: [2] },
+      });
+      expectPass(matcher, 'foo');
+
+      const msg = [
+        'Found unexpected match: {',
+        '  "foo": {',
+        '    "bar": [',
+        '      1,',
+        '      2',
+        '    ]',
+        '  }',
+        '}',
       ].join('\n');
       expectFailure(matcher, {
         foo: { bar: [1, 2] },
