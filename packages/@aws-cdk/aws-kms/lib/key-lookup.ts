@@ -1,6 +1,5 @@
 /**
  * Properties for looking up an existing Key.
- *
  */
 export interface KeyLookupOptions {
   /**

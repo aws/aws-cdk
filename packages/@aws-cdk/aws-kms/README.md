@@ -74,7 +74,7 @@ const myKeyImported = kms.Key.fromKeyArn(this, 'MyImportedKey', 'arn:aws:...');
 myKeyImported.addAlias('alias/foo');
 ```
 
-Note that a call to `.addToPolicy(statement)` on `myKeyImported` will not have
+Note that a call to `.addToResourcePolicy(statement)` on `myKeyImported` will not have
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
 
@@ -99,7 +99,7 @@ have a reference to the underlying KMS Key.
 
 If you can't use a KMS key imported by alias (e.g. because you need access to the key id), you can lookup the key with `Key.fromLookup()`.
 
-In generel, the preferred method would be to use `Alias.fromAliasName()` which returns an `IAlias` object which extends `IKey`. However, some services need to have access to the underlying key id. In this case, `Key.fromLookup()` allows to lookup the key id.
+In general, the preferred method would be to use `Alias.fromAliasName()` which returns an `IAlias` object which extends `IKey`. However, some services need to have access to the underlying key id. In this case, `Key.fromLookup()` allows to lookup the key id.
 
 The result of the `Key.fromLookup()` operation will be written to a file
 called `cdk.context.json`. You must commit this file to source control so
@@ -116,14 +116,10 @@ const myKeyLookup = kms.Key.fromLookup(this, 'MyKeyLookup', {
 const role = new iam.Role(this, 'MyRole', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
-role.addToPolicy(new iam.PolicyStatement({
-  actions: ['kms:*'],
-  effect: iam.Effect.ALLOW,
-  resources: [myKeyLookup.keyArn],
-}));
+myKeyLookup.grantEncryptDecrypt(role);
 ```
 
-Note that a call to `.addToPolicy(statement)` on `myKeyLookup` will not have
+Note that a call to `.addToResourcePolicy(statement)` on `myKeyLookup` will not have
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
 

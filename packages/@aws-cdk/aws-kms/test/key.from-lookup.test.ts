@@ -29,7 +29,13 @@ test('return correct key', () => {
   });
 
   expect(key.keyId).toEqual('12345678-1234-1234-1234-123456789012');
-  expect(key.keyArn).toEqual('arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');
+  expect(stack.resolve(key.keyArn)).toEqual({
+    'Fn::Join': ['', [
+      'arn:',
+      { Ref: 'AWS::Partition' },
+      ':kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012',
+    ]],
+  });
 
   restoreContextProvider(previous);
 });

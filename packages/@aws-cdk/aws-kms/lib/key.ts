@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration, Token, ContextProvider } from '@aws-cdk/core';
+import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration, Token, ContextProvider, Arn } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
@@ -542,7 +542,7 @@ export class Key extends KeyBase {
    * This function only needs to be used to use Keys not defined in your CDK
    * application. If you are looking to share a Key between stacks, you can
    * pass the `Key` object between stacks and use it as normal. In addition,
-   * it's not necessary to use this method if an interface accepcts an `IKey`.
+   * it's not necessary to use this method if an interface accepts an `IKey`.
    * In this case, `Alias.fromAliasName()` can be used which returns an alias
    * that extends `IKey`.
    *
@@ -587,7 +587,7 @@ export class Key extends KeyBase {
     }).value;
 
     return new Import(attributes.keyId,
-      `arn:aws:kms:${Stack.of(scope).region}:${Stack.of(scope).account}:key/${attributes.keyId}`);
+      Arn.format({ resource: 'key', service: 'kms', resourceName: attributes.keyId }, Stack.of(scope)));
   }
 
   public readonly keyArn: string;
