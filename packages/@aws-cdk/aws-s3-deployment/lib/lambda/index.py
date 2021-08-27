@@ -128,35 +128,36 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
     contents_dir=os.path.join(workdir, 'contents')
     os.mkdir(contents_dir)
 
-    # download the archive from the source and extract to "contents"
-    for s3_source_zip in s3_source_zips:
-        archive=os.path.join(workdir, str(uuid4()))
-        logger.info("archive: %s" % archive)
-        aws_command("s3", "cp", s3_source_zip, archive)
-        logger.info("| extracting archive to: %s\n" % contents_dir)
-        with ZipFile(archive, "r") as zip:
-          zip.extractall(contents_dir)
+    try:
+        # download the archive from the source and extract to "contents"
+        for s3_source_zip in s3_source_zips:
+            archive=os.path.join(workdir, str(uuid4()))
+            logger.info("archive: %s" % archive)
+            aws_command("s3", "cp", s3_source_zip, archive)
+            logger.info("| extracting archive to: %s\n" % contents_dir)
+            with ZipFile(archive, "r") as zip:
+              zip.extractall(contents_dir)
 
-    # sync from "contents" to destination
+        # sync from "contents" to destination
 
-    s3_command = ["s3", "sync"]
+        s3_command = ["s3", "sync"]
 
-    if prune:
-      s3_command.append("--delete")
+        if prune:
+          s3_command.append("--delete")
 
-    if exclude:
-      for filter in exclude:
-        s3_command.extend(["--exclude", filter])
+        if exclude:
+          for filter in exclude:
+            s3_command.extend(["--exclude", filter])
 
-    if include:
-      for filter in include:
-        s3_command.extend(["--include", filter])
+        if include:
+          for filter in include:
+            s3_command.extend(["--include", filter])
 
-    s3_command.extend([contents_dir, s3_dest])
-    s3_command.extend(create_metadata_args(user_metadata, system_metadata))
-    aws_command(*s3_command)
-
-    shutil.rmtree(workdir)
+        s3_command.extend([contents_dir, s3_dest])
+        s3_command.extend(create_metadata_args(user_metadata, system_metadata))
+        aws_command(*s3_command)
+    finally:
+        shutil.rmtree(workdir)
 
 #---------------------------------------------------------------------------------------------------
 # invalidate files in the CloudFront distribution edge caches

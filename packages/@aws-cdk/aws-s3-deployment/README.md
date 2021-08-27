@@ -255,7 +255,7 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket,
     destinationKeyPrefix: 'efs/',
-    enableTempEfsStorage: true,
+    useEfs: true,
     vpc: new ec2.Vpc(this, 'Vpc'),
     retainOnDelete: false,
 });
