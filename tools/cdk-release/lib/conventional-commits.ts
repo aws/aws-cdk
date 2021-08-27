@@ -96,20 +96,21 @@ export async function getConventionalCommitsFromGitHistory(args: ReleaseOptions,
  */
 export interface FilterCommitsOptions {
   /**
-   * Scopes matching these simplified package names (and variants) will be excluded from the commits returned.
-   * Package names should be provided as simplified package names (e.g., 'aws-foo' for '@aws-cdk/aws-foo')
+   * Scopes matching these package names (and variants) will be excluded from the commits returned.
+   * @default - No packages are excluded.
    **/
   excludePackages?: string[];
 
   /**
-   * If provided, scopes matching these names (and variants) will be the *only commits* considered.
-   * Package names should be provided as simplified package names (e.g., 'aws-foo' for '@aws-cdk/aws-foo')
+   * If provided, scopes matching these package names (and variants) will be the *only commits* considered.
+   * @default - All packages are included.
    **/
   includePackages?: string[];
 }
 
 /**
  * Filters commits based on package scopes and inclusion/exclusion criteria.
+ * If `opts.includePackages` is provided, commits without scopes will not be included.
  *
  * @param commits the array of Conventional Commits to filter
  * @param opts filtering options; if none are provided, all commits are returned.
@@ -124,7 +125,9 @@ export function filterCommits(commits: ConventionalCommit[], opts: FilterCommits
 }
 
 function createScopeVariations(names: string[]) {
-  return flatMap(names, (pkgName) => [
+  const simplifiedNames = names.map(n => n.replace(/^@aws-cdk\//, ''));
+
+  return flatMap(simplifiedNames, (pkgName) => [
     pkgName,
     ...(pkgName.startsWith('aws-')
       ? [

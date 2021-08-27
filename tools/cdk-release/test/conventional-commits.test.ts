@@ -53,7 +53,7 @@ describe('filterCommits', () => {
   });
 
   test('excludePackages removes commits matching scope', () => {
-    const filteredCommits = filterCommits(commits, { excludePackages: ['aws-experimental'] });
+    const filteredCommits = filterCommits(commits, { excludePackages: ['@aws-cdk/aws-experimental'] });
 
     expect(filteredCommits.length).toEqual(2);
     expect(filteredCommits.map(c => c.scope)).not.toContain('aws-experimental');
@@ -67,14 +67,14 @@ describe('filterCommits', () => {
       commitWithScope('aws.experimental'),
     ];
 
-    const filteredCommits = filterCommits(experimentalCommits, { excludePackages: ['aws-experimental'] });
+    const filteredCommits = filterCommits(experimentalCommits, { excludePackages: ['@aws-cdk/aws-experimental'] });
 
     expect(filteredCommits.length).toEqual(1);
     expect(filteredCommits[0].scope).toEqual('aws.experimental');
   });
 
   test('includePackages only includes commits matching scope', () => {
-    const filteredCommits = filterCommits(commits, { includePackages: ['aws-stable'] });
+    const filteredCommits = filterCommits(commits, { includePackages: ['@aws-cdk/aws-stable'] });
 
     expect(filteredCommits.length).toEqual(1);
     expect(filteredCommits[0].scope).toEqual('aws-stable');
@@ -88,7 +88,7 @@ describe('filterCommits', () => {
       commitWithScope('notstable'),
     ];
 
-    const filteredCommits = filterCommits(stableCommits, { includePackages: ['aws-stable'] });
+    const filteredCommits = filterCommits(stableCommits, { includePackages: ['@aws-cdk/aws-stable'] });
 
     expect(filteredCommits.length).toEqual(3);
     expect(filteredCommits.map(c => c.scope)).not.toContain('notstable');
@@ -96,8 +96,8 @@ describe('filterCommits', () => {
 
   test('excludes criteria are run after includes', () => {
     const filteredCommits = filterCommits(commits, {
-      includePackages: ['aws-stable', 'aws-experimental'],
-      excludePackages: ['aws-experimental'],
+      includePackages: ['@aws-cdk/aws-stable', '@aws-cdk/aws-experimental'],
+      excludePackages: ['@aws-cdk/aws-experimental'],
     });
 
     expect(filteredCommits.length).toEqual(1);

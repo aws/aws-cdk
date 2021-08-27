@@ -35,6 +35,7 @@ export interface ReleaseOptions {
   skip?: LifecyclesSkip;
   versionFile: string;
   changelogFile: string;
+  alphaChangelogFile?: string;
   prerelease?: string;
   scripts?: Lifecycles;
   dryRun?: boolean;
@@ -53,7 +54,7 @@ export interface ReleaseOptions {
 }
 
 export interface PackageInfo {
-  simplifiedName: string;
+  name: string;
   location: string;
-  unstable: boolean;
+  alpha: boolean;
 }

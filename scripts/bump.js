@@ -71,6 +71,7 @@ async function main() {
     // Rename some options to match cdk-release inputs (replaces bumpFiles, packageFiles, and infile)
     opts.versionFile = ver.versionFile;
     opts.changelogFile = ver.changelogFile;
+    opts.alphaChangelogFile = ver.alphaChangelogFile;
     console.error("🎉 Calling our 'cdk-release' package to make the bump");
     console.error("ℹ️ Set the LEGACY_BUMP env variable to use the old 'standard-version' bump instead");
     const cdkRelease = require('cdk-release');

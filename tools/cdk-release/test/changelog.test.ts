@@ -19,37 +19,39 @@ describe('writeChangelogs', () => {
     buildCommit({ type: 'feat', scope: 'aws-experimental', subject: 'new experimental feat' }),
   ];
   const packages: PackageInfo[] = [
-    { simplifiedName: 'aws-stable', unstable: false, location: 'aws-stable' },
-    { simplifiedName: 'aws-experimental', unstable: true, location: 'aws-experimental' },
+    { name: 'aws-stable', alpha: false, location: 'aws-stable' },
+    { name: 'aws-experimental', alpha: true, location: 'aws-experimental' },
   ];
 
-  test('does nothing if skip.changelog is set', async () => {
-    const changelogResult = await writeChangelogs(
-      { ...args, skip: { changelog: true } },
-      currentVersion,
-      newVersion,
-      commits,
-      packages,
-    );
+  const defaultWriteChangelogOpts = {
+    ...args,
+    currentVersion,
+    newVersion,
+    commits,
+    packages,
+  };
 
-    expect(Object.values(changelogResult)).toEqual([]);
+  test('does nothing if skip.changelog is set', async () => {
+    const changelogResult = await writeChangelogs({ ...defaultWriteChangelogOpts, skip: { changelog: true } });
+
+    expect(changelogResult).toEqual([]);
   });
 
-  test('defaults changelogExperimentalChanges to "include"', async () => {
-    const changelogResultDefault = await writeChangelogs(
-      { ...args, experimentalChangesTreatment: undefined },
-      currentVersion, newVersion, commits, packages);
-    const changelogResultInclude = await writeChangelogs(
-      { ...args, experimentalChangesTreatment: ExperimentalChangesTreatment.INCLUDE },
-      currentVersion, newVersion, commits, packages);
+  test('defaults experimentalChangesTreatment to "include"', async () => {
+    const changelogResultDefault = await writeChangelogs({
+      ...defaultWriteChangelogOpts, experimentalChangesTreatment: undefined,
+    });
+    const changelogResultInclude = await writeChangelogs({
+      ...defaultWriteChangelogOpts, experimentalChangesTreatment: ExperimentalChangesTreatment.INCLUDE,
+    });
 
     expect(changelogResultDefault).toEqual(changelogResultInclude);
   });
 
-  test('if changelogExperimentalChanges is "include", includes experimental changes', async () => {
-    const changelogResult = await writeChangelogs(
-      { ...args, experimentalChangesTreatment: ExperimentalChangesTreatment.INCLUDE },
-      currentVersion, newVersion, commits, packages);
+  test('if experimentalChangesTreatment is "include", includes experimental changes', async () => {
+    const changelogResult = await writeChangelogs({
+      ...defaultWriteChangelogOpts, experimentalChangesTreatment: ExperimentalChangesTreatment.INCLUDE,
+    });
 
     expect(changelogResult.length).toEqual(1);
     expect(changelogResult[0].filePath).toEqual('CHANGELOG.md');
@@ -63,9 +65,9 @@ describe('writeChangelogs', () => {
   });
 
   test('if changelogExperimentalChanges is "strip", excludes experimental changes', async () => {
-    const changelogResult = await writeChangelogs(
-      { ...args, experimentalChangesTreatment: ExperimentalChangesTreatment.STRIP },
-      currentVersion, newVersion, commits, packages);
+    const changelogResult = await writeChangelogs({
+      ...defaultWriteChangelogOpts, experimentalChangesTreatment: ExperimentalChangesTreatment.STRIP,
+    });
 
     expect(changelogResult.length).toEqual(1);
     expect(changelogResult[0].filePath).toEqual('CHANGELOG.md');
@@ -77,53 +79,58 @@ describe('writeChangelogs', () => {
 * **aws-stable:** new stable feat`);
   });
 
-  test('if changelogExperimentalChanges is "separate", throws if alpha versions are not present', async () => {
-    await expect(writeChangelogs(
-      { ...args, experimentalChangesTreatment: ExperimentalChangesTreatment.SEPARATE },
-      { stableVersion: '1.23.0' },
-      { stableVersion: '1.24.0' },
-      commits, packages))
-      .rejects
-      .toThrow(/without alpha package versions/);
+  describe('experimentalChangesTreatment is SEPARATE', () => {
 
-    await expect(writeChangelogs(
-      { ...args, experimentalChangesTreatment: ExperimentalChangesTreatment.SEPARATE },
-      { stableVersion: '1.23.0', alphaVersion: '1.23.0-alpha.0' },
-      { stableVersion: '1.24.0' },
-      commits, packages))
-      .rejects
-      .toThrow(/without alpha package versions/);
+    const defaultSeparateChangelogOpts = {
+      ...defaultWriteChangelogOpts,
+      experimentalChangesTreatment: ExperimentalChangesTreatment.SEPARATE,
+      currentVersion: { stableVersion: '1.23.0', alphaVersion: '1.23.0-alpha.0' },
+      newVersion: { stableVersion: '1.24.0', alphaVersion: '1.24.0-alpha.0' },
+      alphaChangelogFile: 'CHANGELOG.alpha.md',
+    };
 
-    await expect(writeChangelogs(
-      { ...args, experimentalChangesTreatment: ExperimentalChangesTreatment.SEPARATE },
-      { stableVersion: '1.23.0' },
-      { stableVersion: '1.24.0', alphaVersion: '1.24.0-alpha.0' },
-      commits, packages))
-      .rejects
-      .toThrow(/without alpha package versions/);
-  });
+    test('throws if alpha versions are not present', async () => {
+      await expect(writeChangelogs({
+        ...defaultSeparateChangelogOpts,
+        currentVersion: { stableVersion: '1.23.0' },
+        newVersion: { stableVersion: '1.24.0' },
+      }))
+        .rejects
+        .toThrow(/without alpha package versions/);
 
-  test('if changelogExperimentalChanges is "separate", excludes experimental changes and writes to separate changelog', async () => {
-    currentVersion.alphaVersion = '1.23.0-alpha.0';
-    newVersion.alphaVersion = '1.24.0-alpha.0';
-    const changelogResult = await writeChangelogs(
-      { ...args, experimentalChangesTreatment: ExperimentalChangesTreatment.SEPARATE },
-      currentVersion, newVersion, commits, packages);
+      await expect(writeChangelogs({ ...defaultSeparateChangelogOpts, newVersion: { stableVersion: '1.24.0' } }))
+        .rejects
+        .toThrow(/without alpha package versions/);
 
-    const mainResult = changelogResult.find(r => r.filePath === 'CHANGELOG.md');
-    const experimentalResult = changelogResult.find(r => r.filePath === 'aws-experimental/CHANGELOG.md');
-    expect(mainResult?.fileContents.trim()).toBe(
-      `## [1.24.0](https://github.com/aws/aws-cdk/compare/v1.23.0...v1.24.0)
+      await expect(writeChangelogs({ ...defaultSeparateChangelogOpts, currentVersion: { stableVersion: '1.23.0' } }))
+        .rejects
+        .toThrow(/without alpha package versions/);
+    });
+
+    test('throws if alpha changelog file is not present', async () => {
+      await expect(writeChangelogs({ ...defaultSeparateChangelogOpts, alphaChangelogFile: undefined }))
+        .rejects
+        .toThrow(/no alphaChangelogFile specified/);
+    });
+
+    test('excludes experimental changes and writes to the alpha changelog', async () => {
+      const changelogResult = await writeChangelogs(defaultSeparateChangelogOpts);
+
+      const mainResult = changelogResult.find(r => r.filePath === 'CHANGELOG.md');
+      const alphaResult = changelogResult.find(r => r.filePath === 'CHANGELOG.alpha.md');
+      expect(mainResult?.fileContents.trim()).toBe(
+        `## [1.24.0](https://github.com/aws/aws-cdk/compare/v1.23.0...v1.24.0)
 
 ### Features
 
 * **aws-stable:** new stable feat`);
-    expect(experimentalResult?.fileContents.trim()).toBe(
-      `## [1.24.0-alpha.0](https://github.com/aws/aws-cdk/compare/v1.23.0-alpha.0...v1.24.0-alpha.0)
+      expect(alphaResult?.fileContents.trim()).toBe(
+        `## [1.24.0-alpha.0](https://github.com/aws/aws-cdk/compare/v1.23.0-alpha.0...v1.24.0-alpha.0)
 
 ### Features
 
 * **aws-experimental:** new experimental feat`);
+    });
   });
 });
 

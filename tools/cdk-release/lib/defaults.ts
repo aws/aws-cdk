@@ -2,6 +2,7 @@ import { ReleaseOptions } from './types';
 
 export const defaults: Partial<ReleaseOptions> = {
   changelogFile: 'CHANGELOG.md',
+  alphaChangelogFile: 'CHANGELOG.alpha.md',
   sign: false,
   silent: false,
   scripts: {},

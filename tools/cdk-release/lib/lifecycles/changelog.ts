@@ -1,4 +1,3 @@
-import * as path from 'path';
 import * as stream from 'stream';
 import * as fs from 'fs-extra';
 import { ConventionalCommit, filterCommits } from '../conventional-commits';
@@ -12,17 +11,25 @@ const conventionalChangelogWriter = require('conventional-changelog-writer');
 
 const START_OF_LAST_RELEASE_PATTERN = /(^#+ \[?[0-9]+\.[0-9]+\.[0-9]+|<a name=)/m;
 
-export interface ChangelogOptions {
+export interface WriteChangelogOptions extends ChangelogOptions {
   skip?: LifecyclesSkip;
+  alphaChangelogFile?: string;
+  experimentalChangesTreatment?: ExperimentalChangesTreatment;
+
+  currentVersion: Versions;
+  newVersion: Versions;
+  commits: ConventionalCommit[];
+  packages: PackageInfo[];
+}
+
+export interface ChangelogOptions {
   changelogFile: string;
   dryRun?: boolean;
   verbose?: boolean;
   silent?: boolean;
 
-  experimentalChangesTreatment?: ExperimentalChangesTreatment;
   changeLogHeader?: string;
   includeDateInChangelog?: boolean;
-  releaseCommitMessageFormat?: string;
 }
 
 export interface ChangelogResult {
@@ -30,51 +37,46 @@ export interface ChangelogResult {
   readonly fileContents: string;
 }
 
-export async function writeChangelogs(
-  args: ChangelogOptions,
-  currentVersion: Versions,
-  newVersion: Versions,
-  commits: ConventionalCommit[],
-  packages: PackageInfo[],
-): Promise<ChangelogResult[]> {
-
-  if (args.skip?.changelog) {
+export async function writeChangelogs(opts: WriteChangelogOptions): Promise<ChangelogResult[]> {
+  if (opts.skip?.changelog) {
     return [];
   }
 
-  const experimentalChangesTreatment = args.experimentalChangesTreatment ?? 'include';
-  const unstablePackages = packages.filter(p => p.unstable);
-  const stableCommits = filterCommits(commits, { excludePackages: unstablePackages.map(p => p.simplifiedName) });
+  const experimentalChangesTreatment = opts.experimentalChangesTreatment ?? 'include';
+  const alphaPackages = opts.packages.filter(p => p.alpha);
+  const stableCommits = filterCommits(opts.commits, { excludePackages: alphaPackages.map(p => p.name) });
 
-  if (experimentalChangesTreatment === 'include') {
-    const contents = await changelog(args, currentVersion.stableVersion, newVersion.stableVersion, commits);
-    return [{ filePath: args.changelogFile, fileContents: contents }];
-  } else if (experimentalChangesTreatment === 'strip') {
-    const contents = await changelog(args, currentVersion.stableVersion, newVersion.stableVersion, stableCommits);
-    return [{ filePath: args.changelogFile, fileContents: contents }];
-  } else if (experimentalChangesTreatment === 'separate') {
-    if (!currentVersion.alphaVersion || !newVersion.alphaVersion) {
-      throw new Error('unable to create "separate" changelogs without alpha package versions');
-    }
+  switch (experimentalChangesTreatment) {
+    case ExperimentalChangesTreatment.INCLUDE:
+      const includeContents = await changelog(opts, opts.currentVersion.stableVersion, opts.newVersion.stableVersion, opts.commits);
+      return [{ filePath: opts.changelogFile, fileContents: includeContents }];
 
-    const changelogResults: ChangelogResult[] = [];
+    case ExperimentalChangesTreatment.STRIP:
+      const stripContents = await changelog(opts, opts.currentVersion.stableVersion, opts.newVersion.stableVersion, stableCommits);
+      return [{ filePath: opts.changelogFile, fileContents: stripContents }];
 
-    unstablePackages.forEach(async (pkg) => {
-      const pkgCommits = filterCommits(commits, { includePackages: [pkg.simplifiedName] });
-      const pkgChangelog = path.join(pkg.location, args.changelogFile);
-      const pkgArgs = {
-        ...args,
-        changelogFile: pkgChangelog,
-      };
-      const contents = await changelog(pkgArgs, currentVersion.alphaVersion!, newVersion.alphaVersion!, pkgCommits);
-      changelogResults.push({ filePath: pkgChangelog, fileContents: contents });
-    });
+    case ExperimentalChangesTreatment.SEPARATE:
+      if (!opts.currentVersion.alphaVersion || !opts.newVersion.alphaVersion) {
+        throw new Error('unable to create "separate" changelogs without alpha package versions');
+      }
+      if (!opts.alphaChangelogFile) {
+        throw new Error('no alphaChangelogFile specified');
+      }
 
-    const contents = await changelog(args, currentVersion.stableVersion, newVersion.stableVersion, stableCommits);
-    changelogResults.push({ filePath: args.changelogFile, fileContents: contents });
-    return changelogResults;
-  } else {
-    throw new Error(`unsupported experimentalChanges type: ${args.experimentalChangesTreatment}`);
+      const changelogResults: ChangelogResult[] = [];
+      const contents = await changelog(opts, opts.currentVersion.stableVersion, opts.newVersion.stableVersion, stableCommits);
+      changelogResults.push({ filePath: opts.changelogFile, fileContents: contents });
+
+      const alphaCommits = filterCommits(opts.commits, { includePackages: alphaPackages.map(p => p.name) });
+      const alphaContents = await changelog(
+        { ...opts, changelogFile: opts.alphaChangelogFile },
+        opts.currentVersion.alphaVersion, opts.newVersion.alphaVersion, alphaCommits);
+      changelogResults.push({ filePath: opts.alphaChangelogFile, fileContents: alphaContents });
+
+      return changelogResults;
+
+    default:
+      throw new Error(`unsupported experimentalChanges type: ${opts.experimentalChangesTreatment}`);
   }
 }
 

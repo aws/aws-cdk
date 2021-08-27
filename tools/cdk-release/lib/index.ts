@@ -28,7 +28,7 @@ module.exports = async function main(opts: ReleaseOptions): Promise<void> {
   const commits = await getConventionalCommitsFromGitHistory(args, `v${currentVersion.stableVersion}`);
 
   debug(args, 'Writing Changelog');
-  const changelogResults = await writeChangelogs(args, currentVersion, newVersion, commits, getProjectPackageInfos());
+  const changelogResults = await writeChangelogs({ ...args, currentVersion, newVersion, commits, packages: getProjectPackageInfos() });
 
   debug(args, 'Committing result');
   await commit(args, newVersion.stableVersion, [args.versionFile, ...changelogResults.map(r => r.filePath)]);
@@ -48,13 +48,13 @@ function getProjectPackageInfos(): PackageInfo[] {
 
   return packages.map((pkg: any) => {
     const maturity = pkg.get('maturity');
-    const unstable = pkg.name.startsWith('@aws-cdk/')
+    const alpha = pkg.name.startsWith('@aws-cdk/')
       && (maturity === 'experimental' || maturity === 'developer-preview');
 
     return {
-      simplifiedName: pkg.name.replace(/^@aws-cdk\//, ''),
+      name: pkg.name,
       location: pkg.location,
-      unstable,
+      alpha,
     };
   });
 }
