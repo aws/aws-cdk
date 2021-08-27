@@ -97,12 +97,52 @@
           "Ref": "ParentHostedZoneC2BD86E1"
         },
         "DelegatedZoneName": "sub.myzone.com",
-        "DelegatedZoneNameServers": {
-          "Fn::GetAtt": [
-            "ChildHostedZoneWithZoneId729259E6",
-            "NameServers"
-          ]
-        },
+        "DelegatedZoneNameServers": [
+          {
+            "Fn::Select": [
+              0,
+              {
+                "Fn::GetAtt": [
+                  "ChildHostedZoneWithZoneId729259E6",
+                  "NameServers"
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::GetAtt": [
+                  "ChildHostedZoneWithZoneId729259E6",
+                  "NameServers"
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Select": [
+              2,
+              {
+                "Fn::GetAtt": [
+                  "ChildHostedZoneWithZoneId729259E6",
+                  "NameServers"
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Select": [
+              3,
+              {
+                "Fn::GetAtt": [
+                  "ChildHostedZoneWithZoneId729259E6",
+                  "NameServers"
+                ]
+              }
+            ]
+          }
+        ],
         "TTL": 172800
       },
       "UpdateReplacePolicy": "Delete",
@@ -229,12 +269,52 @@
         },
         "ParentZoneName": "myzone.com",
         "DelegatedZoneName": "anothersub.myzone.com",
-        "DelegatedZoneNameServers": {
-          "Fn::GetAtt": [
-            "ChildHostedZoneWithZoneNameBC2C15F6",
-            "NameServers"
-          ]
-        },
+        "DelegatedZoneNameServers": [
+          {
+            "Fn::Select": [
+              0,
+              {
+                "Fn::GetAtt": [
+                  "ChildHostedZoneWithZoneNameBC2C15F6",
+                  "NameServers"
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::GetAtt": [
+                  "ChildHostedZoneWithZoneNameBC2C15F6",
+                  "NameServers"
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Select": [
+              2,
+              {
+                "Fn::GetAtt": [
+                  "ChildHostedZoneWithZoneNameBC2C15F6",
+                  "NameServers"
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Select": [
+              3,
+              {
+                "Fn::GetAtt": [
+                  "ChildHostedZoneWithZoneNameBC2C15F6",
+                  "NameServers"
+                ]
+              }
+            ]
+          }
+        ],
         "TTL": 172800
       },
       "UpdateReplacePolicy": "Delete",

@@ -170,4 +170,27 @@ nodeunitShim({
 
     test.done();
   },
+
+  'Hosted Zone name servers'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // WHEN
+    const testZone = new HostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+    });
+
+    // THEN
+    test.equal(testZone.hostedZoneNameServers?.length, 4);
+    test.deepEqual(stack.resolve(testZone.hostedZoneNameServers), [
+      { 'Fn::Select': [0, { 'Fn::GetAtt': ['HostedZoneDB99F866', 'NameServers'] }] },
+      { 'Fn::Select': [1, { 'Fn::GetAtt': ['HostedZoneDB99F866', 'NameServers'] }] },
+      { 'Fn::Select': [2, { 'Fn::GetAtt': ['HostedZoneDB99F866', 'NameServers'] }] },
+      { 'Fn::Select': [3, { 'Fn::GetAtt': ['HostedZoneDB99F866', 'NameServers'] }] },
+    ]);
+
+    test.done();
+  },
 });

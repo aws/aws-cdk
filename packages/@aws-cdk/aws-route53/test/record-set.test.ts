@@ -638,12 +638,52 @@ nodeunitShim({
         Ref: 'ParentHostedZoneC2BD86E1',
       },
       DelegatedZoneName: 'sub.myzone.com',
-      DelegatedZoneNameServers: {
-        'Fn::GetAtt': [
-          'ChildHostedZone4B14AC71',
-          'NameServers',
-        ],
-      },
+      DelegatedZoneNameServers: [
+        {
+          'Fn::Select': [
+            0,
+            {
+              'Fn::GetAtt': [
+                'ChildHostedZone4B14AC71',
+                'NameServers',
+              ],
+            },
+          ],
+        },
+        {
+          'Fn::Select': [
+            1,
+            {
+              'Fn::GetAtt': [
+                'ChildHostedZone4B14AC71',
+                'NameServers',
+              ],
+            },
+          ],
+        },
+        {
+          'Fn::Select': [
+            2,
+            {
+              'Fn::GetAtt': [
+                'ChildHostedZone4B14AC71',
+                'NameServers',
+              ],
+            },
+          ],
+        },
+        {
+          'Fn::Select': [
+            3,
+            {
+              'Fn::GetAtt': [
+                'ChildHostedZone4B14AC71',
+                'NameServers',
+              ],
+            },
+          ],
+        },
+      ],
       TTL: 60,
     }));
     expect(stack).to(haveResource('Custom::CrossAccountZoneDelegation', {
@@ -688,12 +728,52 @@ nodeunitShim({
       },
       ParentZoneName: 'myzone.com',
       DelegatedZoneName: 'sub.myzone.com',
-      DelegatedZoneNameServers: {
-        'Fn::GetAtt': [
-          'ChildHostedZone4B14AC71',
-          'NameServers',
-        ],
-      },
+      DelegatedZoneNameServers: [
+        {
+          'Fn::Select': [
+            0,
+            {
+              'Fn::GetAtt': [
+                'ChildHostedZone4B14AC71',
+                'NameServers',
+              ],
+            },
+          ],
+        },
+        {
+          'Fn::Select': [
+            1,
+            {
+              'Fn::GetAtt': [
+                'ChildHostedZone4B14AC71',
+                'NameServers',
+              ],
+            },
+          ],
+        },
+        {
+          'Fn::Select': [
+            2,
+            {
+              'Fn::GetAtt': [
+                'ChildHostedZone4B14AC71',
+                'NameServers',
+              ],
+            },
+          ],
+        },
+        {
+          'Fn::Select': [
+            3,
+            {
+              'Fn::GetAtt': [
+                'ChildHostedZone4B14AC71',
+                'NameServers',
+              ],
+            },
+          ],
+        },
+      ],
       TTL: 60,
     }));
     test.done();

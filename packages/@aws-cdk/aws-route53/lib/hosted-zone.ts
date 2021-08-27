@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ContextProvider, Duration, Lazy, Resource, Stack, Fn } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
@@ -162,8 +162,13 @@ export class HostedZone extends Resource implements IHostedZone {
     });
 
     this.hostedZoneId = resource.ref;
-    this.hostedZoneNameServers = resource.attrNameServers;
     this.zoneName = props.zoneName;
+
+    // Build array of 4 names servers, otherwise length is not available at synth time.
+    this.hostedZoneNameServers = [];
+    for (let i = 0; i < 4; i++) {
+      this.hostedZoneNameServers.push(Fn.select(i, resource.attrNameServers));
+    }
 
     for (const vpc of props.vpcs || []) {
       this.addVpc(vpc);
