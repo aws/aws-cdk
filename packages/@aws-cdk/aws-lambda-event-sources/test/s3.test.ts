@@ -1,4 +1,4 @@
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as sources from '../lib';
@@ -23,7 +23,7 @@ describe('S3EventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
       'NotificationConfiguration': {
         'LambdaFunctionConfigurations': [
           {

@@ -35,7 +35,7 @@ nodeunitShim({
       'vpc.vpcId returns a token to the VPC ID'(test: Test) {
         const stack = getTestStack();
         const vpc = new Vpc(stack, 'TheVPC');
-        test.deepEqual(stack.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' } );
+        test.deepEqual(stack.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
         test.done();
       },
 
@@ -55,11 +55,11 @@ nodeunitShim({
         new Vpc(stack, 'TheVPC');
         cdkExpect(stack).to(
           haveResource('AWS::EC2::VPC',
-            hasTags( [{ Key: 'Name', Value: 'TestStack/TheVPC' }])),
+            hasTags([{ Key: 'Name', Value: 'TestStack/TheVPC' }])),
         );
         cdkExpect(stack).to(
           haveResource('AWS::EC2::InternetGateway',
-            hasTags( [{ Key: 'Name', Value: 'TestStack/TheVPC' }])),
+            hasTags([{ Key: 'Name', Value: 'TestStack/TheVPC' }])),
         );
         test.done();
       },
@@ -86,7 +86,7 @@ nodeunitShim({
 
     'dns getters correspond to CFN properties': (() => {
 
-      const tests: any = { };
+      const tests: any = {};
 
       const inputs = [
         { dnsSupport: false, dnsHostnames: false },
@@ -173,8 +173,7 @@ nodeunitShim({
           },
         ],
       });
-      cdkExpect(stack).to(countResources('AWS::EC2::InternetGateway', 1))
-      ;
+      cdkExpect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
       cdkExpect(stack).notTo(haveResource('AWS::EC2::NatGateway'));
       test.done();
     },
@@ -223,7 +222,7 @@ nodeunitShim({
     'with no subnets defined, the VPC should have an IGW, and a NAT Gateway per AZ'(test: Test) {
       const stack = getTestStack();
       const zones = stack.availabilityZones.length;
-      new Vpc(stack, 'TheVPC', { });
+      new Vpc(stack, 'TheVPC', {});
       cdkExpect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
       cdkExpect(stack).to(countResources('AWS::EC2::NatGateway', zones));
       test.done();
@@ -251,7 +250,7 @@ nodeunitShim({
       cdkExpect(stack).to(haveResource('AWS::EC2::InternetGateway'));
       cdkExpect(stack).to(haveResourceLike('AWS::EC2::Route', {
         DestinationCidrBlock: '8.8.8.8/32',
-        GatewayId: { },
+        GatewayId: {},
       }));
       test.done();
     },
@@ -457,7 +456,7 @@ nodeunitShim({
       }
       cdkExpect(stack).to(haveResourceLike('AWS::EC2::Route', {
         DestinationCidrBlock: '0.0.0.0/0',
-        NatGatewayId: { },
+        NatGatewayId: {},
       }));
 
       test.done();
@@ -475,7 +474,7 @@ nodeunitShim({
       }
       cdkExpect(stack).to(haveResourceLike('AWS::EC2::Route', {
         DestinationCidrBlock: '0.0.0.0/0',
-        NatGatewayId: { },
+        NatGatewayId: {},
       }));
       test.done();
     },
@@ -489,7 +488,7 @@ nodeunitShim({
       cdkExpect(stack).to(countResources('AWS::EC2::NatGateway', 1));
       cdkExpect(stack).to(haveResourceLike('AWS::EC2::Route', {
         DestinationCidrBlock: '0.0.0.0/0',
-        NatGatewayId: { },
+        NatGatewayId: {},
       }));
       test.done();
     },
@@ -868,6 +867,31 @@ nodeunitShim({
       }));
       cdkExpect(stack).to(haveResource('AWS::EC2::NatGateway', {
         AllocationId: 'b',
+      }));
+
+      test.done();
+    },
+
+    'NAT gateway provider with insufficient EIP allocations'(test: Test) {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.gateway({ eipAllocationIds: ['a'] });
+      expect(() => new Vpc(stack, 'VpcNetwork', { natGatewayProvider }))
+        .toThrow(/Not enough NAT gateway EIP allocation IDs \(1 provided\) for the requested subnet count \(\d+ needed\)/);
+
+      test.done();
+    },
+
+    'NAT gateway provider with token EIP allocations'(test: Test) {
+      const stack = new Stack();
+      const eipAllocationIds = Fn.split(',', Fn.importValue('myVpcId'));
+      const natGatewayProvider = NatProvider.gateway({ eipAllocationIds });
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      cdkExpect(stack).to(haveResource('AWS::EC2::NatGateway', {
+        AllocationId: stack.resolve(Fn.select(0, eipAllocationIds)),
+      }));
+      cdkExpect(stack).to(haveResource('AWS::EC2::NatGateway', {
+        AllocationId: stack.resolve(Fn.select(1, eipAllocationIds)),
       }));
 
       test.done();
@@ -1686,6 +1710,58 @@ nodeunitShim({
           },
         ],
       }));
+      test.done();
+    },
+
+    'can filter by Subnet Ids'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        vpcCidrBlock: '192.168.0.0/16',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        privateSubnetIds: ['priv-1', 'priv-2', 'priv-3'],
+      });
+
+      // WHEN
+      new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+        vpc,
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+        subnets: {
+          subnetFilters: [SubnetFilter.byIds(['priv-1', 'priv-2'])],
+        },
+      });
+
+      // THEN
+      cdkExpect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+        SubnetIds: ['priv-1', 'priv-2'],
+      }));
+      test.done();
+    },
+
+    'can filter by Cidr Netmask'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VpcNetwork', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          { name: 'normalSn1', subnetType: SubnetType.PUBLIC, cidrMask: 20 },
+          { name: 'normalSn2', subnetType: SubnetType.PUBLIC, cidrMask: 20 },
+          { name: 'smallSn', subnetType: SubnetType.PUBLIC, cidrMask: 28 },
+        ],
+      });
+
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets(
+        { subnetFilters: [SubnetFilter.byCidrMask(20)] },
+      );
+
+      // THEN
+      test.deepEqual(subnetIds.length, 2);
+      const expected = vpc.publicSubnets.filter(s => s.ipv4CidrBlock.endsWith('/20'));
+      test.deepEqual(subnetIds, expected.map(s => s.subnetId));
       test.done();
     },
   },
