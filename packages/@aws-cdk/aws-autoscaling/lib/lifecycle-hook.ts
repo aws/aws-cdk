@@ -54,7 +54,7 @@ export interface BasicLifecycleHookProps {
   /**
    * The role that allows publishing to the notification target
    *
-   * @default - No role
+   * @default - A role will be provided if a target is provided. Otherwise, no role is provided.
    */
   readonly role?: iam.IRole;
 }
@@ -78,7 +78,7 @@ export interface ILifecycleHook extends IResource {
    *
    * @default: No role
    */
-  role?: iam.IRole;
+  role: iam.IRole;
 }
 
 /**
@@ -91,7 +91,20 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
    * @default: A default role is created if `notificationTarget` is specified.
    * Otherwise, no role is created.
    */
-  public role?: iam.IRole;
+  //public role?: iam.IRole;
+  private _role?: iam.IRole;
+
+  public get role() {
+    if (!this._role) {
+      throw new Error('Oh no we don\'t have a role');
+    }
+
+    return this._role;
+  }
+
+  public set role(role: iam.IRole ) {
+    this._role = role;
+  }
 
   /**
    * The name of this lifecycle hook
@@ -104,7 +117,9 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       physicalName: props.lifecycleHookName,
     });
 
+    /* eslint-disable */
     if (props.role) {
+      console.log("foo1");
       this.role = props.role;
 
       if (!props.notificationTarget) {
@@ -121,10 +136,21 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       }
     }*/
 
+      console.log("foo2");
     const targetProps = props.notificationTarget ? props.notificationTarget.bind(this, this) : undefined;
     const notificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;
-    const roleArn = this.role ? this.role.roleArn : undefined;
+    //const roleArn = this._role ? this.role.roleArn : undefined;
+    // this rework is horrible; it's null by default, only so that we can check if it was assigned (if it's still null then it wasn't)
+    // and so if it wasn't assigned (to undefined), we need to set it
+    let roleArn = null;
 
+    try { this.role; } catch (e) { roleArn = undefined; }
+      console.log("foo3");
+
+      if (roleArn === null) {
+        roleArn = this.role.roleArn;
+      }
+      console.log("foo4");
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       defaultResult: props.defaultResult,
@@ -139,7 +165,16 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     // A LifecycleHook resource is going to do a permissions test upon creation,
     // so we have to make sure the role has full permissions before creating the
     // lifecycle hook.
-    if (this.role) {
+    //if (this.role) {
+     // resource.node.addDependency(this.role);
+    //}
+
+    let role = true;
+
+    try { this.role }
+    catch (e) { role = false; }
+
+    if (role) {
       resource.node.addDependency(this.role);
     }
 
