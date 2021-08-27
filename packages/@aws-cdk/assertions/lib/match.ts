@@ -55,6 +55,14 @@ export abstract class Match {
   public static objectEquals(pattern: {[key: string]: any}): Matcher {
     return new ObjectMatch('objectEquals', pattern, { partial: false });
   }
+
+  /**
+   * Matches any target which does NOT follow the specified pattern.
+   * @param pattern the pattern to NOT match
+   */
+  public static not(pattern: any): Matcher {
+    return new NotMatch('not', pattern);
+  }
 }
 
 /**
@@ -82,7 +90,6 @@ class LiteralMatch extends Matcher {
 
     super();
     this.partialObjects = options.partialObjects ?? false;
-    this.name = 'exact';
 
     if (Matcher.isMatcher(this.pattern)) {
       throw new Error('LiteralMatch cannot directly contain another matcher. ' +
@@ -143,11 +150,6 @@ class ArrayMatch extends Matcher {
 
     super();
     this.partial = options.subsequence ?? true;
-    if (this.partial) {
-      this.name = 'arrayWith';
-    } else {
-      this.name = 'arrayEquals';
-    }
   }
 
   public test(actual: any): MatchResult {
@@ -211,11 +213,6 @@ class ObjectMatch extends Matcher {
 
     super();
     this.partial = options.partial ?? true;
-    if (this.partial) {
-      this.name = 'objectLike';
-    } else {
-      this.name = 'objectEquals';
-    }
   }
 
   public test(actual: any): MatchResult {
@@ -250,6 +247,26 @@ class ObjectMatch extends Matcher {
       result.compose(`/${patternKey}`, inner);
     }
 
+    return result;
+  }
+}
+
+class NotMatch extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: {[key: string]: any}) {
+
+    super();
+  }
+
+  public test(actual: any): MatchResult {
+    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
+
+    const innerResult = matcher.test(actual);
+    const result = new MatchResult(actual);
+    if (innerResult.failCount === 0) {
+      result.push(this, [], `Found unexpected match: ${JSON.stringify(actual, undefined, 2)}`);
+    }
     return result;
   }
 }
