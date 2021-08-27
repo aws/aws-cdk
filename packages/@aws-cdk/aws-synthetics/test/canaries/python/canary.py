@@ -1,3 +1,5 @@
+# This example comes from the AWS Synthetics service console "API canary" blueprint
+
 import json
 import http.client
 import urllib.parse
