@@ -87,11 +87,12 @@
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticsearch": "0.0.0",
-    "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-opensearchservice": "0.0.0",
+    "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69"
   },
@@ -103,10 +104,11 @@
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-s3-assets": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-opensearchservice": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69"
   },
   "engines": {
