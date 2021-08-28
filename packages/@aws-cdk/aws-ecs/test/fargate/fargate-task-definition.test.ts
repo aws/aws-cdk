@@ -57,6 +57,7 @@ describe('fargate task definition', () => {
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
+        ephemeralStorageGiB: 21,
       });
 
       taskDefinition.addVolume({
@@ -74,6 +75,9 @@ describe('fargate task definition', () => {
             'ExecutionRole605A040B',
             'Arn',
           ],
+        },
+        EphemeralStorage: {
+          SizeInGiB: 21,
         },
         Family: 'myApp',
         Memory: '1024',
@@ -129,6 +133,30 @@ describe('fargate task definition', () => {
       }).toThrow(/Cannot use inference accelerators on tasks that run on Fargate/);
 
 
+    });
+
+    test('throws when ephemeral storage request is too high', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          ephemeralStorageGiB: 201,
+        });
+      }).toThrow(/Ephemeral storage size must be between 21GiB and 200GiB/);
+
+      // THEN
+    });
+
+    test('throws when ephemeral storage request is too low', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          ephemeralStorageGiB: 20,
+        });
+      }).toThrow(/Ephemeral storage size must be between 21GiB and 200GiB/);
+
+      // THEN
     });
   });
 
