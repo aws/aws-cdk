@@ -140,37 +140,37 @@ describe('userdata', () => {
   });
 
   function linuxUserDataTest(signalLogicalId: string) {
-    const lines = linuxUserData.render().split("\n");
-    expectLine(lines, cmdArg("cfn-init", `--region ${Aws.REGION}`));
-    expectLine(lines, cmdArg("cfn-init", `--stack ${Aws.STACK_NAME}`));
-    expectLine(lines, cmdArg("cfn-init", `--resource ${resource.logicalId}`));
-    expectLine(lines, cmdArg("cfn-init", "-c default"));
-    expectLine(lines, cmdArg("cfn-signal", `--region ${Aws.REGION}`));
-    expectLine(lines, cmdArg("cfn-signal", `--stack ${Aws.STACK_NAME}`));
-    expectLine(lines, cmdArg("cfn-signal", `--resource ${signalLogicalId}`));
-    expectLine(lines, cmdArg("cfn-signal", "-e $?"));
-    expectLine(lines, cmdArg("cat", "cfn-init.log"));
+    const lines = linuxUserData.render().split('\n');
+    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', '-c default'));
+    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-signal', `--resource ${signalLogicalId}`));
+    expectLine(lines, cmdArg('cfn-signal', '-e $?'));
+    expectLine(lines, cmdArg('cat', 'cfn-init.log'));
     expectLine(lines, /fingerprint/);
   }
 
   function windowsUserDataTest(
     windowsUserData: ec2.UserData,
-    signalLogicalId: string
+    signalLogicalId: string,
   ) {
-    const lines = windowsUserData.render().split("\n");
-    expectLine(lines, cmdArg("cfn-init", `--region ${Aws.REGION}`));
-    expectLine(lines, cmdArg("cfn-init", `--stack ${Aws.STACK_NAME}`));
-    expectLine(lines, cmdArg("cfn-init", `--resource ${resource.logicalId}`));
-    expectLine(lines, cmdArg("cfn-init", "-c default"));
-    expectLine(lines, cmdArg("cfn-signal", `--region ${Aws.REGION}`));
-    expectLine(lines, cmdArg("cfn-signal", `--stack ${Aws.STACK_NAME}`));
-    expectLine(lines, cmdArg("cfn-signal", `--resource ${signalLogicalId}`));
-    expectLine(lines, cmdArg("cfn-signal", "-e $LASTEXITCODE"));
-    expectLine(lines, cmdArg("type", "cfn-init.log"));
+    const lines = windowsUserData.render().split('\n');
+    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', '-c default'));
+    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-signal', `--resource ${signalLogicalId}`));
+    expectLine(lines, cmdArg('cfn-signal', '-e $LASTEXITCODE'));
+    expectLine(lines, cmdArg('type', 'cfn-init.log'));
     expectLine(lines, /fingerprint/);
   }
 
-  test("linux userdata contains right commands", () => {
+  test('linux userdata contains right commands', () => {
     // WHEN
     simpleInit.attach(resource, linuxOptions());
 
@@ -178,7 +178,7 @@ describe('userdata', () => {
     linuxUserDataTest(resource.logicalId);
   });
 
-  test("linux userdata contains right commands with different signal resource", () => {
+  test('linux userdata contains right commands with different signal resource', () => {
     // WHEN
     simpleInit.attach(resource, {
       ...linuxOptions(),
@@ -189,7 +189,7 @@ describe('userdata', () => {
     linuxUserDataTest(signalResource.logicalId);
   });
 
-  test("Windows userdata contains right commands", () => {
+  test('Windows userdata contains right commands', () => {
     // WHEN
     const windowsUserData = ec2.UserData.forWindows();
 
@@ -203,7 +203,7 @@ describe('userdata', () => {
     windowsUserDataTest(windowsUserData, resource.logicalId);
   });
 
-  test("Windows userdata contains right commands with different signal resource", () => {
+  test('Windows userdata contains right commands with different signal resource', () => {
     // WHEN
     const windowsUserData = ec2.UserData.forWindows();
 
