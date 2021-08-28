@@ -112,6 +112,7 @@ async function parseCommandLineArguments() {
       .option('hotswap', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
+          'which skips CloudFormation and updates the resources directly, ' +
           'and falls back to a full deployment if that is not possible. ' +
           'Do not use this in production environments',
       })

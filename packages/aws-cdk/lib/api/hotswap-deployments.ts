@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { HotswapOperation, ListStackResources } from './hotswap/common';
+import { ChangeHotswapImpact, HotswapOperation, ListStackResources } from './hotswap/common';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { CloudFormationStack } from './util/cloudformation';
 
@@ -49,9 +49,9 @@ function findAllHotswappableChanges(
   let foundNonHotswappableChange = false;
   stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
     const lambdaFunctionShortCircuitChange = isHotswappableLambdaFunctionChange(logicalId, change, assetParamsWithEnv);
-    if (lambdaFunctionShortCircuitChange === false) {
+    if (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
-    } else if (lambdaFunctionShortCircuitChange === true) {
+    } else if (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
       hotswappableResources.push(lambdaFunctionShortCircuitChange);

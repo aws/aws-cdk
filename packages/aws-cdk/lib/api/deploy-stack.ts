@@ -250,20 +250,18 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
-  // attempt to short-circuit the deployment if possible
-  const hotswapDeploymentResult = options.hotswap
-    ? await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact)
-    : undefined;
-  if (hotswapDeploymentResult) {
-    return hotswapDeploymentResult;
-  } else {
-    // could not short-circuit the deployment, perform a full CFN deploy instead
-    if (options.hotswap) {
-      print('Could not perform a hotswap deployment, as the stack %s contains non-Asset changes', stackArtifact.displayName);
-      print('Falling back to doing a full deployment');
+  if (options.hotswap) {
+    // attempt to short-circuit the deployment if possible
+    const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
+    if (hotswapDeploymentResult) {
+      return hotswapDeploymentResult;
     }
-    return prepareAndExecuteChangeSet(options, cloudFormationStack, stackArtifact, stackParams, bodyParameter);
+    // could not short-circuit the deployment, perform a full CFN deploy instead
+    print('Could not perform a hotswap deployment, as the stack %s contains non-Asset changes', stackArtifact.displayName);
+    print('Falling back to doing a full deployment');
   }
+
+  return prepareAndExecuteChangeSet(options, cloudFormationStack, stackArtifact, stackParams, bodyParameter);
 }
 
 async function prepareAndExecuteChangeSet(

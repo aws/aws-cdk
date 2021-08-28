@@ -15,6 +15,26 @@ export interface HotswapOperation {
 }
 
 /**
+ * An enum that represents the result of detection whether a given change can be hotswapped.
+ */
+export enum ChangeHotswapImpact {
+  /**
+   * This result means that the given change cannot be hotswapped,
+   * and requires a full deployment.
+   */
+  REQUIRES_FULL_DEPLOYMENT = 'requires-full-deployment',
+
+  /**
+   * This result means that the given change can be safely be ignored when determining
+   * whether the given Stack can be hotswapped or not
+   * (for example, it's a change to the CDKMetadata resource).
+   */
+  IRRELEVANT = 'irrelevant',
+}
+
+export type ChangeHotswapResult = HotswapOperation | ChangeHotswapImpact;
+
+/**
  * For old-style synthesis which uses CFN Parameters,
  * the Code properties can have the values of complex CFN expressions.
  * For new-style synthesis of env-agnostic stacks,

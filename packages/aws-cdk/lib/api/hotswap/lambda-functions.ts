@@ -1,6 +1,6 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { ISDK } from '../aws-auth';
-import { assetMetadataChanged, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression } from './common';
+import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression } from './common';
 
 /**
  * Returns `false` if the change cannot be short-circuited,
@@ -10,9 +10,9 @@ import { assetMetadataChanged, HotswapOperation, ListStackResources, stringifyPo
  */
 export function isHotswappableLambdaFunctionChange(
   logicalId: string, change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-): HotswapOperation | boolean {
+): ChangeHotswapResult {
   const lambdaCodeChange = isLambdaFunctionCodeOnlyChange(change, assetParamsWithEnv);
-  if (typeof lambdaCodeChange === 'boolean') {
+  if (typeof lambdaCodeChange === 'string') {
     return lambdaCodeChange;
   } else {
     // verify that the Asset changed - otherwise,
@@ -20,7 +20,7 @@ export function isHotswappableLambdaFunctionChange(
     // but not to an asset change
     // (for example, going from Code.fromAsset() to Code.fromInline())
     if (!assetMetadataChanged(change)) {
-      return false;
+      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
 
     let functionPhysicalName: string | undefined;
@@ -56,23 +56,23 @@ export function isHotswappableLambdaFunctionChange(
  */
 function isLambdaFunctionCodeOnlyChange(
   change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-): LambdaFunctionCode | boolean {
+): LambdaFunctionCode | ChangeHotswapImpact {
   if (!change.newValue) {
-    return false;
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
   const newResourceType = change.newValue.Type;
   // Ignore Metadata changes
   if (newResourceType === 'AWS::CDK::Metadata') {
-    return true;
+    return ChangeHotswapImpact.IRRELEVANT;
   }
   // The only other resource change we should see is a Lambda function
   if (newResourceType !== 'AWS::Lambda::Function') {
-    return false;
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
   if (change.oldValue?.Type == null) {
     // this means this is a brand-new Lambda function -
     // obviously, we can't short-circuit that!
-    return false;
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
   /*
@@ -93,7 +93,7 @@ function isLambdaFunctionCodeOnlyChange(
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
     if (updatedProp.newValue === undefined) {
-      return false;
+      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
     for (const newPropName in updatedProp.newValue) {
       switch (newPropName) {
@@ -106,7 +106,7 @@ function isLambdaFunctionCodeOnlyChange(
           s3Key = stringifyPotentialCfnExpression(updatedProp.newValue[newPropName], assetParamsWithEnv);
           break;
         default:
-          return false;
+          return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
       }
     }
   }
@@ -116,7 +116,7 @@ function isLambdaFunctionCodeOnlyChange(
       s3Bucket,
       s3Key,
     }
-    : true;
+    : ChangeHotswapImpact.IRRELEVANT;
 }
 
 interface LambdaFunctionCode {
