@@ -125,7 +125,14 @@ export class CloudFormationInit {
     // To identify the resources that have the metadata and where the signal
     // needs to be sent, we need { region, stackName, logicalId }
     const resourceLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${attachedResource.logicalId}`;
-    const configSets = (attachOptions.configSets ?? ['default']).join(',');
+    const notifyResourceLocator = `--region ${Aws.REGION} --stack ${
+      Aws.STACK_NAME
+    } --resource ${
+      attachOptions.signalResource
+        ? attachOptions.signalResource.logicalId
+        : attachedResource.logicalId
+    }`;
+    const configSets = (attachOptions.configSets ?? ["default"]).join(",");
     const printLog = attachOptions.printLog ?? true;
 
     if (attachOptions.embedFingerprint ?? true) {
@@ -134,23 +141,27 @@ export class CloudFormationInit {
     }
 
     if (attachOptions.platform === OperatingSystemType.WINDOWS) {
-      const errCode = attachOptions.ignoreFailures ? '0' : '$LASTEXITCODE';
-      attachOptions.userData.addCommands(...[
-        `cfn-init.exe -v ${resourceLocator} -c ${configSets}`,
-        `cfn-signal.exe -e ${errCode} ${resourceLocator}`,
-        ...printLog ? ['type C:\\cfn\\log\\cfn-init.log'] : [],
-      ]);
+      const errCode = attachOptions.ignoreFailures ? "0" : "$LASTEXITCODE";
+      attachOptions.userData.addCommands(
+        ...[
+          `cfn-init.exe -v ${resourceLocator} -c ${configSets}`,
+          `cfn-signal.exe -e ${errCode} ${notifyResourceLocator}`,
+          ...(printLog ? ["type C:\\cfn\\log\\cfn-init.log"] : []),
+        ]
+      );
     } else {
-      const errCode = attachOptions.ignoreFailures ? '0' : '$?';
-      attachOptions.userData.addCommands(...[
-        // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
-        '(',
-        '  set +e',
-        `  /opt/aws/bin/cfn-init -v ${resourceLocator} -c ${configSets}`,
-        `  /opt/aws/bin/cfn-signal -e ${errCode} ${resourceLocator}`,
-        ...printLog ? ['  cat /var/log/cfn-init.log >&2'] : [],
-        ')',
-      ]);
+      const errCode = attachOptions.ignoreFailures ? "0" : "$?";
+      attachOptions.userData.addCommands(
+        ...[
+          // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
+          "(",
+          "  set +e",
+          `  /opt/aws/bin/cfn-init -v ${resourceLocator} -c ${configSets}`,
+          `  /opt/aws/bin/cfn-signal -e ${errCode} ${notifyResourceLocator}`,
+          ...(printLog ? ["  cat /var/log/cfn-init.log >&2"] : []),
+          ")",
+        ]
+      );
     }
   }
 
@@ -401,4 +412,13 @@ export interface AttachInitOptions {
    * @default false
    */
   readonly ignoreFailures?: boolean;
+
+  /**
+   * When provided, signals this resource instead of the attached resource
+   *
+   * You can use this to support signaling LaunchTemplate while attaching AutoScalingGroup
+   *
+   * @default undefined
+   */
+  readonly signalResource?: CfnResource;
 }
