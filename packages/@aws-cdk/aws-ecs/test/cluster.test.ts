@@ -1572,11 +1572,11 @@ describe('cluster', () => {
     expect(Object.entries(parameters).some(
       ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
         (v as any).Default.includes('/bottlerocket/'),
-    )).toBeDefined();
+    )).toEqual(true);
     expect(Object.entries(parameters).some(
       ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
         (v as any).Default.includes('/aws-ecs-1/'),
-    )).toBeDefined();
+    )).toEqual(true);
 
   });
 

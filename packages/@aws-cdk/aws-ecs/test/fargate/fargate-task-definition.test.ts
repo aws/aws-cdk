@@ -165,7 +165,7 @@ describe('fargate task definition', () => {
       // THEN
       expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
       expect(taskDefinition.compatibility).toEqual(ecs.Compatibility.FARGATE);
-      expect(taskDefinition.isFargateCompatible).toBeDefined();
+      expect(taskDefinition.isFargateCompatible).toEqual(true);
       expect(taskDefinition.isEc2Compatible).toEqual(false);
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);

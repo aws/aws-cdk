@@ -715,7 +715,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup).toBeDefined();
+    expect(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup).toEqual(true);
 
 
   });

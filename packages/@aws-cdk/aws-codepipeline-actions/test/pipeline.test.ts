@@ -675,7 +675,7 @@ describe('pipeline', () => {
       expect(usEast1Support).toBeDefined();
       expect(usEast1Support.stack.region).toEqual('us-east-1');
       expect(usEast1Support.stack.account).toEqual(pipelineAccount);
-      expect(usEast1Support.stack.node.id.indexOf('us-east-1') !== -1).toBeDefined();
+      expect(usEast1Support.stack.node.id.indexOf('us-east-1')).not.toEqual(-1);
 
 
     });

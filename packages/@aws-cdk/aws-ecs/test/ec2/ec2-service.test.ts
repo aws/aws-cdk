@@ -1949,7 +1949,7 @@ describe('ec2 service', () => {
       // THEN
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.randomly());
-      });
+      }).toThrow();
 
 
     });
@@ -2069,7 +2069,7 @@ describe('ec2 service', () => {
       // THEN
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
-      });
+      }).toThrow();
 
 
     });
