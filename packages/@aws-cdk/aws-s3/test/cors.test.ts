@@ -1,10 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Bucket, HttpMethods } from '../lib';
 
-nodeunitShim({
-  'Can use addCors() to add a CORS configuration'(test: Test) {
+describe('cors', () => {
+  test('Can use addCors() to add a CORS configuration', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -16,19 +15,19 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       CorsConfiguration: {
         CorsRules: [{
           AllowedMethods: ['GET', 'HEAD'],
           AllowedOrigins: ['https://example.com'],
         }],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'Bucket with multiple cors configurations'(test: Test) {
+  });
+
+  test('Bucket with multiple cors configurations', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -74,7 +73,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       CorsConfiguration: {
         CorsRules: [
           {
@@ -114,8 +113,8 @@ nodeunitShim({
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
+
+  });
 });
