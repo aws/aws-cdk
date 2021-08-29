@@ -189,7 +189,7 @@ describe('public repository', () => {
     ].join(EOL);
 
     expect(() => new ecr.PublicRepository(stack, 'PublicRepo', {
-      repositoryName,
+      publicRepositoryName: repositoryName,
     })).toThrow(expectedErrors);
   });
 
@@ -197,11 +197,11 @@ describe('public repository', () => {
     const stack = new cdk.Stack();
 
     expect(() => new ecr.PublicRepository(stack, 'PublicRepo1', {
-      repositoryName: 'a',
+      publicRepositoryName: 'a',
     })).toThrow(/at least 2/);
 
     expect(() => new ecr.PublicRepository(stack, 'PublicRepo2', {
-      repositoryName: new Array(207).join('x'),
+      publicRepositoryName: new Array(207).join('x'),
     })).toThrow(/no more than 205/);
   });
 
@@ -209,19 +209,19 @@ describe('public repository', () => {
     const stack = new cdk.Stack();
 
     expect(() => new ecr.PublicRepository(stack, 'PublicRepo1', {
-      repositoryName: 'aAa',
+      publicRepositoryName: 'aAa',
     })).toThrow(/must follow the specified pattern/);
 
     expect(() => new ecr.PublicRepository(stack, 'PublicRepo2', {
-      repositoryName: 'a--a',
+      publicRepositoryName: 'a--a',
     })).toThrow(/must follow the specified pattern/);
 
     expect(() => new ecr.PublicRepository(stack, 'PublicRepo3', {
-      repositoryName: 'a./a-a',
+      publicRepositoryName: 'a./a-a',
     })).toThrow(/must follow the specified pattern/);
 
     expect(() => new ecr.PublicRepository(stack, 'PublicRepo4', {
-      repositoryName: 'a//a-a',
+      publicRepositoryName: 'a//a-a',
     })).toThrow(/must follow the specified pattern/);
   });
 
@@ -240,10 +240,10 @@ describe('public repository', () => {
           {
             Action: [
               'ecr-public:BatchCheckLayerAvailability',
-              'ecr-public:PutImage',
-              'ecr-public:InitiateLayerUpload',
-              'ecr-public:UploadLayerPart',
               'ecr-public:CompleteLayerUpload',
+              'ecr-public:InitiateLayerUpload',
+              'ecr-public:PutImage',
+              'ecr-public:UploadLayerPart',
             ],
             Effect: 'Allow',
             Principal: { AWS: '*' },

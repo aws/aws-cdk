@@ -5,30 +5,33 @@ import { Lazy, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 
+import { Construct } from 'constructs';
 import { CfnPublicRepository, CfnPublicRepositoryProps } from './ecr.generated';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
-
+/**
+ * Options for the ECR Public Repository construct.
+ */
 export interface PublicRepositoryProps {
   /**
    * Name for this repository
    *
    * @default Automatically generated name.
    */
-  readonly repositoryName?: string;
+  readonly publicRepositoryName?: string;
 
   /**
    * A short description of the contents of the repository.
    * This text appears in both the image details and also when searching for repositories on the Amazon ECR Public Gallery.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
    * A detailed description of the contents of the repository.
    * It's publicly visible in the Amazon ECR Public Gallery. The text must be in markdown format.
+   *
+   * @default - No about text.
    */
   readonly about?: string;
 
@@ -36,16 +39,22 @@ export interface PublicRepositoryProps {
    * Detailed information about how to use the contents of the repository. It's publicly visible in the Amazon ECR Public Gallery.
    * The usage text provides context, support information, and additional usage details for users of the repository.
    * The text must be in markdown format.
+   *
+   * @default - No usage text.
    */
   readonly usage?: string;
 
   /**
    * The system architecture that the images in the repository are compatible with.
+   *
+   * @default - No system architecture tags.
    */
   readonly architectures?: Architecture[];
 
   /**
    * The operating systems that the images in the repository are compatible with.
+   *
+   * @default - No operating system tags.
    */
   readonly operatingSystems?: OperatingSystem[];
 
@@ -64,15 +73,19 @@ export interface PublicRepositoryProps {
   readonly removalPolicy?: RemovalPolicy;
 }
 
-export interface PublicRepositoryAttributes {
-  readonly repositoryName: string;
-  readonly repositoryArn: string;
-}
-
 /**
  * Define an ECR Public Repository.
  */
 export class PublicRepository extends Resource {
+
+  // From https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-policy-examples.html
+  private static readonly PUSH_IAM_ACTIONS = [
+    'ecr-public:BatchCheckLayerAvailability',
+    'ecr-public:CompleteLayerUpload',
+    'ecr-public:InitiateLayerUpload',
+    'ecr-public:PutImage',
+    'ecr-public:UploadLayerPart',
+  ];
 
   private static validateRepositoryName(physicalName: string) {
     const repositoryName = physicalName;
@@ -98,13 +111,23 @@ export class PublicRepository extends Resource {
     }
   }
 
-  public readonly repositoryName: string;
-  public readonly repositoryArn: string;
+  /**
+   * The name of the repository.
+   * @attribute
+   */
+  public readonly publicRepositoryName: string;
+
+  /**
+   * The ARN of the repository.
+   * @attribute
+   */
+  public readonly publicRepositoryArn: string;
+
   private policy: iam.PolicyDocument;
 
   constructor(scope: Construct, id: string, props: PublicRepositoryProps = {}) {
     super(scope, id, {
-      physicalName: props.repositoryName,
+      physicalName: props.publicRepositoryName,
     });
 
     PublicRepository.validateRepositoryName(this.physicalName);
@@ -121,14 +144,13 @@ export class PublicRepository extends Resource {
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.repositoryName = this.getResourceNameAttribute(resource.ref);
-    this.repositoryArn = this.getResourceArnAttribute(resource.attrArn, {
+    this.publicRepositoryName = this.getResourceNameAttribute(resource.ref);
+    this.publicRepositoryArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'ecr-public',
       resource: 'repository',
       resourceName: this.physicalName,
     });
   }
-
 
   private renderRepositoryCatalogData(props: PublicRepositoryProps): CfnPublicRepositoryProps['repositoryCatalogData'] | undefined {
     if (!props.about && !props.description && !props.usage && !props.architectures && !props.operatingSystems) {
@@ -144,6 +166,9 @@ export class PublicRepository extends Resource {
     };
   }
 
+  /**
+   * Add a policy statement to the repository's resource policy
+   */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     this.policy.addStatements(statement);
     return { statementAdded: false, policyDependable: this.policy };
@@ -162,7 +187,7 @@ export class PublicRepository extends Resource {
     return iam.Grant.addToPrincipalAndResource({
       grantee,
       actions,
-      resourceArns: [this.repositoryArn],
+      resourceArns: [this.publicRepositoryArn],
       resourceSelfArns: [],
       resource: this,
     });
@@ -172,12 +197,7 @@ export class PublicRepository extends Resource {
    * Grant the given identity permissions to push images to this repository.
    */
   public grantPush(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee,
-      'ecr-public:BatchCheckLayerAvailability',
-      'ecr-public:PutImage',
-      'ecr-public:InitiateLayerUpload',
-      'ecr-public:UploadLayerPart',
-      'ecr-public:CompleteLayerUpload');
+    const ret = this.grant(grantee, ...PublicRepository.PUSH_IAM_ACTIONS);
 
     iam.Grant.addToPrincipal({
       grantee,
@@ -197,11 +217,31 @@ export class PublicRepository extends Resource {
  * and can be retrieved using the API but isn't discoverable in the Amazon ECR Public Gallery.
  */
 export class Architecture {
+  /**
+   * ARM Architecture.
+   */
   public static readonly ARM = new Architecture('ARM');
+
+  /**
+   * ARM 64 Architecture.
+   */
   public static readonly ARM_64 = new Architecture('ARM 64');
+
+  /**
+   * x86 Architecture.
+   */
   public static readonly X86 = new Architecture('x86');
+
+  /**
+   * x86-64 Architecture.
+   */
   public static readonly X86_64 = new Architecture('x86-64');
 
+  /**
+   * Constructor for specifying a custom architecture tag.
+   *
+   * @param value the name of architecture tag.
+   */
   public constructor(public readonly value: string) { }
 }
 
@@ -212,8 +252,20 @@ export class Architecture {
  * and can be retrieved using the API but isn't discoverable in the Amazon ECR Public Gallery.
  */
 export class OperatingSystem {
+  /**
+   * Linux Operating System.
+   */
   public static readonly LINUX = new OperatingSystem('Linux');
+
+  /**
+   * Windows Operating System.
+   */
   public static readonly WINDOWS = new OperatingSystem('Windows');
 
+  /**
+   * Constructor for specifying a custom operating system tag.
+   *
+   * @param value the name of operating system tag.
+   */
   public constructor(public readonly value: string) { }
 }

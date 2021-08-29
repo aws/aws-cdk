@@ -20,10 +20,10 @@
             {
               "Action": [
                 "ecr-public:BatchCheckLayerAvailability",
-                "ecr-public:PutImage",
+                "ecr-public:CompleteLayerUpload",
                 "ecr-public:InitiateLayerUpload",
-                "ecr-public:UploadLayerPart",
-                "ecr-public:CompleteLayerUpload"
+                "ecr-public:PutImage",
+                "ecr-public:UploadLayerPart"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -82,10 +82,10 @@
             {
               "Action": [
                 "ecr-public:BatchCheckLayerAvailability",
-                "ecr-public:PutImage",
+                "ecr-public:CompleteLayerUpload",
                 "ecr-public:InitiateLayerUpload",
-                "ecr-public:UploadLayerPart",
-                "ecr-public:CompleteLayerUpload"
+                "ecr-public:PutImage",
+                "ecr-public:UploadLayerPart"
               ],
               "Effect": "Allow",
               "Resource": {

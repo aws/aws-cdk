@@ -9,10 +9,10 @@ import * as ecr from '../lib';
  * 3. export AWS_SECRET_ACCESS_KEY=`echo ${CREDENTIALS} | jq -r '.Credentials.SecretAccessKey'`
  * 4. export AWS_SESSION_TOKEN=`echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken'`
  * 5. echo 'FROM alpine\nCMD ["echo", "Hello World!"]' > Dockerfile
- * 6. docker build -t hello .
+ * 6. docker build -t hello:latest .
  * 7. aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
- * 8. docker tag hello:latest public.ecr.aws/<registry-alias>/<repo-name>/hello:latest
- * 9. docker push public.ecr.aws/<registry-alias>/<repo-name>/hello:latest
+ * 8. docker tag hello:latest public.ecr.aws/<registry-alias>/<repo-name>
+ * 9. docker push public.ecr.aws/<registry-alias>/<repo-name>
  */
 
 const app = new cdk.App();
