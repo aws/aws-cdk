@@ -106,6 +106,30 @@ describe('IAM user', () => {
     expect(stack.resolve(user.userName)).toStrictEqual(userName);
   });
 
+  test('user imported by user ARN with path', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', `arn:aws:iam::account-id:user/path/${userName}`);
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
+  test('user imported by user ARN with path (multiple elements)', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', `arn:aws:iam::account-id:user/p/a/t/h/${userName}`);
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
   test('user imported by user attributes has a name', () => {
     // GIVEN
     const stack = new Stack();
@@ -114,6 +138,34 @@ describe('IAM user', () => {
     // WHEN
     const user = User.fromUserAttributes(stack, 'import', {
       userArn: `arn:aws:iam::account-id:user/${userName}`,
+    });
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
+  test('user imported by user attributes with path has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserAttributes(stack, 'import', {
+      userArn: `arn:aws:iam::account-id:user/path/${userName}`,
+    });
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
+  test('user imported by user attributes with path (multiple elements) has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserAttributes(stack, 'import', {
+      userArn: `arn:aws:iam::account-id:user/p/a/t/h/${userName}`,
     });
 
     // THEN

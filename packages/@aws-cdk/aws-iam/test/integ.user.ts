@@ -12,13 +12,25 @@ new User(stack, 'MyUser', {
 });
 
 const userImportedByArn = User.fromUserArn(stack, 'ImportedUserByArn', 'arn:aws:iam::123456789012:user/rossrhodes');
+const userImportedByArnWithPath = User.fromUserArn(stack, 'ImportedUserByArnPath', 'arn:aws:iam::123456789012:user/path/johndoe');
+const userImportedByArnPathMultiple = User.fromUserArn(stack, 'ImportedUserByArnPathMultiple', 'arn:aws:iam::123456789012:user/p/a/t/h/johndoe');
 const userImportedByAttributes = User.fromUserAttributes(stack, 'ImportedUserByAttributes', {
   userArn: 'arn:aws:iam::123456789012:user/johndoe',
+});
+const userImportedByAttributesPath = User.fromUserAttributes(stack, 'ImportedUserByAttributesPath', {
+  userArn: 'arn:aws:iam::123456789012:user/path/johndoe',
+});
+const userImportedByAttributesPathMultiple = User.fromUserAttributes(stack, 'ImportedUserByAttributesPathMultiple', {
+  userArn: 'arn:aws:iam::123456789012:user/p/a/t/h/johndoe',
 });
 const userImportedByName = User.fromUserName(stack, 'ImportedUserByName', 'janedoe');
 
 new CfnOutput(stack, 'NameForUserImportedByArn', { value: userImportedByArn.userName });
+new CfnOutput(stack, 'NameForUserImportedByArnPath', { value: userImportedByArnWithPath.userName });
+new CfnOutput(stack, 'NameForUserImportedByArnPathMultiple', { value: userImportedByArnPathMultiple.userName });
 new CfnOutput(stack, 'NameForUserImportedByAttributes', { value: userImportedByAttributes.userName });
+new CfnOutput(stack, 'NameForUserImportedByAttributesPath', { value: userImportedByAttributesPath.userName });
+new CfnOutput(stack, 'NameForUserImportedByAttributesPathMultiple', { value: userImportedByAttributesPathMultiple.userName });
 new CfnOutput(stack, 'NameForUserImportedByName', { value: userImportedByName.userName });
 
 app.synth();

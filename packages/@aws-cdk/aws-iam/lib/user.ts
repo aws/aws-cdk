@@ -175,7 +175,9 @@ export class User extends Resource implements IIdentity, IUser {
     class Import extends Resource implements IUser {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly principalAccount = Aws.ACCOUNT_ID;
-      public readonly userName: string = Arn.extractResourceName(attrs.userArn, 'user');
+      // Resource name with path can have multiple elements separated by slash.
+      // Therefore, use element after last slash as userName.
+      public readonly userName: string = Arn.extractResourceName(attrs.userArn, 'user').split('/').pop()!;
       public readonly userArn: string = attrs.userArn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(attrs.userArn).policyFragment;
