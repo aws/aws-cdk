@@ -49,10 +49,6 @@ export function makePhysicalId(resourceName: string, clusterProps: ClusterProps)
   return `${clusterProps.clusterName}:${clusterProps.databaseName}:${resourceName}`;
 }
 
-export function getResourceNameFromPhysicalId(physicalId: string): string {
-  return physicalId.split(':')[2];
-}
-
 export function getResourceProperty(propertyName: string, resourceProperties: { [Key: string]: any }): any {
   const property = resourceProperties[propertyName];
   if (!property) {

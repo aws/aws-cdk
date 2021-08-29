@@ -2,7 +2,7 @@
 import * as AWSLambda from 'aws-lambda';
 /* eslint-disable-next-line import/no-extraneous-dependencies */
 import * as SecretsManager from 'aws-sdk/clients/secretsmanager';
-import { ClusterProps, executeStatement, getClusterPropsFromEvent, getResourceNameFromPhysicalId, getResourceProperty, makePhysicalId } from './util';
+import { ClusterProps, executeStatement, getClusterPropsFromEvent, getResourceProperty, makePhysicalId } from './util';
 
 const secretsManager = new SecretsManager();
 
@@ -15,7 +15,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     await createUser(username, passwordSecretArn, clusterProps);
     return { PhysicalResourceId: makePhysicalId(username, clusterProps), Data: { username: username } };
   } else if (event.RequestType === 'Delete') {
-    await dropUser(getResourceNameFromPhysicalId(event.PhysicalResourceId), clusterProps);
+    await dropUser(username, clusterProps);
     return;
   } else if (event.RequestType === 'Update') {
     await updateUser(username, passwordSecretArn, clusterProps, event.OldResourceProperties);
