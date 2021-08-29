@@ -4,13 +4,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 import { LaunchType } from '../../lib/base/base-service';
 
-nodeunitShim({
-  'When creating an External Service': {
-    'with only required properties set, it correctly sets default properties'(test: Test) {
+describe('external service', () => {
+  describe('When creating an External Service', () => {
+    test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -44,13 +43,13 @@ nodeunitShim({
         LaunchType: LaunchType.EXTERNAL,
       });
 
-      test.notEqual(service.node.defaultChild, undefined);
+      expect(service.node.defaultChild).toBeDefined();
 
-      test.done();
-    },
-  },
 
-  'with all properties set'(test: Test) {
+    });
+  });
+
+  test('with all properties set', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -97,10 +96,10 @@ nodeunitShim({
       ServiceName: 'bonjour',
     });
 
-    test.done();
-  },
 
-  'with cloudmap set on cluster, throw error'(test: Test) {
+  });
+
+  test('with cloudmap set on cluster, throw error', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -130,10 +129,10 @@ nodeunitShim({
       serviceName: 'bonjour',
     })).toThrow('Cloud map integration is not supported for External service' );
 
-    test.done();
-  },
 
-  'with multiple security groups, it correctly updates the cfn template'(test: Test) {
+  });
+
+  test('with multiple security groups, it correctly updates the cfn template', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -205,10 +204,10 @@ nodeunitShim({
       ],
     });
 
-    test.done();
-  },
 
-  'throws when task definition is not External compatible'(test: Test) {
+  });
+
+  test('throws when task definition is not External compatible', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -227,10 +226,10 @@ nodeunitShim({
       taskDefinition,
     })).toThrow('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
 
-    test.done();
-  },
 
-  'errors if minimum not less than maximum'(test: Test) {
+  });
+
+  test('errors if minimum not less than maximum', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -250,10 +249,10 @@ nodeunitShim({
       maxHealthyPercent: 100,
     })).toThrow('Minimum healthy percent must be less than maximum healthy percent.');
 
-    test.done();
-  },
 
-  'error if cloudmap options provided with external service'(test: Test) {
+  });
+
+  test('error if cloudmap options provided with external service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -276,10 +275,10 @@ nodeunitShim({
     })).toThrow('Cloud map options are not supported for External service');
 
     // THEN
-    test.done();
-  },
 
-  'error if enableExecuteCommand options provided with external service'(test: Test) {
+  });
+
+  test('error if enableExecuteCommand options provided with external service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -300,10 +299,10 @@ nodeunitShim({
     })).toThrow('Enable Execute Command options are not supported for External service');
 
     // THEN
-    test.done();
-  },
 
-  'error if capacityProviderStrategies options provided with external service'(test: Test) {
+  });
+
+  test('error if capacityProviderStrategies options provided with external service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -338,10 +337,10 @@ nodeunitShim({
     })).toThrow('Capacity Providers are not supported for External service');
 
     // THEN
-    test.done();
-  },
 
-  'error when performing attachToApplicationTargetGroup to an external service'(test: Test) {
+  });
+
+  test('error when performing attachToApplicationTargetGroup to an external service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -369,10 +368,10 @@ nodeunitShim({
     expect(() => service.attachToApplicationTargetGroup(targetGroup)).toThrow('Application load balancer cannot be attached to an external service');
 
     // THEN
-    test.done();
-  },
 
-  'error when performing loadBalancerTarget to an external service'(test: Test) {
+  });
+
+  test('error when performing loadBalancerTarget to an external service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -396,10 +395,10 @@ nodeunitShim({
     })).toThrow('External service cannot be attached as load balancer targets');
 
     // THEN
-    test.done();
-  },
 
-  'error when performing registerLoadBalancerTargets to an external service'(test: Test) {
+  });
+
+  test('error when performing registerLoadBalancerTargets to an external service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -430,10 +429,10 @@ nodeunitShim({
     )).toThrow('External service cannot be registered as load balancer targets');
 
     // THEN
-    test.done();
-  },
 
-  'error when performing autoScaleTaskCount to an external service'(test: Test) {
+  });
+
+  test('error when performing autoScaleTaskCount to an external service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -458,10 +457,10 @@ nodeunitShim({
     })).toThrow('Autoscaling not supported for external service');
 
     // THEN
-    test.done();
-  },
 
-  'error when performing enableCloudMap to an external service'(test: Test) {
+  });
+
+  test('error when performing enableCloudMap to an external service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -483,10 +482,10 @@ nodeunitShim({
     expect(() => service.enableCloudMap({})).toThrow('Cloud map integration not supported for an external service');
 
     // THEN
-    test.done();
-  },
 
-  'error when performing associateCloudMapService to an external service'(test: Test) {
+  });
+
+  test('error when performing associateCloudMapService to an external service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -523,6 +522,6 @@ nodeunitShim({
     })).toThrow('Cloud map service association is not supported for an external service');
 
     // THEN
-    test.done();
-  },
+
+  });
 });
