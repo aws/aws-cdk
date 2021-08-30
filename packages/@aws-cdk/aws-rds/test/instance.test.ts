@@ -402,7 +402,7 @@ describe('instance', () => {
 
     });
 
-    test('can correctly create a new database instance from an existing one with a tokenized parameter', () => {
+    test('can create a new database instance with fromDatabaseInstanceAttributes using a token for the port', () => {
       // GIVEN
       const existingDatabasePort = new cdk.CfnParameter(stack, 'ExistingDatabasePort', {
         type: 'Number',
