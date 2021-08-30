@@ -401,6 +401,37 @@ describe('instance', () => {
 
 
     });
+
+    test('can correctly create a new database instance from an existing one with a tokenized parameter', () => {
+      // GIVEN
+      const existingDatabasePort = new cdk.CfnParameter(stack, 'ExistingDatabasePort', {
+        type: 'Number',
+        default: 5432,
+      }).valueAsNumber;
+
+      // WHEN
+      const existingDatabaseInstance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'ExistingDatabaseInstance', {
+        instanceIdentifier: 'foo',
+        securityGroups: [],
+        instanceEndpointAddress: 'foao',
+        port: existingDatabasePort,
+      });
+
+      new cdk.CfnOutput(stack, 'DatabaseUrlOutput', {
+        exportName: 'databaseUrl',
+        value: `${existingDatabaseInstance.dbInstanceEndpointPort}`,
+      });
+
+      // THEN
+      expect(stack).toHaveOutput({
+        exportName: 'databaseUrl',
+        outputValue: {
+          Ref: 'ExistingDatabasePort',
+        },
+      });
+
+
+    });
   });
 
   test('create a read replica in the same region - with the subnet group name', () => {
