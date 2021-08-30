@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import { DnsBlockResponse, FirewallDomainList, FirewallRuleAction, FirewallRuleGroup, IFirewallDomainList } from '../lib';
@@ -23,7 +23,7 @@ test('basic rule group', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53Resolver::FirewallRuleGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallRuleGroup', {
     FirewallRules: [
       {
         Action: 'BLOCK',
@@ -55,7 +55,7 @@ test('use addRule to add rules', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53Resolver::FirewallRuleGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallRuleGroup', {
     FirewallRules: [
       {
         Action: 'ALLOW',
@@ -83,7 +83,7 @@ test('rule with response override', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53Resolver::FirewallRuleGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallRuleGroup', {
     FirewallRules: [
       {
         Action: 'BLOCK',
@@ -110,7 +110,7 @@ test('associate rule group with a vpc', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53Resolver::FirewallRuleGroupAssociation', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallRuleGroupAssociation', {
     FirewallRuleGroupId: {
       'Fn::GetAtt': [
         'RuleGroup06BA8844',

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { FirewallDomainList, FirewallDomains } from '../lib';
@@ -16,7 +16,7 @@ test('domain list from strings', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53Resolver::FirewallDomainList', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallDomainList', {
     Domains: [
       'first-domain.com',
       'second-domain.net',
@@ -31,7 +31,7 @@ test('domain list from S3 URL', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53Resolver::FirewallDomainList', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallDomainList', {
     DomainFileUrl: 's3://bucket/prefix/object',
   });
 });
@@ -43,7 +43,7 @@ test('domain list from S3', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53Resolver::FirewallDomainList', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallDomainList', {
     DomainFileUrl: 's3://bucket/prefix/object',
   });
 });
@@ -55,7 +55,7 @@ test('domain list from asset', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53Resolver::FirewallDomainList', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallDomainList', {
     DomainFileUrl: {
       'Fn::Join': [
         '',
