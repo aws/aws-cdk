@@ -94,7 +94,7 @@ export function contentFingerprint(file: string): string {
 
       let dataBuffer = slicedBuffer;
       if (!isBinary) { // Line endings normalization (CRLF -> LF)
-        const str = buffer.slice(0, read).toString('binary');
+        const str = buffer.slice(0, read).toString();
 
         // We are going to normalize line endings to LF. So if the current
         // buffer ends with CR, it could be that the next one starts with
@@ -106,7 +106,7 @@ export function contentFingerprint(file: string): string {
 
         const data = lastStr + str;
         const normalizedData = data.replace(new RegExp(CRLF, 'g'), LF);
-        dataBuffer = Buffer.from(normalizedData, 'binary');
+        dataBuffer = Buffer.from(normalizedData);
         lastStr = '';
       }
 
