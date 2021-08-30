@@ -1,16 +1,12 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
-import { ClusterProps, executeStatement, getClusterPropsFromEvent, getResourceProperty } from './util';
+import { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
+import { ClusterProps, executeStatement } from './util';
 
-interface TablePrivilege {
-  readonly tableName: string;
-  readonly actions: string[];
-}
-
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  const username = getResourceProperty('username', event.ResourceProperties);
-  const tablePrivileges = JSON.parse(getResourceProperty('tablePrivileges', event.ResourceProperties)) as TablePrivilege[];
-  const clusterProps = getClusterPropsFromEvent(event.ResourceProperties);
+export async function handler(props: UserTablePrivilegesHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
+  const username = props.username;
+  const tablePrivileges = props.tablePrivileges;
+  const clusterProps = props;
 
   if (event.RequestType === 'Create') {
     await grantPrivileges(username, tablePrivileges, clusterProps);
@@ -19,7 +15,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     await revokePrivileges(username, tablePrivileges, clusterProps);
     return;
   } else if (event.RequestType === 'Update') {
-    await updatePrivileges(username, tablePrivileges, clusterProps, event.OldResourceProperties);
+    await updatePrivileges(username, tablePrivileges, clusterProps, event.OldResourceProperties as UserTablePrivilegesHandlerProps & ClusterProps);
     return { PhysicalResourceId: username };
   } else {
     /* eslint-disable-next-line dot-notation */
@@ -43,10 +39,10 @@ async function updatePrivileges(
   username: string,
   tablePrivileges: TablePrivilege[],
   clusterProps: ClusterProps,
-  oldResourceProperties: { [Key: string]: any },
+  oldResourceProperties: UserTablePrivilegesHandlerProps & ClusterProps,
 ) {
-  const oldUsername = getResourceProperty('username', oldResourceProperties);
-  const oldTablePrivileges = JSON.parse(getResourceProperty('tablePrivileges', oldResourceProperties)) as TablePrivilege[];
+  const oldUsername = oldResourceProperties.username;
+  const oldTablePrivileges = oldResourceProperties.tablePrivileges;
   if (oldUsername === username) {
     await revokePrivileges(username, oldTablePrivileges, clusterProps);
   }

@@ -3,8 +3,9 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseProps } from './database-props';
-import { DatabaseQuery } from './database-query';
 import { DatabaseSecret } from './database-secret';
+import { DatabaseQuery } from './private/database-query';
+import { UserHandlerProps } from './private/handler-props';
 import { TableAction, UserTablePrivileges } from './privileges';
 import { ITable } from './table';
 
@@ -136,7 +137,7 @@ export class User extends UserBase {
   readonly databaseName: string;
   protected databaseProps: DatabaseProps;
 
-  private resource: DatabaseQuery;
+  private resource: DatabaseQuery<UserHandlerProps>;
 
   constructor(scope: Construct, id: string, props: UserProps) {
     super(scope, id);

@@ -1,16 +1,13 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
-import { ClusterProps, executeStatement, getClusterPropsFromEvent, getResourceProperty, makePhysicalId } from './util';
+import { Column } from '../../table';
+import { TableHandlerProps } from '../handler-props';
+import { ClusterProps, executeStatement, makePhysicalId } from './util';
 
-interface Column {
-  name: string;
-  dataType: string;
-}
-
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  const tableColumns = JSON.parse(getResourceProperty('tableColumns', event.ResourceProperties)) as Column[];
-  const tableName = event.ResourceProperties.tableName;
-  const clusterProps = getClusterPropsFromEvent(event.ResourceProperties);
+export async function handler(props: TableHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
+  const tableName = props.tableName;
+  const tableColumns = props.tableColumns;
+  const clusterProps = props;
 
   if (event.RequestType === 'Create') {
     await createTable(tableName, tableColumns, clusterProps);
@@ -19,7 +16,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     await dropTable(tableName, clusterProps);
     return;
   } else if (event.RequestType === 'Update') {
-    const { replace } = await updateTable(tableName, tableColumns, clusterProps, event.OldResourceProperties);
+    const { replace } = await updateTable(tableName, tableColumns, clusterProps, event.OldResourceProperties as TableHandlerProps & ClusterProps);
     const physicalId = replace ? makeNewPhysicalId(tableName, clusterProps, event.RequestId) : event.PhysicalResourceId;
     return { PhysicalResourceId: physicalId, Data: { tableName: tableName } };
   } else {
@@ -45,9 +42,9 @@ async function updateTable(
   tableName: string,
   tableColumns: Column[],
   clusterProps: ClusterProps,
-  oldResourceProperties: { [Key: string]: any },
+  oldResourceProperties: TableHandlerProps & ClusterProps,
 ): Promise<{ replace: boolean }> {
-  const oldClusterProps = getClusterPropsFromEvent(oldResourceProperties);
+  const oldClusterProps = oldResourceProperties;
   if (clusterProps.clusterName !== oldClusterProps.clusterName || clusterProps.databaseName !== oldClusterProps.databaseName) {
     await createTable(tableName, tableColumns, clusterProps);
     return { replace: true };
@@ -59,7 +56,7 @@ async function updateTable(
     return { replace: true };
   }
 
-  const oldTableColumns = JSON.parse(getResourceProperty('tableColumns', oldResourceProperties)) as Column[];
+  const oldTableColumns = oldResourceProperties.tableColumns;
   if (!oldTableColumns.every(oldColumn => tableColumns.some(column => column.name === oldColumn.name && column.dataType === oldColumn.dataType))) {
     await createTable(tableName, tableColumns, clusterProps);
     return { replace: true };

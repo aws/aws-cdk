@@ -860,10 +860,6 @@
             "Arn"
           ]
         },
-        "username": "awscdkredshiftclusterdatabaseuserc17d5ebd",
-        "passwordSecretArn": {
-          "Ref": "UserSecretAttachment02022609"
-        },
         "handler": "create-user",
         "clusterName": {
           "Ref": "ClusterEB0386A7"
@@ -871,7 +867,11 @@
         "adminUserArn": {
           "Ref": "ClusterSecretAttachment769E6258"
         },
-        "databaseName": "my_db"
+        "databaseName": "my_db",
+        "username": "awscdkredshiftclusterdatabaseuserc17d5ebd",
+        "passwordSecretArn": {
+          "Ref": "UserSecretAttachment02022609"
+        }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -1015,27 +1015,6 @@
             "Arn"
           ]
         },
-        "username": {
-          "Fn::GetAtt": [
-            "UserFDDCDD17",
-            "username"
-          ]
-        },
-        "tablePrivileges": {
-          "Fn::Join": [
-            "",
-            [
-              "[{\"tableName\":\"",
-              {
-                "Fn::GetAtt": [
-                  "Table7ABB320E",
-                  "tableName"
-                ]
-              },
-              "\",\"actions\":[\"INSERT\",\"DELETE\",\"SELECT\"]}]"
-            ]
-          ]
-        },
         "handler": "grant-user-table-privileges",
         "clusterName": {
           "Ref": "ClusterEB0386A7"
@@ -1043,7 +1022,28 @@
         "adminUserArn": {
           "Ref": "ClusterSecretAttachment769E6258"
         },
-        "databaseName": "my_db"
+        "databaseName": "my_db",
+        "username": {
+          "Fn::GetAtt": [
+            "UserFDDCDD17",
+            "username"
+          ]
+        },
+        "tablePrivileges": [
+          {
+            "tableName": {
+              "Fn::GetAtt": [
+                "Table7ABB320E",
+                "tableName"
+              ]
+            },
+            "actions": [
+              "INSERT",
+              "DELETE",
+              "SELECT"
+            ]
+          }
+        ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -1132,7 +1132,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters3797b2ef9d6156ff2b1ff6e506fccab0a9ee1bf4ed27f48aa924e47e398c330dS3BucketCB15A6BB"
+            "Ref": "AssetParameters416e9b75c33a5897f428bc77d9b3d36b7a5e9f137050a27aa51f8b32aaf02d15S3Bucket557A9F7C"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1145,7 +1145,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3797b2ef9d6156ff2b1ff6e506fccab0a9ee1bf4ed27f48aa924e47e398c330dS3VersionKeyEA5AA0AD"
+                          "Ref": "AssetParameters416e9b75c33a5897f428bc77d9b3d36b7a5e9f137050a27aa51f8b32aaf02d15S3VersionKey0FBE0D0E"
                         }
                       ]
                     }
@@ -1158,7 +1158,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3797b2ef9d6156ff2b1ff6e506fccab0a9ee1bf4ed27f48aa924e47e398c330dS3VersionKeyEA5AA0AD"
+                          "Ref": "AssetParameters416e9b75c33a5897f428bc77d9b3d36b7a5e9f137050a27aa51f8b32aaf02d15S3VersionKey0FBE0D0E"
                         }
                       ]
                     }
@@ -1324,8 +1324,6 @@
             "Arn"
           ]
         },
-        "tableName": "awscdkredshiftclusterdatabaseTable24923533",
-        "tableColumns": "[{\"name\":\"col1\",\"dataType\":\"varchar(4)\"},{\"name\":\"col2\",\"dataType\":\"float\"}]",
         "handler": "create-table",
         "clusterName": {
           "Ref": "ClusterEB0386A7"
@@ -1333,24 +1331,35 @@
         "adminUserArn": {
           "Ref": "ClusterSecretAttachment769E6258"
         },
-        "databaseName": "my_db"
+        "databaseName": "my_db",
+        "tableName": "awscdkredshiftclusterdatabaseTable24923533",
+        "tableColumns": [
+          {
+            "name": "col1",
+            "dataType": "varchar(4)"
+          },
+          {
+            "name": "col2",
+            "dataType": "float"
+          }
+        ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
-    "AssetParameters3797b2ef9d6156ff2b1ff6e506fccab0a9ee1bf4ed27f48aa924e47e398c330dS3BucketCB15A6BB": {
+    "AssetParameters416e9b75c33a5897f428bc77d9b3d36b7a5e9f137050a27aa51f8b32aaf02d15S3Bucket557A9F7C": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"3797b2ef9d6156ff2b1ff6e506fccab0a9ee1bf4ed27f48aa924e47e398c330d\""
+      "Description": "S3 bucket for asset \"416e9b75c33a5897f428bc77d9b3d36b7a5e9f137050a27aa51f8b32aaf02d15\""
     },
-    "AssetParameters3797b2ef9d6156ff2b1ff6e506fccab0a9ee1bf4ed27f48aa924e47e398c330dS3VersionKeyEA5AA0AD": {
+    "AssetParameters416e9b75c33a5897f428bc77d9b3d36b7a5e9f137050a27aa51f8b32aaf02d15S3VersionKey0FBE0D0E": {
       "Type": "String",
-      "Description": "S3 key for asset version \"3797b2ef9d6156ff2b1ff6e506fccab0a9ee1bf4ed27f48aa924e47e398c330d\""
+      "Description": "S3 key for asset version \"416e9b75c33a5897f428bc77d9b3d36b7a5e9f137050a27aa51f8b32aaf02d15\""
     },
-    "AssetParameters3797b2ef9d6156ff2b1ff6e506fccab0a9ee1bf4ed27f48aa924e47e398c330dArtifactHash0096ADFB": {
+    "AssetParameters416e9b75c33a5897f428bc77d9b3d36b7a5e9f137050a27aa51f8b32aaf02d15ArtifactHash6A4A5049": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"3797b2ef9d6156ff2b1ff6e506fccab0a9ee1bf4ed27f48aa924e47e398c330d\""
+      "Description": "Artifact hash for asset \"416e9b75c33a5897f428bc77d9b3d36b7a5e9f137050a27aa51f8b32aaf02d15\""
     },
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",

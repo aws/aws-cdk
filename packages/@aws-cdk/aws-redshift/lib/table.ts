@@ -2,7 +2,8 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseProps } from './database-props';
-import { DatabaseQuery } from './database-query';
+import { DatabaseQuery } from './private/database-query';
+import { TableHandlerProps } from './private/handler-props';
 import { TableAction } from './privileges';
 import { IUser } from './user';
 
@@ -135,7 +136,7 @@ export class Table extends TableBase {
   readonly cluster: ICluster;
   readonly databaseName: string;
 
-  private resource: DatabaseQuery;
+  private resource: DatabaseQuery<TableHandlerProps>;
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
@@ -150,7 +151,7 @@ export class Table extends TableBase {
       handler: 'create-table',
       properties: {
         tableName: props.tableName ?? cdk.Names.uniqueId(this),
-        tableColumns: JSON.stringify(this.tableColumns),
+        tableColumns: this.tableColumns,
       },
     });
 

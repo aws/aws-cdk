@@ -2,14 +2,15 @@
 import * as AWSLambda from 'aws-lambda';
 /* eslint-disable-next-line import/no-extraneous-dependencies */
 import * as SecretsManager from 'aws-sdk/clients/secretsmanager';
-import { ClusterProps, executeStatement, getClusterPropsFromEvent, getResourceProperty, makePhysicalId } from './util';
+import { UserHandlerProps } from '../handler-props';
+import { ClusterProps, executeStatement, makePhysicalId } from './util';
 
 const secretsManager = new SecretsManager();
 
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  const username = getResourceProperty('username', event.ResourceProperties);
-  const passwordSecretArn = getResourceProperty('passwordSecretArn', event.ResourceProperties);
-  const clusterProps = getClusterPropsFromEvent(event.ResourceProperties);
+export async function handler(props: UserHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
+  const username = props.username;
+  const passwordSecretArn = props.passwordSecretArn;
+  const clusterProps = props;
 
   if (event.RequestType === 'Create') {
     await createUser(username, passwordSecretArn, clusterProps);
@@ -18,7 +19,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     await dropUser(username, clusterProps);
     return;
   } else if (event.RequestType === 'Update') {
-    await updateUser(username, passwordSecretArn, clusterProps, event.OldResourceProperties);
+    await updateUser(username, passwordSecretArn, clusterProps, event.OldResourceProperties as UserHandlerProps & ClusterProps);
     return { PhysicalResourceId: makePhysicalId(username, clusterProps), Data: { username: username } };
   } else {
     /* eslint-disable-next-line dot-notation */
@@ -36,15 +37,20 @@ async function createUser(username: string, passwordSecretArn: string, clusterPr
   await executeStatement(`CREATE USER ${username} PASSWORD '${password}'`, clusterProps);
 }
 
-async function updateUser(username: string, passwordSecretArn: string, clusterProps: ClusterProps, oldResourceProperties: { [Key: string]: any }) {
-  const oldClusterProps = getClusterPropsFromEvent(oldResourceProperties);
+async function updateUser(
+  username: string,
+  passwordSecretArn: string,
+  clusterProps: ClusterProps,
+  oldResourceProperties: UserHandlerProps & ClusterProps,
+) {
+  const oldClusterProps = oldResourceProperties;
   if (clusterProps !== oldClusterProps) {
     await createUser(username, passwordSecretArn, clusterProps);
     return;
   }
 
-  const oldUsername = getResourceProperty('username', oldResourceProperties);
-  const oldPasswordSecretArn = getResourceProperty('passwordSecretArn', oldResourceProperties);
+  const oldUsername = oldResourceProperties.username;
+  const oldPasswordSecretArn = oldResourceProperties.passwordSecretArn;
   const oldPassword = await getPasswordFromSecret(oldPasswordSecretArn);
   const password = await getPasswordFromSecret(passwordSecretArn);
 

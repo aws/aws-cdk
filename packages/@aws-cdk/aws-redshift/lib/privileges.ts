@@ -1,7 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { DatabaseProps } from './database-props';
-import { DatabaseQuery } from './database-query';
+import { DatabaseQuery } from './private/database-query';
+import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './private/handler-props';
 import { ITable } from './table';
 import { IUser } from './user';
 
@@ -94,15 +95,15 @@ export class UserTablePrivileges extends CoreConstruct {
 
     this.privileges = props.privileges ?? [];
 
-    new DatabaseQuery(this, 'Resource', {
+    new DatabaseQuery<UserTablePrivilegesHandlerProps>(this, 'Resource', {
       ...props,
       handler: 'grant-user-table-privileges',
       properties: {
         username: props.user.username,
-        tablePrivileges: cdk.Lazy.string({
-          produce: () => JSON.stringify(
+        tablePrivileges: cdk.Lazy.any({
+          produce: () => {
             // TODO: needs to be `reduce`d to combine tables
-            this.privileges.map(({ table, actions }) => {
+            const reducedPrivileges = this.privileges.map(({ table, actions }) => {
               if (actions.includes(TableAction.ALL)) {
                 actions = [TableAction.ALL];
               }
@@ -110,10 +111,15 @@ export class UserTablePrivileges extends CoreConstruct {
                 actions.push(TableAction.SELECT);
               }
               const actionSet = new Set(actions);
-              return { tableName: table.tableName, actions: Array.from(actionSet).map(action => TableAction[action]) };
-            }),
-          ),
-        }),
+              return { table, actions: Array.from(actionSet) };
+            });
+            const serializedPrivileges: SerializedTablePrivilege[] = reducedPrivileges.map(({ table, actions }) => ({
+              tableName: table.tableName,
+              actions: Array.from(actions).map(action => TableAction[action]),
+            }));
+            return serializedPrivileges;
+          },
+        }) as any,
       },
     });
   }

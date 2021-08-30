@@ -39,7 +39,7 @@ describe('cluster table', () => {
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
       tableName: 'Table',
-      tableColumns: JSON.stringify(tableColumns),
+      tableColumns,
     });
   });
 

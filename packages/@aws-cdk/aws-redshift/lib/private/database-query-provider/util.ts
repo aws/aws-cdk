@@ -1,13 +1,10 @@
 /* eslint-disable-next-line import/no-extraneous-dependencies */
 import * as RedshiftData from 'aws-sdk/clients/redshiftdata';
+import { DatabaseQueryHandlerProps } from '../handler-props';
 
 const redshiftData = new RedshiftData();
 
-export interface ClusterProps {
-  clusterName: string;
-  adminUserArn: string;
-  databaseName: string;
-}
+export type ClusterProps = Omit<DatabaseQueryHandlerProps, 'handler'>;
 
 export async function executeStatement(statement: string, clusterProps: ClusterProps): Promise<void> {
   const executeStatementProps = {
@@ -38,21 +35,6 @@ async function waitForStatementComplete(statementId: string): Promise<void> {
   }
 }
 
-export function getClusterPropsFromEvent(resourceProperties: { [Key: string]: any }): ClusterProps {
-  const clusterName = getResourceProperty('clusterName', resourceProperties);
-  const adminUserArn = getResourceProperty('adminUserArn', resourceProperties);
-  const databaseName = getResourceProperty('databaseName', resourceProperties);
-  return { clusterName, adminUserArn, databaseName };
-}
-
 export function makePhysicalId(resourceName: string, clusterProps: ClusterProps): string {
   return `${clusterProps.clusterName}:${clusterProps.databaseName}:${resourceName}`;
-}
-
-export function getResourceProperty(propertyName: string, resourceProperties: { [Key: string]: any }): any {
-  const property = resourceProperties[propertyName];
-  if (!property) {
-    throw new Error(`Custom resource properties must contain value for \`${propertyName}\``);
-  }
-  return property;
 }

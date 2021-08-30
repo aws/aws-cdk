@@ -3,13 +3,13 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as redshift from '../lib';
-import { DatabaseQuery } from '../lib/database-query';
+import { DatabaseQuery, DatabaseQueryProps } from '../lib/private/database-query';
 
 describe('database query', () => {
   let stack: cdk.Stack;
   let vpc: ec2.Vpc;
   let cluster: redshift.ICluster;
-  let minimalProps: { cluster: redshift.ICluster; databaseName: string; handler: string };
+  let minimalProps: DatabaseQueryProps<any>;
 
   beforeEach(() => {
     stack = new cdk.Stack();
@@ -24,6 +24,7 @@ describe('database query', () => {
       cluster: cluster,
       databaseName: 'databaseName',
       handler: 'handler',
+      properties: {},
     };
   });
 

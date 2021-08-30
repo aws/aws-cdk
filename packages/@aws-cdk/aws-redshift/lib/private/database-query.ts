@@ -5,16 +5,17 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
-import { Cluster } from './cluster';
-import { DatabaseProps } from './database-props';
+import { Cluster } from '../cluster';
+import { DatabaseProps } from '../database-props';
+import { DatabaseQueryHandlerProps } from './handler-props';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-export interface DatabaseQueryProps extends DatabaseProps {
+export interface DatabaseQueryProps<HandlerProps> extends DatabaseProps {
   readonly handler: string;
-  readonly properties?: {[key: string]: any};
+  readonly properties: HandlerProps;
   /**
    * The policy to apply when this resource is removed from the application.
    *
@@ -23,13 +24,13 @@ export interface DatabaseQueryProps extends DatabaseProps {
   readonly removalPolicy?: cdk.RemovalPolicy;
 }
 
-export class DatabaseQuery extends CoreConstruct implements iam.IGrantable {
+export class DatabaseQuery<HandlerProps> extends CoreConstruct implements iam.IGrantable {
   readonly grantPrincipal: iam.IPrincipal;
   readonly ref: string;
 
   private readonly resource: cdk.CustomResource;
 
-  constructor(scope: Construct, id: string, props: DatabaseQueryProps) {
+  constructor(scope: Construct, id: string, props: DatabaseQueryProps<HandlerProps>) {
     super(scope, id);
 
     const adminUser = this.getAdminUser(props);
@@ -51,17 +52,18 @@ export class DatabaseQuery extends CoreConstruct implements iam.IGrantable {
       onEventHandler: handler,
     });
 
+    const queryHandlerProps: DatabaseQueryHandlerProps & HandlerProps = {
+      handler: props.handler,
+      clusterName: props.cluster.clusterName,
+      adminUserArn: adminUser.secretArn,
+      databaseName: props.databaseName,
+      ...props.properties,
+    };
     this.resource = new cdk.CustomResource(this, 'Resource', {
       resourceType: 'Custom::RedshiftDatabaseQuery',
       serviceToken: provider.serviceToken,
       removalPolicy: props.removalPolicy,
-      properties: {
-        ...props.properties,
-        handler: props.handler,
-        clusterName: props.cluster.clusterName,
-        adminUserArn: adminUser.secretArn,
-        databaseName: props.databaseName,
-      },
+      properties: queryHandlerProps,
     });
 
     this.grantPrincipal = handler.grantPrincipal;

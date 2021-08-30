@@ -57,7 +57,7 @@ describe('table privileges', () => {
           'username',
         ],
       },
-      tablePrivileges: '[{"tableName":"tableName","actions":["INSERT"]},{"tableName":"tableName2","actions":["SELECT","DROP"]}]',
+      tablePrivileges: [{ tableName: 'tableName', actions: ['INSERT'] }, { tableName: 'tableName2', actions: ['SELECT', 'DROP'] }],
     });
   });
 
@@ -73,7 +73,7 @@ describe('table privileges', () => {
           'username',
         ],
       },
-      tablePrivileges: '[{"tableName":"tableName","actions":["INSERT"]}]',
+      tablePrivileges: [{ tableName: 'tableName', actions: ['INSERT'] }],
     });
   });
 
@@ -89,7 +89,7 @@ describe('table privileges', () => {
           'username',
         ],
       },
-      tablePrivileges: '[{"tableName":"tableName","actions":["ALL"]}]',
+      tablePrivileges: [{ tableName: 'tableName', actions: ['ALL'] }],
     });
   });
 
@@ -106,7 +106,7 @@ describe('table privileges', () => {
           'username',
         ],
       },
-      tablePrivileges: '[{"tableName":"tableName","actions":["UPDATE","SELECT"]},{"tableName":"tableName2","actions":["DELETE","SELECT"]}]',
+      tablePrivileges: [{ tableName: 'tableName', actions: ['UPDATE', 'SELECT'] }, { tableName: 'tableName2', actions: ['DELETE', 'SELECT'] }],
     });
   });
 });
