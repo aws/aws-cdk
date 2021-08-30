@@ -95,10 +95,7 @@ describe('given an AutoScalingGroup and no role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
-      NotificationTargetARN: { Ref: 'TopicBFC7AF6E' },
-    });
-
+    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'TopicBFC7AF6E' } });
     expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -136,9 +133,7 @@ describe('given an AutoScalingGroup and no role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
-      NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
-    });
+    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' } });
     expect(stack).toHaveResource('AWS::SNS::Subscription', {
       Protocol: 'lambda',
       TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
@@ -276,9 +271,7 @@ describe('given an AutoScalingGroup and a role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
-      NotificationTargetARN: { Ref: 'TopicBFC7AF6E' },
-    });
+    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'TopicBFC7AF6E' } });
     expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -320,9 +313,7 @@ describe('given an AutoScalingGroup and a role', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
-      NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
-    });
+    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' } });
     expect(stack).toHaveResource('AWS::SNS::Subscription', {
       Protocol: 'lambda',
       TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
