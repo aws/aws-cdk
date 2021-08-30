@@ -79,10 +79,10 @@ export function contentFingerprint(file: string): string {
   // eslint-disable-next-line no-bitwise
   const fd = fs.openSync(file, fs.constants.O_DSYNC | fs.constants.O_RDONLY | fs.constants.O_SYNC);
   let size = 0;
+  let isBinary = false;
+  let lastStr = '';
+  let read = 0;
   try {
-    let read = 0;
-    let isBinary = false;
-    let lastStr = '';
     while ((read = fs.readSync(fd, buffer, 0, BUFFER_SIZE, null)) !== 0) {
       const slicedBuffer = buffer.slice(0, read);
 
