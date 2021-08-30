@@ -411,9 +411,9 @@ describe('instance', () => {
 
       // WHEN
       const existingDatabaseInstance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'ExistingDatabaseInstance', {
-        instanceIdentifier: 'foo',
+        instanceIdentifier: '',
         securityGroups: [],
-        instanceEndpointAddress: 'foao',
+        instanceEndpointAddress: '',
         port: existingDatabasePort,
       });
 
