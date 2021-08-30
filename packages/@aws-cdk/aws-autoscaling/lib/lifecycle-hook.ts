@@ -47,14 +47,14 @@ export interface BasicLifecycleHookProps {
   /**
    * The target of the lifecycle hook
    *
-   * @default: No target.
+   * @default - No target.
    */
   readonly notificationTarget?: ILifecycleHookTarget;
 
   /**
    * The role that allows publishing to the notification target
    *
-   * @default - A role will be provided if a target is provided. Otherwise, no role is provided.
+   * @default - A role will be created if a target is provided. Otherwise, no role is created.
    */
   readonly role?: iam.IRole;
 }
@@ -126,8 +126,8 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     }
 
     const targetProps = props.notificationTarget ? props.notificationTarget.bind(this, this) : undefined;
-    const notificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;
-    const roleArn = this._role ? this.role.roleArn : undefined;
+    const l1NotificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;
+    const l1RoleArn = this._role ? this.role.roleArn : undefined;
 
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
@@ -136,8 +136,8 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       lifecycleHookName: this.physicalName,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,
-      notificationTargetArn: notificationTargetArn,
-      roleArn: roleArn,
+      notificationTargetArn: l1NotificationTargetArn,
+      roleArn: l1RoleArn,
     });
 
     // A LifecycleHook resource is going to do a permissions test upon creation,
