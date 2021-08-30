@@ -37,7 +37,7 @@ describe('exec', () => {
       stderr: Buffer.from('stderr'),
       stdout: Buffer.from('stdout'),
       pid: 123,
-      output: [Buffer.from('stdout'), Buffer.from('stderr')],
+      output: ['stdout', 'stderr'],
       signal: null,
     });
 
@@ -63,7 +63,7 @@ describe('exec', () => {
       stderr: Buffer.from('error occured'),
       stdout: Buffer.from('stdout'),
       pid: 123,
-      output: [Buffer.from('stdout'), Buffer.from('stderr')],
+      output: ['stdout', 'stderr'],
       signal: null,
     });
 
@@ -79,7 +79,7 @@ describe('exec', () => {
       stderr: Buffer.from('stderr'),
       stdout: Buffer.from('stdout'),
       pid: 123,
-      output: [Buffer.from('stdout'), Buffer.from('stderr')],
+      output: ['stdout', 'stderr'],
       signal: null,
     });
 
@@ -96,7 +96,7 @@ describe('getGoBuildVersion', () => {
       stderr: Buffer.from('stderr'),
       stdout: Buffer.from('go version go1.15 linux/amd64'),
       pid: 123,
-      output: [Buffer.from('stdout'), Buffer.from('stderr')],
+      output: ['stdout', 'stderr'],
       signal: null,
     });
 
@@ -112,7 +112,7 @@ describe('getGoBuildVersion', () => {
       stderr: Buffer.from('stderr'),
       stdout: Buffer.from('stdout'),
       pid: 123,
-      output: [Buffer.from('stdout'), Buffer.from('stderr')],
+      output: ['stdout', 'stderr'],
       signal: null,
     });
 
@@ -128,7 +128,7 @@ describe('getGoBuildVersion', () => {
       stderr: Buffer.from('stderr'),
       stdout: Buffer.from('stdout'),
       pid: 123,
-      output: [Buffer.from('stdout'), Buffer.from('stderr')],
+      output: ['stdout', 'stderr'],
       signal: null,
     });
 
@@ -143,7 +143,7 @@ describe('getGoBuildVersion', () => {
       stderr: Buffer.from('stderr'),
       stdout: Buffer.from('go version go1.15 windows/amd64'),
       pid: 123,
-      output: [Buffer.from('stdout'), Buffer.from('stderr')],
+      output: ['stdout', 'stderr'],
       signal: null,
     });
     const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
