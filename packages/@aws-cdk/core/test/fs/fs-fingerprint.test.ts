@@ -160,11 +160,12 @@ nodeunitShim({
   eol: {
     'normalizes line endings'(test: Test) {
       // GIVEN
-      const crlf = path.join(__dirname, 'eol', 'crlf.txt');
-      const crlfStat = fs.statSync(crlf);
-
       const lf = path.join(__dirname, 'eol', 'lf.txt');
+      const crlf = path.join(__dirname, 'eol', 'crlf.txt');
+      fs.writeFileSync(crlf, fs.readFileSync(lf, 'utf8').replace(/\n/g, '\r\n'));
+
       const lfStat = fs.statSync(lf);
+      const crlfStat = fs.statSync(crlf);
 
       // WHEN
       const crlfHash = contentFingerprint(crlf);
@@ -173,6 +174,8 @@ nodeunitShim({
       // THEN
       test.notEqual(crlfStat.size, lfStat.size); // Difference in size due to different line endings
       test.deepEqual(crlfHash, lfHash); // Same hash
+
+      fs.unlinkSync(crlf);
       test.done();
     },
   },
