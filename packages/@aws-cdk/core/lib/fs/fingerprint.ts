@@ -81,26 +81,37 @@ export function contentFingerprint(file: string): string {
   let size = 0;
   try {
     let read = 0;
+    let isBinary = false;
     let lastStr = '';
     while ((read = fs.readSync(fd, buffer, 0, BUFFER_SIZE, null)) !== 0) {
-      const str = buffer.slice(0, read).toString('binary');
+      const slicedBuffer = buffer.slice(0, read);
 
-      // We are going to normalize line endings to LF. So if the current
-      // buffer ends with CR, it could be that the next one starts with
-      // LF so we need to save it for later use.
-      if (new RegExp(`${CR}$`).test(str)) {
-        lastStr += str;
-        continue;
+      // Detect if file is binary by checking the first 8k bytes for the
+      // null character (git like implementation)
+      if (size === 0) {
+        isBinary = slicedBuffer.indexOf(0) !== -1;
       }
 
-      const data = lastStr + str;
-      const normalizedData = data.replace(new RegExp(CRLF, 'g'), LF);
-      const normalizedBuffer = Buffer.from(normalizedData, 'binary');
-      size += normalizedBuffer.length;
+      let dataBuffer = slicedBuffer;
+      if (!isBinary) { // Line endings normalization (CRLF -> LF)
+        const str = buffer.slice(0, read).toString('binary');
 
-      hash.update(normalizedBuffer);
+        // We are going to normalize line endings to LF. So if the current
+        // buffer ends with CR, it could be that the next one starts with
+        // LF so we need to save it for later use.
+        if (new RegExp(`${CR}$`).test(str)) {
+          lastStr += str;
+          continue;
+        }
 
-      lastStr = '';
+        const data = lastStr + str;
+        const normalizedData = data.replace(new RegExp(CRLF, 'g'), LF);
+        dataBuffer = Buffer.from(normalizedData, 'binary');
+        lastStr = '';
+      }
+
+      size += dataBuffer.length;
+      hash.update(dataBuffer);
     }
 
     if (lastStr) {
