@@ -1,4 +1,5 @@
 import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -348,6 +349,50 @@ export = {
         },
       ],
     }));
+
+    test.done();
+  },
+
+  'can set capacity provider strategies'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+    });
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+    // WHEN
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+      cluster,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 512,
+      capacityProviderStrategies: [
+        {
+          capacityProvider: capacityProvider.capacityProviderName,
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(
+      haveResource('AWS::ECS::Service', {
+        LaunchType: ABSENT,
+        CapacityProviderStrategy: [
+          {
+            CapacityProvider: {
+              Ref: 'providerD3FF4D3A',
+            },
+          },
+        ],
+      }),
+    );
 
     test.done();
   },
