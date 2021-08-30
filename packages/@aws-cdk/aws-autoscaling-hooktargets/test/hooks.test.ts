@@ -26,7 +26,7 @@ describe('given an AutoScalingGroup', () => {
     });
   });
 
-  test('can use queue as hook target without providing a role', () => {
+  test('can use queue as a notificationTarget without providing a role', () => {
     // GIVEN
     const queue = new sqs.Queue(stack, 'Queue');
 
@@ -38,64 +38,7 @@ describe('given an AutoScalingGroup', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
-  });
 
-  test('can use topic as hook target without providing a role', () => {
-    // GIVEN
-    const topic = new sns.Topic(stack, 'Topic');
-
-    // WHEN
-    asg.addLifecycleHook('Trans', {
-      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
-      notificationTarget: new hooks.TopicHook(topic),
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
-      NotificationTargetARN: { Ref: 'TopicBFC7AF6E' },
-    });
-  });
-
-  test('can use Lambda function as hook target without providing a role', () => {
-    // GIVEN
-    const fn = new lambda.Function(stack, 'Fn', {
-      code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
-      handler: 'index.index',
-    });
-
-    // WHEN
-    asg.addLifecycleHook('Trans', {
-      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
-      notificationTarget: new hooks.FunctionHook(fn),
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
-      NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
-    });
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
-      Protocol: 'lambda',
-      TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
-      Endpoint: { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
-    });
-  });
-
-  test('can use queue as hook target with a role', () => {
-    // GIVEN
-    const queue = new sqs.Queue(stack, 'Queue');
-    const myrole = new iam.Role(stack, 'MyRole', {
-      assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
-    });
-
-    // WHEN
-    asg.addLifecycleHook('Trans', {
-      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
-      notificationTarget: new hooks.QueueHook(queue),
-      role: myrole,
-    });
-
-    // THEN
     expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
@@ -110,28 +53,50 @@ describe('given an AutoScalingGroup', () => {
         ],
       },
     });
-
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'sqs:SendMessage',
+              'sqs:GetQueueAttributes',
+              'sqs:GetQueueUrl',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'Queue4A7E3555',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'ASGLifecycleHookTransRoleDefaultPolicy43D7C82A',
+      Roles: [
+        {
+          Ref: 'ASGLifecycleHookTransRole71E0A219',
+        },
+      ],
+    });
   });
 
-  test('can use topic as hook target with a role', () => {
+  test('can use topic as a notificationTarget without providing a role', () => {
     // GIVEN
     const topic = new sns.Topic(stack, 'Topic');
-    const myrole = new iam.Role(stack, 'MyRole', {
-      assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
-    });
 
     // WHEN
     asg.addLifecycleHook('Trans', {
       lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
       notificationTarget: new hooks.TopicHook(topic),
-      role: myrole,
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
       NotificationTargetARN: { Ref: 'TopicBFC7AF6E' },
     });
+
     expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
@@ -159,6 +124,152 @@ describe('given an AutoScalingGroup', () => {
         ],
         Version: '2012-10-17',
       },
+      PolicyName: 'ASGLifecycleHookTransRoleDefaultPolicy43D7C82A',
+      Roles: [
+        {
+          Ref: 'ASGLifecycleHookTransRole71E0A219',
+        },
+      ],
+    });
+  });
+
+  test('can use Lambda function as a notificationTarget without providing a role', () => {
+    // GIVEN
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.index',
+    });
+
+    // WHEN
+    asg.addLifecycleHook('Trans', {
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      notificationTarget: new hooks.FunctionHook(fn),
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
+    });
+    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+      Protocol: 'lambda',
+      TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
+      Endpoint: { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
+    });
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'autoscaling.amazonaws.com',
+            },
+          },
+        ],
+      },
+    });
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'ASGLifecycleHookTransTopic9B0D4842',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'ASGLifecycleHookTransRoleDefaultPolicy43D7C82A',
+      Roles: [
+        {
+          Ref: 'ASGLifecycleHookTransRole71E0A219',
+        },
+      ],
+    });
+
+  });
+
+  test('can use queue as a notificationTarget with a role', () => {
+    // GIVEN
+    const queue = new sqs.Queue(stack, 'Queue');
+    const myrole = new iam.Role(stack, 'MyRole', {
+      assumedBy: new iam.ServicePrincipal('custom.role.domain.com'),
+    });
+    // WHEN
+    asg.addLifecycleHook('Trans', {
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      notificationTarget: new hooks.QueueHook(queue),
+      role: myrole,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'custom.role.domain.com',
+            },
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
+  });
+
+  test('can use topic as a notificationTarget with a role', () => {
+    // GIVEN
+    const topic = new sns.Topic(stack, 'Topic');
+    const myrole = new iam.Role(stack, 'MyRole', {
+      assumedBy: new iam.ServicePrincipal('custom.role.domain.com'),
+    });
+
+    // WHEN
+    asg.addLifecycleHook('Trans', {
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      notificationTarget: new hooks.TopicHook(topic),
+      role: myrole,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: { Ref: 'TopicBFC7AF6E' },
+    });
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'custom.role.domain.com',
+            },
+          },
+        ],
+      },
+    });
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
       PolicyName: 'MyRoleDefaultPolicyA36BE1DD',
       Roles: [
         {
@@ -168,7 +279,7 @@ describe('given an AutoScalingGroup', () => {
     });
   });
 
-  test('can use Lambda function as hook target with a role', () => {
+  test('can use Lambda function as a notificationTarget with a role', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
@@ -176,7 +287,7 @@ describe('given an AutoScalingGroup', () => {
       handler: 'index.index',
     });
     const myrole = new iam.Role(stack, 'MyRole', {
-      assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('custom.role.domain.com'),
     });
 
     // WHEN
@@ -203,7 +314,7 @@ describe('given an AutoScalingGroup', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: 'autoscaling.amazonaws.com',
+              Service: 'custom.role.domain.com',
             },
           },
         ],

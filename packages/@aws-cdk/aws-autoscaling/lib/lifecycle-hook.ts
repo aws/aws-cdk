@@ -76,7 +76,8 @@ export interface ILifecycleHook extends IResource {
   /**
    * The role for the lifecycle hook to execute
    *
-   * @default: No role
+   * @default - A default role is created if 'notificationTarget' is specified.
+   * Otherwise, no role is created.
    */
   role: iam.IRole;
 }
@@ -85,18 +86,17 @@ export interface ILifecycleHook extends IResource {
  * Define a life cycle hook
  */
 export class LifecycleHook extends Resource implements ILifecycleHook {
+  private _role?: iam.IRole;
+
   /**
    * The role that allows the ASG to publish to the notification target
    *
-   * @default: A default role is created if `notificationTarget` is specified.
+   * @default - A default role is created if 'notificationTarget' is specified.
    * Otherwise, no role is created.
    */
-  //public role?: iam.IRole;
-  private _role?: iam.IRole;
-
   public get role() {
     if (!this._role) {
-      throw new Error('Oh no we don\'t have a role');
+      throw new Error('\'role\' is undefined. Please specify a \'role\' or specify a \'notificationTarget\' to have a role provided for you.');
     }
 
     return this._role;
@@ -117,30 +117,18 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       physicalName: props.lifecycleHookName,
     });
 
-    /* eslint-disable */
     if (props.role) {
-      console.log("foo1");
       this.role = props.role;
 
       if (!props.notificationTarget) {
         throw new Error("'notificationTarget' parameter required when 'role' parameter is specified");
       }
-    } /*else {
-      if (props.notificationTarget) {
-        // specify a default role to not break users who provide a notificationTarget but no role
-        this.role = new iam.Role(this, 'Role', {
-          assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
-        });
-      } else {
-        this.role = undefined;
-      }
-    }*/
+    }
 
-      console.log("foo2");
     const targetProps = props.notificationTarget ? props.notificationTarget.bind(this, this) : undefined;
     const notificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;
     const roleArn = this._role ? this.role.roleArn : undefined;
-      console.log("foo4");
+
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       defaultResult: props.defaultResult,

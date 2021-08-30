@@ -11,7 +11,7 @@ export class QueueHook implements autoscaling.ILifecycleHookTarget {
   }
 
   public bind(_scope: Construct, lifecycleHook: autoscaling.LifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    if (!lifecycleHook.role) {
+    try { lifecycleHook.role; } catch (noRoleError) {
       lifecycleHook.role = new iam.Role(lifecycleHook, 'Role', {
         assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
       });

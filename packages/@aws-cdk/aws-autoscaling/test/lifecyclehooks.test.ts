@@ -1,13 +1,12 @@
-/* eslint-disable */
-import { expect, haveResource/*, ResourcePart*/ } from '@aws-cdk/assert-internal';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
-//import * as iam from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-//import * as constructs from 'constructs';
+import * as constructs from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
-/*nodeunitShim({
+nodeunitShim({
   'we can add a lifecycle hook with no role and with a notifcationTarget to an ASG'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -28,14 +27,15 @@ import * as autoscaling from '../lib';
     }));
 
     // Lifecycle Hook has a dependency on the policy object
-    /*expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
+    expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
       DependsOn: [
         'ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB',
         'ASGLifecycleHookTransitionRole3AAA6BB7',
       ],
-    }, ResourcePart.CompleteDefinition));*/
+    }, ResourcePart.CompleteDefinition));
 
-    /*expect(stack).to(haveResource('AWS::IAM::Role', {
+    // A default role is provided
+    expect(stack).to(haveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -48,9 +48,10 @@ import * as autoscaling from '../lib';
           },
         ],
       },
-    }));*/
+    }));
 
-    /*expect(stack).to(haveResource('AWS::IAM::Policy', {
+    // FakeNotificationTarget.bind() was executed
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -61,12 +62,11 @@ import * as autoscaling from '../lib';
           },
         ],
       },
-    }));*/
+    }));
 
-    /*
     test.done();
   },
-});*/
+});
 
 nodeunitShim({
   'we can add a lifecycle hook to an ASG with no role and with no notificationTargetArn'(test: Test) {
@@ -86,17 +86,47 @@ nodeunitShim({
       DefaultResult: 'ABANDON',
     }));
 
+    // A default role is NOT provided
+    expect(stack).notTo(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'autoscaling.amazonaws.com',
+            },
+          },
+        ],
+      },
+    }));
+
+    // FakeNotificationTarget.bind() was NOT executed
+    expect(stack).notTo(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'action:Work',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      },
+    }));
+
     test.done();
   },
 });
 
-/*nodeunitShim({
+nodeunitShim({
   'we can add a lifecycle hook to an ASG with a role and with a notificationTargetArn'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const asg = newASG(stack);
     const myrole = new iam.Role(stack, 'MyRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('custom.role.domain.com'),
     });
 
     // WHEN
@@ -114,6 +144,22 @@ nodeunitShim({
       DefaultResult: 'ABANDON',
     }));
 
+    // the provided role (myrole), not the default role, is used
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'custom.role.domain.com',
+            },
+          },
+        ],
+      },
+    }));
+
     test.done();
   },
 });
@@ -124,7 +170,7 @@ nodeunitShim({
     const stack = new cdk.Stack();
     const asg = newASG(stack);
     const myrole = new iam.Role(stack, 'MyRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('custom.role.domain.com'),
     });
 
     // WHEN
@@ -139,37 +185,25 @@ nodeunitShim({
 
     test.done();
   },
-});*/
+});
 
-/*class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
+class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
   public bind(_scope: constructs.Construct, lifecycleHook: autoscaling.LifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    /*if (lifecycleHook.role) {
-      lifecycleHook.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['action:Work'],
-        resources: ['*'],
-      }));
-    }
-
-    return { notificationTargetArn: 'target:arn' };*/
-
-    //if (!lifecycleHook.role) {
-    /*try {
-      lifecycleHook.role;
-    } catch (e) {
+    try { lifecycleHook.role; } catch (noRoleError) {
       lifecycleHook.role = new iam.Role(lifecycleHook, 'Role', {
         assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
       });
     }
+
     lifecycleHook.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['action:Work'],
       resources: ['*'],
     }));
 
     return { notificationTargetArn: 'target:arn' };
-
   }
 }
-*/
+
 function newASG(stack: cdk.Stack) {
   const vpc = new ec2.Vpc(stack, 'VPC');
 

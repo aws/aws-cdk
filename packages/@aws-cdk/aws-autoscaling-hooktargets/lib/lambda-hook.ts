@@ -32,7 +32,7 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
     // Topic's grantPublish() is in a base class that does not know there is a kms key, and so does not
     // grant appropriate permissions to the kms key. We do that here to ensure the correct permissions
     // are in place.
-    if (!lifecycleHook.role) {
+    try { lifecycleHook.role; } catch (noRoleError) {
       lifecycleHook.role = new iam.Role(lifecycleHook, 'Role', {
         assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
       });
