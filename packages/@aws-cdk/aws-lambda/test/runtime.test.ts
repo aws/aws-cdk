@@ -55,10 +55,4 @@ describe('runtime', () => {
     // THEN
     expect(runtime.bundlingDockerImage.image).toEqual('my-docker-image');
   });
-
-  test('dotnetcore and go have overridden images', () => {
-    expect(lambda.Runtime.DOTNET_CORE_3_1.bundlingDockerImage.image).toEqual('lambci/lambda:build-dotnetcore3.1');
-    expect(lambda.Runtime.DOTNET_CORE_2_1.bundlingDockerImage.image).toEqual('lambci/lambda:build-dotnetcore2.1');
-    expect(lambda.Runtime.GO_1_X.bundlingDockerImage.image).toEqual('lambci/lambda:build-go1.x');
-  });
 });
