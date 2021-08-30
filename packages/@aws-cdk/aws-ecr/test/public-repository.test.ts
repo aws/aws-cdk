@@ -299,8 +299,8 @@ describe('public repository', () => {
     // THEN
     expectCDK(stack.resolve(repo.publicRepositoryArn)).toMatch({
       'Fn::Join': ['', [
-        'arn:', { Ref: 'AWS::Partition' }, ':ecr-public:', { Ref: 'AWS::Region' },
-        ':', { Ref: 'AWS::AccountId' }, ':repository/foo/bar/foo/fooo',
+        'arn:', { Ref: 'AWS::Partition' }, ':ecr-public::',
+        { Ref: 'AWS::AccountId' }, ':repository/foo/bar/foo/fooo',
       ]],
     });
     expect(stack.resolve(repo.publicRepositoryName)).toBe('foo/bar/foo/fooo');

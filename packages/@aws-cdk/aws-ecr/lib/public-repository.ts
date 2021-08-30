@@ -214,7 +214,7 @@ export class PublicRepository extends PublicRepositoryBase {
   }
 
   /**
-   * Import a public repository that resides in the same account/region
+   * Import a public repository that resides in the same account
    * as the current stack from repository name.
    */
   public static fromPublicRepositoryName(scope: Construct, id: string, publicRepositoryName: string): IPublicRepository {
@@ -232,12 +232,11 @@ export class PublicRepository extends PublicRepositoryBase {
   }
 
   /**
-   * Returns an ECR ARN for a repository that resides in the same account/region
-   * as the current stack.
+   * Returns an ECR ARN for a repository that resides in the same account as the current stack.
    */
-  public static arnForLocalRepository(publicRepositoryName: string, scope: IConstruct, account?: string): string {
+  public static arnForLocalRepository(publicRepositoryName: string, scope: IConstruct): string {
     return Stack.of(scope).formatArn({
-      account,
+      region: '',
       service: 'ecr-public',
       resource: 'repository',
       resourceName: publicRepositoryName,
@@ -297,6 +296,7 @@ export class PublicRepository extends PublicRepositoryBase {
 
     this.publicRepositoryName = this.getResourceNameAttribute(resource.ref);
     this.publicRepositoryArn = this.getResourceArnAttribute(resource.attrArn, {
+      region: '',
       service: 'ecr-public',
       resource: 'repository',
       resourceName: this.physicalName,
