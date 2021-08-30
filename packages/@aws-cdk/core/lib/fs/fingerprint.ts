@@ -9,14 +9,16 @@ const BUFFER_SIZE = 8 * 1024;
 const CTRL_SOH = '\x01';
 const CTRL_SOT = '\x02';
 const CTRL_ETX = '\x03';
+const CR = '\r';
+const LF = '\n';
+const CRLF = `${CR}${LF}`;
 
 /**
  * Produces fingerprint based on the contents of a single file or an entire directory tree.
  *
  * The fingerprint will also include:
  * 1. An extra string if defined in `options.extra`.
- * 2. The set of exclude patterns, if defined in `options.exclude`
- * 3. The symlink follow mode value.
+ * 2. The symlink follow mode value.
  *
  * @param fileOrDirectory The directory or file to fingerprint
  * @param options Fingerprinting options
@@ -60,7 +62,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
         _hashField(hash, `link:${relativePath}`, linkTarget);
       }
     } else if (stat.isFile()) {
-      _hashField(hash, `file:${relativePath}`, _contentFingerprint(realPath, stat));
+      _hashField(hash, `file:${relativePath}`, contentFingerprint(realPath));
     } else if (stat.isDirectory()) {
       for (const item of fs.readdirSync(realPath).sort()) {
         _processFileOrDirectory(path.join(symbolicPath, item), false, path.join(realPath, item));
@@ -71,20 +73,43 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   }
 }
 
-function _contentFingerprint(file: string, stat: fs.Stats): string {
+export function contentFingerprint(file: string): string {
   const hash = crypto.createHash('sha256');
   const buffer = Buffer.alloc(BUFFER_SIZE);
   // eslint-disable-next-line no-bitwise
   const fd = fs.openSync(file, fs.constants.O_DSYNC | fs.constants.O_RDONLY | fs.constants.O_SYNC);
+  let size = 0;
   try {
     let read = 0;
+    let lastStr = '';
     while ((read = fs.readSync(fd, buffer, 0, BUFFER_SIZE, null)) !== 0) {
-      hash.update(buffer.slice(0, read));
+      const str = buffer.slice(0, read).toString('binary');
+
+      // We are going to normalize line endings to LF. So if the current
+      // buffer ends with CR, it could be that the next one starts with
+      // LF so we need to save it for later use.
+      if (new RegExp(`${CR}$`).test(str)) {
+        lastStr += str;
+        continue;
+      }
+
+      const data = lastStr + str;
+      const normalizedData = data.replace(new RegExp(CRLF, 'g'), LF);
+      const normalizedBuffer = Buffer.from(normalizedData, 'binary');
+      size += normalizedBuffer.length;
+
+      hash.update(normalizedBuffer);
+
+      lastStr = '';
+    }
+
+    if (lastStr) {
+      hash.update(Buffer.from(lastStr, 'binary'));
     }
   } finally {
     fs.closeSync(fd);
   }
-  return `${stat.size}:${hash.digest('hex')}`;
+  return `${size}:${hash.digest('hex')}`;
 }
 
 function _hashField(hash: crypto.Hash, header: string, value: string | Buffer | DataView) {

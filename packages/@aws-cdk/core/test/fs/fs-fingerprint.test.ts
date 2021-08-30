@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { FileSystem, SymlinkFollowMode } from '../../lib/fs';
+import { contentFingerprint } from '../../lib/fs/fingerprint';
 
 nodeunitShim({
   files: {
@@ -152,6 +153,26 @@ nodeunitShim({
       // THEN
       test.deepEqual(original, afterChange);
       test.deepEqual(afterRevert, original);
+      test.done();
+    },
+  },
+
+  eol: {
+    'normalizes line endings'(test: Test) {
+      // GIVEN
+      const crlf = path.join(__dirname, 'eol', 'crlf.txt');
+      const crlfStat = fs.statSync(crlf);
+
+      const lf = path.join(__dirname, 'eol', 'lf.txt');
+      const lfStat = fs.statSync(lf);
+
+      // WHEN
+      const crlfHash = contentFingerprint(crlf);
+      const lfHash = contentFingerprint(lf);
+
+      // THEN
+      test.notEqual(crlfStat.size, lfStat.size); // Difference in size due to different line endings
+      test.deepEqual(crlfHash, lfHash); // Same hash
       test.done();
     },
   },
