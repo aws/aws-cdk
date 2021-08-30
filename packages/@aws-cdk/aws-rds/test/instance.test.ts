@@ -429,8 +429,6 @@ describe('instance', () => {
           Ref: 'DatabasePort',
         },
       });
-
-
     });
   });
 
