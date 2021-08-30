@@ -219,9 +219,8 @@ export class PipelineGraph {
 
   private addChangeSet(changeSet: Step[], prepareNode: AGraphNode, deployNode: AGraphNode, graph: AGraph) {
     for (const c of changeSet) {
-      const changeSetNode: AGraphNode = GraphNode.of(c.id, { type: 'step', step: c });
-      graph.add(changeSetNode);
-      changeSetNode.dependOn(prepareNode);
+      const changeSetNode = this.addAndRecurse(c, graph);
+      changeSetNode?.dependOn(prepareNode);
       deployNode.dependOn(changeSetNode);
     }
   }
