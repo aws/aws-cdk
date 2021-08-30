@@ -350,6 +350,14 @@ If the tool detects that the change does not support hotswapping,
 it will fall back and perform a full CloudFormation deployment,
 exactly like `cdk deploy` does without the `--hotswap` flag.
 
+Passing this option to `cdk deploy` will make it use your current AWS credentials to perform the API calls -
+it will not assume the Roles from your bootstrap stack,
+even if the `@aws-cdk/core:newStyleStackSynthesis` feature flag is set to `true`
+(as those Roles do not have the necessary permissions to update AWS resources directly, without using CloudFormation).
+For that reason, make sure that your credentials are for the same AWS account that the Stack(s)
+you are performing the hotswap deployment for belong to,
+and that you have the necessary IAM permissions to update the resources that are being deployed.
+
 Hotswapping is currently supported for the following changes
 (additional changes will be supported in the future):
 
