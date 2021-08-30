@@ -37,7 +37,51 @@ test('does nothing on create event', async () => {
   expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(0);
 });
 
-test('does nothing on update event', async () => {
+test('does nothing on update event when everything remains the same', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    RequestType: 'Update',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+    OldResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+  };
+
+  // WHEN
+  await invokeHandler(event);
+
+  // THEN
+  expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(0);
+  expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(0);
+});
+
+test('does nothing on update event when the bucket name remains the same but the service token changes', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    RequestType: 'Update',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+    OldResourceProperties: {
+      ServiceToken: 'Bar',
+      BucketName: 'MyBucket',
+    },
+  };
+
+  // WHEN
+  await invokeHandler(event);
+
+  // THEN
+  expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(0);
+  expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(0);
+});
+
+test('does nothing on update event when the old resource properties are absent', async () => {
   // GIVEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
     RequestType: 'Update',
@@ -53,6 +97,63 @@ test('does nothing on update event', async () => {
   // THEN
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(0);
   expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(0);
+});
+
+test('does nothing on update event when the new resource properties are absent', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    RequestType: 'Update',
+    OldResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+  };
+
+  // WHEN
+  await invokeHandler(event);
+
+  // THEN
+  expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(0);
+  expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(0);
+});
+
+test('deletes all objects when the name changes on update event', async () => {
+  // GIVEN
+  mockS3Client.promise.mockResolvedValue({ // listObjectVersions() call
+    Versions: [
+      { Key: 'Key1', VersionId: 'VersionId1' },
+      { Key: 'Key2', VersionId: 'VersionId2' },
+    ],
+  });
+
+  const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    RequestType: 'Update',
+    OldResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket-renamed',
+    },
+  };
+
+  // WHEN
+  await invokeHandler(event);
+
+  // THEN
+  expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
+  expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
+  expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(1);
+  expect(mockS3Client.deleteObjects).toHaveBeenCalledWith({
+    Bucket: 'MyBucket',
+    Delete: {
+      Objects: [
+        { Key: 'Key1', VersionId: 'VersionId1' },
+        { Key: 'Key2', VersionId: 'VersionId2' },
+      ],
+    },
+  });
 });
 
 test('deletes no objects on delete event when bucket has no objects', async () => {
