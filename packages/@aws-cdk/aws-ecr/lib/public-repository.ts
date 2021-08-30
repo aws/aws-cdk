@@ -1,12 +1,87 @@
 import { EOL } from 'os';
 import * as iam from '@aws-cdk/aws-iam';
-import { Lazy, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { CfnPublicRepository, CfnPublicRepositoryProps } from './ecr.generated';
+
+/**
+ * Represents an ECR Public Repository.
+ */
+export interface IPublicRepository extends IResource {
+  /**
+   * The name of the repository.
+   * @attribute
+   */
+  readonly publicRepositoryName: string;
+
+  /**
+   * The ARN of the repository.
+   * @attribute
+   */
+  readonly publicRepositoryArn: string;
+
+  /**
+   * Add a policy statement to the repository's resource policy
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  /**
+   * Grant the given principal identity permissions to perform the actions on this repository
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to push images to this repository.
+   */
+  grantPush(grantee: iam.IGrantable): iam.Grant;
+}
+
+/**
+ * Base class for ECR Public Repository. Reused between imported repositories and owned repositories.
+ */
+export abstract class PublicRepositoryBase extends Resource implements IPublicRepository {
+
+  // From https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-policy-examples.html
+  private static readonly PUSH_IAM_ACTIONS = [
+    'ecr-public:BatchCheckLayerAvailability',
+    'ecr-public:CompleteLayerUpload',
+    'ecr-public:InitiateLayerUpload',
+    'ecr-public:PutImage',
+    'ecr-public:UploadLayerPart',
+  ];
+
+  public abstract readonly publicRepositoryName: string;
+  public abstract readonly publicRepositoryArn: string;
+
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipalAndResource({
+      grantee,
+      actions,
+      resourceArns: [this.publicRepositoryArn],
+      resourceSelfArns: [],
+      resource: this,
+    });
+  }
+
+  public grantPush(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, ...PublicRepositoryBase.PUSH_IAM_ACTIONS);
+
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecr-public:GetAuthorizationToken', 'sts:GetServiceBearerToken'],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
+  }
+}
 
 /**
  * Options for the ECR Public Repository construct.
@@ -59,11 +134,11 @@ export interface PublicRepositoryProps {
   readonly operatingSystems?: OperatingSystem[];
 
   /**
-   * Custom policy document to attach to the Public Repository.
+   * Custom resource policy document to attach to the Public Repository.
    *
-   * @default - An empty policy document will be created.
+   * @default - No policy document. Only the repository owner has access to manage the repository.
    */
-  readonly policy?: iam.PolicyDocument;
+  readonly resourcePolicy?: iam.PolicyStatement[];
 
   /**
    * Determine what happens to the repository when the resource/stack is deleted.
@@ -74,18 +149,100 @@ export interface PublicRepositoryProps {
 }
 
 /**
+ * ECR Public Repository attributes.
+ */
+export interface PublicRepositoryAttributes {
+
+  /**
+   * The name of the repository.
+   */
+  readonly publicRepositoryName: string;
+
+  /**
+   * The ARN of the repository.
+   */
+  readonly publicRepositoryArn: string;
+}
+
+/**
  * Define an ECR Public Repository.
  */
-export class PublicRepository extends Resource {
+export class PublicRepository extends PublicRepositoryBase {
 
-  // From https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-policy-examples.html
-  private static readonly PUSH_IAM_ACTIONS = [
-    'ecr-public:BatchCheckLayerAvailability',
-    'ecr-public:CompleteLayerUpload',
-    'ecr-public:InitiateLayerUpload',
-    'ecr-public:PutImage',
-    'ecr-public:UploadLayerPart',
-  ];
+  /**
+   * Import a repository from attributes.
+   */
+  public static fromPublicRepositoryAttributes(scope: Construct, id: string, attrs: PublicRepositoryAttributes): IPublicRepository {
+    class Import extends PublicRepositoryBase {
+      public readonly publicRepositoryName = attrs.publicRepositoryName;
+      public readonly publicRepositoryArn = attrs.publicRepositoryArn;
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+        // dropped
+        return { statementAdded: false };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import a public repository from ARN.
+   */
+  public static fromPublicRepositoryArn(scope: Construct, id: string, publicRepositoryArn: string): IPublicRepository {
+
+    // if publicRepositoryArn is a token, the repository name is also required. this is because
+    // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
+    // parse the name from an ARN using CloudFormation's split/select.
+    if (Token.isUnresolved(publicRepositoryArn)) {
+      throw new Error('"publicRepositoryArn" is a late-bound value, and therefore "publicRepositoryName" is required. Use `fromPublicRepositoryAttributes` instead');
+    }
+
+    const publicRepositoryName = publicRepositoryArn.split('/').slice(1).join('/');
+
+    class Import extends PublicRepositoryBase {
+      public publicRepositoryName = publicRepositoryName;
+      public publicRepositoryArn = publicRepositoryArn;
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+        // dropped
+        return { statementAdded: false };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import a public repository that resides in the same account/region
+   * as the current stack from repository name.
+   */
+  public static fromPublicRepositoryName(scope: Construct, id: string, publicRepositoryName: string): IPublicRepository {
+    class Import extends PublicRepositoryBase {
+      public publicRepositoryName = publicRepositoryName;
+      public publicRepositoryArn = PublicRepository.arnForLocalRepository(publicRepositoryName, scope);
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+        // dropped
+        return { statementAdded: false };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Returns an ECR ARN for a repository that resides in the same account/region
+   * as the current stack.
+   */
+  public static arnForLocalRepository(publicRepositoryName: string, scope: IConstruct, account?: string): string {
+    return Stack.of(scope).formatArn({
+      account,
+      service: 'ecr-public',
+      resource: 'repository',
+      resourceName: publicRepositoryName,
+    });
+  }
 
   private static validateRepositoryName(physicalName: string) {
     const repositoryName = physicalName;
@@ -111,19 +268,10 @@ export class PublicRepository extends Resource {
     }
   }
 
-  /**
-   * The name of the repository.
-   * @attribute
-   */
   public readonly publicRepositoryName: string;
-
-  /**
-   * The ARN of the repository.
-   * @attribute
-   */
   public readonly publicRepositoryArn: string;
 
-  private policy: iam.PolicyDocument;
+  private resourcePolicy?: iam.PolicyDocument;
 
   constructor(scope: Construct, id: string, props: PublicRepositoryProps = {}) {
     super(scope, id, {
@@ -132,13 +280,16 @@ export class PublicRepository extends Resource {
 
     PublicRepository.validateRepositoryName(this.physicalName);
 
-    this.policy = props.policy ?? new iam.PolicyDocument();
+    if (props.resourcePolicy !== undefined) {
+      this.resourcePolicy = new iam.PolicyDocument({ statements: props.resourcePolicy });
+    }
+
     const repositoryCatalogData = this.renderRepositoryCatalogData(props);
 
     const resource = new CfnPublicRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
-      repositoryPolicyText: Lazy.any({ produce: () => this.policy }),
+      repositoryPolicyText: Lazy.any({ produce: () => this.resourcePolicy }),
       repositoryCatalogData,
     });
 
@@ -170,43 +321,17 @@ export class PublicRepository extends Resource {
    * Add a policy statement to the repository's resource policy
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    this.policy.addStatements(statement);
-    return { statementAdded: false, policyDependable: this.policy };
+    if (this.resourcePolicy === undefined) {
+      this.resourcePolicy = new iam.PolicyDocument();
+    }
+    this.resourcePolicy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.resourcePolicy };
   }
 
   protected validate(): string[] {
     const errors = super.validate();
-    errors.push(...this.policy.validateForResourcePolicy() || []);
+    errors.push(...this.resourcePolicy?.validateForResourcePolicy() || []);
     return errors;
-  }
-
-  /**
-   * Grant the given principal identity permissions to perform the actions on this repository
-   */
-  public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipalAndResource({
-      grantee,
-      actions,
-      resourceArns: [this.publicRepositoryArn],
-      resourceSelfArns: [],
-      resource: this,
-    });
-  }
-
-  /**
-   * Grant the given identity permissions to push images to this repository.
-   */
-  public grantPush(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, ...PublicRepository.PUSH_IAM_ACTIONS);
-
-    iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['ecr-public:GetAuthorizationToken', 'sts:GetServiceBearerToken'],
-      resourceArns: ['*'],
-      scope: this,
-    });
-
-    return ret;
   }
 }
 

@@ -68,12 +68,10 @@ describe('public repository', () => {
 
     // WHEN
     new ecr.PublicRepository(stack, 'PublicRepo', {
-      policy: new iam.PolicyDocument({
-        statements: [new iam.PolicyStatement({
-          actions: ['*'],
-          principals: [new iam.AnyPrincipal()],
-        })],
-      }),
+      resourcePolicy: [new iam.PolicyStatement({
+        actions: ['*'],
+        principals: [new iam.AnyPrincipal()],
+      })],
     });
 
     // THEN
@@ -252,5 +250,59 @@ describe('public repository', () => {
         Version: '2012-10-17',
       },
     }));
+  });
+
+  test('import with concrete arn', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const repo = ecr.PublicRepository.fromPublicRepositoryArn(stack, 'repo', 'arn:aws:ecr-public::585695036304:repository/foo/bar/foo/fooo');
+
+    // THEN
+    expect(stack.resolve(repo.publicRepositoryArn)).toBe('arn:aws:ecr-public::585695036304:repository/foo/bar/foo/fooo');
+    expect(stack.resolve(repo.publicRepositoryName)).toBe('foo/bar/foo/fooo');
+  });
+
+  test('fails if importing with token arn and no name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN/THEN
+    expect(() => {
+      ecr.PublicRepository.fromPublicRepositoryArn(stack, 'arn', cdk.Fn.getAtt('Boom', 'Boom').toString());
+    }).toThrow(/\"publicRepositoryArn\" is a late-bound value, and therefore \"publicRepositoryName\" is required\. Use \`fromPublicRepositoryAttributes\` instead/);
+  });
+
+  test('import with token arn and repository name (see awslabs/aws-cdk#1232)', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const repo = ecr.PublicRepository.fromPublicRepositoryAttributes(stack, 'PublicRepo', {
+      publicRepositoryArn: cdk.Fn.getAtt('Boom', 'Arn').toString(),
+      publicRepositoryName: cdk.Fn.getAtt('Boom', 'Name').toString(),
+    });
+
+    // THEN
+    expectCDK(stack.resolve(repo.publicRepositoryArn)).toMatch({ 'Fn::GetAtt': ['Boom', 'Arn'] });
+    expectCDK(stack.resolve(repo.publicRepositoryName)).toMatch({ 'Fn::GetAtt': ['Boom', 'Name'] });
+  });
+
+  test('import with local public repository name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const repo = ecr.PublicRepository.fromPublicRepositoryName(stack, 'PublicRepo', 'foo/bar/foo/fooo');
+
+    // THEN
+    expectCDK(stack.resolve(repo.publicRepositoryArn)).toMatch({
+      'Fn::Join': ['', [
+        'arn:', { Ref: 'AWS::Partition' }, ':ecr-public:', { Ref: 'AWS::Region' },
+        ':', { Ref: 'AWS::AccountId' }, ':repository/foo/bar/foo/fooo',
+      ]],
+    });
+    expect(stack.resolve(repo.publicRepositoryName)).toBe('foo/bar/foo/fooo');
   });
 });

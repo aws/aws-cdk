@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecr from '../lib';
 
-/*
+/**
  * Stack verification steps:
  * 1. CREDENTIALS=`aws sts assume-role --role-arn <role-arn> --role-session-name aws-ecr-public-repo-integ`
  * 2. export AWS_ACCESS_KEY_ID=`echo ${CREDENTIALS} | jq -r '.Credentials.AccessKeyId'`
