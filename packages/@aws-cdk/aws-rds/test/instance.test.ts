@@ -404,29 +404,29 @@ describe('instance', () => {
 
     test('can create a new database instance with fromDatabaseInstanceAttributes using a token for the port', () => {
       // GIVEN
-      const existingDatabasePort = new cdk.CfnParameter(stack, 'ExistingDatabasePort', {
+      const databasePort = new cdk.CfnParameter(stack, 'DatabasePort', {
         type: 'Number',
         default: 5432,
       }).valueAsNumber;
 
       // WHEN
-      const existingDatabaseInstance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'ExistingDatabaseInstance', {
+      const instance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'DatabaseInstance', {
         instanceIdentifier: '',
         securityGroups: [],
         instanceEndpointAddress: '',
-        port: existingDatabasePort,
+        port: databasePort,
       });
 
-      new cdk.CfnOutput(stack, 'DatabaseUrlOutput', {
+      new cdk.CfnOutput(stack, 'portOutput', {
         exportName: 'databaseUrl',
-        value: `${existingDatabaseInstance.dbInstanceEndpointPort}`,
+        value: `${instance.dbInstanceEndpointPort}`,
       });
 
       // THEN
       expect(stack).toHaveOutput({
         exportName: 'databaseUrl',
         outputValue: {
-          Ref: 'ExistingDatabasePort',
+          Ref: 'DatabasePort',
         },
       });
 
