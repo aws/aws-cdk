@@ -1,3 +1,133 @@
+# CloudFormation Resource Specification v40.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CE::CostCategory SplitChargeRules (__added__)
+
+## Property Type Changes
+
+* AWS::EFS::FileSystem.LifecyclePolicy TransitionToPrimaryStorageClass (__added__)
+* AWS::EFS::FileSystem.LifecyclePolicy TransitionToIA.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v40.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::EC2::DHCPOptions Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html
+* AWS::EC2::DHCPOptions DhcpOptionsId (__added__)
+
+## Property Changes
+
+* AWS::AutoScaling::ScalingPolicy PredictiveScalingConfiguration (__added__)
+* AWS::EC2::DHCPOptions DomainName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-domainname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-domainname
+* AWS::EC2::DHCPOptions DomainNameServers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-domainnameservers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-domainnameservers
+* AWS::EC2::DHCPOptions NetbiosNameServers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-netbiosnameservers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-netbiosnameservers
+* AWS::EC2::DHCPOptions NetbiosNodeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-netbiosnodetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-netbiosnodetype
+* AWS::EC2::DHCPOptions NtpServers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-ntpservers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-ntpservers
+* AWS::EC2::DHCPOptions Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-tags
+* AWS::Redshift::Cluster AquaConfigurationStatus (__added__)
+* AWS::Redshift::Cluster AvailabilityZoneRelocation (__added__)
+* AWS::Redshift::Cluster AvailabilityZoneRelocationStatus (__added__)
+* AWS::Redshift::Cluster Classic (__added__)
+* AWS::Redshift::Cluster DeferMaintenance (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceDuration (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceEndTime (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceIdentifier (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceStartTime (__added__)
+* AWS::Redshift::Cluster DestinationRegion (__added__)
+* AWS::Redshift::Cluster EnhancedVpcRouting (__added__)
+* AWS::Redshift::Cluster MaintenanceTrackName (__added__)
+* AWS::Redshift::Cluster ManualSnapshotRetentionPeriod (__added__)
+* AWS::Redshift::Cluster ResourceAction (__added__)
+* AWS::Redshift::Cluster RevisionTarget (__added__)
+* AWS::Redshift::Cluster RotateEncryptionKey (__added__)
+* AWS::Redshift::Cluster SnapshotCopyGrantName (__added__)
+* AWS::Redshift::Cluster SnapshotCopyManual (__added__)
+* AWS::Redshift::Cluster SnapshotCopyRetentionPeriod (__added__)
+* AWS::Redshift::Cluster AvailabilityZone.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster ElasticIp.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster Encrypted.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster KmsKeyId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster Port.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::EndpointConfig AsyncInferenceConfig (__added__)
+
+## Property Type Changes
+
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingConfiguration (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingPredefinedLoadMetric (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingPredefinedMetricPair (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingPredefinedScalingMetric (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceClientConfig (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceConfig (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceNotificationConfig (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceOutputConfig (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement Version (__added__)
+
+
+# CloudFormation Resource Specification v39.10.0
+
+## New Resource Types
+
+* AWS::WAFv2::LoggingConfiguration
+
+## Attribute Changes
+
+* AWS::EC2::EgressOnlyInternetGateway Id (__added__)
+* AWS::S3::AccessPoint Alias (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::DomainName OwnershipVerificationCertificateArn (__added__)
+* AWS::CodeBuild::Project ResourceAccessRole (__added__)
+* AWS::CodeBuild::Project Visibility (__added__)
+
+## Property Type Changes
+
+* AWS::Elasticsearch::Domain.ColdStorageOptions (__added__)
+* AWS::IoTAnalytics::Datastore.CustomerManagedS3Storage (__added__)
+* AWS::IoTAnalytics::Datastore.IotSiteWiseMultiLayerStorage (__added__)
+* AWS::ApiGatewayV2::DomainName.DomainNameConfiguration OwnershipVerificationCertificateArn (__added__)
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig ColdStorageOptions (__added__)
+* AWS::IoTAnalytics::Datastore.DatastoreStorage IotSiteWiseMultiLayerStorage (__added__)
+
+
 # CloudFormation Resource Specification v39.9.0
 
 ## New Resource Types
