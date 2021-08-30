@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
@@ -15,7 +15,7 @@ test('create a vault', () => {
   new BackupVault(stack, 'Vault');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupVault', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
     BackupVaultName: 'Vault',
   });
 });
@@ -46,7 +46,7 @@ test('with access policy', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupVault', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
     AccessPolicy: {
       Version: '2012-10-17',
       Statement: [
@@ -68,6 +68,33 @@ test('with access policy', () => {
   });
 });
 
+test('with DENY_DELETE_RECOVERY_POINT access policy', () => {
+  // WHEN
+  new BackupVault(stack, 'Vault', {
+    accessPolicy: BackupVault.DENY_DELETE_RECOVERY_POINT,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    AccessPolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Deny',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'backup:DeleteRecoveryPoint',
+            'backup:UpdateRecoveryPointLifecycle',
+          ],
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
+
 test('with encryption key', () => {
   // GIVEN
   const encryptionKey = new kms.Key(stack, 'Key');
@@ -78,7 +105,7 @@ test('with encryption key', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupVault', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
     EncryptionKeyArn: {
       'Fn::GetAtt': [
         'Key961B73FD',
@@ -102,7 +129,7 @@ test('with notifications', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupVault', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
     Notifications: {
       BackupVaultEvents: [
         'BACKUP_JOB_COMPLETED',
@@ -125,7 +152,7 @@ test('defaults to all notifications', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupVault', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
     Notifications: {
       BackupVaultEvents: Object.values(BackupVaultEvents),
       SNSTopicArn: {
@@ -175,7 +202,7 @@ test('grant action', () => {
   vault.grant(role, 'backup:StartBackupJob');
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {

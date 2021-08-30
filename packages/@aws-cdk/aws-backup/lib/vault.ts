@@ -153,6 +153,23 @@ abstract class BackupVaultBase extends Resource implements IBackupVault {
  */
 export class BackupVault extends BackupVaultBase {
   /**
+   * A vault policy document that prevents anyone from deleting a recovery point
+   */
+  public static readonly DENY_DELETE_RECOVERY_POINT = new iam.PolicyDocument({
+    statements: [
+      new iam.PolicyStatement({
+        effect: iam.Effect.DENY,
+        actions: [
+          'backup:DeleteRecoveryPoint',
+          'backup:UpdateRecoveryPointLifecycle',
+        ],
+        principals: [new iam.AnyPrincipal()],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  /**
    * Import an existing backup vault by name
    */
   public static fromBackupVaultName(scope: Construct, id: string, backupVaultName: string): IBackupVault {
