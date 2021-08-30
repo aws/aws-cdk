@@ -149,6 +149,57 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
 });
 ```
 
+### AWS Service Integrations
+
+AWS Service integrations allow for API Gateway to integrate directly with the following AWS Services:
+
+- EventBridge
+  - PutEvents
+- SQS
+  - SendMessage
+  - ReceiveMessage
+  - DeleteMessage
+  - PurgeQueue
+- Kinesis
+  - PutRecord
+- Step Functions
+  - StartExecution
+  - StartSyncExecution
+  - StopExecution
+
+The following code configures a `message` route, which creates an SQS message containing the request body:
+
+```ts
+const queue = new Queue(stack, 'Queue');
+const httpApi = new HttpApi(stack, 'IntegrationApi');
+
+const role = new Role(stack, 'SQSRole', {
+  assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+});
+role.addToPrincipalPolicy(new PolicyStatement({
+  actions: ['sqs:*'],
+  resources: [queue.queueArn],
+}));
+
+httpApi.addRoutes({
+  path: '/message',
+  methods: [HttpMethod.POST],
+  integration: new SqsSendMessageIntegration({
+    role,
+    body: StringMappingExpression.fromMapping(Mapping.fromRequestBody()),
+    queue: QueueMappingExpression.fromQueue(queue),
+  }),
+});
+```
+
+Integrations should always specify a role, with appropriate permissions to allow the actions.
+
+All other integration properties, except for the `region` can be either set up by the CDK, or
+specified in the request, context variables or stage variables. The various `MappingExpression`
+classes assist with creating these properties; each can be constructed from the type it represents,
+or from a `Mapping` from the request, context or scope, as described in the
+[API Gateway documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services.html#http-api-develop-integrations-aws-services-parameter-mapping).
+
 ## WebSocket APIs
 
 WebSocket integrations connect a route to backend resources. The following integrations are supported in the CDK.

@@ -22,8 +22,7 @@ const app = new App();
 const stack = new Stack(app, 'integ-sqs');
 const httpApi = new HttpApi(stack, 'IntegrationApi');
 
-const queue = new Queue(stack, 'Queue', {
-});
+const queue = new Queue(stack, 'Queue');
 const queueMapping = QueueMappingExpression.fromQueue(queue);
 
 const role = new Role(stack, 'SQSRole', {
