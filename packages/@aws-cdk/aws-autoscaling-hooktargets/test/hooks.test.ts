@@ -26,7 +26,7 @@ describe('given an AutoScalingGroup', () => {
     });
   });
 
-  test('can use queue as a notificationTarget without providing a role', () => {
+  test('can use queue as a hook target without providing a role', () => {
     // GIVEN
     const queue = new sqs.Queue(stack, 'Queue');
 
@@ -82,7 +82,7 @@ describe('given an AutoScalingGroup', () => {
     });
   });
 
-  test('can use topic as a notificationTarget without providing a role', () => {
+  test('can use topic as a hook target without providing a role', () => {
     // GIVEN
     const topic = new sns.Topic(stack, 'Topic');
 
@@ -133,7 +133,7 @@ describe('given an AutoScalingGroup', () => {
     });
   });
 
-  test('can use Lambda function as a notificationTarget without providing a role', () => {
+  test('can use Lambda function as a hook target without providing a role', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
@@ -193,7 +193,7 @@ describe('given an AutoScalingGroup', () => {
 
   });
 
-  test('can use queue as a notificationTarget with a role', () => {
+  test('can use queue as a hook target with a role', () => {
     // GIVEN
     const queue = new sqs.Queue(stack, 'Queue');
     const myrole = new iam.Role(stack, 'MyRole', {
@@ -225,7 +225,7 @@ describe('given an AutoScalingGroup', () => {
     expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
   });
 
-  test('can use topic as a notificationTarget with a role', () => {
+  test('can use topic as a hook target with a role', () => {
     // GIVEN
     const topic = new sns.Topic(stack, 'Topic');
     const myrole = new iam.Role(stack, 'MyRole', {
@@ -279,7 +279,7 @@ describe('given an AutoScalingGroup', () => {
     });
   });
 
-  test('can use Lambda function as a notificationTarget with a role', () => {
+  test('can use Lambda function as a hook target with a role', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
