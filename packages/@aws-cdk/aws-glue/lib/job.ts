@@ -370,6 +370,11 @@ abstract class JobBase extends cdk.Resource implements IJob {
  */
 export interface SparkUIProps {
   /**
+   * Enable Spark UI.
+   */
+  readonly enabled: boolean
+
+  /**
    * The bucket where the Glue job stores the logs.
    *
    * @default a new bucket will be created.
@@ -411,6 +416,11 @@ export interface SparkUIConfig {
  * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
  */
 export interface ContinuousLoggingProps {
+  /**
+   * Enable continouous logging.
+   */
+  readonly enabled: boolean;
+
   /**
    * Specify a custom CloudWatch log group name.
    *
@@ -638,7 +648,7 @@ export class Job extends JobBase {
       physicalName: props.jobName,
     });
 
-    const executable = props.executable.bind(this);
+    const executable = props.executable.bind();
 
     // Create a basic service role if one is not provided https://docs.aws.amazon.com/glue/latest/dg/create-service-policy.html
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
@@ -646,19 +656,18 @@ export class Job extends JobBase {
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
     });
 
+    const sparkUI = props.sparkUI?.enabled ? this.setupSparkUI(executable, this.role, props.sparkUI) : undefined;
+    this.sparkUIConfig = sparkUI?.config;
+    const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
+    const profilingMetricsArgs = props.enableProfilingMetrics ? { '--enable-metrics': '' } : {};
+
     const defaultArguments = {
       ...this.executableArguments(executable),
+      ...continuousLoggingArgs,
+      ...profilingMetricsArgs,
+      ...sparkUI?.args,
       ...props.defaultArguments,
     };
-    if (props.enableProfilingMetrics) {
-      defaultArguments['--enable-metrics'] = '';
-    }
-    if (props.sparkUI) {
-      this.sparkUIConfig = this.setupSparkUI(executable, this.role, defaultArguments, props.sparkUI);
-    }
-    if (props.continuousLogging) {
-      this.setupContinuousLogging(this.role, defaultArguments, props.continuousLogging);
-    }
 
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
@@ -676,9 +685,9 @@ export class Job extends JobBase {
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
-      timeout: props.timeout ? props.timeout.toMinutes() : undefined,
+      timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
-      securityConfiguration: props.securityConfiguration ? props.securityConfiguration.securityConfigurationName : undefined,
+      securityConfiguration: props.securityConfiguration?.securityConfigurationName,
       tags: props.tags,
       defaultArguments,
     });
@@ -709,25 +718,32 @@ export class Job extends JobBase {
     return args;
   }
 
-  private setupSparkUI(executable: JobExecutableConfig, role: iam.IRole, args: {[key: string]: string}, props: SparkUIProps): SparkUIConfig {
-    if (![JobType.ETL, JobType.STREAMING].includes(executable.type)) {
-      throw new Error('Spark UI can only be configured for JobType.ETL or JobType.STREAMING jobs');
+  private setupSparkUI(executable: JobExecutableConfig, role: iam.IRole, props: SparkUIProps) {
+    if (JobType.PYTHON_SHELL === executable.type) {
+      throw new Error('Spark UI is not available for JobType.PYTHON_SHELL jobs');
     }
 
-    const bucket = props.bucket || new s3.Bucket(this, 'SparkUIBucket');
+    const bucket = props.bucket ?? new s3.Bucket(this, 'SparkUIBucket');
     bucket.grantReadWrite(role);
-    args['--enable-spark-ui'] = 'true';
-    args['--spark-event-logs-path'] = `s3://${bucket.bucketName}/${props.path || ''}`;
+    const args = {
+      '--enable-spark-ui': 'true',
+      '--spark-event-logs-path': `s3://${bucket.bucketName}/${props.path || ''}`,
+    };
 
     return {
-      ...props,
-      bucket,
+      config: {
+        ...props,
+        bucket,
+      },
+      args,
     };
   }
 
-  private setupContinuousLogging(role: iam.IRole, args: {[key: string]: string}, props: ContinuousLoggingProps) {
-    args['--enable-continuous-cloudwatch-log'] = 'true';
-    args['--enable-continuous-log-filter'] = (props.filter?? true).toString();
+  private setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps) {
+    const args: {[key: string]: string} = {
+      '--enable-continuous-cloudwatch-log': 'true',
+      '--enable-continuous-log-filter': (props.filter ?? true).toString(),
+    };
 
     if (props.logGroup) {
       args['--continuous-log-logGroup'] = props.logGroup.logGroupName;
@@ -740,5 +756,6 @@ export class Job extends JobBase {
     if (props.conversionPattern) {
       args['--continuous-log-conversionPattern'] = props.conversionPattern;
     }
+    return args;
   }
 }

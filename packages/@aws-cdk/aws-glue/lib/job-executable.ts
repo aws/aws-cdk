@@ -1,5 +1,3 @@
-import * as constructs from 'constructs';
-
 /**
  * AWS Glue version determines the versions of Apache Spark and Python that are available to the job.
  *
@@ -320,7 +318,7 @@ export class JobExecutable {
    *
    * @param props Scala Apache Spark Job props
    */
-  public static etlScala(props: ScalaJobExecutableProps): JobExecutable {
+  public static scalaEtl(props: ScalaJobExecutableProps): JobExecutable {
     return new JobExecutable({
       ...props,
       type: JobType.ETL,
@@ -333,7 +331,7 @@ export class JobExecutable {
    *
    * @param props Scala Apache Spark Job props
    */
-  public static streamingScala(props: ScalaJobExecutableProps): JobExecutable {
+  public static scalaStreaming(props: ScalaJobExecutableProps): JobExecutable {
     return new JobExecutable({
       ...props,
       type: JobType.STREAMING,
@@ -346,7 +344,7 @@ export class JobExecutable {
    *
    * @param props Python Apache Spark Job props
    */
-  public static etlPython(props: PythonJobExecutableProps): JobExecutable {
+  public static pythonEtl(props: PythonJobExecutableProps): JobExecutable {
     return new JobExecutable({
       ...props,
       type: JobType.ETL,
@@ -359,7 +357,7 @@ export class JobExecutable {
    *
    * @param props Python Apache Spark Job props
    */
-  public static streamingPython(props: PythonJobExecutableProps): JobExecutable {
+  public static pythonStreaming(props: PythonJobExecutableProps): JobExecutable {
     return new JobExecutable({
       ...props,
       type: JobType.STREAMING,
@@ -372,7 +370,7 @@ export class JobExecutable {
    *
    * @param props Python Shell Job props.
    */
-  public static shellPython(props: PythonShellExecutableProps): JobExecutable {
+  public static pythonShell(props: PythonShellExecutableProps): JobExecutable {
     return new JobExecutable({
       ...props,
       type: JobType.PYTHON_SHELL,
@@ -409,7 +407,7 @@ export class JobExecutable {
     this.config = config;
   }
 
-  public bind(_scope: constructs.Construct): JobExecutableConfig {
+  public bind(): JobExecutableConfig {
     return this.config;
   }
 }

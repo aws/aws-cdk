@@ -79,7 +79,7 @@ describe('Job', () => {
     describe('with necessary props only', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.etlScala({
+          executable: glue.JobExecutable.scalaEtl({
             glueVersion: glue.GlueVersion.V2_0,
             className,
             scriptLocation,
@@ -148,7 +148,7 @@ describe('Job', () => {
       test('with a custom role should use it and set it in CloudFormation', () => {
         const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
         job = new glue.Job(stack, 'JobWithRole', {
-          executable: glue.JobExecutable.etlPython({
+          executable: glue.JobExecutable.pythonEtl({
             glueVersion: glue.GlueVersion.V2_0,
             pythonVersion: PythonVersion.THREE,
             scriptLocation,
@@ -164,7 +164,7 @@ describe('Job', () => {
 
       test('with a custom jobName should set it in CloudFormation', () => {
         job = new glue.Job(stack, 'JobWithName', {
-          executable: glue.JobExecutable.streamingScala({
+          executable: glue.JobExecutable.scalaStreaming({
             glueVersion: glue.GlueVersion.V2_0,
             className,
             scriptLocation,
@@ -181,12 +181,12 @@ describe('Job', () => {
     describe('enabling continuous logging with defaults', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.etlScala({
+          executable: glue.JobExecutable.scalaEtl({
             glueVersion: glue.GlueVersion.V2_0,
             className,
             scriptLocation,
           }),
-          continuousLogging: {},
+          continuousLogging: { enabled: true },
         });
       });
 
@@ -206,12 +206,13 @@ describe('Job', () => {
       beforeEach(() => {
         logGroup = logs.LogGroup.fromLogGroupName(stack, 'LogGroup', 'LogGroupName');
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.etlScala({
+          executable: glue.JobExecutable.scalaEtl({
             glueVersion: glue.GlueVersion.V2_0,
             className,
             scriptLocation,
           }),
           continuousLogging: {
+            enabled: true,
             filter: false,
             logStreamPrefix: 'LogStreamPrefix',
             conversionPattern: '%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n',
@@ -277,12 +278,12 @@ describe('Job', () => {
     describe('enabling spark ui but no bucket or path provided', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.etlScala({
+          executable: glue.JobExecutable.scalaEtl({
             glueVersion: glue.GlueVersion.V2_0,
             className,
             scriptLocation,
           }),
-          sparkUI: {},
+          sparkUI: { enabled: true },
         });
       });
 
@@ -368,12 +369,13 @@ describe('Job', () => {
         bucketName = 'BucketName';
         bucket = s3.Bucket.fromBucketName(stack, 'BucketId', bucketName);
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.etlScala({
+          executable: glue.JobExecutable.scalaEtl({
             glueVersion: glue.GlueVersion.V2_0,
             className,
             scriptLocation,
           }),
           sparkUI: {
+            enabled: true,
             bucket,
           },
         });
@@ -450,12 +452,13 @@ describe('Job', () => {
         bucket = s3.Bucket.fromBucketName(stack, 'BucketId', bucketName);
         path = 'some/path/';
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.etlScala({
+          executable: glue.JobExecutable.scalaEtl({
             glueVersion: glue.GlueVersion.V2_0,
             className,
             scriptLocation,
           }),
           sparkUI: {
+            enabled: true,
             bucket,
             path,
           },
@@ -477,7 +480,7 @@ describe('Job', () => {
         job = new glue.Job(stack, 'Job', {
           jobName,
           description: 'test job',
-          executable: glue.JobExecutable.streamingPython({
+          executable: glue.JobExecutable.pythonStreaming({
             glueVersion: glue.GlueVersion.V2_0,
             pythonVersion: PythonVersion.THREE,
             scriptLocation,
@@ -550,7 +553,7 @@ describe('Job', () => {
 
       test('with minimal props should synthesize correctly', () => {
         new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.shellPython({
+          executable: glue.JobExecutable.pythonShell({
             glueVersion: glue.GlueVersion.V2_0,
             pythonVersion: PythonVersion.THREE,
             scriptLocation,
@@ -569,7 +572,7 @@ describe('Job', () => {
 
       test('with unsupported glue version throws', () => {
         expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.shellPython({
+          executable: glue.JobExecutable.pythonShell({
             glueVersion: glue.GlueVersion.V0_9,
             pythonVersion: PythonVersion.TWO,
             scriptLocation,
@@ -579,18 +582,18 @@ describe('Job', () => {
 
       test('with unsupported Spark UI prop throws', () => {
         expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.shellPython({
+          executable: glue.JobExecutable.pythonShell({
             glueVersion: glue.GlueVersion.V2_0,
             pythonVersion: PythonVersion.THREE,
             scriptLocation,
           }),
-          sparkUI: {},
-        })).toThrow('Spark UI can only be configured for JobType.ETL or JobType.STREAMING jobs');
+          sparkUI: { enabled: true },
+        })).toThrow('Spark UI is not available for JobType.PYTHON_SHELL');
       });
 
       test('with all props should synthesize correctly', () => {
         new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.shellPython({
+          executable: glue.JobExecutable.pythonShell({
             glueVersion: glue.GlueVersion.V2_0,
             pythonVersion: PythonVersion.THREE,
             scriptLocation,
@@ -619,7 +622,7 @@ describe('Job', () => {
 
       test('with minimal props should synthesize correctly', () => {
         new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.etlPython({
+          executable: glue.JobExecutable.pythonEtl({
             glueVersion: glue.GlueVersion.V2_0,
             pythonVersion: PythonVersion.THREE,
             scriptLocation,
@@ -648,7 +651,7 @@ describe('Job', () => {
 
       test('with all props should synthesize correctly', () => {
         new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.etlPython({
+          executable: glue.JobExecutable.pythonEtl({
             glueVersion: glue.GlueVersion.V2_0,
             pythonVersion: PythonVersion.THREE,
             extraJarsFirst: true,
@@ -687,7 +690,7 @@ describe('Job', () => {
 
       test('with minimal props should synthesize correctly', () => {
         new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.streamingScala({
+          executable: glue.JobExecutable.scalaStreaming({
             glueVersion: glue.GlueVersion.V2_0,
             scriptLocation,
             className,
@@ -715,7 +718,7 @@ describe('Job', () => {
 
       test('with all props should synthesize correctly', () => {
         new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.streamingScala({
+          executable: glue.JobExecutable.scalaStreaming({
             glueVersion: glue.GlueVersion.V2_0,
             extraJarsFirst: true,
             className,
@@ -751,7 +754,7 @@ describe('Job', () => {
     describe('event rules and rule-based metrics', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.etlScala({
+          executable: glue.JobExecutable.scalaEtl({
             glueVersion: glue.GlueVersion.V2_0,
             className,
             scriptLocation,
