@@ -115,7 +115,7 @@ export function contentFingerprint(file: string): string {
     }
 
     if (lastStr) {
-      hash.update(Buffer.from(lastStr, 'binary'));
+      hash.update(Buffer.from(lastStr));
     }
   } finally {
     fs.closeSync(fd);
