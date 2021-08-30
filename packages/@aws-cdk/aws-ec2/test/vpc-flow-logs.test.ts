@@ -175,6 +175,36 @@ nodeunitShim({
     );
     test.done();
   },
+  'with custom log format set, it successfully creates with cloudwatch log destination'(
+    test: Test,
+  ) {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
+      logFormat: '${srcport} ${dstport}',
+    });
+
+    expect(stack).to(
+      haveResource('AWS::EC2::FlowLog', {
+        ResourceType: 'NetworkInterface',
+        TrafficType: 'ALL',
+        ResourceId: 'eni-123455',
+        DeliverLogsPermissionArn: {
+          'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
+        },
+        LogFormat: '${srcport} ${dstport}',
+        LogGroupName: {
+          Ref: 'FlowLogsLogGroup9853A85F',
+        },
+      }),
+    );
+
+    expect(stack).to(countResources('AWS::Logs::LogGroup', 1));
+    expect(stack).to(countResources('AWS::IAM::Role', 1));
+    expect(stack).notTo(haveResource('AWS::S3::Bucket'));
+    test.done();
+  },
 });
 
 function getTestStack(): Stack {
