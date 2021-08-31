@@ -133,7 +133,7 @@ interface SharedJobExecutableProps {
   /**
    * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
    *
-   * @default - no extra files and argument is not set
+   * @default [] - no extra files are copied to the working directory
    *
    * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
@@ -144,7 +144,7 @@ interface SharedSparkJobExecutableProps extends SharedJobExecutableProps {
   /**
    * Additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
    *
-   * @default - no extra jars and argument is not set
+   * @default [] - no extra jars are added to the classpath
    *
    * @see `--extra-jars` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
@@ -153,7 +153,7 @@ interface SharedSparkJobExecutableProps extends SharedJobExecutableProps {
   /**
    * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
    *
-   * @default - priortiy is not given to extra jars and argument is not set
+   * @default false - priority is not given to user-provided jars
    *
    * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
@@ -174,7 +174,7 @@ export interface JobExecutableConfig {
   /**
    * The language of the job (Scala or Python).
    *
-   * @see `--job-languae` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see `--job-language` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly language: JobLanguage;
 
@@ -191,7 +191,7 @@ export interface JobExecutableConfig {
   readonly pythonVersion?: PythonVersion;
 
   /**
-   * The script that executes a job.
+   * The script that is executed by a job.
    */
   readonly script: Code;
 

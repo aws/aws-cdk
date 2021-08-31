@@ -375,7 +375,7 @@ export interface SparkUIProps {
   /**
    * The path inside the bucket (objects prefix) where the Glue job stores the logs.
    *
-   * @default - no path will be used, the logs will be written at the root of the bucket.
+   * @default '/' - the logs will be written at the root of the bucket
    */
   readonly path?: string;
 }
@@ -415,19 +415,19 @@ export interface ContinuousLoggingProps {
   /**
    * Specify a custom CloudWatch log group name.
    *
-   * @default LogGroup named `/aws-glue/jobs/logs-v2/`.
+   * @default - a log group is created with name `/aws-glue/jobs/logs-v2/`.
    */
   readonly logGroup?: logs.ILogGroup;
 
   /**
    * Specify a custom CloudWatch log stream prefix.
    *
-   * @default the job run ID.
+   * @default - the job run ID.
    */
   readonly logStreamPrefix?: string;
 
   /**
-   * Enable pruning out non-useful Apache Spark driver/executor and Apache Hadoop YARN heartbeat log messages.
+   * Filter out non-useful Apache Spark driver/executor and Apache Hadoop YARN heartbeat log messages.
    *
    * @default true
    */
@@ -463,14 +463,14 @@ export interface JobProps {
   /**
    * The name of the job.
    *
-   * @default cloudformation generated name.
+   * @default - a name is automatically generated
    */
   readonly jobName?: string;
 
   /**
    * The description of the job.
    *
-   * @default no value.
+   * @default - no value
    */
   readonly description?: string;
 
@@ -478,12 +478,12 @@ export interface JobProps {
    * The number of AWS Glue data processing units (DPUs) that can be allocated when this job runs.
    * Cannot be used for Glue version 2.0 and later - workerType and numberOfWorkers should be used instead.
    *
-   * @default 10 when you specify an Apache Spark ETL or Sreaming job, 0.0625 DPU when you specify a Python shell job.
+   * @default - 10 when job type is Apache Spark ETL or streaming, 0.0625 when job type is Python shell
    */
   readonly maxCapacity?: number;
 
   /**
-   * The maximum number of times to retry this job after a JobRun fails.
+   * The maximum number of times to retry this job after a job run fails.
    *
    * @default 0
    */
@@ -491,6 +491,7 @@ export interface JobProps {
 
   /**
    * The maximum number of concurrent runs allowed for the job.
+   *
    * An error is returned when this threshold is reached. The maximum value you can specify is controlled by a service limit.
    *
    * @default 1
@@ -514,28 +515,28 @@ export interface JobProps {
   /**
    * The type of predefined worker that is allocated when a job runs.
    *
-   * @default differs based on specific glue version
+   * @default - differs based on specific Glue version
    */
   readonly workerType?: WorkerType;
 
   /**
    * The number of workers of a defined {@link WorkerType} that are allocated when a job runs.
    *
-   * @default differs based on specific glue version/worker type
+   * @default - differs based on specific Glue version/worker type
    */
   readonly numberOfWorkers?: number;
 
   /**
    * The {@link Connection}s used for this job.
    *
-   * @default no connection.
+   * @default [] - no connections are added to the job
    */
-  readonly connections?: IConnection [];
+  readonly connections?: IConnection[];
 
   /**
    * The {@link SecurityConfiguration} to use for this job.
    *
-   * @default no security configuration.
+   * @default - no security configuration.
    */
   readonly securityConfiguration?: ISecurityConfiguration;
 
@@ -543,21 +544,21 @@ export interface JobProps {
    * The default arguments for this job, specified as name-value pairs.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html for a list of  special parameters Used by AWS Glue
-   * @default no arguments
+   * @default - no arguments
    */
   readonly defaultArguments?: { [key: string]: string };
 
   /**
-   * The tags to use with this job.
+   * The tags to add to the resources on which the job runs
    *
-   * @default no tags
+   * @default {} - no tags
    */
   readonly tags?: { [key: string]: string };
 
   /**
-   * The IAM role associated with this job.
+   * The IAM role assumed by Glue to run this job.
    *
-   * @default an IAM role is generated
+   * @default - a role is automatically generated
    */
   readonly role?: iam.IRole;
 
@@ -581,9 +582,9 @@ export interface JobProps {
   readonly sparkUI?: SparkUIProps,
 
   /**
-   * Enables Continuous Logging with the specified props.
+   * Enables continuous logging with the specified props.
    *
-   * @default - Continuous Logging is disabled.
+   * @default - continuous logging is disabled.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging-enable.html
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
@@ -596,12 +597,12 @@ export interface JobProps {
  */
 export class Job extends JobBase {
   /**
-     * Creates a Glue Job
-     *
-     * @param scope The scope creating construct (usually `this`).
-     * @param id The construct's id.
-     * @param attrs Import attributes
-     */
+   * Creates a Glue Job
+   *
+   * @param scope The scope creating construct (usually `this`).
+   * @param id The construct's id.
+   * @param attrs Import attributes
+   */
   public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobAttributes): IJob {
     class Import extends JobBase {
       public readonly jobName = attrs.jobName;
@@ -641,7 +642,6 @@ export class Job extends JobBase {
 
     const executable = props.executable.bind();
 
-    // Create a basic service role if one is not provided https://docs.aws.amazon.com/glue/latest/dg/create-service-policy.html
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],

@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as s3 from '@aws-cdk/aws-s3';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as s3assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 
@@ -31,14 +31,14 @@ export abstract class Code {
   /**
    * Called when the Job is initialized to allow this object to bind.
    */
-  public abstract bind(_scope: constructs.Construct): CodeConfig;
+  public abstract bind(scope: constructs.Construct): CodeConfig;
 }
 
 /**
  * Glue job Code from an S3 bucket.
  */
 export class S3Code extends Code {
-  constructor(private bucket: s3.IBucket, private key: string) {
+  constructor(private readonly bucket: s3.IBucket, private readonly key: string) {
     super();
   }
 
@@ -61,7 +61,7 @@ export class AssetCode extends Code {
   /**
    * @param path The path to the Code file.
    */
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  constructor(private readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
     super();
   }
 
