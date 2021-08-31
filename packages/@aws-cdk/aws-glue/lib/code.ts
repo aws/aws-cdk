@@ -24,7 +24,7 @@ export abstract class Code {
    *
    * @param path code file (not a directory).
    */
-  public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
+  public static fromAsset(path: string, options?: s3assets.AssetOptions): AssetCode {
     return new AssetCode(path, options);
   }
 
@@ -56,12 +56,12 @@ export class S3Code extends Code {
  * Job Code from a local file.
  */
 export class AssetCode extends Code {
-  private asset?: s3_assets.Asset;
+  private asset?: s3assets.Asset;
 
   /**
    * @param path The path to the Code file.
    */
-  constructor(private readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  constructor(private readonly path: string, private readonly options: s3assets.AssetOptions = { }) {
     super();
   }
 
@@ -71,7 +71,7 @@ export class AssetCode extends Code {
     }
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(scope, `Code${this.hashcode(this.path)}`, {
+      this.asset = new s3assets.Asset(scope, `Code${this.hashcode(this.path)}`, {
         path: this.path,
         ...this.options,
       });
