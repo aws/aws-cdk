@@ -37,7 +37,7 @@ jobs:
            {"keywords":["(@aws-cdk/aws-appintegrations)","(aws-appintegrations)","(appintegrations)"],"labels":["@aws-cdk/aws-appintegrations"],"assignees":["skinny85"]},
            {"keywords":["(@aws-cdk/aws-applicationautoscaling)","(aws-applicationautoscaling)","(applicationautoscaling)","(application autoscaling)","(application-autoscaling)"],"labels":["@aws-cdk/aws-applicationautoscaling"],"assignees":["comcalvi"]},
            {"keywords":["(@aws-cdk/aws-applicationinsights)","(aws-applicationinsights)","(applicationinsights)","(application insights)","(application-insights)"],"labels":["@aws-cdk/aws-applicationinsights"],"assignees":["njlynch"]},
-           {"keywords":["(@aws-cdk/aws-appmesh)","(aws-appmesh)","(appmesh)","(app mesh)","(app-mesh)"],"labels":["@aws-cdk/aws-appmesh"],"assignees":["skinny85"]},
+           {"keywords":["(@aws-cdk/aws-appmesh)","(aws-appmesh)","(appmesh)","(app mesh)","(app-mesh)"],"labels":["@aws-cdk/aws-appmesh"],"assignees":["Seiya6329"]},
            {"keywords":["(@aws-cdk/aws-appstream)","(aws-appstream)","(appstream)","(app stream)","(app-stream)"],"labels":["@aws-cdk/aws-appstream"],"assignees":["madeline-k"]},
            {"keywords":["(@aws-cdk/aws-appsync)","(aws-appsync)","(appsync)","(app sync)","(app-sync)"],"labels":["@aws-cdk/aws-appsync"],"assignees":["otaviomacedo"]},
            {"keywords":["(@aws-cdk/aws-athena)","(aws-athena)","(athena)"],"labels":["@aws-cdk/aws-athena"],"assignees":["BenChaimberg"]},
