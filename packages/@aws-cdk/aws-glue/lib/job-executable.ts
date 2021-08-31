@@ -117,6 +117,22 @@ export class JobType {
   }
 }
 
+interface PythonExecutableProps {
+  /**
+   * The Python version to use.
+   */
+  readonly pythonVersion: PythonVersion;
+
+  /**
+   * Additional Python files that AWS Glue adds to the Python path before executing your script.
+   *
+   * @default - no extra python files and argument is not set
+   *
+   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraPythonFiles?: Code[];
+}
+
 interface SharedJobExecutableProps {
   /**
    * Glue version.
@@ -175,42 +191,12 @@ export interface ScalaJobExecutableProps extends SharedSparkJobExecutableProps {
 /**
  * Props for creating a Python Spark (ETL or Streaming) job executable
  */
-export interface PythonSparkJobExecutableProps extends SharedSparkJobExecutableProps {
-
-  /**
-   * The Python version to use.
-   */
-  readonly pythonVersion: PythonVersion;
-
-  /**
-   * Additional Python files that AWS Glue adds to the Python path before executing your script.
-   *
-   * @default - no extra python files and argument is not set
-   *
-   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraPythonFiles?: Code[];
-}
+export interface PythonSparkJobExecutableProps extends SharedSparkJobExecutableProps, PythonExecutableProps {}
 
 /**
  * Props for creating a Python shell job executable
  */
-export interface PythonShellExecutableProps extends SharedJobExecutableProps {
-
-  /**
-   * The Python version to use.
-   */
-  readonly pythonVersion: PythonVersion;
-
-  /**
-   * Additional Python files that AWS Glue adds to the Python path before executing your script.
-   *
-   * @default - no extra python files and argument is not set
-   *
-   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraPythonFiles?: Code[];
-}
+export interface PythonShellExecutableProps extends SharedJobExecutableProps, PythonExecutableProps {}
 
 /**
  * The executable properties related to the Glue job's GlueVersion, JobType and code
