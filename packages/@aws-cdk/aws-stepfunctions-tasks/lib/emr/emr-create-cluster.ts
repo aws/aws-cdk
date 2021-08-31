@@ -169,7 +169,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   private _clusterRole: iam.IRole;
   private _autoScalingRole?: iam.IRole;
 
-  constructor (scope: Construct, id: string, private readonly props: EmrCreateClusterProps) {
+  constructor(scope: Construct, id: string, private readonly props: EmrCreateClusterProps) {
     super(scope, id, props);
     this.visibleToAllUsers = this.props.visibleToAllUsers ?? true;
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.RUN_JOB;
@@ -198,7 +198,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    *
    * Only available after task has been added to a state machine.
    */
-  public get serviceRole (): iam.IRole {
+  public get serviceRole(): iam.IRole {
     if (this._serviceRole === undefined) {
       throw new Error('role not available yet--use the object in a Task first');
     }
@@ -210,7 +210,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    *
    * Only available after task has been added to a state machine.
    */
-  public get clusterRole (): iam.IRole {
+  public get clusterRole(): iam.IRole {
     if (this._clusterRole === undefined) {
       throw new Error('role not available yet--use the object in a Task first');
     }
@@ -222,7 +222,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    *
    * Only available after task has been added to a state machine.
    */
-  public get autoScalingRole (): iam.IRole {
+  public get autoScalingRole(): iam.IRole {
     if (this._autoScalingRole === undefined) {
       throw new Error('role not available yet--use the object in a Task first');
     }
@@ -232,7 +232,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask (): any {
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'createCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
@@ -258,14 +258,14 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     };
   }
 
-  private renderTags (tags: { [key: string]: any } | undefined): { [key: string]: any } {
+  private renderTag(tags: { [key: string]: any } | undefined): { [key: string]: any } {
     return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
   /**
    * This generates the PolicyStatements required by the Task to call CreateCluster.
    */
-  private createPolicyStatements (serviceRole: iam.IRole, clusterRole: iam.IRole, autoScalingRole?: iam.IRole): iam.PolicyStatement[] {
+  private createPolicyStatements(serviceRole: iam.IRole, clusterRole: iam.IRole, autoScalingRole?: iam.IRole): iam.PolicyStatement[] {
     const stack = cdk.Stack.of(this);
 
     const policyStatements = [
@@ -312,7 +312,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   /**
    * Generate the Role used by the EMR Service
    */
-  private createServiceRole (): iam.IRole {
+  private createServiceRole(): iam.IRole {
     return new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole')],
@@ -324,7 +324,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    *
    * Data access permissions will need to be updated by the user
    */
-  private createClusterRole (): iam.IRole {
+  private createClusterRole(): iam.IRole {
     const role = new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
@@ -340,7 +340,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   /**
    * Generate the Role used to AutoScale the Cluster
    */
-  private createAutoScalingRole (): iam.IRole {
+  private createAutoScalingRole(): iam.IRole {
     const role = new iam.Role(this, 'AutoScalingRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceforAutoScalingRole')],
@@ -544,7 +544,7 @@ export namespace EmrCreateCluster {
    *
    */
   export enum SpotTimeoutAction {
-    /**\
+    /**
      * SWITCH_TO_ON_DEMAND
      */
     SWITCH_TO_ON_DEMAND = 'SWITCH_TO_ON_DEMAND',
@@ -557,10 +557,12 @@ export namespace EmrCreateCluster {
   /**
    * Spot Allocation Strategies
    *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SpotProvisioningSpecification.html
+   * 
    */
   export enum SpotAllocationStrategy {
-    /**\
-     * capacity-optimized
+    /**
+     * capacity-optimized, which launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
      */
     CAPACITY_OPTIMIZED = 'capacity-optimized',
   }
@@ -573,15 +575,16 @@ export namespace EmrCreateCluster {
    */
   export interface SpotProvisioningSpecificationProperty {
     /**
-     * Specifies the strategy to use in launching Spot Instance fleets.
+     * Specifies the strategy to use in launching Spot Instance fleets. Currently, the only option is capacity-optimized (the default), 
+     * which launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
      *
-     * @default No allocation strategy
+     * @default - No allocation strategy
      */
     readonly allocationStrategy?: SpotAllocationStrategy;
     /**
      * The defined duration for Spot instances (also known as Spot blocks) in minutes.
      *
-     * @default No blockDurationMinutes
+     * @default - No blockDurationMinutes
      */
     readonly blockDurationMinutes?: number;
 
