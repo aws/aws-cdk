@@ -162,10 +162,11 @@ back) in order to leave the stack in a consistent state at the end of the operat
 to iterate on a development stack in your personal account, you might not require CloudFormation to leave your
 stack in a consistent state, but instead would prefer to update your CDK application and try again.
 
-To disable the rollback feature, specify `--no-rollback`:
+To disable the rollback feature, specify `--no-rollback` (`-R` for short):
 
 ```console
 $ cdk deploy --no-rollback
+$ cdk deploy -R
 ```
 
 NOTE: you cannot use `--no-rollback` for any updates that would cause a resource replacement, only for updates
