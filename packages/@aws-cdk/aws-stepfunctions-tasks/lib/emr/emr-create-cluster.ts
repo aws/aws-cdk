@@ -258,7 +258,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     };
   }
 
-  private renderTag(tags: { [key: string]: any } | undefined): { [key: string]: any } {
+  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
     return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
