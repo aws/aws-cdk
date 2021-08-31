@@ -339,7 +339,7 @@ const myServiceDescription = nameDescription.add(new QueueExtension({
 }));
 
 // To access the `eventsQueue` for the service, use the `eventsQueue` getter for the extension
-const myQueueExtension = myServiceDescription.extensions['queue'] as QueueExtension;
+const myQueueExtension = myServiceDescription.extensions.queue as QueueExtension;
 const myEventsQueue = myQueueExtension.eventsQueue;
 ```
 

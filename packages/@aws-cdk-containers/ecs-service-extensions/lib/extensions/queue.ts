@@ -18,13 +18,13 @@ export interface ISubscribable {
   /**
    * All classes implementing this interface must also implement the `subscribe()` method
    */
-  subscribe(): void;
+  subscribe(queue: sqs.IQueue): sqs.IQueue | undefined;
 }
 
 /**
- * The settings for the EventsQueue extension.
+ * The settings for the Queue extension.
  */
-export interface QueueProps {
+export interface QueueExtensionProps {
   /**
    * The list of subscriptions for this service.
    *
@@ -71,20 +71,30 @@ export class TopicSubscription implements ISubscribable {
     this.queue = props.queue;
   }
 
-  public subscribe() {
+  /**
+   * This method sets up SNS Topic subscriptions for the SQS queue provided by the user. If a `queue` is not provided,
+   * the default `eventsQueue` subscribes to the given topic.
+   *
+   * @param queue `eventsQueue` of the service
+   * @returns topic-specific SQS Queue, if provided by the user
+   */
+  public subscribe(queue: sqs.IQueue) : sqs.IQueue | undefined {
     if (this.queue) {
       this.topic.addSubscription(new subscription.SqsSubscription(this.queue));
+    } else {
+      this.topic.addSubscription(new subscription.SqsSubscription(queue));
     }
+    return this.queue;
   }
 }
 
 /**
  * Settings for the hook which mutates the application container
- * to add the events queue URL to its environment.
+ * to add the events queue URI to its environment.
  */
 interface ContainerMutatingProps {
   /**
-   * The queue name and URLs to be added to the container environment.
+   * The events queue name and URI to be added to the container environment.
    */
   readonly environment: { [key: string]: string };
 }
@@ -124,9 +134,9 @@ export class QueueExtension extends ServiceExtension {
 
   private environment: { [key: string]: string } = {};
 
-  private props?: QueueProps;
+  private props?: QueueExtensionProps;
 
-  constructor(props?: QueueProps) {
+  constructor(props?: QueueExtensionProps) {
     super('queue');
 
     this.props = props;
@@ -162,8 +172,9 @@ export class QueueExtension extends ServiceExtension {
 
     if (this.props?.subscriptions) {
       for (const subs of this.props.subscriptions) {
-        if (subs instanceof TopicSubscription) {
-          this.addTopicSubscriptions(subs as TopicSubscription);
+        const subsQueue = subs.subscribe(this._eventsQueue);
+        if (subsQueue) {
+          this.subscriptionQueues.push(subsQueue);
         }
       }
     }
@@ -194,21 +205,6 @@ export class QueueExtension extends ServiceExtension {
     this._eventsQueue.grantConsumeMessages(taskDefinition.taskRole);
     for (const queue of this.subscriptionQueues) {
       queue.grantConsumeMessages(taskDefinition.taskRole);
-    }
-
-  }
-
-  /**
-   * This helper method creates a SNS Subscription for a topic and the queue that subscribes to it.
-   *
-   * @param topicSubscription TopicSubscription
-   */
-  private addTopicSubscriptions(topicSubscription: TopicSubscription) {
-    if (topicSubscription.queue) {
-      topicSubscription.subscribe();
-      this.subscriptionQueues.push(topicSubscription.queue);
-    } else {
-      topicSubscription.topic.addSubscription(new subscription.SqsSubscription(this._eventsQueue));
     }
   }
 
