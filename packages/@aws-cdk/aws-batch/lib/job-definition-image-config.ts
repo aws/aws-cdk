@@ -3,10 +3,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
 import { JobDefinitionContainer } from './job-definition';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * TaskDefinitionRole
  *
@@ -68,7 +64,7 @@ export class JobDefinitionImageConfig {
   }
 
   private bindImageConfig(scope: Construct, container: JobDefinitionContainer): ecs.ContainerImageConfig {
-    return container.image.bind(scope as CoreConstruct, new ecs.ContainerDefinition(scope, 'Resource-Batch-Job-Container-Definition', {
+    return container.image.bind(scope, new ecs.ContainerDefinition(scope, 'Resource-Batch-Job-Container-Definition', {
       command: container.command,
       cpu: container.vcpus,
       image: container.image,
