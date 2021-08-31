@@ -161,6 +161,165 @@ interface SharedSparkJobExecutableProps extends SharedJobExecutableProps {
 }
 
 /**
+ * Props for creating a Scala Spark (ETL or Streaming) job executable
+ */
+export interface ScalaJobExecutableProps extends SharedSparkJobExecutableProps {
+  /**
+   * The fully qualified Scala class name that serves as the entry point for the job.
+   *
+   * @see `--class` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly className: string;
+}
+
+/**
+ * Props for creating a Python Spark (ETL or Streaming) job executable
+ */
+export interface PythonSparkJobExecutableProps extends SharedSparkJobExecutableProps {
+
+  /**
+   * The Python version to use.
+   */
+  readonly pythonVersion: PythonVersion;
+
+  /**
+   * Additional Python files that AWS Glue adds to the Python path before executing your script.
+   *
+   * @default - no extra python files and argument is not set
+   *
+   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraPythonFiles?: Code[];
+}
+
+/**
+ * Props for creating a Python shell job executable
+ */
+export interface PythonShellExecutableProps extends SharedJobExecutableProps {
+
+  /**
+   * The Python version to use.
+   */
+  readonly pythonVersion: PythonVersion;
+
+  /**
+   * Additional Python files that AWS Glue adds to the Python path before executing your script.
+   *
+   * @default - no extra python files and argument is not set
+   *
+   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraPythonFiles?: Code[];
+}
+
+/**
+ * The executable properties related to the Glue job's GlueVersion, JobType and code
+ */
+export class JobExecutable {
+
+  /**
+   * Create Scala executable props for Apache Spark ETL job.
+   *
+   * @param props Scala Apache Spark Job props
+   */
+  public static scalaEtl(props: ScalaJobExecutableProps): JobExecutable {
+    return new JobExecutable({
+      ...props,
+      type: JobType.ETL,
+      language: JobLanguage.SCALA,
+    });
+  }
+
+  /**
+   * Create Scala executable props for Apache Spark Streaming job.
+   *
+   * @param props Scala Apache Spark Job props
+   */
+  public static scalaStreaming(props: ScalaJobExecutableProps): JobExecutable {
+    return new JobExecutable({
+      ...props,
+      type: JobType.STREAMING,
+      language: JobLanguage.SCALA,
+    });
+  }
+
+  /**
+   * Create Python executable props for Apache Spark ETL job.
+   *
+   * @param props Python Apache Spark Job props
+   */
+  public static pythonEtl(props: PythonSparkJobExecutableProps): JobExecutable {
+    return new JobExecutable({
+      ...props,
+      type: JobType.ETL,
+      language: JobLanguage.PYTHON,
+    });
+  }
+
+  /**
+   * Create Python executable props for Apache Spark Streaming job.
+   *
+   * @param props Python Apache Spark Job props
+   */
+  public static pythonStreaming(props: PythonSparkJobExecutableProps): JobExecutable {
+    return new JobExecutable({
+      ...props,
+      type: JobType.STREAMING,
+      language: JobLanguage.PYTHON,
+    });
+  }
+
+  /**
+   * Create Python executable props for python shell jobs.
+   *
+   * @param props Python Shell Job props.
+   */
+  public static pythonShell(props: PythonShellExecutableProps): JobExecutable {
+    return new JobExecutable({
+      ...props,
+      type: JobType.PYTHON_SHELL,
+      language: JobLanguage.PYTHON,
+    });
+  }
+
+  /**
+   * Create a custom JobExecutable.
+   *
+   * @param config custom job executable configuration.
+   */
+  public static of(config: JobExecutableConfig): JobExecutable {
+    return new JobExecutable(config);
+  }
+
+  private config: JobExecutableConfig;
+
+  private constructor(config: JobExecutableConfig) {
+    if (JobType.PYTHON_SHELL === config.type) {
+      if (config.language !== JobLanguage.PYTHON) {
+        throw new Error('Python shell requires the language to be set to Python');
+      }
+      if ([GlueVersion.V0_9, GlueVersion.V1_0].includes(config.glueVersion)) {
+        throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support Python Shell`);
+      }
+    }
+    if (config.extraJarsFirst && [GlueVersion.V0_9, GlueVersion.V1_0].includes(config.glueVersion)) {
+      throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support extraJarsFirst`);
+    }
+    if (config.pythonVersion === PythonVersion.TWO && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(config.glueVersion)) {
+      throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support PythonVersion ${config.pythonVersion}`);
+    }
+    this.config = config;
+  }
+
+  /**
+   * Called during Job initialization to get JobExecutableConfig.
+   */
+  public bind(): JobExecutableConfig {
+    return this.config;
+  }
+}
+
+/**
  * Result of binding a `JobExecutable` into a `Job`.
  */
 export interface JobExecutableConfig {
@@ -239,168 +398,4 @@ export interface JobExecutableConfig {
    * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraJarsFirst?: boolean;
-}
-
-/**
- * Props for creating a Scala Spark (ETL or Streaming) job executable
- */
-export interface ScalaJobExecutableProps extends SharedSparkJobExecutableProps {
-  /**
-   * The fully qualified Scala class name that serves as the entry point for the job.
-   *
-   * @see `--class` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly className: string;
-}
-
-/**
- * Props for creating a Python Spark (ETL or Streaming) job executable
- */
-export interface PythonJobExecutableProps extends SharedSparkJobExecutableProps {
-
-  /**
-   * The Python version to use.
-   */
-  readonly pythonVersion: PythonVersion;
-
-  /**
-   * Additional Python files that AWS Glue adds to the Python path before executing your script.
-   *
-   * @default - no extra python files and argument is not set
-   *
-   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraPythonFiles?: Code[];
-
-  /**
-   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
-   *
-   * @default - priortiy is not given to extra jars and argument is not set
-   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraJarsFirst?: boolean;
-}
-
-/**
- * Props for creating a Python shell job executable
- */
-export interface PythonShellExecutableProps extends SharedJobExecutableProps {
-
-  /**
-   * The Python version to use.
-   */
-  readonly pythonVersion: PythonVersion;
-
-  /**
-   * Additional Python files that AWS Glue adds to the Python path before executing your script.
-   *
-   * @default - no extra python files and argument is not set
-   *
-   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraPythonFiles?: Code[];
-}
-
-/**
- * The executable properties related to the Glue job's GlueVersion, JobType and code
- */
-export class JobExecutable {
-
-  /**
-   * Create Scala executable props for Apache Spark ETL job.
-   *
-   * @param props Scala Apache Spark Job props
-   */
-  public static scalaEtl(props: ScalaJobExecutableProps): JobExecutable {
-    return new JobExecutable({
-      ...props,
-      type: JobType.ETL,
-      language: JobLanguage.SCALA,
-    });
-  }
-
-  /**
-   * Create Scala executable props for Apache Spark Streaming job.
-   *
-   * @param props Scala Apache Spark Job props
-   */
-  public static scalaStreaming(props: ScalaJobExecutableProps): JobExecutable {
-    return new JobExecutable({
-      ...props,
-      type: JobType.STREAMING,
-      language: JobLanguage.SCALA,
-    });
-  }
-
-  /**
-   * Create Python executable props for Apache Spark ETL job.
-   *
-   * @param props Python Apache Spark Job props
-   */
-  public static pythonEtl(props: PythonJobExecutableProps): JobExecutable {
-    return new JobExecutable({
-      ...props,
-      type: JobType.ETL,
-      language: JobLanguage.PYTHON,
-    });
-  }
-
-  /**
-   * Create Python executable props for Apache Spark Streaming job.
-   *
-   * @param props Python Apache Spark Job props
-   */
-  public static pythonStreaming(props: PythonJobExecutableProps): JobExecutable {
-    return new JobExecutable({
-      ...props,
-      type: JobType.STREAMING,
-      language: JobLanguage.PYTHON,
-    });
-  }
-
-  /**
-   * Create Python executable props for python shell jobs.
-   *
-   * @param props Python Shell Job props.
-   */
-  public static pythonShell(props: PythonShellExecutableProps): JobExecutable {
-    return new JobExecutable({
-      ...props,
-      type: JobType.PYTHON_SHELL,
-      language: JobLanguage.PYTHON,
-    });
-  }
-
-  /**
-   * Create a custom JobExecutable.
-   *
-   * @param config custom job executable configuration.
-   */
-  public static of(config: JobExecutableConfig): JobExecutable {
-    return new JobExecutable(config);
-  }
-
-  private config: JobExecutableConfig;
-
-  private constructor(config: JobExecutableConfig) {
-    if (JobType.PYTHON_SHELL === config.type) {
-      if (config.language !== JobLanguage.PYTHON) {
-        throw new Error('Python shell requires the language to be set to Python');
-      }
-      if ([GlueVersion.V0_9, GlueVersion.V1_0].includes(config.glueVersion)) {
-        throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support Python Shell`);
-      }
-    }
-    if (config.extraJarsFirst && [GlueVersion.V0_9, GlueVersion.V1_0].includes(config.glueVersion)) {
-      throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support extraJarsFirst`);
-    }
-    if (config.pythonVersion === PythonVersion.TWO && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(config.glueVersion)) {
-      throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support PythonVersion ${config.pythonVersion}`);
-    }
-    this.config = config;
-  }
-
-  public bind(): JobExecutableConfig {
-    return this.config;
-  }
 }

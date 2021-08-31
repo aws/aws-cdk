@@ -39,7 +39,7 @@ const etlJob = new glue.Job(stack, 'Job', {
     script,
   }),
   workerType: glue.WorkerType.G_2X,
-  numberOfWorkers: 10,
+  workerCount: 10,
   maxConcurrentRuns: 2,
   maxRetries: 2,
   timeout: cdk.Duration.minutes(5),

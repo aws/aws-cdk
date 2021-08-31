@@ -216,7 +216,7 @@ describe('Job', () => {
           }),
           continuousLogging: {
             enabled: true,
-            filter: false,
+            quiet: false,
             logStreamPrefix: 'LogStreamPrefix',
             conversionPattern: '%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n',
             logGroup,
@@ -355,7 +355,6 @@ describe('Job', () => {
                   {
                     Ref: 'JobSparkUIBucket8E6A0139',
                   },
-                  '/',
                 ],
               ],
             },
@@ -439,7 +438,7 @@ describe('Job', () => {
         cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
           DefaultArguments: {
             '--enable-spark-ui': 'true',
-            '--spark-event-logs-path': `s3://${bucketName}/`,
+            '--spark-event-logs-path': `s3://${bucketName}`,
           },
         }));
       });
@@ -448,12 +447,12 @@ describe('Job', () => {
     describe('enabling spark ui with bucket and path provided', () => {
       let bucketName: string;
       let bucket: s3.IBucket;
-      let path: string;
+      let prefix: string;
 
       beforeEach(() => {
         bucketName = 'BucketName';
         bucket = s3.Bucket.fromBucketName(stack, 'BucketId', bucketName);
-        path = 'some/path/';
+        prefix = 'some/path/';
         job = new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.scalaEtl({
             glueVersion: glue.GlueVersion.V2_0,
@@ -463,7 +462,7 @@ describe('Job', () => {
           sparkUI: {
             enabled: true,
             bucket,
-            path,
+            prefix,
           },
         });
       });
@@ -472,7 +471,7 @@ describe('Job', () => {
         cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
           DefaultArguments: {
             '--enable-spark-ui': 'true',
-            '--spark-event-logs-path': `s3://${bucketName}/${path}`,
+            '--spark-event-logs-path': `s3://${bucketName}/${prefix}`,
           },
         }));
       });
@@ -489,7 +488,7 @@ describe('Job', () => {
             script,
           }),
           workerType: glue.WorkerType.G_2X,
-          numberOfWorkers: 10,
+          workerCount: 10,
           maxConcurrentRuns: 2,
           maxRetries: 2,
           timeout: cdk.Duration.minutes(5),

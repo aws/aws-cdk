@@ -44,8 +44,8 @@ describe('Code', () => {
       expect(codeConfig.s3Location.objectKey).toBeDefined();
     });
 
-    test('with an unsupported directory path and calling bind() throws', () => {
-      expect(() => Code.fromAsset(directoryPath).bind(stack))
+    test('with an unsupported directory path throws', () => {
+      expect(() => Code.fromAsset(directoryPath))
         .toThrow(/Only files are supported/);
     });
 

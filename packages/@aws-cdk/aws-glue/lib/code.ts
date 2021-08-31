@@ -63,12 +63,13 @@ export class AssetCode extends Code {
    */
   constructor(private readonly path: string, private readonly options: s3assets.AssetOptions = { }) {
     super();
-  }
 
-  public bind(scope: constructs.Construct): CodeConfig {
     if (fs.lstatSync(this.path).isDirectory()) {
       throw new Error(`Code path ${this.path} is a directory. Only files are supported`);
     }
+  }
+
+  public bind(scope: constructs.Construct): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3assets.Asset(scope, `Code${this.hashcode(this.path)}`, {

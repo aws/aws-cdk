@@ -112,7 +112,7 @@ export enum MetricType {
 /**
  * Interface representing a created or an imported {@link Job}.
  */
-export interface IJob extends cdk.IResource {
+export interface IJob extends cdk.IResource, iam.IGrantable {
   /**
    * The name of the job.
    * @attribute
@@ -131,6 +131,13 @@ export interface IJob extends cdk.IResource {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
    */
   onEvent(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Defines a CloudWatch event rule triggered when this job moves to the input jobState.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
+   */
+  onStateChange(id: string, jobState: JobState, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule triggered when this job moves to the SUCCEEDED state.
@@ -182,40 +189,9 @@ export interface IJob extends cdk.IResource {
 
 abstract class JobBase extends cdk.Resource implements IJob {
 
-  /**
-   * Create a CloudWatch Metric that's based on Glue Job events
-   * {@see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types}
-   * The metric has namespace = 'AWS/Events', metricName = 'TriggeredRules' and RuleName = rule.ruleName dimension.
-   *
-   * @param rule for use in setting RuleName dimension value
-   * @param props metric properties
-   */
-  protected static metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/Events',
-      metricName: 'TriggeredRules',
-      dimensions: { RuleName: rule.ruleName },
-      statistic: cloudwatch.Statistic.SUM,
-      ...props,
-    }).attachTo(rule);
-  }
-
-
-  /**
-   * Returns the job arn
-   * @param scope
-   * @param jobName
-   */
-  protected static buildJobArn(scope: constructs.Construct, jobName: string) : string {
-    return cdk.Stack.of(scope).formatArn({
-      service: 'glue',
-      resource: 'job',
-      resourceName: jobName,
-    });
-  }
-
   public abstract readonly jobArn: string;
   public abstract readonly jobName: string;
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * Create a CloudWatch Event Rule for this Glue Job when it's in a given state
@@ -242,13 +218,34 @@ abstract class JobBase extends cdk.Resource implements IJob {
   }
 
   /**
-   * Return a CloudWatch Event Rule matching JobState.SUCCEEDED.
+   * Create a CloudWatch Event Rule for the transition into the input jobState.
+   *
+   * @param id construct id.
+   * @param jobState the job state.
+   * @param options optional event options.
+   * @private
+   */
+  public onStateChange(id: string, jobState: JobState, options: events.OnEventOptions = {}): events.Rule {
+    const rule = this.onEvent(id, {
+      description: `Rule triggered when Glue job ${this.jobName} is in ${jobState} state`,
+      ...options,
+    });
+    rule.addEventPattern({
+      detail: {
+        state: [jobState],
+      },
+    });
+    return rule;
+  }
+
+  /**
+   * Create a CloudWatch Event Rule matching JobState.SUCCEEDED.
    *
    * @param id construct id.
    * @param options optional event options. default is {}.
    */
   public onSuccess(id: string, options: events.OnEventOptions = {}): events.Rule {
-    return this.jobStateRule(id, JobState.SUCCEEDED, options);
+    return this.onStateChange(id, JobState.SUCCEEDED, options);
   }
 
   /**
@@ -258,7 +255,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * @param options optional event options. default is {}.
    */
   public onFailure(id: string, options: events.OnEventOptions = {}): events.Rule {
-    return this.jobStateRule(id, JobState.FAILED, options);
+    return this.onStateChange(id, JobState.FAILED, options);
   }
 
   /**
@@ -268,7 +265,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * @param options optional event options. default is {}.
    */
   public onTimeout(id: string, options: events.OnEventOptions = {}): events.Rule {
-    return this.jobStateRule(id, JobState.TIMEOUT, options);
+    return this.onStateChange(id, JobState.TIMEOUT, options);
   }
 
   /**
@@ -299,7 +296,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * This metric is based on the Rule returned by no-args onSuccess() call.
    */
   public metricSuccess(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return JobBase.metricRule(this.metricJobStateRule('SuccessMetricRule', JobState.SUCCEEDED), props);
+    return metricRule(this.metricJobStateRule('SuccessMetricRule', JobState.SUCCEEDED), props);
   }
 
   /**
@@ -308,7 +305,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * This metric is based on the Rule returned by no-args onFailure() call.
    */
   public metricFailure(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return JobBase.metricRule(this.metricJobStateRule('FailureMetricRule', JobState.FAILED), props);
+    return metricRule(this.metricJobStateRule('FailureMetricRule', JobState.FAILED), props);
   }
 
   /**
@@ -317,7 +314,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * This metric is based on the Rule returned by no-args onTimeout() call.
    */
   public metricTimeout(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return JobBase.metricRule(this.metricJobStateRule('TimeoutMetricRule', JobState.TIMEOUT), props);
+    return metricRule(this.metricJobStateRule('TimeoutMetricRule', JobState.TIMEOUT), props);
   }
 
   /**
@@ -328,28 +325,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * @private
    */
   private metricJobStateRule(id: string, jobState: JobState): events.Rule {
-    return this.node.tryFindChild(id) as events.Rule ?? this.jobStateRule(id, jobState);
-  }
-
-  /**
-   * Creates a new rule for a transition into the input jobState.
-   *
-   * @param id construct id.
-   * @param jobState the job state.
-   * @param options optional event options.
-   * @private
-   */
-  private jobStateRule(id: string, jobState: JobState, options: events.OnEventOptions = {}): events.Rule {
-    const rule = this.onEvent(id, {
-      description: `Rule triggered when Glue job ${this.jobName} is in ${jobState} state`,
-      ...options,
-    });
-    rule.addEventPattern({
-      detail: {
-        state: [jobState],
-      },
-    });
-    return rule;
+    return this.node.tryFindChild(id) as events.Rule ?? this.onStateChange(id, jobState);
   }
 }
 
@@ -377,16 +353,16 @@ export interface SparkUIProps {
    *
    * @default '/' - the logs will be written at the root of the bucket
    */
-  readonly path?: string;
+  readonly prefix?: string;
 }
 
 /**
- * The Spark UI monitoring configurations for Spark-based Glue jobs.
+ * The Spark UI logging location.
  *
  * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
  * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
  */
-export interface SparkUIConfig {
+export interface SparkUILoggingLocation {
   /**
    * The bucket where the Glue job stores the logs.
    */
@@ -395,9 +371,9 @@ export interface SparkUIConfig {
   /**
    * The path inside the bucket (objects prefix) where the Glue job stores the logs.
    *
-   * @default - no path will be used, the logs will be written at the root of the bucket.
+   * @default '/' - the logs will be written at the root of the bucket
    */
-  readonly path?: string;
+  readonly prefix?: string;
 }
 
 /**
@@ -431,10 +407,11 @@ export interface ContinuousLoggingProps {
    *
    * @default true
    */
-  readonly filter?: boolean;
+  readonly quiet?: boolean;
 
   /**
    * Apply the provided conversion pattern.
+   * This is a Log4j Conversion Pattern to customize driver and executor logs.
    *
    * @default `%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n`
    */
@@ -476,7 +453,7 @@ export interface JobProps {
 
   /**
    * The number of AWS Glue data processing units (DPUs) that can be allocated when this job runs.
-   * Cannot be used for Glue version 2.0 and later - workerType and numberOfWorkers should be used instead.
+   * Cannot be used for Glue version 2.0 and later - workerType and workerCount should be used instead.
    *
    * @default - 10 when job type is Apache Spark ETL or streaming, 0.0625 when job type is Python shell
    */
@@ -524,10 +501,11 @@ export interface JobProps {
    *
    * @default - differs based on specific Glue version/worker type
    */
-  readonly numberOfWorkers?: number;
+  readonly workerCount?: number;
 
   /**
    * The {@link Connection}s used for this job.
+   * Connections are used to connect to other AWS Service or resources within a VPC.
    *
    * @default [] - no connections are added to the job
    */
@@ -543,7 +521,7 @@ export interface JobProps {
   /**
    * The default arguments for this job, specified as name-value pairs.
    *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html for a list of  special parameters Used by AWS Glue
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html for a list of reserved parameters
    * @default - no arguments
    */
   readonly defaultArguments?: { [key: string]: string };
@@ -557,6 +535,9 @@ export interface JobProps {
 
   /**
    * The IAM role assumed by Glue to run this job.
+   * If providing a custom role, it needs to trust Glue servie (glue.amazonaws.com).
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/getting-started-access.html
    *
    * @default - a role is automatically generated
    */
@@ -606,7 +587,8 @@ export class Job extends JobBase {
   public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobAttributes): IJob {
     class Import extends JobBase {
       public readonly jobName = attrs.jobName;
-      public readonly jobArn = JobBase.buildJobArn(scope, attrs.jobName);
+      public readonly jobArn = jobArn(scope, attrs.jobName)
+      public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
 
     return new Import(scope, id);
@@ -623,17 +605,22 @@ export class Job extends JobBase {
   public readonly jobName: string;
 
   /**
-   * The IAM role associated with this job.
+   * The IAM role Glue assumes to run this job.
    */
   public readonly role: iam.IRole;
 
   /**
-   * The Spark monitoring configuration (Bucket, path) if Spark UI monitoring and debugging is enabled.
+   * The principal this Glue Job is running as.
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * The Spark UI logs location if Spark UI monitoring and debugging is enabled.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  public readonly sparkUIConfig?: SparkUIConfig;
+  public readonly sparkUILoggingLocation?: SparkUILoggingLocation;
 
   constructor(scope: constructs.Construct, id: string, props: JobProps) {
     super(scope, id, {
@@ -646,9 +633,10 @@ export class Job extends JobBase {
       assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
     });
+    this.grantPrincipal = this.role;
 
     const sparkUI = props.sparkUI?.enabled ? this.setupSparkUI(executable, this.role, props.sparkUI) : undefined;
-    this.sparkUIConfig = sparkUI?.config;
+    this.sparkUILoggingLocation = sparkUI?.location;
     const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
     const profilingMetricsArgs = props.enableProfilingMetrics ? { '--enable-metrics': '' } : {};
 
@@ -657,7 +645,7 @@ export class Job extends JobBase {
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
       ...sparkUI?.args,
-      ...props.defaultArguments,
+      ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
     const jobResource = new CfnJob(this, 'Resource', {
@@ -671,7 +659,7 @@ export class Job extends JobBase {
       },
       glueVersion: executable.glueVersion.name,
       workerType: props.workerType?.name,
-      numberOfWorkers: props.numberOfWorkers,
+      numberOfWorkers: props.workerCount,
       maxCapacity: props.maxCapacity,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
@@ -684,8 +672,25 @@ export class Job extends JobBase {
     });
 
     const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = JobBase.buildJobArn(this, resourceName);
+    this.jobArn = jobArn(this, resourceName);
     this.jobName = resourceName;
+  }
+
+  /**
+   * Check no usage of reserved arguments.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  private checkNoReservedArgs(defaultArguments?: { [key: string]: string }) {
+    if (defaultArguments) {
+      const reservedArgs = new Set(['--conf', '--debug', '--mode', '--JOB_NAME']);
+      Object.keys(defaultArguments).forEach((arg) => {
+        if (reservedArgs.has(arg)) {
+          throw new Error(`${arg} is a reserved argument. Don't set it`);
+        }
+      });
+    }
+    return defaultArguments;
   }
 
   private executableArguments(config: JobExecutableConfig) {
@@ -718,12 +723,12 @@ export class Job extends JobBase {
     bucket.grantReadWrite(role);
     const args = {
       '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': `s3://${bucket.bucketName}/${props.path || ''}`,
+      '--spark-event-logs-path': bucket.s3UrlForObject(props.prefix),
     };
 
     return {
-      config: {
-        ...props,
+      location: {
+        prefix: props.prefix,
         bucket,
       },
       args,
@@ -733,7 +738,7 @@ export class Job extends JobBase {
   private setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps) {
     const args: {[key: string]: string} = {
       '--enable-continuous-cloudwatch-log': 'true',
-      '--enable-continuous-log-filter': (props.filter ?? true).toString(),
+      '--enable-continuous-log-filter': (props.quiet ?? true).toString(),
     };
 
     if (props.logGroup) {
@@ -750,8 +755,40 @@ export class Job extends JobBase {
     return args;
   }
 
-  private codeS3ObjectUrl(code: Code): string {
+  private codeS3ObjectUrl(code: Code) {
     const s3Location = code.bind(this).s3Location;
     return `s3://${s3Location.bucketName}/${s3Location.objectKey}`;
   }
+}
+
+/**
+ * Create a CloudWatch Metric that's based on Glue Job events
+ * {@see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types}
+ * The metric has namespace = 'AWS/Events', metricName = 'TriggeredRules' and RuleName = rule.ruleName dimension.
+ *
+ * @param rule for use in setting RuleName dimension value
+ * @param props metric properties
+ */
+function metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  return new cloudwatch.Metric({
+    namespace: 'AWS/Events',
+    metricName: 'TriggeredRules',
+    dimensions: { RuleName: rule.ruleName },
+    statistic: cloudwatch.Statistic.SUM,
+    ...props,
+  }).attachTo(rule);
+}
+
+
+/**
+ * Returns the job arn
+ * @param scope
+ * @param jobName
+ */
+function jobArn(scope: constructs.Construct, jobName: string) : string {
+  return cdk.Stack.of(scope).formatArn({
+    service: 'glue',
+    resource: 'job',
+    resourceName: jobName,
+  });
 }
