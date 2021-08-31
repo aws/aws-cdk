@@ -129,6 +129,13 @@ export interface DeployStackOptions {
    * @default false
    */
   readonly ci?: boolean;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -204,6 +211,7 @@ export class CloudFormationDeployments {
       usePreviousParameters: options.usePreviousParameters,
       progress: options.progress,
       ci: options.ci,
+      rollback: options.rollback,
     });
   }
 

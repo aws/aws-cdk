@@ -140,7 +140,7 @@ $ cdk diff --app='node bin/main.js' MyStackName --template=path/to/template.yml
 
 ### `cdk deploy`
 
-Deploys a stack of your CDK app to it's environment. During the deployment, the toolkit will output progress
+Deploys a stack of your CDK app to its environment. During the deployment, the toolkit will output progress
 indications, similar to what can be observed in the AWS CloudFormation Console. If the environment was never
 bootstrapped (using `cdk bootstrap`), only stacks that are not using assets and synthesize to a template that is under
 51,200 bytes will successfully deploy.
@@ -153,6 +153,24 @@ Before creating a change set, `cdk deploy` will compare the template and tags of
 currently deployed stack to the template and tags that are about to be deployed and
 will skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
+
+#### Disabling Rollback
+
+If a resource fails to be created or updated, the deployment will *roll back* before the CLI returns. All changes made
+up to that point will be undone (resources that were created will be deleted, updates that were made will be changed
+back) in order to leave the stack in a consistent state at the end of the operation. If you are using the CDK CLI
+to iterate on a development stack in your personal account, you might not require CloudFormation to leave your
+stack in a consistent state, but instead would prefer to update your CDK application and try again.
+
+To disable the rollback feature, specify `--no-rollback` (`-R` for short):
+
+```console
+$ cdk deploy --no-rollback
+$ cdk deploy -R
+```
+
+NOTE: you cannot use `--no-rollback` for any updates that would cause a resource replacement, only for updates
+and creations of new resources.
 
 #### Deploying multiple stacks
 

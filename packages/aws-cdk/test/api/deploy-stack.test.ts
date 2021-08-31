@@ -635,6 +635,35 @@ test('updateTerminationProtection called when termination protection is undefine
   }));
 });
 
+describe('disable rollback', () => {
+  test('by default, we do not disable rollback (and also do not pass the flag)', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+    });
+
+    // THEN
+    expect(cfnMocks.executeChangeSet).toHaveBeenCalledTimes(1);
+    expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
+      DisableRollback: expect.anything(),
+    }));
+  });
+
+  test('rollback can be disabled by setting rollback: false', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+      rollback: false,
+    });
+
+    // THEN
+    expect(cfnMocks.executeChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+      DisableRollback: true,
+    }));
+  });
+
+});
+
 /**
  * Set up the mocks so that it looks like the stack exists to start with
  *

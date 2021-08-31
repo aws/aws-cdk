@@ -104,7 +104,11 @@ async function parseCommandLineArguments() {
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
-      .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' }),
+      .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' })
+      .option('rollback', { type: 'boolean', default: true, desc: 'Rollback stack to stable state on failure (iterate more rapidly with --no-rollback or -R)' })
+      // Hack to get '-R' as an alias for '--no-rollback', suggested by: https://github.com/yargs/yargs/issues/1729
+      .option('R', { type: 'boolean', hidden: true })
+      .middleware(yargsNegativeAlias('R', 'rollback'), true),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Destroy all available stacks' })
@@ -319,6 +323,7 @@ async function initCommandLine() {
           outputsFile: configuration.settings.get(['outputsFile']),
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
+          rollback: configuration.settings.get(['rollback']),
         });
 
       case 'destroy':
@@ -419,6 +424,15 @@ function isFeatureEnabled(configuration: Configuration, featureFlag: string) {
 function arrayFromYargs(xs: string[]): string[] | undefined {
   if (xs.length === 0) { return undefined; }
   return xs.filter(x => x !== '');
+}
+
+function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S extends string, L extends string>(shortName: S, longName: L) {
+  return (argv: T) => {
+    if (shortName in argv && argv[shortName]) {
+      (argv as any)[longName] = false;
+    }
+    return argv;
+  };
 }
 
 initCommandLine()
