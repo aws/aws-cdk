@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { EventBus } from '../lib';
 import { Archive } from '../lib/archive';
 
-export = {
-  'creates an archive for an EventBus'(test: Test) {
+describe('archive', () => {
+  test('creates an archive for an EventBus', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -21,11 +20,11 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::EventBus', {
+    expect(stack).toHaveResource('AWS::Events::EventBus', {
       Name: 'Bus',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::Events::Archive', {
+    expect(stack).toHaveResource('AWS::Events::Archive', {
       EventPattern: {
         account: [{
           Ref: 'AWS::AccountId',
@@ -38,11 +37,11 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
-  'creates an archive for an EventBus with a pattern including a detailType property'(test: Test) {
+
+  });
+  test('creates an archive for an EventBus with a pattern including a detailType property', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -59,11 +58,11 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::EventBus', {
+    expect(stack).toHaveResource('AWS::Events::EventBus', {
       Name: 'Bus',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::Events::Archive', {
+    expect(stack).toHaveResource('AWS::Events::Archive', {
       EventPattern: {
         'account': [{
           Ref: 'AWS::AccountId',
@@ -77,8 +76,8 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
-}
+
+  });
+});
