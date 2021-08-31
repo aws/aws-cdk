@@ -175,6 +175,13 @@ export interface DeployStackOptions {
    * @default false
    */
   readonly ci?: boolean;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -282,7 +289,12 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const execute = options.execute === undefined ? true : options.execute;
   if (execute) {
     debug('Initiating execution of changeset %s on stack %s', changeSet.Id, deployName);
-    await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
+
+    // Do a bit of contortions to only pass the `DisableRollback` flag if it's true. That way,
+    // CloudFormation won't balk at the unrecognized option in regions where the feature is not available yet.
+    const disableRollback = options.rollback === false ? { DisableRollback: true } : undefined;
+    await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName, ...disableRollback }).promise();
+
     // eslint-disable-next-line max-len
     const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, stackArtifact, {
       resourcesTotal: (changeSetDescription.Changes ?? []).length,
