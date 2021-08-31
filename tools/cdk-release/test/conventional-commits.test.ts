@@ -39,38 +39,69 @@ describe('getConventionalCommitsFromGitHistory', () => {
   });
 });
 
-// NOTE - These test currently use real package.json data to determine package's stability.
 describe('filterCommits', () => {
   const commits: ConventionalCommit[] = [
-    buildCommit({
-      type: 'feat',
-      scope: 'scope',
-      subject: 'super important feature',
-    }),
-    buildCommit({
-      type: 'fix',
-      scope: 'example-construct-library', // really hope we don't stabilize this one
-      subject: 'hairy bugfix',
-      notes: [
-        {
-          title: 'BREAKING CHANGE',
-          text: 'this is a breaking change',
-        },
-      ],
-    }),
+    commitWithScope('aws-stable'),
+    commitWithScope('aws-experimental'),
+    commitWithScope(),
   ];
 
-  test('if stripExperimental is not set, returns original commits', async () => {
-    const filteredCommits = filterCommits(args, commits);
+  test('if no options are provided, returns all commits', () => {
+    const filteredCommits = filterCommits(commits);
 
-    expect(filteredCommits.length).toEqual(2);
+    expect(filteredCommits).toEqual(commits);
   });
 
-  test("skips experimental modules if requested, even with 'BREAKING CHANGES'", async () => {
-    const filteredCommits = filterCommits({ ...args, stripExperimentalChanges: true }, commits);
+  test('excludePackages removes commits matching scope', () => {
+    const filteredCommits = filterCommits(commits, { excludePackages: ['@aws-cdk/aws-experimental'] });
+
+    expect(filteredCommits.length).toEqual(2);
+    expect(filteredCommits.map(c => c.scope)).not.toContain('aws-experimental');
+  });
+
+  test('excludePackages removes commits matching specific variants of the scope', () => {
+    const experimentalCommits = [
+      commitWithScope('aws-experimental'),
+      commitWithScope('awsexperimental'),
+      commitWithScope('experimental'),
+      commitWithScope('aws.experimental'),
+    ];
+
+    const filteredCommits = filterCommits(experimentalCommits, { excludePackages: ['@aws-cdk/aws-experimental'] });
 
     expect(filteredCommits.length).toEqual(1);
-    expect(filteredCommits[0].subject).toEqual('super important feature');
+    expect(filteredCommits[0].scope).toEqual('aws.experimental');
+  });
+
+  test('includePackages only includes commits matching scope', () => {
+    const filteredCommits = filterCommits(commits, { includePackages: ['@aws-cdk/aws-stable'] });
+
+    expect(filteredCommits.length).toEqual(1);
+    expect(filteredCommits[0].scope).toEqual('aws-stable');
+  });
+
+  test('includePackages includes commits matching variants of the scope', () => {
+    const stableCommits = [
+      commitWithScope('aws-stable'),
+      commitWithScope('awsstable'),
+      commitWithScope('stable'),
+      commitWithScope('notstable'),
+    ];
+
+    const filteredCommits = filterCommits(stableCommits, { includePackages: ['@aws-cdk/aws-stable'] });
+
+    expect(filteredCommits.length).toEqual(3);
+    expect(filteredCommits.map(c => c.scope)).not.toContain('notstable');
+  });
+
+  test('excludes criteria are run after includes', () => {
+    const filteredCommits = filterCommits(commits, {
+      includePackages: ['@aws-cdk/aws-stable', '@aws-cdk/aws-experimental'],
+      excludePackages: ['@aws-cdk/aws-experimental'],
+    });
+
+    expect(filteredCommits.length).toEqual(1);
+    expect(filteredCommits[0].scope).toEqual('aws-stable');
   });
 });
 
@@ -85,16 +116,13 @@ function mockGitCommits(messages: string[]) {
   return rStream;
 }
 
-interface PartialCommit extends Partial<ConventionalCommit> {
-  readonly type: string;
-  readonly subject: string;
-}
-
-function buildCommit(commit: PartialCommit): ConventionalCommit {
+function commitWithScope(scope?: string): ConventionalCommit {
   return {
     notes: [],
     references: [],
-    header: `${commit.type}${commit.scope ? '(' + commit.scope + ')' : ''}: ${commit.subject}`,
-    ...commit,
+    header: `feat${scope ? '(' + scope + ')' : ''}: some commit message`,
+    type: 'feat',
+    subject: 'some commit message',
+    scope,
   };
 }
