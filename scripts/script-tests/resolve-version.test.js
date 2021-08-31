@@ -13,6 +13,7 @@ happy({
   },
   expected: {
     changelogFile: 'CHANGELOG.v2.md',
+    alphaChangelogFile: 'CHANGELOG.v2.alpha.md',
     marker: '0.0.0',
     prerelease: undefined,
     version: '2.1.0',
@@ -28,6 +29,7 @@ happy({
   },
   expected: {
     changelogFile: 'CHANGELOG.v2.md',
+    alphaChangelogFile: 'CHANGELOG.v2.alpha.md',
     marker: '0.0.0',
     prerelease: 'alpha',
     version: '2.1.0-alpha.0',
@@ -43,6 +45,7 @@ happy({
   },
   expected: {
     changelogFile: 'CHANGELOG.v2.md',
+    alphaChangelogFile: 'CHANGELOG.v2.alpha.md',
     marker: '0.0.0',
     prerelease: 'rc',
     version: '2.1.0-rc.0',
@@ -58,6 +61,7 @@ happy({
   },
   expected: {
     changelogFile: 'CHANGELOG.md',
+    alphaChangelogFile: undefined,
     marker: '0.0.0',
     prerelease: undefined,
     version: '1.72.0',
@@ -73,6 +77,7 @@ happy({
   },
   expected: {
     changelogFile: 'CHANGELOG.v2.md',
+    alphaChangelogFile: 'CHANGELOG.v2.alpha.md',
     marker: '0.0.0',
     prerelease: undefined,
     version: '2.0.0-rc.0',
