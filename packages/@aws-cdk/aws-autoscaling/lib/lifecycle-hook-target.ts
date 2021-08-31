@@ -1,4 +1,4 @@
-import { LifecycleHook } from './lifecycle-hook';
+import { ILifecycleHook } from './lifecycle-hook';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -12,7 +12,7 @@ export interface ILifecycleHookTarget {
    * Called when this object is used as the target of a lifecycle hook
    * @param lifecycleHook [disable-awslint:ref-via-interface] The lifecycle hook to attach to
    */
-  bind(scope: Construct, lifecycleHook: LifecycleHook): LifecycleHookTargetConfig;
+  bind(scope: Construct, lifecycleHook: ILifecycleHook): LifecycleHookTargetConfig;
 }
 
 /**

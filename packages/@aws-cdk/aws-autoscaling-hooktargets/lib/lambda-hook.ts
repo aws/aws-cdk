@@ -24,12 +24,12 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
   constructor(private readonly fn: lambda.IFunction, private readonly encryptionKey?: kms.IKey) {
   }
 
-  public bind(scope: Construct, lifecycleHook: autoscaling.LifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    const topic = new sns.Topic(scope, 'Topic', {
+  public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
+    const topic = new sns.Topic(_scope, 'Topic', {
       masterKey: this.encryptionKey,
     });
     try { lifecycleHook.role; } catch (noRoleError) {
-      lifecycleHook.role = new iam.Role(lifecycleHook, 'Role', {
+      lifecycleHook.role = new iam.Role(_scope, 'Role', {
         assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
       });
     }
@@ -40,6 +40,6 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
     // are in place.
     this.encryptionKey?.grant(lifecycleHook.role, 'kms:Decrypt', 'kms:GenerateDataKey');
     topic.addSubscription(new subs.LambdaSubscription(this.fn));
-    return new TopicHook(topic).bind(scope, lifecycleHook);
+    return new TopicHook(topic).bind(_scope, lifecycleHook);
   }
 }
