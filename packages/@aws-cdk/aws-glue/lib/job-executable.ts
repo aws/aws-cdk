@@ -125,6 +125,7 @@ interface PythonExecutableProps {
 
   /**
    * Additional Python files that AWS Glue adds to the Python path before executing your script.
+   * Only individual files are supported, directories are not supported.
    *
    * @default - no extra python files and argument is not set
    *
@@ -148,6 +149,7 @@ interface SharedJobExecutableProps {
 
   /**
    * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
+   * Only individual files are supported, directories are not supported.
    *
    * @default [] - no extra files are copied to the working directory
    *
@@ -159,6 +161,7 @@ interface SharedJobExecutableProps {
 interface SharedSparkJobExecutableProps extends SharedJobExecutableProps {
   /**
    * Additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
+   * Only individual files are supported, directories are not supported.
    *
    * @default [] - no extra jars are added to the classpath
    *
