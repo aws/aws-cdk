@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
+import '@jsii/check-node/run';
 import * as colors from 'colors/safe';
 import * as yargs from 'yargs';
 

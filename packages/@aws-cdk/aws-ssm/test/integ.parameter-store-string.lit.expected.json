@@ -13,6 +13,10 @@
   },
   {
     "Parameters": {
+      "MyParameterVersion": {
+        "Type": "Number",
+        "Default": 1
+      },
       "MyValueParameter": {
         "Type": "AWS::SSM::Parameter::Value<String>",
         "Default": "/My/Public/Parameter"
@@ -27,6 +31,20 @@
       "TheValue": {
         "Value": {
           "Ref": "MyValueParameter"
+        }
+      },
+      "TheValueVersionFromToken": {
+        "Value": {
+          "Fn::Join": [
+            "",
+            [
+              "{{resolve:ssm:/My/Public/Parameter:",
+              {
+                "Ref": "MyParameterVersion"
+              },
+              "}}"
+            ]
+          ]
         }
       }
     }
