@@ -38,21 +38,14 @@ export abstract class Code {
  * Glue job Code from an S3 bucket.
  */
 export class S3Code extends Code {
-  private bucketName: string;
-
-  constructor(bucket: s3.IBucket, private key: string) {
+  constructor(private bucket: s3.IBucket, private key: string) {
     super();
-
-    if (!bucket.bucketName) {
-      throw new Error('bucketName is undefined for the provided bucket');
-    }
-    this.bucketName = bucket.bucketName;
   }
 
   public bind(_scope: constructs.Construct): CodeConfig {
     return {
       s3Location: {
-        bucketName: this.bucketName,
+        bucketName: this.bucket.bucketName,
         objectKey: this.key,
       },
     };
@@ -74,7 +67,7 @@ export class AssetCode extends Code {
 
   public bind(scope: constructs.Construct): CodeConfig {
     if (fs.lstatSync(this.path).isDirectory()) {
-      throw new Error(`Code path ${this.path} is a directory. Only files are supported.`);
+      throw new Error(`Code path ${this.path} is a directory. Only files are supported`);
     }
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
