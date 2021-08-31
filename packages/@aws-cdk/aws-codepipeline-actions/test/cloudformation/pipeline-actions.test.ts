@@ -442,9 +442,14 @@ class RoleDouble extends iam.Role {
   }
 
   public addToPolicy(statement: iam.PolicyStatement): boolean {
-    super.addToPolicy(statement);
-    this.statements.push(statement);
+    this.addToPrincipalPolicy(statement);
     return true;
+  }
+
+  public addToPrincipalPolicy(statement: iam.PolicyStatement): iam.AddToPrincipalPolicyResult {
+    const ret = super.addToPrincipalPolicy(statement);
+    this.statements.push(statement);
+    return ret;
   }
 }
 

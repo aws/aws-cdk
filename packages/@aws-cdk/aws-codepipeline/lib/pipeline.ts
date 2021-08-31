@@ -317,6 +317,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
   private readonly crossAccountKeys: boolean;
+  private readonly principalForGrants: iam.GroupingByActionsPrincipal;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -368,6 +369,7 @@ export class Pipeline extends PipelineBase {
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
+    this.principalForGrants = new iam.GroupingByActionsPrincipal(this.role, 'RoleWrapper');
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
@@ -381,7 +383,7 @@ export class Pipeline extends PipelineBase {
     // this will produce a DependsOn for both the role and the policy resources.
     codePipeline.node.addDependency(this.role);
 
-    this.artifactBucket.grantReadWrite(this.role);
+    this.artifactBucket.grantReadWrite(this.principalForGrants);
     this.pipelineName = this.getResourceNameAttribute(codePipeline.ref);
     this.pipelineVersion = codePipeline.attrVersion;
     this.crossRegionBucketsPassed = !!props.crossRegionReplicationBuckets;
@@ -549,7 +551,7 @@ export class Pipeline extends PipelineBase {
     // the stack containing the replication bucket must be deployed before the pipeline
     Stack.of(this).addDependency(crossRegionSupport.stack);
     // The Pipeline role must be able to replicate to that bucket
-    crossRegionSupport.replicationBucket.grantReadWrite(this.role);
+    crossRegionSupport.replicationBucket.grantReadWrite(this.principalForGrants);
 
     return {
       artifactBucket: crossRegionSupport.replicationBucket,
@@ -666,7 +668,7 @@ export class Pipeline extends PipelineBase {
 
     // the pipeline role needs assumeRole permissions to the action role
     if (actionRole) {
-      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      this.principalForGrants.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['sts:AssumeRole'],
         resources: [actionRole.roleArn],
       }));

@@ -223,6 +223,11 @@ abstract class KeyBase extends Resource implements IKey {
   private principalIsANewlyCreatedResource(principal: IConstruct): boolean {
     // yes, this sucks
     // this is just a temporary stopgap to stem the bleeding while we work on a proper fix
+
+    if (principal instanceof iam.GroupingByActionsPrincipal) {
+      return this.principalIsANewlyCreatedResource(principal.wrappedIdentity);
+    }
+
     return principal instanceof iam.Role ||
       principal instanceof iam.User ||
       principal instanceof iam.Group;

@@ -226,108 +226,74 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineBuildSynthCodePipelineActionRoleF7BF5926",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineUnattachedStageSingleStageSecurityCheckCodePipelineActionRoleFF6E43E2",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleF7A614C8",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionPreProductionSecurityCheckCodePipelineActionRole4E54C194",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionPreProductionManualApprovalCodePipelineActionRole81B9C4F9",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionSafeProductionSecurityCheckCodePipelineActionRole399C68A6",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionSafeProductionManualApprovalCodePipelineActionRole4F30C0D9",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineNoSecurityCheckEnableSecurityCheckSecurityCheckCodePipelineActionRole8D10AA6D",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineNoSecurityCheckEnableSecurityCheckManualApprovalCodePipelineActionRole27FC4015",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineBuildSynthCodePipelineActionRoleF7BF5926",
+                    "Arn"
                   ]
-                ]
-              }
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineUnattachedStageSingleStageSecurityCheckCodePipelineActionRoleFF6E43E2",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleF7A614C8",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelinePreProductionPreProductionSecurityCheckCodePipelineActionRole4E54C194",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelinePreProductionPreProductionManualApprovalCodePipelineActionRole81B9C4F9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelinePreProductionSafeProductionSecurityCheckCodePipelineActionRole399C68A6",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelinePreProductionSafeProductionManualApprovalCodePipelineActionRole4F30C0D9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineNoSecurityCheckEnableSecurityCheckSecurityCheckCodePipelineActionRole8D10AA6D",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineNoSecurityCheckEnableSecurityCheckManualApprovalCodePipelineActionRole27FC4015",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

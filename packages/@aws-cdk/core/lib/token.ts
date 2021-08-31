@@ -16,21 +16,29 @@ export class TokenComparison {
    * This means we're certain the two components are NOT
    * Tokens, and identical.
    */
-  public static readonly SAME = new TokenComparison();
+  public static readonly SAME = new TokenComparison('SAME');
 
   /**
    * This means we're certain the two components are NOT
    * Tokens, and different.
    */
-  public static readonly DIFFERENT = new TokenComparison();
+  public static readonly DIFFERENT = new TokenComparison('DIFFERENT');
 
   /** This means exactly one of the components is a Token. */
-  public static readonly ONE_UNRESOLVED = new TokenComparison();
+  public static readonly ONE_UNRESOLVED = new TokenComparison('ONE_UNRESOLVED');
 
   /** This means both components are Tokens. */
-  public static readonly BOTH_UNRESOLVED = new TokenComparison();
+  public static readonly BOTH_UNRESOLVED = new TokenComparison('BOTH_UNRESOLVED');
 
-  private constructor() {
+  private constructor(private readonly label: string) {
+  }
+
+  /**
+   * Returns the name of the constant as the string representation of this class.
+   * This is useful for debugging purposes.
+   */
+  public toString() {
+    return this.label;
   }
 }
 

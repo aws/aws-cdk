@@ -602,32 +602,26 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyPipelineSourceCodePipelineActionRoleAA05D76F",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyPipelineBuildCodeBuildCodePipelineActionRoleCAE538CA",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyPipelineDeployDeployActionCodePipelineActionRole854184EF",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineSourceCodePipelineActionRoleAA05D76F",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineBuildCodeBuildCodePipelineActionRoleCAE538CA",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineDeployDeployActionCodePipelineActionRole854184EF",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

@@ -290,6 +290,22 @@ export class PolicyStatement {
     return this.resource && this.resource.length > 0;
   }
 
+  /**
+   * Returns the current list of resources
+   * (the Resource field of the policy statement).
+   */
+  public get resources(): string[] {
+    return [...this.resource];
+  }
+
+  /**
+   * Returns the current list of notResources
+   * (the NotResource field of the policy statement).
+   */
+  public get notResources(): string[] {
+    return [...this.notResource];
+  }
+
   //
   // Condition
   //
