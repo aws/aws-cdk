@@ -137,21 +137,21 @@ export interface IJob extends cdk.IResource {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
    */
-  onSuccess(id?: string, options?: events.OnEventOptions): events.Rule;
+  onSuccess(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule triggered when this job moves to the FAILED state.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
    */
-  onFailure(id?: string, options?: events.OnEventOptions): events.Rule;
+  onFailure(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule triggered when this job moves to the TIMEOUT state.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
    */
-  onTimeout(id?: string, options?: events.OnEventOptions): events.Rule;
+  onTimeout(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Create a CloudWatch metric.
@@ -244,40 +244,31 @@ abstract class JobBase extends cdk.Resource implements IJob {
   /**
    * Return a CloudWatch Event Rule matching JobState.SUCCEEDED.
    *
-   * If no id or options are provided, the created rule is cached. Later no-args calls with retrieves from cache but ones with args.
-   * Later calls with args lead to the creation of a new Rule
-   *
-   * @param id optional construct id. default is SUCCEEDEDRule
-   * @param options optional event options. default is {}
+   * @param id construct id.
+   * @param options optional event options. default is {}.
    */
-  public onSuccess(id?: string, options: events.OnEventOptions = {}): events.Rule {
-    return this.rule(JobState.SUCCEEDED, id, options);
+  public onSuccess(id: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.jobStateRule(id, JobState.SUCCEEDED, options);
   }
 
   /**
    * Return a CloudWatch Event Rule matching FAILED state.
    *
-   * If no id or options are provided, the created rule is cached. Later no-args calls with retrieves from cache but ones with args.
-   * Later calls with args lead to the creation of a new Rule
-   *
-   * @param id optional construct id. default is FAILEDRule
-   * @param options optional event options. default is {}
+   * @param id construct id.
+   * @param options optional event options. default is {}.
    */
-  public onFailure(id?: string, options: events.OnEventOptions = {}): events.Rule {
-    return this.rule(JobState.FAILED, id, options);
+  public onFailure(id: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.jobStateRule(id, JobState.FAILED, options);
   }
 
   /**
    * Return a CloudWatch Event Rule matching TIMEOUT state.
    *
-   * If no id or options are provided, the created rule is cached. Later no-args calls with retrieves from cache but ones with args.
-   * Later calls with args lead to the creation of a new Rule
-   *
-   * @param id optional construct id. default is TIMEOUTRule
-   * @param options optional event options. default is {}
+   * @param id construct id.
+   * @param options optional event options. default is {}.
    */
-  public onTimeout(id?: string, options: events.OnEventOptions = {}): events.Rule {
-    return this.rule(JobState.TIMEOUT, id, options);
+  public onTimeout(id: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.jobStateRule(id, JobState.TIMEOUT, options);
   }
 
   /**
@@ -308,7 +299,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * This metric is based on the Rule returned by no-args onSuccess() call.
    */
   public metricSuccess(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return JobBase.metricRule(this.onSuccess(), props);
+    return JobBase.metricRule(this.metricJobStateRule('SuccessMetricRule', JobState.SUCCEEDED), props);
   }
 
   /**
@@ -317,7 +308,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * This metric is based on the Rule returned by no-args onFailure() call.
    */
   public metricFailure(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return JobBase.metricRule(this.onFailure(), props);
+    return JobBase.metricRule(this.metricJobStateRule('FailureMetricRule', JobState.FAILED), props);
   }
 
   /**
@@ -326,29 +317,30 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * This metric is based on the Rule returned by no-args onTimeout() call.
    */
   public metricTimeout(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return JobBase.metricRule(this.onTimeout(), props);
+    return JobBase.metricRule(this.metricJobStateRule('TimeoutMetricRule', JobState.TIMEOUT), props);
   }
 
   /**
-   * Creates a new rule for a transition into the input jobState or attempt to create-if-necessary and retrieve the default rule
-   * - A new rule is created but not cached if the id parameter is specified
-   * - A create/retrieve from cache scenario happens when no explicit id (and options) are not provided
-   * The reason is that the default rule is used by onSuccess, onFailure and onTimeout methods which are in turn used by metrics methods.
+   * Creates or retrieves a singleton event rule for the input job state for use with the metric JobState methods.
    *
-   * @param jobState the job state
-   * @param id optional construct id
-   * @param options optional event options
+   * @param id construct id.
+   * @param jobState the job state.
    * @private
    */
-  private rule(jobState: JobState, id?: string, options: events.OnEventOptions = {}): events.Rule {
-    // Caching (for metric methods and default arg-less event methods)
-    const cachedRuleId = `${jobState}Rule`;
-    const cachedRule = this.node.tryFindChild(cachedRuleId);
-    // Use the already created rule if no id is provided (arg-less event methods or events supporting metrics)
-    if (!id && cachedRule) {
-      return cachedRule as events.Rule;
-    }
-    const rule = this.onEvent(id || cachedRuleId, {
+  private metricJobStateRule(id: string, jobState: JobState): events.Rule {
+    return this.node.tryFindChild(id) as events.Rule ?? this.jobStateRule(id, jobState);
+  }
+
+  /**
+   * Creates a new rule for a transition into the input jobState.
+   *
+   * @param id construct id.
+   * @param jobState the job state.
+   * @param options optional event options.
+   * @private
+   */
+  private jobStateRule(id: string, jobState: JobState, options: events.OnEventOptions = {}): events.Rule {
+    const rule = this.onEvent(id, {
       description: `Rule triggered when Glue job ${this.jobName} is in ${jobState} state`,
       ...options,
     });
@@ -359,7 +351,6 @@ abstract class JobBase extends cdk.Resource implements IJob {
     });
     return rule;
   }
-
 }
 
 /**

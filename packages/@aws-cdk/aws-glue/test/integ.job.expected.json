@@ -609,7 +609,7 @@
         "WorkerType": "G.2X"
       }
     },
-    "JobSUCCEEDEDRule682F039B": {
+    "JobSuccessMetricRule80747C33": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "Description": {
