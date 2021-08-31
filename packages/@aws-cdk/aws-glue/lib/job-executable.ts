@@ -1,3 +1,5 @@
+import { Code } from './code';
+
 /**
  * AWS Glue version determines the versions of Apache Spark and Python that are available to the job.
  *
@@ -124,31 +126,29 @@ interface SharedJobExecutableProps {
   readonly glueVersion: GlueVersion;
 
   /**
-   * Specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job.
+   * The script that executes a job.
    */
-  readonly scriptLocation: string;
+  readonly script: Code;
 
   /**
-   * The Amazon S3 paths to additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
-   * Only individual files are supported, not a directory path.
+   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
    *
    * @default - no extra files and argument is not set
    *
    * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly extraFiles?: string[];
+  readonly extraFiles?: Code[];
 }
 
 interface SharedSparkJobExecutableProps extends SharedJobExecutableProps {
   /**
-   * The Amazon S3 paths to additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
-   * Only individual files are supported, not a directory path.
+   * Additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
    *
    * @default - no extra jars and argument is not set
    *
    * @see `--extra-jars` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly extraJars?: string[];
+  readonly extraJars?: Code[];
 
   /**
    * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
@@ -191,9 +191,9 @@ export interface JobExecutableConfig {
   readonly pythonVersion?: PythonVersion;
 
   /**
-   * Specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job.
+   * The script that executes a job.
    */
-  readonly scriptLocation: string;
+  readonly script: Code;
 
   /**
    * The Scala class that serves as the entry point for the job. This applies only if your the job langauage is Scala.
@@ -205,34 +205,31 @@ export interface JobExecutableConfig {
   readonly className?: string;
 
   /**
-   * The Amazon S3 paths to additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
-   * Only individual files are supported, not a directory path.
+   * Additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
    *
    * @default - no extra jars specified.
    *
    * @see `--extra-jars` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly extraJars?: string[];
+  readonly extraJars?: Code[];
 
   /**
-   * The Amazon S3 paths to additional Python modules that AWS Glue adds to the Python path before executing your script.
-   * Only individual files are supported, not a directory path.
+   * Additional Python files that AWS Glue adds to the Python path before executing your script.
    *
    * @default - no extra python files specified.
    *
    * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly extraPythonFiles?: string[];
+  readonly extraPythonFiles?: Code[];
 
   /**
-   * The Amazon S3 paths to additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
-   * Only individual files are supported, not a directory path.
+   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
    *
    * @default - no extra files specified.
    *
    * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly extraFiles?: string[];
+  readonly extraFiles?: Code[];
 
   /**
    * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
@@ -267,14 +264,13 @@ export interface PythonJobExecutableProps extends SharedSparkJobExecutableProps 
   readonly pythonVersion: PythonVersion;
 
   /**
-   * The Amazon S3 paths to additional Python modules that AWS Glue adds to the Python path before executing your script.
-   * Only individual files are supported, not a directory path.
+   * Additional Python files that AWS Glue adds to the Python path before executing your script.
    *
    * @default - no extra python files and argument is not set
    *
    * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly extraPythonFiles?: string[];
+  readonly extraPythonFiles?: Code[];
 
   /**
    * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
@@ -296,20 +292,17 @@ export interface PythonShellExecutableProps extends SharedJobExecutableProps {
   readonly pythonVersion: PythonVersion;
 
   /**
-   * The Amazon S3 paths to additional Python modules that AWS Glue adds to the Python path before executing your script.
-   * Only individual files are supported, not a directory path.
+   * Additional Python files that AWS Glue adds to the Python path before executing your script.
    *
    * @default - no extra python files and argument is not set
    *
    * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly extraPythonFiles?: string[];
+  readonly extraPythonFiles?: Code[];
 }
 
 /**
  * The executable properties related to the Glue job's GlueVersion, JobType and code
- *
- * TODO test for exceptions
  */
 export class JobExecutable {
 

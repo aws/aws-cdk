@@ -5,7 +5,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-import { JobExecutable, JobExecutableConfig, JobType } from '.';
+import { Code, JobExecutable, JobExecutableConfig, JobType } from '.';
 import { IConnection } from './connection';
 import { CfnJob } from './glue.generated';
 import { ISecurityConfiguration } from './security-configuration';
@@ -666,7 +666,7 @@ export class Job extends JobBase {
       role: this.role.roleArn,
       command: {
         name: executable.type.name,
-        scriptLocation: executable.scriptLocation,
+        scriptLocation: this.codeS3ObjectUrl(executable.script),
         pythonVersion: executable.pythonVersion,
       },
       glueVersion: executable.glueVersion.name,
@@ -694,14 +694,14 @@ export class Job extends JobBase {
     if (config.className) {
       args['--class'] = config.className;
     }
-    if (config.extraJars && config.extraJars.length > 0) {
-      args['--extra-jars'] = config.extraJars.join(',');
+    if (config.extraJars && config.extraJars?.length > 0) {
+      args['--extra-jars'] = config.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
     if (config.extraPythonFiles && config.extraPythonFiles.length > 0) {
-      args['--extra-py-files'] = config.extraPythonFiles.join(',');
+      args['--extra-py-files'] = config.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
     if (config.extraFiles && config.extraFiles.length > 0) {
-      args['--extra-files'] = config.extraFiles.join(',');
+      args['--extra-files'] = config.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
     if (config.extraJarsFirst) {
       args['--user-jars-first'] = 'true';
@@ -748,5 +748,10 @@ export class Job extends JobBase {
       args['--continuous-log-conversionPattern'] = props.conversionPattern;
     }
     return args;
+  }
+
+  private codeS3ObjectUrl(code: Code): string {
+    const s3Location = code.bind(this).s3Location;
+    return `s3://${s3Location.bucketName}/${s3Location.objectKey}`;
   }
 }
