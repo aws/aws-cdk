@@ -577,8 +577,7 @@ export namespace EmrCreateCluster {
    */
   export interface SpotProvisioningSpecificationProperty {
     /**
-     * Specifies the strategy to use in launching Spot Instance fleets. Currently, the only option is capacity-optimized (the default), 
-     * which launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
+     * Specifies the strategy to use in launching Spot Instance fleets.
      *
      * @default - No allocation strategy
      */
