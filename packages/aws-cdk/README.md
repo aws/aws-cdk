@@ -334,6 +334,34 @@ execute.
 $ cdk deploy --no-execute --change-set-name MyChangeSetName
 ```
 
+#### Hotswap deployments for faster development
+
+You can pass the `--hotswap` flag to the `deploy` command:
+
+```console
+$ cdk deploy --hotswap [StackNames]
+```
+
+This will attempt to perform a faster, short-circuit deployment if possible
+(for example, if you only changed the code of a Lambda function in your CDK app,
+but nothing else in your CDK code),
+skipping CloudFormation, and updating the affected resources directly.
+If the tool detects that the change does not support hotswapping,
+it will fall back and perform a full CloudFormation deployment,
+exactly like `cdk deploy` does without the `--hotswap` flag.
+
+Hotswapping is currently supported for the following changes
+(additional changes will be supported in the future):
+
+- Code asset changes of AWS Lambda functions.
+
+**⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
+For this reason, only use it for development purposes.
+**Never use this flag for your production deployments**!
+
+**⚠ Note #2**: This command is considered experimental,
+and might have breaking changes in the future.
+
 ### `cdk destroy`
 
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were

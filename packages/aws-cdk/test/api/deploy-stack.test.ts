@@ -1,6 +1,9 @@
-import { deployStack, ToolkitInfo } from '../../lib/api';
+import { deployStack, DeployStackOptions, ToolkitInfo } from '../../lib/api';
+import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
+
+jest.mock('../../lib/api/hotswap-deployments');
 
 const FAKE_STACK = testStack({
   stackName: 'withouterrors',
@@ -27,6 +30,8 @@ let sdk: MockSdk;
 let sdkProvider: MockSdkProvider;
 let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
 beforeEach(() => {
+  jest.resetAllMocks();
+
   sdkProvider = new MockSdkProvider();
   sdk = new MockSdk();
 
@@ -60,7 +65,7 @@ beforeEach(() => {
 
 });
 
-function standardDeployStackArguments() {
+function standardDeployStackArguments(): DeployStackOptions {
   return {
     stack: FAKE_STACK,
     sdk,
@@ -69,6 +74,28 @@ function standardDeployStackArguments() {
     toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(sdk),
   };
 }
+
+test("calls tryHotswapDeployment() if 'hotswap' is true", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: true,
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).toHaveBeenCalled();
+});
+
+test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: false,
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).not.toHaveBeenCalled();
+});
 
 test('do deploy executable change set with 0 changes', async () => {
   // WHEN
