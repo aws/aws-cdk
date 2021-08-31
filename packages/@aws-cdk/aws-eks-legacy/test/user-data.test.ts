@@ -1,13 +1,12 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { renderUserData } from '../lib/user-data';
 
 /* eslint-disable max-len */
 
-export = {
-  'default user data'(test: Test) {
+describe('user data', () => {
+  test('default user data', () => {
     // GIVEN
     const { asg, stack } = newFixtures();
 
@@ -15,16 +14,16 @@ export = {
     const userData = stack.resolve(renderUserData('my-cluster-name', asg));
 
     // THEN
-    test.deepEqual(userData, [
+    expect(userData).toEqual([
       'set -o xtrace',
       '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true',
       '/opt/aws/bin/cfn-signal --exit-code $? --stack my-stack --resource ASG46ED3070 --region us-west-33',
     ]);
 
-    test.done();
-  },
 
-  '--use-max-pods=true'(test: Test) {
+  });
+
+  test('--use-max-pods=true', () => {
     // GIVEN
     const { asg, stack } = newFixtures();
 
@@ -34,11 +33,11 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true');
-    test.done();
-  },
+    expect(userData[1]).toEqual('/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true');
 
-  '--use-max-pods=false'(test: Test) {
+  });
+
+  test('--use-max-pods=false', () => {
     // GIVEN
     const { asg, stack } = newFixtures();
 
@@ -48,11 +47,11 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods false');
-    test.done();
-  },
+    expect(userData[1]).toEqual('/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods false');
 
-  '--aws-api-retry-attempts'(test: Test) {
+  });
+
+  test('--aws-api-retry-attempts', () => {
     // GIVEN
     const { asg, stack } = newFixtures();
 
@@ -62,11 +61,11 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --aws-api-retry-attempts 123');
-    test.done();
-  },
+    expect(userData[1]).toEqual('/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --aws-api-retry-attempts 123');
 
-  '--docker-config-json'(test: Test) {
+  });
+
+  test('--docker-config-json', () => {
     // GIVEN
     const { asg } = newFixtures();
 
@@ -76,11 +75,11 @@ export = {
     });
 
     // THEN
-    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --docker-config-json \'{"docker":123}\'');
-    test.done();
-  },
+    expect(userData[1]).toEqual('/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --docker-config-json \'{"docker":123}\'');
 
-  '--enable-docker-bridge=true'(test: Test) {
+  });
+
+  test('--enable-docker-bridge=true', () => {
     // GIVEN
     const { asg, stack } = newFixtures();
 
@@ -90,11 +89,11 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --enable-docker-bridge');
-    test.done();
-  },
+    expect(userData[1]).toEqual('/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --enable-docker-bridge');
 
-  '--enable-docker-bridge=false'(test: Test) {
+  });
+
+  test('--enable-docker-bridge=false', () => {
     // GIVEN
     const { asg, stack } = newFixtures();
 
@@ -104,11 +103,11 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true');
-    test.done();
-  },
+    expect(userData[1]).toEqual('/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true');
 
-  '--kubelet-extra-args'(test: Test) {
+  });
+
+  test('--kubelet-extra-args', () => {
     // GIVEN
     const { asg, stack } = newFixtures();
 
@@ -118,11 +117,11 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand  --extra-args-for --kubelet" --use-max-pods true');
-    test.done();
-  },
+    expect(userData[1]).toEqual('/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand  --extra-args-for --kubelet" --use-max-pods true');
 
-  'arbitrary additional bootstrap arguments can be passed through "additionalArgs"'(test: Test) {
+  });
+
+  test('arbitrary additional bootstrap arguments can be passed through "additionalArgs"', () => {
     // GIVEN
     const { asg, stack } = newFixtures();
 
@@ -132,11 +131,11 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --apiserver-endpoint 1111 --foo-bar');
-    test.done();
-  },
+    expect(userData[1]).toEqual('/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --apiserver-endpoint 1111 --foo-bar');
 
-  'if asg has spot instances, the correct label and taint is used'(test: Test) {
+  });
+
+  test('if asg has spot instances, the correct label and taint is used', () => {
     // GIVEN
     const { asg, stack } = newFixtures(true);
 
@@ -146,10 +145,10 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels X=y" --use-max-pods true');
-    test.done();
-  },
-};
+    expect(userData[1]).toEqual('/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels X=y" --use-max-pods true');
+
+  });
+});
 
 function newFixtures(spot = false) {
   const app = new App();
