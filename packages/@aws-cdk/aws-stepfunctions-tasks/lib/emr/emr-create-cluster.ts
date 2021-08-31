@@ -556,11 +556,11 @@ export namespace EmrCreateCluster {
 
   /**
    * Spot Allocation Strategies
-   * 
+   *
    * Specifies the strategy to use in launching Spot Instance fleets. For example, "capacity-optimized" launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SpotProvisioningSpecification.html
-   * 
+   *
    */
   export enum SpotAllocationStrategy {
     /**
