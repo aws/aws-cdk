@@ -1,12 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
-import { Test } from 'nodeunit';
+import '@aws-cdk/assert-internal/jest';
 import { Cluster, KubernetesResource } from '../lib';
 import { testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-export = {
-  'basic usage'(test: Test) {
+describe('manifest', () => {
+  test('basic usage', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'cluster');
@@ -69,9 +68,9 @@ export = {
       manifest,
     });
 
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: JSON.stringify(manifest),
-    }));
-    test.done();
-  },
-};
+    });
+
+  });
+});
