@@ -579,7 +579,7 @@ export namespace EmrCreateCluster {
     /**
      * Specifies the strategy to use in launching Spot Instance fleets.
      *
-     * @default - No allocation strategy
+     * @default - No allocation strategy, i.e. spot instance type will be chosen based on current price only
      */
     readonly allocationStrategy?: SpotAllocationStrategy;
     /**
