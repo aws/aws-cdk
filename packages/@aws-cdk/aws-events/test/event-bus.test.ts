@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnResource, Stack, Arn } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { EventBus } from '../lib';
 
-export = {
-  'default event bus'(test: Test) {
+describe('event bus', () => {
+  test('default event bus', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -13,14 +12,14 @@ export = {
     new EventBus(stack, 'Bus');
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::EventBus', {
+    expect(stack).toHaveResource('AWS::Events::EventBus', {
       Name: 'Bus',
-    }));
+    });
 
-    test.done();
-  },
 
-  'named event bus'(test: Test) {
+  });
+
+  test('named event bus', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -30,14 +29,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::EventBus', {
+    expect(stack).toHaveResource('AWS::Events::EventBus', {
       Name: 'myEventBus',
-    }));
+    });
 
-    test.done();
-  },
 
-  'partner event bus'(test: Test) {
+  });
+
+  test('partner event bus', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -47,15 +46,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::EventBus', {
+    expect(stack).toHaveResource('AWS::Events::EventBus', {
       Name: 'aws.partner/PartnerName/acct1/repo1',
       EventSourceName: 'aws.partner/PartnerName/acct1/repo1',
-    }));
+    });
 
-    test.done();
-  },
 
-  'imported event bus'(test: Test) {
+  });
+
+  test('imported event bus', () => {
     const stack = new Stack();
 
     const eventBus = new EventBus(stack, 'Bus');
@@ -71,15 +70,15 @@ export = {
       },
     });
 
-    expect(stack).to(haveResource('Test::Resource', {
+    expect(stack).toHaveResource('Test::Resource', {
       EventBusArn1: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
       EventBusArn2: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
-    }));
+    });
 
-    test.done();
-  },
 
-  'imported event bus from name'(test: Test) {
+  });
+
+  test('imported event bus from name', () => {
     const stack = new Stack();
 
     const eventBus = new EventBus(stack, 'Bus', { eventBusName: 'test-bus-to-import-by-name' });
@@ -87,12 +86,12 @@ export = {
     const importEB = EventBus.fromEventBusName(stack, 'ImportBus', eventBus.eventBusName);
 
     // WHEN
-    test.deepEqual(stack.resolve(eventBus.eventBusName), stack.resolve(importEB.eventBusName));
+    expect(stack.resolve(eventBus.eventBusName)).toEqual(stack.resolve(importEB.eventBusName));
 
-    test.done();
-  },
 
-  'same account imported event bus has right resource env'(test: Test) {
+  });
+
+  test('same account imported event bus has right resource env', () => {
     const stack = new Stack();
 
     const eventBus = new EventBus(stack, 'Bus');
@@ -100,13 +99,13 @@ export = {
     const importEB = EventBus.fromEventBusArn(stack, 'ImportBus', eventBus.eventBusArn);
 
     // WHEN
-    test.deepEqual(stack.resolve(importEB.env.account), { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }] });
-    test.deepEqual(stack.resolve(importEB.env.region), { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }] });
+    expect(stack.resolve(importEB.env.account)).toEqual({ 'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }] });
+    expect(stack.resolve(importEB.env.region)).toEqual({ 'Fn::Select': [3, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }] });
 
-    test.done();
-  },
 
-  'cross account imported event bus has right resource env'(test: Test) {
+  });
+
+  test('cross account imported event bus has right resource env', () => {
     const stack = new Stack();
 
     const arnParts = {
@@ -121,13 +120,13 @@ export = {
     const importEB = EventBus.fromEventBusArn(stack, 'ImportBus', arn);
 
     // WHEN
-    test.deepEqual(importEB.env.account, arnParts.account);
-    test.deepEqual(importEB.env.region, arnParts.region);
+    expect(importEB.env.account).toEqual(arnParts.account);
+    expect(importEB.env.region).toEqual(arnParts.region);
 
-    test.done();
-  },
 
-  'can get bus name'(test: Test) {
+  });
+
+  test('can get bus name', () => {
     // GIVEN
     const stack = new Stack();
     const bus = new EventBus(stack, 'Bus', {
@@ -143,14 +142,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('Test::Resource', {
+    expect(stack).toHaveResource('Test::Resource', {
       EventBusName: { Ref: 'BusEA82B648' },
-    }));
+    });
 
-    test.done();
-  },
 
-  'can get bus arn'(test: Test) {
+  });
+
+  test('can get bus arn', () => {
     // GIVEN
     const stack = new Stack();
     const bus = new EventBus(stack, 'Bus', {
@@ -166,14 +165,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('Test::Resource', {
+    expect(stack).toHaveResource('Test::Resource', {
       EventBusArn: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
-    }));
+    });
 
-    test.done();
-  },
 
-  'event bus name cannot be default'(test: Test) {
+  });
+
+  test('event bus name cannot be default', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -183,14 +182,14 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       createInvalidBus();
-    }, /'eventBusName' must not be 'default'/);
+    }).toThrow(/'eventBusName' must not be 'default'/);
 
-    test.done();
-  },
 
-  'event bus name cannot contain slash'(test: Test) {
+  });
+
+  test('event bus name cannot contain slash', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -200,14 +199,14 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       createInvalidBus();
-    }, /'eventBusName' must not contain '\/'/);
+    }).toThrow(/'eventBusName' must not contain '\/'/);
 
-    test.done();
-  },
 
-  'event bus cannot have name and source name'(test: Test) {
+  });
+
+  test('event bus cannot have name and source name', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -218,14 +217,14 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       createInvalidBus();
-    }, /'eventBusName' and 'eventSourceName' cannot both be provided/);
+    }).toThrow(/'eventBusName' and 'eventSourceName' cannot both be provided/);
 
-    test.done();
-  },
 
-  'event bus name cannot be empty string'(test: Test) {
+  });
+
+  test('event bus name cannot be empty string', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -235,26 +234,26 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       createInvalidBus();
-    }, /'eventBusName' must satisfy: /);
+    }).toThrow(/'eventBusName' must satisfy: /);
 
-    test.done();
-  },
 
-  'does not throw if eventBusName is a token'(test: Test) {
+  });
+
+  test('does not throw if eventBusName is a token', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN / THEN
-    test.doesNotThrow(() => new EventBus(stack, 'EventBus', {
+    expect(() => new EventBus(stack, 'EventBus', {
       eventBusName: Aws.STACK_NAME,
-    }));
+    })).not.toThrow();
 
-    test.done();
-  },
 
-  'event bus source name must follow pattern'(test: Test) {
+  });
+
+  test('event bus source name must follow pattern', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -264,14 +263,14 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       createInvalidBus();
-    }, /'eventSourceName' must satisfy: \/\^aws/);
+    }).toThrow(/'eventSourceName' must satisfy: \/\^aws/);
 
-    test.done();
-  },
 
-  'event bus source name cannot be empty string'(test: Test) {
+  });
+
+  test('event bus source name cannot be empty string', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -281,14 +280,14 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       createInvalidBus();
-    }, /'eventSourceName' must satisfy: /);
+    }).toThrow(/'eventSourceName' must satisfy: /);
 
-    test.done();
-  },
 
-  'can grant PutEvents'(test: Test) {
+  });
+
+  test('can grant PutEvents', () => {
     // GIVEN
     const stack = new Stack();
     const role = new iam.Role(stack, 'Role', {
@@ -299,7 +298,7 @@ export = {
     EventBus.grantPutEvents(role);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -315,12 +314,12 @@ export = {
           Ref: 'Role1ABCC5F0',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'can grant PutEvents using grantAllPutEvents'(test: Test) {
+  });
+
+  test('can grant PutEvents using grantAllPutEvents', () => {
     // GIVEN
     const stack = new Stack();
     const role = new iam.Role(stack, 'Role', {
@@ -331,7 +330,7 @@ export = {
     EventBus.grantAllPutEvents(role);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -347,11 +346,11 @@ export = {
           Ref: 'Role1ABCC5F0',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
-  'can grant PutEvents to a specific event bus'(test: Test) {
+
+  });
+  test('can grant PutEvents to a specific event bus', () => {
     // GIVEN
     const stack = new Stack();
     const role = new iam.Role(stack, 'Role', {
@@ -364,7 +363,7 @@ export = {
     eventBus.grantPutEventsTo(role);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -385,11 +384,11 @@ export = {
           Ref: 'Role1ABCC5F0',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
-  'can archive events'(test: Test) {
+
+  });
+  test('can archive events', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -404,11 +403,11 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::EventBus', {
+    expect(stack).toHaveResource('AWS::Events::EventBus', {
       Name: 'Bus',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::Events::Archive', {
+    expect(stack).toHaveResource('AWS::Events::Archive', {
       SourceArn: {
         'Fn::GetAtt': [
           'BusEA82B648',
@@ -436,11 +435,11 @@ export = {
       },
       RetentionDays: 0,
       ArchiveName: 'MyArchive',
-    }));
+    });
 
-    test.done();
-  },
-  'can archive events from an imported EventBus'(test: Test) {
+
+  });
+  test('can archive events from an imported EventBus', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -457,11 +456,11 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::EventBus', {
+    expect(stack).toHaveResource('AWS::Events::EventBus', {
       Name: 'Bus',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::Events::Archive', {
+    expect(stack).toHaveResource('AWS::Events::Archive', {
       SourceArn: {
         'Fn::GetAtt': [
           'BusEA82B648',
@@ -512,8 +511,8 @@ export = {
       },
       RetentionDays: 0,
       ArchiveName: 'MyArchive',
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});

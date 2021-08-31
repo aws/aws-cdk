@@ -1,13 +1,12 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { User } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { EventField, IRuleTarget, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
-export = {
-  'json template': {
-    'can just be a JSON object'(test: Test) {
+describe('input', () => {
+  describe('json template', () => {
+    test('can just be a JSON object', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
@@ -18,17 +17,17 @@ export = {
       rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({ SomeObject: 'withAValue' })));
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             Input: '{"SomeObject":"withAValue"}',
           },
         ],
-      }));
-      test.done();
-    },
+      });
 
-    'can use joined JSON containing refs in JSON object'(test: Test) {
+    });
+
+    test('can use joined JSON containing refs in JSON object', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
@@ -42,7 +41,7 @@ export = {
       })));
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             InputTransformer: {
@@ -62,12 +61,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'can use joined JSON containing refs in JSON object with tricky inputs'(test: Test) {
+    });
+
+    test('can use joined JSON containing refs in JSON object with tricky inputs', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
@@ -81,7 +80,7 @@ export = {
       })));
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             InputTransformer: {
@@ -101,12 +100,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'can use joined JSON containing refs in JSON object and concat'(test: Test) {
+    });
+
+    test('can use joined JSON containing refs in JSON object and concat', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
@@ -120,7 +119,7 @@ export = {
       })));
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             InputTransformer: {
@@ -140,12 +139,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'can use joined JSON containing refs in JSON object and quotes'(test: Test) {
+    });
+
+    test('can use joined JSON containing refs in JSON object and quotes', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
@@ -159,7 +158,7 @@ export = {
       })));
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             InputTransformer: {
@@ -179,12 +178,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'can use joined JSON containing refs in JSON object and multiple keys'(test: Test) {
+    });
+
+    test('can use joined JSON containing refs in JSON object and multiple keys', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
@@ -198,7 +197,7 @@ export = {
       })));
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             InputTransformer: {
@@ -218,12 +217,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'can use token'(test: Test) {
+    });
+
+    test('can use token', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
@@ -235,7 +234,7 @@ export = {
       rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({ userArn: user.userArn })));
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             Input: {
@@ -255,13 +254,13 @@ export = {
             },
           },
         ],
-      }));
-      test.done();
-    },
-  },
+      });
 
-  'text templates': {
-    'strings with newlines are serialized to a newline-delimited list of JSON strings'(test: Test) {
+    });
+  });
+
+  describe('text templates', () => {
+    test('strings with newlines are serialized to a newline-delimited list of JSON strings', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
@@ -272,18 +271,18 @@ export = {
       rule.addTarget(new SomeTarget(RuleTargetInput.fromMultilineText('I have\nmultiple lines')));
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             Input: '"I have"\n"multiple lines"',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'escaped newlines are not interpreted as newlines'(test: Test) {
+    });
+
+    test('escaped newlines are not interpreted as newlines', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
@@ -294,18 +293,18 @@ export = {
       rule.addTarget(new SomeTarget(RuleTargetInput.fromMultilineText('this is not\\na real newline'))),
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             Input: '"this is not\\\\na real newline"',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'can use Tokens in text templates'(test: Test) {
+    });
+
+    test('can use Tokens in text templates', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
@@ -318,18 +317,18 @@ export = {
       rule.addTarget(new SomeTarget(RuleTargetInput.fromText(`hello ${world}`)));
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             Input: '"hello world"',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
-};
+
+    });
+  });
+});
 
 class SomeTarget implements IRuleTarget {
   public constructor(private readonly input: RuleTargetInput) {
