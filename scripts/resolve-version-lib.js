@@ -59,7 +59,7 @@ function resolveVersion(rootdir) {
     : `CHANGELOG.v${majorVersion}.md`;
 
   const alphaChangelogFile = majorVersion === 1
-    ? 'CHANGELOG.alpha.md'
+    ? undefined
     : `CHANGELOG.v${majorVersion}.alpha.md`;
 
   //

@@ -22,11 +22,11 @@ export type ReleaseType = 'major' | 'minor' | 'patch';
 
 /** How to handle experimental changes in the changelog. */
 export enum ExperimentalChangesTreatment {
-  /** experimental changes are included in the main changelog (this is the default) */
+  /** Experimental changes are included in the main changelog (this is the default) */
   INCLUDE = 'include',
-  /** remove all experimental changes from the changelog */
+  /** Remove all experimental changes from the changelog */
   STRIP = 'strip',
-  /** write experimental changes to individual changelogs, and into a separate section of the main changelog. */
+  /** Write experimental changes to a separate changelog */
   SEPARATE = 'separate'
 };
 

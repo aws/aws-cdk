@@ -61,7 +61,7 @@ happy({
   },
   expected: {
     changelogFile: 'CHANGELOG.md',
-    alphaChangelogFile: 'CHANGELOG.alpha.md',
+    alphaChangelogFile: undefined,
     marker: '0.0.0',
     prerelease: undefined,
     version: '1.72.0',

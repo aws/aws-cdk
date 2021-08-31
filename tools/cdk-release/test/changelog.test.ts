@@ -110,7 +110,7 @@ describe('writeChangelogs', () => {
     test('throws if alpha changelog file is not present', async () => {
       await expect(writeChangelogs({ ...defaultSeparateChangelogOpts, alphaChangelogFile: undefined }))
         .rejects
-        .toThrow(/no alphaChangelogFile specified/);
+        .toThrow(/alphaChangelogFile must be specified/);
     });
 
     test('excludes experimental changes and writes to the alpha changelog', async () => {

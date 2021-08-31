@@ -57,10 +57,10 @@ export async function writeChangelogs(opts: WriteChangelogOptions): Promise<Chan
 
     case ExperimentalChangesTreatment.SEPARATE:
       if (!opts.currentVersion.alphaVersion || !opts.newVersion.alphaVersion) {
-        throw new Error('unable to create "separate" changelogs without alpha package versions');
+        throw new Error('unable to create separate alpha Changelog without alpha package versions');
       }
       if (!opts.alphaChangelogFile) {
-        throw new Error('no alphaChangelogFile specified');
+        throw new Error('alphaChangelogFile must be specified if experimentalChangesTreatment is SEPARATE');
       }
 
       const changelogResults: ChangelogResult[] = [];
