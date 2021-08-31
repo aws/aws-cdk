@@ -564,7 +564,7 @@ export namespace EmrCreateCluster {
    */
   export enum SpotAllocationStrategy {
     /**
-     * capacity-optimized, which launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
+     * Capacity-optimized, which launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
      */
     CAPACITY_OPTIMIZED = 'capacity-optimized',
   }
