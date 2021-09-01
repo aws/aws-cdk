@@ -50,16 +50,35 @@ describe('Job', () => {
     jobName = 'test-job';
   });
 
-  test('.fromJobAttributes() should return correct jobName and jobArn', () => {
-    const iJob = glue.Job.fromJobAttributes(stack, 'ImportedJob', { jobName });
+  describe('.fromJobAttributes()', () => {
+    test('with required attrs only', () => {
+      const job = glue.Job.fromJobAttributes(stack, 'ImportedJob', { jobName });
 
-    expect(iJob.jobName).toEqual(jobName);
-    expect(iJob.jobArn).toEqual(stack.formatArn({
-      service: 'glue',
-      resource: 'job',
-      resourceName: jobName,
-    }));
+      expect(job.jobName).toEqual(jobName);
+      expect(job.jobArn).toEqual(stack.formatArn({
+        service: 'glue',
+        resource: 'job',
+        resourceName: jobName,
+      }));
+      expect(job.role).toBeUndefined();
+      expect(job.grantPrincipal).toEqual(new iam.UnknownPrincipal({ resource: job }));
+    });
+
+    test('with all attrs', () => {
+      const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
+      const job = glue.Job.fromJobAttributes(stack, 'ImportedJob', { jobName, role });
+
+      expect(job.jobName).toEqual(jobName);
+      expect(job.jobArn).toEqual(stack.formatArn({
+        service: 'glue',
+        resource: 'job',
+        resourceName: jobName,
+      }));
+      expect(job.role).toEqual(role);
+      expect(job.grantPrincipal).toEqual(role);
+    });
   });
+
 
   describe('new', () => {
     let codeBucket: s3.IBucket;

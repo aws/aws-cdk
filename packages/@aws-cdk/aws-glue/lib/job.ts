@@ -126,6 +126,12 @@ export interface IJob extends cdk.IResource, iam.IGrantable {
   readonly jobArn: string;
 
   /**
+   * The IAM role assumed by Glue to run this job.
+   * @attribute
+   */
+  readonly role?: iam.IRole;
+
+  /**
    * Defines a CloudWatch event rule triggered when something happens with this job.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
@@ -191,6 +197,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
 
   public abstract readonly jobArn: string;
   public abstract readonly jobName: string;
+  public abstract readonly role?: iam.IRole;
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
@@ -426,6 +433,13 @@ export interface JobAttributes {
    * The name of the job.
    */
   readonly jobName: string;
+
+  /**
+   * The IAM role assumed by Glue to run this job.
+   *
+   * @default - undefined
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -589,8 +603,9 @@ export class Job extends JobBase {
   public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobAttributes): IJob {
     class Import extends JobBase {
       public readonly jobName = attrs.jobName;
-      public readonly jobArn = jobArn(scope, attrs.jobName)
-      public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
+      public readonly jobArn = jobArn(scope, attrs.jobName);
+      public readonly role = attrs.role;
+      public readonly grantPrincipal = attrs.role ?? new iam.UnknownPrincipal({ resource: this });
     }
 
     return new Import(scope, id);
@@ -609,7 +624,7 @@ export class Job extends JobBase {
   /**
    * The IAM role Glue assumes to run this job.
    */
-  public readonly role: iam.IRole;
+  public readonly role?: iam.IRole;
 
   /**
    * The principal this Glue Job is running as.
