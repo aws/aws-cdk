@@ -20,22 +20,41 @@ export interface Versions {
 
 export type ReleaseType = 'major' | 'minor' | 'patch';
 
-/* ****** main options ******** */
+/** How to handle experimental changes in the changelog. */
+export enum ExperimentalChangesTreatment {
+  /** Experimental changes are included in the main changelog (this is the default) */
+  INCLUDE = 'include',
+  /** Remove all experimental changes from the changelog */
+  STRIP = 'strip',
+  /** Write experimental changes to a separate changelog */
+  SEPARATE = 'separate'
+};
 
 export interface ReleaseOptions {
   releaseAs: ReleaseType;
   skip?: LifecyclesSkip;
   versionFile: string;
   changelogFile: string;
+  alphaChangelogFile?: string;
   prerelease?: string;
   scripts?: Lifecycles;
   dryRun?: boolean;
   verbose?: boolean;
   silent?: boolean;
   sign?: boolean;
-  stripExperimentalChanges?: boolean;
 
+  /**
+   * How to handle experimental changes in the changelog.
+   * @default ExperimentalChangesTreatment.INCLUDE
+   */
+  experimentalChangesTreatment?: ExperimentalChangesTreatment;
   changeLogHeader?: string;
   includeDateInChangelog?: boolean;
   releaseCommitMessageFormat?: string;
+}
+
+export interface PackageInfo {
+  name: string;
+  location: string;
+  alpha: boolean;
 }

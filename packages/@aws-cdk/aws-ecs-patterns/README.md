@@ -330,6 +330,31 @@ const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTa
 
 In addition to using the constructs, users can also add logic to customize these constructs:
 
+### Configure HTTPS on an ApplicationLoadBalancedFargateService
+
+```ts
+import { ApplicationLoadBalancedFargateService } from './application-load-balanced-fargate-service';
+import { HostedZone } from '@aws-cdk/aws-route53';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
+import { SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
+
+const domainZone = HostedZone.fromLookup(this, 'Zone', { domainName: 'example.com' });
+const certificate = Certificate.fromCertificateArn(this, 'Cert', 'arn:aws:acm:us-east-1:123456:certificate/abcdefg');
+
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  vpc
+  cluster,
+  certificate,
+  sslPolicy: SslPolicy.RECOMMENDED,
+  domainName: 'api.example.com',
+  domainZone,
+  redirectHTTP: true,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+});
+```
+
 ### Add Schedule-Based Auto-Scaling to an ApplicationLoadBalancedFargateService
 
 ```ts
@@ -481,6 +506,57 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
   maxReceiveCount: 42,
   retentionPeriod: cdk.Duration.days(7),
   visibilityTimeout: cdk.Duration.minutes(5),
+});
+```
+
+### Set capacityProviderStrategies for QueueProcessingFargateService
+
+```ts
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+cluster.enableFargateCapacityProviders();
+
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  capacityProviderStrategies: [
+    {
+      capacityProvider: 'FARGATE_SPOT',
+      weight: 2,
+    },
+    {
+      capacityProvider: 'FARGATE',
+      weight: 1,
+    },
+  ],
+});
+```
+
+### Set capacityProviderStrategies for QueueProcessingEc2Service
+
+```ts
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+});
+const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  capacityProviderStrategies: [
+    {
+      capacityProvider: capacityProvider.capacityProviderName,
+    },
+  ],
 });
 ```
 

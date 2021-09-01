@@ -1,3 +1,23 @@
+# CloudFormation Resource Specification v40.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CE::CostCategory SplitChargeRules (__added__)
+
+## Property Type Changes
+
+* AWS::EFS::FileSystem.LifecyclePolicy TransitionToPrimaryStorageClass (__added__)
+* AWS::EFS::FileSystem.LifecyclePolicy TransitionToIA.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v40.0.0
 
 ## New Resource Types

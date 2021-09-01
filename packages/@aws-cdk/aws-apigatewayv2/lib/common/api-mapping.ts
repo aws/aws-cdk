@@ -103,11 +103,6 @@ export class ApiMapping extends Resource implements IApiMapping {
       }
     }
 
-    const paramRe = '^[a-zA-Z0-9]*[-_.+!,$]?[a-zA-Z0-9]*$';
-    if (props.apiMappingKey && !new RegExp(paramRe).test(props.apiMappingKey)) {
-      throw new Error('An ApiMapping key may contain only letters, numbers and one of $-_.+!*\'(),');
-    }
-
     if (props.apiMappingKey === '') {
       throw new Error('empty string for api mapping key not allowed');
     }

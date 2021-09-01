@@ -1,4 +1,5 @@
-import { expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { isSuperObject } from '@aws-cdk/assert-internal';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -10,7 +11,6 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as fc from 'fast-check';
-import * as nodeunit from 'nodeunit';
 import { PipelineDeployStackAction } from '../lib/pipeline-deploy-stack-action';
 
 interface SelfUpdatingPipeline {
@@ -19,14 +19,14 @@ interface SelfUpdatingPipeline {
 }
 const accountId = fc.array(fc.integer(0, 9), 12, 12).map(arr => arr.join());
 
-export = nodeunit.testCase({
-  'rejects cross-environment deployment'(test: nodeunit.Test) {
+describe('pipeline deploy stack action', () => {
+  test('rejects cross-environment deployment', () => {
     fc.assert(
       fc.property(
         accountId, accountId,
         (pipelineAccount, stackAccount) => {
           fc.pre(pipelineAccount !== stackAccount);
-          test.throws(() => {
+          expect(() => {
             const app = new cdk.App();
             const stack = new cdk.Stack(app, 'Test', { env: { account: pipelineAccount } });
             const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -43,20 +43,20 @@ export = nodeunit.testCase({
               stack: new cdk.Stack(app, 'DeployedStack', { env: { account: stackAccount } }),
               adminPermissions: false,
             }));
-          }, 'Cross-environment deployment is not supported');
+          }).toThrow('Cross-environment deployment is not supported');
         },
       ),
     );
-    test.done();
-  },
 
-  'rejects createRunOrder >= executeRunOrder'(test: nodeunit.Test) {
+  });
+
+  test('rejects createRunOrder >= executeRunOrder', () => {
     fc.assert(
       fc.property(
         fc.integer(1, 999), fc.integer(1, 999),
         (createRunOrder, executeRunOrder) => {
           fc.pre(createRunOrder >= executeRunOrder);
-          test.throws(() => {
+          expect(() => {
             const app = new cdk.App();
             const stack = new cdk.Stack(app, 'Test');
             const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -74,13 +74,13 @@ export = nodeunit.testCase({
               stack: new cdk.Stack(app, 'DeployedStack'),
               adminPermissions: false,
             }));
-          }, 'createChangeSetRunOrder must be < executeChangeSetRunOrder');
+          }).toThrow(/createChangeSetRunOrder .* must be < executeChangeSetRunOrder/);
         },
       ),
     );
-    test.done();
-  },
-  'users can supply CloudFormation capabilities'(test: nodeunit.Test) {
+
+  });
+  test('users can supply CloudFormation capabilities', () => {
     const pipelineStack = getTestStack();
     const stackWithNoCapability = new cdk.Stack(undefined, 'NoCapStack',
       { env: { account: '123456789012', region: 'us-east-1' } });
@@ -134,57 +134,57 @@ export = nodeunit.testCase({
       capabilities: [cfn.CloudFormationCapabilities.ANONYMOUS_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND],
       adminPermissions: false,
     }));
-    expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
+    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'TestStack',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_NAMED_IAM',
       },
-    })));
-    expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
+    }));
+    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'AnonymousIAM',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_IAM',
       },
-    })));
-    expect(pipelineStack).notTo(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
+    }));
+    expect(pipelineStack).not.toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'NoCapStack',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_NAMED_IAM',
       },
-    })));
-    expect(pipelineStack).notTo(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
+    }));
+    expect(pipelineStack).not.toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'NoCapStack',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_IAM',
       },
-    })));
-    expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
+    }));
+    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'NoCapStack',
         ActionMode: 'CHANGE_SET_REPLACE',
       },
-    })));
-    expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
+    }));
+    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'AutoExpand',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_AUTO_EXPAND',
       },
-    })));
-    expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
+    }));
+    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'AnonymousIAMAndAutoExpand',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND',
       },
-    })));
-    test.done();
-  },
-  'users can use admin permissions'(test: nodeunit.Test) {
+    }));
+
+  });
+  test('users can use admin permissions', () => {
     const pipelineStack = getTestStack();
     const selfUpdatingStack = createSelfUpdatingStack(pipelineStack);
 
@@ -195,7 +195,7 @@ export = nodeunit.testCase({
       input: selfUpdatingStack.synthesizedApp,
       adminPermissions: true,
     }));
-    expect(pipelineStack).to(haveResource('AWS::IAM::Policy', {
+    expect(pipelineStack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -249,17 +249,17 @@ export = nodeunit.testCase({
           },
         ],
       },
-    }));
-    expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
+    });
+    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'TestStack',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
       },
-    })));
-    test.done();
-  },
-  'users can supply a role for deploy action'(test: nodeunit.Test) {
+    }));
+
+  });
+  test('users can supply a role for deploy action', () => {
     const pipelineStack = getTestStack();
     const selfUpdatingStack = createSelfUpdatingStack(pipelineStack);
 
@@ -275,10 +275,10 @@ export = nodeunit.testCase({
       role,
     });
     selfUpdateStage.addAction(deployAction);
-    test.same(deployAction.deploymentRole, role);
-    test.done();
-  },
-  'users can specify IAM permissions for the deploy action'(test: nodeunit.Test) {
+    expect(deployAction.deploymentRole).toEqual(role);
+
+  });
+  test('users can specify IAM permissions for the deploy action', () => {
     // GIVEN //
     const pipelineStack = getTestStack();
 
@@ -312,7 +312,7 @@ export = nodeunit.testCase({
     }));
 
     // THEN //
-    expect(pipelineStack).to(haveResource('AWS::IAM::Policy', {
+    expect(pipelineStack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -379,10 +379,10 @@ export = nodeunit.testCase({
           Ref: 'CodePipelineDeployChangeSetRoleF9F2B343',
         },
       ],
-    }));
-    test.done();
-  },
-  'rejects stacks with assets'(test: nodeunit.Test) {
+    });
+
+  });
+  test('rejects stacks with assets', () => {
     fc.assert(
       fc.property(
         fc.integer(1, 5),
@@ -394,21 +394,21 @@ export = nodeunit.testCase({
             deployedStack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, {});
           }
 
-          test.throws(() => {
+          expect(() => {
             new PipelineDeployStackAction({
               changeSetName: 'ChangeSet',
               input: new codepipeline.Artifact(),
               stack: deployedStack,
               adminPermissions: false,
             });
-          }, /Cannot deploy the stack DeployedStack because it references/);
+          }).toThrow(/Cannot deploy the stack DeployedStack because it references/);
         },
       ),
     );
-    test.done();
-  },
 
-  'allows overriding the ChangeSet and Execute action names'(test: nodeunit.Test) {
+  });
+
+  test('allows overriding the ChangeSet and Execute action names', () => {
     const stack = getTestStack();
     const selfUpdatingPipeline = createSelfUpdatingStack(stack);
     selfUpdatingPipeline.pipeline.addStage({
@@ -424,7 +424,7 @@ export = nodeunit.testCase({
       ],
     });
 
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       Stages: [
         {},
         {},
@@ -440,10 +440,10 @@ export = nodeunit.testCase({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
+
+  });
 });
 
 class FakeAction implements codepipeline.IAction {
