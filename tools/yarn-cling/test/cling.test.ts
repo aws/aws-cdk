@@ -13,12 +13,12 @@ test('generate lock for fixture directory', async () => {
     requires: true,
     version: '1.1.1',
     dependencies: {
-      package2: {
+      'package2': {
         version: '2.2.2',
       },
-      registrydependency1: {
+      'aws-cdk': {
         dependencies: {
-          registrydependency2: {
+          'aws-cdk-lib': {
             integrity: 'sha512-pineapple',
             resolved: 'https://registry.bla.com/stuff',
             version: '2.3.999',
@@ -26,7 +26,7 @@ test('generate lock for fixture directory', async () => {
         },
         integrity: 'sha512-banana',
         requires: {
-          registrydependency2: '^2.3.4',
+          'aws-cdk-lib': '^2.3.4',
         },
         resolved: 'https://registry.bla.com/stuff',
         version: '1.2.999',
@@ -47,18 +47,18 @@ test('generate hoisted lock for fixture directory', async () => {
     requires: true,
     version: '1.1.1',
     dependencies: {
-      package2: {
+      'package2': {
         version: '2.2.2',
       },
-      registrydependency1: {
+      'aws-cdk': {
         integrity: 'sha512-banana',
         requires: {
-          registrydependency2: '^2.3.4',
+          'aws-cdk-lib': '^2.3.4',
         },
         resolved: 'https://registry.bla.com/stuff',
         version: '1.2.999',
       },
-      registrydependency2: {
+      'aws-cdk-lib': {
         integrity: 'sha512-pineapple',
         resolved: 'https://registry.bla.com/stuff',
         version: '2.3.999',
