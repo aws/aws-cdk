@@ -321,6 +321,7 @@ export class Alarm extends AlarmBase {
                   unit: stat.unitFilter,
                 },
                 id: entry.id || uniqueMetricId(),
+                accountId: stat.account,
                 label: conf.renderingProperties?.label,
                 returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
               };
