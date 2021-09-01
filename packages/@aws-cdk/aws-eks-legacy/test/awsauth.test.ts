@@ -1,14 +1,13 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
-import { Test } from 'nodeunit';
 import { Cluster, KubernetesResource } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
 import { testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-export = {
-  'empty aws-auth'(test: Test) {
+describe('awsauth', () => {
+  test('empty aws-auth', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'cluster');
@@ -17,18 +16,18 @@ export = {
     new AwsAuth(stack, 'AwsAuth', { cluster });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: JSON.stringify([{
         apiVersion: 'v1',
         kind: 'ConfigMap',
         metadata: { name: 'aws-auth', namespace: 'kube-system' },
         data: { mapRoles: '[]', mapUsers: '[]', mapAccounts: '[]' },
       }]),
-    }));
-    test.done();
-  },
+    });
 
-  'addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap'(test: Test) {
+  });
+
+  test('addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'Cluster');
@@ -44,8 +43,8 @@ export = {
     cluster.awsAuth.addAccount('5566776655');
 
     // THEN
-    expect(stack).to(countResources(KubernetesResource.RESOURCE_TYPE, 1));
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).toCountResources(KubernetesResource.RESOURCE_TYPE, 1);
+    expect(stack).toHaveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -89,12 +88,12 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'imported users and roles can be also be used'(test: Test) {
+  });
+
+  test('imported users and roles can be also be used', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'Cluster');
@@ -106,7 +105,7 @@ export = {
     cluster.awsAuth.addUserMapping(user, { groups: ['group2'] });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -130,8 +129,8 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});
