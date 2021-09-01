@@ -223,7 +223,6 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * @param id construct id.
    * @param jobState the job state.
    * @param options optional event options.
-   * @private
    */
   public onStateChange(id: string, jobState: JobState, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, {
@@ -411,6 +410,7 @@ export interface ContinuousLoggingProps {
 
   /**
    * Apply the provided conversion pattern.
+   *
    * This is a Log4j Conversion Pattern to customize driver and executor logs.
    *
    * @default `%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n`
@@ -505,6 +505,7 @@ export interface JobProps {
 
   /**
    * The {@link Connection}s used for this job.
+   *
    * Connections are used to connect to other AWS Service or resources within a VPC.
    *
    * @default [] - no connections are added to the job
@@ -535,7 +536,8 @@ export interface JobProps {
 
   /**
    * The IAM role assumed by Glue to run this job.
-   * If providing a custom role, it needs to trust Glue servie (glue.amazonaws.com).
+   *
+   * If providing a custom role, it needs to trust the Glue service principal (glue.amazonaws.com) and be granted sufficient permissions.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/getting-started-access.html
    *
@@ -686,7 +688,7 @@ export class Job extends JobBase {
       const reservedArgs = new Set(['--conf', '--debug', '--mode', '--JOB_NAME']);
       Object.keys(defaultArguments).forEach((arg) => {
         if (reservedArgs.has(arg)) {
-          throw new Error(`${arg} is a reserved argument. Don't set it`);
+          throw new Error(`The ${arg} argument is reserved by Glue. Don't set it`);
         }
       });
     }
