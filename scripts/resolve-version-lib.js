@@ -36,6 +36,7 @@ function resolveVersion(rootdir) {
   //
   // validate that current version matches the requirements
   //
+  
   const versions = require(versionFilePath);
   const currentVersion = versions.version;
   if (!currentVersion.startsWith(`${majorVersion}.`)) {
