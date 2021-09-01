@@ -3,13 +3,13 @@ import { checkRequiredVersions, generateShrinkwrap } from '../lib';
 
 test('generate lock for fixture directory', async () => {
   const lockFile = await generateShrinkwrap({
-    packageJsonFile: path.join(__dirname, 'test-fixture', 'package1', 'package.json'),
+    packageJsonFile: path.join(__dirname, 'test-fixture', 'jsii', 'package.json'),
     hoist: false,
   });
 
   expect(lockFile).toEqual({
     lockfileVersion: 1,
-    name: 'package1',
+    name: 'jsii',
     requires: true,
     version: '1.1.1',
     dependencies: {
@@ -37,13 +37,13 @@ test('generate lock for fixture directory', async () => {
 
 test('generate hoisted lock for fixture directory', async () => {
   const lockFile = await generateShrinkwrap({
-    packageJsonFile: path.join(__dirname, 'test-fixture', 'package1', 'package.json'),
+    packageJsonFile: path.join(__dirname, 'test-fixture', 'jsii', 'package.json'),
     hoist: true,
   });
 
   expect(lockFile).toEqual({
     lockfileVersion: 1,
-    name: 'package1',
+    name: 'jsii',
     requires: true,
     version: '1.1.1',
     dependencies: {
@@ -70,11 +70,11 @@ test('generate hoisted lock for fixture directory', async () => {
 test('fail when requires cannot be satisfied', async () => {
   const lockFile = {
     lockfileVersion: 1,
-    name: 'package1',
+    name: 'jsii',
     requires: true,
     version: '1.1.1',
     dependencies: {
-      package1: {
+      jsii: {
         version: '2.2.2',
         requires: {
           cdk: '^3.3.3', // <- this needs to be adjusted
