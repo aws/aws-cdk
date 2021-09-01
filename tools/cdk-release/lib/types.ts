@@ -9,56 +9,52 @@ export interface Lifecycles {
   tag?: string;
 }
 
-type LifecyclesSkip = {
+export type LifecyclesSkip = {
   [key in keyof Lifecycles]: boolean;
 }
 
-/* ****** Updaters ******** */
-
-export interface UpdaterModule {
-  isPrivate?: (contents: string) => string | boolean | null | undefined;
-  readVersion(contents: string): string;
-  writeVersion(contents: string, version: string): string;
-}
-
-export interface ArgUpdater {
-  filename: string;
-  type?: string;
-  updater?: UpdaterModule | string;
-}
-
-export type ArgFile = string | ArgUpdater;
-
-export interface Updater {
-  filename: string;
-  updater: UpdaterModule;
+export interface Versions {
+  stableVersion: string;
+  alphaVersion?: string;
 }
 
 export type ReleaseType = 'major' | 'minor' | 'patch';
 
-export interface ConventionalCommitType {
-  type: string;
-  section?: string;
-  hidden?: boolean;
-}
-
-/* ****** main options ******** */
+/** How to handle experimental changes in the changelog. */
+export enum ExperimentalChangesTreatment {
+  /** Experimental changes are included in the main changelog (this is the default) */
+  INCLUDE = 'include',
+  /** Remove all experimental changes from the changelog */
+  STRIP = 'strip',
+  /** Write experimental changes to a separate changelog */
+  SEPARATE = 'separate'
+};
 
 export interface ReleaseOptions {
   releaseAs: ReleaseType;
   skip?: LifecyclesSkip;
-  packageFiles?: ArgFile[];
-  bumpFiles?: ArgFile[];
-  infile?: string;
+  versionFile: string;
+  changelogFile: string;
+  alphaChangelogFile?: string;
   prerelease?: string;
   scripts?: Lifecycles;
   dryRun?: boolean;
   verbose?: boolean;
   silent?: boolean;
   sign?: boolean;
-  stripExperimentalChanges?: boolean;
 
+  /**
+   * How to handle experimental changes in the changelog.
+   * @default ExperimentalChangesTreatment.INCLUDE
+   */
+  experimentalChangesTreatment?: ExperimentalChangesTreatment;
   changeLogHeader?: string;
   includeDateInChangelog?: boolean;
   releaseCommitMessageFormat?: string;
+}
+
+export interface PackageInfo {
+  name: string;
+  location: string;
+  alpha: boolean;
 }

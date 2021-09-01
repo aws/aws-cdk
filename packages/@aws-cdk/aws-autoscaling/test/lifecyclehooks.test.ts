@@ -1,13 +1,13 @@
+import '@aws-cdk/assert-internal/jest';
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
-nodeunitShim({
-  'we can add a lifecycle hook to an ASG'(test: Test) {
+describe('lifecycle hooks', () => {
+  test('we can add a lifecycle hook to an ASG', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -67,8 +67,8 @@ nodeunitShim({
       },
     }));
 
-    test.done();
-  },
+
+  });
 });
 
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {

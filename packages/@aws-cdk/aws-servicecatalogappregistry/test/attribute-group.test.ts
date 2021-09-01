@@ -6,7 +6,12 @@ describe('Attribute Group', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
-    stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+    stack = new cdk.Stack(app);
   });
 
   test('default attribute group creation', () => {
