@@ -13,7 +13,7 @@ test('generate lock for fixture directory', async () => {
     requires: true,
     version: '1.1.1',
     dependencies: {
-      'package2': {
+      'cdk': {
         version: '2.2.2',
       },
       'aws-cdk': {
@@ -47,7 +47,7 @@ test('generate hoisted lock for fixture directory', async () => {
     requires: true,
     version: '1.1.1',
     dependencies: {
-      'package2': {
+      'cdk': {
         version: '2.2.2',
       },
       'aws-cdk': {
@@ -77,10 +77,10 @@ test('fail when requires cannot be satisfied', async () => {
       package1: {
         version: '2.2.2',
         requires: {
-          package2: '^3.3.3', // <- this needs to be adjusted
+          cdk: '^3.3.3', // <- this needs to be adjusted
         },
       },
-      package2: {
+      cdk: {
         version: '4.4.4',
       },
     },

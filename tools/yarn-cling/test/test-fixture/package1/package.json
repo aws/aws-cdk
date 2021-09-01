@@ -3,6 +3,6 @@
     "version": "1.1.1",
     "dependencies": {
         "aws-cdk": "^1.2.3",
-        "package2": "2.2.2"
+        "cdk": "2.2.2"
     }
 }
