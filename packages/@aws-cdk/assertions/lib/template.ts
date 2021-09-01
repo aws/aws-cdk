@@ -109,10 +109,11 @@ export class Template {
    * Assert that an Output with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
    * To configure different behavour, use other matchers in the `Match` class.
+   * @param outputName the name of the output.
    * @param props the output as should be expected in the template.
    */
-  public hasOutput(props: any): void {
-    const matchError = hasOutput(this.inspector, props);
+  public hasOutput(outputName: string, props: any): void {
+    const matchError = hasOutput(this.inspector, outputName, props);
     if (matchError) {
       throw new Error(matchError);
     }
