@@ -568,6 +568,22 @@ describe('Job', () => {
       });
     });
 
+    test('with reserved args throws', () => {
+      ['--conf', '--debug', '--mode', '--JOB_NAME'].forEach((arg, index) => {
+        const defaultArguments: {[key: string]: string} = {};
+        defaultArguments[arg] = 'random value';
+
+        expect(() => new glue.Job(stack, `Job${index}`, {
+          executable: glue.JobExecutable.scalaEtl({
+            glueVersion: glue.GlueVersion.V2_0,
+            className,
+            script,
+          }),
+          defaultArguments,
+        })).toThrow(/argument is reserved by Glue/);
+      });
+    });
+
     describe('python shell job', () => {
 
       test('with minimal props should synthesize correctly', () => {
