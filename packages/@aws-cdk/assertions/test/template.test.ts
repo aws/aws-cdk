@@ -342,7 +342,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(() => inspect.hasOutput({ Value: 'Bar' })).not.toThrow();
+      expect(() => inspect.hasOutput('Foo', { Value: 'Bar' })).not.toThrow();
     });
 
     test('not matching', (done) => {
@@ -357,18 +357,62 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasOutput({
+        () => inspect.hasOutput('Foo', {
           Value: 'Bar',
           Export: { Name: 'ExportBaz' },
         }),
         [
-          /2 outputs/,
+          /1 outputs named Foo/,
           /Expected ExportBaz but received ExportBar/,
         ],
         done,
       );
       done();
     });
+
+    test('outputName not matching', (done) => {
+      const stack = new Stack();
+      new CfnOutput(stack, 'Foo', {
+        value: 'Bar',
+      });
+      new CfnOutput(stack, 'Fred', {
+        value: 'Baz',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasOutput('Fred', {
+          Value: 'Bar',
+        }),
+        [
+          /1 outputs named Fred/,
+          /Expected Bar but received Baz/,
+        ],
+        done,
+      );
+      done();
+    });
+  });
+
+  test('name not matching', (done) => {
+    const stack = new Stack();
+    new CfnOutput(stack, 'Foo', {
+      value: 'Bar',
+      exportName: 'ExportBar',
+    });
+
+    const inspect = Template.fromStack(stack);
+    expectToThrow(
+      () => inspect.hasOutput('Fred', {
+        Value: 'Bar',
+        Export: { Name: 'ExportBar' },
+      }),
+      [
+        /No outputs named Fred found in the template./,
+      ],
+      done,
+    );
+    done();
   });
 
   describe('findOutputs', () => {
