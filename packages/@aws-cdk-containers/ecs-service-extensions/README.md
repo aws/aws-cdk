@@ -355,6 +355,7 @@ nameDescription.add(new QueueExtension({
     queue: myTopicQueue,
   }],
 }));
+```
 
 ## Publisher Extension
 
