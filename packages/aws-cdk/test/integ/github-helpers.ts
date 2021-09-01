@@ -13,15 +13,23 @@ module.exports.fetchPreviousVersion = async function(base: string) {
     repo: 'aws-cdk',
   });
 
-  // this returns a list in decsending order, newest releases first
+  // this returns a list in descending order, newest releases first
+  // opts for same major version where possible, falling back otherwise
+  // to previous major versions.
+  let previousMVRelease = undefined;
   for (const release of releases.data) {
     const version = release.name?.replace('v', '');
     if (version && semver.lt(version, base)) {
-      return version;
+      if (semver.major(version) === semver.major(base)) {
+        return version;
+      } else if (!previousMVRelease) {
+        previousMVRelease = version;
+      }
     }
   }
-  throw new Error(`Unable to find previous version of ${base}`);
+  if (previousMVRelease) { return previousMVRelease; }
 
+  throw new Error(`Unable to find previous version of ${base}`);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
