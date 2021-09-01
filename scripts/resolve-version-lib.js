@@ -68,6 +68,7 @@ function resolveVersion(rootdir) {
 
   return {
     version: currentVersion,
+    alphaVersion: require(versionFilePath).alphaVersion,
     versionFile,
     changelogFile,
     alphaChangelogFile,
