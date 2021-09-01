@@ -18,7 +18,7 @@ export interface ISubscribable {
   /**
    * All classes implementing this interface must also implement the `subscribe()` method
    */
-  subscribe(queue: sqs.IQueue): sqs.IQueue | undefined;
+  subscribe(extension: QueueExtension): sqs.IQueue;
 }
 
 /**
@@ -75,16 +75,16 @@ export class TopicSubscription implements ISubscribable {
    * This method sets up SNS Topic subscriptions for the SQS queue provided by the user. If a `queue` is not provided,
    * the default `eventsQueue` subscribes to the given topic.
    *
-   * @param queue `eventsQueue` of the service
-   * @returns topic-specific SQS Queue, if provided by the user
+   * @param extension `QueueExtension` added to the service
+   * @returns the queue subscribed to the given topic
    */
-  public subscribe(queue: sqs.IQueue) : sqs.IQueue | undefined {
+  public subscribe(extension: QueueExtension) : sqs.IQueue {
+    let queue = extension.eventsQueue;
     if (this.queue) {
-      this.topic.addSubscription(new subscription.SqsSubscription(this.queue));
-    } else {
-      this.topic.addSubscription(new subscription.SqsSubscription(queue));
+      queue = this.queue;
     }
-    return this.queue;
+    this.topic.addSubscription(new subscription.SqsSubscription(queue));
+    return queue;
   }
 }
 
@@ -130,7 +130,7 @@ class QueueExtensionMutatingHook extends ContainerMutatingHook {
 export class QueueExtension extends ServiceExtension {
   private _eventsQueue!: sqs.IQueue;
 
-  private subscriptionQueues: sqs.IQueue[] = [];
+  private subscriptionQueues = new Set<sqs.IQueue>();
 
   private environment: { [key: string]: string } = {};
 
@@ -172,10 +172,8 @@ export class QueueExtension extends ServiceExtension {
 
     if (this.props?.subscriptions) {
       for (const subs of this.props.subscriptions) {
-        const subsQueue = subs.subscribe(this._eventsQueue);
-        if (subsQueue) {
-          this.subscriptionQueues.push(subsQueue);
-        }
+        const subsQueue = subs.subscribe(this);
+        this.subscriptionQueues.add(subsQueue);
       }
     }
   }
