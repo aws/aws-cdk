@@ -150,9 +150,9 @@ certificate.metricDaysToExpiry().createAlarm({
 AWS Certificate Manager can create [private certificates](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-private.html) issued by [Private Certificate Authority (PCA)](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaWelcome.html). Validation of private certificates is not necessary.
 
 ```ts
-new Certificate(stack, 'Certificate', {
+new Certificate(this, 'Certificate', {
   domainName: 'test.example.com',
-  certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
+  certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(this, 'CA',
     'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
 });
 ```
