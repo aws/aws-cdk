@@ -20,6 +20,7 @@ The `Service` construct provided by this module can be extended with optional `S
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
 - Queue to allow your service to consume messages from an SQS Queue which is populated by one or more SNS Topics that it is subscribed to
+- Publisher to allow your service to publish events to SNS Topics or AWS EventBus
 - [Community Extensions](#community-extensions), providing support for advanced use cases
 
 The `ServiceExtension` class is an abstract class which you can also implement in
@@ -354,6 +355,32 @@ nameDescription.add(new QueueExtension({
     queue: myTopicQueue,
   }],
 }));
+
+## Publisher Extension
+
+This service extension accepts a list of `IPublisher` resources that the service can publish events to. It sets up the corresponding publish permissions for the task role of the service.
+
+### Publishing to SNS Topics
+
+You can use this extension to publish events to SNS Topics.
+
+```ts
+nameDescription.add(new PublisherExtension({
+  publishers: [new PublisherTopic({
+    topic: new sns.Topic(stack, 'topic2'),
+  })],
+}))
+```
+
+You can also provide a list of account IDs for each topic to allow the them to be able to subscribe to the given topic.
+
+```ts
+nameDescription.add(new PublisherExtension({
+  publishers: [new PublisherTopic({
+    topic: new sns.Topic(stack, 'topic2'),
+    allowedAccounts: ['123456789012'],
+  })],
+}))
 ```
 
 ## Community Extensions
