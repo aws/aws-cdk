@@ -196,6 +196,7 @@ export class CdkToolkit {
           usePreviousParameters: options.usePreviousParameters,
           progress: options.progress,
           ci: options.ci,
+          rollback: options.rollback,
         });
 
         const message = result.noOp
@@ -625,6 +626,13 @@ export interface DeployOptions {
    * @default false
    */
   readonly ci?: boolean;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
 }
 
 export interface DestroyOptions {

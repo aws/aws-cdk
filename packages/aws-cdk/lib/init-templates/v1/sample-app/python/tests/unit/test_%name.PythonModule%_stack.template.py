@@ -2,7 +2,7 @@ import json
 import pytest
 
 from aws_cdk import core
-from %name%.%name.PythonModule%_stack import %name.PascalCased%Stack
+from %name.PythonModule%.%name.PythonModule%_stack import %name.PascalCased%Stack
 
 
 def get_template():

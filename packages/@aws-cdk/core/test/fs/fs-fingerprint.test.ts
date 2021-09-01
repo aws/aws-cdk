@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { FileSystem, SymlinkFollowMode } from '../../lib/fs';
+import { contentFingerprint } from '../../lib/fs/fingerprint';
 
 nodeunitShim({
   files: {
@@ -155,33 +156,26 @@ nodeunitShim({
       test.done();
     },
   },
-  exclude: {
-    'encodes exclude patterns'(test: Test) {
+
+  eol: {
+    'normalizes line endings'(test: Test) {
       // GIVEN
-      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
-      const options1 = { path: dir, exclude: ['**', '!file.py'], sourcePath: dir };
-      const options2 = { path: dir, exclude: ['**', '!otherfile.py'], sourcePath: dir };
+      const lf = path.join(__dirname, 'eol', 'lf.txt');
+      const crlf = path.join(__dirname, 'eol', 'crlf.txt');
+      fs.writeFileSync(crlf, fs.readFileSync(lf, 'utf8').replace(/\n/g, '\r\n'));
+
+      const lfStat = fs.statSync(lf);
+      const crlfStat = fs.statSync(crlf);
 
       // WHEN
-      const f1 = FileSystem.fingerprint(dir, options1);
-      const f2 = FileSystem.fingerprint(dir, options2);
+      const crlfHash = contentFingerprint(crlf);
+      const lfHash = contentFingerprint(lf);
 
       // THEN
-      test.notDeepEqual(f1, f2);
-      test.done();
-    },
-    'considers negated exclude patterns for fingerprint'(test: Test) {
-      // GIVEN
-      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
-      const options = { path: dir, exclude: ['**', '!file.txt'], sourcePath: dir };
+      test.notEqual(crlfStat.size, lfStat.size); // Difference in size due to different line endings
+      test.deepEqual(crlfHash, lfHash); // Same hash
 
-      // WHEN
-      const f1 = FileSystem.fingerprint(dir, options);
-      fs.writeFileSync(path.join(dir, 'file.txt'), 'data');
-      const f2 = FileSystem.fingerprint(dir, options);
-
-      // THEN
-      test.notDeepEqual(f1, f2);
+      fs.unlinkSync(crlf);
       test.done();
     },
   },
