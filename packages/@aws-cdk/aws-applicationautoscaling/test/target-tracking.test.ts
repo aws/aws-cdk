@@ -1,12 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as appscaling from '../lib';
 import { createScalableTarget } from './util';
 
-export = {
-  'test setup target tracking on predefined metric'(test: Test) {
+describe('target tracking', () => {
+  test('test setup target tracking on predefined metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const target = createScalableTarget(stack);
@@ -18,19 +17,19 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'EC2SpotFleetRequestAverageCPUUtilization' },
         TargetValue: 30,
       },
 
-    }));
+    });
 
-    test.done();
-  },
 
-  'test setup target tracking on predefined metric for lambda'(test: Test) {
+  });
+
+  test('test setup target tracking on predefined metric for lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const target = createScalableTarget(stack);
@@ -42,19 +41,19 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
         TargetValue: 0.9,
       },
 
-    }));
+    });
 
-    test.done();
-  },
 
-  'test setup target tracking on custom metric'(test: Test) {
+  });
+
+  test('test setup target tracking on custom metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const target = createScalableTarget(stack);
@@ -66,7 +65,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
@@ -77,8 +76,8 @@ export = {
         TargetValue: 30,
       },
 
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});
