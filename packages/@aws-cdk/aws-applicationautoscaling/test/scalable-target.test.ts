@@ -1,12 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as appscaling from '../lib';
 import { createScalableTarget } from './util';
 
-export = {
-  'test scalable target creation'(test: Test) {
+describe('scalable target', () => {
+  test('test scalable target creation', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -20,18 +19,18 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
       ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',
       MinCapacity: 1,
       MaxCapacity: 20,
-    }));
+    });
 
-    test.done();
-  },
 
-  'validation does not fail when using Tokens'(test: Test) {
+  });
+
+  test('validation does not fail when using Tokens', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -45,18 +44,18 @@ export = {
     });
 
     // THEN: no exception
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
       ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',
       MinCapacity: 10,
       MaxCapacity: 1,
-    }));
+    });
 
-    test.done();
-  },
 
-  'add scheduled scaling'(test: Test) {
+  });
+
+  test('add scheduled scaling', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const target = createScalableTarget(stack);
@@ -69,7 +68,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
       ScheduledActions: [
         {
           ScalableTargetAction: {
@@ -80,12 +79,12 @@ export = {
           ScheduledActionName: 'ScaleUp',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'step scaling on MathExpression'(test: Test) {
+  });
+
+  test('step scaling on MathExpression', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const target = createScalableTarget(stack);
@@ -110,11 +109,11 @@ export = {
     });
 
     // THEN
-    expect(stack).notTo(haveResource('AWS::CloudWatch::Alarm', {
+    expect(stack).not.toHaveResource('AWS::CloudWatch::Alarm', {
       Period: 60,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'LessThanOrEqualToThreshold',
       EvaluationPeriods: 1,
       Metrics: [
@@ -136,22 +135,22 @@ export = {
         },
       ],
       Threshold: 49,
-    }));
+    });
 
-    test.done();
-  },
 
-  'test service namespace enum'(test: Test) {
-    test.equals(appscaling.ServiceNamespace.APPSTREAM, 'appstream');
-    test.equals(appscaling.ServiceNamespace.COMPREHEND, 'comprehend');
-    test.equals(appscaling.ServiceNamespace.CUSTOM_RESOURCE, 'custom-resource');
-    test.equals(appscaling.ServiceNamespace.DYNAMODB, 'dynamodb');
-    test.equals(appscaling.ServiceNamespace.EC2, 'ec2');
-    test.equals(appscaling.ServiceNamespace.ECS, 'ecs');
-    test.equals(appscaling.ServiceNamespace.ELASTIC_MAP_REDUCE, 'elasticmapreduce');
-    test.equals(appscaling.ServiceNamespace.LAMBDA, 'lambda');
-    test.equals(appscaling.ServiceNamespace.RDS, 'rds');
-    test.equals(appscaling.ServiceNamespace.SAGEMAKER, 'sagemaker');
-    test.done();
-  },
-};
+  });
+
+  test('test service namespace enum', () => {
+    expect(appscaling.ServiceNamespace.APPSTREAM).toEqual( 'appstream');
+    expect(appscaling.ServiceNamespace.COMPREHEND).toEqual( 'comprehend');
+    expect(appscaling.ServiceNamespace.CUSTOM_RESOURCE).toEqual( 'custom-resource');
+    expect(appscaling.ServiceNamespace.DYNAMODB).toEqual( 'dynamodb');
+    expect(appscaling.ServiceNamespace.EC2).toEqual( 'ec2');
+    expect(appscaling.ServiceNamespace.ECS).toEqual( 'ecs');
+    expect(appscaling.ServiceNamespace.ELASTIC_MAP_REDUCE).toEqual( 'elasticmapreduce');
+    expect(appscaling.ServiceNamespace.LAMBDA).toEqual( 'lambda');
+    expect(appscaling.ServiceNamespace.RDS).toEqual( 'rds');
+    expect(appscaling.ServiceNamespace.SAGEMAKER).toEqual( 'sagemaker');
+
+  });
+});
