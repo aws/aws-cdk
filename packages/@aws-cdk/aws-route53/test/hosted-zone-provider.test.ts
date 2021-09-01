@@ -1,11 +1,11 @@
+import '@aws-cdk/assert-internal/jest';
 import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { HostedZone } from '../lib';
 
-nodeunitShim({
-  'Hosted Zone Provider': {
-    'HostedZoneProvider will return context values if available'(test: Test) {
+describe('hosted zone provider', () => {
+  describe('Hosted Zone Provider', () => {
+    test('HostedZoneProvider will return context values if available', () => {
       // GIVEN
       const stack = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '12345', region: 'us-east-1' },
@@ -15,7 +15,7 @@ nodeunitShim({
       HostedZone.fromLookup(stack, 'Ref', filter);
 
       const missing = SynthUtils.synthesize(stack).assembly.manifest.missing!;
-      test.ok(missing && missing.length === 1);
+      expect(missing && missing.length === 1).toEqual(true);
 
       const fakeZoneId = '11111111111111';
       const fakeZone = {
@@ -38,12 +38,10 @@ nodeunitShim({
       const zoneRef = HostedZone.fromLookup(stack2, 'MyZoneProvider', filter);
 
       // THEN
-      test.deepEqual(zoneRef.hostedZoneId, fakeZoneId);
-      test.done();
-    },
-    'HostedZoneProvider will return context values if available when using plain hosted zone id'(
-      test: Test,
-    ) {
+      expect(zoneRef.hostedZoneId).toEqual(fakeZoneId);
+
+    });
+    test('HostedZoneProvider will return context values if available when using plain hosted zone id', () => {
       // GIVEN
       const stack = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '12345', region: 'us-east-1' },
@@ -53,7 +51,7 @@ nodeunitShim({
       HostedZone.fromLookup(stack, 'Ref', filter);
 
       const missing = SynthUtils.synthesize(stack).assembly.manifest.missing!;
-      test.ok(missing && missing.length === 1);
+      expect(missing && missing.length === 1).toEqual(true);
 
       const fakeZoneId = '11111111111111';
       const fakeZone = {
@@ -78,8 +76,8 @@ nodeunitShim({
       const zoneId = zone.hostedZoneId;
 
       // THEN
-      test.deepEqual(fakeZoneId, zoneId);
-      test.done();
-    },
-  },
+      expect(fakeZoneId).toEqual(zoneId);
+
+    });
+  });
 });

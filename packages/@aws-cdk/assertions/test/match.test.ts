@@ -194,17 +194,112 @@ describe('Matchers', () => {
       expectFailure(matcher, { foo: 'bar', baz: 'qux' }, [/Unexpected key at \/baz/]);
     });
   });
+
+  describe('not()', () => {
+    let matcher: Matcher;
+
+    test('literal', () => {
+      matcher = Match.not('foo');
+      expectPass(matcher, 'bar');
+      expectPass(matcher, 3);
+
+      expectFailure(matcher, 'foo', ['Found unexpected match: "foo"']);
+    });
+
+    test('object', () => {
+      matcher = Match.not({ foo: 'bar' });
+      expectPass(matcher, 'bar');
+      expectPass(matcher, 3);
+      expectPass(matcher, { foo: 'baz' });
+      expectPass(matcher, { bar: 'foo' });
+
+      const msg = [
+        'Found unexpected match: {',
+        '  "foo": "bar"',
+        '}',
+      ].join('\n');
+      expectFailure(matcher, { foo: 'bar' }, [msg]);
+    });
+
+    test('array', () => {
+      matcher = Match.not(['foo', 'bar']);
+      expectPass(matcher, 'foo');
+      expectPass(matcher, []);
+      expectPass(matcher, ['bar']);
+      expectPass(matcher, ['foo', 3]);
+
+      const msg = [
+        'Found unexpected match: [',
+        '  "foo",',
+        '  "bar"',
+        ']',
+      ].join('\n');
+      expectFailure(matcher, ['foo', 'bar'], [msg]);
+    });
+
+    test('as a nested matcher', () => {
+      matcher = Match.exact({
+        foo: { bar: Match.not([1, 2]) },
+      });
+
+      expectPass(matcher, {
+        foo: { bar: [1] },
+      });
+      expectPass(matcher, {
+        foo: { bar: ['baz'] },
+      });
+
+      const msg = [
+        'Found unexpected match: [',
+        '  1,',
+        '  2',
+        '] at /foo/bar',
+      ].join('\n');
+      expectFailure(matcher, {
+        foo: { bar: [1, 2] },
+      }, [msg]);
+    });
+
+    test('with nested matcher', () => {
+      matcher = Match.not({
+        foo: { bar: Match.arrayWith([1]) },
+      });
+
+      expectPass(matcher, {
+        foo: { bar: [2] },
+      });
+      expectPass(matcher, 'foo');
+
+      const msg = [
+        'Found unexpected match: {',
+        '  "foo": {',
+        '    "bar": [',
+        '      1,',
+        '      2',
+        '    ]',
+        '  }',
+        '}',
+      ].join('\n');
+      expectFailure(matcher, {
+        foo: { bar: [1, 2] },
+      }, [msg]);
+    });
+  });
 });
 
 function expectPass(matcher: Matcher, target: any): void {
   expect(matcher.test(target).hasFailed()).toEqual(false);
 }
 
-function expectFailure(matcher: Matcher, target: any, expected: (string | RegExp)[]): void {
-  const actual = matcher.test(target).toHumanStrings();
+function expectFailure(matcher: Matcher, target: any, expected: (string | RegExp)[] = []): void {
+  const result = matcher.test(target);
+  expect(result.failCount).toBeGreaterThan(0);
+  const actual = result.toHumanStrings();
+  if (expected.length > 0) {
+    expect(actual.length).toEqual(expected.length);
+  }
   for (let i = 0; i < expected.length; i++) {
     const e = expected[i];
     expect(actual[i]).toMatch(e);
   }
-  expect(expected.length).toEqual(actual.length);
 }

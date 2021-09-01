@@ -1,13 +1,13 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import * as fc from 'fast-check';
-import { Test } from 'nodeunit';
 import * as appscaling from '../lib';
 import { arbitrary_input_intervals, createScalableTarget } from './util';
 
-export = {
-  'alarm thresholds are valid numbers'(test: Test) {
+describe('step scaling policy', () => {
+  test('alarm thresholds are valid numbers', () => {
     fc.assert(fc.property(
       arbitrary_input_intervals(),
       (intervals) => {
@@ -24,10 +24,10 @@ export = {
       },
     ));
 
-    test.done();
-  },
 
-  'generated step intervals are valid intervals'(test: Test) {
+  });
+
+  test('generated step intervals are valid intervals', () => {
     fc.assert(fc.property(
       arbitrary_input_intervals(),
       (intervals) => {
@@ -40,10 +40,10 @@ export = {
       },
     ));
 
-    test.done();
-  },
 
-  'generated step intervals are nonoverlapping'(test: Test) {
+  });
+
+  test('generated step intervals are nonoverlapping', () => {
     fc.assert(fc.property(
       arbitrary_input_intervals(),
       (intervals) => {
@@ -61,10 +61,10 @@ export = {
       },
     ), { verbose: true });
 
-    test.done();
-  },
 
-  'all template intervals occur in input array'(test: Test) {
+  });
+
+  test('all template intervals occur in input array', () => {
     fc.assert(fc.property(
       arbitrary_input_intervals(),
       (intervals) => {
@@ -83,10 +83,10 @@ export = {
       },
     ));
 
-    test.done();
-  },
 
-  'lower alarm uses lower policy'(test: Test) {
+  });
+
+  test('lower alarm uses lower policy', () => {
     fc.assert(fc.property(
       arbitrary_input_intervals(),
       (intervals) => {
@@ -98,10 +98,10 @@ export = {
       },
     ));
 
-    test.done();
-  },
 
-  'upper alarm uses upper policy'(test: Test) {
+  });
+
+  test('upper alarm uses upper policy', () => {
     fc.assert(fc.property(
       arbitrary_input_intervals(),
       (intervals) => {
@@ -113,10 +113,10 @@ export = {
       },
     ));
 
-    test.done();
-  },
 
-  'test step scaling on metric'(test: Test) {
+  });
+
+  test('test step scaling on metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const target = createScalableTarget(stack);
@@ -132,7 +132,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       ScalingTargetId: {
         Ref: 'Target3191CF44',
@@ -148,12 +148,12 @@ export = {
         ],
       },
 
-    }));
+    });
 
-    test.done();
-  },
 
-  'step scaling from percentile metric'(test: Test) {
+  });
+
+  test('step scaling from percentile metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const target = createScalableTarget(stack);
@@ -169,14 +169,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       StepScalingPolicyConfiguration: {
         AdjustmentType: 'ChangeInCapacity',
         MetricAggregationType: 'Average',
       },
-    }));
-    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+    });
+    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 1,
       AlarmActions: [
@@ -186,12 +186,12 @@ export = {
       MetricName: 'Metric',
       Namespace: 'Test',
       Threshold: 100,
-    }));
+    });
 
-    test.done();
-  },
 
-  'step scaling with evaluation period configured'(test: Test) {
+  });
+
+  test('step scaling with evaluation period configured', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const target = createScalableTarget(stack);
@@ -209,25 +209,25 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       StepScalingPolicyConfiguration: {
         AdjustmentType: 'ChangeInCapacity',
         MetricAggregationType: 'Maximum',
       },
-    }));
-    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+    });
+    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 10,
       ExtendedStatistic: 'p99',
       MetricName: 'Metric',
       Namespace: 'Test',
       Threshold: 100,
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});
 
 /**
  * Synthesize the given step scaling setup to a template

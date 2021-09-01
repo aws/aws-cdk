@@ -593,8 +593,6 @@ new sfn.StateMachine(stack, 'MyStateMachine', {
 Enable X-Ray tracing for StateMachine:
 
 ```ts
-const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
-
 new sfn.StateMachine(stack, 'MyStateMachine', {
     definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
     tracingEnabled: true
