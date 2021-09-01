@@ -178,7 +178,7 @@ describe('cross environment', () => {
       });
     });
 
-    test('metric expression can render in a different account', () => {
+    test('math expression can render in a different account', () => {
       // GIVEN
       const b = new Metric({
         namespace: 'Test',
@@ -203,7 +203,7 @@ describe('cross environment', () => {
         Metrics: [
           {
             Expression: 'a + b',
-            Id: 'expr_1'
+            Id: 'expr_1',
           },
           {
             AccountId: '0000',
