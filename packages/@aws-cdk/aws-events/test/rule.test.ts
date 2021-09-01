@@ -1,23 +1,22 @@
 /* eslint-disable object-curly-newline */
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
-import { Test } from 'nodeunit';
 import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 /* eslint-disable quote-props */
 
-export = {
-  'default rule'(test: Test) {
+describe('rule', () => {
+  test('default rule', () => {
     const stack = new cdk.Stack();
 
     new Rule(stack, 'MyRule', {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
     });
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -28,10 +27,10 @@ export = {
         },
       },
     });
-    test.done();
-  },
 
-  'can get rule name'(test: Test) {
+  });
+
+  test('can get rule name', () => {
     const stack = new cdk.Stack();
     const rule = new Rule(stack, 'MyRule', {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
@@ -44,14 +43,14 @@ export = {
       },
     });
 
-    expect(stack).to(haveResource('Test::Resource', {
+    expect(stack).toHaveResource('Test::Resource', {
       RuleName: { Ref: 'MyRuleA44AB831' },
-    }));
+    });
 
-    test.done();
-  },
 
-  'get rate as token'(test: Test) {
+  });
+
+  test('get rate as token', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyScheduledStack');
     const lazyDuration = cdk.Duration.minutes(cdk.Lazy.number({ produce: () => 5 }));
@@ -62,29 +61,29 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
       'Name': 'rateInMinutes',
       'ScheduleExpression': 'rate(5 minutes)',
-    }));
+    });
 
-    test.done();
-  },
 
-  'Seconds is not an allowed value for Schedule rate'(test: Test) {
+  });
+
+  test('Seconds is not an allowed value for Schedule rate', () => {
     const lazyDuration = cdk.Duration.seconds(cdk.Lazy.number({ produce: () => 5 }));
-    test.throws(() => Schedule.rate(lazyDuration), /Allowed units for scheduling/i);
-    test.done();
-  },
+    expect(() => Schedule.rate(lazyDuration)).toThrow(/Allowed units for scheduling/i);
 
-  'Millis is not an allowed value for Schedule rate'(test: Test) {
+  });
+
+  test('Millis is not an allowed value for Schedule rate', () => {
     const lazyDuration = cdk.Duration.millis(cdk.Lazy.number({ produce: () => 5 }));
 
     // THEN
-    test.throws(() => Schedule.rate(lazyDuration), /Allowed units for scheduling/i);
-    test.done();
-  },
+    expect(() => Schedule.rate(lazyDuration)).toThrow(/Allowed units for scheduling/i);
 
-  'rule with physical name'(test: Test) {
+  });
+
+  test('rule with physical name', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -95,14 +94,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    expect(stack).toHaveResource('AWS::Events::Rule', {
       Name: 'PhysicalName',
-    }));
+    });
 
-    test.done();
-  },
 
-  'eventPattern is rendered properly'(test: Test) {
+  });
+
+  test('eventPattern is rendered properly', () => {
     const stack = new cdk.Stack();
 
     new Rule(stack, 'MyRule', {
@@ -121,7 +120,7 @@ export = {
       },
     });
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -143,18 +142,18 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'fails synthesis if neither eventPattern nor scheudleExpression are specified'(test: Test) {
+  });
+
+  test('fails synthesis if neither eventPattern nor scheudleExpression are specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     new Rule(stack, 'Rule');
-    test.throws(() => app.synth(), /Either 'eventPattern' or 'schedule' must be defined/);
-    test.done();
-  },
+    expect(() => app.synth()).toThrow(/Either 'eventPattern' or 'schedule' must be defined/);
 
-  'addEventPattern can be used to add filters'(test: Test) {
+  });
+
+  test('addEventPattern can be used to add filters', () => {
     const stack = new cdk.Stack();
 
     const rule = new Rule(stack, 'MyRule');
@@ -175,7 +174,7 @@ export = {
       },
     });
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -204,10 +203,10 @@ export = {
         },
       },
     });
-    test.done();
-  },
 
-  'addEventPattern can de-duplicate filters and keep the order'(test: Test) {
+  });
+
+  test('addEventPattern can de-duplicate filters and keep the order', () => {
     const stack = new cdk.Stack();
 
     const rule = new Rule(stack, 'MyRule');
@@ -219,7 +218,7 @@ export = {
       detailType: ['EC2 Instance State-change Notification', 'AWS API Call via CloudTrail'],
     });
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -235,10 +234,10 @@ export = {
         },
       },
     });
-    test.done();
-  },
 
-  'targets can be added via props or addTarget with input transformer'(test: Test) {
+  });
+
+  test('targets can be added via props or addTarget with input transformer', () => {
     const stack = new cdk.Stack();
     const t1: IRuleTarget = {
       bind: () => ({
@@ -263,7 +262,7 @@ export = {
 
     rule.addTarget(t2);
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'EventRule5A491D2C': {
           'Type': 'AWS::Events::Rule',
@@ -293,10 +292,10 @@ export = {
         },
       },
     });
-    test.done();
-  },
 
-  'input template can contain tokens'(test: Test) {
+  });
+
+  test('input template can contain tokens', () => {
     const stack = new cdk.Stack();
 
     const rule = new Rule(stack, 'EventRule', {
@@ -339,7 +338,7 @@ export = {
       }),
     });
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'EventRule5A491D2C': {
           'Type': 'AWS::Events::Rule',
@@ -381,10 +380,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'target can declare role which will be used'(test: Test) {
+  });
+
+  test('target can declare role which will be used', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -406,7 +405,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
       'Targets': [
         {
           'Arn': 'ARN2',
@@ -414,12 +413,12 @@ export = {
           'RoleArn': { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'in cross-account scenario, target role is only used in target account'(test: Test) {
+  });
+
+  test('in cross-account scenario, target role is only used in target account', () => {
     // GIVEN
     const app = new cdk.App();
     const ruleStack = new cdk.Stack(app, 'RuleStack', { env: { account: '1234', region: 'us-east-1' } });
@@ -444,7 +443,7 @@ export = {
     });
 
     // THEN
-    expect(ruleStack).to(haveResourceLike('AWS::Events::Rule', {
+    expect(ruleStack).toHaveResourceLike('AWS::Events::Rule', {
       Targets: [
         {
           Arn: { 'Fn::Join': ['', [
@@ -454,8 +453,8 @@ export = {
           ]] },
         },
       ],
-    }));
-    expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
+    });
+    expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
       'Targets': [
         {
           'Arn': 'ARN2',
@@ -463,12 +462,12 @@ export = {
           'RoleArn': { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'asEventRuleTarget can use the ruleArn and a uniqueId of the rule'(test: Test) {
+  });
+
+  test('asEventRuleTarget can use the ruleArn and a uniqueId of the rule', () => {
     const stack = new cdk.Stack();
 
     let receivedRuleArn = 'FAIL';
@@ -490,12 +489,12 @@ export = {
     const rule = new Rule(stack, 'EventRule');
     rule.addTarget(t1);
 
-    test.deepEqual(stack.resolve(receivedRuleArn), stack.resolve(rule.ruleArn));
-    test.deepEqual(receivedRuleId, cdk.Names.uniqueId(rule));
-    test.done();
-  },
+    expect(stack.resolve(receivedRuleArn)).toEqual(stack.resolve(rule.ruleArn));
+    expect(receivedRuleId).toEqual(cdk.Names.uniqueId(rule));
 
-  'fromEventRuleArn'(test: Test) {
+  });
+
+  test('fromEventRuleArn', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -503,12 +502,12 @@ export = {
     const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:aws:events:us-east-2:123456789012:rule/example');
 
     // THEN
-    test.deepEqual(importedRule.ruleArn, 'arn:aws:events:us-east-2:123456789012:rule/example');
-    test.deepEqual(importedRule.ruleName, 'example');
-    test.done();
-  },
+    expect(importedRule.ruleArn).toEqual('arn:aws:events:us-east-2:123456789012:rule/example');
+    expect(importedRule.ruleName).toEqual('example');
 
-  'rule can be disabled'(test: Test) {
+  });
+
+  test('rule can be disabled', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -519,14 +518,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    expect(stack).toHaveResource('AWS::Events::Rule', {
       'State': 'DISABLED',
-    }));
+    });
 
-    test.done();
-  },
 
-  'can add multiple targets with the same id'(test: Test) {
+  });
+
+  test('can add multiple targets with the same id', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new Rule(stack, 'Rule', {
@@ -537,7 +536,7 @@ export = {
     rule.addTarget(new SomeTarget());
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    expect(stack).toHaveResource('AWS::Events::Rule', {
       Targets: [
         {
           'Arn': 'ARN1',
@@ -554,12 +553,12 @@ export = {
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'sqsParameters are generated when they are specified in target props'(test: Test) {
+  });
+
+  test('sqsParameters are generated when they are specified in target props', () => {
     const stack = new cdk.Stack();
     const t1: IRuleTarget = {
       bind: () => ({
@@ -574,7 +573,7 @@ export = {
       targets: [t1],
     });
 
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    expect(stack).toHaveResource('AWS::Events::Rule', {
       Targets: [
         {
           'Arn': 'ARN1',
@@ -584,11 +583,11 @@ export = {
           },
         },
       ],
-    }));
-    test.done();
-  },
+    });
 
-  'associate rule with event bus'(test: Test) {
+  });
+
+  test('associate rule with event bus', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const eventBus = new EventBus(stack, 'EventBus');
@@ -602,30 +601,30 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    expect(stack).toHaveResource('AWS::Events::Rule', {
       EventBusName: {
         Ref: 'EventBus7B8748AA',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'throws with eventBus and schedule'(test: Test) {
+  });
+
+  test('throws with eventBus and schedule', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     const eventBus = new EventBus(stack, 'EventBus');
 
     // THEN
-    test.throws(() => new Rule(stack, 'MyRule', {
+    expect(() => new Rule(stack, 'MyRule', {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
       eventBus,
-    }), /Cannot associate rule with 'eventBus' when using 'schedule'/);
-    test.done();
-  },
+    })).toThrow(/Cannot associate rule with 'eventBus' when using 'schedule'/);
 
-  'allow an imported target if is in the same account and region'(test: Test) {
+  });
+
+  test('allow an imported target if is in the same account and region', () => {
     const app = new cdk.App();
 
     const sourceAccount = '123456789012';
@@ -641,7 +640,7 @@ export = {
 
     rule.addTarget(new SomeTarget('T', resource));
 
-    expect(sourceStack).to(haveResource('AWS::Events::Rule', {
+    expect(sourceStack).toHaveResource('AWS::Events::Rule', {
       Targets: [
         {
           'Arn': 'ARN1',
@@ -651,13 +650,13 @@ export = {
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'for cross-account and/or cross-region targets': {
-    'requires that the source stack specify a concrete account'(test: Test) {
+  });
+
+  describe('for cross-account and/or cross-region targets', () => {
+    test('requires that the source stack specify a concrete account', () => {
       const app = new cdk.App();
 
       const sourceStack = new cdk.Stack(app, 'SourceStack');
@@ -667,14 +666,14 @@ export = {
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount } });
       const resource = new Construct(targetStack, 'Resource');
 
-      test.throws(() => {
+      expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /You need to provide a concrete region/);
+      }).toThrow(/You need to provide a concrete region/);
 
-      test.done();
-    },
 
-    'requires that the target stack specify a concrete account'(test: Test) {
+    });
+
+    test('requires that the target stack specify a concrete account', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
@@ -684,14 +683,14 @@ export = {
       const targetStack = new cdk.Stack(app, 'TargetStack');
       const resource = new Construct(targetStack, 'Resource');
 
-      test.throws(() => {
+      expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /You need to provide a concrete account for the target stack when using cross-account or cross-region events/);
+      }).toThrow(/You need to provide a concrete account for the target stack when using cross-account or cross-region events/);
 
-      test.done();
-    },
 
-    'requires that the target stack specify a concrete region'(test: Test) {
+    });
+
+    test('requires that the target stack specify a concrete region', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
@@ -702,14 +701,14 @@ export = {
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount } });
       const resource = new Construct(targetStack, 'Resource');
 
-      test.throws(() => {
+      expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /You need to provide a concrete region for the target stack when using cross-account or cross-region events/);
+      }).toThrow(/You need to provide a concrete region for the target stack when using cross-account or cross-region events/);
 
-      test.done();
-    },
 
-    'creates cross-account targets if in the same region'(test: Test) {
+    });
+
+    test('creates cross-account targets if in the same region', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
@@ -728,7 +727,7 @@ export = {
 
       rule.addTarget(new SomeTarget('T', resource));
 
-      expect(sourceStack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
         'State': 'ENABLED',
         'Targets': [
           {
@@ -745,9 +744,9 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      expect(targetStack).to(haveResource('AWS::Events::Rule', {
+      expect(targetStack).toHaveResource('AWS::Events::Rule', {
         Targets: [
           {
             'Arn': 'ARN1',
@@ -757,12 +756,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'creates cross-region targets'(test: Test) {
+    });
+
+    test('creates cross-region targets', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
@@ -781,7 +780,7 @@ export = {
 
       rule.addTarget(new SomeTarget('T', resource));
 
-      expect(sourceStack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
         'State': 'ENABLED',
         'Targets': [
           {
@@ -798,9 +797,9 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      expect(targetStack).to(haveResource('AWS::Events::Rule', {
+      expect(targetStack).toHaveResource('AWS::Events::Rule', {
         Targets: [
           {
             'Arn': 'ARN1',
@@ -810,12 +809,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'do not create duplicated targets'(test: Test) {
+    });
+
+    test('do not create duplicated targets', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
@@ -836,7 +835,7 @@ export = {
       // same target should be skipped
       rule.addTarget(new SomeTarget('T1', resource));
 
-      expect(sourceStack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
         'State': 'ENABLED',
         'Targets': [
           {
@@ -853,9 +852,9 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      expect(sourceStack).notTo(haveResourceLike('AWS::Events::Rule', {
+      expect(sourceStack).not.toHaveResourceLike('AWS::Events::Rule', {
         'State': 'ENABLED',
         'Targets': [
           {
@@ -872,12 +871,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'requires that the target is not imported'(test: Test) {
+    });
+
+    test('requires that the target is not imported', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
@@ -892,14 +891,14 @@ export = {
       const targetAccount = '123456789012';
       const targetRegion = 'us-west-1';
       const resource = EventBus.fromEventBusArn(sourceStack, 'TargetEventBus', `arn:aws:events:${targetRegion}:${targetAccount}:event-bus/default`);
-      test.throws(() => {
+      expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /Cannot create a cross-account or cross-region rule for an imported resource/);
+      }).toThrow(/Cannot create a cross-account or cross-region rule for an imported resource/);
 
-      test.done();
-    },
 
-    'requires that the source and target stacks be part of the same App'(test: Test) {
+    });
+
+    test('requires that the source and target stacks be part of the same App', () => {
       const sourceApp = new cdk.App();
       const sourceAccount = '123456789012';
       const sourceStack = new cdk.Stack(sourceApp, 'SourceStack', { env: { account: sourceAccount, region: 'us-west-2' } });
@@ -910,14 +909,14 @@ export = {
       const targetStack = new cdk.Stack(targetApp, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
       const resource = new Construct(targetStack, 'Resource');
 
-      test.throws(() => {
+      expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /Event stack and target stack must belong to the same CDK app/);
+      }).toThrow(/Event stack and target stack must belong to the same CDK app/);
 
-      test.done();
-    },
 
-    'generates the correct rules in the source and target stacks when eventPattern is passed in the constructor'(test: Test) {
+    });
+
+    test('generates the correct rules in the source and target stacks when eventPattern is passed in the constructor', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
@@ -946,7 +945,7 @@ export = {
       rule.addTarget(new SomeTarget('T1', resource1));
       rule.addTarget(new SomeTarget('T2', resource2));
 
-      expect(sourceStack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -968,9 +967,9 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -983,8 +982,8 @@ export = {
             'Arn': 'ARN1',
           },
         ],
-      }));
-      expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
+      });
+      expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -997,19 +996,19 @@ export = {
             'Arn': 'ARN1',
           },
         ],
-      }));
+      });
 
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
-      expect(eventBusPolicyStack).to(haveResourceLike('AWS::Events::EventBusPolicy', {
+      expect(eventBusPolicyStack).toHaveResourceLike('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
         'StatementId': `Allow-account-${sourceAccount}`,
         'Principal': sourceAccount,
-      }));
+      });
 
-      test.done();
-    },
 
-    'generates the correct rule in the target stack when addEventPattern in the source rule is used'(test: Test) {
+    });
+
+    test('generates the correct rule in the target stack when addEventPattern in the source rule is used', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
@@ -1036,7 +1035,7 @@ export = {
         source: ['some-event'],
       });
 
-      expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -1049,12 +1048,12 @@ export = {
             'Arn': 'ARN1',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
-};
+
+    });
+  });
+});
 
 class SomeTarget implements IRuleTarget {
   // eslint-disable-next-line cdk/no-core-construct

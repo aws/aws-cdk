@@ -41,7 +41,7 @@ export class IntegrationTests {
   public async discover(): Promise<IntegrationTest[]> {
     const files = await this.readTree();
     const integs = files.filter(fileName => path.basename(fileName).startsWith('integ.') && path.basename(fileName).endsWith('.js'));
-    return await this.request(integs);
+    return this.request(integs);
   }
 
   public async request(files: string[]): Promise<IntegrationTest[]> {

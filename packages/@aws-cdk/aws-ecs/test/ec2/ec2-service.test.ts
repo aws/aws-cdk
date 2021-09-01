@@ -1,4 +1,5 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import { SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
@@ -8,14 +9,13 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
-nodeunitShim({
-  'When creating an EC2 Service': {
-    'with only required properties set, it correctly sets default properties'(test: Test) {
+describe('ec2 service', () => {
+  describe('When creating an EC2 Service', () => {
+    test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -34,7 +34,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -48,14 +48,14 @@ nodeunitShim({
         LaunchType: LaunchType.EC2,
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
-      }));
+      });
 
-      test.notEqual(service.node.defaultChild, undefined);
+      expect(service.node.defaultChild).toBeDefined();
 
-      test.done();
-    },
 
-    'allows setting enable execute command'(test: Test) {
+    });
+
+    test('allows setting enable execute command', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -75,7 +75,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -90,9 +90,9 @@ nodeunitShim({
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
         EnableExecuteCommand: true,
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -128,12 +128,12 @@ nodeunitShim({
             Ref: 'Ec2TaskDefTaskRole400FA349',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'no logging enabled when logging field is set to NONE'(test: Test) {
+    });
+
+    test('no logging enabled when logging field is set to NONE', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -166,7 +166,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -188,12 +188,12 @@ nodeunitShim({
             Ref: 'Ec2TaskDefTaskRole400FA349',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'enables execute command logging when logging field is set to OVERRIDE'(test: Test) {
+    });
+
+    test('enables execute command logging when logging field is set to OVERRIDE', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -229,7 +229,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -305,12 +305,12 @@ nodeunitShim({
             Ref: 'Ec2TaskDefTaskRole400FA349',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'enables only execute command session encryption'(test: Test) {
+    });
+
+    test('enables only execute command session encryption', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -349,7 +349,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -438,9 +438,9 @@ nodeunitShim({
             Ref: 'Ec2TaskDefTaskRole400FA349',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::KMS::Key', {
+      expect(stack).toHaveResource('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
@@ -488,12 +488,12 @@ nodeunitShim({
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'enables encryption for execute command logging'(test: Test) {
+    });
+
+    test('enables encryption for execute command logging', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -539,7 +539,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -643,9 +643,9 @@ nodeunitShim({
             Ref: 'Ec2TaskDefTaskRole400FA349',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::KMS::Key', {
+      expect(stack).toHaveResource('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
@@ -738,12 +738,12 @@ nodeunitShim({
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with custom cloudmap namespace'(test: Test) {
+    });
+
+    test('with custom cloudmap namespace', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -773,7 +773,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -799,19 +799,19 @@ nodeunitShim({
             'Id',
           ],
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
         Name: 'scorekeep.com',
         Vpc: {
           Ref: 'MyVpcF9F0CA6F',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with all properties set'(test: Test) {
+    });
+
+    test('with all properties set', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -864,7 +864,7 @@ nodeunitShim({
       service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -925,12 +925,12 @@ nodeunitShim({
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'with autoscaling group capacity provider'(test: Test) {
+    });
+
+    test('with autoscaling group capacity provider', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -970,7 +970,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         CapacityProviderStrategy: [
           {
             CapacityProvider: {
@@ -978,11 +978,11 @@ nodeunitShim({
             },
           },
         ],
-      }));
-      test.done();
-    },
+      });
 
-    'with multiple security groups, it correctly updates the cfn template'(test: Test) {
+    });
+
+    test('with multiple security groups, it correctly updates the cfn template', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1021,7 +1021,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -1059,9 +1059,9 @@ nodeunitShim({
         },
         SchedulingStrategy: 'REPLICA',
         ServiceName: 'bonjour',
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Example',
         GroupName: 'Bingo',
         SecurityGroupEgress: [
@@ -1074,9 +1074,9 @@ nodeunitShim({
         VpcId: {
           Ref: 'MyVpcF9F0CA6F',
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Example',
         GroupName: 'Rolly',
         SecurityGroupEgress: [
@@ -1091,12 +1091,12 @@ nodeunitShim({
         VpcId: {
           Ref: 'MyVpcF9F0CA6F',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws when both securityGroup and securityGroups are supplied'(test: Test) {
+    });
+
+    test('throws when both securityGroup and securityGroups are supplied', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1123,7 +1123,7 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
           taskDefinition,
@@ -1136,12 +1136,12 @@ nodeunitShim({
           serviceName: 'bonjour',
           vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
         });
-      }, /Only one of SecurityGroup or SecurityGroups can be populated./);
+      }).toThrow(/Only one of SecurityGroup or SecurityGroups can be populated./);
 
-      test.done();
-    },
 
-    'throws when task definition is not EC2 compatible'(test: Test) {
+    });
+
+    test('throws when task definition is not EC2 compatible', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1156,17 +1156,17 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
           taskDefinition,
         });
-      }, /Supplied TaskDefinition is not configured for compatibility with EC2/);
+      }).toThrow(/Supplied TaskDefinition is not configured for compatibility with EC2/);
 
-      test.done();
-    },
 
-    'ignore task definition and launch type if deployment controller is set to be EXTERNAL'(test: Test) {
+    });
+
+    test('ignore task definition and launch type if deployment controller is set to be EXTERNAL', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1188,8 +1188,8 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(service.node.metadata[0].data, 'taskDefinition and launchType are blanked out when using external deployment controller.');
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
         },
@@ -1199,12 +1199,12 @@ nodeunitShim({
         },
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
-      }));
+      });
 
-      test.done();
-    },
 
-    'errors if daemon and desiredCount both specified'(test: Test) {
+    });
+
+    test('errors if daemon and desiredCount both specified', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1217,19 +1217,19 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
           taskDefinition,
           daemon: true,
           desiredCount: 2,
         });
-      }, /Don't supply desiredCount/);
+      }).toThrow(/Don't supply desiredCount/);
 
-      test.done();
-    },
 
-    'errors if daemon and maximumPercent not 100'(test: Test) {
+    });
+
+    test('errors if daemon and maximumPercent not 100', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1242,19 +1242,19 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
           taskDefinition,
           daemon: true,
           maxHealthyPercent: 300,
         });
-      }, /Maximum percent must be 100 for daemon mode./);
+      }).toThrow(/Maximum percent must be 100 for daemon mode./);
 
-      test.done();
-    },
 
-    'errors if minimum not less than maximum'(test: Test) {
+    });
+
+    test('errors if minimum not less than maximum', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1267,7 +1267,7 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
           taskDefinition,
@@ -1275,12 +1275,12 @@ nodeunitShim({
           minHealthyPercent: 100,
           maxHealthyPercent: 100,
         });
-      }, /Minimum healthy percent must be less than maximum healthy percent./);
+      }).toThrow(/Minimum healthy percent must be less than maximum healthy percent./);
 
-      test.done();
-    },
 
-    'errors if no container definitions'(test: Test) {
+    });
+
+    test('errors if no container definitions', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1294,14 +1294,14 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
-        expect(stack);
-      }, /one essential container/);
+      expect(() => {
+        SynthUtils.synthesize(stack);
+      }).toThrow(/one essential container/);
 
-      test.done();
-    },
 
-    'allows adding the default container after creating the service'(test: Test) {
+    });
+
+    test('allows adding the default container after creating the service', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1321,18 +1321,18 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Name: 'main',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'sets daemon scheduling strategy'(test: Test) {
+    });
+
+    test('sets daemon scheduling strategy', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1352,19 +1352,19 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         SchedulingStrategy: 'DAEMON',
         DeploymentConfiguration: {
           MaximumPercent: 100,
           MinimumHealthyPercent: 0,
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with a TaskDefinition with Bridge network mode': {
-      'it errors if vpcSubnets is specified'(test: Test) {
+    });
+
+    describe('with a TaskDefinition with Bridge network mode', () => {
+      test('it errors if vpcSubnets is specified', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1380,7 +1380,7 @@ nodeunitShim({
         });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           new ecs.Ec2Service(stack, 'Ec2Service', {
             cluster,
             taskDefinition,
@@ -1391,10 +1391,10 @@ nodeunitShim({
         });
 
         // THEN
-        test.done();
-      },
 
-      'it errors if assignPublicIp is true'(test: Test) {
+      });
+
+      test('it errors if assignPublicIp is true', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1410,19 +1410,19 @@ nodeunitShim({
         });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           new ecs.Ec2Service(stack, 'Ec2Service', {
             cluster,
             taskDefinition,
             assignPublicIp: true,
           });
-        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
+        }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-        test.done();
-      },
 
-      'it errors if vpc subnets is provided'(test: Test) {
+      });
+
+      test('it errors if vpc subnets is provided', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1442,7 +1442,7 @@ nodeunitShim({
         });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           new ecs.Ec2Service(stack, 'Ec2Service', {
             cluster,
             taskDefinition,
@@ -1450,13 +1450,13 @@ nodeunitShim({
               subnets: [subnet],
             },
           });
-        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
+        }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-        test.done();
-      },
 
-      'it errors if security group is provided'(test: Test) {
+      });
+
+      test('it errors if security group is provided', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1472,19 +1472,19 @@ nodeunitShim({
         });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           new ecs.Ec2Service(stack, 'Ec2Service', {
             cluster,
             taskDefinition,
             securityGroup,
           });
-        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
+        }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-        test.done();
-      },
 
-      'it errors if multiple security groups is provided'(test: Test) {
+      });
+
+      test('it errors if multiple security groups is provided', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1503,21 +1503,21 @@ nodeunitShim({
         });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           new ecs.Ec2Service(stack, 'Ec2Service', {
             cluster,
             taskDefinition,
             securityGroups,
           });
-        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
+        }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-        test.done();
-      },
-    },
 
-    'with a TaskDefinition with AwsVpc network mode': {
-      'it creates a security group for the service'(test: Test) {
+      });
+    });
+
+    describe('with a TaskDefinition with AwsVpc network mode', () => {
+      test('it creates a security group for the service', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1538,7 +1538,7 @@ nodeunitShim({
         });
 
         // THEN
-        expect(stack).to(haveResource('AWS::ECS::Service', {
+        expect(stack).toHaveResource('AWS::ECS::Service', {
           NetworkConfiguration: {
             AwsvpcConfiguration: {
               AssignPublicIp: 'DISABLED',
@@ -1560,12 +1560,12 @@ nodeunitShim({
               ],
             },
           },
-        }));
+        });
 
-        test.done();
-      },
 
-      'it allows vpcSubnets'(test: Test) {
+      });
+
+      test('it allows vpcSubnets', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1589,11 +1589,11 @@ nodeunitShim({
         });
 
         // THEN
-        test.done();
-      },
-    },
 
-    'with distinctInstance placement constraint'(test: Test) {
+      });
+    });
+
+    test('with distinctInstance placement constraint', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1613,16 +1613,16 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         PlacementConstraints: [{
           Type: 'distinctInstance',
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'with memberOf placement constraints'(test: Test) {
+    });
+
+    test('with memberOf placement constraints', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1643,17 +1643,17 @@ nodeunitShim({
       service.addPlacementConstraints(PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         PlacementConstraints: [{
           Expression: 'attribute:ecs.instance-type =~ t2.*',
           Type: 'memberOf',
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'with spreadAcross container instances strategy'(test: Test) {
+    });
+
+    test('with spreadAcross container instances strategy', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1675,17 +1675,17 @@ nodeunitShim({
       service.addPlacementStrategies(PlacementStrategy.spreadAcrossInstances());
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'instanceId',
           Type: 'spread',
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'with spreadAcross placement strategy'(test: Test) {
+    });
+
+    test('with spreadAcross placement strategy', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1706,36 +1706,36 @@ nodeunitShim({
       service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'attribute:ecs.availability-zone',
           Type: 'spread',
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'can turn PlacementStrategy into json format'(test: Test) {
+    });
+
+    test('can turn PlacementStrategy into json format', () => {
       // THEN
-      test.deepEqual(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE).toJson(), [{
+      expect(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE).toJson()).toEqual([{
         type: 'spread',
         field: 'attribute:ecs.availability-zone',
       }]);
 
-      test.done();
-    },
 
-    'can turn PlacementConstraints into json format'(test: Test) {
+    });
+
+    test('can turn PlacementConstraints into json format', () => {
       // THEN
-      test.deepEqual(PlacementConstraint.distinctInstances().toJson(), [{
+      expect(PlacementConstraint.distinctInstances().toJson()).toEqual([{
         type: 'distinctInstance',
       }]);
 
-      test.done();
-    },
 
-    'errors when spreadAcross with no input'(test: Test) {
+    });
+
+    test('errors when spreadAcross with no input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1754,14 +1754,14 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         service.addPlacementStrategies(PlacementStrategy.spreadAcross());
-      }, 'spreadAcross: give at least one field to spread by');
+      }).toThrow('spreadAcross: give at least one field to spread by');
 
-      test.done();
-    },
 
-    'errors with spreadAcross placement strategy if daemon specified'(test: Test) {
+    });
+
+    test('errors with spreadAcross placement strategy if daemon specified', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1781,14 +1781,14 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
       });
 
-      test.done();
-    },
 
-    'with no placement constraints'(test: Test) {
+    });
+
+    test('with no placement constraints', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1807,14 +1807,14 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).notTo(haveResource('AWS::ECS::Service', {
+      expect(stack).not.toHaveResource('AWS::ECS::Service', {
         PlacementConstraints: undefined,
-      }));
+      });
 
-      test.done();
-    },
 
-    'with both propagateTags and propagateTaskTagsFrom defined'(test: Test) {
+    });
+
+    test('with both propagateTags and propagateTaskTagsFrom defined', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1827,18 +1827,18 @@ nodeunitShim({
         memoryLimitMiB: 512,
       });
 
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
           taskDefinition,
           propagateTags: PropagatedTagSource.SERVICE,
           propagateTaskTagsFrom: PropagatedTagSource.SERVICE,
         });
-      }, /You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/);
-      test.done();
-    },
+      }).toThrow(/You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/);
 
-    'with no placement strategy if daemon specified'(test: Test) {
+    });
+
+    test('with no placement strategy if daemon specified', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1858,14 +1858,14 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).notTo(haveResource('AWS::ECS::Service', {
+      expect(stack).not.toHaveResource('AWS::ECS::Service', {
         PlacementStrategies: undefined,
-      }));
+      });
 
-      test.done();
-    },
 
-    'with random placement strategy'(test: Test) {
+    });
+
+    test('with random placement strategy', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc');
@@ -1886,16 +1886,16 @@ nodeunitShim({
       service.addPlacementStrategies(PlacementStrategy.randomly());
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         PlacementStrategies: [{
           Type: 'random',
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'errors with random placement strategy if daemon specified'(test: Test) {
+    });
+
+    test('errors with random placement strategy if daemon specified', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc');
@@ -1915,14 +1915,14 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         service.addPlacementStrategies(PlacementStrategy.randomly());
-      });
+      }).toThrow();
 
-      test.done();
-    },
 
-    'with packedbyCpu placement strategy'(test: Test) {
+    });
+
+    test('with packedbyCpu placement strategy', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1943,17 +1943,17 @@ nodeunitShim({
       service.addPlacementStrategies(PlacementStrategy.packedByCpu());
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'cpu',
           Type: 'binpack',
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'with packedbyMemory placement strategy'(test: Test) {
+    });
+
+    test('with packedbyMemory placement strategy', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1974,17 +1974,17 @@ nodeunitShim({
       service.addPlacementStrategies(PlacementStrategy.packedByMemory());
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'memory',
           Type: 'binpack',
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'with packedBy placement strategy'(test: Test) {
+    });
+
+    test('with packedBy placement strategy', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2005,17 +2005,17 @@ nodeunitShim({
       service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'memory',
           Type: 'binpack',
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'errors with packedBy placement strategy if daemon specified'(test: Test) {
+    });
+
+    test('errors with packedBy placement strategy if daemon specified', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2035,16 +2035,16 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
-      });
+      }).toThrow();
 
-      test.done();
-    },
-  },
 
-  'attachToClassicLB': {
-    'allows network mode of task definition to be host'(test: Test) {
+    });
+  });
+
+  describe('attachToClassicLB', () => {
+    test('allows network mode of task definition to be host', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2065,10 +2065,10 @@ nodeunitShim({
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       service.attachToClassicLB(lb);
 
-      test.done();
-    },
 
-    'allows network mode of task definition to be bridge'(test: Test) {
+    });
+
+    test('allows network mode of task definition to be bridge', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2089,10 +2089,10 @@ nodeunitShim({
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       service.attachToClassicLB(lb);
 
-      test.done();
-    },
 
-    'throws when network mode of task definition is AwsVpc'(test: Test) {
+    });
+
+    test('throws when network mode of task definition is AwsVpc', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2111,14 +2111,14 @@ nodeunitShim({
 
       // THEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
-      test.throws(() => {
+      expect(() => {
         service.attachToClassicLB(lb);
-      }, /Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead./);
+      }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead./);
 
-      test.done();
-    },
 
-    'throws when network mode of task definition is none'(test: Test) {
+    });
+
+    test('throws when network mode of task definition is none', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2137,16 +2137,16 @@ nodeunitShim({
 
       // THEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
-      test.throws(() => {
+      expect(() => {
         service.attachToClassicLB(lb);
-      }, /Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead./);
+      }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead./);
 
-      test.done();
-    },
-  },
 
-  'attachToApplicationTargetGroup': {
-    'allows network mode of task definition to be other than none'(test: Test) {
+    });
+  });
+
+  describe('attachToApplicationTargetGroup', () => {
+    test('allows network mode of task definition to be other than none', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2171,10 +2171,10 @@ nodeunitShim({
       // THEN
       service.attachToApplicationTargetGroup(targetGroup);
 
-      test.done();
-    },
 
-    'throws when network mode of task definition is none'(test: Test) {
+    });
+
+    test('throws when network mode of task definition is none', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2197,15 +2197,15 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         service.attachToApplicationTargetGroup(targetGroup);
-      }, /Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
+      }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
 
-      test.done();
-    },
 
-    'correctly setting ingress and egress port': {
-      'with bridge/NAT network mode and 0 host port'(test: Test) {
+    });
+
+    describe('correctly setting ingress and egress port', () => {
+      test('with bridge/NAT network mode and 0 host port', () => {
         [ecs.NetworkMode.BRIDGE, ecs.NetworkMode.NAT].forEach((networkMode: ecs.NetworkMode) => {
           // GIVEN
           const stack = new cdk.Stack();
@@ -2237,23 +2237,23 @@ nodeunitShim({
           });
 
           // THEN
-          expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+          expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
             Description: 'Load balancer to target',
             FromPort: 32768,
             ToPort: 65535,
-          }));
+          });
 
-          expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+          expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
             Description: 'Load balancer to target',
             FromPort: 32768,
             ToPort: 65535,
-          }));
+          });
         });
 
-        test.done();
-      },
 
-      'with bridge/NAT network mode and host port other than 0'(test: Test) {
+      });
+
+      test('with bridge/NAT network mode and host port other than 0', () => {
         [ecs.NetworkMode.BRIDGE, ecs.NetworkMode.NAT].forEach((networkMode: ecs.NetworkMode) => {
           // GIVEN
           const stack = new cdk.Stack();
@@ -2285,23 +2285,23 @@ nodeunitShim({
           });
 
           // THEN
-          expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+          expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
             Description: 'Load balancer to target',
             FromPort: 80,
             ToPort: 80,
-          }));
+          });
 
-          expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+          expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
             Description: 'Load balancer to target',
             FromPort: 80,
             ToPort: 80,
-          }));
+          });
         });
 
-        test.done();
-      },
 
-      'with host network mode'(test: Test) {
+      });
+
+      test('with host network mode', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2332,22 +2332,22 @@ nodeunitShim({
         });
 
         // THEN
-        expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+        expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
-        }));
+        });
 
-        expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+        expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
-        }));
+        });
 
-        test.done();
-      },
 
-      'with aws_vpc network mode'(test: Test) {
+      });
+
+      test('with aws_vpc network mode', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2378,25 +2378,25 @@ nodeunitShim({
         });
 
         // THEN
-        expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+        expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
-        }));
+        });
 
-        expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+        expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
-        }));
+        });
 
-        test.done();
-      },
-    },
-  },
 
-  'attachToNetworkTargetGroup': {
-    'allows network mode of task definition to be other than none'(test: Test) {
+      });
+    });
+  });
+
+  describe('attachToNetworkTargetGroup', () => {
+    test('allows network mode of task definition to be other than none', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2421,10 +2421,10 @@ nodeunitShim({
       // THEN
       service.attachToNetworkTargetGroup(targetGroup);
 
-      test.done();
-    },
 
-    'throws when network mode of task definition is none'(test: Test) {
+    });
+
+    test('throws when network mode of task definition is none', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2447,16 +2447,16 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         service.attachToNetworkTargetGroup(targetGroup);
-      }, /Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
+      }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
 
-      test.done();
-    },
-  },
 
-  'classic ELB': {
-    'can attach to classic ELB'(test: Test) {
+    });
+  });
+
+  describe('classic ELB', () => {
+    test('can attach to classic ELB', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2478,7 +2478,7 @@ nodeunitShim({
       lb.addTarget(service);
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         LoadBalancers: [
           {
             ContainerName: 'web',
@@ -2486,18 +2486,18 @@ nodeunitShim({
             LoadBalancerName: { Ref: 'LB8A12904C' },
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         // if any load balancer is configured and healthCheckGracePeriodSeconds is not
         // set, then it should default to 60 seconds.
         HealthCheckGracePeriodSeconds: 60,
-      }));
+      });
 
-      test.done();
-    },
 
-    'can attach any container and port as a target'(test: Test) {
+    });
+
+    test('can attach any container and port as a target', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2523,7 +2523,7 @@ nodeunitShim({
       }));
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         LoadBalancers: [
           {
             ContainerName: 'web',
@@ -2531,14 +2531,14 @@ nodeunitShim({
             LoadBalancerName: { Ref: 'LB8A12904C' },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'When enabling service discovery': {
-    'throws if namespace has not been added to cluster'(test: Test) {
+    });
+  });
+
+  describe('When enabling service discovery', () => {
+    test('throws if namespace has not been added to cluster', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2554,7 +2554,7 @@ nodeunitShim({
       container.addPortMappings({ containerPort: 8000 });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
@@ -2562,12 +2562,12 @@ nodeunitShim({
             name: 'myApp',
           },
         });
-      }, /Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
+      }).toThrow(/Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
 
-      test.done();
-    },
 
-    'throws if network mode is none'(test: Test) {
+    });
+
+    test('throws if network mode is none', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2585,7 +2585,7 @@ nodeunitShim({
       cluster.addDefaultCloudMapNamespace({ name: 'foo.com' });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
@@ -2593,12 +2593,12 @@ nodeunitShim({
             name: 'myApp',
           },
         });
-      }, /Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
+      }).toThrow(/Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
 
-      test.done();
-    },
 
-    'creates AWS Cloud Map service for Private DNS namespace with bridge network mode'(test: Test) {
+    });
+
+    test('creates AWS Cloud Map service for Private DNS namespace with bridge network mode', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2628,7 +2628,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'MainContainer',
@@ -2641,9 +2641,9 @@ nodeunitShim({
             },
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2669,12 +2669,12 @@ nodeunitShim({
             'Id',
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'creates AWS Cloud Map service for Private DNS namespace with host network mode'(test: Test) {
+    });
+
+    test('creates AWS Cloud Map service for Private DNS namespace with host network mode', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2705,7 +2705,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'MainContainer',
@@ -2718,9 +2718,9 @@ nodeunitShim({
             },
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2746,12 +2746,12 @@ nodeunitShim({
             'Id',
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws if wrong DNS record type specified with bridge network mode'(test: Test) {
+    });
+
+    test('throws if wrong DNS record type specified with bridge network mode', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2771,7 +2771,7 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
@@ -2780,12 +2780,12 @@ nodeunitShim({
             dnsRecordType: cloudmap.DnsRecordType.A,
           },
         });
-      }, /SRV records must be used when network mode is Bridge or Host./);
+      }).toThrow(/SRV records must be used when network mode is Bridge or Host./);
 
-      test.done();
-    },
 
-    'creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode'(test: Test) {
+    });
+
+    test('creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2816,7 +2816,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             RegistryArn: {
@@ -2827,9 +2827,9 @@ nodeunitShim({
             },
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2855,12 +2855,12 @@ nodeunitShim({
             'Id',
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode with SRV records'(test: Test) {
+    });
+
+    test('creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode with SRV records', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2892,7 +2892,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'MainContainer',
@@ -2905,9 +2905,9 @@ nodeunitShim({
             },
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2933,12 +2933,12 @@ nodeunitShim({
             'Id',
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'user can select any container and port'(test: Test) {
+    });
+
+    test('user can select any container and port', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2976,7 +2976,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
@@ -2984,12 +2984,12 @@ nodeunitShim({
             ContainerPort: 8001,
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'By default, the container name is the default'(test: Test) {
+    });
+
+    test('By default, the container name is the default', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3021,17 +3021,17 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
         ServiceRegistries: [{
           ContainerName: 'main',
           ContainerPort: undefined,
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'For SRV, by default, container name is default container and port is the default container port'(test: Test) {
+    });
+
+    test('For SRV, by default, container name is default container and port is the default container port', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3065,17 +3065,17 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
         ServiceRegistries: [{
           ContainerName: 'main',
           ContainerPort: 1234,
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'allows SRV service discovery to select the container and port'(test: Test) {
+    });
+
+    test('allows SRV service discovery to select the container and port', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3112,17 +3112,17 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
         ServiceRegistries: [{
           ContainerName: 'second',
           ContainerPort: 4321,
         }],
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws if SRV and container is not part of task definition'(test: Test) {
+    });
+
+    test('throws if SRV and container is not part of task definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3150,7 +3150,7 @@ nodeunitShim({
       });
 
       // WHEN
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
@@ -3160,12 +3160,12 @@ nodeunitShim({
             containerPort: 4321,
           },
         });
-      }, /another task definition/i);
+      }).toThrow(/another task definition/i);
 
-      test.done();
-    },
 
-    'throws if SRV and the container port is not mapped'(test: Test) {
+    });
+
+    test('throws if SRV and the container port is not mapped', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -3185,7 +3185,7 @@ nodeunitShim({
 
       container.addPortMappings({ containerPort: 8000 });
 
-      test.throws(() => {
+      expect(() => {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
@@ -3195,13 +3195,13 @@ nodeunitShim({
             containerPort: 4321,
           },
         });
-      }, /container port.*not.*mapped/i);
+      }).toThrow(/container port.*not.*mapped/i);
 
-      test.done();
-    },
-  },
 
-  'Metric'(test: Test) {
+    });
+  });
+
+  test('Metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3219,7 +3219,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(stack.resolve(service.metricMemoryUtilization()), {
+    expect(stack.resolve(service.metricMemoryUtilization())).toEqual({
       dimensions: {
         ClusterName: { Ref: 'EcsCluster97242B84' },
         ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] },
@@ -3230,7 +3230,7 @@ nodeunitShim({
       statistic: 'Average',
     });
 
-    test.deepEqual(stack.resolve(service.metricCpuUtilization()), {
+    expect(stack.resolve(service.metricCpuUtilization())).toEqual({
       dimensions: {
         ClusterName: { Ref: 'EcsCluster97242B84' },
         ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] },
@@ -3241,11 +3241,11 @@ nodeunitShim({
       statistic: 'Average',
     });
 
-    test.done();
-  },
 
-  'When import an EC2 Service': {
-    'with serviceArn'(test: Test) {
+  });
+
+  describe('When import an EC2 Service', () => {
+    test('with serviceArn', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
@@ -3257,13 +3257,13 @@ nodeunitShim({
       });
 
       // THEN
-      test.equal(service.serviceArn, 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
-      test.equal(service.serviceName, 'my-http-service');
+      expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+      expect(service.serviceName).toEqual('my-http-service');
 
-      test.done();
-    },
 
-    'with serviceName'(test: Test) {
+    });
+
+    test('with serviceName', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const pseudo = new cdk.ScopedAws(stack);
@@ -3276,40 +3276,40 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(stack.resolve(service.serviceArn), stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
-      test.equal(service.serviceName, 'my-http-service');
+      expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
+      expect(service.serviceName).toEqual('my-http-service');
 
-      test.done();
-    },
 
-    'throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
+    });
+
+    test('throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
-      test.throws(() => {
+      expect(() => {
         ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
           serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
           serviceName: 'my-http-service',
           cluster,
         });
-      }, /only specify either serviceArn or serviceName/);
+      }).toThrow(/only specify either serviceArn or serviceName/);
 
-      test.done();
-    },
 
-    'throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
+    });
+
+    test('throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
-      test.throws(() => {
+      expect(() => {
         ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
           cluster,
         });
-      }, /only specify either serviceArn or serviceName/);
+      }).toThrow(/only specify either serviceArn or serviceName/);
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });
