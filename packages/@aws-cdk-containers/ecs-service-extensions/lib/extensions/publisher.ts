@@ -14,6 +14,10 @@ import { Construct } from '@aws-cdk/core';
  */
 export interface IPublisher {
   publish(taskDefinition: ecs.TaskDefinition): void;
+
+  envVarKey(): string;
+
+  envVarValue(): string;
 }
 
 /**
@@ -59,6 +63,14 @@ export class PublisherTopic implements IPublisher {
 
   public publish(taskDefinition: ecs.TaskDefinition) {
     this.topic.grantPublish(taskDefinition.taskRole);
+  }
+
+  public envVarKey(): string {
+    return this.topic.node.id;
+  }
+
+  public envVarValue(): string {
+    return this.topic.topicArn;
   }
 }
 
@@ -124,9 +136,7 @@ export class PublisherExtension extends ServiceExtension {
     this.parentService = service;
 
     for (const resource of this.props.publishers) {
-      if (resource instanceof PublisherTopic) {
-        this.environment[`${service.id.toUpperCase()}_${resource.topic.node.id.toUpperCase()}_ARN`] = resource.topic.topicArn;
-      }
+      this.environment[`${service.id.toUpperCase()}_${resource.envVarKey().toUpperCase()}_ARN`] = resource.envVarValue();
     }
   }
 
