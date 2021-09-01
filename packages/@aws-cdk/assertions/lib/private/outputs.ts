@@ -12,20 +12,25 @@ export function findOutputs(inspector: StackInspector, props: any = {}): { [key:
   return result.matches;
 }
 
-export function hasOutput(inspector: StackInspector, props: any): string | void {
+export function hasOutput(inspector: StackInspector, outputName: string, props: any): string | void {
   const section: { [key: string]: {} } = inspector.value.Outputs;
-  const result = matchSection(section, props);
-
+  const result = matchSection(filterName(section, outputName), props);
   if (result.match) {
     return;
   }
 
   if (result.closestResult === undefined) {
-    return 'No outputs found in the template';
+    return `No outputs named ${outputName} found in the template.`;
   }
 
   return [
-    `Template has ${result.analyzedCount} outputs, but none match as expected.`,
+    `Template has ${result.analyzedCount} outputs named ${outputName}, but none match as expected.`,
     formatFailure(result.closestResult),
   ].join('\n');
+}
+
+function filterName(section: { [key: string]: {} }, outputName: string): { [key: string]: {} } {
+  return Object.entries(section ?? {})
+    .filter(([k, _]) => k === outputName)
+    .reduce((agg, [k, v]) => { return { ...agg, [k]: v }; }, {});
 }
