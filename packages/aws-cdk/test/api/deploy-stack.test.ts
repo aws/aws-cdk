@@ -97,6 +97,35 @@ test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
   expect(tryHotswapDeployment).not.toHaveBeenCalled();
 });
 
+test("rollback defaults to disabled if 'hotswap' is true", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: true,
+    rollback: undefined,
+  });
+
+  // THEN
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    DisableRollback: true,
+  }));
+});
+
+test("rollback defaults to enabled if 'hotswap' is false", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: false,
+    rollback: undefined,
+  });
+
+  // THEN
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalledTimes(1);
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
+    DisableRollback: expect.anything(),
+  }));
+});
+
 test('do deploy executable change set with 0 changes', async () => {
   // WHEN
   const ret = await deployStack({
