@@ -1,13 +1,11 @@
-import * as cdkassert from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import '@aws-cdk/assert-internal/jest';
 import * as glue from '../lib';
-import { PythonVersion } from '../lib';
 
 describe('GlueVersion', () => {
   test('.V0_9', () => expect(glue.GlueVersion.V0_9.name).toEqual('0.9'));
@@ -112,7 +110,7 @@ describe('Job', () => {
       test('should create a role and use it with the job', () => {
         // check the role
         expect(job.role).toBeDefined();
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::IAM::Role', {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
             Statement: [
               {
@@ -139,10 +137,10 @@ describe('Job', () => {
               ],
             },
           ],
-        }));
+        });
 
         // check the job using the role
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           Command: {
             Name: 'glueetl',
             ScriptLocation: 's3://bucketName/script',
@@ -153,7 +151,7 @@ describe('Job', () => {
               'Arn',
             ],
           },
-        }));
+        });
       });
 
       test('should return correct jobName and jobArn from CloudFormation', () => {
@@ -172,16 +170,16 @@ describe('Job', () => {
         job = new glue.Job(stack, 'JobWithRole', {
           executable: glue.JobExecutable.pythonEtl({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.THREE,
+            pythonVersion: glue.PythonVersion.THREE,
             script,
           }),
           role,
         });
 
         expect(job.role).toEqual(role);
-        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           Role: role.roleArn,
-        }));
+        });
       });
 
       test('with a custom jobName should set it in CloudFormation', () => {
@@ -194,9 +192,9 @@ describe('Job', () => {
           jobName,
         });
 
-        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           Name: jobName,
-        }));
+        });
       });
     });
 
@@ -213,12 +211,12 @@ describe('Job', () => {
       });
 
       test('should set minimal default arguments', () => {
-        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           DefaultArguments: {
             '--enable-continuous-cloudwatch-log': 'true',
             '--enable-continuous-log-filter': 'true',
           },
-        }));
+        });
       });
     });
 
@@ -244,7 +242,7 @@ describe('Job', () => {
       });
 
       test('should set all arguments', () => {
-        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           DefaultArguments: {
             '--enable-continuous-cloudwatch-log': 'true',
             '--enable-continuous-log-filter': 'false',
@@ -252,11 +250,11 @@ describe('Job', () => {
             '--continuous-log-logStreamPrefix': 'LogStreamPrefix',
             '--continuous-log-conversionPattern': '%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n',
           },
-        }));
+        });
       });
 
       test('should grant cloudwatch log write permissions', () => {
-        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::IAM::Policy', {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
@@ -293,7 +291,7 @@ describe('Job', () => {
               Ref: 'JobServiceRole4F432993',
             },
           ],
-        }));
+        });
       });
     });
 
@@ -310,11 +308,11 @@ describe('Job', () => {
       });
 
       test('should create spark ui bucket', () => {
-        cdkassert.expect(stack).to(cdkassert.countResources('AWS::S3::Bucket', 1));
+        Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
       });
 
       test('should grant the role read/write permissions to the spark ui bucket', () => {
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::IAM::Policy', {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
@@ -359,11 +357,11 @@ describe('Job', () => {
               Ref: 'JobServiceRole4F432993',
             },
           ],
-        }));
+        });
       });
 
       test('should set spark arguments on the job', () => {
-        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           DefaultArguments: {
             '--enable-spark-ui': 'true',
             '--spark-event-logs-path': {
@@ -378,7 +376,7 @@ describe('Job', () => {
               ],
             },
           },
-        }));
+        });
       });
     });
 
@@ -403,7 +401,7 @@ describe('Job', () => {
       });
 
       test('should grant the role read/write permissions to the provided spark ui bucket', () => {
-        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::IAM::Policy', {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
@@ -450,16 +448,16 @@ describe('Job', () => {
               Ref: 'JobServiceRole4F432993',
             },
           ],
-        }));
+        });
       });
 
       test('should set spark arguments on the job', () => {
-        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           DefaultArguments: {
             '--enable-spark-ui': 'true',
             '--spark-event-logs-path': `s3://${bucketName}`,
           },
-        }));
+        });
       });
     });
 
@@ -487,12 +485,12 @@ describe('Job', () => {
       });
 
       test('should set spark arguments on the job', () => {
-        cdkassert.expect(stack).to(cdkassert.haveResourceLike('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           DefaultArguments: {
             '--enable-spark-ui': 'true',
             '--spark-event-logs-path': `s3://${bucketName}/${prefix}`,
           },
-        }));
+        });
       });
     });
 
@@ -503,7 +501,7 @@ describe('Job', () => {
           description: 'test job',
           executable: glue.JobExecutable.pythonStreaming({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.THREE,
+            pythonVersion: glue.PythonVersion.THREE,
             script,
           }),
           workerType: glue.WorkerType.G_2X,
@@ -526,7 +524,7 @@ describe('Job', () => {
       });
 
       test('should synthesize correctly', () => {
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           Command: {
             Name: 'gluestreaming',
             ScriptLocation: 's3://bucketName/script',
@@ -566,7 +564,7 @@ describe('Job', () => {
             ],
           },
           SecurityConfiguration: 'SecurityConfigurationName',
-        }));
+        });
       });
     });
 
@@ -576,26 +574,26 @@ describe('Job', () => {
         new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.pythonShell({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.THREE,
+            pythonVersion: glue.PythonVersion.THREE,
             script,
           }),
         });
 
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           Command: {
             Name: 'pythonshell',
             ScriptLocation: 's3://bucketName/script',
             PythonVersion: '3',
           },
           GlueVersion: '2.0',
-        }));
+        });
       });
 
       test('with unsupported glue version throws', () => {
         expect(() => new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.pythonShell({
             glueVersion: glue.GlueVersion.V0_9,
-            pythonVersion: PythonVersion.TWO,
+            pythonVersion: glue.PythonVersion.TWO,
             script,
           }),
         })).toThrow('Specified GlueVersion 0.9 does not support Python Shell');
@@ -605,7 +603,7 @@ describe('Job', () => {
         expect(() => new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.pythonShell({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.THREE,
+            pythonVersion: glue.PythonVersion.THREE,
             script,
           }),
           sparkUI: { enabled: true },
@@ -616,14 +614,14 @@ describe('Job', () => {
         new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.pythonShell({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.THREE,
+            pythonVersion: glue.PythonVersion.THREE,
             script,
             extraPythonFiles,
             extraFiles,
           }),
         });
 
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           Command: {
             Name: 'pythonshell',
             ScriptLocation: 's3://bucketName/script',
@@ -635,7 +633,7 @@ describe('Job', () => {
             '--extra-py-files': 's3://bucketName/file1.py,s3://bucketName/file2.py',
             '--extra-files': 's3://bucketName/file1.txt,s3://bucketName/file2.txt',
           },
-        }));
+        });
       });
     });
 
@@ -645,13 +643,13 @@ describe('Job', () => {
         new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.pythonEtl({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.THREE,
+            pythonVersion: glue.PythonVersion.THREE,
             script,
           }),
         });
 
         // check the job using the role
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           GlueVersion: '2.0',
           Command: {
             Name: 'glueetl',
@@ -667,14 +665,14 @@ describe('Job', () => {
           DefaultArguments: {
             '--job-language': 'python',
           },
-        }));
+        });
       });
 
       test('with all props should synthesize correctly', () => {
         new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.pythonEtl({
             glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: PythonVersion.THREE,
+            pythonVersion: glue.PythonVersion.THREE,
             extraJarsFirst: true,
             script,
             extraPythonFiles,
@@ -683,7 +681,7 @@ describe('Job', () => {
           }),
         });
 
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           GlueVersion: '2.0',
           Command: {
             Name: 'glueetl',
@@ -703,7 +701,7 @@ describe('Job', () => {
             '--extra-files': 's3://bucketName/file1.txt,s3://bucketName/file2.txt',
             '--user-jars-first': 'true',
           },
-        }));
+        });
       });
     });
 
@@ -718,7 +716,7 @@ describe('Job', () => {
           }),
         });
 
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           GlueVersion: '2.0',
           Command: {
             Name: 'gluestreaming',
@@ -734,7 +732,7 @@ describe('Job', () => {
             '--job-language': 'scala',
             '--class': 'com.amazon.test.ClassName',
           },
-        }));
+        });
       });
 
       test('with all props should synthesize correctly', () => {
@@ -749,7 +747,7 @@ describe('Job', () => {
           }),
         });
 
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Job', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           GlueVersion: '2.0',
           Command: {
             Name: 'gluestreaming',
@@ -768,7 +766,7 @@ describe('Job', () => {
             '--extra-files': 's3://bucketName/file1.txt,s3://bucketName/file2.txt',
             '--user-jars-first': 'true',
           },
-        }));
+        });
       });
     });
 
@@ -786,7 +784,7 @@ describe('Job', () => {
       test('.onEvent() creates the expected event rule', () => {
         job.onEvent('eventId', {});
 
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           EventPattern: {
             'source': [
               'aws.glue',
@@ -804,14 +802,14 @@ describe('Job', () => {
             },
           },
           State: 'ENABLED',
-        }));
+        });
       });
 
       describe('.onSuccess()', () => {
         test('should create a rule with correct properties', () => {
           job.onSuccess('SuccessRule');
 
-          cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
+          Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
             Description: {
               'Fn::Join': [
                 '',
@@ -844,7 +842,7 @@ describe('Job', () => {
               },
             },
             State: 'ENABLED',
-          }));
+          });
         });
       });
 
@@ -852,7 +850,7 @@ describe('Job', () => {
         test('should create a rule with correct properties', () => {
           job.onFailure('FailureRule');
 
-          cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
+          Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
             Description: {
               'Fn::Join': [
                 '',
@@ -885,7 +883,7 @@ describe('Job', () => {
               },
             },
             State: 'ENABLED',
-          }));
+          });
         });
       });
 
@@ -893,7 +891,7 @@ describe('Job', () => {
         test('should create a rule with correct properties', () => {
           job.onTimeout('TimeoutRule');
 
-          cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
+          Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
             Description: {
               'Fn::Join': [
                 '',
@@ -926,7 +924,7 @@ describe('Job', () => {
               },
             },
             State: 'ENABLED',
-          }));
+          });
         });
       });
 
@@ -943,8 +941,8 @@ describe('Job', () => {
           statistic: 'Sum',
         }));
 
-        cdkassert.countResources('AWS::Events::Rule', 1);
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
+        Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Description: {
             'Fn::Join': [
               '',
@@ -977,7 +975,7 @@ describe('Job', () => {
             },
           },
           State: 'ENABLED',
-        }));
+        });
       });
 
       test('.metricFailure() creates the expected singleton event rule and corresponding metric', () => {
@@ -993,8 +991,8 @@ describe('Job', () => {
           statistic: 'Sum',
         }));
 
-        cdkassert.countResources('AWS::Events::Rule', 1);
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
+        Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Description: {
             'Fn::Join': [
               '',
@@ -1027,7 +1025,7 @@ describe('Job', () => {
             },
           },
           State: 'ENABLED',
-        }));
+        });
       });
 
       test('.metricTimeout() creates the expected singleton event rule and corresponding metric', () => {
@@ -1043,8 +1041,8 @@ describe('Job', () => {
           statistic: 'Sum',
         }));
 
-        cdkassert.countResources('AWS::Events::Rule', 1);
-        cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Events::Rule', {
+        Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Description: {
             'Fn::Join': [
               '',
@@ -1077,7 +1075,7 @@ describe('Job', () => {
             },
           },
           State: 'ENABLED',
-        }));
+        });
       });
     });
 
