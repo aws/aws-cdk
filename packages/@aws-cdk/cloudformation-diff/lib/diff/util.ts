@@ -141,7 +141,7 @@ export function unionOf(lv: string[] | Set<string>, rv: string[] | Set<string>):
  */
 function safeParseFloat(str: string): number {
   const ret = parseFloat(str);
-  const nonNumericRegex = /[^\d\-\.]/;
+  const nonNumericRegex = /\d*\.\d+\./;
   if (ret === 0) {
     // if the str is exactly '0', that's OK;
     // but parseFloat() also returns 0 for things like '0.0';
