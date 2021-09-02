@@ -115,8 +115,7 @@ async function parseCommandLineArguments() {
           'which skips CloudFormation and updates the resources directly, ' +
           'and falls back to a full deployment if that is not possible. ' +
           'Do not use this in production environments',
-      })
-      .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' }),
+      }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Destroy all available stacks' })
