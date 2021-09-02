@@ -1,4 +1,4 @@
-import { Assertion, JestFriendlyAssertion } from '../assertion';
+import { JestFriendlyAssertion } from '../assertion';
 import { StackInspector } from '../inspector';
 import { isSuperObject } from './have-resource';
 
@@ -12,7 +12,7 @@ export function countResources(resourceType: string, count = 1): JestFriendlyAss
 /**
  * An assertion to check whether a resource of a given type and with the given properties exists, considering properties
  */
-export function countResourcesLike(resourceType: string, count = 1, props: any): Assertion<StackInspector> {
+export function countResourcesLike(resourceType: string, count = 1, props: any): JestFriendlyAssertion<StackInspector> {
   return new CountResourcesAssertion(resourceType, count, props);
 }
 
@@ -30,7 +30,7 @@ class CountResourcesAssertion extends JestFriendlyAssertion<StackInspector> {
 
   public assertUsing(inspector: StackInspector): boolean {
     let counted = 0;
-    for (const logicalId of Object.keys(inspector.value.Resources || {})) {
+    for (const logicalId of Object.keys(inspector.value.Resources || { })) {
       const resource = inspector.value.Resources[logicalId];
       if (resource.Type === this.resourceType) {
         if (this.props) {
