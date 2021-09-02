@@ -17,24 +17,24 @@
 
 Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 
-The `TemplateAssertions` class includes a set of methods for writing assertions against CloudFormation templates. Use one of the `TemplateAssertions.fromXxx()` static methods to create an instance of this class.
+The `Template` class includes a set of methods for writing assertions against CloudFormation templates. Use one of the `Template.fromXxx()` static methods to create an instance of this class.
 
-To create `TemplateAssertions` from CDK stack, start off with:
+To create `Template` from CDK stack, start off with:
 
 ```ts
 import { Stack } from '@aws-cdk/core';
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 
 const stack = new Stack(...)
 ...
-const assert = TemplateAssertions.fromStack(stack);
+const assert = Template.fromStack(stack);
 ```
 
 Alternatively, assertions can be run on an existing CloudFormation template -
 
 ```ts
 const template = fs.readFileSync('/path/to/template/file');
-const assert = TemplateAssertions.fromString(template);
+const assert = Template.fromString(template);
 ```
 
 ## Full Template Match
@@ -53,6 +53,17 @@ assert.templateMatches({
 });
 ```
 
+The `Template` class also supports [snapshot
+testing](https://jestjs.io/docs/snapshot-testing) using jest.
+
+```ts
+// using jest
+expect(Template.fromStack(stack)).toMatchSnapshot();
+```
+
+For non-javascript languages, the `toJSON()` can be called to get an in-memory object
+of the template.
+
 ## Counting Resources
 
 This module allows asserting the number of resources of a specific type found
@@ -62,7 +73,7 @@ in a template.
 assert.resourceCountIs('Foo::Bar', 2);
 ```
 
-## Resource Matching
+## Resource Matching & Retrieval
 
 Beyond resource counting, the module also allows asserting that a resource with
 specific properties are present.
@@ -88,15 +99,31 @@ assert.hasResource('Foo::Bar', {
 });
 ```
 
+Beyond assertions, the module provides APIs to retrieve matching resources.
+The `findResources()` API is complementary to the `hasResource()` API, except,
+instead of asserting its presence, it returns the set of matching resources.
+
 By default, the `hasResource()` and `hasResourceProperties()` APIs perform deep
 partial object matching. This behavior can be configured using matchers.
 See subsequent section on [special matchers](#special-matchers).
 
+## Other Sections
+
+Similar to the `hasResource()` and `findResources()`, we have equivalent methods
+to check and find other sections of the CloudFormation resources.
+
+* Outputs - `hasOutput()` and `findOutputs()`
+* Mapping - `hasMapping()` and `findMappings()`
+
+All of the defaults and behaviour documented for `hasResource()` and
+`findResources()` apply to these methods.
+
 ## Special Matchers
 
-The expectation provided to the `hasResourceXXX()` methods, besides carrying
-literal values, as seen in the above examples, can also have special matchers
-encoded. 
+The expectation provided to the `hasXXX()` and `findXXX()` methods, besides
+carrying literal values, as seen in the above examples, also accept special
+matchers. 
+
 They are available as part of the `Match` class.
 
 ### Object Matchers
@@ -210,6 +237,35 @@ target array. Out of order will be recorded as a match failure.
 
 Alternatively, the `Match.arrayEquals()` API can be used to assert that the target is
 exactly equal to the pattern array.
+
+### Not Matcher
+
+The not matcher inverts the search pattern and matches all patterns in the path that does
+not match the pattern specified.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Flob", "Cat"]
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: Match.not(['Flob']),
+});
+
+// The following will throw an assertion error
+assert.hasResourceProperties('Foo::Bar', Match.objectLike({
+  Fred: Match.not(['Flob', 'Cat']);
+}});
+```
 
 ## Strongly typed languages
 

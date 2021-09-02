@@ -182,6 +182,41 @@
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
+    "TestPortfolioLaunchRoleConstrainta0185761d2312183162C": {
+      "Type": "AWS::ServiceCatalog::LaunchRoleConstraint",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "ProductId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "LaunchRole2CFB2E44",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+      ]
+    },
+    "TestPortfolioLaunchTemplateConstraintfac7b49c426e599F9FFF": {
+      "Type": "AWS::ServiceCatalog::LaunchTemplateConstraint",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "ProductId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "Rules": "{\"SubnetsinVPC\":{\"Assertions\":[{\"Assert\":{\"Fn::EachMemberIn\":[{\"Fn::ValueOfAll\":[\"AWs::EC2::Subnet::Id\",\"VpcId\"]},{\"Fn::RefAll\":\"AWS::EC2::VPC::Id\"}]},\"AssertDescription\":\"test description\"}]}}"
+      },
+      "DependsOn": [
+        "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
+      ]
+    },
     "TagOptionc0d88a3c4b8b": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
@@ -226,6 +261,106 @@
     },
     "specialTopic7664DE4C": {
       "Type": "AWS::SNS::Topic"
+    },
+    "LaunchRole2CFB2E44": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "servicecatalog.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "SecondTestPortfolio96C8F4BA": {
+      "Type": "AWS::ServiceCatalog::Portfolio",
+      "Properties": {
+        "DisplayName": "SecondTestPortfolio",
+        "ProviderName": "TestProvider"
+      }
+    },
+    "SecondTestPortfolioPortfolioProductAssociationcda67a671c209FE862F2": {
+      "Type": "AWS::ServiceCatalog::PortfolioProductAssociation",
+      "Properties": {
+        "PortfolioId": {
+          "Ref": "SecondTestPortfolio96C8F4BA"
+        },
+        "ProductId": {
+          "Ref": "TestProduct7606930B"
+        }
+      }
+    },
+    "SecondTestPortfolioStackSetConstraintcda67a671c20A02367A6": {
+      "Type": "AWS::ServiceCatalog::StackSetConstraint",
+      "Properties": {
+        "AccountList": [
+          "000000000000",
+          "111111111111",
+          "222222222222"
+        ],
+        "AdminRole": {
+          "Fn::GetAtt": [
+            "AdminRole38563C57",
+            "Arn"
+          ]
+        },
+        "Description": "",
+        "ExecutionRole": "StackSetExecutionRole",
+        "PortfolioId": {
+          "Ref": "SecondTestPortfolio96C8F4BA"
+        },
+        "ProductId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "RegionList": [
+          "us-east-1",
+          "us-west-2",
+          "eu-west-1"
+        ],
+        "StackInstanceControl": "ALLOWED"
+      },
+      "DependsOn": [
+        "SecondTestPortfolioPortfolioProductAssociationcda67a671c209FE862F2"
+      ]
+    },
+    "AdminRole38563C57": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
     }
   }
 }

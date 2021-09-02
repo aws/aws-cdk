@@ -1,7 +1,4 @@
-import * as fs from 'fs-extra';
 import { ReleaseOptions } from './types';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const lerna_project = require('@lerna/project');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const conventionalCommitsParser = require('conventional-commits-parser');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -72,10 +69,10 @@ export async function getConventionalCommitsFromGitHistory(args: ReleaseOptions,
   const ret = new Array<any>();
   return new Promise((resolve, reject) => {
     const conventionalCommitsStream = gitRawCommits({
+      // Raw body (subject + body) + '\n-hash-\n' + commit hash
       format: '%B%n-hash-%n%H',
       // our tags have the 'v' prefix
       from: gitTag,
-      // path: options.path,
     }).pipe(conventionalCommitsParser());
 
     conventionalCommitsStream.on('data', function (data: any) {
@@ -95,31 +92,42 @@ export async function getConventionalCommitsFromGitHistory(args: ReleaseOptions,
 }
 
 /**
- * Filters commits based on the criteria in `args`
- * (right now, the only criteria is whether to remove commits that relate to experimental packages).
- *
- * @param args configuration
- * @param commits the array of Conventional Commits to filter
- * @returns an array of ConventionalCommit objects which is a subset of `commits`
- *   (possibly exactly equal to `commits`)
+ * Options for filterCommits
  */
-export function filterCommits(args: ReleaseOptions, commits: ConventionalCommit[]): ConventionalCommit[] {
-  if (!args.stripExperimentalChanges) {
-    return commits;
-  }
+export interface FilterCommitsOptions {
+  /**
+   * Scopes matching these package names (and variants) will be excluded from the commits returned.
+   * @default - No packages are excluded.
+   **/
+  excludePackages?: string[];
 
-  // a get a list of packages from our monorepo
-  const project = new lerna_project.Project();
-  const packages = project.getPackagesSync();
-  const experimentalPackageNames: string[] = packages
-    .filter((pkg: any) => {
-      const pkgJson = fs.readJsonSync(pkg.manifestLocation);
-      return pkgJson.name.startsWith('@aws-cdk/')
-        && (pkgJson.maturity === 'experimental' || pkgJson.maturity === 'developer-preview');
-    })
-    .map((pkg: any) => pkg.name.substr('@aws-cdk/'.length));
+  /**
+   * If provided, scopes matching these package names (and variants) will be the *only commits* considered.
+   * @default - All packages are included.
+   **/
+  includePackages?: string[];
+}
 
-  const experimentalScopes = flatMap(experimentalPackageNames, (pkgName) => [
+/**
+ * Filters commits based on package scopes and inclusion/exclusion criteria.
+ * If `opts.includePackages` is provided, commits without scopes will not be included.
+ *
+ * @param commits the array of Conventional Commits to filter
+ * @param opts filtering options; if none are provided, all commits are returned.
+ */
+export function filterCommits(commits: ConventionalCommit[], opts: FilterCommitsOptions = {}): ConventionalCommit[] {
+  const excludeScopes = createScopeVariations(opts.excludePackages ?? []);
+  const includeScopes = createScopeVariations(opts.includePackages ?? []);
+
+  return commits
+    .filter(commit => includeScopes.length === 0 || (commit.scope && includeScopes.includes(commit.scope)))
+    .filter(commit => excludeScopes.length === 0 || !commit.scope || !excludeScopes.includes(commit.scope));
+}
+
+function createScopeVariations(names: string[]) {
+  const simplifiedNames = names.map(n => n.replace(/^@aws-cdk\//, ''));
+
+  return flatMap(simplifiedNames, (pkgName) => [
     pkgName,
     ...(pkgName.startsWith('aws-')
       ? [
@@ -133,8 +141,6 @@ export function filterCommits(args: ReleaseOptions, commits: ConventionalCommit[
       : []
     ),
   ]);
-
-  return commits.filter(commit => !commit.scope || !experimentalScopes.includes(commit.scope));
 }
 
 function flatMap<T, U>(xs: T[], fn: (x: T) => U[]): U[] {
