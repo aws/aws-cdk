@@ -152,7 +152,7 @@ test('create a service with local assets(image repository type: ECR)', () => {
               {
                 Ref: 'AWS::URLSuffix',
               },
-              '/aws-cdk/assets:42ecd36e93a8da81231961db6fa8b9157145615726c4a70c06327b3e670514f4',
+              '/aws-cdk/assets:424c8142f98fbfce57ac06e87a84c82eb336f9a858a041ed52f8e550b938b7f5',
             ],
           ],
         },
@@ -316,7 +316,7 @@ test('custom IAM access role and instance role are allowed', () => {
               {
                 Ref: 'AWS::URLSuffix',
               },
-              '/aws-cdk/assets:42ecd36e93a8da81231961db6fa8b9157145615726c4a70c06327b3e670514f4',
+              '/aws-cdk/assets:424c8142f98fbfce57ac06e87a84c82eb336f9a858a041ed52f8e550b938b7f5',
             ],
           ],
         },
