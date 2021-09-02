@@ -136,7 +136,7 @@ export class PublisherExtension extends ServiceExtension {
     this.parentService = service;
 
     for (const resource of this.props.publishers) {
-      this.environment[`${service.id.toUpperCase()}_${resource.envVarKey().toUpperCase()}_ARN`] = resource.envVarValue();
+      this.environment[`${service.id.toUpperCase()}_${resource.envVarKey().toUpperCase()}_TOPIC_ARN`] = resource.envVarValue();
     }
   }
 
