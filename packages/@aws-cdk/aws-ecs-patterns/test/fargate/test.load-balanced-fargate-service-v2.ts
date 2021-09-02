@@ -424,7 +424,7 @@ export = {
         },
       });
 
-      // THEN - stack contains a service with execute-command enabled
+      // THEN - stack contains a service with execute-command omitted
       expect(stack).to(haveResourceLike('AWS::ECS::Service', {
         EnableExecuteCommand: ABSENT,
       }));
@@ -447,7 +447,7 @@ export = {
         enableExecuteCommand: false,
       });
 
-      // THEN - stack contains a service with execute-command enabled
+      // THEN - stack contains a service with execute-command set to false
       expect(stack).to(haveResourceLike('AWS::ECS::Service', {
         EnableExecuteCommand: false,
       }));
