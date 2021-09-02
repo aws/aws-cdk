@@ -125,6 +125,13 @@ describe('formatAnalytics', () => {
     expectAnalytics(constructInfo, '1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack},0.1.2!aws-cdk-lib.{CoolResource,OtherResource}');
   });
 
+  test('ensure gzip is encoded with "unknown" operating system to maintain consistent output across systems', () => {
+    const constructInfo = [{ fqn: 'aws-cdk-lib.Construct', version: '1.2.3' }];
+    const analytics = formatAnalytics(constructInfo);
+    const gzip = Buffer.from(analytics.split(':')[2], 'base64');
+    expect(gzip[9]).toBe(255);
+  });
+
   // Compares the output of formatAnalytics with an expected (plaintext) output.
   // For ease of testing, the plaintext versions are compared rather than the encoded versions.
   function expectAnalytics(constructs: ConstructInfo[], expectedPlaintext: string) {
