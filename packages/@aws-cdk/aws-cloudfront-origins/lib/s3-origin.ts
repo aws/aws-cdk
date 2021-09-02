@@ -8,14 +8,7 @@ import { HttpOrigin } from './http-origin';
 /**
  * Properties to use to customize an S3 Origin.
  */
-export interface S3OriginProps {
-  /**
-   * An optional path that CloudFront appends to the origin domain name when CloudFront requests content from the origin.
-   * Must begin, but not end, with '/' (e.g., '/production/images').
-   *
-   * @default '/'
-   */
-  readonly originPath?: string;
+export interface S3OriginProps extends cloudfront.OriginProps {
   /**
    * An optional Origin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
    *
