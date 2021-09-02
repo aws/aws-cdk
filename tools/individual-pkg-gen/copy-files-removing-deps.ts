@@ -42,6 +42,10 @@ function transformPackages(): void {
       if (ignoredFiles.includes(sourceFileName)) {
         continue;
       }
+      if (sourceFileName.match('.*generated.*')) {
+        // Skip copying the generated L1 files
+        continue;
+      }
 
       const source = path.join(srcDir, sourceFileName);
       const destination = path.join(destDir, sourceFileName);
@@ -71,10 +75,22 @@ function transformPackages(): void {
           }
         }
         fs.outputFileSync(destination, resultFileLines.join('\n'));
+      } else if (sourceFileName === 'index.ts') {
+        // Remove any exports for generated L1s
+        const indexLines = fs.readFileSync(source).toString().split('\n');
+        const resultFileLines = [];
+        for (const line of indexLines) {
+          if (line.match('generated')) {
+            continue;
+          }
+          resultFileLines.push(line);
+        }
+        fs.outputFileSync(destination, resultFileLines.join('\n'));
       } else if (sourceFileName.endsWith('.ts') && !sourceFileName.endsWith('.d.ts')) {
         const sourceCode = fs.readFileSync(source).toString();
         const sourceCodeOutput = awsCdkMigration.rewriteImports(sourceCode, sourceFileName, {
           customModules: alphaPackages,
+          isInAlphaPackage: true,
         });
         fs.outputFileSync(destination, sourceCodeOutput);
       } else {
