@@ -22,6 +22,7 @@ export interface ISDK {
    */
   currentAccount(): Promise<Account>;
 
+  lambda(): AWS.Lambda;
   cloudFormation(): AWS.CloudFormation;
   ec2(): AWS.EC2;
   ssm(): AWS.SSM;
@@ -82,6 +83,10 @@ export class SDK implements ISDK {
       logger: { log: (...messages) => messages.forEach(m => trace('%s', m)) },
     };
     this.currentRegion = region;
+  }
+
+  public lambda(): AWS.Lambda {
+    return this.wrapServiceErrorHandling(new AWS.Lambda(this.config));
   }
 
   public cloudFormation(): AWS.CloudFormation {
