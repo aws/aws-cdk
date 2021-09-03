@@ -183,10 +183,12 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
+    
+    // see https://docs.aws.amazon.com/athena/latest/APIReference/API_StartQueryExecution.html
 
-    let renderedObject = {
+    const renderedObject = {
       Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
-      Parameters: {
+      Parameters: sfn.FieldUtils.renderObject({
         QueryString: this.props.queryString,
         ClientRequestToken: this.props.clientRequestToken,
         QueryExecutionContext: (this.props.queryExecutionContext?.catalogName || this.props.queryExecutionContext?.databaseName) ? {
@@ -198,21 +200,11 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
           OutputLocation: this.props.resultConfiguration?.outputLocation ? `s3://${this.props.resultConfiguration?.outputLocation?.bucketName}/${this.props.resultConfiguration?.outputLocation?.objectKey}/` : undefined,
         },
         WorkGroup: this.props?.workGroup,
-      },
+      }),
     };
 
-    if (this.props.resultConfiguration?.outputLocation) {
-      const customResultConfiguration = {
-        OutputLocation: `s3://${this.props.resultConfiguration?.outputLocation?.bucketName}/${this.props.resultConfiguration?.outputLocation?.objectKey}/`,
-      };
-      renderedObject.Parameters.ResultConfiguration = Object.assign(renderedObject.Parameters.ResultConfiguration, customResultConfiguration);
-    }
 
-    if (!renderedObject.Parameters.QueryExecutionContext.Catalog && !renderedObject.Parameters.QueryExecutionContext.Database) {
-      delete renderedObject.Parameters.QueryExecutionContext;
-    }
-
-    return { Resource: renderedObject.Resource, Parameters: sfn.FieldUtils.renderObject(renderedObject.Parameters) };
+    return renderedObject;
   }
 }
 
