@@ -3,7 +3,7 @@ import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { Protocol, SslPolicy } from '../shared/enums';
+import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 import { NetworkListenerAction } from './network-listener-action';
@@ -65,6 +65,17 @@ export interface BaseNetworkListenerProps {
    * @default - Current predefined security policy.
    */
   readonly sslPolicy?: SslPolicy;
+
+
+  /**
+   * Application-Layer Protocol Negotiation (ALPN) is a TLS extension that is sent on the initial TLS handshake hello messages.
+   * ALPN enables the application layer to negotiate which protocols should be used over a secure connection, such as HTTP/1 and HTTP/2.
+   *
+   * Can only be specified together with Protocol TLS.
+   *
+   * @default - None
+   */
+  readonly alpnPolicy?: AlpnPolicy;
 }
 
 /**
@@ -168,12 +179,17 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       throw new Error('Protocol must be TLS when certificates have been specified');
     }
 
+    if (proto !== Protocol.TLS && props.alpnPolicy) {
+      throw new Error('Protocol must be TLS when alpnPolicy have been specified');
+    }
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       protocol: proto,
       port: props.port,
       sslPolicy: props.sslPolicy,
       certificates: props.certificates,
+      alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });
 
     this.loadBalancer = props.loadBalancer;
