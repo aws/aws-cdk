@@ -28,7 +28,7 @@ nodeunitShim({
     const vpc = new Vpc(stack, 'VPC', {
       subnetConfiguration: [
         {
-          subnetType: SubnetType.ISOLATED,
+          subnetType: SubnetType.PRIVATE_ISOLATED,
           name: 'Isolated',
         },
       ],
@@ -53,7 +53,7 @@ nodeunitShim({
     const vpc = new Vpc(stack, 'VPC', {
       subnetConfiguration: [
         {
-          subnetType: SubnetType.ISOLATED,
+          subnetType: SubnetType.PRIVATE_ISOLATED,
           name: 'Isolated',
         },
       ],

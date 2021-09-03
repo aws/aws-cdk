@@ -125,7 +125,7 @@ export interface GatewayVpcEndpointOptions {
    *   service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
    *   // Add only to ISOLATED subnets
    *   subnets: [
-   *     { subnetType: ec2.SubnetType.ISOLATED }
+   *     { subnetType: ec2.SubnetType.PRIVATE_ISOLATED }
    *   ]
    * });
    *
