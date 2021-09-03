@@ -1,5 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import { AthenaStartQueryExecution, EncryptionOption } from '../../lib/athena/start-query-execution';
 
 describe('Start Query Execution', () => {
