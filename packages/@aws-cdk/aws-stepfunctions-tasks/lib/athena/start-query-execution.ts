@@ -183,7 +183,6 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    
     // see https://docs.aws.amazon.com/athena/latest/APIReference/API_StartQueryExecution.html
 
     const renderedObject = {
@@ -202,7 +201,6 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         WorkGroup: this.props?.workGroup,
       }),
     };
-
 
     return renderedObject;
   }
