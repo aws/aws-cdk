@@ -2,7 +2,6 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { AthenaStartQueryExecution, EncryptionOption } from '../../lib';
 
-
 /*
  * Stack verification steps:
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn

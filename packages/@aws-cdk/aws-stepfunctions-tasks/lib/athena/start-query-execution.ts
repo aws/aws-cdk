@@ -183,9 +183,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    // see https://docs.aws.amazon.com/athena/latest/APIReference/API_StartQueryExecution.html
-
-    const renderedObject = {
+    return {
       Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         QueryString: this.props.queryString,
@@ -196,13 +194,11 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         } : undefined,
         ResultConfiguration: {
           EncryptionConfiguration: this.renderEncryption(),
-          OutputLocation: this.props.resultConfiguration?.outputLocation ? `s3://${this.props.resultConfiguration?.outputLocation?.bucketName}/${this.props.resultConfiguration?.outputLocation?.objectKey}/` : undefined,
+          OutputLocation: this.props.resultConfiguration?.outputLocation ? `s3://${this.props.resultConfiguration.outputLocation.bucketName}/${this.props.resultConfiguration.outputLocation.objectKey}/` : undefined,
         },
         WorkGroup: this.props?.workGroup,
       }),
     };
-
-    return renderedObject;
   }
 }
 
