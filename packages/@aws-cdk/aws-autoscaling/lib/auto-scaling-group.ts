@@ -1145,6 +1145,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       embedFingerprint: options.embedFingerprint,
       printLog: options.printLog,
       ignoreFailures: options.ignoreFailures,
+      includeRole: options.includeRole,
+      includeUrl: options.includeUrl,
     });
   }
 
@@ -1780,4 +1782,23 @@ export interface ApplyCloudFormationInitOptions {
    * @default false
    */
   readonly ignoreFailures?: boolean;
+
+  /**
+   * Include --url argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the cloudformation endpoint in the deployed region
+   * e.g. https://cloudformation.us-east-1.amazonaws.com
+   *
+   * @default false
+   */
+  readonly includeUrl?: boolean;
+
+  /**
+  * Include --role argument when running cfn-init and cfn-signal commands
+  *
+  * This will be the IAM instance profile attached to the EC2 instance
+  *
+  * @default false
+  */
+  readonly includeRole?: boolean;
 }
