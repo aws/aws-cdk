@@ -97,10 +97,15 @@ export class MockSdkProvider extends SdkProvider {
   public stubSSM(stubs: SyncHandlerSubsetOf<AWS.SSM>) {
     (this.sdk as any).ssm = jest.fn().mockReturnValue(partialAwsService<AWS.SSM>(stubs));
   }
+
+  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
+    (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs));
+  }
 }
 
 export class MockSdk implements ISDK {
   public readonly currentRegion: string = 'bermuda-triangle-1337';
+  public readonly lambda = jest.fn();
   public readonly cloudFormation = jest.fn();
   public readonly ec2 = jest.fn();
   public readonly ssm = jest.fn();

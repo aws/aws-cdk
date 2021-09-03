@@ -12,6 +12,7 @@ nodeunitShim({
   },
 
   'bundling with image from registry'(test: Test) {
+    sinon.stub(process, 'platform').value('darwin');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -230,6 +231,7 @@ nodeunitShim({
   },
 
   'custom entrypoint is passed through to docker exec'(test: Test) {
+    sinon.stub(process, 'platform').value('darwin');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -343,7 +345,9 @@ nodeunitShim({
     test.done();
   },
 
-  'adding user provided securit-opt'(test: Test) {
+  'adding user provided security-opt'(test: Test) {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -352,8 +356,9 @@ nodeunitShim({
       output: ['stdout', 'stderr'],
       signal: null,
     });
-
     const image = DockerImage.fromRegistry('alpine');
+
+    // GIVEN
     image.run({
       command: ['cool', 'command'],
       environment: {
@@ -373,6 +378,131 @@ nodeunitShim({
       '-v', '/host-path:/container-path:delegated',
       '--env', 'VAR1=value1',
       '--env', 'VAR2=value2',
+      '-w', '/working-directory',
+      'alpine',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] }));
+    test.done();
+  },
+
+  'ensure selinux docker mount'(test: Test) {
+    // GIVEN
+    sinon.stub(process, 'platform').value('linux');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync');
+    spawnSyncStub.onFirstCall().returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['selinuxenable-command', 'stderr'],
+      signal: null,
+    });
+    spawnSyncStub.onSecondCall().returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 124,
+      output: ['docker run command', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+    image.run({
+      command: ['cool', 'command'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    // THEN
+    test.ok(spawnSyncStub.secondCall.calledWith('docker', [
+      'run', '--rm',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:z,delegated',
+      '-w', '/working-directory',
+      'alpine',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] }));
+    test.done();
+  },
+
+  'ensure selinux docker mount on linux with selinux disabled'(test: Test) {
+    // GIVEN
+    sinon.stub(process, 'platform').value('linux');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync');
+    spawnSyncStub.onFirstCall().returns({
+      status: 1,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['selinuxenabled output', 'stderr'],
+      signal: null,
+    });
+    spawnSyncStub.onSecondCall().returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 124,
+      output: ['docker run command', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+    image.run({
+      command: ['cool', 'command'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    // THEN
+    test.ok(spawnSyncStub.secondCall.calledWith('docker', [
+      'run', '--rm',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
+      '-w', '/working-directory',
+      'alpine',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] }));
+    test.done();
+  },
+  'ensure no selinux docker mount if selinuxenabled isn\'t an available command'(test: Test) {
+    // GIVEN
+    sinon.stub(process, 'platform').value('linux');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync');
+    spawnSyncStub.onFirstCall().returns({
+      status: 127,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['selinuxenabled output', 'stderr'],
+      signal: null,
+    });
+    spawnSyncStub.onSecondCall().returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 124,
+      output: ['docker run command', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+    image.run({
+      command: ['cool', 'command'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    // THEN
+    test.ok(spawnSyncStub.secondCall.calledWith('docker', [
+      'run', '--rm',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
