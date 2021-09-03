@@ -1,4 +1,3 @@
-import { ABSENT } from '@aws-cdk/assert-internal';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { AthenaStartQueryExecution, EncryptionOption } from '../../lib/athena/start-query-execution';
@@ -173,10 +172,6 @@ describe('Start Query Execution', () => {
 
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toMatchObject({
-      Parameters: {
-        QueryExecutionContext: ABSENT,
-      },
-    });
+    expect(stack.resolve(task.toStateJson())).not.toHaveProperty('Parameters.QueryExecutionContext');
   });
 });
