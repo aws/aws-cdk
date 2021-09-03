@@ -14,16 +14,6 @@ describe('GlueVersion', () => {
   test('of(customVersion) should set the name correctly', () => expect(glue.GlueVersion.of('CustomVersion').name).toEqual('CustomVersion'));
 });
 
-describe('WorkerType', () => {
-  test('.STANDARD should set the name correctly', () => expect(glue.WorkerType.STANDARD.name).toEqual('Standard'));
-
-  test('.G_1X should set the name correctly', () => expect(glue.WorkerType.G_1X.name).toEqual('G.1X'));
-
-  test('.G_2X should set the name correctly', () => expect(glue.WorkerType.G_2X.name).toEqual('G.2X'));
-
-  test('of(customType) should set name correctly', () => expect(glue.WorkerType.of('CustomType').name).toEqual('CustomType'));
-});
-
 describe('JobType', () => {
   test('.ETL should set the name correctly', () => expect(glue.JobType.ETL.name).toEqual('glueetl'));
 
