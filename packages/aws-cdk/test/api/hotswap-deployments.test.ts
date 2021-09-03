@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Lambda } from 'aws-sdk';
+import { Lambda, StepFunctions } from 'aws-sdk';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { testStack, TestStackArtifact } from '../util';
 import { MockSdkProvider } from '../util/mock-sdk';
@@ -10,6 +10,7 @@ const STACK_ID = 'stackId';
 
 let mockSdkProvider: MockSdkProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
+let mockUpdateMachineCode: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
 let currentCfnStack: FakeCloudformationStack;
 
 beforeEach(() => {
@@ -18,6 +19,9 @@ beforeEach(() => {
   mockUpdateLambdaCode = jest.fn();
   mockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
+  });
+  mockSdkProvider.stubStepFunctions({
+    updateStateMachine: mockUpdateMachineCode,
   });
   currentCfnStack = new FakeCloudformationStack({
     stackName: STACK_NAME,
@@ -104,6 +108,54 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
     S3Key: 'new-key',
   });
 });
+
+test('calls the updateStateMachine() API when it receives only a definitionString change in a state machine', async () => {
+  // GIVEN
+  currentCfnStack.setTemplate({
+    Resources: {
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: {
+            'Fn::Join': [
+              'old-string-1',
+              'old-string-2',
+            ],
+          },
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              'Fn::Join': [
+                'new-string-1',
+                'new-string-2',
+              ],
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+    FunctionName: 'my-function',
+    S3Bucket: 'current-bucket',
+    S3Key: 'new-key',
+  });
+});
+
 
 function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
   return testStack({

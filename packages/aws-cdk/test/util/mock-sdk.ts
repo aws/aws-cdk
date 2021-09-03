@@ -101,11 +101,16 @@ export class MockSdkProvider extends SdkProvider {
   public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
     (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs));
   }
+
+  public stubStepFunctions(stubs: SyncHandlerSubsetOf<AWS.StepFunctions>) {
+    (this.sdk as any).step = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
+  }
 }
 
 export class MockSdk implements ISDK {
   public readonly currentRegion: string = 'bermuda-triangle-1337';
   public readonly lambda = jest.fn();
+  public readonly step = jest.fn();
   public readonly cloudFormation = jest.fn();
   public readonly ec2 = jest.fn();
   public readonly ssm = jest.fn();

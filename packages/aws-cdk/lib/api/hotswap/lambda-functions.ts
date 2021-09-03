@@ -57,6 +57,27 @@ export function isHotswappableLambdaFunctionChange(
 function isLambdaFunctionCodeOnlyChange(
   change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
 ): LambdaFunctionCode | ChangeHotswapImpact {
+/*eslint-disable*/
+  console.log("new val: ")
+  console.log(change.newValue);
+  console.log("updates.newval: ");
+  console.log(change.propertyUpdates.newValue);
+  const propertyUpdates2 = change.propertyUpdates;
+  for (const updatedPropName in propertyUpdates2) {
+  console.log("updatedpropname: ");
+    console.log(updatedPropName);
+    const updatedProp = propertyUpdates2[updatedPropName];
+    //if (updatedProp.newValue === undefined) {
+    //}
+    console.log(updatedProp.newValue);
+
+    console.log('---------------------------------------------')
+    for (const newPropName in updatedProp.newValue) {
+      console.log(newPropName);
+    }
+  }
+
+
   if (!change.newValue) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
