@@ -203,7 +203,7 @@ export enum AlpnPolicy {
   NONE = 'None',
 }
 
-/*
+/**
  * Load balancing algorithmm type for target groups
  */
 export enum TargetGroupLoadBalancingAlgorithmType {
