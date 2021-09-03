@@ -64,7 +64,7 @@ nodeunitShim({
                 subnetType: SubnetType.PUBLIC,
               },
               {
-                subnetType: SubnetType.PRIVATE,
+                subnetType: SubnetType.PRIVATE_WITH_NAT,
               },
             ],
           },

@@ -38,15 +38,15 @@ instances for your project.
 A VPC consists of one or more subnets that instances can be placed into. CDK
 distinguishes three different subnet types:
 
-* **Public** - public subnets connect directly to the Internet using an
+* **Public (`SubnetType.PUBLIC`)** - public subnets connect directly to the Internet using an
   Internet Gateway. If you want your instances to have a public IP address
   and be directly reachable from the Internet, you must place them in a
   public subnet.
-* **Private** - instances in private subnets are not directly routable from the
+* **Private with Internet Access (`SubnetType.PRIVATE_WITH_NAT`)** - instances in private subnets are not directly routable from the
   Internet, and connect out to the Internet via a NAT gateway. By default, a
   NAT gateway is created in every public subnet for maximum availability. Be
   aware that you will be charged for NAT gateways.
-* **Isolated** - isolated subnets do not route from or to the Internet, and
+* **Isolated (`SubnetType.PRIVATE_ISOLATED`)** - isolated subnets do not route from or to the Internet, and
   as such do not require NAT gateways. They can only connect to or be
   connected to from other instances in the same VPC. A default VPC configuration
   will not include isolated subnets,
@@ -245,12 +245,12 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 24,
       name: 'Application',
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
     {
       cidrMask: 28,
       name: 'Database',
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
 
       // 'reserved' can be used to reserve IP address space. No resources will
       // be created for this subnet, but the IP range will be kept available for
@@ -345,12 +345,12 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 26,
       name: 'Application1',
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
     {
       cidrMask: 26,
       name: 'Application2',
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       reserved: true,   // <---- This subnet group is reserved
     },
     {
