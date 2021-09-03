@@ -7,38 +7,6 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as glue from '../lib';
 
-describe('GlueVersion', () => {
-  test('.V0_9', () => expect(glue.GlueVersion.V0_9.name).toEqual('0.9'));
-
-  test('.V1_0', () => expect(glue.GlueVersion.V1_0.name).toEqual('1.0'));
-
-  test('.V2_0', () => expect(glue.GlueVersion.V2_0.name).toEqual('2.0'));
-
-  test('.V3_0', () => expect(glue.GlueVersion.V3_0.name).toEqual('3.0'));
-
-  test('of(customVersion) sets name correctly', () => expect(glue.GlueVersion.of('CustomVersion').name).toEqual('CustomVersion'));
-});
-
-describe('WorkerType', () => {
-  test('.STANDARD', () => expect(glue.WorkerType.STANDARD.name).toEqual('Standard'));
-
-  test('.G_1X', () => expect(glue.WorkerType.G_1X.name).toEqual('G.1X'));
-
-  test('.G_2X', () => expect(glue.WorkerType.G_2X.name).toEqual('G.2X'));
-
-  test('of(customType) sets name correctly', () => expect(glue.WorkerType.of('CustomType').name).toEqual('CustomType'));
-});
-
-describe('JobType', () => {
-  test('.ETL', () => expect(glue.JobType.ETL.name).toEqual('glueetl'));
-
-  test('.STREAMING', () => expect(glue.JobType.STREAMING.name).toEqual('gluestreaming'));
-
-  test('.PYTHON_SHELL', () => expect(glue.JobType.PYTHON_SHELL.name).toEqual('pythonshell'));
-
-  test('of(customName) sets name correctly', () => expect(glue.JobType.of('CustomName').name).toEqual('CustomName'));
-});
-
 describe('Job', () => {
   let stack: cdk.Stack;
   let jobName: string;
@@ -568,7 +536,7 @@ describe('Job', () => {
       });
     });
 
-    test('with reserved args throws', () => {
+    test('with reserved args should throw', () => {
       ['--conf', '--debug', '--mode', '--JOB_NAME'].forEach((arg, index) => {
         const defaultArguments: {[key: string]: string} = {};
         defaultArguments[arg] = 'random value';
@@ -605,7 +573,7 @@ describe('Job', () => {
         });
       });
 
-      test('with unsupported glue version throws', () => {
+      test('with unsupported glue version should throw', () => {
         expect(() => new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.pythonShell({
             glueVersion: glue.GlueVersion.V0_9,
@@ -615,7 +583,7 @@ describe('Job', () => {
         })).toThrow('Specified GlueVersion 0.9 does not support Python Shell');
       });
 
-      test('with unsupported Spark UI prop throws', () => {
+      test('with unsupported Spark UI prop should throw', () => {
         expect(() => new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.pythonShell({
             glueVersion: glue.GlueVersion.V2_0,
@@ -797,7 +765,7 @@ describe('Job', () => {
         });
       });
 
-      test('.onEvent() creates the expected event rule', () => {
+      test('.onEvent() should create the expected event rule', () => {
         job.onEvent('eventId', {});
 
         Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -944,7 +912,7 @@ describe('Job', () => {
         });
       });
 
-      test('.metricSuccess() creates the expected singleton event rule and corresponding metric', () => {
+      test('.metricSuccess() should create the expected singleton event rule and corresponding metric', () => {
         const metric = job.metricSuccess();
         job.metricSuccess();
 
@@ -994,7 +962,7 @@ describe('Job', () => {
         });
       });
 
-      test('.metricFailure() creates the expected singleton event rule and corresponding metric', () => {
+      test('.metricFailure() should create the expected singleton event rule and corresponding metric', () => {
         const metric = job.metricFailure();
         job.metricFailure();
 
@@ -1044,7 +1012,7 @@ describe('Job', () => {
         });
       });
 
-      test('.metricTimeout() creates the expected singleton event rule and corresponding metric', () => {
+      test('.metricTimeout() should create the expected singleton event rule and corresponding metric', () => {
         const metric = job.metricTimeout();
         job.metricTimeout();
 
@@ -1097,7 +1065,7 @@ describe('Job', () => {
 
     describe('.metric()', () => {
 
-      test('to create a count sum metric', () => {
+      test('with MetricType.COUNT should create a count sum metric', () => {
         const metricName = 'glue.driver.aggregate.bytesRead';
         const props = { statistic: cloudwatch.Statistic.SUM };
 
@@ -1113,7 +1081,7 @@ describe('Job', () => {
         }));
       });
 
-      test('to create a gauge average metric', () => {
+      test('with MetricType.GAUGE should create a gauge average metric', () => {
         const metricName = 'glue.driver.BlockManager.disk.diskSpaceUsed_MB';
         const props = { statistic: cloudwatch.Statistic.AVERAGE };
 

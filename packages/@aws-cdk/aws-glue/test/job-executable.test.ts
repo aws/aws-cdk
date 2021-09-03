@@ -2,6 +2,38 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as glue from '../lib';
 
+describe('GlueVersion', () => {
+  test('.V0_9 should set the name correctly', () => expect(glue.GlueVersion.V0_9.name).toEqual('0.9'));
+
+  test('.V1_0 should set the name correctly', () => expect(glue.GlueVersion.V1_0.name).toEqual('1.0'));
+
+  test('.V2_0 should set the name correctly', () => expect(glue.GlueVersion.V2_0.name).toEqual('2.0'));
+
+  test('.V3_0 should set the name correctly', () => expect(glue.GlueVersion.V3_0.name).toEqual('3.0'));
+
+  test('of(customVersion) should set the name correctly', () => expect(glue.GlueVersion.of('CustomVersion').name).toEqual('CustomVersion'));
+});
+
+describe('WorkerType', () => {
+  test('.STANDARD should set the name correctly', () => expect(glue.WorkerType.STANDARD.name).toEqual('Standard'));
+
+  test('.G_1X should set the name correctly', () => expect(glue.WorkerType.G_1X.name).toEqual('G.1X'));
+
+  test('.G_2X should set the name correctly', () => expect(glue.WorkerType.G_2X.name).toEqual('G.2X'));
+
+  test('of(customType) should set name correctly', () => expect(glue.WorkerType.of('CustomType').name).toEqual('CustomType'));
+});
+
+describe('JobType', () => {
+  test('.ETL should set the name correctly', () => expect(glue.JobType.ETL.name).toEqual('glueetl'));
+
+  test('.STREAMING should set the name correctly', () => expect(glue.JobType.STREAMING.name).toEqual('gluestreaming'));
+
+  test('.PYTHON_SHELL should set the name correctly', () => expect(glue.JobType.PYTHON_SHELL.name).toEqual('pythonshell'));
+
+  test('of(customName) should set the name correctly', () => expect(glue.JobType.of('CustomName').name).toEqual('CustomName'));
+});
+
 describe('JobExecutable', () => {
   let stack: cdk.Stack;
   let bucket: s3.IBucket;
@@ -14,7 +46,7 @@ describe('JobExecutable', () => {
   });
 
   describe('.of()', () => {
-    test('with valid config', () => {
+    test('with valid config should succeed', () => {
       expect(glue.JobExecutable.of({
         glueVersion: glue.GlueVersion.V2_0,
         type: glue.JobType.PYTHON_SHELL,
@@ -24,7 +56,7 @@ describe('JobExecutable', () => {
       })).toBeDefined();
     });
 
-    test('python shell job with a language other than python throws', () => {
+    test('with JobType.PYTHON_SHELL and a language other than JobLanguage.PYTHON', () => {
       expect(() => glue.JobExecutable.of({
         glueVersion: glue.GlueVersion.V3_0,
         type: glue.JobType.PYTHON_SHELL,
@@ -34,7 +66,7 @@ describe('JobExecutable', () => {
     });
 
     [glue.GlueVersion.V0_9, glue.GlueVersion.V1_0].forEach((glueVersion) => {
-      test(`python shell with glue version ${glueVersion} throws`, () => {
+      test(`with JobType.PYTHON_SHELL and GlueVersion ${glueVersion} should throw`, () => {
         expect(() => glue.JobExecutable.of({
           type: glue.JobType.PYTHON_SHELL,
           language: glue.JobLanguage.PYTHON,
@@ -44,7 +76,7 @@ describe('JobExecutable', () => {
         })).toThrow(`Specified GlueVersion ${glueVersion.name} does not support Python Shell`);
       });
 
-      test(`extraJarsFirst with glue version ${glueVersion} throws`, () => {
+      test(`with extraJarsFirst set and GlueVersion ${glueVersion} should throw`, () => {
         expect(() => glue.JobExecutable.of({
           type: glue.JobType.ETL,
           language: glue.JobLanguage.PYTHON,
@@ -57,7 +89,7 @@ describe('JobExecutable', () => {
     });
 
     [glue.GlueVersion.V2_0, glue.GlueVersion.V3_0].forEach((glueVersion) => {
-      test(`PythonVersion.TWO with glue version ${glueVersion} throws`, () => {
+      test(`with PythonVersion.TWO and GlueVersion ${glueVersion} should throw`, () => {
         expect(() => glue.JobExecutable.of({
           type: glue.JobType.PYTHON_SHELL,
           language: glue.JobLanguage.PYTHON,
@@ -67,6 +99,5 @@ describe('JobExecutable', () => {
         })).toThrow(`Specified GlueVersion ${glueVersion.name} does not support PythonVersion 2`);
       });
     });
-
   });
 });
