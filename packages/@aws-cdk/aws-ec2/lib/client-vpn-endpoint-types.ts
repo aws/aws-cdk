@@ -1,4 +1,5 @@
-import { IDependable, IResource } from '@aws-cdk/core';
+import { IResource } from '@aws-cdk/core';
+import { IDependable } from 'constructs';
 import { IConnectable } from './connections';
 
 /**
