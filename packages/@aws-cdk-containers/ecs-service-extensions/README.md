@@ -20,7 +20,7 @@ The `Service` construct provided by this module can be extended with optional `S
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
 - [Publish/ Subscribe Service Pattern](https://aws.amazon.com/pub-sub-messaging/), for implementing asynchronous communication between services. This can be accomplished by using the following service extensions:
-  - [Publisher Extension](#publisher-extension) to allow your service to publish events to SNS Topics or AWS EventBus 
+  - [Publisher Extension](#publisher-extension) to allow your service to publish events to SNS Topics or Amazon EventBridge Event Bus 
   - [Queue Extension](#queue-extension) to allow your service to consume messages from an SQS Queue which is populated by one or more SNS Topics that it is subscribed to
 - [Community Extensions](#community-extensions), providing support for advanced use cases
 
@@ -340,7 +340,7 @@ nameDescription.add(new PublisherExtension({
 }))
 ```
 
-You can also provide a list of account IDs for each topic to allow the accounts permissions to be able to subscribe to the given topic.
+You can also provide a list of account IDs for each topic to permit those accounts to create subscriptions to the given topic.
 
 ```ts
 nameDescription.add(new PublisherExtension({
@@ -385,14 +385,22 @@ nameDescription.add(new QueueExtension({
 }));
 ```
 
-## Publish/ Subscribe Service Pattern
+## Publish/Subscribe Service Pattern
 
-The [Publish/ Subscribe Service Pattern](https://aws.amazon.com/pub-sub-messaging/) is used for implementing asynchronous communication between services. It involves 'publisher' services publishing events to SNS Topics which are then consumed by 'worker' services. 
+The [Publish/Subscribe Service Pattern](https://aws.amazon.com/pub-sub-messaging/) is used for implementing asynchronous communication between services. It involves 'publisher' services emitting events to SNS Topics, which are passed to subscribed SQS queues and then consumed by 'worker' services. 
 
 The following example adds the `PublisherExtension` to a `Publisher` Service which can publish events to an SNS Topic and adds the `QueueExtension` to a `Worker` Service which can poll its `eventsQueue` to consume messages populated by the topic.
 
 ```ts
+const environment = new Environment(stack, 'production');
+
 const pubServiceDescription = new ServiceDescription();
+pubServiceDescription.add(new Container({
+  cpu: 256,
+  memoryMiB: 512,
+  trafficPort: 80,
+  image: ecs.ContainerImage.fromRegistry('sns-publish'),
+}));
 
 const myTopic = new PublisherTopic({
   topic: new sns.Topic(stack, 'myTopic'),
@@ -410,6 +418,12 @@ new Service(stack, 'Publisher', {
 });
 
 const subServiceDescription = new ServiceDescription();
+subServiceDescription.add(new Container({
+  cpu: 256,
+  memoryMiB: 512,
+  trafficPort: 80,
+  image: ecs.ContainerImage.fromRegistry('sqs-reader'),
+}));
 
 // Add the `QueueExtension` to the service description to subscribe to `myTopic`
 subServiceDescription.add(new QueueExtension({
