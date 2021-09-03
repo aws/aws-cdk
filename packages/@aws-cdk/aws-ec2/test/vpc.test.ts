@@ -146,7 +146,7 @@ nodeunitShim({
       new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
             name: 'Isolated',
           },
         ],
@@ -168,7 +168,7 @@ nodeunitShim({
             name: 'Public',
           },
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
             name: 'Isolated',
           },
         ],
@@ -186,7 +186,7 @@ nodeunitShim({
             name: 'Public',
           },
           {
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
             name: 'private',
           },
         ],
@@ -194,7 +194,7 @@ nodeunitShim({
 
       const nacl1 = new NetworkAcl(stack, 'myNACL1', {
         vpc,
-        subnetSelection: { subnetType: SubnetType.PRIVATE },
+        subnetSelection: { subnetType: SubnetType.PRIVATE_WITH_NAT },
       });
 
       new NetworkAclEntry(stack, 'AllowDNSEgress', {
@@ -233,7 +233,7 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
             name: 'isolated',
           },
           {
@@ -260,7 +260,7 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
             name: 'isolated',
           },
         ],
@@ -283,13 +283,13 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'reserved',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
             reserved: true,
           },
           {
             cidrMask: 28,
             name: 'rds',
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
           },
         ],
         maxAzs: 3,
@@ -310,13 +310,13 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'reserved',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
             reserved: true,
           },
           {
             cidrMask: 24,
             name: 'rds',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
         ],
         maxAzs: 3,
@@ -352,12 +352,12 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
           {
             cidrMask: 28,
             name: 'rds',
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
           },
         ],
         maxAzs: 3,
@@ -391,12 +391,12 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
           {
             cidrMask: 28,
             name: 'rds',
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
           },
         ],
         maxAzs: 3,
@@ -509,7 +509,7 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'private',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
         ],
         natGatewaySubnets: {
@@ -541,7 +541,7 @@ nodeunitShim({
             },
             {
               name: 'private',
-              subnetType: SubnetType.PRIVATE,
+              subnetType: SubnetType.PRIVATE_WITH_NAT,
             },
           ],
         });
@@ -583,7 +583,7 @@ nodeunitShim({
           },
           {
             name: 'private',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
             reserved: true,
           },
         ],
@@ -608,7 +608,7 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'private',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
         ],
         natGatewaySubnets: {
@@ -662,12 +662,12 @@ nodeunitShim({
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'Public' },
-          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'Isolated' },
         ],
         vpnGateway: true,
         vpnRoutePropagation: [
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
           },
         ],
       });
@@ -696,16 +696,16 @@ nodeunitShim({
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'Public' },
-          { subnetType: SubnetType.PRIVATE, name: 'Private' },
-          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE_WITH_NAT, name: 'Private' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'Isolated' },
         ],
         vpnGateway: true,
         vpnRoutePropagation: [
           {
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
           },
         ],
       });
@@ -743,7 +743,7 @@ nodeunitShim({
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'Public' },
-          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'Isolated' },
         ],
         vpnGateway: true,
       });
@@ -1292,12 +1292,12 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'Public' },
-          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'Isolated' },
         ],
       });
 
       // WHEN
-      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.ISOLATED });
+      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_ISOLATED });
 
       // THEN
       test.deepEqual(subnetIds, vpc.isolatedSubnets.map(s => s.subnetId));
@@ -1311,8 +1311,8 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'BlaBla' },
-          { subnetType: SubnetType.PRIVATE, name: 'DontTalkToMe' },
-          { subnetType: SubnetType.ISOLATED, name: 'DontTalkAtAll' },
+          { subnetType: SubnetType.PRIVATE_WITH_NAT, name: 'DontTalkToMe' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'DontTalkAtAll' },
         ],
       });
 
@@ -1330,8 +1330,8 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'BlaBla' },
-          { subnetType: SubnetType.PRIVATE, name: 'DontTalkToMe' },
-          { subnetType: SubnetType.ISOLATED, name: 'DontTalkAtAll' },
+          { subnetType: SubnetType.PRIVATE_WITH_NAT, name: 'DontTalkToMe' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'DontTalkAtAll' },
         ],
       });
 
@@ -1398,8 +1398,8 @@ nodeunitShim({
         maxAzs: 1,
         subnetConfiguration: [
           { name: 'lb', subnetType: SubnetType.PUBLIC },
-          { name: 'app', subnetType: SubnetType.PRIVATE },
-          { name: 'db', subnetType: SubnetType.PRIVATE },
+          { name: 'app', subnetType: SubnetType.PRIVATE_WITH_NAT },
+          { name: 'db', subnetType: SubnetType.PRIVATE_WITH_NAT },
         ],
       });
 
@@ -1579,7 +1579,7 @@ nodeunitShim({
         privateDnsEnabled: false,
         service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
         subnets: {
-          subnetType: SubnetType.PRIVATE,
+          subnetType: SubnetType.PRIVATE_WITH_NAT,
           availabilityZones: ['dummy1a', 'dummy1c'],
         },
       });
