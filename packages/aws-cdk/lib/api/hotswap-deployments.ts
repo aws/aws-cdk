@@ -5,6 +5,7 @@ import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
 import { ChangeHotswapImpact, HotswapOperation, ListStackResources } from './hotswap/common';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
+import { isHotswappableStepFunctionChange } from './hotswap/step-functions';
 import { CloudFormationStack } from './util/cloudformation';
 
 /**
@@ -49,6 +50,7 @@ function findAllHotswappableChanges(
   let foundNonHotswappableChange = false;
   stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
     const lambdaFunctionShortCircuitChange = isHotswappableLambdaFunctionChange(logicalId, change, assetParamsWithEnv);
+    const stepFunctionShortCircuitChange = isHotswappableStepFunctionChange(logicalId, change, assetParamsWithEnv);
     if (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
     } else if (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) {

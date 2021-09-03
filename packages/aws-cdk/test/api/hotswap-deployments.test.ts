@@ -149,13 +149,15 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
-  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-    S3Bucket: 'current-bucket',
-    S3Key: 'new-key',
+  expect(mockUpdateMachineCode).toHaveBeenCalledWith({
+    DefinitionString: {
+      'Fn::Join': [
+        'new-string-1',
+        'new-string-2',
+      ],
+    },
   });
 });
-
 
 function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
   return testStack({
