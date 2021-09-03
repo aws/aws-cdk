@@ -62,6 +62,8 @@ pass the construct to the other stack:
 
 ## Importing existing keys
 
+### Import key by ARN
+
 To use a KMS key that is not defined in this CDK app, but is created through other means, use
 `Key.fromKeyArn(parent, name, ref)`:
 
@@ -72,9 +74,11 @@ const myKeyImported = kms.Key.fromKeyArn(this, 'MyImportedKey', 'arn:aws:...');
 myKeyImported.addAlias('alias/foo');
 ```
 
-Note that a call to `.addToPolicy(statement)` on `myKeyImported` will not have
+Note that a call to `.addToResourcePolicy(statement)` on `myKeyImported` will not have
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
+
+### Import key by alias
 
 If a Key has an associated Alias, the Alias can be imported by name and used in place
 of the Key as a reference. A common scenario for this is in referencing AWS managed keys.
@@ -90,6 +94,34 @@ const trail = new cloudtrail.Trail(this, 'myCloudTrail', {
 Note that calls to `addToResourcePolicy` and `grant*` methods on `myKeyAlias` will be
 no-ops, and `addAlias` and `aliasTargetKey` will fail, as the imported alias does not
 have a reference to the underlying KMS Key.
+
+### Lookup key by alias
+
+If you can't use a KMS key imported by alias (e.g. because you need access to the key id), you can lookup the key with `Key.fromLookup()`.
+
+In general, the preferred method would be to use `Alias.fromAliasName()` which returns an `IAlias` object which extends `IKey`. However, some services need to have access to the underlying key id. In this case, `Key.fromLookup()` allows to lookup the key id.
+
+The result of the `Key.fromLookup()` operation will be written to a file
+called `cdk.context.json`. You must commit this file to source control so
+that the lookup values are available in non-privileged environments such
+as CI build steps, and to ensure your template builds are repeatable.
+
+Here's how `Key.fromLookup()` can be used:
+
+```ts
+const myKeyLookup = kms.Key.fromLookup(this, 'MyKeyLookup', {
+  aliasName: 'alias/KeyAlias'
+});
+
+const role = new iam.Role(this, 'MyRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+myKeyLookup.grantEncryptDecrypt(role);
+```
+
+Note that a call to `.addToResourcePolicy(statement)` on `myKeyLookup` will not have
+an affect on the key's policy because it is not owned by your stack. The call
+will be a no-op.
 
 ## Key Policies
 
