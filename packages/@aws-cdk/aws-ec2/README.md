@@ -42,7 +42,7 @@ distinguishes three different subnet types:
   Internet Gateway. If you want your instances to have a public IP address
   and be directly reachable from the Internet, you must place them in a
   public subnet.
-* **Private (`SubnetType.PRIVATE_WITH_NAT`)** - instances in private subnets are not directly routable from the
+* **Private with Internet Access (`SubnetType.PRIVATE_WITH_NAT`)** - instances in private subnets are not directly routable from the
   Internet, and connect out to the Internet via a NAT gateway. By default, a
   NAT gateway is created in every public subnet for maximum availability. Be
   aware that you will be charged for NAT gateways.
