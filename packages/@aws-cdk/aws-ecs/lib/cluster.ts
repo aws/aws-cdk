@@ -574,8 +574,21 @@ export class Cluster extends Resource implements ICluster {
  * ECS-optimized Windows version list
  */
 export enum WindowsOptimizedVersion {
-  SERVER_2019 = '2019',
-  SERVER_2016 = '2016',
+  SERVER_20H2_CORE = 'Windows_Server-20H2-English-Core',
+  SERVER_2004_CORE = 'Windows_Server-2004-English-Core',
+  SERVER_2019_FULL = 'Windows_Server-2019-English-Full',
+  SERVER_2019_CORE = 'Windows_Server-2019-English-Core',
+  SERVER_2016_FULL = 'Windows_Server-2016-English-Full',
+
+  /**
+   * @deprecated see ${@link WindowsOptimizedVersion.SERVER_2019_FULL}
+   */
+  SERVER_2019 = 'Windows_Server-2019-English-Full',
+
+  /**
+   * @deprecated see ${@link WindowsOptimizedVersion.SERVER_2016_FULL}
+   */
+  SERVER_2016 = 'Windows_Server-2016-English-Full',
 }
 
 /*
@@ -651,13 +664,16 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
+    if (this.windowsVersion) {
+      this.amiParameterName = `/aws/service/ami-windows-latest/${this.windowsVersion}-ECS_Optimized/image_id`;
+    } else {
+      this.amiParameterName = '/aws/service/ecs/optimized-ami/'
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
       + 'recommended/image_id';
+    }
   }
 
   /**
@@ -724,13 +740,16 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
+    if (this.windowsVersion) {
+      this.amiParameterName = `/aws/service/ami-windows-latest/${this.windowsVersion}-ECS_Optimized/image_id`;
+    } else {
+      this.amiParameterName = '/aws/service/ecs/optimized-ami/'
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
       + 'recommended/image_id';
+    }
   }
 
   /**

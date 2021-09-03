@@ -757,27 +757,31 @@ describe('cluster', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('WindowsAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: new ecs.EcsOptimizedAmi({
-        windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
-      }),
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'MyAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t3.small'),
+      machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019_FULL),
     });
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'WindowsAsgCapacityProvider', {
+      capacityProviderName: 'WindowsAsgCapacityProvider',
+      autoScalingGroup,
+    }));
 
     // THEN
     expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
-        Ref: 'SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+        Ref: 'SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
-      InstanceType: 't2.micro',
+      InstanceType: 't3.small',
       IamInstanceProfile: {
-        Ref: 'EcsClusterWindowsAutoScalingGroupInstanceProfile65DFA6BB',
+        Ref: 'MyAutoScalingGroupInstanceProfile729989CC',
       },
       SecurityGroups: [
         {
           'Fn::GetAtt': [
-            'EcsClusterWindowsAutoScalingGroupInstanceSecurityGroupDA468DF1',
+            'MyAutoScalingGroupInstanceSecurityGroup718C4F94',
             'GroupId',
           ],
         },
@@ -868,21 +872,25 @@ describe('cluster', () => {
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('WindowsAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: new ecs.EcsOptimizedAmi({
-        windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
-      }),
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'MyAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t3.small'),
+      machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019_FULL),
     });
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'WindowsAsgCapacityProvider', {
+      capacityProviderName: 'WindowsAsgCapacityProvider',
+      autoScalingGroup,
+    }));
 
     // THEN
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+      SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
+        Default: '/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ECS_Optimized/image_id',
       },
     });
 
@@ -901,7 +909,7 @@ describe('cluster', () => {
       cluster.addCapacity('WindowsGpuAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: new ecs.EcsOptimizedAmi({
-          windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
+          windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019_FULL,
           hardwareType: ecs.AmiHardwareType.GPU,
         }),
       });
@@ -922,7 +930,7 @@ describe('cluster', () => {
       cluster.addCapacity('WindowsScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: new ecs.EcsOptimizedAmi({
-          windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
+          windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019_FULL,
           generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
         }),
       });
@@ -935,7 +943,7 @@ describe('cluster', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const ami = new ecs.EcsOptimizedAmi({
-      windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
+      windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019_FULL,
     });
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.WINDOWS);
@@ -1002,7 +1010,7 @@ describe('cluster', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    expect(ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019).getImage(stack).osType).toEqual(
+    expect(ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019_FULL).getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.WINDOWS);
 
 
@@ -1080,19 +1088,25 @@ describe('cluster', () => {
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('WindowsAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'MyAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t3.small'),
+      machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019_FULL),
     });
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'WindowsAsgCapacityProvider', {
+      capacityProviderName: 'WindowsAsgCapacityProvider',
+      autoScalingGroup,
+    }));
 
     // THEN
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+      SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
+        Default: '/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ECS_Optimized/image_id',
       },
     });
 
