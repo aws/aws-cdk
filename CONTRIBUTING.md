@@ -7,7 +7,10 @@ coming from the community. We want to recognize all your hard work
 by getting your code merged as quickly as we can, so please read the guidance
 here carefully to make sure the review process goes smoothly.
 
-This document describes how to set up a development environment and submit your changes. Please 
+The CDK is released under the [Apache license](http://aws.amazon.com/apache2.0/).
+Any code you submit will be released under that license.
+
+This document describes how to set up a development environment and submit your changes. Please
 let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
 - [Getting Started](#getting-started)
@@ -142,20 +145,6 @@ docker$ exit
 
 The `dist/` folder within each module contains the packaged up language artifacts.
 
-## Docker Build (Alternative)
-
-Build the docker image:
-
-```console
-$ docker build -t aws-cdk .
-```
-
-This allows you to run the CDK in a CDK-compatible directory with a command like:
-
-```console
-$ docker run -v $(pwd):/app -w /app aws-cdk <CDK ARGS>
-```
-
 ## Gitpod (Alternative)
 
 You may also set up your local development environment using [Gitpod](http://gitpod.io) -
@@ -262,7 +251,7 @@ The steps here are usually AWS CLI commands but they need not be.
 
 Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
-* [integ.token-authorizer.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.ts#L6)
+* [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
 
 #### yarn watch (Optional)
 
@@ -770,17 +759,7 @@ The pattern is simple:
    through `cdk init`.
 4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
 
-    ```
-    fix(core): impossible to use the same physical stack name for two stacks (under feature flag)
-    ```
-5. Under `BREAKING CHANGES` in your commit message describe this new behavior:
-
-    ```
-    BREAKING CHANGE: template file names for new projects created through "cdk init"
-    will use the template artifact ID instead of the physical stack name to enable
-    multiple stacks to use the same name. This is enabled through the flag
-    `@aws-cdk/core:enableStackNameDuplicates` in newly generated `cdk.json` files.
-    ```
+    `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
 In the [next major version of the
 CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the

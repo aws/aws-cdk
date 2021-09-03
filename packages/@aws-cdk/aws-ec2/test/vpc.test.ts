@@ -35,7 +35,7 @@ nodeunitShim({
       'vpc.vpcId returns a token to the VPC ID'(test: Test) {
         const stack = getTestStack();
         const vpc = new Vpc(stack, 'TheVPC');
-        test.deepEqual(stack.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' } );
+        test.deepEqual(stack.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
         test.done();
       },
 
@@ -55,11 +55,11 @@ nodeunitShim({
         new Vpc(stack, 'TheVPC');
         cdkExpect(stack).to(
           haveResource('AWS::EC2::VPC',
-            hasTags( [{ Key: 'Name', Value: 'TestStack/TheVPC' }])),
+            hasTags([{ Key: 'Name', Value: 'TestStack/TheVPC' }])),
         );
         cdkExpect(stack).to(
           haveResource('AWS::EC2::InternetGateway',
-            hasTags( [{ Key: 'Name', Value: 'TestStack/TheVPC' }])),
+            hasTags([{ Key: 'Name', Value: 'TestStack/TheVPC' }])),
         );
         test.done();
       },
@@ -86,7 +86,7 @@ nodeunitShim({
 
     'dns getters correspond to CFN properties': (() => {
 
-      const tests: any = { };
+      const tests: any = {};
 
       const inputs = [
         { dnsSupport: false, dnsHostnames: false },
@@ -146,7 +146,7 @@ nodeunitShim({
       new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
             name: 'Isolated',
           },
         ],
@@ -168,13 +168,12 @@ nodeunitShim({
             name: 'Public',
           },
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
             name: 'Isolated',
           },
         ],
       });
-      cdkExpect(stack).to(countResources('AWS::EC2::InternetGateway', 1))
-      ;
+      cdkExpect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
       cdkExpect(stack).notTo(haveResource('AWS::EC2::NatGateway'));
       test.done();
     },
@@ -187,7 +186,7 @@ nodeunitShim({
             name: 'Public',
           },
           {
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
             name: 'private',
           },
         ],
@@ -195,7 +194,7 @@ nodeunitShim({
 
       const nacl1 = new NetworkAcl(stack, 'myNACL1', {
         vpc,
-        subnetSelection: { subnetType: SubnetType.PRIVATE },
+        subnetSelection: { subnetType: SubnetType.PRIVATE_WITH_NAT },
       });
 
       new NetworkAclEntry(stack, 'AllowDNSEgress', {
@@ -223,7 +222,7 @@ nodeunitShim({
     'with no subnets defined, the VPC should have an IGW, and a NAT Gateway per AZ'(test: Test) {
       const stack = getTestStack();
       const zones = stack.availabilityZones.length;
-      new Vpc(stack, 'TheVPC', { });
+      new Vpc(stack, 'TheVPC', {});
       cdkExpect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
       cdkExpect(stack).to(countResources('AWS::EC2::NatGateway', zones));
       test.done();
@@ -234,7 +233,7 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
             name: 'isolated',
           },
           {
@@ -251,7 +250,7 @@ nodeunitShim({
       cdkExpect(stack).to(haveResource('AWS::EC2::InternetGateway'));
       cdkExpect(stack).to(haveResourceLike('AWS::EC2::Route', {
         DestinationCidrBlock: '8.8.8.8/32',
-        GatewayId: { },
+        GatewayId: {},
       }));
       test.done();
     },
@@ -261,7 +260,7 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
             name: 'isolated',
           },
         ],
@@ -284,13 +283,13 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'reserved',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
             reserved: true,
           },
           {
             cidrMask: 28,
             name: 'rds',
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
           },
         ],
         maxAzs: 3,
@@ -311,13 +310,13 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'reserved',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
             reserved: true,
           },
           {
             cidrMask: 24,
             name: 'rds',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
         ],
         maxAzs: 3,
@@ -353,12 +352,12 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
           {
             cidrMask: 28,
             name: 'rds',
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
           },
         ],
         maxAzs: 3,
@@ -392,12 +391,12 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
           {
             cidrMask: 28,
             name: 'rds',
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
           },
         ],
         maxAzs: 3,
@@ -457,7 +456,7 @@ nodeunitShim({
       }
       cdkExpect(stack).to(haveResourceLike('AWS::EC2::Route', {
         DestinationCidrBlock: '0.0.0.0/0',
-        NatGatewayId: { },
+        NatGatewayId: {},
       }));
 
       test.done();
@@ -475,7 +474,7 @@ nodeunitShim({
       }
       cdkExpect(stack).to(haveResourceLike('AWS::EC2::Route', {
         DestinationCidrBlock: '0.0.0.0/0',
-        NatGatewayId: { },
+        NatGatewayId: {},
       }));
       test.done();
     },
@@ -489,7 +488,7 @@ nodeunitShim({
       cdkExpect(stack).to(countResources('AWS::EC2::NatGateway', 1));
       cdkExpect(stack).to(haveResourceLike('AWS::EC2::Route', {
         DestinationCidrBlock: '0.0.0.0/0',
-        NatGatewayId: { },
+        NatGatewayId: {},
       }));
       test.done();
     },
@@ -510,7 +509,7 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'private',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
         ],
         natGatewaySubnets: {
@@ -542,7 +541,7 @@ nodeunitShim({
             },
             {
               name: 'private',
-              subnetType: SubnetType.PRIVATE,
+              subnetType: SubnetType.PRIVATE_WITH_NAT,
             },
           ],
         });
@@ -584,7 +583,7 @@ nodeunitShim({
           },
           {
             name: 'private',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
             reserved: true,
           },
         ],
@@ -609,7 +608,7 @@ nodeunitShim({
           {
             cidrMask: 24,
             name: 'private',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
         ],
         natGatewaySubnets: {
@@ -663,12 +662,12 @@ nodeunitShim({
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'Public' },
-          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'Isolated' },
         ],
         vpnGateway: true,
         vpnRoutePropagation: [
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
           },
         ],
       });
@@ -697,16 +696,16 @@ nodeunitShim({
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'Public' },
-          { subnetType: SubnetType.PRIVATE, name: 'Private' },
-          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE_WITH_NAT, name: 'Private' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'Isolated' },
         ],
         vpnGateway: true,
         vpnRoutePropagation: [
           {
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
           },
           {
-            subnetType: SubnetType.ISOLATED,
+            subnetType: SubnetType.PRIVATE_ISOLATED,
           },
         ],
       });
@@ -744,7 +743,7 @@ nodeunitShim({
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'Public' },
-          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'Isolated' },
         ],
         vpnGateway: true,
       });
@@ -868,6 +867,31 @@ nodeunitShim({
       }));
       cdkExpect(stack).to(haveResource('AWS::EC2::NatGateway', {
         AllocationId: 'b',
+      }));
+
+      test.done();
+    },
+
+    'NAT gateway provider with insufficient EIP allocations'(test: Test) {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.gateway({ eipAllocationIds: ['a'] });
+      expect(() => new Vpc(stack, 'VpcNetwork', { natGatewayProvider }))
+        .toThrow(/Not enough NAT gateway EIP allocation IDs \(1 provided\) for the requested subnet count \(\d+ needed\)/);
+
+      test.done();
+    },
+
+    'NAT gateway provider with token EIP allocations'(test: Test) {
+      const stack = new Stack();
+      const eipAllocationIds = Fn.split(',', Fn.importValue('myVpcId'));
+      const natGatewayProvider = NatProvider.gateway({ eipAllocationIds });
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      cdkExpect(stack).to(haveResource('AWS::EC2::NatGateway', {
+        AllocationId: stack.resolve(Fn.select(0, eipAllocationIds)),
+      }));
+      cdkExpect(stack).to(haveResource('AWS::EC2::NatGateway', {
+        AllocationId: stack.resolve(Fn.select(1, eipAllocationIds)),
       }));
 
       test.done();
@@ -1268,12 +1292,12 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'Public' },
-          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'Isolated' },
         ],
       });
 
       // WHEN
-      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.ISOLATED });
+      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_ISOLATED });
 
       // THEN
       test.deepEqual(subnetIds, vpc.isolatedSubnets.map(s => s.subnetId));
@@ -1287,8 +1311,8 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'BlaBla' },
-          { subnetType: SubnetType.PRIVATE, name: 'DontTalkToMe' },
-          { subnetType: SubnetType.ISOLATED, name: 'DontTalkAtAll' },
+          { subnetType: SubnetType.PRIVATE_WITH_NAT, name: 'DontTalkToMe' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'DontTalkAtAll' },
         ],
       });
 
@@ -1306,8 +1330,8 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           { subnetType: SubnetType.PUBLIC, name: 'BlaBla' },
-          { subnetType: SubnetType.PRIVATE, name: 'DontTalkToMe' },
-          { subnetType: SubnetType.ISOLATED, name: 'DontTalkAtAll' },
+          { subnetType: SubnetType.PRIVATE_WITH_NAT, name: 'DontTalkToMe' },
+          { subnetType: SubnetType.PRIVATE_ISOLATED, name: 'DontTalkAtAll' },
         ],
       });
 
@@ -1374,8 +1398,8 @@ nodeunitShim({
         maxAzs: 1,
         subnetConfiguration: [
           { name: 'lb', subnetType: SubnetType.PUBLIC },
-          { name: 'app', subnetType: SubnetType.PRIVATE },
-          { name: 'db', subnetType: SubnetType.PRIVATE },
+          { name: 'app', subnetType: SubnetType.PRIVATE_WITH_NAT },
+          { name: 'db', subnetType: SubnetType.PRIVATE_WITH_NAT },
         ],
       });
 
@@ -1555,7 +1579,7 @@ nodeunitShim({
         privateDnsEnabled: false,
         service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
         subnets: {
-          subnetType: SubnetType.PRIVATE,
+          subnetType: SubnetType.PRIVATE_WITH_NAT,
           availabilityZones: ['dummy1a', 'dummy1c'],
         },
       });
@@ -1686,6 +1710,58 @@ nodeunitShim({
           },
         ],
       }));
+      test.done();
+    },
+
+    'can filter by Subnet Ids'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        vpcCidrBlock: '192.168.0.0/16',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        privateSubnetIds: ['priv-1', 'priv-2', 'priv-3'],
+      });
+
+      // WHEN
+      new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+        vpc,
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+        subnets: {
+          subnetFilters: [SubnetFilter.byIds(['priv-1', 'priv-2'])],
+        },
+      });
+
+      // THEN
+      cdkExpect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+        SubnetIds: ['priv-1', 'priv-2'],
+      }));
+      test.done();
+    },
+
+    'can filter by Cidr Netmask'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VpcNetwork', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          { name: 'normalSn1', subnetType: SubnetType.PUBLIC, cidrMask: 20 },
+          { name: 'normalSn2', subnetType: SubnetType.PUBLIC, cidrMask: 20 },
+          { name: 'smallSn', subnetType: SubnetType.PUBLIC, cidrMask: 28 },
+        ],
+      });
+
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets(
+        { subnetFilters: [SubnetFilter.byCidrMask(20)] },
+      );
+
+      // THEN
+      test.deepEqual(subnetIds.length, 2);
+      const expected = vpc.publicSubnets.filter(s => s.ipv4CidrBlock.endsWith('/20'));
+      test.deepEqual(subnetIds, expected.map(s => s.subnetId));
       test.done();
     },
   },

@@ -30,6 +30,15 @@ enables organizations to create and manage catalogs of products for their end us
   - [Granting access to a portfolio](#granting-access-to-a-portfolio)
   - [Sharing a portfolio with another AWS account](#sharing-a-portfolio-with-another-aws-account)
 - [Product](#product)
+  - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
+- [TagOptions](#tag-options)
+- [Constraints](#constraints)
+  - [Tag update constraint](#tag-update-constraint)
+  - [Notify on stack events](#notify-on-stack-events)
+  - [CloudFormation parameters constraint](#cloudformation-parameters-constraint)
+  - [Set launch role](#set-launch-role)
+  - [Deploy with StackSets](#deploy-with-stacksets)
+
 
 The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
@@ -57,7 +66,7 @@ new servicecatalog.Portfolio(this, 'MyFirstPortfolio', {
   displayName: 'MyFirstPortfolio',
   providerName: 'MyTeam',
   description: 'Portfolio for a project',
-  acceptLanguage: servicecatalog.AcceptLanguage.EN,
+  messageLanguage: servicecatalog.MessageLanguage.EN,
 });
 ```
 
@@ -125,6 +134,8 @@ Assets are files that are uploaded to an S3 Bucket before deployment.
 `CloudFormationTemplate.fromAsset` can be utilized to create a Product by passing the path to a local template file on your disk:
 
 ```ts
+import * as path from 'path';
+
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
   productName: "My Product",
   owner: "Product Owner",
@@ -139,5 +150,154 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
     },
   ]
+});
+```
+
+### Adding a product to a portfolio
+
+You add products to a portfolio to manage your resources at scale.  After adding a product to a portfolio,
+it creates a portfolio-product association, and will become visible from the portfolio side in both the console and service catalog CLI.
+A product can be added to multiple portfolios depending on your resource and organizational needs.
+
+```ts fixture=portfolio-product
+portfolio.addProduct(product);
+```
+
+## Tag Options
+
+TagOptions allow administrators to easily manage tags on provisioned products by creating a selection of tags for end users to choose from.
+For example, an end user can choose an `ec2` for the instance type size.
+TagOptions are created by specifying a key with a selection of values.
+At the moment, TagOptions can only be disabled in the console.
+
+```ts fixture=basic-portfolio
+const tagOptions = new servicecatalog.TagOptions({
+  ec2InstanceType: ['A1', 'M4'],
+  ec2InstanceSize: ['medium', 'large'],
+});
+portfolio.associateTagOptions(tagOptions);
+```
+
+## Constraints
+
+Constraints define governance mechanisms that allow you to manage permissions, notifications, and options related to actions end users can perform on products,
+Constraints are applied on a portfolio-product association.
+Using the CDK, if you do not explicitly associate a product to a portfolio and add a constraint, it will automatically add an association for you.
+
+There are rules around plurariliites of constraints for a portfolio and product.
+For example, you can only have a single "tag update" constraint applied to a portfolio-product association. 
+If a misconfigured constraint is added, `synth` will fail with an error message.
+
+Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints.html).
+
+### Tag update constraint
+
+Tag update constraints allow or disallow end users to update tags on resources associated with an AWS Service Catalog product upon provisioning.
+By default, tag updating is not permitted.
+If tag updating is allowed, then new tags associated with the product or portfolio will be applied to provisioned resources during a provisioned product update.
+
+```ts fixture=portfolio-product
+portfolio.addProduct(product);
+
+portfolio.constrainTagUpdates(product);
+```
+
+If you want to disable this feature later on, you can update it by setting the "allow" parameter to `false`:
+
+```ts fixture=portfolio-product
+// to disable tag updates:
+portfolio.constrainTagUpdates(product, {
+  allow: false,
+});
+```
+
+### Notify on stack events
+
+Allows users to subscribe an AWS `SNS` topic to the stack events of the product.
+When an end user provisions a product it creates a product stack that notifies the subscribed topic on creation, edit, and delete events.
+An individual `SNS` topic may only be subscribed once to a portfolio-product association.
+
+```ts fixture=portfolio-product
+import * as sns from '@aws-cdk/aws-sns';
+
+const topic1 = new sns.Topic(this, 'MyTopic1');
+portfolio.notifyOnStackEvents(product, topic1);
+
+const topic2 = new sns.Topic(this, 'MyTopic2');
+portfolio.notifyOnStackEvents(product, topic2, {
+  description: 'description for this topic2', // description is an optional field. 
+});
+```
+
+### CloudFormation parameters constraint
+
+CloudFormation parameters constraints allow you to configure the that are available to end users when they launch a product via defined rules.
+A rule consists of one or more assertions that narrow the allowable values for parameters in a product.
+You can configure multiple parameter constraints to govern the different parameters and parameter options in your products.
+For example, a rule might define the various instance types that users can choose from when launching a stack that includes EC2 instances.
+A parameter rule has an optional `condition` field that allows ability to configure when rules are applied.
+If a `condition` is specified, all the assertions will be applied if the condition evalutates to true.
+For information on rule-specific intrinsic functions to define rule conditions and assertions,
+see [AWS Rule Functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-rules.html).
+
+```ts fixture=portfolio-product
+import * as cdk from '@aws-cdk/core';
+
+portfolio.constrainCloudFormationParameters(product, {
+  rule: {
+    ruleName: 'testInstanceType',
+    condition: cdk.Fn.conditionEquals(cdk.Fn.ref('Environment'), 'test'),
+    assertions: [{
+      assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
+      description: 'For test environment, the instance type should be small',
+    }],
+  },
+});
+```
+
+### Set launch role
+
+Allows you to configure a specific AWS `IAM` role that a user must assume when launching a product.
+By setting this launch role, you can control what policies and privileges end users can have.
+The launch role must be assumed by the service catalog principal.
+You can only have one launch role set for a portfolio-product association, and you cannot set a launch role if a StackSets deployment has been configured.
+
+```ts fixture=portfolio-product
+import * as iam from '@aws-cdk/aws-iam';
+
+const launchRole = new iam.Role(this, 'LaunchRole', {
+  assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
+});
+
+portfolio.setLaunchRole(product, launchRole);
+```
+
+See [Launch Constraint](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html) documentation
+to understand permissions roles need.
+
+### Deploy with StackSets
+
+A StackSets deployment constraint allows you to configure product deployment options using 
+[AWS CloudFormation StackSets](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/using-stacksets.html). 
+You can specify multiple accounts and regions for the product launch following StackSets conventions.
+There is an additional field `allowStackSetInstanceOperations` that configures ability for end users to create, edit, or delete the stacks.
+By default, this field is set to `false`.
+End users can manage those accounts and determine where products deploy and the order of deployment.
+You can only define one StackSets deployment configuration per portfolio-product association,
+and you cannot both set a launch role and StackSets deployment configuration for an assocation.
+
+```ts fixture=portfolio-product
+import * as iam from '@aws-cdk/aws-iam';
+
+const adminRole = new iam.Role(this, 'AdminRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+portfolio.deployWithStackSets(product, {
+  accounts: ['012345678901', '012345678902', '012345678903'],
+  regions: ['us-west-1', 'us-east-1', 'us-west-2', 'us-east-1'],
+  adminRole: adminRole,
+  executionRoleName: 'SCStackSetExecutionRole', // Name of role deployed in end users accounts.
+  allowStackSetInstanceOperations: true,
 });
 ```

@@ -12,6 +12,7 @@ os.environ['PATH'] = '/opt/kubectl:/opt/awscli:' + os.environ['PATH']
 outdir = os.environ.get('TEST_OUTDIR', '/tmp')
 kubeconfig = os.path.join(outdir, 'kubeconfig')
 
+
 def apply_handler(event, context):
     logger.info(json.dumps(event))
 
@@ -34,6 +35,9 @@ def apply_handler(event, context):
     ]
     logger.info(f'Running command: {cmd}')
     subprocess.check_call(cmd)
+
+    if os.path.isfile(kubeconfig):
+        os.chmod(kubeconfig, 0o600)
 
     # write resource manifests in sequence: { r1 }{ r2 }{ r3 } (this is how
     # a stream of JSON objects can be included in a k8s manifest).
@@ -81,8 +85,8 @@ def kubectl(verb, file, *opts):
         except subprocess.CalledProcessError as exc:
             output = exc.output
             if b'i/o timeout' in output and retry > 0:
-              retry = retry - 1
-              logger.info("kubectl timed out, retries left: %s" % retry)
+                retry = retry - 1
+                logger.info("kubectl timed out, retries left: %s" % retry)
             else:
                 raise Exception(output)
         else:
