@@ -189,12 +189,13 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
       Parameters: {
         QueryString: this.props.queryString,
         ClientRequestToken: this.props.clientRequestToken,
-        QueryExecutionContext: {
+        QueryExecutionContext: (this.props.queryExecutionContext?.catalogName || this.props.queryExecutionContext?.databaseName) ? {
           Catalog: this.props.queryExecutionContext?.catalogName,
           Database: this.props.queryExecutionContext?.databaseName,
-        },
+        } : undefined,
         ResultConfiguration: {
           EncryptionConfiguration: this.renderEncryption(),
+          OutputLocation: this.props.resultConfiguration?.outputLocation ? `s3://${this.props.resultConfiguration?.outputLocation?.bucketName}/${this.props.resultConfiguration?.outputLocation?.objectKey}/` : undefined,
         },
         WorkGroup: this.props?.workGroup,
       },

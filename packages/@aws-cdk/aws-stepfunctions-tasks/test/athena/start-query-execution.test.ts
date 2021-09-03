@@ -154,8 +154,7 @@ describe('Start Query Execution', () => {
     });
   });
 
-  // No preset execution context
-  test('missing executioncontext', () => {
+  test('omit QueryExecutionContext if no catalog or database name provided', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -173,27 +172,9 @@ describe('Start Query Execution', () => {
 
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::athena:startQueryExecution',
-          ],
-        ],
-      },
-      End: true,
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        QueryString: 'CREATE DATABASE database',
-        ClientRequestToken: 'unique-client-request-token',
-        ResultConfiguration: {
-          OutputLocation: 's3://query-results-bucket/folder/',
-        },
+        QueryExecutionContext: ABSENT,
       },
     });
   });
