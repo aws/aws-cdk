@@ -44,6 +44,9 @@ created for the selection. The `BackupSelection` implements `IGrantable`.
 
 To add rules to a plan, use `addRule()`:
 
+And use the Volume Shadow Copy Service via the windowsVss parameter, default value is false. 
+To use this, you can provide windowsVss as a parameter to new backup.BackupPlanRule.
+
 ```ts fixture=with-plan
 plan.addRule(new backup.BackupPlanRule({
   completionWindow: Duration.hours(2),
