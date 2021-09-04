@@ -157,24 +157,19 @@ new redshift.Table(this, 'Table', {
 
 ### Granting Privileges
 
-You can give a user privileges to perform certain actions on a table by using the `User.addPrivilege` method.
+You can give a user privileges to perform certain actions on a table by using the `Table.grant()` method.
 
 ```ts
-const databaseProps = {
+const databaseProps = ;
+const user = new redshift.User(this, 'User', {
   cluster: cluster,
   databaseName: 'databaseName',
-};
-const user = new redshift.User(this, 'User', databaseProps);
+});
 const table = new redshift.Table(this, 'Table', {
-  ...databaseProps,
+  cluster: cluster,
+  databaseName: 'databaseName',
   tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
 });
 
-user.addPrivilege(table, Privilege.INSERT, Privilege.UPDATE);
-```
-
-Privileges on the table can also be given by using the `Table.grant` method.
-
-```ts
-table.grant(user, Privilege.DROP, Privilege.SELECT);
+table.grant(user, TableAction.DROP, TableAction.SELECT);
 ```
