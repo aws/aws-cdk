@@ -15,5 +15,5 @@ export async function handler(event: Event): Promise<any> {
     );
   console.log(`Expression: ${expression}`);
 
-  return eval(expression);
+  return await eval(expression);
 }
