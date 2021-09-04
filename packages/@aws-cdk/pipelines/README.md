@@ -410,6 +410,21 @@ Region and that environment has been
 , CDK Pipelines will transparently make sure the IAM roles are set up
 correctly and any requisite replication Buckets are created.
 
+#### Deploying using an arbitrary step
+
+If you need to use custom commands for deployment, you can add one or more
+`Steps` which will be run in sequence with other Stages and Steps added 
+to the pipeline.
+
+```ts
+// Do this as many times as necessary
+pipeline.addStep(new ShellStep('Prod', {
+  commands: [
+    'kubectl apply -f https://k8s.io/examples/application/nginx-app.yaml'
+  ],
+}));
+```
+
 #### Deploying in parallel
 
 By default, all applications added to CDK Pipelines by calling `addStage()` will

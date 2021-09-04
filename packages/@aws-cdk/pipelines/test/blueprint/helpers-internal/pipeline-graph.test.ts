@@ -66,6 +66,33 @@ describe('blueprint with one stage', () => {
   });
 });
 
+describe('blueprint with one step', () => {
+  let blueprint: Blueprint;
+  beforeEach(() => {
+    blueprint = new Blueprint(app, 'Bp', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+        commands: ['build'],
+      }),
+    });
+    blueprint.addStep(new cdkp.ShellStep('Prod', {
+      commands: [],
+    }));
+  });
+
+  test('simple app gets graphed correctly', () => {
+    // WHEN
+    const graph = new PipelineGraph(blueprint).graph;
+
+    // THEN
+    expect(childrenAt(graph)).toEqual([
+      'Source',
+      'Build',
+      'Prod',
+    ]);
+  });
+});
+
 describe('blueprint with wave and stage', () => {
   let blueprint: Blueprint;
   beforeEach(() => {

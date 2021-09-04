@@ -1,6 +1,6 @@
 import { Aspects, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AddStageOpts as StageOptions, WaveOptions, Wave, IFileSetProducer, ShellStep, FileSet } from '../blueprint';
+import { AddStageOpts as StageOptions, WaveOptions, Wave, IFileSetProducer, ShellStep, FileSet, Step } from '../blueprint';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -77,7 +77,7 @@ export abstract class PipelineBase extends CoreConstruct {
    * Deploy a single Stage by itself
    *
    * Add a Stage to the pipeline, to be deployed in sequence with other
-   * Stages added to the pipeline. All Stacks in the stage will be deployed
+   * Stages and Steps added to the pipeline. All Stacks in the stage will be deployed
    * in an order automatically determined by their relative dependencies.
    */
   public addStage(stage: Stage, options?: StageOptions) {
@@ -86,6 +86,19 @@ export abstract class PipelineBase extends CoreConstruct {
     }
 
     return this.addWave(stage.stageName).addStage(stage, options);
+  }
+
+  /**
+   * Add a single Step by itself
+   *
+   * Add a Step to the pipeline, to be run in sequence with other
+   * Stages and Steps added to the pipeline.
+   */
+  public addStep(step: Step) {
+    if (this.built) {
+      throw new Error('addStep: can\'t add Steps anymore after buildPipeline() has been called');
+    }
+    return this.addWave(step.id, { post: [step] });
   }
 
   /**
