@@ -77,7 +77,7 @@ test('create a plan and add rules - add BackupPlan.AdvancedBackupSettings.Backup
 
   // WHEN
   const plan = new BackupPlan(stack, 'Plan', {
-    backupOptions: { WindowsVSS: 'enabled' },
+    windowsVss: true,
     backupVault: vault,
     backupPlanRules: [
       new BackupPlanRule({
