@@ -601,14 +601,14 @@ Example with Python:
 new Function(this, 'Function', {
   code: Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
     bundling: {
-      image: Runtime.PYTHON_3_8.bundlingImage,
+      image: Runtime.PYTHON_3_9.bundlingImage,
       command: [
         'bash', '-c',
         'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
   }),
-  runtime: Runtime.PYTHON_3_8,
+  runtime: Runtime.PYTHON_3_9,
   handler: 'index.handler',
 });
 ```
@@ -632,7 +632,7 @@ new Function(this, 'Function', {
       command: ['my', 'cool', 'command'],
     },
   }),
-  runtime: Runtime.PYTHON_3_8,
+  runtime: Runtime.PYTHON_3_9,
   handler: 'index.handler',
 });
 ```

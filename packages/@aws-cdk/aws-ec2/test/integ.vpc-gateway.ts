@@ -12,7 +12,7 @@ const vpc = new ec2.Vpc(stack, 'MyVpc', {
       name: 'Public',
     },
     {
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       name: 'Isolated',
     },
   ],
