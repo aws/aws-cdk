@@ -6,8 +6,8 @@ import { DatabaseOptions } from './database-options';
 import { DatabaseSecret } from './database-secret';
 import { DatabaseQuery } from './private/database-query';
 import { UserHandlerProps } from './private/handler-props';
-import { TableAction, UserTablePrivileges } from './privileges';
-import { ITable } from './table';
+import { UserTablePrivileges } from './private/privileges';
+import { ITable, TableAction } from './table';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order

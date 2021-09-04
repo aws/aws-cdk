@@ -1,10 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { DatabaseOptions } from './database-options';
-import { DatabaseQuery } from './private/database-query';
-import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './private/handler-props';
-import { ITable } from './table';
-import { IUser } from './user';
+import { DatabaseQuery } from './database-query';
+import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
+import { DatabaseOptions } from '../database-options';
+import { ITable, TableAction } from '../table';
+import { IUser } from '../user';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -23,48 +23,6 @@ export interface TablePrivilege {
    * The actions that will be granted.
    */
   readonly actions: TableAction[];
-}
-
-/**
- * An action that a Redshift user can be granted privilege to perform on a table.
- */
-export enum TableAction {
-  /**
-   * Grants privilege to select data from a table or view using a SELECT statement.
-   */
-  SELECT,
-
-  /**
-   * Grants privilege to load data into a table using an INSERT statement or a COPY statement.
-   */
-  INSERT,
-
-  /**
-   * Grants privilege to update a table column using an UPDATE statement.
-   */
-  UPDATE,
-
-  /**
-   * Grants privilege to delete a data row from a table.
-   */
-  DELETE,
-
-  /**
-   * Grants privilege to drop a table.
-   */
-  DROP,
-
-  /**
-   * Grants privilege to create a foreign key constraint.
-   *
-   * You need to grant this privilege on both the referenced table and the referencing table; otherwise, the user can't create the constraint.
-   */
-  REFERENCES,
-
-  /**
-   * Grants all available privileges at once to the specified user or user group.
-   */
-  ALL
 }
 
 /**
