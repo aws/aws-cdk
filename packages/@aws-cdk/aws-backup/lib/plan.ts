@@ -34,7 +34,7 @@ export interface BackupPlanProps {
    * @default - Object used to set Windows VSS options.
    * @see {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-backup-backupplan-windows.html}
    */
-  readonly backupOptions? : object;
+  readonly windowsVss? : boolean;
 
 
   /**
