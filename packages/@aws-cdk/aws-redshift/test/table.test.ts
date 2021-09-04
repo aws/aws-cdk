@@ -99,7 +99,7 @@ describe('cluster table', () => {
     table.grant(user, redshift.TableAction.INSERT);
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-      handler: 'grant-user-table-privileges',
+      handler: 'user-table-privileges',
     });
   });
 

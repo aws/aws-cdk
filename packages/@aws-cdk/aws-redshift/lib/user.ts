@@ -156,7 +156,7 @@ export class User extends UserBase {
 
     this.resource = new DatabaseQuery(this, 'Resource', {
       ...this.databaseProps,
-      handler: 'create-user',
+      handler: 'user',
       properties: {
         username,
         passwordSecretArn: attachedSecret.secretArn,

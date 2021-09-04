@@ -189,7 +189,7 @@ export class Table extends TableBase {
     this.resource = new DatabaseQuery(this, 'Resource', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       ...props,
-      handler: 'create-table',
+      handler: 'table',
       properties: {
         tableName: props.tableName ?? cdk.Names.uniqueId(this),
         tableColumns: this.tableColumns,

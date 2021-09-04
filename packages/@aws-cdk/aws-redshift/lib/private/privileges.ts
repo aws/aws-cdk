@@ -55,7 +55,7 @@ export class UserTablePrivileges extends CoreConstruct {
 
     new DatabaseQuery<UserTablePrivilegesHandlerProps>(this, 'Resource', {
       ...props,
-      handler: 'grant-user-table-privileges',
+      handler: 'user-table-privileges',
       properties: {
         username: props.user.username,
         tablePrivileges: cdk.Lazy.any({
