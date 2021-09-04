@@ -133,7 +133,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
 
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
-        ...(props.windowsVss ? { advancedBackupSettings: [{ backupOptions: {WindowsVSS : 'enabled' }, resourceType: 'EC2' }] } : {}),
+        ...(props.windowsVss ? { advancedBackupSettings: [{ backupOptions: { WindowsVSS: 'enabled' }, resourceType: 'EC2' }] } : {}),
         backupPlanName: props.backupPlanName || id,
         backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
       },
