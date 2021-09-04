@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { DatabaseProps } from './database-props';
+import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
 import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './private/handler-props';
 import { ITable } from './table';
@@ -70,7 +70,7 @@ export enum TableAction {
 /**
  * Properties for specifying privileges granted to a Redshift user on Redshift tables.
  */
-export interface UserTablePrivilegesProps extends DatabaseProps {
+export interface UserTablePrivilegesProps extends DatabaseOptions {
   /**
    * The user to which privileges will be granted.
    */

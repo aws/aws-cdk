@@ -8,7 +8,7 @@ describe('table privileges', () => {
   let vpc: ec2.Vpc;
   let cluster: redshift.ICluster;
   const databaseName = 'databaseName';
-  let databaseProps: redshift.DatabaseProps;
+  let databaseOptions: redshift.DatabaseOptions;
   const tableColumns = [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }];
   let table: redshift.ITable;
   let table2: redshift.ITable;
@@ -26,7 +26,7 @@ describe('table privileges', () => {
       },
       publiclyAccessible: true,
     });
-    databaseProps = {
+    databaseOptions = {
       cluster,
       databaseName,
     };
@@ -45,7 +45,7 @@ describe('table privileges', () => {
   });
 
   it('adding table privilege creates custom resource', () => {
-    const user = new redshift.User(stack, 'User', databaseProps);
+    const user = new redshift.User(stack, 'User', databaseOptions);
 
     user.addTablePrivileges(table, redshift.TableAction.INSERT);
     user.addTablePrivileges(table2, redshift.TableAction.SELECT, redshift.TableAction.DROP);
@@ -62,7 +62,7 @@ describe('table privileges', () => {
   });
 
   it('table privileges are deduplicated', () => {
-    const user = new redshift.User(stack, 'User', databaseProps);
+    const user = new redshift.User(stack, 'User', databaseOptions);
 
     user.addTablePrivileges(table, redshift.TableAction.INSERT, redshift.TableAction.INSERT);
 
@@ -78,7 +78,7 @@ describe('table privileges', () => {
   });
 
   it('table privileges are removed when ALL specified', () => {
-    const user = new redshift.User(stack, 'User', databaseProps);
+    const user = new redshift.User(stack, 'User', databaseOptions);
 
     user.addTablePrivileges(table, redshift.TableAction.ALL, redshift.TableAction.INSERT);
 
@@ -94,7 +94,7 @@ describe('table privileges', () => {
   });
 
   it('SELECT table privilege is added when UPDATE or DELETE is specified', () => {
-    const user = new redshift.User(stack, 'User', databaseProps);
+    const user = new redshift.User(stack, 'User', databaseOptions);
 
     user.addTablePrivileges(table, redshift.TableAction.UPDATE);
     user.addTablePrivileges(table2, redshift.TableAction.DELETE);

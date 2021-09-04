@@ -10,7 +10,7 @@ describe('cluster user', () => {
   let vpc: ec2.Vpc;
   let cluster: redshift.ICluster;
   const databaseName = 'databaseName';
-  let databaseProps: redshift.DatabaseProps;
+  let databaseOptions: redshift.DatabaseOptions;
 
   beforeEach(() => {
     stack = new cdk.Stack();
@@ -25,14 +25,14 @@ describe('cluster user', () => {
       },
       publiclyAccessible: true,
     });
-    databaseProps = {
+    databaseOptions = {
       cluster,
       databaseName,
     };
   });
 
   it('creates using custom resource', () => {
-    new redshift.User(stack, 'User', databaseProps);
+    new redshift.User(stack, 'User', databaseOptions);
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
       passwordSecretArn: { Ref: 'UserSecretAttachment02022609' },
@@ -50,7 +50,7 @@ describe('cluster user', () => {
   });
 
   it('creates database secret', () => {
-    const user = new redshift.User(stack, 'User', databaseProps);
+    const user = new redshift.User(stack, 'User', databaseOptions);
 
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
@@ -63,7 +63,7 @@ describe('cluster user', () => {
   });
 
   it('username property is pulled from custom resource', () => {
-    const user = new redshift.User(stack, 'User', databaseProps);
+    const user = new redshift.User(stack, 'User', databaseOptions);
 
     expect(stack.resolve(user.username)).toStrictEqual({
       'Fn::GetAtt': [
@@ -74,7 +74,7 @@ describe('cluster user', () => {
   });
 
   it('password property is pulled from attached secret', () => {
-    const user = new redshift.User(stack, 'User', databaseProps);
+    const user = new redshift.User(stack, 'User', databaseOptions);
 
     expect(stack.resolve(user.password)).toStrictEqual({
       'Fn::Join': [
@@ -94,7 +94,7 @@ describe('cluster user', () => {
     const username = 'username';
 
     new redshift.User(stack, 'User', {
-      ...databaseProps,
+      ...databaseOptions,
       username,
     });
 
@@ -109,7 +109,7 @@ describe('cluster user', () => {
     const userSecret = secretsmanager.Secret.fromSecretNameV2(stack, 'User Secret', 'redshift-user-secret');
 
     const user = redshift.User.fromUserAttributes(stack, 'User', {
-      ...databaseProps,
+      ...databaseOptions,
       username: userSecret.secretValueFromJson('username').toString(),
       password: userSecret.secretValueFromJson('password'),
     });
@@ -157,7 +157,7 @@ describe('cluster user', () => {
   });
 
   it('destroys user on deletion by default', () => {
-    new redshift.User(stack, 'User', databaseProps);
+    new redshift.User(stack, 'User', databaseOptions);
 
     Template.fromStack(stack).hasResource('Custom::RedshiftDatabaseQuery', {
       Properties: {
@@ -168,7 +168,7 @@ describe('cluster user', () => {
   });
 
   it('retains user on deletion if requested', () => {
-    const user = new redshift.User(stack, 'User', databaseProps);
+    const user = new redshift.User(stack, 'User', databaseOptions);
 
     user.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
@@ -184,7 +184,7 @@ describe('cluster user', () => {
     const encryptionKey = new kms.Key(stack, 'Key');
 
     new redshift.User(stack, 'User', {
-      ...databaseProps,
+      ...databaseOptions,
       encryptionKey,
     });
 
@@ -195,7 +195,7 @@ describe('cluster user', () => {
 
   it('addTablePrivileges grants access to table', () => {
     const user = redshift.User.fromUserAttributes(stack, 'User', {
-      ...databaseProps,
+      ...databaseOptions,
       username: 'username',
       password: cdk.SecretValue.plainText('INSECURE_NOT_FOR_PRODUCTION'),
     });

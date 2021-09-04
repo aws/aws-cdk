@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { DatabaseProps } from './database-props';
+import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
 import { TableHandlerProps } from './private/handler-props';
 import { TableAction } from './privileges';
@@ -29,7 +29,7 @@ export interface Column {
 /**
  * Properties for configuring a Redshift table.
  */
-export interface TableProps extends DatabaseProps {
+export interface TableProps extends DatabaseOptions {
   /**
    * The name of the table.
    *

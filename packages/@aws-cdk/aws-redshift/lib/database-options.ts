@@ -4,7 +4,7 @@ import { ICluster } from './cluster';
 /**
  * Properties for accessing a Redshift database
  */
-export interface DatabaseProps {
+export interface DatabaseOptions {
   /**
    * The cluster containing the database.
    */

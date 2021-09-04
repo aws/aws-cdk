@@ -6,14 +6,14 @@ import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { Cluster } from '../cluster';
-import { DatabaseProps } from '../database-props';
+import { DatabaseOptions } from '../database-options';
 import { DatabaseQueryHandlerProps } from './handler-props';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-export interface DatabaseQueryProps<HandlerProps> extends DatabaseProps {
+export interface DatabaseQueryProps<HandlerProps> extends DatabaseOptions {
   readonly handler: string;
   readonly properties: HandlerProps;
   /**
@@ -82,7 +82,7 @@ export class DatabaseQuery<HandlerProps> extends CoreConstruct implements iam.IG
     return this.resource.getAttString(attributeName);
   }
 
-  private getAdminUser(props: DatabaseProps): secretsmanager.ISecret {
+  private getAdminUser(props: DatabaseOptions): secretsmanager.ISecret {
     const cluster = props.cluster;
     let adminUser = props.adminUser;
     if (!adminUser) {

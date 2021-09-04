@@ -2,7 +2,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { DatabaseProps } from './database-props';
+import { DatabaseOptions } from './database-options';
 import { DatabaseSecret } from './database-secret';
 import { DatabaseQuery } from './private/database-query';
 import { UserHandlerProps } from './private/handler-props';
@@ -16,7 +16,7 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 /**
  * Properties for configuring a Redshift user.
  */
-export interface UserProps extends DatabaseProps {
+export interface UserProps extends DatabaseOptions {
   /**
    * The name of the user.
    *
@@ -75,7 +75,7 @@ export interface IUser extends cdk.IConstruct {
 /**
  * A full specification of a Redshift user that can be used to import it fluently into the CDK application.
  */
-export interface UserAttributes extends DatabaseProps {
+export interface UserAttributes extends DatabaseOptions {
   /**
    * The name of the user.
    */
@@ -100,7 +100,7 @@ abstract class UserBase extends CoreConstruct implements IUser {
    */
   private privileges?: UserTablePrivileges;
 
-  protected abstract readonly databaseProps: DatabaseProps;
+  protected abstract readonly databaseProps: DatabaseOptions;
 
   addTablePrivileges(table: ITable, ...actions: TableAction[]): void {
     if (!this.privileges) {
@@ -135,7 +135,7 @@ export class User extends UserBase {
   readonly password: cdk.SecretValue;
   readonly cluster: ICluster;
   readonly databaseName: string;
-  protected databaseProps: DatabaseProps;
+  protected databaseProps: DatabaseOptions;
 
   private resource: DatabaseQuery<UserHandlerProps>;
 
