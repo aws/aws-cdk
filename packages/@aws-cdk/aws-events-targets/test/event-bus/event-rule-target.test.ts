@@ -1,6 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
@@ -89,5 +90,80 @@ test('with supplied role', () => {
     Roles: [{
       Ref: 'Role1ABCC5F0',
     }],
+  });
+});
+
+test('with a Dead Letter Queue specified', () => {
+  const stack = new Stack();
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+  const queue = new sqs.Queue(stack, 'Queue');
+
+  rule.addTarget(new targets.EventBus(
+    events.EventBus.fromEventBusArn(
+      stack,
+      'External',
+      'arn:aws:events:us-east-1:123456789012:default',
+    ),
+    { deadLetterQueue: queue },
+  ));
+
+  expect(stack).toHaveResource('AWS::Events::Rule', {
+    Targets: [{
+      Arn: 'arn:aws:events:us-east-1:123456789012:default',
+      Id: 'Target0',
+      RoleArn: {
+        'Fn::GetAtt': [
+          'RuleEventsRoleC51A4248',
+          'Arn',
+        ],
+      },
+      DeadLetterConfig: {
+        Arn: {
+          'Fn::GetAtt': [
+            'Queue4A7E3555',
+            'Arn',
+          ],
+        },
+      },
+    }],
+  });
+
+  expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'sqs:SendMessage',
+          Condition: {
+            ArnEquals: {
+              'aws:SourceArn': {
+                'Fn::GetAtt': [
+                  'Rule4C995B7F',
+                  'Arn',
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Service: 'events.amazonaws.com',
+          },
+          Resource: {
+            'Fn::GetAtt': [
+              'Queue4A7E3555',
+              'Arn',
+            ],
+          },
+          Sid: 'AllowEventRuleRule',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Queues: [
+      {
+        Ref: 'Queue4A7E3555',
+      },
+    ],
   });
 });
