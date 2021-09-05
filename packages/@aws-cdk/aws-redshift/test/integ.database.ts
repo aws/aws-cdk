@@ -29,13 +29,13 @@ const cluster = new redshift.Cluster(stack, 'Cluster', {
   publiclyAccessible: true,
 });
 
-const databaseProps = {
+const databaseOptions = {
   cluster: cluster,
   databaseName: databaseName,
 };
-const user = new redshift.User(stack, 'User', databaseProps);
+const user = new redshift.User(stack, 'User', databaseOptions);
 const table = new redshift.Table(stack, 'Table', {
-  ...databaseProps,
+  ...databaseOptions,
   tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
 });
 table.grant(user, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
