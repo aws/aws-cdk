@@ -15,7 +15,12 @@ export async function handler(props: UserTablePrivilegesHandlerProps & ClusterPr
     await revokePrivileges(username, tablePrivileges, clusterProps);
     return;
   } else if (event.RequestType === 'Update') {
-    const { replace } = await updatePrivileges(username, tablePrivileges, clusterProps, event.OldResourceProperties as UserTablePrivilegesHandlerProps & ClusterProps);
+    const { replace } = await updatePrivileges(
+      username,
+      tablePrivileges,
+      clusterProps,
+      event.OldResourceProperties as UserTablePrivilegesHandlerProps & ClusterProps,
+    );
     const physicalId = replace ? makePhysicalId(username, clusterProps, event.RequestId) : event.PhysicalResourceId;
     return { PhysicalResourceId: physicalId };
   } else {
