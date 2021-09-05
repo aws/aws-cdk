@@ -271,6 +271,8 @@ rule.addTarget(
 
 Use the `EventBus` target to route event to a different EventBus.
 
+The code snippet below creates the scheduled event rule that route events to an imported event bus.
+
 ```ts
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.expression('rate(1 minute)'),
