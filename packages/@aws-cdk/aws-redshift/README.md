@@ -26,15 +26,16 @@
 To set up a Redshift cluster, define a `Cluster`. It will be launched in a VPC.
 You can specify a VPC, otherwise one will be created. The nodes are always launched in private subnets and are encrypted by default.
 
-``` typescript
-import redshift = require('@aws-cdk/aws-redshift');
-...
-const cluster = new redshift.Cluster(this, 'Redshift', {
-    masterUser: {
-      masterUsername: 'admin',
-    },
-    vpc
-  });
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc
+});
 ```
 
 By default, the master password will be generated and stored in AWS Secrets Manager.
@@ -49,13 +50,13 @@ Depending on your use case, you can make the cluster publicly accessible with th
 To control who can access the cluster, use the `.connections` attribute. Redshift Clusters have
 a default port, so you don't need to specify the port:
 
-```ts
-cluster.connections.allowFromAnyIpv4('Open to the world');
+```ts fixture=cluster
+cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 ```
 
 The endpoint to access your database cluster will be available as the `.clusterEndpoint` attribute:
 
-```ts
+```ts fixture=cluster
 cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
@@ -63,15 +64,17 @@ cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
-```ts
+```ts fixture=cluster
 cluster.addRotationSingleUser(); // Will rotate automatically after 30 days
 ```
 
 The multi user rotation scheme is also available:
 
-```ts
+```ts fixture=cluster
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+
 cluster.addRotationMultiUser('MyUser', {
-  secret: myImportedSecret
+  secret: secretsmanager.Secret.fromSecretNameV2(this, 'Imported Secret', 'my-secret'),
 });
 ```
 
@@ -96,8 +99,8 @@ will generate a username and password, store the credentials in a [AWS Secrets M
 and make a query to the Redshift cluster to create a new database user with the
 credentials.
 
-```ts
-new redshift.User(this, 'User', {
+```ts fixture=cluster
+new User(this, 'User', {
   cluster: cluster,
   databaseName: 'databaseName',
 });
@@ -107,11 +110,11 @@ By default, the user credentials are encrypted with your AWS account's default S
 Manager encryption key. You can specify the encryption key used for this purpose by
 supplying a key in the `encryptionKey` property.
 
-```ts
+```ts fixture=cluster
 import * as kms from '@aws-cdk/aws-kms';
 
 const encryptionKey = new kms.Key(this, 'Key');
-new redshift.User(stack, 'User', {
+new User(this, 'User', {
   encryptionKey: encryptionKey,
   cluster: cluster,
   databaseName: 'databaseName',
@@ -124,9 +127,9 @@ in the construct tree. You can specify a particular username by providing a valu
 identifiers](https://docs.aws.amazon.com/redshift/latest/dg/r_names.html) in the *Amazon
 Redshift Database Developer Guide*.
 
-```ts
-new redshift.User(stack, 'User', {
-  username: 'myuser'
+```ts fixture=cluster
+new User(this, 'User', {
+  username: 'myuser',
   cluster: cluster,
   databaseName: 'databaseName',
 });
@@ -147,8 +150,8 @@ Create a table within a Redshift cluster database by instantiating a `Table`
 construct. This will make a query to the Redshift cluster to create a new database table
 with the supplied schema.
 
-```ts
-new redshift.Table(this, 'Table', {
+```ts fixture=cluster
+new Table(this, 'Table', {
   cluster: cluster,
   databaseName: 'databaseName',
   tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
@@ -159,13 +162,12 @@ new redshift.Table(this, 'Table', {
 
 You can give a user privileges to perform certain actions on a table by using the `Table.grant()` method.
 
-```ts
-const databaseProps = ;
-const user = new redshift.User(this, 'User', {
+```ts fixture=cluster
+const user = new User(this, 'User', {
   cluster: cluster,
   databaseName: 'databaseName',
 });
-const table = new redshift.Table(this, 'Table', {
+const table = new Table(this, 'Table', {
   cluster: cluster,
   databaseName: 'databaseName',
   tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
