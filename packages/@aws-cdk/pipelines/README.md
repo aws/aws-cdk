@@ -355,6 +355,16 @@ const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket');
 CodePipelineSource.s3(bucket, 'my/source.zip');
 ```
 
+##### ECR
+
+You can use a Docker image in ECR as the source of the pipeline. The pipeline will be
+triggered every time an image us pushed to ECR:
+
+```ts
+const repository = ecr.Repository(this, 'Repository');
+CodePipelineSource.ecr(repository);
+```
+
 #### Additional inputs
 
 `ShellStep` allows passing in more than one input: additional

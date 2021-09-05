@@ -2,6 +2,7 @@ import { anything, arrayWith, Capture, objectLike } from '@aws-cdk/assert-intern
 import '@aws-cdk/assert-internal/jest';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import { CodeCommitTrigger, GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
+import * as ecr from '@aws-cdk/aws-ecr';
 import { AnyPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { SecretValue, Stack, Token } from '@aws-cdk/core';
@@ -76,9 +77,9 @@ test('CodeCommit source honors all valid properties', () => {
 });
 
 test('S3 source handles tokenized names correctly', () => {
-  const buckit = new s3.Bucket(pipelineStack, 'Buckit');
+  const bucket = new s3.Bucket(pipelineStack, 'Bucket');
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
-    input: cdkp.CodePipelineSource.s3(buckit, 'thefile.zip'),
+    input: cdkp.CodePipelineSource.s3(bucket, 'thefile.zip'),
   });
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -89,6 +90,27 @@ test('S3 source handles tokenized names correctly', () => {
           Configuration: objectLike({
             S3Bucket: { Ref: anything() },
             S3ObjectKey: 'thefile.zip',
+          }),
+          Name: { Ref: anything() },
+        }),
+      ],
+    }),
+  });
+});
+
+test('ECR source handles tokenized names correctly', () => {
+  const repository = new ecr.Repository(pipelineStack, 'Repository');
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: cdkp.CodePipelineSource.ecr(repository),
+  });
+
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Source',
+      Actions: [
+        objectLike({
+          Configuration: objectLike({
+            RepositoryName: { Ref: anything() },
           }),
           Name: { Ref: anything() },
         }),
