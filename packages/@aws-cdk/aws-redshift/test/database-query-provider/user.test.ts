@@ -1,15 +1,16 @@
 /* eslint-disable-next-line import/no-unresolved */
 import type * as AWSLambda from 'aws-lambda';
 
-const tableName = 'tableName';
-const tableColumns = [{ name: 'col1', dataType: 'varchar(1)' }];
+const password = 'password';
+const username = 'username';
+const passwordSecretArn = 'passwordSecretArn';
 const clusterName = 'clusterName';
 const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
 const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties = {
-  tableName,
-  tableColumns,
+  username,
+  passwordSecretArn,
   clusterName,
   adminUserArn,
   databaseName,
@@ -31,7 +32,11 @@ jest.mock('aws-sdk/clients/redshiftdata', () => class {
   executeStatement = mockExecuteStatement;
   describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
 });
-import { handler as manageTable } from '../../lib/private/database-query-provider/table';
+const mockGetSecretValue = jest.fn(() => ({ promise: jest.fn(() => ({ SecretString: JSON.stringify({ password }) })) }));
+jest.mock('aws-sdk/clients/secretsmanager', () => class {
+  getSecretValue = mockGetSecretValue;
+});
+import { handler as manageUser } from '../../lib/private/database-query-provider/user';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -46,14 +51,14 @@ describe('create', () => {
   test('serializes properties in statement and creates physical resource ID', async () => {
     const event = baseEvent;
 
-    await expect(manageTable(resourceProperties, event)).resolves.toEqual({
-      PhysicalResourceId: 'clusterName:databaseName:tableName:requestId',
+    await expect(manageUser(resourceProperties, event)).resolves.toEqual({
+      PhysicalResourceId: 'clusterName:databaseName:username:requestId',
       Data: {
-        tableName,
+        username: username,
       },
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: 'CREATE TABLE tableName (col1 varchar(1))',
+      Sql: `CREATE USER username PASSWORD '${password}'`,
     }));
   });
 });
@@ -68,10 +73,10 @@ describe('delete', () => {
   test('executes statement', async () => {
     const event = baseEvent;
 
-    await manageTable(resourceProperties, event);
+    await manageUser(resourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: 'DROP TABLE tableName',
+      Sql: 'DROP USER username',
     }));
   });
 });
@@ -91,12 +96,12 @@ describe('update', () => {
       clusterName: newClusterName,
     };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+    await expect(manageUser(newResourceProperties, event)).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       ClusterIdentifier: newClusterName,
-      Sql: expect.stringMatching(/CREATE TABLE/),
+      Sql: expect.stringMatching(/CREATE USER/),
     }));
   });
 
@@ -107,7 +112,7 @@ describe('update', () => {
       adminUserArn: newAdminUserArn,
     };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+    await expect(manageUser(newResourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).not.toHaveBeenCalled();
@@ -120,61 +125,39 @@ describe('update', () => {
       databaseName: newDatabaseName,
     };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+    await expect(manageUser(newResourceProperties, event)).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Database: newDatabaseName,
-      Sql: expect.stringMatching(/CREATE TABLE/),
+      Sql: expect.stringMatching(/CREATE USER/),
     }));
   });
 
-  test('replaces if table name changes', async () => {
-    const newTableName = 'newTableName';
+  test('replaces if user name changes', async () => {
+    const newUsername = 'newUsername';
     const newResourceProperties = {
       ...resourceProperties,
-      tableName: newTableName,
+      username: newUsername,
     };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+    await expect(manageUser(newResourceProperties, event)).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${newTableName}`)),
+      Sql: expect.stringMatching(new RegExp(`CREATE USER ${newUsername}`)),
     }));
   });
 
-  test('replaces if table columns change', async () => {
-    const newTableColumnName = 'col2';
-    const newTableColumnDataType = 'varchar(1)';
-    const newTableColumns = [{ name: newTableColumnName, dataType: newTableColumnDataType }];
-    const newResourceProperties = {
-      ...resourceProperties,
-      tableColumns: newTableColumns,
-    };
+  test('does not replace if password changes', async () => {
+    const newPassword = 'newPassword';
+    mockGetSecretValue.mockImplementationOnce(() => ({ promise: jest.fn(() => ({ SecretString: JSON.stringify({ password: newPassword }) })) }));
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+    await expect(manageUser(resourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableName} (${newTableColumnName} ${newTableColumnDataType})`,
-    }));
-  });
-
-  test('does not replace if table columns added', async () => {
-    const newTableColumnName = 'col2';
-    const newTableColumnDataType = 'varchar(1)';
-    const newTableColumns = [{ name: 'col1', dataType: 'varchar(1)' }, { name: newTableColumnName, dataType: newTableColumnDataType }];
-    const newResourceProperties = {
-      ...resourceProperties,
-      tableColumns: newTableColumns,
-    };
-
-    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
-      PhysicalResourceId: physicalResourceId,
-    });
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `ALTER TABLE ${tableName} ADD ${newTableColumnName} ${newTableColumnDataType}`,
+      Sql: expect.stringMatching(new RegExp(`ALTER USER ${username} PASSWORD '${password}'`)),
     }));
   });
 });

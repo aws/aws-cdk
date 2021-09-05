@@ -35,6 +35,6 @@ async function waitForStatementComplete(statementId: string): Promise<void> {
   }
 }
 
-export function makePhysicalId(resourceName: string, clusterProps: ClusterProps): string {
-  return `${clusterProps.clusterName}:${clusterProps.databaseName}:${resourceName}`;
+export function makePhysicalId(resourceName: string, clusterProps: ClusterProps, requestId: string): string {
+  return `${clusterProps.clusterName}:${clusterProps.databaseName}:${resourceName}:${requestId}`;
 }

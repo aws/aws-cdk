@@ -1,7 +1,7 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
 import { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
-import { ClusterProps, executeStatement } from './util';
+import { ClusterProps, executeStatement, makePhysicalId } from './util';
 
 export async function handler(props: UserTablePrivilegesHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const username = props.username;
@@ -10,13 +10,14 @@ export async function handler(props: UserTablePrivilegesHandlerProps & ClusterPr
 
   if (event.RequestType === 'Create') {
     await grantPrivileges(username, tablePrivileges, clusterProps);
-    return { PhysicalResourceId: username };
+    return { PhysicalResourceId: makePhysicalId(username, clusterProps, event.RequestId) };
   } else if (event.RequestType === 'Delete') {
     await revokePrivileges(username, tablePrivileges, clusterProps);
     return;
   } else if (event.RequestType === 'Update') {
-    await updatePrivileges(username, tablePrivileges, clusterProps, event.OldResourceProperties as UserTablePrivilegesHandlerProps & ClusterProps);
-    return { PhysicalResourceId: username };
+    const { replace } = await updatePrivileges(username, tablePrivileges, clusterProps, event.OldResourceProperties as UserTablePrivilegesHandlerProps & ClusterProps);
+    const physicalId = replace ? makePhysicalId(username, clusterProps, event.RequestId) : event.PhysicalResourceId;
+    return { PhysicalResourceId: physicalId };
   } else {
     /* eslint-disable-next-line dot-notation */
     throw new Error(`Unrecognized event type: ${event['RequestType']}`);
@@ -40,11 +41,25 @@ async function updatePrivileges(
   tablePrivileges: TablePrivilege[],
   clusterProps: ClusterProps,
   oldResourceProperties: UserTablePrivilegesHandlerProps & ClusterProps,
-) {
-  const oldUsername = oldResourceProperties.username;
-  const oldTablePrivileges = oldResourceProperties.tablePrivileges;
-  if (oldUsername === username) {
-    await revokePrivileges(username, oldTablePrivileges, clusterProps);
+): Promise<{ replace: boolean }> {
+  const oldClusterProps = oldResourceProperties;
+  if (clusterProps.clusterName !== oldClusterProps.clusterName || clusterProps.databaseName !== oldClusterProps.databaseName) {
+    await grantPrivileges(username, tablePrivileges, clusterProps);
+    return { replace: true };
   }
-  await grantPrivileges(username, tablePrivileges, clusterProps);
+
+  const oldUsername = oldResourceProperties.username;
+  if (oldUsername !== username) {
+    await grantPrivileges(username, tablePrivileges, clusterProps);
+    return { replace: true };
+  }
+
+  const oldTablePrivileges = oldResourceProperties.tablePrivileges;
+  if (oldTablePrivileges !== tablePrivileges) {
+    await revokePrivileges(username, oldTablePrivileges, clusterProps);
+    await grantPrivileges(username, tablePrivileges, clusterProps);
+    return { replace: false };
+  }
+
+  return { replace: false };
 }

@@ -11,22 +11,18 @@ export async function handler(props: TableHandlerProps & ClusterProps, event: AW
 
   if (event.RequestType === 'Create') {
     await createTable(tableName, tableColumns, clusterProps);
-    return { PhysicalResourceId: makeNewPhysicalId(tableName, clusterProps, event.RequestId), Data: { tableName: tableName } };
+    return { PhysicalResourceId: makePhysicalId(tableName, clusterProps, event.RequestId), Data: { tableName: tableName } };
   } else if (event.RequestType === 'Delete') {
     await dropTable(tableName, clusterProps);
     return;
   } else if (event.RequestType === 'Update') {
     const { replace } = await updateTable(tableName, tableColumns, clusterProps, event.OldResourceProperties as TableHandlerProps & ClusterProps);
-    const physicalId = replace ? makeNewPhysicalId(tableName, clusterProps, event.RequestId) : event.PhysicalResourceId;
+    const physicalId = replace ? makePhysicalId(tableName, clusterProps, event.RequestId) : event.PhysicalResourceId;
     return { PhysicalResourceId: physicalId, Data: { tableName: tableName } };
   } else {
     /* eslint-disable-next-line dot-notation */
     throw new Error(`Unrecognized event type: ${event['RequestType']}`);
   }
-}
-
-function makeNewPhysicalId(tableName: string, clusterProps: ClusterProps, requestId: string): string {
-  return `${makePhysicalId(tableName, clusterProps)}:${requestId}`;
 }
 
 async function createTable(tableName: string, tableColumns: Column[], clusterProps: ClusterProps) {

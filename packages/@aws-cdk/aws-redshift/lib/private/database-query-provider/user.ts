@@ -14,13 +14,14 @@ export async function handler(props: UserHandlerProps & ClusterProps, event: AWS
 
   if (event.RequestType === 'Create') {
     await createUser(username, passwordSecretArn, clusterProps);
-    return { PhysicalResourceId: makePhysicalId(username, clusterProps), Data: { username: username } };
+    return { PhysicalResourceId: makePhysicalId(username, clusterProps, event.RequestId), Data: { username: username } };
   } else if (event.RequestType === 'Delete') {
     await dropUser(username, clusterProps);
     return;
   } else if (event.RequestType === 'Update') {
-    await updateUser(username, passwordSecretArn, clusterProps, event.OldResourceProperties as UserHandlerProps & ClusterProps);
-    return { PhysicalResourceId: makePhysicalId(username, clusterProps), Data: { username: username } };
+    const { replace } = await updateUser(username, passwordSecretArn, clusterProps, event.OldResourceProperties as UserHandlerProps & ClusterProps);
+    const physicalId = replace ? makePhysicalId(username, clusterProps, event.RequestId) : event.PhysicalResourceId;
+    return { PhysicalResourceId: physicalId, Data: { username: username } };
   } else {
     /* eslint-disable-next-line dot-notation */
     throw new Error(`Unrecognized event type: ${event['RequestType']}`);
@@ -42,11 +43,11 @@ async function updateUser(
   passwordSecretArn: string,
   clusterProps: ClusterProps,
   oldResourceProperties: UserHandlerProps & ClusterProps,
-) {
+): Promise<{ replace: boolean }> {
   const oldClusterProps = oldResourceProperties;
-  if (clusterProps !== oldClusterProps) {
+  if (clusterProps.clusterName !== oldClusterProps.clusterName || clusterProps.databaseName !== oldClusterProps.databaseName) {
     await createUser(username, passwordSecretArn, clusterProps);
-    return;
+    return { replace: true };
   }
 
   const oldUsername = oldResourceProperties.username;
@@ -56,12 +57,15 @@ async function updateUser(
 
   if (username !== oldUsername) {
     await createUser(username, passwordSecretArn, clusterProps);
-    return;
+    return { replace: true };
   }
 
   if (password !== oldPassword) {
-    await executeStatement(`ALTER USER ${username} PASSWORD ${password}`, clusterProps);
+    await executeStatement(`ALTER USER ${username} PASSWORD '${password}'`, clusterProps);
+    return { replace: false };
   }
+
+  return { replace: false };
 }
 
 async function getPasswordFromSecret(passwordSecretArn: string): Promise<string> {
