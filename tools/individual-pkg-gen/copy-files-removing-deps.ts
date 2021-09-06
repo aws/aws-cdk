@@ -42,8 +42,10 @@ function transformPackages(): void {
       if (ignoredFiles.includes(sourceFileName)) {
         continue;
       }
-      if (sourceFileName.match('.*generated.*')) {
-        // Skip copying the generated L1 files
+
+      if (sourceFileName.match('generated') && !sourceFileName.match(/canned-metric|augmentations/)) {
+        // Skip copying the generated L1 files: foo.generated.*
+        // Don't skip the augmentations and canned metrics: foo-augmentations.generated.*, foo-canned-metrics.generated.*
         continue;
       }
 
@@ -76,21 +78,18 @@ function transformPackages(): void {
         }
         fs.outputFileSync(destination, resultFileLines.join('\n'));
       } else if (sourceFileName === 'index.ts') {
-        // Remove any exports for generated L1s
-        const indexLines = fs.readFileSync(source).toString().split('\n');
-        const resultFileLines = [];
-        for (const line of indexLines) {
-          if (line.match('generated')) {
-            continue;
-          }
-          resultFileLines.push(line);
-        }
-        fs.outputFileSync(destination, resultFileLines.join('\n'));
+        // Remove any exports for generated L1s, e.g.:
+        // export * from './apigatewayv2.generated';
+        const indexLines = fs.readFileSync(source, 'utf8')
+          .split('\n')
+          .filter(line => !line.match(/export \* from '.*\.generated'/))
+          .join('\n');
+        fs.outputFileSync(destination, indexLines);
       } else if (sourceFileName.endsWith('.ts') && !sourceFileName.endsWith('.d.ts')) {
         const sourceCode = fs.readFileSync(source).toString();
         const sourceCodeOutput = awsCdkMigration.rewriteImports(sourceCode, sourceFileName, {
           customModules: alphaPackages,
-          isInAlphaPackage: true,
+          rewriteCfnImports: true,
         });
         fs.outputFileSync(destination, sourceCodeOutput);
       } else {

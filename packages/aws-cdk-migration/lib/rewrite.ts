@@ -12,7 +12,7 @@ export interface RewriteOptions {
   /**
    * Optional flag to set for rewriting imports in alpha packages. When true, this will rewrite imports of generated L1s to reference aws-cdk-lib.
    */
-  readonly isInAlphaPackage?: boolean;
+  readonly rewriteCfnImports?: boolean;
 }
 
 /**
@@ -113,10 +113,10 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions): string 
     return customModulePath;
   }
 
-  if (options.isInAlphaPackage && modulePath.endsWith('generated')) {
-    const modulePathSplit = modulePath.split(/[.\/]/);
-    // The following line takes the 2nd to last item in modulePathSplit, which will always be the basename of the module e.g. api-gatewayv2.
-    return `aws-cdk-lib/aws-${modulePathSplit[modulePathSplit.length-2].replace('-canned-metrics', '')}`;
+  if (options.rewriteCfnImports && modulePath.endsWith('generated') && !modulePath.match(/canned-metric|augmentations/)) {
+    const modulePathSplit = modulePath.split(/[./]/);
+    // The following line takes the 2nd to last item in modulePathSplit, which will always be the basename of the module e.g. apigatewayv2.
+    return `aws-cdk-lib/aws-${modulePathSplit[modulePathSplit.length-2]}`;
   }
 
   if (!modulePath.startsWith('@aws-cdk/') || EXEMPTIONS.has(modulePath)) {
