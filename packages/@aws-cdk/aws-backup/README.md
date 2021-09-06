@@ -107,7 +107,7 @@ You can assign policies to backup vaults and the resources they contain. Assigni
 you to do things like grant access to users to create backup plans and on-demand backups, but limit
 their ability to delete recovery points after they're created.
 
-Use the `accessPolicy` to create a backup vault policy:
+Use the `accessPolicy` property to create a backup vault policy:
 
 ```ts
 const vault = new backup.BackupVault(this, 'Vault', {
@@ -132,12 +132,12 @@ const vault = new backup.BackupVault(this, 'Vault', {
 })
 ```
 
-Use the `BackupVault.DENY_DELETE_RECOVERY_POINT` policy to prevent recovery point deletions in your
-vault:
+Use the `blockRecoveryPointDeletion` property to add a vault access policy that prevents recovery point
+deletions in your vault:
 
 ```ts
 new BackupVault(stack, 'Vault', {
-  accessPolicy: BackupVault.DENY_DELETE_RECOVERY_POINT,
+  blockRecoveryPointDeletion: true,
 });
 ```
 

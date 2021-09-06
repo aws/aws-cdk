@@ -83,6 +83,14 @@ export interface BackupVaultProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to apply a vault access policy that prevents anyone from deleting
+   * a recovery point.
+   *
+   * @default false
+   */
+  readonly blockRecoveryPointDeletion?: boolean;
 }
 
 /**
@@ -153,23 +161,6 @@ abstract class BackupVaultBase extends Resource implements IBackupVault {
  */
 export class BackupVault extends BackupVaultBase {
   /**
-   * A vault policy document that prevents anyone from deleting a recovery point
-   */
-  public static readonly DENY_DELETE_RECOVERY_POINT = new iam.PolicyDocument({
-    statements: [
-      new iam.PolicyStatement({
-        effect: iam.Effect.DENY,
-        actions: [
-          'backup:DeleteRecoveryPoint',
-          'backup:UpdateRecoveryPointLifecycle',
-        ],
-        principals: [new iam.AnyPrincipal()],
-        resources: ['*'],
-      }),
-    ],
-  });
-
-  /**
    * Import an existing backup vault by name
    */
   public static fromBackupVaultName(scope: Construct, id: string, backupVaultName: string): IBackupVault {
@@ -223,9 +214,31 @@ export class BackupVault extends BackupVaultBase {
       props.notificationTopic.grantPublish(new iam.ServicePrincipal('backup.amazonaws.com'));
     }
 
+    if (props.blockRecoveryPointDeletion && props.accessPolicy) {
+      throw new Error('Cannot specify `accessPolicy` when `blockRecoveryPointDeletion` is set to `true`');
+    }
+
+    let accessPolicy: iam.PolicyDocument | undefined;
+    if (props.accessPolicy) {
+      accessPolicy = props.accessPolicy;
+    } else if (props.blockRecoveryPointDeletion) {
+      accessPolicy = new iam.PolicyDocument({
+        statements: [
+          new iam.PolicyStatement({
+            effect: iam.Effect.DENY,
+            actions: [
+              'backup:DeleteRecoveryPoint',
+              'backup:UpdateRecoveryPointLifecycle',
+            ],
+            principals: [new iam.AnyPrincipal()],
+            resources: ['*'],
+          }),
+        ],
+      });
+    }
     const vault = new CfnBackupVault(this, 'Resource', {
       backupVaultName: props.backupVaultName || this.uniqueVaultName(),
-      accessPolicy: props.accessPolicy && props.accessPolicy.toJSON(),
+      accessPolicy: accessPolicy?.toJSON(),
       encryptionKeyArn: props.encryptionKey && props.encryptionKey.keyArn,
       notifications,
     });

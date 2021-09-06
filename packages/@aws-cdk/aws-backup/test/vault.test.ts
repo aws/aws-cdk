@@ -68,10 +68,10 @@ test('with access policy', () => {
   });
 });
 
-test('with DENY_DELETE_RECOVERY_POINT access policy', () => {
+test('with blockRecoveryPointDeletion', () => {
   // WHEN
   new BackupVault(stack, 'Vault', {
-    accessPolicy: BackupVault.DENY_DELETE_RECOVERY_POINT,
+    blockRecoveryPointDeletion: true,
   });
 
   // THEN
@@ -93,6 +93,13 @@ test('with DENY_DELETE_RECOVERY_POINT access policy', () => {
       ],
     },
   });
+});
+
+test('throws with both accessPolicy and blockRecoveryPointDeletion', () => {
+  expect(() => new BackupVault(stack, 'Vault', {
+    blockRecoveryPointDeletion: true,
+    accessPolicy: new iam.PolicyDocument(),
+  })).toThrow(/Cannot specify `accessPolicy` when `blockRecoveryPointDeletion` is set to `true`/);
 });
 
 test('with encryption key', () => {
