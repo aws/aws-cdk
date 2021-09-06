@@ -150,20 +150,6 @@ nodeunitShim({
     test.done();
   },
 
-  'security group name accessor throws'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const vpc = new Vpc(stack, 'VPC');
-    const sg = new SecurityGroup(stack, 'SG', { vpc });
-
-    // THEN
-    test.throws(() => {
-      sg.securityGroupName;
-    }, /This property is deprecated because it misleadingly returns the security group id/);
-
-    test.done();
-  },
-
   'Inline Rule Control': {
     //Not inlined
     'When props.disableInlineRules is true': testRulesAreNotInlined(undefined, true),

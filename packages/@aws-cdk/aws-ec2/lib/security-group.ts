@@ -382,11 +382,9 @@ export class SecurityGroup extends SecurityGroupBase {
    * An attribute that represents the security group name.
    *
    * @attribute
-   * @deprecated Actually returns the security group ID, will throw an error if used.
+   * @deprecated Actually returns the security group ID
    */
-  get securityGroupName(): string {
-    throw new Error('This property is deprecated because it misleadingly returns the security group id');
-  }
+  public readonly securityGroupName: string;
 
   /**
    * The ID of the security group
@@ -439,6 +437,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     this.securityGroupId = this.securityGroup.attrGroupId;
     this.securityGroupVpcId = this.securityGroup.attrVpcId;
+    this.securityGroupName = this.securityGroup.ref;
 
     this.addDefaultEgressRule();
   }
