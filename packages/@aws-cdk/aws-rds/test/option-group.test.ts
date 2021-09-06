@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { DatabaseInstanceEngine, OptionGroup, OracleEngineVersion, OracleLegacyEngineVersion } from '../lib';
 
-nodeunitShim({
-  'create an option group'(test: Test) {
+describe('option group', () => {
+  test('create an option group', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -22,7 +21,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::OptionGroup', {
+    expect(stack).toHaveResource('AWS::RDS::OptionGroup', {
       EngineName: 'oracle-se1',
       MajorEngineVersion: '11.2',
       OptionGroupDescription: 'Option group for oracle-se1 11.2',
@@ -31,12 +30,12 @@ nodeunitShim({
           OptionName: 'XMLDB',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'option group with new security group'(test: Test) {
+  });
+
+  test('option group with new security group', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -57,7 +56,7 @@ nodeunitShim({
     optionGroup.optionConnections.OEM.connections.allowDefaultPortFromAnyIpv4();
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::OptionGroup', {
+    expect(stack).toHaveResource('AWS::RDS::OptionGroup', {
       EngineName: 'oracle-se',
       MajorEngineVersion: '11.2',
       OptionGroupDescription: 'Option group for oracle-se 11.2',
@@ -75,9 +74,9 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Security group for OEM option',
       SecurityGroupIngress: [
         {
@@ -91,12 +90,12 @@ nodeunitShim({
       VpcId: {
         Ref: 'VPCB9E5F0B4',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'option group with existing security group'(test: Test) {
+  });
+
+  test('option group with existing security group', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -118,7 +117,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::OptionGroup', {
+    expect(stack).toHaveResource('AWS::RDS::OptionGroup', {
       EngineName: 'oracle-se',
       MajorEngineVersion: '11.2',
       OptionGroupDescription: 'Option group for oracle-se 11.2',
@@ -136,17 +135,17 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'throws when using an option with port and no vpc'(test: Test) {
+  });
+
+  test('throws when using an option with port and no vpc', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // THEN
-    test.throws(() => new OptionGroup(stack, 'Options', {
+    expect(() => new OptionGroup(stack, 'Options', {
       engine: DatabaseInstanceEngine.oracleSe2({
         version: OracleEngineVersion.VER_12_1,
       }),
@@ -156,8 +155,8 @@ nodeunitShim({
           port: 1158,
         },
       ],
-    }), /`port`.*`vpc`/);
+    })).toThrow(/`port`.*`vpc`/);
 
-    test.done();
-  },
+
+  });
 });
