@@ -12,7 +12,7 @@
     },
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Apigatewayv2",
+        "namespace": "Amazon.CDK.AWS.APIGatewayv2",
         "packageId": "Amazon.CDK.AWS.APIGatewayv2",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },

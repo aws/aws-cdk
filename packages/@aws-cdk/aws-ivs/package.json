@@ -9,7 +9,7 @@
     "projectReferences": true,
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Ivs",
+        "namespace": "Amazon.CDK.AWS.IVS",
         "packageId": "Amazon.CDK.AWS.IVS",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },

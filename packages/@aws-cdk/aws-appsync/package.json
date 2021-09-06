@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Appsync",
+        "namespace": "Amazon.CDK.AWS.AppSync",
         "packageId": "Amazon.CDK.AWS.AppSync",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },

@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.kinesisanalytics.flink",
+        "package": "software.amazon.awscdk.services.kinesis.analytics.flink",
         "maven": {
           "groupId": "software.amazon.awscdk",
           "artifactId": "kinesisanalytics-flink"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Kinesisanalytics.Flink",
+        "namespace": "Amazon.CDK.AWS.KinesisAnalyticsFlink",
         "packageId": "Amazon.CDK.AWS.KinesisAnalyticsFlink",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
