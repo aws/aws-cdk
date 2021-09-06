@@ -201,6 +201,7 @@ export class Trail extends Resource {
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
   private topic: sns.ITopic | undefined;
+  private defaultIncludeManagementEvents: boolean | undefined;
 
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
     super(scope, id, {
@@ -253,18 +254,14 @@ export class Trail extends Resource {
     }
 
     if (props.managementEvents) {
-      let managementEvent;
       if (props.managementEvents === ReadWriteType.NONE) {
-        managementEvent = {
-          includeManagementEvents: false,
-        };
+        this.defaultIncludeManagementEvents = false;
       } else {
-        managementEvent = {
+        this.eventSelectors.push({
           includeManagementEvents: true,
           readWriteType: props.managementEvents,
-        };
+        });
       }
-      this.eventSelectors.push(managementEvent);
     }
 
     if (props.kmsKey && props.encryptionKey) {
@@ -333,7 +330,7 @@ export class Trail extends Resource {
         type: dataResourceType,
         values: dataResourceValues,
       }],
-      includeManagementEvents: options.includeManagementEvents,
+      includeManagementEvents: options.includeManagementEvents ?? this.defaultIncludeManagementEvents,
       readWriteType: options.readWriteType,
     });
   }
@@ -421,7 +418,7 @@ export interface AddEventSelectorOptions {
   /**
    * Specifies whether the event selector includes management events for the trail.
    *
-   * @default true
+   * @default true unless the parent Trail has management events disabled
    */
   readonly includeManagementEvents?: boolean;
 }

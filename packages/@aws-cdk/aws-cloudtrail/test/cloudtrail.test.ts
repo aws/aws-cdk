@@ -502,7 +502,7 @@ describe('cloudtrail', () => {
         });
       });
 
-      test('managementEvents set to None correctly turns off management events', () => {
+      test('managementEvents set to None does not include a management event selector', () => {
         const stack = getTestStack();
 
         new Trail(stack, 'MyAmazingCloudTrail', {
@@ -510,13 +510,72 @@ describe('cloudtrail', () => {
         });
 
         expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
-          EventSelectors: [
-            {
-              IncludeManagementEvents: false,
-            },
-          ],
+          EventSelectors: [],
         });
       });
+
+      test('managementEvents set to None defaults IncludeManagementEvents to false', () => {
+        const stack = getTestStack();
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail', {
+          managementEvents: ReadWriteType.NONE,
+        });
+
+        const bucket = new s3.Bucket(stack, 'testBucket', { bucketName: 'test-bucket' });
+        cloudTrail.addS3EventSelector([{ bucket }]);
+
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [{
+            DataResources: [{
+              Type: 'AWS::S3::Object',
+              Values: [{
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
+                    '/',
+                  ],
+                ],
+              }],
+            }],
+            IncludeManagementEvents: false,
+          }],
+        });
+      });
+
+      test('managementEvents default None can be overriden', () => {
+        const stack = getTestStack();
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail', {
+          managementEvents: ReadWriteType.NONE,
+        });
+
+        const bucket = new s3.Bucket(stack, 'testBucket', { bucketName: 'test-bucket' });
+        cloudTrail.addS3EventSelector([{ bucket }], {
+          includeManagementEvents: true,
+          readWriteType: ReadWriteType.WRITE_ONLY,
+        });
+
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [{
+            DataResources: [{
+              Type: 'AWS::S3::Object',
+              Values: [{
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
+                    '/',
+                  ],
+                ],
+              }],
+            }],
+            IncludeManagementEvents: true,
+            ReadWriteType: 'WriteOnly',
+          }],
+        });
+      });
+
     });
   });
 
