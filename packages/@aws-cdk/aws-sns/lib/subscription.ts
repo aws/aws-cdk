@@ -88,8 +88,15 @@ export class Subscription extends Resource {
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
 
-    if (props.rawMessageDelivery && ['http', 'https', 'sqs'].indexOf(props.protocol) < 0) {
-      throw new Error('Raw message delivery can only be enabled for HTTP/S and SQS subscriptions.');
+    if (props.rawMessageDelivery &&
+      [
+        SubscriptionProtocol.HTTP,
+        SubscriptionProtocol.HTTPS,
+        SubscriptionProtocol.SQS,
+        SubscriptionProtocol.FIREHOSE,
+      ]
+        .indexOf(props.protocol) < 0) {
+      throw new Error('Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.');
     }
 
     if (props.filterPolicy) {
