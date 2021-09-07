@@ -75,7 +75,7 @@
     "@aws-cdk/region-info": "0.0.0",
     "@jsii/check-node": "1.33.0",
     "archiver": "^5.3.0",
-    "aws-sdk": "^2.848.0",
+    "aws-sdk": "^2.979.0",
     "camelcase": "^6.2.0",
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
