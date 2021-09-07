@@ -17,6 +17,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   mockSdkProvider = new MockSdkProvider({ realSdk: false });
   mockUpdateLambdaCode = jest.fn();
+  mockUpdateMachineCode = jest.fn();
   mockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
   });
@@ -29,7 +30,7 @@ beforeEach(() => {
   });
 });
 
-test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
+/*test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
   // WHEN
   const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifactOf());
 
@@ -107,6 +108,40 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
     S3Bucket: 'current-bucket',
     S3Key: 'new-key',
   });
+});*/
+
+test('Resources that are not lambdas or step functions result in a full deployment', async () => {
+  // GIVEN
+  currentCfnStack.setTemplate({
+    Resources: {
+      Machine: {
+        Type: 'AWS::CloudFormation::SomethingElse',
+        Properties: {
+          Prop: 'old-value',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Machine: {
+          Type: 'AWS::CloudFormation::SomethingElse',
+          Properties: {
+            Prop: 'new-value',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateMachineCode).not.toHaveBeenCalled();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
 test('calls the updateStateMachine() API when it receives only a definitionString change in a state machine', async () => {
@@ -158,6 +193,42 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
     },
   });
 });
+
+test('changes to CDK::Metadata result in a noOp', async () => {
+  // GIVEN
+  currentCfnStack.setTemplate({
+    Resources: {
+      MetaData: {
+        Type: 'AWS::CDK::MetaData',
+        Properties: {
+          Prop: 'old-value',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        MetaData: {
+          Type: 'AWS::CDK::Metadata',
+          Properties: {
+            Prop: 'new-value',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(deployStackResult?.noOp).toEqual(true);
+  expect(mockUpdateMachineCode).not.toHaveBeenCalled();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+});
+
 
 function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
   return testStack({

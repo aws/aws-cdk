@@ -58,7 +58,7 @@ function isLambdaFunctionCodeOnlyChange(
   change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
 ): LambdaFunctionCode | ChangeHotswapImpact {
 /*eslint-disable*/
-  console.log("new val: ")
+  /*console.log("new val: ")
   console.log(change.newValue);
   console.log("updates.newval: ");
   console.log(change.propertyUpdates.newValue);
@@ -75,10 +75,10 @@ function isLambdaFunctionCodeOnlyChange(
     for (const newPropName in updatedProp.newValue) {
       console.log(newPropName);
     }
-  }
-
+  }*/
 
   if (!change.newValue) {
+    // TODO: determine what this line does
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
   const newResourceType = change.newValue.Type;
