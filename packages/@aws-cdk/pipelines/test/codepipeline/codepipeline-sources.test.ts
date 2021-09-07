@@ -1,4 +1,4 @@
-import { anything, arrayWith, objectLike } from '@aws-cdk/assert-internal';
+import { anything, arrayWith, Capture, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import { CodeCommitTrigger, GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
@@ -140,5 +140,43 @@ test('GitHub source does not accept unresolved identifiers', () => {
   }).toThrow(/Step id cannot be unresolved/);
 });
 
+test('Dashes in repo names are removed from artifact names', () => {
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: cdkp.CodePipelineSource.gitHub('owner/my-repo', 'main'),
+  });
 
-// a-z0-9.@-_
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Source',
+      Actions: [
+        objectLike({
+          OutputArtifacts: [
+            { Name: 'owner_my_repo_Source' },
+          ],
+        }),
+      ],
+    }),
+  });
+});
+
+test('artifact names are never longer than 128 characters', () => {
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: cdkp.CodePipelineSource.gitHub('owner/' + 'my-repo'.repeat(100), 'main'),
+  });
+
+  const artifactId = Capture.aString();
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Source',
+      Actions: [
+        objectLike({
+          OutputArtifacts: [
+            { Name: artifactId.capture() },
+          ],
+        }),
+      ],
+    }),
+  });
+
+  expect(artifactId.capturedValue.length).toBeLessThanOrEqual(128);
+});

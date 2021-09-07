@@ -8,6 +8,7 @@ import { AmiContextProviderPlugin } from './ami';
 import { AZContextProviderPlugin } from './availability-zones';
 import { EndpointServiceAZContextProviderPlugin } from './endpoint-service-availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
+import { KeyContextProviderPlugin } from './keys';
 import { LoadBalancerContextProviderPlugin, LoadBalancerListenerContextProviderPlugin } from './load-balancers';
 import { ContextProviderPlugin } from './provider';
 import { SecurityGroupContextProviderPlugin } from './security-groups';
@@ -74,4 +75,5 @@ const availableContextProviders: ProviderMap = {
   [cxschema.ContextProvider.SECURITY_GROUP_PROVIDER]: SecurityGroupContextProviderPlugin,
   [cxschema.ContextProvider.LOAD_BALANCER_PROVIDER]: LoadBalancerContextProviderPlugin,
   [cxschema.ContextProvider.LOAD_BALANCER_LISTENER_PROVIDER]: LoadBalancerListenerContextProviderPlugin,
+  [cxschema.ContextProvider.KEY_PROVIDER]: KeyContextProviderPlugin,
 };

@@ -382,6 +382,12 @@ export class TestFixture {
     });
   }
 
+  public template(stackName: string): any {
+    const fullStackName = this.fullStackName(stackName);
+    const templatePath = path.join(this.integTestDir, 'cdk.out', `${fullStackName}.template.json`);
+    return JSON.parse(fs.readFileSync(templatePath, { encoding: 'utf-8' }).toString());
+  }
+
   public get bootstrapStackName() {
     return this.fullStackName('bootstrap-stack');
   }

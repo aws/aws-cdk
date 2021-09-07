@@ -547,7 +547,7 @@ of properties that allow you to customize various aspects of the projects:
 
 ```ts
 new CodeBuildStep('Synth', {
-  // ...standard RunScript props...
+  // ...standard ShellStep props...
   commands: [/* ... */],
   env: { /* ... */ },
 
@@ -575,15 +575,15 @@ new CodeBuildStep('Synth', {
   securityGroups: [mySecurityGroup],
 
   // Additional policy statements for the execution role
-  rolePolicy: [
+  rolePolicyStatements: [
     new iam.PolicyStatement({ /* ... */ }),
   ],
 });
 ```
 
 You can also configure defaults for *all* CodeBuild projects by passing `codeBuildDefaults`,
-or just for the asset publishing and self-mutation projects by passing `assetPublishingCodeBuildDefaults`
-or `selfMutationCodeBuildDefaults`:
+or just for the synth, asset publishing, and self-mutation projects by passing `synthCodeBuildDefaults`,
+`assetPublishingCodeBuildDefaults`, or `selfMutationCodeBuildDefaults`:
 
 ```ts
 new CodePipeline(this, 'Pipeline', {
@@ -613,6 +613,7 @@ new CodePipeline(this, 'Pipeline', {
     ],
   },
 
+  synthCodeBuildDefaults: { /* ... */ },
   assetPublishingCodeBuildDefaults: { /* ... */ },
   selfMutationCodeBuildDefaults: { /* ... */ },
 });
@@ -954,7 +955,7 @@ new CodePipeline(this, 'Pipeline', {
         resources: ['*'],
         conditions: {
           StringEquals: {
-            'iam:ResourceTag/aws-cdk:bootstrap-role': 'deploy',
+            'iam:ResourceTag/aws-cdk:bootstrap-role': 'lookup',
           },
         },
       }),
