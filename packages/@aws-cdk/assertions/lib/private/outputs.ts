@@ -1,9 +1,9 @@
 import { StackInspector } from '../vendored/assert';
-import { formatFailure, matchSection } from './section';
+import { filterLogicalId, formatFailure, matchSection } from './section';
 
-export function findOutputs(inspector: StackInspector, props: any = {}): { [key: string]: any }[] {
+export function findOutputs(inspector: StackInspector, outputName: string, props: any = {}): { [key: string]: any }[] {
   const section: { [key: string] : {} } = inspector.value.Outputs;
-  const result = matchSection(section, props);
+  const result = matchSection(filterLogicalId(section, outputName), props);
 
   if (!result.match) {
     return [];
@@ -14,7 +14,7 @@ export function findOutputs(inspector: StackInspector, props: any = {}): { [key:
 
 export function hasOutput(inspector: StackInspector, outputName: string, props: any): string | void {
   const section: { [key: string]: {} } = inspector.value.Outputs;
-  const result = matchSection(filterName(section, outputName), props);
+  const result = matchSection(filterLogicalId(section, outputName), props);
   if (result.match) {
     return;
   }
@@ -27,10 +27,4 @@ export function hasOutput(inspector: StackInspector, outputName: string, props: 
     `Template has ${result.analyzedCount} outputs named ${outputName}, but none match as expected.`,
     formatFailure(result.closestResult),
   ].join('\n');
-}
-
-function filterName(section: { [key: string]: {} }, outputName: string): { [key: string]: {} } {
-  return Object.entries(section ?? {})
-    .filter(([k, _]) => k === outputName)
-    .reduce((agg, [k, v]) => { return { ...agg, [k]: v }; }, {});
 }
