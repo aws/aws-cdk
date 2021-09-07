@@ -101,8 +101,7 @@
     "jest": true
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   },
-  "separate-module": false,
-  "private": true
+  "separate-module": false
 }
