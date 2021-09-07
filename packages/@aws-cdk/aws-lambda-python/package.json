@@ -99,7 +99,6 @@
       "docker"
     ]
   },
-  "separate-module": false,
   "publishConfig": {
     "tag": "latest"
   }
