@@ -56,3 +56,12 @@ function leftPad(x: string, indent: number = 2): string {
   const pad = ' '.repeat(indent);
   return pad + x.split('\n').join(`\n${pad}`);
 }
+
+export function filterLogicalId(section: { [key: string]: {} }, outputName: string): { [key: string]: {} } {
+  // default signal for all outputs is '*'
+  if (outputName === '*') return section;
+
+  return Object.entries(section ?? {})
+    .filter(([k, _]) => k === outputName)
+    .reduce((agg, [k, v]) => { return { ...agg, [k]: v }; }, {});
+}
