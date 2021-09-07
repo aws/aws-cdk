@@ -19,7 +19,7 @@ The `Service` construct provided by this module can be extended with optional `S
 - [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
-- [Publish/ Subscribe Service Pattern](https://aws.amazon.com/pub-sub-messaging/), for implementing asynchronous communication between services. This can be accomplished by using the following service extensions:
+- [Publish/Subscribe Service Pattern](https://aws.amazon.com/pub-sub-messaging/), for implementing asynchronous communication between services. This can be accomplished by using the following service extensions:
   - [Publisher Extension](#publisher-extension) to allow your service to publish events to SNS Topics or Amazon EventBridge Event Bus 
   - [Queue Extension](#queue-extension) to allow your service to consume messages from an SQS Queue which is populated by one or more SNS Topics that it is subscribed to
 - [Community Extensions](#community-extensions), providing support for advanced use cases
@@ -330,22 +330,14 @@ This service extension accepts a list of `IPublisher` resources that the service
 
 ### Publishing to SNS Topics
 
-You can use this extension to set up publishing permissions for SNS Topics.
+You can use this extension to set up publishing permissions for SNS Topics. You can also provide a list of account IDs for each topic to permit those accounts to create subscriptions to the given topic.
 
 ```ts
 nameDescription.add(new PublisherExtension({
   publishers: [new PublisherTopic({
+    // SNS Topic the service will publish to
     topic: new sns.Topic(stack, 'my-topic'),
-  })],
-}))
-```
-
-You can also provide a list of account IDs for each topic to permit those accounts to create subscriptions to the given topic.
-
-```ts
-nameDescription.add(new PublisherExtension({
-  publishers: [new PublisherTopic({
-    topic: new sns.Topic(stack, 'my-topic'),
+    // Optionally provide a list of accounts allowed to create subscriptions to the `topic`
     allowedAccounts: ['123456789012'],
   })],
 }));
