@@ -1,12 +1,11 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, CfnOutput, CfnResource, Construct, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'CrossEnvironmentToken': {
-    'can reference an ARN with a fixed physical name directly in a different account'(test: Test) {
+describe('cross environment', () => {
+  describe('CrossEnvironmentToken', () => {
+    test('can reference an ARN with a fixed physical name directly in a different account', () => {
       // GIVEN
       const app = new App();
       const stack1 = new Stack(app, 'Stack1', {
@@ -30,7 +29,7 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(toCloudFormation(stack2), {
+      expect(toCloudFormation(stack2)).toEqual({
         Outputs: {
           Output: {
             Value: {
@@ -49,10 +48,10 @@ nodeunitShim({
         },
       });
 
-      test.done();
-    },
 
-    'can reference a fixed physical name directly in a different account'(test: Test) {
+    });
+
+    test('can reference a fixed physical name directly in a different account', () => {
       // GIVEN
       const app = new App();
       const stack1 = new Stack(app, 'Stack1', {
@@ -75,7 +74,7 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(toCloudFormation(stack2), {
+      expect(toCloudFormation(stack2)).toEqual({
         Outputs: {
           Output: {
             Value: 'PhysicalName',
@@ -83,10 +82,10 @@ nodeunitShim({
         },
       });
 
-      test.done();
-    },
 
-    'can reference an ARN with an assigned physical name directly in a different account'(test: Test) {
+    });
+
+    test('can reference an ARN with an assigned physical name directly in a different account', () => {
       // GIVEN
       const app = new App();
       const stack1 = new Stack(app, 'Stack1', {
@@ -110,7 +109,7 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(toCloudFormation(stack2), {
+      expect(toCloudFormation(stack2)).toEqual({
         Outputs: {
           Output: {
             Value: {
@@ -129,10 +128,10 @@ nodeunitShim({
         },
       });
 
-      test.done();
-    },
 
-    'can reference an assigned physical name directly in a different account'(test: Test) {
+    });
+
+    test('can reference an assigned physical name directly in a different account', () => {
       // GIVEN
       const app = new App();
       const stack1 = new Stack(app, 'Stack1', {
@@ -155,7 +154,7 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(toCloudFormation(stack2), {
+      expect(toCloudFormation(stack2)).toEqual({
         Outputs: {
           Output: {
             Value: 'stack1stack1myresourcec54ced43683ebf9a3c4c',
@@ -163,11 +162,11 @@ nodeunitShim({
         },
       });
 
-      test.done();
-    },
-  },
 
-  'cannot reference a deploy-time physical name across environments'(test: Test) {
+    });
+  });
+
+  test('cannot reference a deploy-time physical name across environments', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -190,13 +189,13 @@ nodeunitShim({
     });
 
     // THEN
-    test.throws(() => toCloudFormation(stack2),
+    expect(() => toCloudFormation(stack2)).toThrow(
       /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
 
-    test.done();
-  },
 
-  'cross environment when stack is a substack'(test: Test) {
+  });
+
+  test('cross environment when stack is a substack', () => {
     const app = new App();
 
     const parentStack = new Stack(app, 'ParentStack', {
@@ -218,7 +217,7 @@ nodeunitShim({
 
     const assembly = app.synth();
 
-    test.deepEqual(assembly.getStackByName(parentStack.stackName).template, {
+    expect(assembly.getStackByName(parentStack.stackName).template).toEqual({
       Resources: {
         ParentResource: {
           Type: 'Parent::Resource',
@@ -229,7 +228,7 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
+    expect(assembly.getStackByName(childStack.stackName).template).toEqual({
       Resources: {
         ChildResource8C37244D: {
           Type: 'My::Resource',
@@ -240,8 +239,8 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
+
+  });
 });
 
 test.each([undefined, 'SomeName'])('stack.exportValue() on name attributes with PhysicalName=%s', physicalName => {
