@@ -8,7 +8,7 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Apigatewayv2.Authorizers",
+        "namespace": "Amazon.CDK.AWS.APIGatewayv2.Authorizers",
         "packageId": "Amazon.CDK.AWS.APIGatewayv2.Authorizers",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",

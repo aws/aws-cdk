@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Servicecatalog",
+        "namespace": "Amazon.CDK.AWS.ServiceCatalog",
         "packageId": "Amazon.CDK.AWS.ServiceCatalog",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },

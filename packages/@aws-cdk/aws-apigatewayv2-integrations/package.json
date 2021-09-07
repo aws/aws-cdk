@@ -8,7 +8,7 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Apigatewayv2.Integrations",
+        "namespace": "Amazon.CDK.AWS.APIGatewayv2.Integrations",
         "packageId": "Amazon.CDK.AWS.APIGatewayv2.Integrations",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },

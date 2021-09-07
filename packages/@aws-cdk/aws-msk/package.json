@@ -8,7 +8,7 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Msk",
+        "namespace": "Amazon.CDK.AWS.MSK",
         "packageId": "Amazon.CDK.AWS.MSK",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
