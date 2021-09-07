@@ -437,17 +437,17 @@ describe('tests', () => {
     });
     group.configureHealthCheck({
       unhealthyThresholdCount: 3,
-      timeout: cdk.Duration.hours(1),
-      interval: cdk.Duration.seconds(30),
+      timeout: cdk.Duration.seconds(30),
+      interval: cdk.Duration.seconds(60),
       path: '/test',
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       UnhealthyThresholdCount: 3,
-      HealthCheckIntervalSeconds: 30,
+      HealthCheckIntervalSeconds: 60,
       HealthCheckPath: '/test',
-      HealthCheckTimeoutSeconds: 3600,
+      HealthCheckTimeoutSeconds: 30,
     });
   });
 
@@ -466,8 +466,8 @@ describe('tests', () => {
 
     group.configureHealthCheck({
       unhealthyThresholdCount: 3,
-      timeout: cdk.Duration.hours(1),
-      interval: cdk.Duration.seconds(30),
+      timeout: cdk.Duration.seconds(30),
+      interval: cdk.Duration.seconds(60),
       path: '/test',
       protocol: elbv2.Protocol.TCP,
     });

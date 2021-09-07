@@ -1,9 +1,9 @@
 import * as stream from 'stream';
 import * as fs from 'fs-extra';
-import { ConventionalCommit } from '../conventional-commits';
+import { ConventionalCommit, filterCommits } from '../conventional-commits';
 import { writeFile } from '../private/files';
-import { notify, debug, debugObject } from '../private/print';
-import { ReleaseOptions } from '../types';
+import { notify, debug } from '../private/print';
+import { ExperimentalChangesTreatment, LifecyclesSkip, PackageInfo, Versions } from '../types';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -11,24 +11,83 @@ const conventionalChangelogWriter = require('conventional-changelog-writer');
 
 const START_OF_LAST_RELEASE_PATTERN = /(^#+ \[?[0-9]+\.[0-9]+\.[0-9]+|<a name=)/m;
 
+export interface WriteChangelogOptions extends ChangelogOptions {
+  skip?: LifecyclesSkip;
+  alphaChangelogFile?: string;
+  experimentalChangesTreatment?: ExperimentalChangesTreatment;
+
+  currentVersion: Versions;
+  newVersion: Versions;
+  commits: ConventionalCommit[];
+  packages: PackageInfo[];
+}
+
+export interface ChangelogOptions {
+  changelogFile: string;
+  dryRun?: boolean;
+  verbose?: boolean;
+  silent?: boolean;
+
+  changeLogHeader?: string;
+  includeDateInChangelog?: boolean;
+}
+
 export interface ChangelogResult {
-  readonly contents: string;
-  readonly changedFiles: string[];
+  readonly filePath: string;
+  readonly fileContents: string;
+}
+
+export async function writeChangelogs(opts: WriteChangelogOptions): Promise<ChangelogResult[]> {
+  if (opts.skip?.changelog) {
+    return [];
+  }
+
+  const experimentalChangesTreatment = opts.experimentalChangesTreatment ?? ExperimentalChangesTreatment.INCLUDE;
+  const alphaPackages = opts.packages.filter(p => p.alpha);
+  const stableCommits = filterCommits(opts.commits, { excludePackages: alphaPackages.map(p => p.name) });
+
+  switch (experimentalChangesTreatment) {
+    case ExperimentalChangesTreatment.INCLUDE:
+      const allContents = await changelog(opts, opts.currentVersion.stableVersion, opts.newVersion.stableVersion, opts.commits);
+      return [{ filePath: opts.changelogFile, fileContents: allContents }];
+
+    case ExperimentalChangesTreatment.STRIP:
+      const strippedContents = await changelog(opts, opts.currentVersion.stableVersion, opts.newVersion.stableVersion, stableCommits);
+      return [{ filePath: opts.changelogFile, fileContents: strippedContents }];
+
+    case ExperimentalChangesTreatment.SEPARATE:
+      if (!opts.currentVersion.alphaVersion || !opts.newVersion.alphaVersion) {
+        throw new Error('unable to create separate alpha Changelog without alpha package versions');
+      }
+      if (!opts.alphaChangelogFile) {
+        throw new Error('alphaChangelogFile must be specified if experimentalChangesTreatment is SEPARATE');
+      }
+
+      const changelogResults: ChangelogResult[] = [];
+      const contents = await changelog(opts, opts.currentVersion.stableVersion, opts.newVersion.stableVersion, stableCommits);
+      changelogResults.push({ filePath: opts.changelogFile, fileContents: contents });
+
+      const alphaCommits = filterCommits(opts.commits, { includePackages: alphaPackages.map(p => p.name) });
+      const alphaContents = await changelog(
+        { ...opts, changelogFile: opts.alphaChangelogFile },
+        opts.currentVersion.alphaVersion, opts.newVersion.alphaVersion, alphaCommits);
+      changelogResults.push({ filePath: opts.alphaChangelogFile, fileContents: alphaContents });
+
+      return changelogResults;
+
+    default:
+      throw new Error(`unsupported experimentalChanges type: ${opts.experimentalChangesTreatment}`);
+  }
 }
 
 export async function changelog(
-  args: ReleaseOptions, currentVersion: string, newVersion: string, commits: ConventionalCommit[],
-): Promise<ChangelogResult> {
-  if (args.skip?.changelog) {
-    return {
-      contents: '',
-      changedFiles: [],
-    };
-  }
+  args: ChangelogOptions, currentVersion: string, newVersion: string, commits: ConventionalCommit[],
+): Promise<string> {
+
   createChangelogIfMissing(args);
 
   // find the position of the last release and remove header
-  let oldContent = args.dryRun ? '' : fs.readFileSync(args.infile!, 'utf-8');
+  let oldContent = args.dryRun ? '' : fs.readFileSync(args.changelogFile, 'utf-8');
   const oldContentStart = oldContent.search(START_OF_LAST_RELEASE_PATTERN);
   if (oldContentStart !== -1) {
     oldContent = oldContent.substring(oldContentStart);
@@ -38,7 +97,6 @@ export async function changelog(
   const presetConfig = await conventionalChangelogPresetLoader({
     name: 'conventional-changelog-conventionalcommits',
   });
-  debugObject(args, 'conventionalChangelogPresetLoader returned', presetConfig);
 
   return new Promise((resolve, reject) => {
     // convert an array of commits into a Stream,
@@ -100,24 +158,20 @@ export async function changelog(
       content += buffer.toString();
     });
     changelogStream.on('end', function () {
-      notify(args, 'outputting changes to %s', [args.infile]);
+      notify(args, 'outputting changes to %s', [args.changelogFile]);
       if (args.dryRun) {
         debug(args, `\n---\n${content.trim()}\n---\n`);
       } else {
-        writeFile(args, args.infile!, args.changeLogHeader + '\n' + (content + oldContent).replace(/\n+$/, '\n'));
+        writeFile(args, args.changelogFile, args.changeLogHeader + '\n' + (content + oldContent).replace(/\n+$/, '\n'));
       }
-      return resolve({
-        contents: content,
-        changedFiles: [args.infile!],
-      });
+      return resolve(content);
     });
   });
 }
 
-function createChangelogIfMissing(args: ReleaseOptions) {
-  if (!fs.existsSync(args.infile!)) {
-    notify(args, 'created %s', [args.infile]);
-    // args.outputUnreleased = true
-    writeFile(args, args.infile!, '\n');
+function createChangelogIfMissing(args: ChangelogOptions) {
+  if (!fs.existsSync(args.changelogFile)) {
+    notify(args, 'created %s', [args.changelogFile]);
+    writeFile(args, args.changelogFile, '\n');
   }
 }

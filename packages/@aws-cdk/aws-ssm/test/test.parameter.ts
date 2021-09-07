@@ -344,6 +344,40 @@ export = {
     test.done();
   },
 
+  'StringParameter.fromStringParameterAttributes with version from token'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'MyParamName', {
+      parameterName: 'MyParamName',
+      version: cdk.Token.asNumber({ Ref: 'version' }),
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(param.parameterArn), {
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/MyParamName',
+      ]],
+    });
+    test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.resolve(param.parameterType), 'String');
+    test.deepEqual(stack.resolve(param.stringValue), {
+      'Fn::Join': ['', [
+        '{{resolve:ssm:MyParamName:',
+        { Ref: 'version' },
+        '}}',
+      ]],
+    });
+    test.done();
+  },
+
   'StringParameter.fromSecureStringParameterAttributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -369,6 +403,40 @@ export = {
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'SecureString');
     test.deepEqual(stack.resolve(param.stringValue), '{{resolve:ssm-secure:MyParamName:2}}');
+    test.done();
+  },
+
+  'StringParameter.fromSecureStringParameterAttributes with version from token'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
+      parameterName: 'MyParamName',
+      version: cdk.Token.asNumber({ Ref: 'version' }),
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(param.parameterArn), {
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/MyParamName',
+      ]],
+    });
+    test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.resolve(param.parameterType), 'SecureString');
+    test.deepEqual(stack.resolve(param.stringValue), {
+      'Fn::Join': ['', [
+        '{{resolve:ssm-secure:MyParamName:',
+        { Ref: 'version' },
+        '}}',
+      ]],
+    });
     test.done();
   },
 
