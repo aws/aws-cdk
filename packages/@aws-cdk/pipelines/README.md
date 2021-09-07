@@ -358,7 +358,7 @@ CodePipelineSource.s3(bucket, 'my/source.zip');
 ##### ECR
 
 You can use a Docker image in ECR as the source of the pipeline. The pipeline will be
-triggered every time an image us pushed to ECR:
+triggered every time an image is pushed to ECR:
 
 ```ts
 const repository = ecr.Repository(this, 'Repository');
