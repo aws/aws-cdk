@@ -17,6 +17,24 @@ happy({
     marker: '0.0.0',
     prerelease: undefined,
     version: '2.1.0',
+    alphaVersion: undefined,
+    versionFile: 'version.v2.json'
+  }
+});
+
+happy({
+  name: 'stable release with alpha modules',
+  inputs: {
+    'release.json': { majorVersion: 2, releaseType: 'stable' },
+    'version.v2.json': { version: '2.1.0', alphaVersion: '2.1.0-alpha' },
+  },
+  expected: {
+    changelogFile: 'CHANGELOG.v2.md',
+    alphaChangelogFile: 'CHANGELOG.v2.alpha.md',
+    marker: '0.0.0',
+    prerelease: undefined,
+    version: '2.1.0',
+    alphaVersion: '2.1.0-alpha',
     versionFile: 'version.v2.json'
   }
 });
@@ -33,6 +51,7 @@ happy({
     marker: '0.0.0',
     prerelease: 'alpha',
     version: '2.1.0-alpha.0',
+    alphaVersion: undefined,
     versionFile: 'version.v2.json'
   }
 });
@@ -49,6 +68,24 @@ happy({
     marker: '0.0.0',
     prerelease: 'rc',
     version: '2.1.0-rc.0',
+    alphaVersion: undefined,
+    versionFile: 'version.v2.json'
+  }
+});
+
+happy({
+  name: 'rc release with alpha modules',
+  inputs: {
+    'release.json': { majorVersion: 2, releaseType: 'rc' },
+    'version.v2.json': { version: '2.0.0-rc.0', alphaVersion: '2.0.0-alpha.0' },
+  },
+  expected: {
+    changelogFile: 'CHANGELOG.v2.md',
+    alphaChangelogFile: 'CHANGELOG.v2.alpha.md',
+    marker: '0.0.0',
+    prerelease: 'rc',
+    version: '2.0.0-rc.0',
+    alphaVersion: '2.0.0-alpha.0',
     versionFile: 'version.v2.json'
   }
 });
@@ -65,6 +102,7 @@ happy({
     marker: '0.0.0',
     prerelease: undefined,
     version: '1.72.0',
+    alphaVersion: undefined,
     versionFile: 'version.v1.json'
   }
 });
@@ -81,6 +119,7 @@ happy({
     marker: '0.0.0',
     prerelease: undefined,
     version: '2.0.0-rc.0',
+    alphaVersion: undefined,
     versionFile: 'version.v2.json'
   }
 });

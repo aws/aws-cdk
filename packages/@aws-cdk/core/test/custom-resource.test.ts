@@ -1,9 +1,8 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { CustomResource, RemovalPolicy, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
-nodeunitShim({
-  'simple case provider identified by service token'(test: Test) {
+describe('custom resource', () => {
+  test('simple case provider identified by service token', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -17,7 +16,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         MyCustomResource: {
           Type: 'AWS::CloudFormation::CustomResource',
@@ -31,10 +30,10 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
 
-  'resource type can be specified'(test: Test) {
+  });
+
+  test('resource type can be specified', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -45,7 +44,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         MyCustomResource: {
           Type: 'Custom::MyResourceType',
@@ -57,10 +56,10 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
 
-  'removal policy'(test: Test) {
+  });
+
+  test('removal policy', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -71,7 +70,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         MyCustomResource: {
           Type: 'AWS::CloudFormation::CustomResource',
@@ -83,23 +82,23 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
 
-  'resource type must begin with "Custom::"'(test: Test) {
+  });
+
+  test('resource type must begin with "Custom::"', () => {
     // GIVEN
     const stack = new Stack();
 
     // THEN
-    test.throws(() => new CustomResource(stack, 'MyCustomResource', {
+    expect(() => new CustomResource(stack, 'MyCustomResource', {
       resourceType: 'MyResourceType',
       serviceToken: 'FooBar',
-    }), /Custom resource type must begin with "Custom::"/);
+    })).toThrow(/Custom resource type must begin with "Custom::"/);
 
-    test.done();
-  },
 
-  'properties can be pascal-cased'(test: Test) {
+  });
+
+  test('properties can be pascal-cased', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -116,7 +115,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         MyCustomResource: {
           Type: 'AWS::CloudFormation::CustomResource',
@@ -132,10 +131,10 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
 
-  'pascal-casing of props is disabled by default'(test: Test) {
+  });
+
+  test('pascal-casing of props is disabled by default', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -151,7 +150,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         MyCustomResource: {
           Type: 'AWS::CloudFormation::CustomResource',
@@ -167,7 +166,7 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
+
+  });
 
 });

@@ -183,40 +183,22 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    if (this.props.resultConfiguration?.outputLocation) {
-      return {
-        Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          QueryString: this.props.queryString,
-          ClientRequestToken: this.props.clientRequestToken,
-          QueryExecutionContext: {
-            Catalog: this.props.queryExecutionContext?.catalogName,
-            Database: this.props.queryExecutionContext?.databaseName,
-          },
-          ResultConfiguration: {
-            EncryptionConfiguration: this.renderEncryption(),
-            OutputLocation: `s3://${this.props.resultConfiguration?.outputLocation?.bucketName}/${this.props.resultConfiguration?.outputLocation?.objectKey}/`,
-          },
-          WorkGroup: this.props.workGroup,
-        }),
-      };
-    } else {
-      return {
-        Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          QueryString: this.props.queryString,
-          ClientRequestToken: this.props.clientRequestToken,
-          QueryExecutionContext: {
-            Catalog: this.props.queryExecutionContext?.catalogName,
-            Database: this.props.queryExecutionContext?.databaseName,
-          },
-          ResultConfiguration: {
-            EncryptionConfiguration: this.renderEncryption(),
-          },
-          WorkGroup: this.props.workGroup,
-        }),
-      };
-    }
+    return {
+      Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject({
+        QueryString: this.props.queryString,
+        ClientRequestToken: this.props.clientRequestToken,
+        QueryExecutionContext: (this.props.queryExecutionContext?.catalogName || this.props.queryExecutionContext?.databaseName) ? {
+          Catalog: this.props.queryExecutionContext?.catalogName,
+          Database: this.props.queryExecutionContext?.databaseName,
+        } : undefined,
+        ResultConfiguration: {
+          EncryptionConfiguration: this.renderEncryption(),
+          OutputLocation: this.props.resultConfiguration?.outputLocation ? `s3://${this.props.resultConfiguration.outputLocation.bucketName}/${this.props.resultConfiguration.outputLocation.objectKey}/` : undefined,
+        },
+        WorkGroup: this.props?.workGroup,
+      }),
+    };
   }
 }
 

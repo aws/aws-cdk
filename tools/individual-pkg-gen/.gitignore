@@ -1,13 +1,15 @@
 *.js
+node_modules
 *.js.map
 *.d.ts
-dist
 
 .LAST_BUILD
-*.snk
-!jest.config.js
-
 .nyc_output
 coverage
 nyc.config.js
+*.snk
 !.eslintrc.js
+
+junit.xml
+
+!jest.config.js

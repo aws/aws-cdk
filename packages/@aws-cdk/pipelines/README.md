@@ -575,7 +575,7 @@ new CodeBuildStep('Synth', {
   securityGroups: [mySecurityGroup],
 
   // Additional policy statements for the execution role
-  rolePolicy: [
+  rolePolicyStatements: [
     new iam.PolicyStatement({ /* ... */ }),
   ],
 });
