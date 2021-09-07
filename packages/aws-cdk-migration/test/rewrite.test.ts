@@ -88,4 +88,28 @@ describe(rewriteImports, () => {
 
     console.log('Look! I did something!');`);
   });
+
+  test('correctly rewrites Cfn imports', () => {
+    const output = rewriteImports(`
+    // something before
+    import * as codestar from './codestar.generated';
+    import { CfnConnection } from './glue.generated';
+    import { CfnApi } from '../apigatewayv2.generated';
+    import { CfnEnvironmentEC2 } from '../lib/cloud9.generated';
+    // something after
+
+    console.log('Look! I did something!');`, 'subject.ts', {
+      rewriteCfnImports: true,
+    });
+
+    expect(output).toBe(`
+    // something before
+    import * as codestar from 'aws-cdk-lib/aws-codestar';
+    import { CfnConnection } from 'aws-cdk-lib/aws-glue';
+    import { CfnApi } from 'aws-cdk-lib/aws-apigatewayv2';
+    import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
+    // something after
+
+    console.log('Look! I did something!');`);
+  });
 });
