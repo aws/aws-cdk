@@ -37,7 +37,8 @@ function resolveVersion(rootdir) {
   // validate that current version matches the requirements
   //
 
-  const currentVersion = require(versionFilePath).version;
+  const versions = require(versionFilePath);
+  const currentVersion = versions.version;
   if (!currentVersion.startsWith(`${majorVersion}.`)) {
     throw new Error(`current version "${currentVersion}" does not use the expected major version ${majorVersion}`);
   }
@@ -68,6 +69,7 @@ function resolveVersion(rootdir) {
 
   return {
     version: currentVersion,
+    alphaVersion: versions.alphaVersion,
     versionFile,
     changelogFile,
     alphaChangelogFile,
