@@ -460,7 +460,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findOutputs('Foo', { Value: 'Fred'});
+      const result = inspect.findOutputs('Foo', { Value: 'Fred' });
       expect(result).toEqual([
         { Value: 'Fred' },
       ]);
@@ -476,7 +476,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findOutputs('Foo', { Value: 'Waldo'});
+      const result = inspect.findOutputs('Foo', { Value: 'Waldo' });
       expect(result.length).toEqual(0);
     });
   });
@@ -516,7 +516,7 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasMapping('*',{
+        () => inspect.hasMapping('*', {
           Foo: { Bar: 'Qux' },
         }),
         [
@@ -562,7 +562,7 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasMapping('Fred',{
+        () => inspect.hasMapping('Fred', {
           Foo: { Baz: 'Fred' },
         }),
         [
