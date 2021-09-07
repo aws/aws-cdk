@@ -131,6 +131,11 @@ export class CdkToolkit {
       }
     }
 
+    if (options.hotswap) {
+      warning('⚠️ The --hotswap flag deliberately introduces CloudFormation drift to speed up deployments');
+      warning('⚠️ It should only be used for development - never use it for your production Stacks!');
+    }
+
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
@@ -197,6 +202,7 @@ export class CdkToolkit {
           progress: options.progress,
           ci: options.ci,
           rollback: options.rollback,
+          hotswap: options.hotswap,
         });
 
         const message = result.noOp
@@ -391,7 +397,7 @@ export class CdkToolkit {
     return stacks;
   }
 
-  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean) {
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean): Promise<StackCollection> {
     const assembly = await this.assembly();
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
@@ -403,7 +409,7 @@ export class CdkToolkit {
     return stacks;
   }
 
-  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean, autoValidate?: boolean) {
+  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean, autoValidate?: boolean): Promise<StackCollection> {
     const assembly = await this.assembly();
 
     const selectedForDiff = await assembly.selectStacks({ patterns: stackNames }, {
@@ -633,6 +639,14 @@ export interface DeployOptions {
    * @default true
    */
   readonly rollback?: boolean;
+  /*
+   * Whether to perform a 'hotswap' deployment.
+   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
+   * and update the affected resources like Lambda functions directly.
+   *
+   * @default - false (do not perform a 'hotswap' deployment)
+   */
+  readonly hotswap?: boolean;
 }
 
 export interface DestroyOptions {
