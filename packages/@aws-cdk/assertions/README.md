@@ -168,7 +168,9 @@ assert.hasResourceProperties('Foo::Bar', {
 The `Match.objectEquals()` API can be used to assert a target as a deep exact
 match.
 
-In addition, the `Match.absentProperty()` can be used to specify that a specific
+### Presence and Absence
+
+The `Match.absentProperty()` matcher can be used to specify that a specific
 property should not exist on the target. This can be used within `Match.objectLike()`
 or outside of any matchers.
 
@@ -199,6 +201,42 @@ assert.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
     Wobble: Match.absentProperty(),
   })
+});
+```
+
+The `Match.anyValue()` matcher can be used to specify that a specific value should be found
+at the location. This matcher will fail if when the target location has null-ish values
+(i.e., `null` or `undefined`).
+
+This matcher can be combined with any of the other matchers.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": {
+//           "Wobble": ["Flob", "Flib"],
+//         }
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: {
+    Wobble: [Match.anyValue(), "Flip"],
+  },
+});
+
+// The following will throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: {
+    Wimble: Match.anyValue(),
+  },
 });
 ```
 
