@@ -3,7 +3,7 @@ import { filterLogicalId, formatFailure, matchSection } from './section';
 
 export function findMappings(inspector: StackInspector, outputName: string, props: any = {}): { [key: string]: any }[] {
   const section: { [key: string] : {} } = inspector.value.Mappings;
-  const result = matchSection(filterLogicalId(section,outputName), props);
+  const result = matchSection(filterLogicalId(section, outputName), props);
 
   if (!result.match) {
     return [];
