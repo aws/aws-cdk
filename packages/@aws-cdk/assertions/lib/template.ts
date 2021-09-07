@@ -109,7 +109,7 @@ export class Template {
    * Assert that an Output with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
    * To configure different behavour, use other matchers in the `Match` class.
-   * @param outputName the name of the output.
+   * @param outputName the name of the output. Provide '*' to match all Output names in the template.
    * @param props the output as should be expected in the template.
    */
   public hasOutput(outputName: string, props: any): void {
@@ -121,22 +121,24 @@ export class Template {
 
   /**
    * Get the set of matching Outputs that match the given properties in the CloudFormation template.
+   * @param outputName the name of the output. Provide '*' to match all Output names in the template.
    * @param props by default, matches all Outputs in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findOutputs(props: any = {}): { [key: string]: any }[] {
-    return findOutputs(this.inspector, props);
+  public findOutputs(outputName: string, props: any = {}): { [key: string]: any }[] {
+    return findOutputs(this.inspector, outputName, props);
   }
 
   /**
    * Assert that a Mapping with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
    * To configure different behavour, use other matchers in the `Match` class.
+   * @param outputName the name of the output. Provide '*' to match all Output names in the template.
    * @param props the output as should be expected in the template.
    */
-  public hasMapping(props: any): void {
-    const matchError = hasMapping(this.inspector, props);
+  public hasMapping(outputName: string, props: any): void {
+    const matchError = hasMapping(this.inspector, outputName, props);
     if (matchError) {
       throw new Error(matchError);
     }
@@ -144,12 +146,13 @@ export class Template {
 
   /**
    * Get the set of matching Mappings that match the given properties in the CloudFormation template.
+   * @param outputName the name of the output. Provide '*' to match all Output names in the template.
    * @param props by default, matches all Mappings in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findMappings(props: any = {}): { [key: string]: any }[] {
-    return findMappings(this.inspector, props);
+  public findMappings(outputName: string, props: any = {}): { [key: string]: any }[] {
+    return findMappings(this.inspector, outputName, props);
   }
 
   /**
