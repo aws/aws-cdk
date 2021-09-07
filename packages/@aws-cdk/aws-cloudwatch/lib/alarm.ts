@@ -323,7 +323,7 @@ export class Alarm extends AlarmBase {
                 id: entry.id || uniqueMetricId(),
                 accountId: stat.account,
                 label: conf.renderingProperties?.label,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "false"
+                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on. 
               };
             },
             withExpression(expr, conf) {
@@ -339,7 +339,7 @@ export class Alarm extends AlarmBase {
                 id: entry.id || uniqueMetricId(),
                 label: conf.renderingProperties?.label,
                 period: hasSubmetrics ? undefined : expr.period,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "false"
+                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on. 
               };
             },
           }) as CfnAlarm.MetricDataQueryProperty),
