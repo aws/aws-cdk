@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* **aws-ec2:** Allow ApplyCloudformationInitOptions to set additional params ([#16121](https://github.com/aws/aws-cdk/issues/16121)) ([1d94646](https://github.com/aws/aws-cdk/commit/1d94646bd50cbbbc1ace3732a7b8ebb313ed3ddf)), closes [#16004](https://github.com/aws/aws-cdk/issues/16004)
+* **ec2:** Allow ApplyCloudformationInitOptions to set additional params ([#16121](https://github.com/aws/aws-cdk/issues/16121)) ([1d94646](https://github.com/aws/aws-cdk/commit/1d94646bd50cbbbc1ace3732a7b8ebb313ed3ddf)), closes [#16004](https://github.com/aws/aws-cdk/issues/16004)
 * **backup:** option to prevent recovery point deletions ([#16282](https://github.com/aws/aws-cdk/issues/16282)) ([6e71806](https://github.com/aws/aws-cdk/commit/6e718067b6c4e1a2c905fedcc60a6863ba3add12))
 * **cli:** hotswap deployments ([#15748](https://github.com/aws/aws-cdk/issues/15748)) ([6e55c95](https://github.com/aws/aws-cdk/commit/6e55c952d683f87bb815deb29124b9a37824749a))
 * **config:** EC2_INSTANCE_PROFILE_ATTACHED managed rule ([#16011](https://github.com/aws/aws-cdk/issues/16011)) ([816a319](https://github.com/aws/aws-cdk/commit/816a31984b5c6e08c4c7dd740919e0c1f5d0e196))
