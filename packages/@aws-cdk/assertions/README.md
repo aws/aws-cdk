@@ -109,7 +109,9 @@ See subsequent section on [special matchers](#special-matchers).
 
 ## Output and Mapping Matching
 
-The module allows you to assert that an output or matching has specific properties. The following code asserts that a resource contains an output with a `logicalId` of `Foo` and the specified properties -
+The module allows you to assert that an output or matching has specific properties.
+The following code asserts that a resource contains an output with a `logicalId` of
+`Foo` and the specified properties -
 
 ```ts
 assert.hasOutput('Foo', { 
@@ -118,7 +120,8 @@ assert.hasOutput('Foo', {
 });
 ```
 
-Alternatively, if you want to match the value to all outputs, you can use the `'*'` special case as the `logicalId`.
+Alternatively, if you want to match the value to all outputs, you can use the `'*'`
+special case as the `logicalId`.
 
 ```ts
 assert.hasOutput('*', {
@@ -127,7 +130,9 @@ assert.hasOutput('*', {
 });
 ```
 
-`findOutputs()` will return a list of outputs that match the `logicalId` and `props`, and you can use the `'*'` special case as well. `hasMapping()` and `findMappings()` follow a similar pattern to output matching.
+`findOutputs()` will return a list of outputs that match the `logicalId` and `props`,
+and you can use the `'*'` special case as well. `hasMapping()` and `findMappings()`
+follow a similar pattern to output matching.
 
 ## Special Matchers
 
