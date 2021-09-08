@@ -38,7 +38,7 @@ describe('JobExecutable', () => {
   describe('.of()', () => {
     test('with valid config should succeed', () => {
       expect(glue.JobExecutable.of({
-        glueVersion: glue.GlueVersion.V2_0,
+        glueVersion: glue.GlueVersion.V1_0,
         type: glue.JobType.PYTHON_SHELL,
         language: glue.JobLanguage.PYTHON,
         pythonVersion: glue.PythonVersion.THREE,
@@ -66,7 +66,7 @@ describe('JobExecutable', () => {
       })).toThrow(/extraPythonFiles is not supported for languages other than JobLanguage.PYTHON/);
     });
 
-    [glue.GlueVersion.V0_9].forEach((glueVersion) => {
+    [glue.GlueVersion.V0_9, glue.GlueVersion.V2_0, glue.GlueVersion.V3_0].forEach((glueVersion) => {
       test(`with JobType.PYTHON_SHELL and GlueVersion ${glueVersion} should throw`, () => {
         expect(() => glue.JobExecutable.of({
           type: glue.JobType.PYTHON_SHELL,
@@ -76,8 +76,10 @@ describe('JobExecutable', () => {
           glueVersion,
         })).toThrow(`Specified GlueVersion ${glueVersion.name} does not support Python Shell`);
       });
+    });
 
-      test(`with extraJarsFirst set and GlueVersion ${glueVersion} should throw`, () => {
+    [glue.GlueVersion.V0_9, glue.GlueVersion.V1_0].forEach((glueVersion) => {
+      test(`with extraJarsFirst set and GlueVersion ${glueVersion.name} should throw`, () => {
         expect(() => glue.JobExecutable.of({
           type: glue.JobType.ETL,
           language: glue.JobLanguage.PYTHON,
@@ -92,7 +94,7 @@ describe('JobExecutable', () => {
     [glue.GlueVersion.V2_0, glue.GlueVersion.V3_0].forEach((glueVersion) => {
       test(`with PythonVersion.TWO and GlueVersion ${glueVersion} should throw`, () => {
         expect(() => glue.JobExecutable.of({
-          type: glue.JobType.PYTHON_SHELL,
+          type: glue.JobType.ETL,
           language: glue.JobLanguage.PYTHON,
           pythonVersion: glue.PythonVersion.TWO,
           script,

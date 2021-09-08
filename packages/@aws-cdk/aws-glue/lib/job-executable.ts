@@ -287,7 +287,7 @@ export class JobExecutable {
       if (config.language !== JobLanguage.PYTHON) {
         throw new Error('Python shell requires the language to be set to Python');
       }
-      if ([GlueVersion.V0_9].includes(config.glueVersion)) {
+      if ([GlueVersion.V0_9, GlueVersion.V2_0, GlueVersion.V3_0].includes(config.glueVersion)) {
         throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support Python Shell`);
       }
     }

@@ -765,7 +765,7 @@ export class Job extends JobBase {
   }
 
   private codeS3ObjectUrl(code: Code) {
-    const s3Location = code.bind(this).s3Location;
+    const s3Location = code.bind(this, this.role).s3Location;
     return `s3://${s3Location.bucketName}/${s3Location.objectKey}`;
   }
 }
