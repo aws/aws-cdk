@@ -83,12 +83,12 @@ function isLambdaFunctionCodeOnlyChange(
   }
   const newResourceType = change.newValue.Type;
   // Ignore Metadata changes
-  if (newResourceType === 'AWS::CDK::Metadata') {
+  /*if (newResourceType === 'AWS::CDK::Metadata') {
     return ChangeHotswapImpact.IRRELEVANT;
-  }
+  }*/
   // The only other resource change we should see is a Lambda function
   if (newResourceType !== 'AWS::Lambda::Function') {
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+    return ChangeHotswapImpact.IRRELEVANT;
   }
   if (change.oldValue?.Type == null) {
     // this means this is a brand-new Lambda function -

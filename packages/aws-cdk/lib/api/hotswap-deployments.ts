@@ -37,6 +37,10 @@ export async function tryHotswapDeployment(
   // create a new SDK using the CLI credentials, because the default one will not work for new-style synthesis -
   // it assumes the bootstrap deploy Role, which doesn't have permissions to update Lambda functions
   const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting);
+  /*eslint-disable*/
+  console.log('////////////////////////////////////////');
+  console.log(sdk.cloudFormation());
+  console.log('////////////////////////////////////////');
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, stackArtifact, hotswappableChanges);
 
@@ -49,18 +53,62 @@ function findAllHotswappableChanges(
   const hotswappableResources = new Array<HotswapOperation>();
   let foundNonHotswappableChange = false;
   stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
+    const nonHotswappableResourceFound = isNonHotswappableResourceChange(change);
     const lambdaFunctionShortCircuitChange = isHotswappableLambdaFunctionChange(logicalId, change, assetParamsWithEnv);
     const stepFunctionShortCircuitChange = isHotswappableStepFunctionChange(logicalId, change, assetParamsWithEnv);
+
     if ((lambdaFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
-    (stepFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT)) {
+    (stepFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
+    (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT)) {
       foundNonHotswappableChange = true;
-    } else if (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) {
+      /*eslint-disable*/
+      console.log('lambda')
+      console.log(lambdaFunctionShortCircuitChange)
+
+      console.log('stepfuncion')
+      console.log(stepFunctionShortCircuitChange)
+
+      console.log('nonHotswappableresource')
+      console.log(nonHotswappableResourceFound)
+
+    } else if ((lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
+    (stepFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
+    (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT)) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
-      hotswappableResources.push(lambdaFunctionShortCircuitChange);
+      if (typeof lambdaFunctionShortCircuitChange !== 'string') {
+        hotswappableResources.push(lambdaFunctionShortCircuitChange);
+      }
+
+      if (typeof stepFunctionShortCircuitChange !== 'string') {
+        hotswappableResources.push(stepFunctionShortCircuitChange);
+      }
     }
   });
+  /*eslint-disable*/
+  console.log("returning: ");
+  console.log( foundNonHotswappableChange ? undefined : hotswappableResources);
   return foundNonHotswappableChange ? undefined : hotswappableResources;
+}
+
+export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): ChangeHotswapImpact | false {
+
+  if (!change.newValue) {
+    // TODO: determine what this line does
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
+
+  const newResourceType = change.newValue.Type;
+  // Ignore Metadata changes
+  if (newResourceType === 'AWS::CDK::Metadata') {
+    return ChangeHotswapImpact.IRRELEVANT;
+  }
+  // The only other resource change we should see is a Lambda function or a Step function
+  if ((newResourceType !== 'AWS::Lambda::Function') && (newResourceType !== 'AWS::StepFunctions::StateMachine')) {
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
+
+  return false;
 }
 
 async function applyAllHotswappableChanges(
@@ -91,6 +139,16 @@ class LazyListStackResources implements ListStackResources {
     const ret = new Array<CloudFormation.StackResourceSummary>();
     let nextToken: string | undefined;
     do {
+      console.log('------------------------------------------------------------');
+      console.log(Object.keys(this.sdk));
+        console.log(this.sdk.elbv2());
+        console.log(this.sdk.stepFunctions());
+        console.log(this.sdk.secretsManager());
+        console.log(this.sdk.ec2());
+        console.log(this.sdk.ecr());
+      console.log(this.sdk.cloudFormation());
+      console.log(this.sdk.cloudFormation);
+      console.log('------------------------------------------------------------');
       const stackResourcesResponse = await this.sdk.cloudFormation().listStackResources({
         StackName: this.stackName,
         NextToken: nextToken,

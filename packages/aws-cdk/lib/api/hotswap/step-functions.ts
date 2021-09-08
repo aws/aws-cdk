@@ -31,11 +31,11 @@ function isStepFunctionDefinitionOnlyChange(
 ): ChangeHotswapImpact | string {
   // TODO: this is where the change.newValue === undefined check might go if we need it
 
-  // non StateMachine changes require full deployment
+  // TODO: remove this check (leaving for needless log)
   if (change.newValue?.Type != 'AWS::StepFunctions::StateMachine') {
     console.log('ignore: ' + assetParamsWithEnv)
 
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+    //return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
   const propertyUpdates = change.propertyUpdates;
