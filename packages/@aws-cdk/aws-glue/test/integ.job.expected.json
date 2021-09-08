@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "MinimalGlueEtlJobServiceRole60989380": {
+    "EtlJobServiceRole837F781B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -31,7 +31,61 @@
         ]
       }
     },
-    "MinimalGlueEtlJobF8C90254": {
+    "EtlJobServiceRoleDefaultPolicy8BFE343B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "EtlJobSparkUIBucketBF23744B",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "EtlJobSparkUIBucketBF23744B",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "EtlJobServiceRoleDefaultPolicy8BFE343B",
+        "Roles": [
+          {
+            "Ref": "EtlJobServiceRole837F781B"
+          }
+        ]
+      }
+    },
+    "EtlJobSparkUIBucketBF23744B": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "EtlJob7FC88E45": {
       "Type": "AWS::Glue::Job",
       "Properties": {
         "Command": {
@@ -78,17 +132,85 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "MinimalGlueEtlJobServiceRole60989380",
+            "EtlJobServiceRole837F781B",
             "Arn"
           ]
         },
         "DefaultArguments": {
-          "--job-language": "python"
+          "--job-language": "python",
+          "--enable-continuous-cloudwatch-log": "true",
+          "--enable-continuous-log-filter": "true",
+          "--continuous-log-logStreamPrefix": "EtlJob",
+          "--enable-spark-ui": "true",
+          "--spark-event-logs-path": {
+            "Fn::Join": [
+              "",
+              [
+                "s3://",
+                {
+                  "Ref": "EtlJobSparkUIBucketBF23744B"
+                }
+              ]
+            ]
+          },
+          "arg1": "value1",
+          "arg2": "value2"
         },
-        "GlueVersion": "2.0"
+        "ExecutionProperty": {
+          "MaxConcurrentRuns": 2
+        },
+        "GlueVersion": "2.0",
+        "MaxRetries": 2,
+        "Name": "EtlJob",
+        "NotificationProperty": {
+          "NotifyDelayAfter": 1
+        },
+        "NumberOfWorkers": 10,
+        "Tags": {
+          "key": "value"
+        },
+        "Timeout": 5,
+        "WorkerType": "G.2X"
       }
     },
-    "MinimalGlueStreamingJobServiceRole77973DB5": {
+    "EtlJobSuccessMetricRuleA72A3EF6": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Rule triggered when Glue job ",
+              {
+                "Ref": "EtlJob7FC88E45"
+              },
+              " is in SUCCEEDED state"
+            ]
+          ]
+        },
+        "EventPattern": {
+          "source": [
+            "aws.glue"
+          ],
+          "detail-type": [
+            "Glue Job State Change",
+            "Glue Job Run Status"
+          ],
+          "detail": {
+            "jobName": [
+              {
+                "Ref": "EtlJob7FC88E45"
+              }
+            ],
+            "state": [
+              "SUCCEEDED"
+            ]
+          }
+        },
+        "State": "ENABLED"
+      }
+    },
+    "StreamingJobServiceRole1B4B8BF9": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -119,7 +241,7 @@
         ]
       }
     },
-    "MinimalGlueStreamingJobC58FD856": {
+    "StreamingJob3783CC17": {
       "Type": "AWS::Glue::Job",
       "Properties": {
         "Command": {
@@ -166,17 +288,23 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "MinimalGlueStreamingJobServiceRole77973DB5",
+            "StreamingJobServiceRole1B4B8BF9",
             "Arn"
           ]
         },
         "DefaultArguments": {
-          "--job-language": "python"
+          "--job-language": "python",
+          "arg1": "value1",
+          "arg2": "value2"
         },
-        "GlueVersion": "2.0"
+        "GlueVersion": "2.0",
+        "Name": "StreamingJob",
+        "Tags": {
+          "key": "value"
+        }
       }
     },
-    "MinimalPythonShellJobServiceRole4944649D": {
+    "ShellJobServiceRoleCF97BC4B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -207,7 +335,7 @@
         ]
       }
     },
-    "MinimalPythonShellJob43B4A269": {
+    "ShellJob42E81F95": {
       "Type": "AWS::Glue::Job",
       "Properties": {
         "Command": {
@@ -254,95 +382,7 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "MinimalPythonShellJobServiceRole4944649D",
-            "Arn"
-          ]
-        },
-        "DefaultArguments": {
-          "--job-language": "python"
-        },
-        "GlueVersion": "2.0"
-      }
-    },
-    "JobServiceRole4F432993": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "glue.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSGlueServiceRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "JobB9D00F9F": {
-      "Type": "AWS::Glue::Job",
-      "Properties": {
-        "Command": {
-          "Name": "glueetl",
-          "PythonVersion": "3",
-          "ScriptLocation": {
-            "Fn::Join": [
-              "",
-              [
-                "s3://",
-                {
-                  "Ref": "AssetParameters894df8f835015940e27548bfbf722885cb247378af70effdc8ecbe342419fc6bS3Bucket252142A8"
-                },
-                "/",
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters894df8f835015940e27548bfbf722885cb247378af70effdc8ecbe342419fc6bS3VersionKey7D45B377"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters894df8f835015940e27548bfbf722885cb247378af70effdc8ecbe342419fc6bS3VersionKey7D45B377"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "JobServiceRole4F432993",
+            "ShellJobServiceRoleCF97BC4B",
             "Arn"
           ]
         },
@@ -351,57 +391,11 @@
           "arg1": "value1",
           "arg2": "value2"
         },
-        "ExecutionProperty": {
-          "MaxConcurrentRuns": 2
-        },
         "GlueVersion": "2.0",
-        "MaxRetries": 2,
-        "NotificationProperty": {
-          "NotifyDelayAfter": 1
-        },
-        "NumberOfWorkers": 10,
+        "Name": "ShellJob",
         "Tags": {
           "key": "value"
-        },
-        "Timeout": 5,
-        "WorkerType": "G.2X"
-      }
-    },
-    "JobSuccessMetricRule80747C33": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "Description": {
-          "Fn::Join": [
-            "",
-            [
-              "Rule triggered when Glue job ",
-              {
-                "Ref": "JobB9D00F9F"
-              },
-              " is in SUCCEEDED state"
-            ]
-          ]
-        },
-        "EventPattern": {
-          "source": [
-            "aws.glue"
-          ],
-          "detail-type": [
-            "Glue Job State Change",
-            "Glue Job Run Status"
-          ],
-          "detail": {
-            "jobName": [
-              {
-                "Ref": "JobB9D00F9F"
-              }
-            ],
-            "state": [
-              "SUCCEEDED"
-            ]
-          }
-        },
-        "State": "ENABLED"
+        }
       }
     }
   },
