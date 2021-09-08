@@ -19,7 +19,8 @@ export function isHotswappableStepFunctionChange(
 ): ChangeHotswapResult {
   const stepDefinitionChange = isStepFunctionDefinitionOnlyChange(change, assetParamsWithEnv);
 
-  if (typeof stepDefinitionChange === 'string') {
+  if ((stepDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) || 
+      (stepDefinitionChange === ChangeHotswapImpact.IRRELEVANT)) {
     return stepDefinitionChange;
   }
 
@@ -33,7 +34,7 @@ export function isHotswappableStepFunctionChange(
 // returns true if a change to the definition string occured and false otherwise
 function isStepFunctionDefinitionOnlyChange(
   change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-): stepFunctionDefinition | ChangeHotswapImpact {
+): string | ChangeHotswapImpact {
   // TODO: this is where the change.newValue === undefined check might go if we need it
 
   // TODO: remove this check (leaving for needless log)
@@ -79,10 +80,7 @@ function isStepFunctionDefinitionOnlyChange(
       */
 
       if (newPropName == 'Fn::Join') {
-        //return JSON.stringify(updatedProp.newValue);
-        return {
-          definition: updatedProp.newValue,
-        }
+        return JSON.stringify(updatedProp.newValue);
       }
     }
   }
@@ -90,14 +88,10 @@ function isStepFunctionDefinitionOnlyChange(
   return ChangeHotswapImpact.IRRELEVANT;
 }
 
-interface stepFunctionDefinition {
-  definition: any,
-}
-
 interface StepFunctionResource {
   readonly logicalId: string;
   readonly physicalName?: string;
-  readonly definition: stepFunctionDefinition;
+  readonly definition: string;
 }
 
 class StepFunctionHotswapOperation implements HotswapOperation {
@@ -122,7 +116,7 @@ class StepFunctionHotswapOperation implements HotswapOperation {
 
    return sdk.stepFunctions().updateStateMachine({
      stateMachineArn: "TODO: NEED ARN",
-     definition: JSON.stringify(this.stepFunctionResource.definition), // json.stringify here?
+     definition: this.stepFunctionResource.definition,
    }).promise();
   }
 }
