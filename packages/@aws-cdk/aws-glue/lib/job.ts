@@ -5,7 +5,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-import { Code, JobExecutable, JobExecutableConfig, JobType } from '.';
+import { Code, JobExecutable, JobExecutableConfig, JobLanguage, JobType } from '.';
 import { IConnection } from './connection';
 import { CfnJob } from './glue.generated';
 import { ISecurityConfiguration } from './security-configuration';
@@ -711,7 +711,7 @@ export class Job extends JobBase {
     if (config.extraJars && config.extraJars?.length > 0) {
       args['--extra-jars'] = config.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
-    if (config.extraPythonFiles && config.extraPythonFiles.length > 0) {
+    if (JobLanguage.PYTHON === config.language && config.extraPythonFiles && config.extraPythonFiles.length > 0) {
       args['--extra-py-files'] = config.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
     if (config.extraFiles && config.extraFiles.length > 0) {

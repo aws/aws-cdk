@@ -61,6 +61,7 @@ describe('Job', () => {
     let extraFiles: glue.Code[];
     let extraPythonFiles: glue.Code[];
     let job: glue.Job;
+    let defaultProps: glue.JobProps;
 
     beforeEach(() => {
       codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketName');
@@ -68,17 +69,18 @@ describe('Job', () => {
       extraJars = [glue.Code.fromBucket(codeBucket, 'file1.jar'), glue.Code.fromBucket(codeBucket, 'file2.jar')];
       extraPythonFiles = [glue.Code.fromBucket(codeBucket, 'file1.py'), glue.Code.fromBucket(codeBucket, 'file2.py')];
       extraFiles = [glue.Code.fromBucket(codeBucket, 'file1.txt'), glue.Code.fromBucket(codeBucket, 'file2.txt')];
+      defaultProps = {
+        executable: glue.JobExecutable.scalaEtl({
+          glueVersion: glue.GlueVersion.V2_0,
+          className,
+          script,
+        }),
+      };
     });
 
     describe('with necessary props only', () => {
       beforeEach(() => {
-        job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.scalaEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            className,
-            script,
-          }),
-        });
+        job = new glue.Job(stack, 'Job', defaultProps);
       });
 
       test('should create a role and use it with the job', () => {
@@ -136,11 +138,7 @@ describe('Job', () => {
       test('with a custom role should use it and set it in CloudFormation', () => {
         const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
         job = new glue.Job(stack, 'JobWithRole', {
-          executable: glue.JobExecutable.pythonEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
+          ...defaultProps,
           role,
         });
 
@@ -152,11 +150,7 @@ describe('Job', () => {
 
       test('with a custom jobName should set it in CloudFormation', () => {
         job = new glue.Job(stack, 'JobWithName', {
-          executable: glue.JobExecutable.scalaStreaming({
-            glueVersion: glue.GlueVersion.V2_0,
-            className,
-            script,
-          }),
+          ...defaultProps,
           jobName,
         });
 
@@ -169,11 +163,7 @@ describe('Job', () => {
     describe('enabling continuous logging with defaults', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.scalaEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            className,
-            script,
-          }),
+          ...defaultProps,
           continuousLogging: { enabled: true },
         });
       });
@@ -194,11 +184,7 @@ describe('Job', () => {
       beforeEach(() => {
         logGroup = logs.LogGroup.fromLogGroupName(stack, 'LogGroup', 'LogGroupName');
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.scalaEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            className,
-            script,
-          }),
+          ...defaultProps,
           continuousLogging: {
             enabled: true,
             quiet: false,
@@ -266,11 +252,7 @@ describe('Job', () => {
     describe('enabling spark ui but no bucket or path provided', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.scalaEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            className,
-            script,
-          }),
+          ...defaultProps,
           sparkUI: { enabled: true },
         });
       });
@@ -355,11 +337,7 @@ describe('Job', () => {
       beforeEach(() => {
         bucket = s3.Bucket.fromBucketName(stack, 'BucketId', bucketName);
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.scalaEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            className,
-            script,
-          }),
+          ...defaultProps,
           sparkUI: {
             enabled: true,
             bucket,
@@ -436,11 +414,7 @@ describe('Job', () => {
       beforeEach(() => {
         bucket = s3.Bucket.fromBucketName(stack, 'BucketId', bucketName);
         job = new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.scalaEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            className,
-            script,
-          }),
+          ...defaultProps,
           sparkUI: {
             enabled: true,
             bucket,
@@ -462,13 +436,9 @@ describe('Job', () => {
     describe('with extended props', () => {
       beforeEach(() => {
         job = new glue.Job(stack, 'Job', {
+          ...defaultProps,
           jobName,
           description: 'test job',
-          executable: glue.JobExecutable.pythonStreaming({
-            glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
           workerType: glue.WorkerType.G_2X,
           workerCount: 10,
           maxConcurrentRuns: 2,
@@ -491,9 +461,8 @@ describe('Job', () => {
       test('should synthesize correctly', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           Command: {
-            Name: 'gluestreaming',
+            Name: 'glueetl',
             ScriptLocation: 's3://bucketName/script',
-            PythonVersion: '3',
           },
           Role: {
             'Fn::GetAtt': [
@@ -502,7 +471,8 @@ describe('Job', () => {
             ],
           },
           DefaultArguments: {
-            '--job-language': 'python',
+            '--job-language': 'scala',
+            '--class': 'com.amazon.test.ClassName',
             '--enable-metrics': '',
             'arg1': 'value1',
             'arg2': 'value2',
@@ -549,27 +519,7 @@ describe('Job', () => {
       });
     });
 
-    describe('python shell job', () => {
-
-      test('with minimal props should synthesize correctly', () => {
-        new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonShell({
-            glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
-        });
-
-        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-          Command: {
-            Name: 'pythonshell',
-            ScriptLocation: 's3://bucketName/script',
-            PythonVersion: '3',
-          },
-          GlueVersion: '2.0',
-        });
-      });
-
+    describe('shell job', () => {
       test('with unsupported glue version should throw', () => {
         expect(() => new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.pythonShell({
@@ -590,164 +540,76 @@ describe('Job', () => {
           sparkUI: { enabled: true },
         })).toThrow('Spark UI is not available for JobType.PYTHON_SHELL');
       });
+    });
 
-      test('with all props should synthesize correctly', () => {
-        new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonShell({
-            glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-            extraPythonFiles,
-            extraFiles,
-          }),
-        });
 
-        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-          Command: {
-            Name: 'pythonshell',
-            ScriptLocation: 's3://bucketName/script',
-            PythonVersion: '3',
-          },
-          GlueVersion: '2.0',
-          DefaultArguments: {
-            '--job-language': 'python',
-            '--extra-py-files': 's3://bucketName/file1.py,s3://bucketName/file2.py',
-            '--extra-files': 's3://bucketName/file1.txt,s3://bucketName/file2.txt',
-          },
-        });
+    test('etl job with all props should synthesize correctly', () => {
+      new glue.Job(stack, 'Job', {
+        executable: glue.JobExecutable.pythonEtl({
+          glueVersion: glue.GlueVersion.V2_0,
+          pythonVersion: glue.PythonVersion.THREE,
+          extraJarsFirst: true,
+          script,
+          extraPythonFiles,
+          extraJars,
+          extraFiles,
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        GlueVersion: '2.0',
+        Command: {
+          Name: 'glueetl',
+          ScriptLocation: 's3://bucketName/script',
+          PythonVersion: '3',
+        },
+        Role: {
+          'Fn::GetAtt': [
+            'JobServiceRole4F432993',
+            'Arn',
+          ],
+        },
+        DefaultArguments: {
+          '--job-language': 'python',
+          '--extra-jars': 's3://bucketName/file1.jar,s3://bucketName/file2.jar',
+          '--extra-py-files': 's3://bucketName/file1.py,s3://bucketName/file2.py',
+          '--extra-files': 's3://bucketName/file1.txt,s3://bucketName/file2.txt',
+          '--user-jars-first': 'true',
+        },
       });
     });
 
-    describe('python etl job', () => {
-
-      test('with minimal props should synthesize correctly', () => {
-        new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
-        });
-
-        // check the job using the role
-        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-          GlueVersion: '2.0',
-          Command: {
-            Name: 'glueetl',
-            ScriptLocation: 's3://bucketName/script',
-            PythonVersion: '3',
-          },
-          Role: {
-            'Fn::GetAtt': [
-              'JobServiceRole4F432993',
-              'Arn',
-            ],
-          },
-          DefaultArguments: {
-            '--job-language': 'python',
-          },
-        });
+    test('streaming job with all props should synthesize correctly', () => {
+      new glue.Job(stack, 'Job', {
+        executable: glue.JobExecutable.scalaStreaming({
+          glueVersion: glue.GlueVersion.V2_0,
+          extraJarsFirst: true,
+          className,
+          script,
+          extraJars,
+          extraFiles,
+        }),
       });
 
-      test('with all props should synthesize correctly', () => {
-        new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            extraJarsFirst: true,
-            script,
-            extraPythonFiles,
-            extraJars,
-            extraFiles,
-          }),
-        });
-
-        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-          GlueVersion: '2.0',
-          Command: {
-            Name: 'glueetl',
-            ScriptLocation: 's3://bucketName/script',
-            PythonVersion: '3',
-          },
-          Role: {
-            'Fn::GetAtt': [
-              'JobServiceRole4F432993',
-              'Arn',
-            ],
-          },
-          DefaultArguments: {
-            '--job-language': 'python',
-            '--extra-jars': 's3://bucketName/file1.jar,s3://bucketName/file2.jar',
-            '--extra-py-files': 's3://bucketName/file1.py,s3://bucketName/file2.py',
-            '--extra-files': 's3://bucketName/file1.txt,s3://bucketName/file2.txt',
-            '--user-jars-first': 'true',
-          },
-        });
-      });
-    });
-
-    describe('scala streaming job', () => {
-
-      test('with minimal props should synthesize correctly', () => {
-        new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.scalaStreaming({
-            glueVersion: glue.GlueVersion.V2_0,
-            script,
-            className,
-          }),
-        });
-
-        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-          GlueVersion: '2.0',
-          Command: {
-            Name: 'gluestreaming',
-            ScriptLocation: 's3://bucketName/script',
-          },
-          Role: {
-            'Fn::GetAtt': [
-              'JobServiceRole4F432993',
-              'Arn',
-            ],
-          },
-          DefaultArguments: {
-            '--job-language': 'scala',
-            '--class': 'com.amazon.test.ClassName',
-          },
-        });
-      });
-
-      test('with all props should synthesize correctly', () => {
-        new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.scalaStreaming({
-            glueVersion: glue.GlueVersion.V2_0,
-            extraJarsFirst: true,
-            className,
-            script,
-            extraJars,
-            extraFiles,
-          }),
-        });
-
-        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-          GlueVersion: '2.0',
-          Command: {
-            Name: 'gluestreaming',
-            ScriptLocation: 's3://bucketName/script',
-          },
-          Role: {
-            'Fn::GetAtt': [
-              'JobServiceRole4F432993',
-              'Arn',
-            ],
-          },
-          DefaultArguments: {
-            '--job-language': 'scala',
-            '--class': 'com.amazon.test.ClassName',
-            '--extra-jars': 's3://bucketName/file1.jar,s3://bucketName/file2.jar',
-            '--extra-files': 's3://bucketName/file1.txt,s3://bucketName/file2.txt',
-            '--user-jars-first': 'true',
-          },
-        });
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        GlueVersion: '2.0',
+        Command: {
+          Name: 'gluestreaming',
+          ScriptLocation: 's3://bucketName/script',
+        },
+        Role: {
+          'Fn::GetAtt': [
+            'JobServiceRole4F432993',
+            'Arn',
+          ],
+        },
+        DefaultArguments: {
+          '--job-language': 'scala',
+          '--class': 'com.amazon.test.ClassName',
+          '--extra-jars': 's3://bucketName/file1.jar,s3://bucketName/file2.jar',
+          '--extra-files': 's3://bucketName/file1.txt,s3://bucketName/file2.txt',
+          '--user-jars-first': 'true',
+        },
       });
     });
 
