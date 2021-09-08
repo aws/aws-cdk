@@ -530,3 +530,20 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
     }),
   });
 });
+
+test('with custom hash', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_12_X,
+    forceDockerBundling: true,
+    assetHash: 'custom',
+  });
+
+  // Correctly passes asset hash options
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), expect.objectContaining({
+    assetHash: 'custom',
+    assetHashType: AssetHashType.CUSTOM,
+  }));
+});
