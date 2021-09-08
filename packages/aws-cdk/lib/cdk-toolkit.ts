@@ -404,7 +404,8 @@ export class CdkToolkit {
       defaultBehavior: DefaultSelection.OnlySingle,
     });
 
-    await this.validateStacks(stacks);
+    this.validateStacksSelected(stacks, selector.patterns);
+    this.validateStacks(stacks);
 
     return stacks;
   }
@@ -422,7 +423,8 @@ export class CdkToolkit {
       ? allStacks.filter(art => art.validateOnSynth ?? false)
       : new StackCollection(assembly, []);
 
-    await this.validateStacks(selectedForDiff.concat(autoValidateStacks));
+    this.validateStacksSelected(selectedForDiff.concat(autoValidateStacks), stackNames);
+    this.validateStacks(selectedForDiff.concat(autoValidateStacks));
 
     return selectedForDiff;
   }
@@ -442,12 +444,21 @@ export class CdkToolkit {
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
-  private async validateStacks(stacks: StackCollection) {
+  private validateStacks(stacks: StackCollection) {
     stacks.processMetadataMessages({
       ignoreErrors: this.props.ignoreErrors,
       strict: this.props.strict,
       verbose: this.props.verbose,
     });
+  }
+
+  /**
+   * Validate that if a user specified a stack name there exists at least 1 stack selected
+   */
+  private validateStacksSelected(stacks: StackCollection, stackNames: string[]) {
+    if (stackNames.length != 0 && stacks.stackCount == 0) {
+      throw new Error(`No stacks match the name(s) ${stackNames}`);
+    }
   }
 
   /**
