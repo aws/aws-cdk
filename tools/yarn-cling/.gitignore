@@ -11,5 +11,5 @@ dist
 coverage
 nyc.config.js
 !.eslintrc.js
-!test/test-fixture/package1/node_modules/
+!test/test-fixture/jsii/node_modules/
 junit.xml

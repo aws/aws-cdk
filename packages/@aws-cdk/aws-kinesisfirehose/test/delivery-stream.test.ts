@@ -491,7 +491,7 @@ describe('delivery stream', () => {
       destinations: [mockS3Destination],
     });
 
-    Template.fromStack(stack).hasMapping({
+    Template.fromStack(stack).hasMapping('*', {
       'af-south-1': {
         FirehoseCidrBlock: '13.244.121.224/27',
       },
