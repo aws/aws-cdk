@@ -305,6 +305,37 @@ assert.hasResourceProperties('Foo::Bar', Match.objectLike({
 }});
 ```
 
+## Capturing Values
+
+This matcher APIs documented above allow capturing values in the matching entry
+(Resource, Output, Mapping, etc.). The following code captures a string from a
+matching resource.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Flob", "Cat"],
+//         "Waldo": ["Qix", "Qux"],
+//       }
+//     }
+//   }
+// }
+
+const fredCapture = new Capture();
+const waldoCapture = new Capture();
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: fredCapture,
+  Waldo: ["Qix", waldoCapture],
+});
+
+fredCapture.asArray(); // returns ["Flob", "Cat"]
+waldoCapture.asString(); // returns "Qux"
+```
+
 ## Strongly typed languages
 
 Some of the APIs documented above, such as `templateMatches()` and

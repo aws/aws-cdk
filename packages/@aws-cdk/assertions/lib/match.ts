@@ -1,4 +1,5 @@
 import { Matcher, MatchResult } from './matcher';
+import { getType } from './private/type';
 import { ABSENT } from './vendored/assert';
 
 /**
@@ -296,8 +297,4 @@ class AnyMatch extends Matcher {
     }
     return result;
   }
-}
-
-function getType(obj: any): string {
-  return Array.isArray(obj) ? 'array' : typeof obj;
 }
