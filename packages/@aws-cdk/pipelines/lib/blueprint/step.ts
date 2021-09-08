@@ -1,4 +1,4 @@
-import { Token } from '@aws-cdk/core';
+import { Stack, Token } from '@aws-cdk/core';
 import { FileSet, IFileSetProducer } from './file-set';
 
 /**
@@ -74,4 +74,36 @@ export abstract class Step implements IFileSetProducer {
   protected configurePrimaryOutput(fs: FileSet) {
     this._primaryOutput = fs;
   }
+}
+
+/**
+ * Instructions for additional steps that are run at stack level
+ */
+export interface StackSteps {
+  /**
+   * The stack you want the steps to run in
+   */
+  readonly stack: Stack;
+
+  /**
+   * Steps that execute before stack is prepared
+   *
+   * @default - no additional steps
+   */
+  readonly pre?: Step[];
+
+  /**
+   * Steps that execute after stack is prepared but before stack is deployed
+   *
+   * @default - no additional steps
+   */
+  readonly changeSet?: Step[];
+
+  /**
+   * Steps that execute after stack is deployed
+   *
+   * @default - no additional steps
+   */
+  readonly post?: Step[];
+
 }

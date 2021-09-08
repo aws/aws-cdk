@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { BackupPlan, BackupPlanRule, BackupVault } from '../lib';
@@ -32,7 +32,7 @@ test('create a plan and add rules', () => {
   plan.addRule(BackupPlanRule.monthly5Year(otherVault));
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
     BackupPlan: {
       BackupPlanName: 'Plan',
       BackupPlanRule: [
@@ -75,7 +75,7 @@ test('daily35DayRetention', () => {
   BackupPlan.daily35DayRetention(stack, 'D35');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
     BackupPlan: {
       BackupPlanName: 'D35',
       BackupPlanRule: [
@@ -102,7 +102,7 @@ test('dailyWeeklyMonthly7YearRetention', () => {
   BackupPlan.dailyWeeklyMonthly7YearRetention(stack, 'DWM7');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
     BackupPlan: {
       BackupPlanName: 'DWM7',
       BackupPlanRule: [
@@ -159,7 +159,7 @@ test('automatically creates a new vault', () => {
   plan.addRule(BackupPlanRule.daily());
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
     BackupPlan: {
       BackupPlanName: 'Plan',
       BackupPlanRule: [
