@@ -84,7 +84,6 @@ export abstract class PipelineBase extends CoreConstruct {
     if (this.built) {
       throw new Error('addStage: can\'t add Stages anymore after buildPipeline() has been called');
     }
-
     return this.addWave(stage.stageName).addStage(stage, options);
   }
 

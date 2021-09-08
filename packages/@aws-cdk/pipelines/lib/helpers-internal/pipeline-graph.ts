@@ -142,8 +142,9 @@ export class PipelineGraph {
       });
 
       retGraph.add(stackGraph);
-
       stackGraph.add(deployNode);
+
+      // node or node collection that represents first point of contact in each stack
       let firstDeployNode;
       if (prepareNode) {
         stackGraph.add(prepareNode);
@@ -151,6 +152,21 @@ export class PipelineGraph {
         firstDeployNode = prepareNode;
       } else {
         firstDeployNode = deployNode;
+      }
+
+      // add changeset steps at the stack level
+      if (stack.changeSet.length > 0) {
+        if (prepareNode) {
+          this.addChangeSet(stack.changeSet, prepareNode, deployNode, stackGraph);
+        } else {
+          throw new Error('Your pipeline engine does not support changeSet steps');
+        }
+      }
+
+      // add pre and post steps at the stack level
+      const preNodes = this.addPrePost(stack.pre, stack.post, stackGraph);
+      if (preNodes.nodes.length > 0) {
+        firstDeployNode = preNodes;
       }
 
       stackGraphs.set(stack, stackGraph);
@@ -201,16 +217,27 @@ export class PipelineGraph {
     return retGraph;
   }
 
+  private addChangeSet(changeSet: Step[], prepareNode: AGraphNode, deployNode: AGraphNode, graph: AGraph) {
+    for (const c of changeSet) {
+      const changeSetNode = this.addAndRecurse(c, graph);
+      changeSetNode?.dependOn(prepareNode);
+      deployNode.dependOn(changeSetNode);
+    }
+  }
+
   private addPrePost(pre: Step[], post: Step[], parent: AGraph) {
     const currentNodes = new GraphNodeCollection(parent.nodes);
+    const preNodes = new GraphNodeCollection(new Array<AGraphNode>());
     for (const p of pre) {
       const preNode = this.addAndRecurse(p, parent);
       currentNodes.dependOn(preNode);
+      preNodes.nodes.push(preNode!);
     }
     for (const p of post) {
       const postNode = this.addAndRecurse(p, parent);
       postNode?.dependOn(...currentNodes.nodes);
     }
+    return preNodes;
   }
 
   private topLevelGraph(name: string): AGraph {
