@@ -84,7 +84,7 @@ describe('Job', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              `:s3:::${codeBucketName}/*`,
+              `:s3:::${codeBucketName}/script`,
             ],
           ],
         },

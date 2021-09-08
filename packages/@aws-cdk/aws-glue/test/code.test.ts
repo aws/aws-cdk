@@ -65,7 +65,7 @@ describe('Code', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':s3:::bucketName/*',
+                      ':s3:::bucketName/script',
                     ],
                   ],
                 },

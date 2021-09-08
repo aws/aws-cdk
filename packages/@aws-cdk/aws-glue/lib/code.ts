@@ -44,7 +44,7 @@ export class S3Code extends Code {
   }
 
   public bind(_scope: constructs.Construct, grantable: iam.IGrantable): CodeConfig {
-    this.bucket.grantRead(grantable);
+    this.bucket.grantRead(grantable, this.key);
     return {
       s3Location: {
         bucketName: this.bucket.bucketName,
