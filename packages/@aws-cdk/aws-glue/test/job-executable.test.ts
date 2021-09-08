@@ -55,6 +55,17 @@ describe('JobExecutable', () => {
       })).toThrow(/Python shell requires the language to be set to Python/);
     });
 
+    test('with a non JobLanguage.PYTHON and extraPythonFiles set should throw', () => {
+      expect(() => glue.JobExecutable.of({
+        glueVersion: glue.GlueVersion.V3_0,
+        type: glue.JobType.ETL,
+        language: glue.JobLanguage.SCALA,
+        className: 'com.Test',
+        extraPythonFiles: [script],
+        script,
+      })).toThrow(/extraPythonFiles is not supported for languages other than JobLanguage.PYTHON/);
+    });
+
     [glue.GlueVersion.V0_9, glue.GlueVersion.V1_0].forEach((glueVersion) => {
       test(`with JobType.PYTHON_SHELL and GlueVersion ${glueVersion} should throw`, () => {
         expect(() => glue.JobExecutable.of({

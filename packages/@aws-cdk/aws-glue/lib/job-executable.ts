@@ -297,6 +297,9 @@ export class JobExecutable {
     if (config.pythonVersion === PythonVersion.TWO && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(config.glueVersion)) {
       throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support PythonVersion ${config.pythonVersion}`);
     }
+    if (JobLanguage.PYTHON !== config.language && config.extraPythonFiles) {
+      throw new Error('extraPythonFiles is not supported for languages other than JobLanguage.PYTHON');
+    }
     this.config = config;
   }
 
