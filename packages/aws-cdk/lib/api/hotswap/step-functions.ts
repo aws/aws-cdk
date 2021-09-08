@@ -1,6 +1,6 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
-//import { ISDK } from '../aws-auth';
-import { /*assetMetadataChanged,*/ ChangeHotswapImpact, ChangeHotswapResult/*, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression*/ } from './common';
+import { ISDK } from '../aws-auth';
+import { /*assetMetadataChanged,*/ ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, /*stringifyPotentialCfnExpression*/ } from './common';
 
 /**
  * currently, we need to check this:
@@ -17,16 +17,18 @@ import { /*assetMetadataChanged,*/ ChangeHotswapImpact, ChangeHotswapResult/*, H
 export function isHotswappableStepFunctionChange(
   logicalId: string, change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
 ): ChangeHotswapResult {
-    console.log('ignore: ' + logicalId)
   const stepDefinitionChange = isStepFunctionDefinitionOnlyChange(change, assetParamsWithEnv);
 
-  return stepDefinitionChange;
+  return new StepFunctionHotswapOperation({
+    logicalId: logicalId,
+    definition: stepDefinitionChange,
+  });
 }
 
 // returns true if a change to the definition string occured and false otherwise
 function isStepFunctionDefinitionOnlyChange(
   change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-): string | ChangeHotswapImpact {
+): ChangeHotswapImpact | string {
   // TODO: this is where the change.newValue === undefined check might go if we need it
 
   // non StateMachine changes require full deployment
@@ -78,4 +80,37 @@ function isStepFunctionDefinitionOnlyChange(
   }
 
   return ChangeHotswapImpact.IRRELEVANT;
+}
+
+interface StepFunctionResource {
+  readonly logicalId: string;
+  readonly physicalName?: string;
+  readonly definition: string;
+}
+
+class StepFunctionHotswapOperation implements HotswapOperation {
+  constructor(private readonly stepFunctionResource: StepFunctionResource) {
+  }
+
+  public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
+    let functionPhysicalName: string;
+    if (this.stepFunctionResource.physicalName) {
+      functionPhysicalName = this.stepFunctionResource.physicalName;
+    } else {
+      const stackResourceList = await stackResources.listStackResources();
+      const foundFunctionName = stackResourceList
+        .find(resSummary => resSummary.LogicalResourceId === this.stepFunctionResource.logicalId)
+        ?.PhysicalResourceId;
+      if (!foundFunctionName) {
+        // if we couldn't find the function in the current stack, we can't update it
+        return;
+      }
+      functionPhysicalName = foundFunctionName;
+    }
+
+   return sdk.stepFunctions().updateStateMachine({
+     stateMachineArn: "TODO: NEED ARN",
+     definition: this.stepFunctionResource.definition,
+   }).promise();
+  }
 }
