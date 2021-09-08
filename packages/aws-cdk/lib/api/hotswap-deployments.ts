@@ -62,7 +62,7 @@ function findAllHotswappableChanges(
     (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT)) {
       foundNonHotswappableChange = true;
       /*eslint-disable*/
-      console.log('lambda')
+      /*console.log('lambda')
       console.log(lambdaFunctionShortCircuitChange)
 
       console.log('stepfuncion')
@@ -70,6 +70,7 @@ function findAllHotswappableChanges(
 
       console.log('nonHotswappableresource')
       console.log(nonHotswappableResourceFound)
+      */
 
     } else if ((lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
     (stepFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
@@ -86,8 +87,8 @@ function findAllHotswappableChanges(
     }
   });
   /*eslint-disable*/
-  console.log("returning: ");
-  console.log( foundNonHotswappableChange ? undefined : hotswappableResources);
+  //console.log("returning: ");
+  //console.log( foundNonHotswappableChange ? undefined : hotswappableResources);
   return foundNonHotswappableChange ? undefined : hotswappableResources;
 }
 
@@ -139,7 +140,7 @@ class LazyListStackResources implements ListStackResources {
     const ret = new Array<CloudFormation.StackResourceSummary>();
     let nextToken: string | undefined;
     do {
-      console.log('------------------------------------------------------------');
+      /*console.log('------------------------------------------------------------');
       console.log(Object.keys(this.sdk));
         console.log(this.sdk.elbv2());
         console.log(this.sdk.stepFunctions());
@@ -148,7 +149,7 @@ class LazyListStackResources implements ListStackResources {
         console.log(this.sdk.ecr());
       console.log(this.sdk.cloudFormation());
       console.log(this.sdk.cloudFormation);
-      console.log('------------------------------------------------------------');
+      console.log('------------------------------------------------------------');*/
       const stackResourcesResponse = await this.sdk.cloudFormation().listStackResources({
         StackName: this.stackName,
         NextToken: nextToken,
