@@ -51,8 +51,8 @@ function findAllHotswappableChanges(
   stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
     const lambdaFunctionShortCircuitChange = isHotswappableLambdaFunctionChange(logicalId, change, assetParamsWithEnv);
     const stepFunctionShortCircuitChange = isHotswappableStepFunctionChange(logicalId, change, assetParamsWithEnv);
-    if ((lambdaFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) &&
-        (stepFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT)) {
+    if ((lambdaFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
+    (stepFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT)) {
       foundNonHotswappableChange = true;
     } else if (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) {
       // empty 'if' just for flow-aware typing to kick in...

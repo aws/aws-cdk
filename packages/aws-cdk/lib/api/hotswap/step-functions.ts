@@ -1,6 +1,6 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { ISDK } from '../aws-auth';
-import { /*assetMetadataChanged,*/ ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, /*stringifyPotentialCfnExpression*/ } from './common';
+import { /*assetMetadataChanged,*/ ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources /*stringifyPotentialCfnExpression*/ } from './common';
 
 /**
  * currently, we need to check this:
@@ -63,7 +63,7 @@ function isStepFunctionDefinitionOnlyChange(
         for (const stringEltLvl2 in stringElt) {
           console.log(stringEltLvl2);
         }
-      }*/
+      }
 
       console.log("type")
       console.log(typeof updatedProp.newValue)
@@ -71,6 +71,7 @@ function isStepFunctionDefinitionOnlyChange(
       console.log(Object.keys(updatedProp.newValue));
       console.log("stringified:")
       console.log(JSON.stringify(updatedProp.newValue));
+      */
 
       if (newPropName == 'Fn::Join') {
         return JSON.stringify(updatedProp.newValue);
@@ -93,9 +94,9 @@ class StepFunctionHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
-    let functionPhysicalName: string;
+    //let functionPhysicalName: string;
     if (this.stepFunctionResource.physicalName) {
-      functionPhysicalName = this.stepFunctionResource.physicalName;
+      //functionPhysicalName = this.stepFunctionResource.physicalName;
     } else {
       const stackResourceList = await stackResources.listStackResources();
       const foundFunctionName = stackResourceList
@@ -105,7 +106,7 @@ class StepFunctionHotswapOperation implements HotswapOperation {
         // if we couldn't find the function in the current stack, we can't update it
         return;
       }
-      functionPhysicalName = foundFunctionName;
+      //functionPhysicalName = foundFunctionName;
     }
 
    return sdk.stepFunctions().updateStateMachine({
