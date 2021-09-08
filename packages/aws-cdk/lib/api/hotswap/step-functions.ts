@@ -102,6 +102,7 @@ class StepFunctionHotswapOperation implements HotswapOperation {
     //let functionPhysicalName: string;
     if (this.stepFunctionResource.physicalName) {
       //functionPhysicalName = this.stepFunctionResource.physicalName;
+      // BUG: the code should go here but it instead goes to the else (in the test) because step functions don't have the physicalName unlike lambdas
     } else {
       const stackResourceList = await stackResources.listStackResources();
       const foundFunctionName = stackResourceList
