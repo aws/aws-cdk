@@ -85,8 +85,8 @@ export interface BackupVaultProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
-   * Whether to apply a vault access policy that prevents anyone from deleting
-   * a recovery point.
+   * Whether to add statements to the vault access policy that prevents anyone
+   * from deleting a recovery point.
    *
    * @default false
    */
@@ -214,31 +214,23 @@ export class BackupVault extends BackupVaultBase {
       props.notificationTopic.grantPublish(new iam.ServicePrincipal('backup.amazonaws.com'));
     }
 
-    if (props.blockRecoveryPointDeletion && props.accessPolicy) {
-      throw new Error('Cannot specify `accessPolicy` when `blockRecoveryPointDeletion` is set to `true`');
+    const accessPolicy = props.accessPolicy ?? new iam.PolicyDocument();
+    if (props.blockRecoveryPointDeletion) {
+      accessPolicy.addStatements(new iam.PolicyStatement({
+        effect: iam.Effect.DENY,
+        actions: [
+          'backup:DeleteRecoveryPoint',
+          'backup:UpdateRecoveryPointLifecycle',
+        ],
+        principals: [new iam.AnyPrincipal()],
+        resources: ['*'],
+      }),
+      );
     }
 
-    let accessPolicy: iam.PolicyDocument | undefined;
-    if (props.accessPolicy) {
-      accessPolicy = props.accessPolicy;
-    } else if (props.blockRecoveryPointDeletion) {
-      accessPolicy = new iam.PolicyDocument({
-        statements: [
-          new iam.PolicyStatement({
-            effect: iam.Effect.DENY,
-            actions: [
-              'backup:DeleteRecoveryPoint',
-              'backup:UpdateRecoveryPointLifecycle',
-            ],
-            principals: [new iam.AnyPrincipal()],
-            resources: ['*'],
-          }),
-        ],
-      });
-    }
     const vault = new CfnBackupVault(this, 'Resource', {
       backupVaultName: props.backupVaultName || this.uniqueVaultName(),
-      accessPolicy: accessPolicy?.toJSON(),
+      accessPolicy: accessPolicy.toJSON(),
       encryptionKeyArn: props.encryptionKey && props.encryptionKey.keyArn,
       notifications,
     });

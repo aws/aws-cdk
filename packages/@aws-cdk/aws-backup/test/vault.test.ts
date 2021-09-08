@@ -95,11 +95,47 @@ test('with blockRecoveryPointDeletion', () => {
   });
 });
 
-test('throws with both accessPolicy and blockRecoveryPointDeletion', () => {
-  expect(() => new BackupVault(stack, 'Vault', {
+test('merges statements from accessPolicy and blockRecoveryPointDeletion', () => {
+  // WHEN
+  new BackupVault(stack, 'Vault', {
+    accessPolicy: new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          effect: iam.Effect.DENY,
+          principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:role/MyRole')],
+          actions: ['backup:StartRestoreJob'],
+        }),
+      ],
+    }),
     blockRecoveryPointDeletion: true,
-    accessPolicy: new iam.PolicyDocument(),
-  })).toThrow(/Cannot specify `accessPolicy` when `blockRecoveryPointDeletion` is set to `true`/);
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    AccessPolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'backup:StartRestoreJob',
+          Effect: 'Deny',
+          Principal: {
+            AWS: 'arn:aws:iam::123456789012:role/MyRole',
+          },
+        },
+        {
+          Effect: 'Deny',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'backup:DeleteRecoveryPoint',
+            'backup:UpdateRecoveryPointLifecycle',
+          ],
+          Resource: '*',
+        },
+      ],
+    },
+  });
 });
 
 test('with encryption key', () => {

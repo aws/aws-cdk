@@ -132,8 +132,8 @@ const vault = new backup.BackupVault(this, 'Vault', {
 })
 ```
 
-Use the `blockRecoveryPointDeletion` property to add a vault access policy that prevents recovery point
-deletions in your vault:
+Use the `blockRecoveryPointDeletion` property to add statements to the vault access policy that
+prevents recovery point deletions in your vault:
 
 ```ts
 new BackupVault(stack, 'Vault', {
