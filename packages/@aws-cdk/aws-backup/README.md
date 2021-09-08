@@ -136,7 +136,7 @@ Use the `blockRecoveryPointDeletion` property to add statements to the vault acc
 prevents recovery point deletions in your vault:
 
 ```ts
-new BackupVault(stack, 'Vault', {
+new backup.BackupVault(this, 'Vault', {
   blockRecoveryPointDeletion: true,
 });
 ```
