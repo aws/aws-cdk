@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { App, SecretValue, Stack } from '@aws-cdk/core';
+import { App, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { Group, ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
 describe('IAM user', () => {
@@ -106,6 +106,19 @@ describe('IAM user', () => {
     expect(stack.resolve(user.userName)).toStrictEqual(userName);
   });
 
+  test('user imported by tokenized user ARN has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', Token.asString({ Ref: 'ARN' }));
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual({
+      'Fn::Select': [1, { 'Fn::Split': [':user/', { Ref: 'ARN' }] }],
+    });
+  });
+
   test('user imported by user ARN with path', () => {
     // GIVEN
     const stack = new Stack();
@@ -128,6 +141,21 @@ describe('IAM user', () => {
 
     // THEN
     expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
+  test('user imported by tokenized user attributes has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserAttributes(stack, 'import', {
+      userArn: Token.asString({ Ref: 'ARN' }),
+    });
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual({
+      'Fn::Select': [1, { 'Fn::Split': [':user/', { Ref: 'ARN' }] }],
+    });
   });
 
   test('user imported by user attributes has a name', () => {
