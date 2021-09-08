@@ -107,16 +107,27 @@ By default, the `hasResource()` and `hasResourceProperties()` APIs perform deep
 partial object matching. This behavior can be configured using matchers.
 See subsequent section on [special matchers](#special-matchers).
 
-## Other Sections
+## Output and Mapping Matching
 
-Similar to the `hasResource()` and `findResources()`, we have equivalent methods
-to check and find other sections of the CloudFormation resources.
+The module allows you to assert that an output or matching has specific properties. The following code asserts that a resource contains an output with a `logicalId` of `Foo` and the specified properties -
 
-* Outputs - `hasOutput()` and `findOutputs()`
-* Mapping - `hasMapping()` and `findMappings()`
+```ts
+assert.hasOutput('Foo', { 
+  Value: 'Bar',
+  Export: { Name: 'ExportBaz' }, 
+});
+```
 
-All of the defaults and behaviour documented for `hasResource()` and
-`findResources()` apply to these methods.
+Alternatively, if you want to match the value to all outputs, you can use the `'*'` special case as the `logicalId`.
+
+```ts
+assert.hasOutput('*', {
+  Value: 'Bar',
+  Export: { Name: 'ExportBaz' },
+});
+```
+
+`findOutputs()` will return a list of outputs that match the `logicalId` and `props`, and you can use the `'*'` special case as well. `hasMapping()` and `findMappings()` follow a similar pattern to output matching.
 
 ## Special Matchers
 
