@@ -83,13 +83,15 @@ export class ContainerImageAssetHandler implements IAssetHandler {
    * External command is responsible for deduplicating the build if possible,
    * and is expected to return the generated image identifier on stdout.
    */
-  private async buildExternalAsset(executable: string[]): Promise<string | undefined> {
+  private async buildExternalAsset(executable: string[], cwd?: string): Promise<string | undefined> {
+
+    const assetPath = cwd ?? this.workDir;
+
     this.host.emitMessage(EventType.BUILD, `Building Docker image using command '${executable}'`);
     if (this.host.aborted) { return undefined; }
 
-    return (await shell(executable, { quiet: true })).trim();
+    return (await shell(executable, { cwd: assetPath, quiet: true })).trim();
   }
-
 
   /**
    * Check whether the image already exists in the ECR repo
