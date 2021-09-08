@@ -46,7 +46,7 @@ interpreted. The recommended setting for Docker image assets is
 old projects) then `IgnoreMode.DOCKER` is the default and you don't need to
 configure it on the asset itself.
 
-Use `asset.imageUri` to reference the image (it includes both the ECR image URL
+Use `asset.imageUri` to reference the image. It includes both the ECR image URL
 and tag.
 
 You can optionally pass build args to the `docker build` command by specifying

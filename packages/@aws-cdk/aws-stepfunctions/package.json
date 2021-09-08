@@ -105,6 +105,7 @@
   "awslint": {
     "exclude": [
       "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.TIMEOUT",
+      "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.HEARTBEAT_TIMEOUT",
       "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern"
     ]
   },

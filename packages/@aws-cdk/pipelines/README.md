@@ -591,7 +591,7 @@ new CodeBuildStep('Synth', {
   securityGroups: [mySecurityGroup],
 
   // Additional policy statements for the execution role
-  rolePolicy: [
+  rolePolicyStatements: [
     new iam.PolicyStatement({ /* ... */ }),
   ],
 });
@@ -971,7 +971,7 @@ new CodePipeline(this, 'Pipeline', {
         resources: ['*'],
         conditions: {
           StringEquals: {
-            'iam:ResourceTag/aws-cdk:bootstrap-role': 'deploy',
+            'iam:ResourceTag/aws-cdk:bootstrap-role': 'lookup',
           },
         },
       }),

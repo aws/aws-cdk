@@ -27,7 +27,15 @@ export abstract class Matcher {
  * The result of `Match.test()`.
  */
 export class MatchResult {
+  /**
+   * The target for which this result was generated.
+   */
+  public readonly target: any;
   private readonly failures: MatchFailure[] = [];
+
+  constructor(target: any) {
+    this.target = target;
+  }
 
   /**
    * Push a new failure into this result at a specific path.
