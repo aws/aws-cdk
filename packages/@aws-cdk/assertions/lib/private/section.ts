@@ -57,11 +57,11 @@ function leftPad(x: string, indent: number = 2): string {
   return pad + x.split('\n').join(`\n${pad}`);
 }
 
-export function filterLogicalId(section: { [key: string]: {} }, outputName: string): { [key: string]: {} } {
-  // default signal for all outputs is '*'
-  if (outputName === '*') return section;
+export function filterLogicalId(section: { [key: string]: {} }, logicalId: string): { [key: string]: {} } {
+  // default signal for all logicalIds is '*'
+  if (logicalId === '*') return section;
 
   return Object.entries(section ?? {})
-    .filter(([k, _]) => k === outputName)
+    .filter(([k, _]) => k === logicalId)
     .reduce((agg, [k, v]) => { return { ...agg, [k]: v }; }, {});
 }
