@@ -648,9 +648,13 @@ describe('Job', () => {
         });
       });
 
-      describe('.onSuccess()', () => {
-        test('should create a rule with correct properties', () => {
-          job.onSuccess('SuccessRule');
+      [
+        { name: 'onSuccess()', invoke: (testJob: glue.Job) => testJob.onSuccess('SuccessRule'), state: 'SUCCEEDED' },
+        { name: 'onFailure()', invoke: (testJob: glue.Job) => testJob.onFailure('FailureRule'), state: 'FAILED' },
+        { name: 'onTimeout()', invoke: (testJob: glue.Job) => testJob.onTimeout('TimeoutRule'), state: 'TIMEOUT' },
+      ].forEach((testCase) => {
+        test(`${testCase.name} should create a rule with correct properties`, () => {
+          testCase.invoke(job);
 
           Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
             Description: {
@@ -661,7 +665,7 @@ describe('Job', () => {
                   {
                     Ref: 'JobB9D00F9F',
                   },
-                  ' is in SUCCEEDED state',
+                  ` is in ${testCase.state} state`,
                 ],
               ],
             },
@@ -675,7 +679,7 @@ describe('Job', () => {
               ],
               'detail': {
                 state: [
-                  'SUCCEEDED',
+                  testCase.state,
                 ],
                 jobName: [
                   {
@@ -689,10 +693,25 @@ describe('Job', () => {
         });
       });
 
-      describe('.onFailure()', () => {
-        test('should create a rule with correct properties', () => {
-          job.onFailure('FailureRule');
+      [
+        { name: '.metricSuccess()', invoke: (testJob: glue.Job) => testJob.metricSuccess(), state: 'SUCCEEDED', ruleId: 'SuccessMetricRule' },
+        { name: '.metricFailure()', invoke: (testJob: glue.Job) => testJob.metricFailure(), state: 'FAILED', ruleId: 'FailureMetricRule' },
+        { name: '.metricTimeout()', invoke: (testJob: glue.Job) => testJob.metricTimeout(), state: 'TIMEOUT', ruleId: 'TimeoutMetricRule' },
+      ].forEach((testCase) => {
+        test(`${testCase.name} should create the expected singleton event rule and corresponding metric`, () => {
+          const metric = testCase.invoke(job);
+          testCase.invoke(job);
 
+          expect(metric).toEqual(new cloudwatch.Metric({
+            dimensions: {
+              RuleName: (job.node.findChild(testCase.ruleId) as events.Rule).ruleName,
+            },
+            metricName: 'TriggeredRules',
+            namespace: 'AWS/Events',
+            statistic: 'Sum',
+          }));
+
+          Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
           Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
             Description: {
               'Fn::Join': [
@@ -702,7 +721,7 @@ describe('Job', () => {
                   {
                     Ref: 'JobB9D00F9F',
                   },
-                  ' is in FAILED state',
+                  ` is in ${testCase.state} state`,
                 ],
               ],
             },
@@ -716,7 +735,7 @@ describe('Job', () => {
               ],
               'detail': {
                 state: [
-                  'FAILED',
+                  testCase.state,
                 ],
                 jobName: [
                   {
@@ -727,197 +746,6 @@ describe('Job', () => {
             },
             State: 'ENABLED',
           });
-        });
-      });
-
-      describe('.onTimeout()', () => {
-        test('should create a rule with correct properties', () => {
-          job.onTimeout('TimeoutRule');
-
-          Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-            Description: {
-              'Fn::Join': [
-                '',
-                [
-                  'Rule triggered when Glue job ',
-                  {
-                    Ref: 'JobB9D00F9F',
-                  },
-                  ' is in TIMEOUT state',
-                ],
-              ],
-            },
-            EventPattern: {
-              'source': [
-                'aws.glue',
-              ],
-              'detail-type': [
-                'Glue Job State Change',
-                'Glue Job Run Status',
-              ],
-              'detail': {
-                state: [
-                  'TIMEOUT',
-                ],
-                jobName: [
-                  {
-                    Ref: 'JobB9D00F9F',
-                  },
-                ],
-              },
-            },
-            State: 'ENABLED',
-          });
-        });
-      });
-
-      test('.metricSuccess() should create the expected singleton event rule and corresponding metric', () => {
-        const metric = job.metricSuccess();
-        job.metricSuccess();
-
-        expect(metric).toEqual(new cloudwatch.Metric({
-          dimensions: {
-            RuleName: (job.node.findChild('SuccessMetricRule') as events.Rule).ruleName,
-          },
-          metricName: 'TriggeredRules',
-          namespace: 'AWS/Events',
-          statistic: 'Sum',
-        }));
-
-        Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
-        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-          Description: {
-            'Fn::Join': [
-              '',
-              [
-                'Rule triggered when Glue job ',
-                {
-                  Ref: 'JobB9D00F9F',
-                },
-                ' is in SUCCEEDED state',
-              ],
-            ],
-          },
-          EventPattern: {
-            'source': [
-              'aws.glue',
-            ],
-            'detail-type': [
-              'Glue Job State Change',
-              'Glue Job Run Status',
-            ],
-            'detail': {
-              state: [
-                'SUCCEEDED',
-              ],
-              jobName: [
-                {
-                  Ref: 'JobB9D00F9F',
-                },
-              ],
-            },
-          },
-          State: 'ENABLED',
-        });
-      });
-
-      test('.metricFailure() should create the expected singleton event rule and corresponding metric', () => {
-        const metric = job.metricFailure();
-        job.metricFailure();
-
-        expect(metric).toEqual(new cloudwatch.Metric({
-          dimensions: {
-            RuleName: (job.node.findChild('FailureMetricRule') as events.Rule).ruleName,
-          },
-          metricName: 'TriggeredRules',
-          namespace: 'AWS/Events',
-          statistic: 'Sum',
-        }));
-
-        Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
-        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-          Description: {
-            'Fn::Join': [
-              '',
-              [
-                'Rule triggered when Glue job ',
-                {
-                  Ref: 'JobB9D00F9F',
-                },
-                ' is in FAILED state',
-              ],
-            ],
-          },
-          EventPattern: {
-            'source': [
-              'aws.glue',
-            ],
-            'detail-type': [
-              'Glue Job State Change',
-              'Glue Job Run Status',
-            ],
-            'detail': {
-              state: [
-                'FAILED',
-              ],
-              jobName: [
-                {
-                  Ref: 'JobB9D00F9F',
-                },
-              ],
-            },
-          },
-          State: 'ENABLED',
-        });
-      });
-
-      test('.metricTimeout() should create the expected singleton event rule and corresponding metric', () => {
-        const metric = job.metricTimeout();
-        job.metricTimeout();
-
-        expect(metric).toEqual(new cloudwatch.Metric({
-          dimensions: {
-            RuleName: (job.node.findChild('TimeoutMetricRule') as events.Rule).ruleName,
-          },
-          metricName: 'TriggeredRules',
-          namespace: 'AWS/Events',
-          statistic: 'Sum',
-        }));
-
-        Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
-        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-          Description: {
-            'Fn::Join': [
-              '',
-              [
-                'Rule triggered when Glue job ',
-                {
-                  Ref: 'JobB9D00F9F',
-                },
-                ' is in TIMEOUT state',
-              ],
-            ],
-          },
-          EventPattern: {
-            'source': [
-              'aws.glue',
-            ],
-            'detail-type': [
-              'Glue Job State Change',
-              'Glue Job Run Status',
-            ],
-            'detail': {
-              state: [
-                'TIMEOUT',
-              ],
-              jobName: [
-                {
-                  Ref: 'JobB9D00F9F',
-                },
-              ],
-            },
-          },
-          State: 'ENABLED',
         });
       });
     });
