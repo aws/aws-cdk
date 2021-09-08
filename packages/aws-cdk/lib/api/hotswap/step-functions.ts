@@ -19,16 +19,21 @@ export function isHotswappableStepFunctionChange(
 ): ChangeHotswapResult {
   const stepDefinitionChange = isStepFunctionDefinitionOnlyChange(change, assetParamsWithEnv);
 
+  if (typeof stepDefinitionChange === 'string') {
+    return stepDefinitionChange;
+  }
+
   return new StepFunctionHotswapOperation({
     logicalId: logicalId,
     definition: stepDefinitionChange,
+    physicalName: 'foo',
   });
 }
 
 // returns true if a change to the definition string occured and false otherwise
 function isStepFunctionDefinitionOnlyChange(
   change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-): ChangeHotswapImpact | string {
+): stepFunctionDefinition | ChangeHotswapImpact {
   // TODO: this is where the change.newValue === undefined check might go if we need it
 
   // TODO: remove this check (leaving for needless log)
@@ -74,19 +79,25 @@ function isStepFunctionDefinitionOnlyChange(
       */
 
       if (newPropName == 'Fn::Join') {
-        return JSON.stringify(updatedProp.newValue);
+        //return JSON.stringify(updatedProp.newValue);
+        return {
+          definition: updatedProp.newValue,
+        }
       }
     }
-
   }
 
   return ChangeHotswapImpact.IRRELEVANT;
 }
 
+interface stepFunctionDefinition {
+  definition: any,
+}
+
 interface StepFunctionResource {
   readonly logicalId: string;
   readonly physicalName?: string;
-  readonly definition: string;
+  readonly definition: stepFunctionDefinition;
 }
 
 class StepFunctionHotswapOperation implements HotswapOperation {
@@ -111,7 +122,7 @@ class StepFunctionHotswapOperation implements HotswapOperation {
 
    return sdk.stepFunctions().updateStateMachine({
      stateMachineArn: "TODO: NEED ARN",
-     definition: this.stepFunctionResource.definition,
+     definition: JSON.stringify(this.stepFunctionResource.definition), // json.stringify here?
    }).promise();
   }
 }

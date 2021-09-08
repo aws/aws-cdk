@@ -58,6 +58,7 @@ test('returns undefined when it a new Lambda function is added to the Stack', as
   // THEN
   expect(deployStackResult).toBeUndefined();
 });
+*/
 
 test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
   // GIVEN
@@ -108,7 +109,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
     S3Bucket: 'current-bucket',
     S3Key: 'new-key',
   });
-});*/
+});
 
 /*test('Resources that are not lambdas or step functions result in a full deployment', async () => {
   // GIVEN
@@ -142,7 +143,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateMachineCode).not.toHaveBeenCalled();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-});*/
+});
 
 test('calls the updateStateMachine() API when it receives only a definitionString change in a state machine', async () => {
   // GIVEN
@@ -180,7 +181,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 
   // WHEN
-  /*const deployStackResult =*/ await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+  /*const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
 
   // THEN
   //expect(deployStackResult).not.toBeUndefined();
@@ -194,7 +195,6 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
     },
   });
 });
-/*
 test('changes to CDK::Metadata result in a noOp', async () => {
   // GIVEN
   currentCfnStack.setTemplate({
