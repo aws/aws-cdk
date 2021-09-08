@@ -107,11 +107,11 @@ By default, the `hasResource()` and `hasResourceProperties()` APIs perform deep
 partial object matching. This behavior can be configured using matchers.
 See subsequent section on [special matchers](#special-matchers).
 
-## Output and Mapping Matching
+## Output and Mapping sections
 
-The module allows you to assert that an output or matching has specific properties.
-The following code asserts that a resource contains an output with a `logicalId` of
-`Foo` and the specified properties -
+The module allows you to assert that the CloudFormation template contains an Output
+that matches specific properties. The following code asserts that a template contains
+an Output with a `logicalId` of `Foo` and the specified properties -
 
 ```ts
 assert.hasOutput('Foo', { 
@@ -120,8 +120,7 @@ assert.hasOutput('Foo', {
 });
 ```
 
-Alternatively, if you want to match the value to all outputs, you can use the `'*'`
-special case as the `logicalId`.
+If you want to match against all Outputs in the template, use `*` as the `logicalId`.
 
 ```ts
 assert.hasOutput('*', {
@@ -131,8 +130,9 @@ assert.hasOutput('*', {
 ```
 
 `findOutputs()` will return a list of outputs that match the `logicalId` and `props`,
-and you can use the `'*'` special case as well. `hasMapping()` and `findMappings()`
-follow a similar pattern to output matching.
+and you can use the `'*'` special case as well.
+
+The APIs `hasMapping()` and `findMappings()` provide similar functionalities.
 
 ## Special Matchers
 
