@@ -36,6 +36,29 @@ export interface BucketDeploymentProps {
   readonly destinationKeyPrefix?: string;
 
   /**
+   * If this is set, matching files or objects will be excluded from the deployment's sync
+   * command. This can be used to exclude a file from being pruned in the destination bucket.
+   *
+   * If you want to just exclude files from the deployment package (which excludes these files
+   * evaluated when invalidating the asset), you should leverage the `exclude` property of
+   * `AssetOptions` when defining your source.
+   *
+   * @default - No exclude filters are used
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
+   */
+  readonly exclude?: string[]
+
+  /**
+   * If this is set, matching files or objects will be included with the deployment's sync
+   * command. Since all files from the deployment package are included by default, this property
+   * is usually leveraged alongside an `exclude` filter.
+   *
+   * @default - No include filters are used and all files are included with the sync command
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
+   */
+  readonly include?: string[]
+
+  /**
    * If this is set to false, files in the destination bucket that
    * do not exist in the asset, will NOT be deleted during deployment (create/update).
    *
@@ -196,8 +219,15 @@ export class BucketDeployment extends CoreConstruct {
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
-    if (props.distributionPaths && !props.distribution) {
-      throw new Error('Distribution must be specified if distribution paths are specified');
+    if (props.distributionPaths) {
+      if (!props.distribution) {
+        throw new Error('Distribution must be specified if distribution paths are specified');
+      }
+      if (!cdk.Token.isUnresolved(props.distributionPaths)) {
+        if (!props.distributionPaths.every(distributionPath => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
+          throw new Error('Distribution paths must start with "/"');
+        }
+      }
     }
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
@@ -238,6 +268,8 @@ export class BucketDeployment extends CoreConstruct {
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
         Prune: props.prune ?? true,
+        Exclude: props.exclude,
+        Include: props.include,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,

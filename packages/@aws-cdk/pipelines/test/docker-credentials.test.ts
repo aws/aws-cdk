@@ -6,12 +6,14 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as cdkp from '../lib';
+import { ShellStep } from '../lib';
+import { DockerAssetApp, TestApp } from './testhelpers';
 
 let app: cdk.App;
 let stack: cdk.Stack;
 
 beforeEach(() => {
-  app = new cdk.App();
+  app = new TestApp();
   stack = new cdk.Stack(app, 'Stack', {
     env: { account: '0123456789012', region: 'eu-west-1' },
   });
@@ -299,9 +301,27 @@ describe('EcrDockerCredential', () => {
 
       expect(stack).not.toHaveResource('AWS::IAM::Policy');
     });
-
   });
 
+  // This test doesn't actually work yet. See https://github.com/aws/aws-cdk/issues/16164
+  // eslint-disable-next-line jest/no-disabled-tests
+  test.skip('with non-parallel publishing', () => {
+    const pipelines = new cdkp.CodePipeline(stack, 'Pipeline', {
+      synth: new ShellStep('Build', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'test'),
+        commands: ['cdk synth'],
+      }),
+
+      publishAssetsInParallel: false,
+      dockerCredentials: [
+        cdkp.DockerCredential.ecr([repo]),
+      ],
+    });
+    pipelines.addStage(new DockerAssetApp(stack, 'AssetApp'));
+
+    // Should not throw
+    app.synth();
+  });
 });
 
 describe('dockerCredentialsInstallCommands', () => {

@@ -232,7 +232,7 @@
                 "Name": "rix0rrr_cdk-pipelines-demo",
                 "OutputArtifacts": [
                   {
-                    "Name": "rix0rrr_cdk-pipelines-demo_Source"
+                    "Name": "rix0rrr_cdk_pipelines_demo_Source"
                   }
                 ],
                 "RunOrder": 1
@@ -257,7 +257,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "rix0rrr_cdk-pipelines-demo_Source"
+                    "Name": "rix0rrr_cdk_pipelines_demo_Source"
                   }
                 ],
                 "Name": "Synth",
