@@ -1,4 +1,4 @@
-import { anything, arrayWith, Capture, objectLike } from '@aws-cdk/assert-internal';
+import { anything, arrayWith, Capture, deepObjectLike, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import { CodeCommitTrigger, GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
@@ -98,8 +98,8 @@ test('S3 source handles tokenized names correctly', () => {
   });
 });
 
-test('ECR source handles tokenized names correctly', () => {
-  const repository = new ecr.Repository(pipelineStack, 'Repository');
+test('ECR source handles tokenized and namespaced names correctly', () => {
+  const repository = new ecr.Repository(pipelineStack, 'Repository', { repositoryName: 'namespace/repo' });
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
     input: cdkp.CodePipelineSource.ecr(repository),
   });
@@ -112,7 +112,19 @@ test('ECR source handles tokenized names correctly', () => {
           Configuration: objectLike({
             RepositoryName: { Ref: anything() },
           }),
-          Name: { Ref: anything() },
+          Name: deepObjectLike({
+            'Fn::Join': [
+              '_',
+              {
+                'Fn::Split': [
+                  '/',
+                  {
+                    Ref: anything(),
+                  },
+                ],
+              },
+            ],
+          }),
         }),
       ],
     }),

@@ -6,7 +6,7 @@ import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '@aws-cdk/aw
 import { IRepository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
-import { SecretValue, Token } from '@aws-cdk/core';
+import { Fn, SecretValue, Token } from '@aws-cdk/core';
 import { Node } from 'constructs';
 import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
@@ -285,10 +285,11 @@ class ECRSource extends CodePipelineSource {
   }
 
   protected getAction(output: Artifact, _actionName: string, runOrder: number) {
+    // RepositoryName can contain '/' that is not a valid ActionName character, use '_' instead
+    const formattedRepositoryName = Fn.join('_', Fn.split('/', this.repository.repositoryName));
     return new cp_actions.EcrSourceAction({
       output,
-      // Repository names are guaranteed to conform to ActionName restrictions
-      actionName: this.props.actionName ?? this.repository.repositoryName,
+      actionName: this.props.actionName ?? formattedRepositoryName,
       runOrder,
       repository: this.repository,
       imageTag: this.props.imageTag,
