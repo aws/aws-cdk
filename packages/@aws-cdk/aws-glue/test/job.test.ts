@@ -36,7 +36,6 @@ describe('Job', () => {
         resource: 'job',
         resourceName: jobName,
       }));
-      expect(job.role).toBeUndefined();
       expect(job.grantPrincipal).toEqual(new iam.UnknownPrincipal({ resource: job }));
     });
 
@@ -50,7 +49,6 @@ describe('Job', () => {
         resource: 'job',
         resourceName: jobName,
       }));
-      expect(job.role).toEqual(role);
       expect(job.grantPrincipal).toEqual(role);
     });
   });
@@ -87,7 +85,6 @@ describe('Job', () => {
 
       test('should create a role and use it with the job', () => {
         // check the role
-        expect(job.role).toBeDefined();
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
             Statement: [
@@ -154,7 +151,7 @@ describe('Job', () => {
           role,
         });
 
-        expect(job.role).toEqual(role);
+        expect(job.grantPrincipal).toEqual(role);
         Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           Role: role.roleArn,
         });
