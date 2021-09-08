@@ -1,9 +1,9 @@
 import { StackInspector } from '../vendored/assert';
 import { filterLogicalId, formatFailure, matchSection } from './section';
 
-export function findOutputs(inspector: StackInspector, outputName: string, props: any = {}): { [key: string]: any }[] {
+export function findOutputs(inspector: StackInspector, logicalId: string, props: any = {}): { [key: string]: any }[] {
   const section: { [key: string] : {} } = inspector.value.Outputs;
-  const result = matchSection(filterLogicalId(section, outputName), props);
+  const result = matchSection(filterLogicalId(section, logicalId), props);
 
   if (!result.match) {
     return [];
@@ -12,19 +12,19 @@ export function findOutputs(inspector: StackInspector, outputName: string, props
   return result.matches;
 }
 
-export function hasOutput(inspector: StackInspector, outputName: string, props: any): string | void {
+export function hasOutput(inspector: StackInspector, logicalId: string, props: any): string | void {
   const section: { [key: string]: {} } = inspector.value.Outputs;
-  const result = matchSection(filterLogicalId(section, outputName), props);
+  const result = matchSection(filterLogicalId(section, logicalId), props);
   if (result.match) {
     return;
   }
 
   if (result.closestResult === undefined) {
-    return `No outputs named ${outputName} found in the template.`;
+    return `No outputs named ${logicalId} found in the template.`;
   }
 
   return [
-    `Template has ${result.analyzedCount} outputs named ${outputName}, but none match as expected.`,
+    `Template has ${result.analyzedCount} outputs named ${logicalId}, but none match as expected.`,
     formatFailure(result.closestResult),
   ].join('\n');
 }
