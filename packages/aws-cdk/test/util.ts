@@ -125,7 +125,7 @@ function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }):
   return cloned;
 }
 
-export function testStack(stack: TestStackArtifact) {
+export function testStack(stack: TestStackArtifact): cxapi.CloudFormationStackArtifact {
   const assembly = testAssembly({ stacks: [stack] });
   return assembly.getStackByName(stack.stackName);
 }

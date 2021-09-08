@@ -1,12 +1,12 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { ServerlessCluster, DatabaseClusterEngine, ParameterGroup, Credentials } from '../lib';
 
-nodeunitShim({
-  'can create a Serverless Cluster using an existing secret from secretmanager'(test: Test) {
+describe('database secret manager', () => {
+  test('can create a Serverless Cluster using an existing secret from secretmanager', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -21,7 +21,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-postgresql',
         DBClusterParameterGroupName: 'default.aurora-postgresql10',
@@ -43,10 +43,10 @@ nodeunitShim({
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
 
-    test.done();
-  },
+
+  });
 });
 
 function testStack() {

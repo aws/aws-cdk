@@ -5,7 +5,8 @@ import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudf
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
-import { MockCloudExecutable, TestStackArtifact, instanceMockFrom } from './util';
+import { RequireApproval } from '../lib/diff';
+import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
@@ -39,6 +40,45 @@ function defaultToolkitSetup() {
 }
 
 describe('deploy', () => {
+  test('fails when no valid stack names are given', async () => {
+    // GIVEN
+    const toolkit = defaultToolkitSetup();
+
+    // WHEN
+    await expect(() => toolkit.deploy({ selector: { patterns: ['Test-Stack-D'] } })).rejects.toThrow('No stacks match the name(s) Test-Stack-D');
+  });
+
+  describe('with hotswap deployment', () => {
+    test("passes through the 'hotswap' option to CloudFormationDeployments.deployStack()", async () => {
+      // GIVEN
+      const mockCfnDeployments = instanceMockFrom(CloudFormationDeployments);
+      mockCfnDeployments.deployStack.mockReturnValue(Promise.resolve({
+        noOp: false,
+        outputs: {},
+        stackArn: 'stackArn',
+        stackArtifact: instanceMockFrom(cxapi.CloudFormationStackArtifact),
+      }));
+      const cdkToolkit = new CdkToolkit({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: mockCfnDeployments,
+      });
+
+      // WHEN
+      await cdkToolkit.deploy({
+        selector: { patterns: ['Test-Stack-A'] },
+        requireApproval: RequireApproval.Never,
+        hotswap: true,
+      });
+
+      // THEN
+      expect(mockCfnDeployments.deployStack).toHaveBeenCalledWith(expect.objectContaining({
+        hotswap: true,
+      }));
+    });
+  });
+
   describe('makes correct CloudFormation calls', () => {
     test('without options', async () => {
       // GIVEN
