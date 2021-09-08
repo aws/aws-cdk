@@ -25,7 +25,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Job
 
-A `Job` encapsulates a script that connects to a data source, processes it, and then writes output to a data target.
+A `Job` encapsulates a script that connects to data sources, processes them, and then writes output to a data target.
 
 There are 3 types of jobs supported by AWS Glue: Spark ETL, Spark Streaming, and Python Shell jobs.
 
@@ -77,7 +77,7 @@ This can be used to schedule and run tasks that don't require an Apache Spark en
 new glue.Job(stack, 'PythonShellJob', {
   executable: glue.JobExecutable.pythonShell({
     glueVersion: glue.GlueVersion.V2_0,
-    pythonVersion: PythonVersion.TWO,
+    pythonVersion: PythonVersion.THREE,
     script: glue.Code.fromBucket(bucket, 'script.py'),
   }),
   description: 'an example Python Shell job',

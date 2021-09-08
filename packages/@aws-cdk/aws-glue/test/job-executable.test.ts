@@ -46,7 +46,7 @@ describe('JobExecutable', () => {
       })).toBeDefined();
     });
 
-    test('with JobType.PYTHON_SHELL and a language other than JobLanguage.PYTHON', () => {
+    test('with JobType.PYTHON_SHELL and a language other than JobLanguage.PYTHON should throw', () => {
       expect(() => glue.JobExecutable.of({
         glueVersion: glue.GlueVersion.V3_0,
         type: glue.JobType.PYTHON_SHELL,

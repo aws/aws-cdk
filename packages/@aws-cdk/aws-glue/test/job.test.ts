@@ -18,12 +18,11 @@ describe('WorkerType', () => {
 });
 
 describe('Job', () => {
+  const jobName = 'test-job';
   let stack: cdk.Stack;
-  let jobName: string;
 
   beforeEach(() => {
     stack = new cdk.Stack();
-    jobName = 'test-job';
   });
 
   describe('.fromJobAttributes()', () => {
@@ -55,18 +54,17 @@ describe('Job', () => {
 
 
   describe('new', () => {
+    const className = 'com.amazon.test.ClassName';
     let codeBucket: s3.IBucket;
     let script: glue.Code;
     let extraJars: glue.Code[];
     let extraFiles: glue.Code[];
     let extraPythonFiles: glue.Code[];
-    let className: string;
     let job: glue.Job;
 
     beforeEach(() => {
       codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketName');
       script = glue.Code.fromBucket(codeBucket, 'script');
-      className = 'com.amazon.test.ClassName';
       extraJars = [glue.Code.fromBucket(codeBucket, 'file1.jar'), glue.Code.fromBucket(codeBucket, 'file2.jar')];
       extraPythonFiles = [glue.Code.fromBucket(codeBucket, 'file1.py'), glue.Code.fromBucket(codeBucket, 'file2.py')];
       extraFiles = [glue.Code.fromBucket(codeBucket, 'file1.txt'), glue.Code.fromBucket(codeBucket, 'file2.txt')];
@@ -84,7 +82,6 @@ describe('Job', () => {
       });
 
       test('should create a role and use it with the job', () => {
-        // check the role
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
             Statement: [
@@ -132,11 +129,7 @@ describe('Job', () => {
       test('should return correct jobName and jobArn from CloudFormation', () => {
         expect(stack.resolve(job.jobName)).toEqual({ Ref: 'JobB9D00F9F' });
         expect(stack.resolve(job.jobArn)).toEqual({
-          'Fn::Join': ['', [
-            'arn:', { Ref: 'AWS::Partition' },
-            ':glue:', { Ref: 'AWS::Region' }, ':',
-            { Ref: 'AWS::AccountId' }, ':job/', { Ref: 'JobB9D00F9F' },
-          ]],
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':job/', { Ref: 'JobB9D00F9F' }]],
         });
       });
 
@@ -356,11 +349,10 @@ describe('Job', () => {
     });
 
     describe('enabling spark ui with bucket provided', () => {
-      let bucketName: string;
+      const bucketName = 'BucketName';
       let bucket: s3.IBucket;
 
       beforeEach(() => {
-        bucketName = 'BucketName';
         bucket = s3.Bucket.fromBucketName(stack, 'BucketId', bucketName);
         job = new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.scalaEtl({
@@ -437,14 +429,12 @@ describe('Job', () => {
     });
 
     describe('enabling spark ui with bucket and path provided', () => {
-      let bucketName: string;
+      const bucketName = 'BucketName';
+      const prefix = 'some/path/';
       let bucket: s3.IBucket;
-      let prefix: string;
 
       beforeEach(() => {
-        bucketName = 'BucketName';
         bucket = s3.Bucket.fromBucketName(stack, 'BucketId', bucketName);
-        prefix = 'some/path/';
         job = new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.scalaEtl({
             glueVersion: glue.GlueVersion.V2_0,
