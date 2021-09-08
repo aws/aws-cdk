@@ -32,21 +32,25 @@ async function createLogGroupSafe(logGroupName: string, region?: string, options
       await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
       return;
     } catch (error) {
-      if (error.code == 'ResourceAlreadyExistsException') {
-        // Yes, the log group is already created by the lambda execution
+      if (error.code === 'ResourceAlreadyExistsException') {
+        // The log group is already created by the lambda execution
         return;
       }
-      if (error.code != 'OperationAbortedException') {
-        throw error;
+      if (error.code === 'OperationAbortedException') {
+        if (retryCount > 0) {
+          retryCount--;
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        } else {
+          // The log group is still being created by another execution but we are out of retries
+          throw new Error('Out of attempts to create a logGroup');
+        }
       }
-      if (retryCount == 0) {
-        console.error(error);
-        throw error;
-      }
+      // Any other error
+      console.error(error);
+      throw error;
     }
-    await new Promise(resolve => setTimeout(resolve, delay));
-  } while (retryCount > 0);
-  throw new Error('Out of attempts to create logGroup');
+  } while (true); // exit happens on retry count check
 }
 
 /**
@@ -85,9 +89,15 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       await setRetentionPolicy(logGroupName, logGroupRegion, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
 
       if (event.RequestType === 'Create') {
-        // Set a retention policy of 1 day on the logs of this function.
+        // Set a retention policy of 1 day on the logs of this very function.
+        // Due to the async nature of the log group creation, the log group for this function might
+        // still be not created yet at this point. Therefore we attempt to create it.
+        // In case it is being created, createLogGroupSafe will handle the conflic.
         const region = process.env.AWS_REGION;
         await createLogGroupSafe(`/aws/lambda/${context.functionName}`, region, retryOptions);
+        // If createLogGroupSafe fails, the log group is not created even after multiple attempts
+        // In this case we have nothing to set the retention policy on but an exception will skip
+        // the next line.
         await setRetentionPolicy(`/aws/lambda/${context.functionName}`, region, retryOptions, 1);
       }
     }
