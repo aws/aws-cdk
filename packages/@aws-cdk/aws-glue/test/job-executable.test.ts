@@ -66,7 +66,7 @@ describe('JobExecutable', () => {
       })).toThrow(/extraPythonFiles is not supported for languages other than JobLanguage.PYTHON/);
     });
 
-    [glue.GlueVersion.V0_9, glue.GlueVersion.V1_0].forEach((glueVersion) => {
+    [glue.GlueVersion.V0_9].forEach((glueVersion) => {
       test(`with JobType.PYTHON_SHELL and GlueVersion ${glueVersion} should throw`, () => {
         expect(() => glue.JobExecutable.of({
           type: glue.JobType.PYTHON_SHELL,

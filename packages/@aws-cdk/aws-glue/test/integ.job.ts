@@ -64,7 +64,7 @@ new glue.Job(stack, 'StreamingJob', {
 new glue.Job(stack, 'ShellJob', {
   jobName: 'ShellJob',
   executable: glue.JobExecutable.pythonShell({
-    glueVersion: glue.GlueVersion.V2_0,
+    glueVersion: glue.GlueVersion.V1_0,
     pythonVersion: glue.PythonVersion.THREE,
     script,
   }),

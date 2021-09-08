@@ -76,7 +76,7 @@ This can be used to schedule and run tasks that don't require an Apache Spark en
 ```ts
 new glue.Job(stack, 'PythonShellJob', {
   executable: glue.JobExecutable.pythonShell({
-    glueVersion: glue.GlueVersion.V2_0,
+    glueVersion: glue.GlueVersion.V1_0,
     pythonVersion: PythonVersion.THREE,
     script: glue.Code.fromBucket(bucket, 'script.py'),
   }),

@@ -6,6 +6,7 @@ import * as glue from '../lib';
 
 describe('Code', () => {
   let stack: cdk.Stack;
+  let script: glue.Code;
 
   beforeEach(() => {
     stack = new cdk.Stack();
@@ -15,13 +16,68 @@ describe('Code', () => {
     const key = 'script';
     let bucket: s3.IBucket;
 
-    test('with valid bucket name and key and calling bind() returns correct s3 location', () => {
+    test('with valid bucket name and key and bound by job sets the right path and grants the job permissions to read from it', () => {
       bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketName');
-      expect(glue.Code.fromBucket(bucket, key).bind(stack)).toEqual({
-        s3Location: {
-          bucketName: 'bucketName',
-          objectKey: 'script',
+      script = glue.Code.fromBucket(bucket, key);
+      new glue.Job(stack, 'Job1', {
+        executable: glue.JobExecutable.pythonShell({
+          glueVersion: glue.GlueVersion.V2_0,
+          pythonVersion: glue.PythonVersion.THREE,
+          script,
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Command: {
+          ScriptLocation: 's3://bucketName/script',
         },
+      });
+
+      // Role policy should grant reading from the assets bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
+              ],
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::bucketName',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::bucketName/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        Roles: [
+          {
+            Ref: 'Job1ServiceRole7AF34CCA',
+          },
+        ],
       });
     });
   });
@@ -30,11 +86,115 @@ describe('Code', () => {
     const filePath = path.join(__dirname, 'job-script/hello_world.py');
     const directoryPath = path.join(__dirname, 'job-script');
 
-    test('with valid and existing file path and calling bind() returns an s3 location and sets metadata', () => {
-      const codeConfig = glue.Code.fromAsset(filePath).bind(stack);
-      expect(codeConfig.s3Location.bucketName).toBeDefined();
-      expect(codeConfig.s3Location.objectKey).toBeDefined();
+    beforeEach(() => {
+      script = glue.Code.fromAsset(filePath);
+    });
+
+    test("with valid and existing file path and bound to job sets job's script location and permissions stack metadata", () => {
+      new glue.Job(stack, 'Job1', {
+        executable: glue.JobExecutable.pythonShell({
+          glueVersion: glue.GlueVersion.V2_0,
+          pythonVersion: glue.PythonVersion.THREE,
+          script,
+        }),
+      });
+
       expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Command: {
+          ScriptLocation: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  Ref: 'AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469',
+                },
+                '/',
+                {
+                  'Fn::Select': [
+                    0,
+                    {
+                      'Fn::Split': [
+                        '||',
+                        {
+                          Ref: 'AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763',
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  'Fn::Select': [
+                    1,
+                    {
+                      'Fn::Split': [
+                        '||',
+                        {
+                          Ref: 'AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+        },
+      });
+      // Role policy should grant reading from the assets bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
+              ],
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
+                      {
+                        Ref: 'AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469',
+                      },
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
+                      {
+                        Ref: 'AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469',
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        Roles: [
+          {
+            Ref: 'Job1ServiceRole7AF34CCA',
+          },
+        ],
+      });
     });
 
     test('with an unsupported directory path throws', () => {
@@ -43,7 +203,6 @@ describe('Code', () => {
     });
 
     test('used in more than 1 job in the same stack should be reused', () => {
-      const script = glue.Code.fromAsset(filePath);
       new glue.Job(stack, 'Job1', {
         executable: glue.JobExecutable.pythonShell({
           glueVersion: glue.GlueVersion.V2_0,
@@ -64,7 +223,7 @@ describe('Code', () => {
           [
             's3://',
             {
-              Ref: 'AssetParameters894df8f835015940e27548bfbf722885cb247378af70effdc8ecbe342419fc6bS3Bucket252142A8',
+              Ref: 'AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3Bucket4E517469',
             },
             '/',
             {
@@ -74,7 +233,7 @@ describe('Code', () => {
                   'Fn::Split': [
                     '||',
                     {
-                      Ref: 'AssetParameters894df8f835015940e27548bfbf722885cb247378af70effdc8ecbe342419fc6bS3VersionKey7D45B377',
+                      Ref: 'AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763',
                     },
                   ],
                 },
@@ -87,7 +246,7 @@ describe('Code', () => {
                   'Fn::Split': [
                     '||',
                     {
-                      Ref: 'AssetParameters894df8f835015940e27548bfbf722885cb247378af70effdc8ecbe342419fc6bS3VersionKey7D45B377',
+                      Ref: 'AssetParameters432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855S3VersionKeyF7753763',
                     },
                   ],
                 },
@@ -96,6 +255,7 @@ describe('Code', () => {
           ],
         ],
       };
+
       expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
       // Job1 and Job2 use reuse the asset
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
@@ -122,13 +282,23 @@ describe('Code', () => {
       });
     });
 
-    test('throws if used in more than 1 stack', () => {
-      const stack2 = new cdk.Stack();
-      const asset = glue.Code.fromAsset(filePath);
-      asset.bind(stack);
+    test('throws if trying to rebind in another stack', () => {
+      new glue.Job(stack, 'Job1', {
+        executable: glue.JobExecutable.pythonShell({
+          glueVersion: glue.GlueVersion.V2_0,
+          pythonVersion: glue.PythonVersion.THREE,
+          script,
+        }),
+      });
+      const differentStack = new cdk.Stack();
 
-      expect(() => asset.bind(stack2))
-        .toThrow(/associated with another stack/);
+      expect(() => new glue.Job(differentStack, 'Job2', {
+        executable: glue.JobExecutable.pythonShell({
+          glueVersion: glue.GlueVersion.V2_0,
+          pythonVersion: glue.PythonVersion.THREE,
+          script: script,
+        }),
+      })).toThrow(/associated with another stack/);
     });
   });
 });
