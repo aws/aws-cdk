@@ -1,6 +1,6 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { ISDK } from '../aws-auth';
-import { /*assetMetadataChanged,*/ ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources /*stringifyPotentialCfnExpression*/ } from './common';
+import { /*assetMetadataChanged,*/ ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression } from './common';
 
 /**
  * currently, we need to check this:
@@ -10,6 +10,7 @@ import { /*assetMetadataChanged,*/ ChangeHotswapImpact, ChangeHotswapResult, Hot
  */
 
 /**
+ * deleteme
  * Updates an existing state machine by modifying its definition, roleArn, or loggingConfiguration. Running executions will continue to use the previous definition and roleArn. You must include at least one of definition or roleArn or you will receive a MissingRequiredParameter error. All StartExecution calls within a few seconds will use the updated definition and roleArn. Executions started immediately after calling UpdateStateMachine may use the previous state machine definition and roleArn.
  */
 /*eslint-disable*/
@@ -24,10 +25,25 @@ export function isHotswappableStepFunctionChange(
     return stepDefinitionChange;
   }
 
+  let machineName: string | undefined;
+  try {
+    machineName = stringifyPotentialCfnExpression(change.newValue?.Properties?.StateMachineName, assetParamsWithEnv);
+  } catch (e) {
+    // It's possible we can't evaluate the function's name -
+    // for example, it can use a Ref to a different resource,
+    // which we wouldn't have in `assetParamsWithEnv`.
+    // That's fine though - ignore any errors,
+    // and treat this case the same way as if the name wasn't provided at all,
+    // which means it will be looked up using the listStackResources() call
+    // by the later phase (which actually does the Lambda function update)
+    machineName = undefined;
+  }
+
+
   return new StepFunctionHotswapOperation({
     logicalId: logicalId,
     definition: stepDefinitionChange,
-    physicalName: 'foo',
+    stateMachineName: machineName,
   });
 }
 
@@ -52,8 +68,8 @@ function isStepFunctionDefinitionOnlyChange(
     //console.log("updatedProp.newValue")
     //console.log(updatedProp.newValue)
     for (const newPropName in updatedProp.newValue) {
-      console.log("newPropName");
-      console.log(newPropName);
+      //console.log("newPropName");
+      //console.log(newPropName);
 
       //console.log("updateProp.newValue[newPropName]");
       //console.log(updatedProp.newValue[newPropName]);
@@ -90,7 +106,7 @@ function isStepFunctionDefinitionOnlyChange(
 
 interface StepFunctionResource {
   readonly logicalId: string;
-  readonly physicalName?: string;
+  readonly stateMachineName?: string;
   readonly definition: string;
 }
 
@@ -100,18 +116,19 @@ class StepFunctionHotswapOperation implements HotswapOperation {
 
   public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
     //let functionPhysicalName: string;
-    if (this.stepFunctionResource.physicalName) {
+    if (this.stepFunctionResource.stateMachineName) {
       //functionPhysicalName = this.stepFunctionResource.physicalName;
       // BUG: the code should go here but it instead goes to the else (in the test) because step functions don't have the physicalName unlike lambdas
     } else {
-      const stackResourceList = await stackResources.listStackResources();
+      console.log('ignore' + stackResources)
+      /*const stackResourceList = await stackResources.listStackResources();
       const foundFunctionName = stackResourceList
         .find(resSummary => resSummary.LogicalResourceId === this.stepFunctionResource.logicalId)
         ?.PhysicalResourceId;
       if (!foundFunctionName) {
         // if we couldn't find the function in the current stack, we can't update it
         return;
-      }
+      }*/
       //functionPhysicalName = foundFunctionName;
     }
 

@@ -38,9 +38,9 @@ export async function tryHotswapDeployment(
   // it assumes the bootstrap deploy Role, which doesn't have permissions to update Lambda functions
   const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting);
   /*eslint-disable*/
-  console.log('////////////////////////////////////////');
-  console.log(sdk.cloudFormation());
-  console.log('////////////////////////////////////////');
+  //console.log('////////////////////////////////////////');
+  //console.log(sdk.cloudFormation());
+  //console.log('////////////////////////////////////////');
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, stackArtifact, hotswappableChanges);
 
@@ -78,12 +78,12 @@ function findAllHotswappableChanges(
       // empty 'if' just for flow-aware typing to kick in...
     } else {
       if (typeof lambdaFunctionShortCircuitChange !== 'string') {
-        console.log('adding lmbda')
+        //console.log('adding lmbda')
         hotswappableResources.push(lambdaFunctionShortCircuitChange);
       }
 
       if (typeof stepFunctionShortCircuitChange !== 'string') {
-        console.log('adding stepfunc')
+        //console.log('adding stepfunc')
         console.log(typeof stepFunctionShortCircuitChange)
         hotswappableResources.push(stepFunctionShortCircuitChange);
       }
@@ -123,7 +123,6 @@ async function applyAllHotswappableChanges(
   // We fetch it lazily, to save a service call, in case all updated Lambdas have their names set.
   const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
 
-  console.log(hotswappableChanges);
   return Promise.all(hotswappableChanges.map(hotswapOperation => hotswapOperation.apply(sdk, listStackResources)));
 }
 

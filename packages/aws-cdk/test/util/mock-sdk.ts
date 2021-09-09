@@ -105,7 +105,7 @@ export class MockSdkProvider extends SdkProvider {
   }
 
   public stubStepFunctions(stubs: SyncHandlerSubsetOf<AWS.StepFunctions>) {
-    (this.sdk as any).step = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
+    (this.sdk as any).stepFunctions = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
   }
 }
 
