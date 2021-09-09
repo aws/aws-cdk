@@ -65,19 +65,24 @@ export class UserTablePrivileges extends CoreConstruct {
         username: props.user.username,
         tablePrivileges: cdk.Lazy.any({
           produce: () => {
-            const reducedPrivileges = this.privileges.map(({ table, actions }) => {
+            const reducedPrivileges = this.privileges.reduce((privileges, { table, actions }) => {
+              const tableName = table.tableName;
+              if (!(tableName in privileges)) {
+                privileges[tableName] = [];
+              }
+              actions = actions.concat(privileges[tableName]);
               if (actions.includes(TableAction.ALL)) {
                 actions = [TableAction.ALL];
               }
               if (actions.includes(TableAction.UPDATE) || actions.includes(TableAction.DELETE)) {
                 actions.push(TableAction.SELECT);
               }
-              const actionSet = new Set(actions);
-              return { table, actions: Array.from(actionSet) };
-            });
-            const serializedPrivileges: SerializedTablePrivilege[] = reducedPrivileges.map(({ table, actions }) => ({
-              tableName: table.tableName,
-              actions: Array.from(actions).map(action => TableAction[action]),
+              privileges[tableName] = Array.from(new Set(actions));
+              return privileges;
+            }, {} as { [key: string]: TableAction[] });
+            const serializedPrivileges: SerializedTablePrivilege[] = Object.entries(reducedPrivileges).map(([tableName, actions]) => ({
+              tableName: tableName,
+              actions: actions.map(action => TableAction[action]),
             }));
             return serializedPrivileges;
           },

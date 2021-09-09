@@ -64,7 +64,8 @@ describe('table privileges', () => {
   it('table privileges are deduplicated', () => {
     const user = new redshift.User(stack, 'User', databaseOptions);
 
-    user.addTablePrivileges(table, redshift.TableAction.INSERT, redshift.TableAction.INSERT);
+    user.addTablePrivileges(table, redshift.TableAction.INSERT, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
+    user.addTablePrivileges(table, redshift.TableAction.SELECT, redshift.TableAction.DELETE);
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
       username: {
@@ -73,7 +74,7 @@ describe('table privileges', () => {
           'username',
         ],
       },
-      tablePrivileges: [{ tableName: 'tableName', actions: ['INSERT'] }],
+      tablePrivileges: [{ tableName: 'tableName', actions: ['SELECT', 'DELETE', 'INSERT'] }],
     });
   });
 
