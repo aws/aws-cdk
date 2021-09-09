@@ -1,22 +1,22 @@
-import { arrayWith, expect, haveResourceLike, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'CodeStar Connections source Action': {
-    'produces the correct configuration when added to a pipeline'(test: Test) {
+describe('CodeStar Connections source Action', () => {
+  describe('CodeStar Connections source Action', () => {
+    test('produces the correct configuration when added to a pipeline', () => {
       const stack = new Stack();
 
       createBitBucketAndCodeBuildPipeline(stack, {
         codeBuildCloneOutput: false,
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -44,20 +44,20 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'setting codeBuildCloneOutput=true adds permission to use the connection to the following CodeBuild Project'(test: Test) {
+    });
+  });
+
+  test('setting codeBuildCloneOutput=true adds permission to use the connection to the following CodeBuild Project', () => {
     const stack = new Stack();
 
     createBitBucketAndCodeBuildPipeline(stack, {
       codeBuildCloneOutput: true,
     });
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -78,19 +78,19 @@ nodeunitShim({
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'grant s3 putObjectACL to the following CodeBuild Project'(test: Test) {
+  });
+
+  test('grant s3 putObjectACL to the following CodeBuild Project', () => {
     const stack = new Stack();
 
     createBitBucketAndCodeBuildPipeline(stack, {
       codeBuildCloneOutput: true,
     });
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': arrayWith(
           objectLike({
@@ -105,19 +105,19 @@ nodeunitShim({
           }),
         ),
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'setting triggerOnPush=false reflects in the configuration'(test: Test) {
+  });
+
+  test('setting triggerOnPush=false reflects in the configuration', () => {
     const stack = new Stack();
 
     createBitBucketAndCodeBuildPipeline(stack, {
       triggerOnPush: false,
     });
 
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source',
@@ -146,10 +146,10 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
+
+  });
 });
 
 function createBitBucketAndCodeBuildPipeline(stack: Stack, props: Partial<cpactions.BitBucketSourceActionProps>): void {

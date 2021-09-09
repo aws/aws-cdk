@@ -29,6 +29,22 @@ describe('DomainName', () => {
     });
   });
 
+  test('throws when domainName is empty string', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const t = () => {
+      new DomainName(stack, 'DomainName', {
+        domainName: '',
+        certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      });
+    };
+
+    // THEN
+    expect(t).toThrow(/empty string for domainName not allowed/);
+  });
+
   test('import domain name correctly', () => {
     // GIVEN
     const stack = new Stack();
@@ -86,7 +102,9 @@ describe('DomainName', () => {
       ApiId: {
         Ref: 'ApiF70053CD',
       },
-      DomainName: 'example.com',
+      DomainName: {
+        Ref: 'DNFDC76583',
+      },
       Stage: 'beta',
       ApiMappingKey: 'beta',
     });
@@ -123,7 +141,9 @@ describe('DomainName', () => {
       ApiId: {
         Ref: 'ApiF70053CD',
       },
-      DomainName: 'example.com',
+      DomainName: {
+        Ref: 'DNFDC76583',
+      },
       Stage: '$default',
     });
   });

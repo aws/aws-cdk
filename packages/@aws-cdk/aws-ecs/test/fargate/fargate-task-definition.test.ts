@@ -1,29 +1,28 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 
-nodeunitShim({
-  'When creating a Fargate TaskDefinition': {
-    'with only required properties set, it correctly sets default properties'(test: Test) {
+describe('fargate task definition', () => {
+  describe('When creating a Fargate TaskDefinition', () => {
+    test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         Family: 'FargateTaskDef',
         NetworkMode: ecs.NetworkMode.AWS_VPC,
         RequiresCompatibilities: ['FARGATE'],
         Cpu: '256',
         Memory: '512',
-      }));
+      });
 
-      test.done();
-    },
 
-    'support lazy cpu and memory values'(test: Test) {
+    });
+
+    test('support lazy cpu and memory values', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -33,15 +32,15 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         Cpu: '128',
         Memory: '1024',
-      }));
+      });
 
-      test.done();
-    },
 
-    'with all properties set'(test: Test) {
+    });
+
+    test('with all properties set', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
@@ -58,6 +57,7 @@ nodeunitShim({
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
+        ephemeralStorageGiB: 21,
       });
 
       taskDefinition.addVolume({
@@ -68,13 +68,16 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         Cpu: '128',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
             'Arn',
           ],
+        },
+        EphemeralStorage: {
+          SizeInGiB: 21,
         },
         Family: 'myApp',
         Memory: '1024',
@@ -96,25 +99,25 @@ nodeunitShim({
             Name: 'scratch',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws when adding placement constraint'(test: Test) {
+    });
+
+    test('throws when adding placement constraint', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         taskDefinition.addPlacementConstraint(ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
-      }, /Cannot set placement constraints on tasks that run on Fargate/);
+      }).toThrow(/Cannot set placement constraints on tasks that run on Fargate/);
 
-      test.done();
-    },
 
-    'throws when adding inference accelerators'(test: Test) {
+    });
+
+    test('throws when adding inference accelerators', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -125,16 +128,40 @@ nodeunitShim({
       };
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         taskDefinition.addInferenceAccelerator(inferenceAccelerator);
-      }, /Cannot use inference accelerators on tasks that run on Fargate/);
+      }).toThrow(/Cannot use inference accelerators on tasks that run on Fargate/);
 
-      test.done();
-    },
-  },
 
-  'When importing from an existing Fargate TaskDefinition': {
-    'can succeed using TaskDefinition Arn'(test: Test) {
+    });
+
+    test('throws when ephemeral storage request is too high', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          ephemeralStorageGiB: 201,
+        });
+      }).toThrow(/Ephemeral storage size must be between 21GiB and 200GiB/);
+
+      // THEN
+    });
+
+    test('throws when ephemeral storage request is too low', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          ephemeralStorageGiB: 20,
+        });
+      }).toThrow(/Ephemeral storage size must be between 21GiB and 200GiB/);
+
+      // THEN
+    });
+  });
+
+  describe('When importing from an existing Fargate TaskDefinition', () => {
+    test('can succeed using TaskDefinition Arn', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const expectTaskDefinitionArn = 'TD_ARN';
@@ -143,11 +170,11 @@ nodeunitShim({
       const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'FARGATE_TD_ID', expectTaskDefinitionArn);
 
       // THEN
-      test.equal(taskDefinition.taskDefinitionArn, expectTaskDefinitionArn);
-      test.done();
-    },
+      expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
 
-    'can succeed using attributes'(test: Test) {
+    });
+
+    test('can succeed using attributes', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const expectTaskDefinitionArn = 'TD_ARN';
@@ -164,17 +191,17 @@ nodeunitShim({
       });
 
       // THEN
-      test.equal(taskDefinition.taskDefinitionArn, expectTaskDefinitionArn);
-      test.equal(taskDefinition.compatibility, ecs.Compatibility.FARGATE);
-      test.ok(taskDefinition.isFargateCompatible);
-      test.equal(taskDefinition.isEc2Compatible, false);
-      test.equal(taskDefinition.networkMode, expectNetworkMode);
-      test.equal(taskDefinition.taskRole, expectTaskRole);
+      expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
+      expect(taskDefinition.compatibility).toEqual(ecs.Compatibility.FARGATE);
+      expect(taskDefinition.isFargateCompatible).toEqual(true);
+      expect(taskDefinition.isEc2Compatible).toEqual(false);
+      expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
+      expect(taskDefinition.taskRole).toEqual(expectTaskRole);
 
-      test.done();
-    },
 
-    'returns a Fargate TaskDefinition that will throw an error when trying to access its networkMode but its networkMode is undefined'(test: Test) {
+    });
+
+    test('returns a Fargate TaskDefinition that will throw an error when trying to access its networkMode but its networkMode is undefined', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const expectTaskDefinitionArn = 'TD_ARN';
@@ -189,15 +216,15 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         taskDefinition.networkMode;
-      }, 'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+      }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
-      test.done();
-    },
 
-    'returns a Fargate TaskDefinition that will throw an error when trying to access its taskRole but its taskRole is undefined'(test: Test) {
+    });
+
+    test('returns a Fargate TaskDefinition that will throw an error when trying to access its taskRole but its taskRole is undefined', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const expectTaskDefinitionArn = 'TD_ARN';
@@ -210,12 +237,12 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         taskDefinition.taskRole;
-      }, 'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+      }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });
