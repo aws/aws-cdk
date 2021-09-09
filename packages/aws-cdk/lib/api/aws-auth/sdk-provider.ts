@@ -157,11 +157,6 @@ export class SdkProvider {
 
     // We will proceed to AssumeRole using whatever we've been given.
     const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn, options.assumeRoleExternalId, env.region);
-    /*eslint-disable*/
-    console.log("sdk.lambda()")
-    console.log(sdk.lambda())
-    console.log("sdk.stepFunctions()")
-    console.log(sdk.stepFunctions())
 
     // Exercise the AssumeRoleCredentialsProvider we've gotten at least once so
     // we can determine whether the AssumeRole call succeeds or not.

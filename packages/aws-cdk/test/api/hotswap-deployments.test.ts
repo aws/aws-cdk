@@ -158,6 +158,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
               'old-string-2',
             ],
           },
+          StateMachineName: 'my-machine',
         },
       },
     },
@@ -174,6 +175,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
                 'new-string-2',
               ],
             },
+            StateMachineName: 'my-machine',
           },
         },
       },
@@ -181,20 +183,23 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 
   // WHEN
-  /*const deployStackResult =*/ await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
 
   // THEN
-  //expect(deployStackResult).not.toBeUndefined();
+  expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
   expect(mockUpdateMachineCode).toHaveBeenCalledWith({
-    DefinitionString: {
+    definition: {
       'Fn::Join': [
         'new-string-1',
         'new-string-2',
       ],
     },
+    // TODO: this may not work as a string, it should be an object
+    stateMachineArn: '{ Ref: my-machine }',
   });
 });
+
 test('changes to CDK::Metadata result in a noOp', async () => {
   // GIVEN
   currentCfnStack.setTemplate({

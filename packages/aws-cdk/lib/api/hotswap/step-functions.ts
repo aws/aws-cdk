@@ -96,7 +96,8 @@ function isStepFunctionDefinitionOnlyChange(
       */
 
       if (newPropName == 'Fn::Join') {
-        return JSON.stringify(updatedProp.newValue);
+        //return JSON.stringify(updatedProp.newValue);
+        return updatedProp.newValue;
       }
     }
   }
@@ -133,7 +134,7 @@ class StepFunctionHotswapOperation implements HotswapOperation {
     }
 
    return sdk.stepFunctions().updateStateMachine({
-     stateMachineArn: "TODO: NEED ARN",
+     stateMachineArn: '{ Ref: ' + this.stepFunctionResource.stateMachineName  + ' }',
      definition: this.stepFunctionResource.definition,
    }).promise();
   }
