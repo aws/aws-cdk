@@ -5,7 +5,7 @@ import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseSecret } from './database-secret';
 import { DatabaseQuery } from './private/database-query';
-import { UserHandlerProps } from './private/handler-props';
+import { HandlerName, UserHandlerProps } from './private/handler-props';
 import { UserTablePrivileges } from './private/privileges';
 import { ITable, TableAction } from './table';
 
@@ -155,7 +155,7 @@ export class User extends UserBase {
 
     this.resource = new DatabaseQuery(this, 'Resource', {
       ...this.databaseProps,
-      handler: 'user',
+      handler: HandlerName.User,
       properties: {
         username,
         passwordSecretArn: attachedSecret.secretArn,

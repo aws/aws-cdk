@@ -1,5 +1,11 @@
 import { Column } from '../table';
 
+export enum HandlerName {
+  User = 'user',
+  Table = 'table',
+  UserTablePrivileges = 'user-table-privileges',
+}
+
 export interface DatabaseQueryHandlerProps {
   readonly handler: string;
   readonly clusterName: string;

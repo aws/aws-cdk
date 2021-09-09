@@ -4,7 +4,7 @@ import { DatabaseOptions } from '../database-options';
 import { ITable, TableAction } from '../table';
 import { IUser } from '../user';
 import { DatabaseQuery } from './database-query';
-import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
+import { HandlerName, TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -60,7 +60,7 @@ export class UserTablePrivileges extends CoreConstruct {
 
     new DatabaseQuery<UserTablePrivilegesHandlerProps>(this, 'Resource', {
       ...props,
-      handler: 'user-table-privileges',
+      handler: HandlerName.UserTablePrivileges,
       properties: {
         username: props.user.username,
         tablePrivileges: cdk.Lazy.any({

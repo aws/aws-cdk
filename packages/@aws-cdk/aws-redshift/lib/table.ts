@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
-import { TableHandlerProps } from './private/handler-props';
+import { HandlerName, TableHandlerProps } from './private/handler-props';
 import { IUser } from './user';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -189,7 +189,7 @@ export class Table extends TableBase {
     this.resource = new DatabaseQuery(this, 'Resource', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       ...props,
-      handler: 'table',
+      handler: HandlerName.Table,
       properties: {
         tableName: props.tableName ?? cdk.Names.uniqueId(this),
         tableColumns: this.tableColumns,
