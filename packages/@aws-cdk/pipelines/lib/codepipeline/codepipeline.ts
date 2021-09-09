@@ -63,8 +63,10 @@ export interface CodePipelineProps {
    * If you want to lock the CDK CLI version used in the pipeline, by steps
    * that are automatically generated for you, specify the version here.
    *
-   * You should not typically need to specify this value. If you do specify it,
-   * be aware that this version should always be equal to or higher than the
+   * We recommend you do not specify this value, as not specifying it always
+   * uses the latest CLI version which is backwards compatible with old versions.
+   * 
+   * If you do specify it, be aware that this version should always be equal to or higher than the
    * version of the CDK framework used by the CDK app, when the CDK commands are
    * run during your pipeline execution. When you change this version, the *next
    * time* the `SelfMutate` step runs it will still be using the CLI of the the
