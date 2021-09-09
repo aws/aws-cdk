@@ -107,11 +107,39 @@ By default, the `hasResource()` and `hasResourceProperties()` APIs perform deep
 partial object matching. This behavior can be configured using matchers.
 See subsequent section on [special matchers](#special-matchers).
 
+## Output and Mapping sections
+
+The module allows you to assert that the CloudFormation template contains an Output
+that matches specific properties. The following code asserts that a template contains
+an Output with a `logicalId` of `Foo` and the specified properties -
+
+```ts
+assert.hasOutput('Foo', { 
+  Value: 'Bar',
+  Export: { Name: 'ExportBaz' }, 
+});
+```
+
+If you want to match against all Outputs in the template, use `*` as the `logicalId`.
+
+```ts
+assert.hasOutput('*', {
+  Value: 'Bar',
+  Export: { Name: 'ExportBaz' },
+});
+```
+
+`findOutputs()` will return a list of outputs that match the `logicalId` and `props`,
+and you can use the `'*'` special case as well.
+
+The APIs `hasMapping()` and `findMappings()` provide similar functionalities.
+
 ## Special Matchers
 
-The expectation provided to the `hasResourceXXX()` methods, besides carrying
-literal values, as seen in the above examples, can also have special matchers
-encoded. 
+The expectation provided to the `hasXXX()` and `findXXX()` methods, besides
+carrying literal values, as seen in the above examples, also accept special
+matchers. 
+
 They are available as part of the `Match` class.
 
 ### Object Matchers
@@ -225,6 +253,35 @@ target array. Out of order will be recorded as a match failure.
 
 Alternatively, the `Match.arrayEquals()` API can be used to assert that the target is
 exactly equal to the pattern array.
+
+### Not Matcher
+
+The not matcher inverts the search pattern and matches all patterns in the path that does
+not match the pattern specified.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Flob", "Cat"]
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: Match.not(['Flob']),
+});
+
+// The following will throw an assertion error
+assert.hasResourceProperties('Foo::Bar', Match.objectLike({
+  Fred: Match.not(['Flob', 'Cat']);
+}});
+```
 
 ## Strongly typed languages
 

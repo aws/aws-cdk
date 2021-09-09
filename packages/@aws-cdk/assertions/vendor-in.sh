@@ -17,6 +17,16 @@ echo "⏳ Vendoring in modules..."
 
 scriptdir=$(cd $(dirname $0) && pwd)
 cd $scriptdir
+
+if [[ "$PHASE" == "transform" ]]; then
+  # Make the script short-circuit when running in the packages/individual-packages build context.
+  # That's required because the build done by individual-pkg-gen does import re-writing when copying the TS files
+  # (because it needs to know which modules are also unstable to do the rewriting correctly),
+  # but the vendor.sh script runs only after the 'build' script for this package has been invoked,
+  # which means any TS files copied by it successfully would not have their imports re-written.
+  exit 0
+fi
+
 set -euo pipefail
 dest="lib/vendored"
 mkdir -p $dest
