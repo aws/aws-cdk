@@ -81,7 +81,7 @@ export = {
             Type: 'fluentbit',
           },
           Image: {
-            Ref: 'SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter',
+            Ref: 'SsmParameterValueawsserviceawsforfluentbitstableC96584B6F00A464EAD1953AFF4B05118Parameter',
           },
           LogConfiguration: {
             LogDriver: 'awslogs',
