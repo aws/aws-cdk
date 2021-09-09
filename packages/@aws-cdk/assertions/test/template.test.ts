@@ -278,10 +278,11 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(inspect.findResources('Foo::Bar')).toEqual({ Foo: {
+      expect(inspect.findResources('Foo::Bar')).toEqual({
+        Foo: {
           Type: 'Foo::Bar',
           Properties: { baz: 'qux', fred: 'waldo' },
-        }
+        },
       });
     });
 
@@ -462,8 +463,10 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       const result = inspect.findOutputs('Foo', { Value: 'Fred' });
-      expect(result).toEqual({ Foo:
-        { Value: 'Fred' },
+      expect(result).toEqual({
+        Foo: {
+          Value: 'Fred',
+        },
       });
     });
 
@@ -631,11 +634,11 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       const result = inspect.findMappings('Foo', { Foo: { Bar: 'Lightning' } });
-      expect(result).toEqual({ Foo: 
-        {
+      expect(result).toEqual({
+        Foo: {
           Foo: { Bar: 'Lightning', Fred: 'Waldo' },
           Baz: { Bar: 'Qux' },
-        }
+        },
       });
     });
 
