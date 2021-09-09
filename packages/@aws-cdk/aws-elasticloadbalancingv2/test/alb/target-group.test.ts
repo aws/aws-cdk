@@ -282,44 +282,87 @@ describe('tests', () => {
     });
   });
 
-  test('Interval equal to timeout', () => {
+  test('Validation error, when healthCheck param has interval equal to timeout', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // WHEN
-    const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
+      healthCheck: {
+        interval: cdk.Duration.seconds(60),
+        timeout: cdk.Duration.seconds(60),
+      },
     });
 
     // THEN
     expect(() => {
-      tg.configureHealthCheck({
-        interval: cdk.Duration.seconds(60),
-        timeout: cdk.Duration.seconds(60),
-      });
+      app.synth();
     }).toThrow(/Healthcheck interval 1 minute must be greater than the timeout 1 minute/);
   });
 
-  test('Interval smaller than timeout', () => {
+  test('Validation error, when healthCheck param has interval smaller than timeout', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // WHEN
-    const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
+      healthCheck: {
+        interval: cdk.Duration.seconds(60),
+        timeout: cdk.Duration.seconds(120),
+      },
     });
 
     // THEN
     expect(() => {
-      tg.configureHealthCheck({
-        interval: cdk.Duration.seconds(60),
-        timeout: cdk.Duration.seconds(120),
-      });
+      app.synth();
     }).toThrow(/Healthcheck interval 1 minute must be greater than the timeout 2 minutes/);
   });
 
+  test('Validation error, when configureHealthCheck() has interval equal to timeout', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+    });
+
+    // WHEN
+    tg.configureHealthCheck({
+      interval: cdk.Duration.seconds(60),
+      timeout: cdk.Duration.seconds(60),
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow(/Healthcheck interval 1 minute must be greater than the timeout 1 minute/);
+  });
+
+  test('Validation error, when configureHealthCheck() has interval smaller than timeout', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+    });
+
+    // WHEN
+    tg.configureHealthCheck({
+      interval: cdk.Duration.seconds(60),
+      timeout: cdk.Duration.seconds(120),
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow(/Healthcheck interval 1 minute must be greater than the timeout 2 minutes/);
+  });
 });
