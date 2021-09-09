@@ -1279,7 +1279,8 @@ Any resource or policy that references the qualifier (`hnb659fds` by default) wi
 The CDK CLI version used in your pipeline is too old to read the Cloud Assembly
 produced by your CDK app.
 
-Most likely this happens in the `SelfMutate` action and you just updated the CDK
+Most likely this happens in the `SelfMutate` action, you are passing the `cliVersion`
+parameter to control the version of the CDK CLI, and you just updated the CDK
 framework version that your application uses. You either forgot to change the
 `cliVersion` parameter, or changed the `cliVersion` in the same commit in which
 you changed the framework version. Because a change to the pipeline settings needs
@@ -1289,6 +1290,10 @@ is not able to read the cloud assembly produced by the new framework version.
 
 Solution: change the `cliVersion` first, commit, push and deploy, and only then
 change the framework version.
+ 
+We recommend you avoid specifying the `cliVersion` parameter at all. By default
+the pipeline will use the latest CLI version, which will support all cloud assembly
+versions.
 
 ## Known Issues
 
