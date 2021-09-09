@@ -195,12 +195,13 @@ given `INSERT` permissions on the table:
 ```ts fixture=cluster
 const databaseName = 'databaseName';
 const username = 'myuser'
+const tableName = 'mytable'
+
 const user = new User(this, 'User', {
   username: username,
   cluster: cluster,
   databaseName: databaseName,
 });
-const tableName = 'mytable'
 const table = new Table(this, 'Table', {
   tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
   cluster: cluster,
@@ -213,6 +214,10 @@ In application 2, the resources are imported and the user is given `INSERT` perm
 the table:
 
 ```ts fixture=cluster
+const databaseName = 'databaseName';
+const username = 'myuser'
+const tableName = 'mytable'
+
 const user = User.fromUserAttributes(this, 'User', {
   username: username,
   password: SecretValue.plainText('NOT_FOR_PRODUCTION'),
