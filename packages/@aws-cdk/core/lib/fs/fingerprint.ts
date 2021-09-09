@@ -31,7 +31,14 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   const follow = options.follow || SymlinkFollowMode.EXTERNAL;
   _hashField(hash, 'options.follow', follow);
 
-  const rootDirectory = fs.statSync(fileOrDirectory).isDirectory()
+  // Resolve symlinks in the initial path (for example, the root directory
+  // might be symlinked). It's important that we know the absolute path, so we
+  // can judge if further symlinks inside the target directory are within the
+  // target or not (if we don't resolve, we would test w.r.t. the wrong path).
+  fileOrDirectory = fs.realpathSync(fileOrDirectory);
+
+  const isDir = fs.statSync(fileOrDirectory).isDirectory();
+  const rootDirectory = isDir
     ? fileOrDirectory
     : path.dirname(fileOrDirectory);
 
@@ -41,7 +48,6 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   }
 
   const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, fileOrDirectory);
-  const isDir = fs.statSync(fileOrDirectory).isDirectory();
   _processFileOrDirectory(fileOrDirectory, isDir);
 
   return hash.digest('hex');
