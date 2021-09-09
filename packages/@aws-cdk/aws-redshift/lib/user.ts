@@ -21,7 +21,6 @@ export interface UserProps extends DatabaseOptions {
    * The name of the user.
    *
    * For valid values, see: https://docs.aws.amazon.com/redshift/latest/dg/r_names.html
-   * TODO: validation?
    *
    * @default - a name is generated
    */

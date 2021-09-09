@@ -65,7 +65,6 @@ export class UserTablePrivileges extends CoreConstruct {
         username: props.user.username,
         tablePrivileges: cdk.Lazy.any({
           produce: () => {
-            // TODO: needs to be `reduce`d to combine tables
             const reducedPrivileges = this.privileges.map(({ table, actions }) => {
               if (actions.includes(TableAction.ALL)) {
                 actions = [TableAction.ALL];
