@@ -71,12 +71,29 @@ function isStepFunctionDefinitionOnlyChange(
       //console.log("newPropName");
       //console.log(newPropName);
 
-      //console.log("updateProp.newValue[newPropName]");
-      //console.log(updatedProp.newValue[newPropName]);
+      console.log("updateProp.newValue[newPropName]");
+      console.log(updatedProp.newValue[newPropName]);
 
-      /*console.log("updateProp.newValue[newPropName][0]");
-      console.log(updatedProp.newValue[newPropName][0]);
-      console.log("updateProp.newValue[newPropName][1]");
+      console.log("updateProp.newValue[newPropName][1][0]");
+      console.log(updatedProp.newValue[newPropName][1][0]);
+
+      // throws error
+      //console.log("JSON.parse(updateProp.newValue[newPropName][0])");
+      //console.log(JSON.parse(updatedProp.newValue[newPropName][0]));
+
+      // this is the magic value we need to pass along
+      console.log("JSON.parse(updateProp.newValue[newPropName][1])");
+      console.log(JSON.parse(updatedProp.newValue[newPropName][1]));
+
+      const updatedDefinition = JSON.parse(updatedProp.newValue[newPropName][1]);
+      console.log("updatedDefinition");
+      console.log(updatedDefinition);
+
+      // throws error
+      //console.log("JSON.parse(updateProp.newValue[newPropName])");
+      //console.log(JSON.parse(updatedProp.newValue[newPropName]));
+
+      /*console.log("updateProp.newValue[newPropName][1]");
       console.log(updatedProp.newValue[newPropName][1]);
 
       for (const idx in updatedProp.newValue[newPropName]) {
@@ -96,7 +113,8 @@ function isStepFunctionDefinitionOnlyChange(
       */
 
       if (newPropName == 'Fn::Join') {
-        return JSON.stringify(updatedProp.newValue);
+        return JSON.stringify(updatedDefinition);
+        //return JSON.stringify(updatedProp.newValue.newPropName);
         //return JSON.stringify(updatedProp.newValue);
         //return updatedProp.newValue;
       }
