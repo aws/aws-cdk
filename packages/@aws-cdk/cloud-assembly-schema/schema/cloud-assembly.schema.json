@@ -420,6 +420,9 @@
                         },
                         {
                             "$ref": "#/definitions/SecurityGroupContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/KeyContextQuery"
                         }
                     ]
                 }
@@ -437,6 +440,7 @@
                 "availability-zones",
                 "endpoint-service-availability-zones",
                 "hosted-zone",
+                "key-provider",
                 "load-balancer",
                 "load-balancer-listener",
                 "security-group",
@@ -765,6 +769,33 @@
                 "account",
                 "region",
                 "securityGroupId"
+            ]
+        },
+        "KeyContextQuery": {
+            "description": "Query input for looking up a KMS Key",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
+                    "type": "string"
+                },
+                "aliasName": {
+                    "description": "Alias name used to search the Key",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "aliasName",
+                "region"
             ]
         },
         "RuntimeInfo": {
