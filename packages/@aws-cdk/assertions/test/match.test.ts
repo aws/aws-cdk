@@ -323,10 +323,23 @@ describe('Matchers', () => {
       expectFailure(matcher, {}, ['Missing key at /foo']);
     });
   });
+
+  describe('serializedJson()', () => {
+    let matcher: Matcher;
+
+    test('valid', () => {
+      matcher = Match.serializedJson({ Foo: 'Bar', Baz: 3, Boo: true, Fred: [1, 2] });
+      expectPass(matcher, '{ "Foo": "Bar", "Baz": 3, "Boo": true, "Fred": [1, 2] }');
+    });
+  });
 });
 
 function expectPass(matcher: Matcher, target: any): void {
-  expect(matcher.test(target).hasFailed()).toEqual(false);
+  const result = matcher.test(target);
+  if (result.hasFailed()) {
+    // eslint-disable-next-line jest/no-jasmine-globals
+    fail(result.toHumanStrings());
+  }
 }
 
 function expectFailure(matcher: Matcher, target: any, expected: (string | RegExp)[] = []): void {

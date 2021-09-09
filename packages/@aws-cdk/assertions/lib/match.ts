@@ -66,6 +66,14 @@ export abstract class Match {
   }
 
   /**
+   * Matches any string-encoded JSON and applies the specified pattern after parsing it.
+   * @param pattern the pattern to match after parsing the encoded JSON.
+   */
+  public static serializedJson(pattern: any): Matcher {
+    return new SerializedJson('stringifiedJson', pattern);
+  }
+
+  /**
    * Matches any non-null value at the target.
    */
   public static anyValue(): Matcher {
@@ -261,6 +269,42 @@ class ObjectMatch extends Matcher {
       result.compose(`/${patternKey}`, inner);
     }
 
+    return result;
+  }
+}
+
+class SerializedJson extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: any,
+  ) {
+    super();
+  };
+
+  public test(actual: any): MatchResult {
+    const result = new MatchResult(actual);
+    if (getType(actual) !== 'string') {
+      result.push(this, [], `Expected JSON as a string but found ${getType(actual)}`);
+      return result;
+    }
+    let parsed;
+    try {
+      parsed = JSON.parse(actual);
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        result.push(this, [], 'Invalid JSON string');
+        return result;
+      } else {
+        throw err;
+      }
+    }
+
+    if (parsed == null) {
+      result.push(this, [], 'Invalid JSON string');
+    }
+    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
+    const innerResult = matcher.test(parsed);
+    result.compose(`${this.name}()`, innerResult);
     return result;
   }
 }
