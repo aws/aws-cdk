@@ -152,9 +152,9 @@ with the supplied schema.
 
 ```ts fixture=cluster
 new Table(this, 'Table', {
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
   cluster: cluster,
   databaseName: 'databaseName',
-  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
 });
 ```
 
@@ -168,10 +168,62 @@ const user = new User(this, 'User', {
   databaseName: 'databaseName',
 });
 const table = new Table(this, 'Table', {
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
   cluster: cluster,
   databaseName: 'databaseName',
-  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
 });
 
 table.grant(user, TableAction.DROP, TableAction.SELECT);
 ```
+
+Take care when managing privileges via the CDK, as attempting to manage a user's privileges on the same table in
+multiple CDK applications could lead to accidentally overriding these permissions. Consider the following two CDK
+applications which both refer to the same user and table. In application 1, the resources are created and the user is
+given `INSERT` permissions on the table:
+
+```ts fixture=cluster
+const databaseName = 'databaseName';
+const username = 'myuser'
+const user = new User(this, 'User', {
+  username: username,
+  cluster: cluster,
+  databaseName: databaseName,
+});
+const tableName = 'mytable'
+const table = new Table(this, 'Table', {
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  cluster: cluster,
+  databaseName: databaseName,
+});
+table.grant(user, TableAction.INSERT);
+```
+
+In application 2, the resources are imported and the user is given `INSERT` permissions on the table:
+
+```ts fixture=cluster
+const user = User.fromUserAttributes(this, 'User', {
+  username: username,
+  password: SecretValue.plainText('NOT_FOR_PRODUCTION'),
+  cluster: cluster,
+  databaseName: databaseName,
+});
+const table = Table.fromTableAttributes(this, 'Table', {
+  tableName: tableName,
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+table.grant(user, TableAction.INSERT);
+```
+
+Both applications attempt to grant the user the appropriate privilege on the table by submitting a `GRANT USER` SQL
+query to the Redshift cluster. Note that the latter of these two calls will have no effect since the user has already
+been granted the privilege.
+
+Now, if application 1 were to remove the call to `grant`, a `REVOKE USER` SQL query is submitted to the Redshift
+cluster. In general, application 1 does not know that application 2 has also granted this permission and thus cannot
+decide not to issue the revocation. This leads to the undesirable state where application 2 still contains the call to
+`grant` but the user does not have the specified permission.
+
+Note that this does not occur when duplicate privileges are granted within the same application, as such privileges
+are de-duplicated before any SQL query is submitted.
