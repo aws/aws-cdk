@@ -18,7 +18,7 @@ describe('section', () => {
       // THEN
       expect(result.match).toEqual(true);
       const success = result as MatchSuccess;
-      expect(success.matches.length).toEqual(2);
+      expect(Object.keys(success.matches).length).toEqual(2);
     });
 
     test('failure', () => {
