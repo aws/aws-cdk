@@ -96,8 +96,9 @@ function isStepFunctionDefinitionOnlyChange(
       */
 
       if (newPropName == 'Fn::Join') {
+        return JSON.stringify(updatedProp.newValue);
         //return JSON.stringify(updatedProp.newValue);
-        return updatedProp.newValue;
+        //return updatedProp.newValue;
       }
     }
   }
@@ -116,25 +117,28 @@ class StepFunctionHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
-    //let functionPhysicalName: string;
+    let stateMachineName: string;
     if (this.stepFunctionResource.stateMachineName) {
-      //functionPhysicalName = this.stepFunctionResource.physicalName;
-      // BUG: the code should go here but it instead goes to the else (in the test) because step functions don't have the physicalName unlike lambdas
+      stateMachineName = this.stepFunctionResource.stateMachineName;
     } else {
       console.log('ignore' + stackResources)
-      /*const stackResourceList = await stackResources.listStackResources();
-      const foundFunctionName = stackResourceList
+      const stackResourceList = await stackResources.listStackResources();
+      const foundMachineName = stackResourceList
         .find(resSummary => resSummary.LogicalResourceId === this.stepFunctionResource.logicalId)
         ?.PhysicalResourceId;
-      if (!foundFunctionName) {
+      if (!foundMachineName) {
         // if we couldn't find the function in the current stack, we can't update it
         return;
-      }*/
-      //functionPhysicalName = foundFunctionName;
+      }
+      stateMachineName = foundMachineName;
     }
 
    return sdk.stepFunctions().updateStateMachine({
-     stateMachineArn: '{ Ref: ' + this.stepFunctionResource.stateMachineName  + ' }',
+     // CloudFormation Docs state that we can use the Ref intrinsic with the state machine name to get the ARN
+     // but it turns out that the name is automatically magically converted to the arn
+     //stateMachineArn: '{ Ref: ' + stateMachineName  + ' }',
+     // magic
+     stateMachineArn: stateMachineName,
      definition: this.stepFunctionResource.definition,
    }).promise();
   }

@@ -189,14 +189,16 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
   expect(mockUpdateMachineCode).toHaveBeenCalledWith({
-    definition: {
+    /*definition: {
       'Fn::Join': [
         'new-string-1',
         'new-string-2',
       ],
-    },
-    // TODO: this may not work as a string, it should be an object
-    stateMachineArn: '{ Ref: my-machine }',
+    },*/
+    definition: '{"Fn::Join":["new-string-1","new-string-2"]}',
+    //stateMachineArn: '{ Ref: my-machine }',
+    // this is somehow magically convereted to the ref to get the arn in an actual deployment -- where does that happen?
+    stateMachineArn: 'my-machine',
   });
 });
 
@@ -234,6 +236,8 @@ test('changes to CDK::Metadata result in a noOp', async () => {
   expect(mockUpdateMachineCode).not.toHaveBeenCalled();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
+
+// TODO: need test for no state machine name being provided
 
 
 function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
