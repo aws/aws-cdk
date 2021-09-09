@@ -128,6 +128,11 @@ describe('Matchers', () => {
     test('absent', () => {
       expect(() => Match.arrayWith([Match.absentProperty()]).test(['foo'])).toThrow(/absentProperty/);
     });
+
+    test('incompatible with anyValue', () => {
+      matcher = Match.arrayWith(['foo', Match.anyValue()]);
+      expect(() => matcher.test(['foo', 'bar'])).toThrow(/anyValue\(\) cannot be nested within arrayWith\(\)/);
+    });
   });
 
   describe('arrayEquals', () => {
@@ -283,6 +288,39 @@ describe('Matchers', () => {
       expectFailure(matcher, {
         foo: { bar: [1, 2] },
       }, [msg]);
+    });
+  });
+
+  describe('anyValue()', () => {
+    let matcher: Matcher;
+
+    test('simple', () => {
+      matcher = Match.anyValue();
+      expectPass(matcher, 'foo');
+      expectPass(matcher, 5);
+      expectPass(matcher, false);
+      expectPass(matcher, []);
+      expectPass(matcher, {});
+
+      expectFailure(matcher, null, ['Expected a value but found none']);
+      expectFailure(matcher, undefined, ['Expected a value but found none']);
+    });
+
+    test('nested in array', () => {
+      matcher = Match.arrayEquals(['foo', Match.anyValue(), 'bar']);
+      expectPass(matcher, ['foo', 'baz', 'bar']);
+      expectPass(matcher, ['foo', 3, 'bar']);
+
+      expectFailure(matcher, ['foo', null, 'bar'], ['Expected a value but found none at [1]']);
+    });
+
+    test('nested in object', () => {
+      matcher = Match.objectLike({ foo: Match.anyValue() });
+      expectPass(matcher, { foo: 'bar' });
+      expectPass(matcher, { foo: [1, 2] });
+
+      expectFailure(matcher, { foo: null }, ['Expected a value but found none at /foo']);
+      expectFailure(matcher, {}, ['Missing key at /foo']);
     });
   });
 });
