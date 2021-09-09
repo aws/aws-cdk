@@ -18,6 +18,7 @@ enum DockerStubCommand {
 }
 
 const FIXTURE_TEST1_DIR = path.join(__dirname, 'fs', 'fixtures', 'test1');
+const FIXTURE_TEST1_HASH = '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00';
 const FIXTURE_TARBALL = path.join(__dirname, 'fs', 'fixtures.tar.gz');
 
 const userInfo = os.userInfo();
@@ -42,18 +43,36 @@ describe('staging', () => {
   test('base case', () => {
     // GIVEN
     const stack = new Stack();
-    const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const sourcePath = FIXTURE_TEST1_DIR;
 
     // WHEN
     const staging = new AssetStaging(stack, 's1', { sourcePath });
 
-    expect(staging.sourceHash).toEqual('2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(staging.sourceHash).toEqual(FIXTURE_TEST1_HASH);
     expect(staging.sourcePath).toEqual(sourcePath);
-    expect(path.basename(staging.stagedPath)).toEqual('asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
-    expect(path.basename(staging.relativeStagedPath(stack))).toEqual('asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(path.basename(staging.stagedPath)).toEqual(`asset.${FIXTURE_TEST1_HASH}`);
+    expect(path.basename(staging.relativeStagedPath(stack))).toEqual(`asset.${FIXTURE_TEST1_HASH}`);
     expect(staging.packaging).toEqual(FileAssetPackaging.ZIP_DIRECTORY);
     expect(staging.isArchive).toEqual(true);
+  });
 
+  test('base case if source directory is a symlink', () => {
+    // GIVEN
+    const stack = new Stack();
+    const sourcePath = path.join(os.tmpdir(), 'asset-symlink');
+    if (fs.existsSync(sourcePath)) { fs.unlinkSync(sourcePath); }
+    fs.symlinkSync(FIXTURE_TEST1_DIR, sourcePath);
+
+    try {
+      const staging = new AssetStaging(stack, 's1', { sourcePath });
+
+      // Should be the same asset hash as in the previous test
+      expect(staging.assetHash).toEqual(FIXTURE_TEST1_HASH);
+    } finally {
+      if (fs.existsSync(sourcePath)) {
+        fs.unlinkSync(sourcePath);
+      }
+    }
   });
 
   test('staging of an archive file correctly sets packaging and isArchive', () => {
@@ -141,7 +160,7 @@ describe('staging', () => {
     // WHEN
     const staging = new AssetStaging(stack, 's1', { sourcePath });
 
-    expect(staging.sourceHash).toEqual('2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(staging.sourceHash).toEqual(FIXTURE_TEST1_HASH);
     expect(staging.sourcePath).toEqual(sourcePath);
     expect(staging.stagedPath).toEqual(sourcePath);
     expect(staging.relativeStagedPath(stack)).toEqual(sourcePath);
@@ -160,7 +179,7 @@ describe('staging', () => {
     // THEN
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
-      'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
+      `asset.${FIXTURE_TEST1_HASH}`,
       'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.gz',
       'cdk.out',
       'manifest.json',
@@ -187,7 +206,7 @@ describe('staging', () => {
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'assembly-Stage1',
       'assembly-Stage2',
-      'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
+      `asset.${FIXTURE_TEST1_HASH}`,
       'cdk.out',
       'manifest.json',
       'tree.json',
@@ -207,7 +226,7 @@ describe('staging', () => {
 
     // THEN
     expect(withoutExtra.sourceHash).not.toEqual(withExtra.sourceHash);
-    expect(withoutExtra.sourceHash).toEqual('2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(withoutExtra.sourceHash).toEqual(FIXTURE_TEST1_HASH);
     expect(withExtra.sourceHash).toEqual('c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
 
   });
