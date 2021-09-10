@@ -24,17 +24,17 @@ createSymlinks() {
 }
 
 runtarget="build"
-run_tests="true"
+run_tests="false"
 extract_snippets="false"
 skip_build=""
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: transform.sh [--skip-test/build] [--extract]"
+            echo "Usage: transform.sh [--skip-build] [--run-tests] [--extract]"
             exit 1
             ;;
-        --skip-test|--skip-tests)
-            run_tests="false"
+        --run-tests)
+            run_tests="true"
             ;;
         --skip-build)
             skip_build="true"
