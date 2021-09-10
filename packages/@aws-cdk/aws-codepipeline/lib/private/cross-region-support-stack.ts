@@ -44,6 +44,13 @@ export interface CrossRegionSupportConstructProps {
    * @default true
    */
   readonly createKmsKey?: boolean;
+
+  /**
+   * Enables KMS key rotation for cross-account keys
+   *
+   * @default false
+   */
+  readonly enableKeyRotation?: boolean;
 }
 
 export class CrossRegionSupportConstruct extends Construct {
@@ -53,11 +60,13 @@ export class CrossRegionSupportConstruct extends Construct {
     super(scope, id);
 
     const createKmsKey = props.createKmsKey ?? true;
+    const enableKeyRotation = props.enableKeyRotation ?? false;
 
     let encryptionAlias;
     if (createKmsKey) {
       const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey', {
         removalPolicy: cdk.RemovalPolicy.DESTROY,
+        enableKeyRotation,
       });
       encryptionAlias = new AliasWithShorterGeneratedName(this, 'CrossRegionCodePipelineReplicationBucketEncryptionAlias', {
         targetKey: encryptionKey,
@@ -106,6 +115,13 @@ export interface CrossRegionSupportStackProps {
    * @default true
    */
   readonly createKmsKey?: boolean;
+
+  /**
+   * Enables KMS key rotation for cross-account keys
+   *
+   * @default false
+   */
+  readonly enableKeyRotation?: boolean;
 }
 
 /**
@@ -130,6 +146,7 @@ export class CrossRegionSupportStack extends cdk.Stack {
 
     const crossRegionSupportConstruct = new CrossRegionSupportConstruct(this, 'Default', {
       createKmsKey: props.createKmsKey,
+      enableKeyRotation: props.enableKeyRotation,
     });
     this.replicationBucket = crossRegionSupportConstruct.replicationBucket;
   }
