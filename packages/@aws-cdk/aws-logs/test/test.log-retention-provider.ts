@@ -27,6 +27,14 @@ function createRequest(type: string) {
     .reply(200);
 }
 
+class MyError extends Error {
+  code: string;
+  constructor(message: string, code: string) {
+    super(message);
+    this.code = code;
+  }
+}
+
 export = {
   'tearDown'(callback: any) {
     AWS.restore();
@@ -231,10 +239,18 @@ export = {
     test.done();
   },
 
-  async 'does not fail when operations on provider log group fail'(test: Test) {
+  async 'does not if when operations on provider log group fails'(test: Test) {
+    let attempt = 2;
     const createLogGroupFake = (params: AWSSDK.CloudWatchLogs.CreateLogGroupRequest) => {
       if (params.logGroupName === '/aws/lambda/provider') {
-        return Promise.reject(new Error('OperationAbortedException'));
+        if (attempt > 0) {
+          attempt--;
+          return Promise.reject(new MyError(
+            'A conflicting operation is currently in progress against this resource. Please try again.',
+            'OperationAbortedException'));
+        } else {
+          return Promise.resolve({});
+        }
       }
       return Promise.resolve({});
     };
@@ -257,6 +273,84 @@ export = {
     };
 
     const request = createRequest('SUCCESS');
+
+    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+
+    test.equal(request.isDone(), true);
+
+    test.done();
+  },
+
+  async 'does not fail if operations on CDK lambda log group fails twice'(test: Test) {
+    let attempt = 2;
+    const createLogGroupFake = (params: AWSSDK.CloudWatchLogs.CreateLogGroupRequest) => {
+      if (params.logGroupName === 'group') {
+        if (attempt > 0) {
+          attempt--;
+          return Promise.reject(new MyError(
+            'A conflicting operation is currently in progress against this resource. Please try again.',
+            'OperationAbortedException'));
+        } else {
+          return Promise.resolve({});
+        }
+      }
+      return Promise.resolve({});
+    };
+
+    const putRetentionPolicyFake = sinon.fake.resolves({});
+    const deleteRetentionPolicyFake = sinon.fake.resolves({});
+
+    AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'putRetentionPolicy', putRetentionPolicyFake);
+    AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', deleteRetentionPolicyFake);
+
+    const event = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        RetentionInDays: '30',
+        LogGroupName: 'group',
+      },
+    };
+
+    const request = createRequest('SUCCESS');
+
+    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+
+    test.equal(request.isDone(), true);
+
+    test.done();
+  },
+
+  async 'does fail if operations on CDK lambda log group fails indefinitely'(test: Test) {
+    const createLogGroupFake = (params: AWSSDK.CloudWatchLogs.CreateLogGroupRequest) => {
+      if (params.logGroupName === 'group') {
+        return Promise.reject(new MyError(
+          'A conflicting operation is currently in progress against this resource. Please try again.',
+          'OperationAbortedException'));
+      }
+      return Promise.resolve({});
+    };
+
+    const putRetentionPolicyFake = sinon.fake.resolves({});
+    const deleteRetentionPolicyFake = sinon.fake.resolves({});
+
+    AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'putRetentionPolicy', putRetentionPolicyFake);
+    AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', deleteRetentionPolicyFake);
+
+    const event = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        RetentionInDays: '30',
+        LogGroupName: 'group',
+      },
+    };
+
+    const request = createRequest('FAILED');
 
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
 
