@@ -131,6 +131,11 @@ export class CdkToolkit {
       }
     }
 
+    if (options.hotswap) {
+      warning('⚠️ The --hotswap flag deliberately introduces CloudFormation drift to speed up deployments');
+      warning('⚠️ It should only be used for development - never use it for your production Stacks!');
+    }
+
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
@@ -196,6 +201,8 @@ export class CdkToolkit {
           usePreviousParameters: options.usePreviousParameters,
           progress: options.progress,
           ci: options.ci,
+          rollback: options.rollback,
+          hotswap: options.hotswap,
         });
 
         const message = result.noOp
@@ -390,19 +397,20 @@ export class CdkToolkit {
     return stacks;
   }
 
-  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean) {
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean): Promise<StackCollection> {
     const assembly = await this.assembly();
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
 
-    await this.validateStacks(stacks);
+    this.validateStacksSelected(stacks, selector.patterns);
+    this.validateStacks(stacks);
 
     return stacks;
   }
 
-  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean, autoValidate?: boolean) {
+  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean, autoValidate?: boolean): Promise<StackCollection> {
     const assembly = await this.assembly();
 
     const selectedForDiff = await assembly.selectStacks({ patterns: stackNames }, {
@@ -415,7 +423,8 @@ export class CdkToolkit {
       ? allStacks.filter(art => art.validateOnSynth ?? false)
       : new StackCollection(assembly, []);
 
-    await this.validateStacks(selectedForDiff.concat(autoValidateStacks));
+    this.validateStacksSelected(selectedForDiff.concat(autoValidateStacks), stackNames);
+    this.validateStacks(selectedForDiff.concat(autoValidateStacks));
 
     return selectedForDiff;
   }
@@ -435,12 +444,21 @@ export class CdkToolkit {
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
-  private async validateStacks(stacks: StackCollection) {
+  private validateStacks(stacks: StackCollection) {
     stacks.processMetadataMessages({
       ignoreErrors: this.props.ignoreErrors,
       strict: this.props.strict,
       verbose: this.props.verbose,
     });
+  }
+
+  /**
+   * Validate that if a user specified a stack name there exists at least 1 stack selected
+   */
+  private validateStacksSelected(stacks: StackCollection, stackNames: string[]) {
+    if (stackNames.length != 0 && stacks.stackCount == 0) {
+      throw new Error(`No stacks match the name(s) ${stackNames}`);
+    }
   }
 
   /**
@@ -625,6 +643,21 @@ export interface DeployOptions {
    * @default false
    */
   readonly ci?: boolean;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
+  /*
+   * Whether to perform a 'hotswap' deployment.
+   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
+   * and update the affected resources like Lambda functions directly.
+   *
+   * @default - false (do not perform a 'hotswap' deployment)
+   */
+  readonly hotswap?: boolean;
 }
 
 export interface DestroyOptions {

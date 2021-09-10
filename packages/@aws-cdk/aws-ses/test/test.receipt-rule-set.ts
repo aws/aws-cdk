@@ -58,6 +58,41 @@ export = {
     test.done();
   },
 
+  'drop spam rule should always appear first'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new ReceiptRuleSet(stack, 'RuleSet', {
+      dropSpam: true,
+      rules: [
+        {
+          scanEnabled: true,
+          recipients: ['foo@example.com'],
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
+      Rule: {
+        Enabled: true,
+        Recipients: [
+          'foo@example.com',
+        ],
+        ScanEnabled: true,
+      },
+      // All "regular" rules should come after the drop spam rule
+      After: {
+        Ref: 'RuleSetDropSpamRule5809F51B',
+      },
+    }));
+
+    expect(stack).to(haveResource('AWS::Lambda::Function'));
+
+    test.done();
+  },
+
   'import receipt rule set'(test: Test) {
     // GIVEN
     const stack = new Stack();

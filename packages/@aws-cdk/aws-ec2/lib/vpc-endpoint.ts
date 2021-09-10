@@ -125,7 +125,7 @@ export interface GatewayVpcEndpointOptions {
    *   service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
    *   // Add only to ISOLATED subnets
    *   subnets: [
-   *     { subnetType: ec2.SubnetType.ISOLATED }
+   *     { subnetType: ec2.SubnetType.PRIVATE_ISOLATED }
    *   ]
    * });
    *
@@ -282,6 +282,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODECOMMIT_GIT = new InterfaceVpcEndpointAwsService('git-codecommit');
   public static readonly CODECOMMIT_GIT_FIPS = new InterfaceVpcEndpointAwsService('git-codecommit-fips');
   public static readonly GLUE = new InterfaceVpcEndpointAwsService('glue');
+  public static readonly KEYSPACES = new InterfaceVpcEndpointAwsService('cassandra', '', 9142);
   public static readonly KINESIS_STREAMS = new InterfaceVpcEndpointAwsService('kinesis-streams');
   public static readonly KINESIS_FIREHOSE = new InterfaceVpcEndpointAwsService('kinesis-firehose');
   public static readonly KMS = new InterfaceVpcEndpointAwsService('kms');
@@ -326,8 +327,69 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     const region = Lazy.uncachedString({
       produce: (context) => Stack.of(context.scope).region,
     });
-    this.name = `${prefix || 'com.amazonaws'}.${region}.${name}`;
+    const defaultEndpointPrefix = Lazy.uncachedString({
+      produce: (context) => {
+        const regionName = Stack.of(context.scope).region;
+        return this.getDefaultEndpointPrefix(name, regionName);
+      },
+    });
+    const defaultEndpointSuffix = Lazy.uncachedString({
+      produce: (context) => {
+        const regionName = Stack.of(context.scope).region;
+        return this.getDefaultEndpointSuffix(name, regionName);
+      },
+    });
+
+    this.name = `${prefix || defaultEndpointPrefix}.${region}.${name}${defaultEndpointSuffix}`;
     this.port = port || 443;
+  }
+
+  /**
+   * Get the endpoint prefix for the service in the specified region
+   * because the prefix for some of the services in cn-north-1 and cn-northwest-1 are different
+   *
+   * For future maintenance， the vpc endpoint services could be fetched using AWS CLI Commmand:
+   * aws ec2 describe-vpc-endpoint-services
+   */
+  private getDefaultEndpointPrefix(name: string, region: string) {
+    const VPC_ENDPOINT_SERVICE_EXCEPTIONS: { [region: string]: string[] } = {
+      'cn-north-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra',
+        'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr',
+        'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder',
+        'iotsitewise.api', 'iotsitewise.data', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring',
+        'rds', 'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime',
+        'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'synthetics', 'transcribe',
+        'transcribestreaming', 'transfer', 'xray'],
+      'cn-northwest-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra',
+        'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr',
+        'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder',
+        'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data', 's3',
+        'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs',
+        'states', 'sts', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
+    };
+    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
+      return 'cn.com.amazonaws';
+    } else {
+      return 'com.amazonaws';
+    }
+  }
+
+  /**
+   * Get the endpoint suffix for the service in the specified region.
+   * In cn-north-1 and cn-northwest-1, the vpc endpoint of transcribe is:
+   *   cn.com.amazonaws.cn-north-1.transcribe.cn
+   *   cn.com.amazonaws.cn-northwest-1.transcribe.cn
+   * so suffix '.cn' should be return in these scenarios.
+   *
+   * For future maintenance， the vpc endpoint services could be fetched using AWS CLI Commmand:
+   * aws ec2 describe-vpc-endpoint-services
+   */
+  private getDefaultEndpointSuffix(name: string, region: string) {
+    const VPC_ENDPOINT_SERVICE_EXCEPTIONS: { [region: string]: string[] } = {
+      'cn-north-1': ['transcribe'],
+      'cn-northwest-1': ['transcribe'],
+    };
+    return VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name) ? '.cn' : '';
   }
 }
 
