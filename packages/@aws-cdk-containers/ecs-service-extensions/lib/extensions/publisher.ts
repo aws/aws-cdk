@@ -1,5 +1,4 @@
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import { Service } from '../service';
 import { Container } from './container';
@@ -26,13 +25,6 @@ export interface PublisherTopicProps {
    * The SNS Topic to publish events to.
    */
   readonly topic: sns.ITopic;
-
-  /**
-   * The accounts allowed to subscribe to the given `topic`.
-   *
-   * @default none
-   */
-  readonly allowedAccounts?: string[];
 }
 
 /**
@@ -44,19 +36,6 @@ export class PublisherTopic implements IPublisher {
 
   constructor(props: PublisherTopicProps) {
     this.topic = props.topic;
-
-    if (props.allowedAccounts) {
-      const principals = [];
-      for (const account of props.allowedAccounts) {
-        principals.push(new iam.AccountPrincipal(account));
-      }
-
-      this.topic.addToResourcePolicy(new iam.PolicyStatement({
-        actions: ['sns:Subscribe'],
-        resources: [this.topic.topicArn],
-        principals,
-      }));
-    }
   }
 
   public publish(taskDefinition: ecs.TaskDefinition) {

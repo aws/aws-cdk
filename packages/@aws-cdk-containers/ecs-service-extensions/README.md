@@ -330,15 +330,13 @@ This service extension accepts a list of `IPublisher` resources that the service
 
 ### Publishing to SNS Topics
 
-You can use this extension to set up publishing permissions for SNS Topics. You can also provide a list of account IDs for each topic to permit those accounts to create subscriptions to the given topic.
+You can use this extension to set up publishing permissions for SNS Topics.
 
 ```ts
 nameDescription.add(new PublisherExtension({
   publishers: [new PublisherTopic({
     // SNS Topic the service will publish to
     topic: new sns.Topic(stack, 'my-topic'),
-    // Optionally provide a list of accounts allowed to create subscriptions to the `topic`
-    allowedAccounts: ['123456789012'],
   })],
 }));
 ```
