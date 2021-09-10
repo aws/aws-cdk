@@ -669,6 +669,7 @@ use in your VPC:
 
 ``` ts
 new InterfaceVpcEndpoint(stack, 'VPC Endpoint', { vpc, service: InterfaceVpcEndpointAwsService.KEYSPACES });
+new InterfaceVpcEndpoint(stack, 'VPC S3 Endpoint', { vpc, service: InterfaceVpcEndpointAwsService.S3 });
 ```
 
 #### Security groups for interface VPC endpoints
