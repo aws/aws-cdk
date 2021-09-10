@@ -70,7 +70,7 @@ export abstract class Match {
    * @param pattern the pattern to match after parsing the encoded JSON.
    */
   public static serializedJson(pattern: any): Matcher {
-    return new SerializedJson('stringifiedJson', pattern);
+    return new SerializedJson('serializedJson', pattern);
   }
 
   /**
@@ -304,7 +304,7 @@ class SerializedJson extends Matcher {
     }
     const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
     const innerResult = matcher.test(parsed);
-    result.compose(`${this.name}()`, innerResult);
+    result.compose(`(${this.name})`, innerResult);
     return result;
   }
 }
