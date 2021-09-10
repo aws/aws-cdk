@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { CfnParameter, Duration, Stack, App } from '@aws-cdk/core';
+import { CfnParameter, Duration, Stack, App, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sqs from '../lib';
 
@@ -188,6 +188,87 @@ export = {
       const fifoQueue = sqs.Queue.fromQueueArn(stack, 'FifoQueue', 'arn:aws:sqs:us-east-1:123456789012:queue2.fifo');
       test.deepEqual(stdQueue.fifo, false);
       test.deepEqual(fifoQueue.fifo, true);
+      test.done();
+    },
+
+    'import queueArn from token, fifo and standard queues can be defined'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const stdQueue1 = sqs.Queue.fromQueueAttributes(stack, 'StdQueue1', {
+        queueArn: Token.asString({ Ref: 'ARN' }),
+      });
+      const stdQueue2 = sqs.Queue.fromQueueAttributes(stack, 'StdQueue2', {
+        queueArn: Token.asString({ Ref: 'ARN' }),
+        fifo: false,
+      });
+      const fifoQueue = sqs.Queue.fromQueueAttributes(stack, 'FifoQueue', {
+        queueArn: Token.asString({ Ref: 'ARN' }),
+        fifo: true,
+      });
+
+      // THEN
+      test.deepEqual(stdQueue1.fifo, false);
+      test.deepEqual(stdQueue2.fifo, false);
+      test.deepEqual(fifoQueue.fifo, true);
+      test.done();
+    },
+
+    'import queueArn from token, check attributes'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const stdQueue1 = sqs.Queue.fromQueueArn(stack, 'StdQueue', Token.asString({ Ref: 'ARN' }));
+
+      // THEN
+      test.deepEqual(stack.resolve(stdQueue1.queueArn), {
+        Ref: 'ARN',
+      });
+      test.deepEqual(stack.resolve(stdQueue1.queueName), {
+        'Fn::Select': [5, { 'Fn::Split': [':', { Ref: 'ARN' }] }],
+      });
+      test.deepEqual(stack.resolve(stdQueue1.queueUrl), {
+        'Fn::Join':
+          ['',
+            ['https://sqs.',
+              { 'Fn::Select': [3, { 'Fn::Split': [':', { Ref: 'ARN' }] }] },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/',
+              { 'Fn::Select': [4, { 'Fn::Split': [':', { Ref: 'ARN' }] }] },
+              '/',
+              { 'Fn::Select': [5, { 'Fn::Split': [':', { Ref: 'ARN' }] }] }]],
+      });
+      test.deepEqual(stdQueue1.fifo, false);
+      test.done();
+    },
+
+    'fails if fifo flag is set for non fifo queue name'(test: Test) {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'my-stack');
+
+      // THEN
+      test.throws(() => sqs.Queue.fromQueueAttributes(stack, 'ImportedStdQueue', {
+        queueArn: 'arn:aws:sqs:us-west-2:123456789012:queue1',
+        fifo: true,
+      }), /FIFO queue names must end in '.fifo'/);
+      test.done();
+    },
+
+
+    'fails if fifo flag is false for fifo queue name'(test: Test) {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'my-stack');
+
+      // THEN
+      test.throws(() => sqs.Queue.fromQueueAttributes(stack, 'ImportedFifoQueue', {
+        queueArn: 'arn:aws:sqs:us-west-2:123456789012:queue1.fifo',
+        fifo: false,
+      }), /Non-FIFO queue name may not end in '.fifo'/);
       test.done();
     },
 
@@ -424,6 +505,55 @@ export = {
       },
     });
 
+    test.done();
+  },
+
+  'test a fifo queue is observed when high throughput properties are specified'(test: Test) {
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'Queue', {
+      fifo: true,
+      fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID,
+      deduplicationScope: sqs.DeduplicationScope.MESSAGE_GROUP,
+    });
+
+    test.deepEqual(queue.fifo, true);
+    expect(stack).toMatch({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'DeduplicationScope': 'messageGroup',
+            'FifoQueue': true,
+            'FifoThroughputLimit': 'perMessageGroupId',
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'test a queue throws when fifoThroughputLimit specified on non fifo queue'(test: Test) {
+    const stack = new Stack();
+    test.throws(() => {
+      new sqs.Queue(stack, 'Queue', {
+        fifo: false,
+        fifoThroughputLimit: sqs.FifoThroughputLimit.PER_MESSAGE_GROUP_ID,
+      });
+    });
+    test.done();
+  },
+
+  'test a queue throws when deduplicationScope specified on non fifo queue'(test: Test) {
+    const stack = new Stack();
+    test.throws(() => {
+      new sqs.Queue(stack, 'Queue', {
+        fifo: false,
+        deduplicationScope: sqs.DeduplicationScope.MESSAGE_GROUP,
+      });
+    });
     test.done();
   },
 

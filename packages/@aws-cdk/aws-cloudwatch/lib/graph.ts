@@ -206,13 +206,39 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    */
   readonly liveData?: boolean;
 
-
   /**
    * Display this metric
    *
    * @default TimeSeries
    */
   readonly view?: GraphWidgetView;
+
+  /**
+   * Whether to show the value from the entire time range. Only applicable for Bar and Pie charts.
+   *
+   * If false, values will be from the most recent period of your chosen time range;
+   * if true, shows the value from the entire time range.
+   *
+   * @default false
+   */
+  readonly setPeriodToTimeRange?: boolean;
+
+  /**
+   * The default period for all metrics in this widget.
+   * The period is the length of time represented by one data point on the graph.
+   * This default can be overridden within each metric definition.
+   *
+   * @default cdk.Duration.seconds(300)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * The default statistic to be displayed for each metric.
+   * This default can be overridden within the definition of each individual metric
+   *
+   * @default - The statistic for each metric is used
+   */
+  readonly statistic?: string;
 }
 
 /**
@@ -276,6 +302,9 @@ export class GraphWidget extends ConcreteWidget {
         },
         legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
         liveData: this.props.liveData,
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+        period: this.props.period?.toSeconds(),
+        stat: this.props.statistic,
       },
     }];
   }

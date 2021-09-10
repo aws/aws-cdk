@@ -112,6 +112,58 @@ describe('LambdaInvoke', () => {
     }));
   });
 
+  test('resultSelector', () => {
+    // WHEN
+    const task = new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      resultSelector: {
+        Result: sfn.JsonPath.stringAt('$.output.Payload'),
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::lambda:invoke',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Fn9270CBC0',
+            'Arn',
+          ],
+        },
+        'Payload.$': '$',
+      },
+      ResultSelector: {
+        'Result.$': '$.output.Payload',
+      },
+      Retry: [
+        {
+          ErrorEquals: [
+            'Lambda.ServiceException',
+            'Lambda.AWSLambdaException',
+            'Lambda.SdkClientException',
+          ],
+          IntervalSeconds: 2,
+          MaxAttempts: 6,
+          BackoffRate: 2,
+        },
+      ],
+    }));
+  });
+
   test('invoke Lambda function and wait for task token', () => {
     // GIVEN
     const task = new LambdaInvoke(stack, 'Task', {
@@ -158,7 +210,7 @@ describe('LambdaInvoke', () => {
     // WHEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
-      payload: sfn.TaskInput.fromDataAt('$.foo'),
+      payload: sfn.TaskInput.fromJsonPathAt('$.foo'),
     });
 
     // THEN

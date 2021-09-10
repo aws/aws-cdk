@@ -257,7 +257,10 @@ export class Alarm extends AlarmBase {
     return dispatchMetric(metric, {
       withStat(stat, conf) {
         self.validateMetricStat(stat, metric);
-        if (conf.renderingProperties?.label == undefined) {
+        const canRenderAsLegacyMetric = conf.renderingProperties?.label == undefined &&
+          (stat.account == undefined || Stack.of(self).account == stat.account);
+        // Do this to disturb existing templates as little as possible
+        if (canRenderAsLegacyMetric) {
           return dropUndefined({
             dimensions: stat.dimensions,
             namespace: stat.namespace,
@@ -283,6 +286,7 @@ export class Alarm extends AlarmBase {
                 unit: stat.unitFilter,
               },
               id: 'm1',
+              accountId: stat.account,
               label: conf.renderingProperties?.label,
               returnData: true,
             } as CfnAlarm.MetricDataQueryProperty,
@@ -317,8 +321,9 @@ export class Alarm extends AlarmBase {
                   unit: stat.unitFilter,
                 },
                 id: entry.id || uniqueMetricId(),
+                accountId: stat.account,
                 label: conf.renderingProperties?.label,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
             },
             withExpression(expr, conf) {
@@ -334,7 +339,7 @@ export class Alarm extends AlarmBase {
                 id: entry.id || uniqueMetricId(),
                 label: conf.renderingProperties?.label,
                 period: hasSubmetrics ? undefined : expr.period,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
             },
           }) as CfnAlarm.MetricDataQueryProperty),
@@ -344,16 +349,13 @@ export class Alarm extends AlarmBase {
   }
 
   /**
-   * Validate that if a region and account are in the given stat config, they match the Alarm
+   * Validate that if a region is in the given stat config, they match the Alarm
    */
   private validateMetricStat(stat: MetricStatConfig, metric: IMetric) {
     const stack = Stack.of(this);
 
     if (definitelyDifferent(stat.region, stack.region)) {
       throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
-    }
-    if (definitelyDifferent(stat.account, stack.account)) {
-      throw new Error(`Cannot create an Alarm in account '${stack.account}' based on metric '${metric}' in '${stat.account}'`);
     }
   }
 }
@@ -392,7 +394,10 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
     // Already percentile. Avoid parsing because we might get into
     // floating point rounding issues, return as-is but lowercase the p.
     return statistic.toLowerCase();
+  } else if (parsed.type === 'generic') {
+    return statistic;
   }
+
   return undefined;
 }
 

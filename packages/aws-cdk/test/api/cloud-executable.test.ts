@@ -68,7 +68,7 @@ test('stop executing if context providers are not making progress', async () => 
   const cxasm = await cloudExecutable.synthesize();
 
   // WHEN
-  await cxasm.selectStacks(['thestack'], { defaultBehavior: DefaultSelection.AllStacks });
+  await cxasm.selectStacks({ patterns: ['thestack'] }, { defaultBehavior: DefaultSelection.AllStacks });
 
   // THEN: the test finishes normally});
 });

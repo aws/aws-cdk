@@ -141,6 +141,25 @@ export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID = '@aws-cdk/aws-apigate
  * Encryption can also be configured explicitly using the `encrypted` property.
  */
 export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptionAtRest';
+
+/**
+ * Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the
+ * `fn.currentVersion`.
+ *
+ * The previous calculation incorrectly considered properties of the `AWS::Lambda::Function` resource that did
+ * not constitute creating a new Version.
+ *
+ * See 'currentVersion' section in the aws-lambda module's README for more details.
+ */
+export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
+
+/**
+ * Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.
+ *
+ * The security policy can also be configured explicitly using the `minimumProtocolVersion` property.
+ */
+export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
+
 /**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
@@ -166,6 +185,8 @@ export const FUTURE_FLAGS: { [key: string]: any } = {
   [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
   [RDS_LOWERCASE_DB_IDENTIFIER]: true,
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
+  [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -195,6 +216,8 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: false,
   [RDS_LOWERCASE_DB_IDENTIFIER]: false,
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: false,
+  [LAMBDA_RECOGNIZE_VERSION_PROPS]: false,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {

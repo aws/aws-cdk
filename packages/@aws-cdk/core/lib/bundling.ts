@@ -86,6 +86,14 @@ export interface BundlingOptions {
    *
    */
   readonly outputType?: BundlingOutput;
+
+  /**
+   * [Security configuration](https://docs.docker.com/engine/reference/run/#security-configuration)
+   * when running the docker container.
+   *
+   * @default - no security options
+   */
+  readonly securityOpt?: string;
 }
 
 /**
@@ -186,10 +194,13 @@ export class BundlingDockerImage {
 
     const dockerArgs: string[] = [
       'run', '--rm',
+      ...options.securityOpt
+        ? ['--security-opt', options.securityOpt]
+        : [],
       ...options.user
         ? ['-u', options.user]
         : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
@@ -259,6 +270,7 @@ export class DockerImage extends BundlingDockerImage {
     const dockerArgs: string[] = [
       'build', '-t', tag,
       ...(options.file ? ['-f', join(path, options.file)] : []),
+      ...(options.platform ? ['--platform', options.platform] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
@@ -404,6 +416,14 @@ export interface DockerRunOptions {
    * @default - root or image default
    */
   readonly user?: string;
+
+  /**
+   * [Security configuration](https://docs.docker.com/engine/reference/run/#security-configuration)
+   * when running the docker container.
+   *
+   * @default - no security options
+   */
+  readonly securityOpt?: string;
 }
 
 /**
@@ -423,6 +443,15 @@ export interface DockerBuildOptions {
    * @default `Dockerfile`
    */
   readonly file?: string;
+
+  /**
+   * Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
+   *
+   * @example 'linux/amd64'
+   *
+   * @default - no platform specified
+   */
+  readonly platform?: string;
 }
 
 function flatten(x: string[][]) {
@@ -451,4 +480,29 @@ function dockerExec(args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
+}
+
+function isSeLinux() : boolean {
+  if (process.platform != 'linux') {
+    return false;
+  }
+  const prog = 'selinuxenabled';
+  const proc = spawnSync(prog, [], {
+    stdio: [ // show selinux status output
+      'pipe', // get value of stdio
+      process.stderr, // redirect stdout to stderr
+      'inherit', // inherit stderr
+    ],
+  });
+  if (proc.error) {
+    // selinuxenabled not a valid command, therefore not enabled
+    return false;
+  }
+  if (proc.status == 0) {
+    // selinux enabled
+    return true;
+  } else {
+    // selinux not enabled
+    return false;
+  }
 }

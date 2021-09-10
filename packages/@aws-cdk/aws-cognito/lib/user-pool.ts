@@ -430,6 +430,26 @@ export enum AccountRecovery {
 }
 
 /**
+ * Device tracking settings
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+ */
+export interface DeviceTracking {
+  /**
+   * Indicates whether a challenge is required on a new device. Only applicable to a new device.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+   * @default false
+   */
+  readonly challengeRequiredOnNewDevice: boolean;
+
+  /**
+   * If true, a device is only remembered on user prompt.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+   * @default false
+   */
+  readonly deviceOnlyRememberedOnUserPrompt: boolean;
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -528,6 +548,13 @@ export interface UserPoolProps {
   readonly mfa?: Mfa;
 
   /**
+   * The SMS message template sent during MFA verification.
+   * Use '{####}' in the template where Cognito should insert the verification code.
+   * @default 'Your authentication code is {####}.'
+   */
+  readonly mfaMessage?: string;
+
+  /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
    *
    * @default - { sms: true, oneTimePassword: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
@@ -574,6 +601,12 @@ export interface UserPoolProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Device tracking settings
+   * @default - see defaults on each property of DeviceTracking.
+   */
+  readonly deviceTracking?: DeviceTracking;
 }
 
 /**
@@ -761,6 +794,7 @@ export class UserPool extends UserPoolBase {
       aliasAttributes: signIn.aliasAttrs,
       autoVerifiedAttributes: signIn.autoVerifyAttrs,
       lambdaConfig: Lazy.any({ produce: () => undefinedIfNoKeys(this.triggers) }),
+      smsAuthenticationMessage: this.mfaMessage(props),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
       emailVerificationMessage,
@@ -779,6 +813,7 @@ export class UserPool extends UserPoolBase {
         caseSensitive: props.signInCaseSensitive,
       }),
       accountRecoverySetting: this.accountRecovery(props),
+      deviceConfiguration: props.deviceTracking,
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
 
@@ -808,6 +843,24 @@ export class UserPool extends UserPoolBase {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: this.userPoolArn,
     });
+  }
+
+  private mfaMessage(props: UserPoolProps): string | undefined {
+    const CODE_TEMPLATE = '{####}';
+    const MAX_LENGTH = 140;
+    const message = props.mfaMessage;
+
+    if (message && !Token.isUnresolved(message)) {
+      if (!message.includes(CODE_TEMPLATE)) {
+        throw new Error(`MFA message must contain the template string '${CODE_TEMPLATE}'`);
+      }
+
+      if (message.length > MAX_LENGTH) {
+        throw new Error(`MFA message must be between ${CODE_TEMPLATE.length} and ${MAX_LENGTH} characters`);
+      }
+    }
+
+    return message;
   }
 
   private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {

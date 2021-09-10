@@ -2,7 +2,7 @@ import { ABSENT, arrayWith, expect, haveResource, haveResourceLike, objectLike }
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, NetworkLoadBalancer, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -28,6 +28,7 @@ export = {
           TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
           TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
         },
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
       },
       desiredCount: 2,
     });
@@ -54,6 +55,10 @@ export = {
             },
           ],
           Memory: 1024,
+          DockerLabels: {
+            label1: 'labelValue1',
+            label2: 'labelValue2',
+          },
         },
       ],
     }));
@@ -389,6 +394,7 @@ export = {
           TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
           TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
         },
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
       },
       desiredCount: 2,
     });
@@ -415,6 +421,10 @@ export = {
               'awslogs-stream-prefix': 'Service',
               'awslogs-region': { Ref: 'AWS::Region' },
             },
+          },
+          DockerLabels: {
+            label1: 'labelValue1',
+            label2: 'labelValue2',
           },
         },
       ],
@@ -498,6 +508,7 @@ export = {
       domainName: 'api.example.com',
       domainZone: zone,
       certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+      sslPolicy: SslPolicy.TLS12_EXT,
     });
 
     // THEN - stack contains a load balancer and a service
@@ -509,6 +520,7 @@ export = {
       Certificates: [{
         CertificateArn: 'helloworld',
       }],
+      SslPolicy: SslPolicy.TLS12_EXT,
     }));
 
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {

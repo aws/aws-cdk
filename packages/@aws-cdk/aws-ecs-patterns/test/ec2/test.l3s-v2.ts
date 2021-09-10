@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/ass
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { InstanceType, Vpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, Cluster, ContainerImage, Ec2TaskDefinition, PropagatedTagSource, Protocol } from '@aws-cdk/aws-ecs';
-import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationProtocol, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { NamespaceType } from '@aws-cdk/aws-servicediscovery';
@@ -107,6 +107,7 @@ export = {
           taskRole: new Role(stack, 'TaskRole', {
             assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
           }),
+          dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
         },
         cpu: 256,
         desiredCount: 3,
@@ -123,6 +124,7 @@ export = {
                 name: 'listener',
                 protocol: ApplicationProtocol.HTTPS,
                 certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+                sslPolicy: SslPolicy.TLS12_EXT,
               },
             ],
           },
@@ -214,6 +216,10 @@ export = {
                 Protocol: 'tcp',
               },
             ],
+            DockerLabels: {
+              label1: 'labelValue1',
+              label2: 'labelValue2',
+            },
           },
         ],
         ExecutionRoleArn: {
@@ -233,6 +239,15 @@ export = {
             'Arn',
           ],
         },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+        Port: 443,
+        Protocol: 'HTTPS',
+        Certificates: [{
+          CertificateArn: 'helloworld',
+        }],
+        SslPolicy: SslPolicy.TLS12_EXT,
       }));
 
       test.done();
@@ -967,6 +982,7 @@ export = {
           taskRole: new Role(stack, 'TaskRole', {
             assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
           }),
+          dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
         },
         cpu: 256,
         desiredCount: 3,
@@ -1079,6 +1095,10 @@ export = {
                 Protocol: 'tcp',
               },
             ],
+            DockerLabels: {
+              label1: 'labelValue1',
+              label2: 'labelValue2',
+            },
           },
         ],
         ExecutionRoleArn: {

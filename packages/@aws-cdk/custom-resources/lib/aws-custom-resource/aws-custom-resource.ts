@@ -128,8 +128,22 @@ export interface AwsSdkCall {
    * Example for ECS / updateService: 'service.deploymentConfiguration.maximumPercent'
    *
    * @default - return all data
+   *
+   * @deprecated use outputPaths instead
    */
   readonly outputPath?: string;
+
+  /**
+   * Restrict the data returned by the custom resource to specific paths in
+   * the API response. Use this to limit the data returned by the custom
+   * resource if working with API calls that could potentially result in custom
+   * response objects exceeding the hard limit of 4096 bytes.
+   *
+   * Example for ECS / updateService: ['service.deploymentConfiguration.maximumPercent']
+   *
+   * @default - return all data
+   */
+  readonly outputPaths?: string[];
 
   /**
    * Used for running the SDK calls in underlying lambda with a different role

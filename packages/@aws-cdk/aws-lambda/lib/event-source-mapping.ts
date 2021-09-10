@@ -121,6 +121,15 @@ export interface EventSourceMappingOptions {
   readonly startingPosition?: StartingPosition;
 
   /**
+   * Allow functions to return partially successful responses for a batch of records.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
+   *
+   * @default false
+   */
+  readonly reportBatchItemFailures?: boolean;
+
+  /**
    * The maximum amount of time to gather records before invoking the function.
    * Maximum of Duration.minutes(5)
    *
@@ -306,6 +315,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
+      functionResponseTypes: props.reportBatchItemFailures ? ['ReportBatchItemFailures'] : undefined,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,

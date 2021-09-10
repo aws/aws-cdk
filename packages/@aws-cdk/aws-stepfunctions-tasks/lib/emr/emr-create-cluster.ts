@@ -360,8 +360,10 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
 export namespace EmrCreateCluster {
   /**
-   * Valid valus for the Cluster ScaleDownBehavior
+   * The Cluster ScaleDownBehavior specifies the way that individual Amazon EC2 instances terminate when an automatic scale-in activity
+   * occurs or an instance group is resized.
    *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html#EMR-RunJobFlow-request-ScaleDownBehavior
    */
   export enum EmrClusterScaleDownBehavior {
     /**
@@ -542,7 +544,7 @@ export namespace EmrCreateCluster {
    *
    */
   export enum SpotTimeoutAction {
-    /**\
+    /**
      * SWITCH_TO_ON_DEMAND
      */
     SWITCH_TO_ON_DEMAND = 'SWITCH_TO_ON_DEMAND',
@@ -553,6 +555,21 @@ export namespace EmrCreateCluster {
   }
 
   /**
+   * Spot Allocation Strategies
+   *
+   * Specifies the strategy to use in launching Spot Instance fleets. For example, "capacity-optimized" launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SpotProvisioningSpecification.html
+   *
+   */
+  export enum SpotAllocationStrategy {
+    /**
+     * Capacity-optimized, which launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
+     */
+    CAPACITY_OPTIMIZED = 'capacity-optimized',
+  }
+
+  /**
    * The launch specification for Spot instances in the instance fleet, which determines the defined duration and provisioning timeout behavior.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SpotProvisioningSpecification.html
@@ -560,9 +577,15 @@ export namespace EmrCreateCluster {
    */
   export interface SpotProvisioningSpecificationProperty {
     /**
+     * Specifies the strategy to use in launching Spot Instance fleets.
+     *
+     * @default - No allocation strategy, i.e. spot instance type will be chosen based on current price only
+     */
+    readonly allocationStrategy?: SpotAllocationStrategy;
+    /**
      * The defined duration for Spot instances (also known as Spot blocks) in minutes.
      *
-     * @default No blockDurationMinutes
+     * @default - No blockDurationMinutes
      */
     readonly blockDurationMinutes?: number;
 

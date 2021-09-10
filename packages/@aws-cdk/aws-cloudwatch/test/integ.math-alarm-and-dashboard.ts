@@ -59,6 +59,13 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   leftAnnotations: [alarm.toAnnotation()],
 }));
 
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  title: 'Percentage of messages in each queue as pie chart',
+  left: [metricA, metricB],
+  view: cloudwatch.GraphWidgetView.PIE,
+  setPeriodToTimeRange: true,
+}));
+
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Current total messages in queue',
   metrics: [sumExpression],

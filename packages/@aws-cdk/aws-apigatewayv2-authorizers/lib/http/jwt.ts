@@ -64,7 +64,7 @@ export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: HttpAuthorizerType.JWT,
+      authorizationType: 'JWT',
     };
   }
 }

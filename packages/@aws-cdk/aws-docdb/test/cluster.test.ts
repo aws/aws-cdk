@@ -167,6 +167,27 @@ describe('DatabaseCluster', () => {
     }));
   });
 
+  test('can configure cluster deletion protection', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      deletionProtection: true,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+      DeletionProtection: true,
+    }));
+  });
+
   test('cluster with parameter group', () => {
     // GIVEN
     const stack = testStack();
@@ -541,8 +562,8 @@ describe('DatabaseCluster', () => {
     // THEN
     expectCDK(stack).to(haveResource('AWS::Serverless::Application', {
       Location: {
-        ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerMongoDBRotationSingleUser',
-        SemanticVersion: '1.1.60',
+        ApplicationId: { 'Fn::FindInMap': ['DatabaseRotationSingleUserSARMapping9AEB3E55', { Ref: 'AWS::Partition' }, 'applicationId'] },
+        SemanticVersion: { 'Fn::FindInMap': ['DatabaseRotationSingleUserSARMapping9AEB3E55', { Ref: 'AWS::Partition' }, 'semanticVersion'] },
       },
       Parameters: {
         endpoint: {
@@ -653,8 +674,8 @@ describe('DatabaseCluster', () => {
     // THEN
     expectCDK(stack).to(haveResource('AWS::Serverless::Application', {
       Location: {
-        ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerMongoDBRotationMultiUser',
-        SemanticVersion: '1.1.60',
+        ApplicationId: { 'Fn::FindInMap': ['DatabaseRotationSARMappingE46CFA92', { Ref: 'AWS::Partition' }, 'applicationId'] },
+        SemanticVersion: { 'Fn::FindInMap': ['DatabaseRotationSARMappingE46CFA92', { Ref: 'AWS::Partition' }, 'semanticVersion'] },
       },
       Parameters: {
         endpoint: {

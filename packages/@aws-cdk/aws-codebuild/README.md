@@ -76,11 +76,13 @@ import * as s3 from '@aws-cdk/aws-s3';
 const bucket = new s3.Bucket(this, 'MyBucket');
 new codebuild.Project(this, 'MyProject', {
   source: codebuild.Source.s3({
-    bucket,
+    bucket: bucket,
     path: 'path/to/file.zip',
   }),
 });
 ```
+
+The CodeBuild role will be granted to read just the given path from the given `bucket`.
 
 ### `GitHubSource` and `GitHubEnterpriseSource`
 
@@ -223,6 +225,7 @@ can use the `environment` property to customize the build environment:
 
 * `buildImage` defines the Docker image used. See [Images](#images) below for
   details on how to define build images.
+* `certificate` defines the location of a PEM encoded certificate to import.
 * `computeType` defines the instance type used for the build.
 * `privileged` can be set to `true` to allow privileged access.
 * `environmentVariables` can be set at this level (and also at the project
@@ -260,6 +263,11 @@ which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageTy
 new codebuild.Project(this, 'Project', {
   environment: {
     buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
+    // optional certificate to include in the build image
+    certificate: {
+      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket'),
+      objectKey: 'path/to/cert.pem',
+    },
   },
   ...
 })
@@ -464,6 +472,21 @@ methods:
 const rule = project.onStateChange('BuildStateChange', {
   target: new targets.LambdaFunction(fn)
 });
+```
+
+## CodeStar Notifications
+
+To define CodeStar Notification rules for Projects, use one of the `notifyOnXxx()` methods.
+They are very similar to `onXxx()` methods for CloudWatch events:
+
+```ts
+const target = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+});
+
+const rule = project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', target);
 ```
 
 ## Secondary sources and artifacts

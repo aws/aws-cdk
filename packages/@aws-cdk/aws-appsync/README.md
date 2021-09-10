@@ -135,7 +135,7 @@ rdsDS.createResolver({
   }
   `),
   responseMappingTemplate: MappingTemplate.fromString(`
-    $util.rds.toJsonObject($ctx.result)
+    $utils.toJson($utils.rds.toJsonObject($ctx.result)[0])
   `),
 });
 
@@ -157,7 +157,7 @@ rdsDS.createResolver({
   }
   `),
   responseMappingTemplate: MappingTemplate.fromString(`
-    $util.rds.toJsonObject($ctx.result)
+    $utils.toJson($utils.rds.toJsonObject($ctx.result)[1][0])
   `),
 });
 ```
@@ -237,6 +237,47 @@ httpDs.createResolver({
   fieldName: 'callStepFunction',
   requestMappingTemplate: MappingTemplate.fromFile('request.vtl'),
   responseMappingTemplate: MappingTemplate.fromFile('response.vtl')
+});
+```
+
+### Elasticsearch
+
+AppSync has builtin support for Elasticsearch from domains that are provisioned
+through your AWS account. You can use AppSync resolvers to perform GraphQL operations
+such as queries, mutations, and subscriptions.
+
+```ts
+const user = new User(stack, 'User');
+const domain = new es.Domain(stack, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  fineGrainedAccessControl: { masterUserArn: user.userArn },
+  encryptionAtRest: { enabled: true },
+  nodeToNodeEncryption: true,
+  enforceHttps: true,
+});
+
+const ds = api.addElasticsearchDataSource('ds', domain);
+
+ds.createResolver({
+  typeName: 'Query',
+  fieldName: 'getTests',
+  requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+    version: '2017-02-28',
+    operation: 'GET',
+    path: '/id/post/_search',
+    params: {
+      headers: {},
+      queryString: {},
+      body: { from: 0, size: 50 },
+    },
+  })),
+  responseMappingTemplate: appsync.MappingTemplate.fromString(`[
+    #foreach($entry in $context.result.hits.hits)
+    #if( $velocityCount > 1 ) , #end
+    $utils.toJson($entry.get("_source"))
+    #end
+  ]`),
 });
 ```
 
@@ -718,7 +759,7 @@ You can create Object Types in three ways:
       name: 'demo',
     });
     const demo = new appsync.ObjectType('Demo', {
-      defintion: {
+      definition: {
         id: appsync.GraphqlType.string({ isRequired: true }),
         version: appsync.GraphqlType.string({ isRequired: true }),
       },
@@ -741,7 +782,7 @@ You can create Object Types in three ways:
     ```ts
     import { required_string } from './scalar-types';
     export const demo = new appsync.ObjectType('Demo', {
-      defintion: {
+      definition: {
         id: required_string,
         version: required_string,
       },
@@ -765,7 +806,7 @@ You can create Object Types in three ways:
     });
     const demo = new appsync.ObjectType('Demo', {
       interfaceTypes: [ node ],
-      defintion: {
+      definition: {
         version: appsync.GraphqlType.string({ isRequired: true }),
       },
     });
@@ -919,7 +960,7 @@ To add fields for these subscriptions, we can simply run the `addSubscription` f
 to the schema's `Subscription` type.
 
 ```ts
-api.addSubscription('addedFilm', new appsync.ResolvableField({
+api.addSubscription('addedFilm', new appsync.Field({
   returnType: film.attribute(),
   args: { id: appsync.GraphqlType.id({ isRequired: true }) },
   directive: [appsync.Directive.subscribe('addFilm')],

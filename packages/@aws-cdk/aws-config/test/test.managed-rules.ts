@@ -130,4 +130,24 @@ export = {
 
     test.done();
   },
+
+  'ec2 instance profile attached check'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new config.ManagedRule(stack, 'Ec2InstanceProfileAttached', {
+      identifier: config.ManagedRuleIdentifiers.EC2_INSTANCE_PROFILE_ATTACHED,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+      Source: {
+        Owner: 'AWS',
+        SourceIdentifier: config.ManagedRuleIdentifiers.EC2_INSTANCE_PROFILE_ATTACHED,
+      },
+    }));
+
+    test.done();
+  },
 };

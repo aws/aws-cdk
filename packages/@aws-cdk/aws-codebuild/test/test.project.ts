@@ -429,6 +429,41 @@ export = {
     test.done();
   },
 
+  'if a role is shared between projects in a VPC, the VPC Policy is only attached once'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+    });
+    const source = codebuild.Source.gitHubEnterprise({
+      httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+    });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project1', { source, role, vpc, projectName: 'P1' });
+    new codebuild.Project(stack, 'Project2', { source, role, vpc, projectName: 'P2' });
+
+    // THEN
+    // - 1 is for `ec2:CreateNetworkInterfacePermission`, deduplicated as they're part of a single policy
+    // - 1 is for `ec2:CreateNetworkInterface`, this is the separate Policy we're deduplicating
+    // We would have found 3 if the deduplication didn't work.
+    expect(stack).to(countResources('AWS::IAM::Policy', 2));
+
+    // THEN - both Projects have a DependsOn on the same policy
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Properties: { Name: 'P1' },
+      DependsOn: ['Project1PolicyDocumentF9761562'],
+    }, ResourcePart.CompleteDefinition));
+
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Properties: { Name: 'P1' },
+      DependsOn: ['Project1PolicyDocumentF9761562'],
+    }, ResourcePart.CompleteDefinition));
+
+    test.done();
+  },
+
   'can use an imported Role for a Project within a VPC'(test: Test) {
     const stack = new cdk.Stack();
 
@@ -756,6 +791,41 @@ export = {
           S3Logs: {
             Location: 'MyBucketName',
             Status: 'ENABLED',
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
+    'certificate arn'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'path',
+        }),
+        environment: {
+          certificate: {
+            bucket,
+            objectKey: 'path',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Environment: objectLike({
+          Certificate: {
+            'Fn::Join': ['', [
+              'arn:',
+              { 'Ref': 'AWS::Partition' },
+              ':s3:::my-bucket/path',
+            ]],
           },
         }),
       }));
@@ -1463,6 +1533,242 @@ export = {
             }),
           },
         }));
+
+        test.done();
+      },
+
+      'can be provided as a SecretArn of a new Secret, with its physical name set, created in a different account'(test: Test) {
+        // GIVEN
+        const app = new cdk.App();
+        const secretStack = new cdk.Stack(app, 'SecretStack', {
+          env: { account: '012345678912' },
+        });
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
+
+        // WHEN
+        const secret = new secretsmanager.Secret(secretStack, 'Secret', { secretName: 'secret-name' });
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: secret.secretArn,
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { 'Ref': 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { 'Ref': 'AWS::Region' },
+                    ':012345678912:secret:secret-name',
+                  ]],
+                },
+              },
+            ],
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':secretsmanager:',
+                  { 'Ref': 'AWS::Region' },
+                  ':012345678912:secret:secret-name-??????',
+                ]],
+              },
+            }),
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':kms:',
+                  { 'Ref': 'AWS::Region' },
+                  ':012345678912:key/*',
+                ]],
+              },
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
+      'can be provided as a SecretArn of a Secret imported by name in a different account'(test: Test) {
+        // GIVEN
+        const app = new cdk.App();
+        const secretStack = new cdk.Stack(app, 'SecretStack', {
+          env: { account: '012345678912' },
+        });
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
+
+        // WHEN
+        const secret = secretsmanager.Secret.fromSecretNameV2(secretStack, 'Secret', 'secret-name');
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: `${secret.secretArn}:json-key`,
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { 'Ref': 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { 'Ref': 'AWS::Region' },
+                    ':012345678912:secret:secret-name:json-key',
+                  ]],
+                },
+              },
+            ],
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':secretsmanager:',
+                  { 'Ref': 'AWS::Region' },
+                  ':012345678912:secret:secret-name*',
+                ]],
+              },
+            }),
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':kms:',
+                  { 'Ref': 'AWS::Region' },
+                  ':012345678912:key/*',
+                ]],
+              },
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
+      'can be provided as a SecretArn of a Secret imported by complete ARN from a different account'(test: Test) {
+        // GIVEN
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
+        const secretArn = 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret-123456';
+
+        // WHEN
+        const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: secret.secretArn,
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': secretArn,
+              },
+            ],
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': `${secretArn}*`,
+            }),
+          },
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
+      'should fail when the parsed Arn does not contain a secret name'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environmentVariables: {
+              'ENV_VAR1': {
+                type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+                value: 'arn:aws:secretsmanager:us-west-2:123456789012:secret',
+              },
+            },
+          });
+        }, /SecretManager ARN is missing the name of the secret:/);
 
         test.done();
       },

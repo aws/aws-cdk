@@ -117,6 +117,7 @@
           "Ref": "LambdaProxyApi67594471"
         },
         "RouteKey": "$default",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
