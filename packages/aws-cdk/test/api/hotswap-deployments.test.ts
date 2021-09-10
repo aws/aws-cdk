@@ -30,7 +30,7 @@ beforeEach(() => {
   });
 });
 
-/*test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
+test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
   // WHEN
   const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifactOf());
 
@@ -58,7 +58,6 @@ test('returns undefined when it a new Lambda function is added to the Stack', as
   // THEN
   expect(deployStackResult).toBeUndefined();
 });
-*/
 
 test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
   // GIVEN
@@ -111,7 +110,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   });
 });
 
-/*test('Resources that are not lambdas or step functions result in a full deployment', async () => {
+test('Resources that are not lambdas or step functions result in a full deployment', async () => {
   // GIVEN
   currentCfnStack.setTemplate({
     Resources: {
@@ -143,7 +142,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateMachineCode).not.toHaveBeenCalled();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-});*/
+});
 
 test('calls the updateStateMachine() API when it receives only a definitionString change in a state machine', async () => {
   // GIVEN
@@ -154,8 +153,10 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
         Properties: {
           DefinitionString: {
             'Fn::Join': [
-              'old-string-1',
-              'old-string-2',
+              '',
+              [
+                '{ "Prop" : "old-value", "AnotherProp" : "another-old-value" }',
+              ],
             ],
           },
           StateMachineName: 'my-machine',
@@ -171,8 +172,10 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
           Properties: {
             DefinitionString: {
               'Fn::Join': [
-                'new-string-1',
-                'new-string-2',
+                '',
+                [
+                  '{ "Prop" : "new-value", "AnotherProp" : "another-new-value" }',
+                ],
               ],
             },
             StateMachineName: 'my-machine',
@@ -189,15 +192,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
   expect(mockUpdateMachineCode).toHaveBeenCalledWith({
-    /*definition: {
-      'Fn::Join': [
-        'new-string-1',
-        'new-string-2',
-      ],
-    },*/
-    definition: '{"Fn::Join":["new-string-1","new-string-2"]}',
-    //stateMachineArn: '{ Ref: my-machine }',
-    // this is somehow magically convereted to the ref to get the arn in an actual deployment -- where does that happen?
+    definition: '{"Prop":"new-value","AnotherProp":"another-new-value"}',
     stateMachineArn: 'my-machine',
   });
 });

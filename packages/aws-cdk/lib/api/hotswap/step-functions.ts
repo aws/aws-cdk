@@ -65,58 +65,13 @@ function isStepFunctionDefinitionOnlyChange(
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
 
-    //console.log("updatedProp.newValue")
-    //console.log(updatedProp.newValue)
     for (const newPropName in updatedProp.newValue) {
-      //console.log("newPropName");
-      //console.log(newPropName);
-
-      console.log("updateProp.newValue[newPropName]");
-      console.log(updatedProp.newValue[newPropName]);
-
-      console.log("updateProp.newValue[newPropName][1][0]");
-      console.log(updatedProp.newValue[newPropName][1][0]);
-
-      // throws error
-      //console.log("JSON.parse(updateProp.newValue[newPropName][0])");
-      //console.log(JSON.parse(updatedProp.newValue[newPropName][0]));
-
-      // this is the magic value we need to pass along
-      console.log("JSON.parse(updateProp.newValue[newPropName][1])");
-      console.log(JSON.parse(updatedProp.newValue[newPropName][1]));
-
-      const updatedDefinition = JSON.parse(updatedProp.newValue[newPropName][1]);
-      console.log("updatedDefinition");
-      console.log(updatedDefinition);
-
-      // throws error
-      //console.log("JSON.parse(updateProp.newValue[newPropName])");
-      //console.log(JSON.parse(updatedProp.newValue[newPropName]));
-
-      /*console.log("updateProp.newValue[newPropName][1]");
-      console.log(updatedProp.newValue[newPropName][1]);
-
-      for (const idx in updatedProp.newValue[newPropName]) {
-        const stringElt = updatedProp.newValue[newPropName][idx];
-
-        for (const stringEltLvl2 in stringElt) {
-          console.log(stringEltLvl2);
-        }
-      }
-
-      console.log("type")
-      console.log(typeof updatedProp.newValue)
-      console.log("keys")
-      console.log(Object.keys(updatedProp.newValue));
-      console.log("stringified:")
-      console.log(JSON.stringify(updatedProp.newValue));
-      */
-
       if (newPropName == 'Fn::Join') {
+        const joinString = updatedProp.newValue[newPropName];
+        console.log(joinString[1]);
+        const updatedDefinition = JSON.parse(joinString[1]); // new value is located here
+
         return JSON.stringify(updatedDefinition);
-        //return JSON.stringify(updatedProp.newValue.newPropName);
-        //return JSON.stringify(updatedProp.newValue);
-        //return updatedProp.newValue;
       }
     }
   }
