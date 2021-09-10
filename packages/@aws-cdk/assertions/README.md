@@ -107,16 +107,32 @@ By default, the `hasResource()` and `hasResourceProperties()` APIs perform deep
 partial object matching. This behavior can be configured using matchers.
 See subsequent section on [special matchers](#special-matchers).
 
-## Other Sections
+## Output and Mapping sections
 
-Similar to the `hasResource()` and `findResources()`, we have equivalent methods
-to check and find other sections of the CloudFormation resources.
+The module allows you to assert that the CloudFormation template contains an Output
+that matches specific properties. The following code asserts that a template contains
+an Output with a `logicalId` of `Foo` and the specified properties -
 
-* Outputs - `hasOutput()` and `findOutputs()`
-* Mapping - `hasMapping()` and `findMappings()`
+```ts
+assert.hasOutput('Foo', { 
+  Value: 'Bar',
+  Export: { Name: 'ExportBaz' }, 
+});
+```
 
-All of the defaults and behaviour documented for `hasResource()` and
-`findResources()` apply to these methods.
+If you want to match against all Outputs in the template, use `*` as the `logicalId`.
+
+```ts
+assert.hasOutput('*', {
+  Value: 'Bar',
+  Export: { Name: 'ExportBaz' },
+});
+```
+
+`findOutputs()` will return a list of outputs that match the `logicalId` and `props`,
+and you can use the `'*'` special case as well.
+
+The APIs `hasMapping()` and `findMappings()` provide similar functionalities.
 
 ## Special Matchers
 
@@ -168,7 +184,9 @@ assert.hasResourceProperties('Foo::Bar', {
 The `Match.objectEquals()` API can be used to assert a target as a deep exact
 match.
 
-In addition, the `Match.absentProperty()` can be used to specify that a specific
+### Presence and Absence
+
+The `Match.absentProperty()` matcher can be used to specify that a specific
 property should not exist on the target. This can be used within `Match.objectLike()`
 or outside of any matchers.
 
@@ -199,6 +217,42 @@ assert.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
     Wobble: Match.absentProperty(),
   })
+});
+```
+
+The `Match.anyValue()` matcher can be used to specify that a specific value should be found
+at the location. This matcher will fail if when the target location has null-ish values
+(i.e., `null` or `undefined`).
+
+This matcher can be combined with any of the other matchers.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": {
+//           "Wobble": ["Flob", "Flib"],
+//         }
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: {
+    Wobble: [Match.anyValue(), "Flip"],
+  },
+});
+
+// The following will throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: {
+    Wimble: Match.anyValue(),
+  },
 });
 ```
 
@@ -265,6 +319,37 @@ assert.hasResourceProperties('Foo::Bar', {
 assert.hasResourceProperties('Foo::Bar', Match.objectLike({
   Fred: Match.not(['Flob', 'Cat']);
 }});
+```
+
+## Capturing Values
+
+This matcher APIs documented above allow capturing values in the matching entry
+(Resource, Output, Mapping, etc.). The following code captures a string from a
+matching resource.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Flob", "Cat"],
+//         "Waldo": ["Qix", "Qux"],
+//       }
+//     }
+//   }
+// }
+
+const fredCapture = new Capture();
+const waldoCapture = new Capture();
+assert.hasResourceProperties('Foo::Bar', {
+  Fred: fredCapture,
+  Waldo: ["Qix", waldoCapture],
+});
+
+fredCapture.asArray(); // returns ["Flob", "Cat"]
+waldoCapture.asString(); // returns "Qux"
 ```
 
 ## Strongly typed languages

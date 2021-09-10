@@ -663,6 +663,14 @@ new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
 });
 ```
 
+Pre-defined AWS services are defined in the [InterfaceVpcEndpointAwsService](lib/vpc-endpoint.ts) class, and can be used to
+create VPC endpoints without having to configure name, ports, etc. For example, a Keyspaces endpoint can be created for
+use in your VPC:
+
+``` ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', { vpc, service: InterfaceVpcEndpointAwsService.KEYSPACES });
+```
+
 #### Security groups for interface VPC endpoints
 
 By default, interface VPC endpoints create a new security group and traffic is **not**
@@ -824,6 +832,12 @@ new ec2.Instance(this, 'Instance', {
 
     // Optional, how long the installation is expected to take (5 minutes by default)
     timeout: Duration.minutes(30),
+
+    // Optional, whether to include the --url argument when running cfn-init and cfn-signal commands (false by default)
+    includeUrl: true
+
+    // Optional, whether to include the --role argument when running cfn-init and cfn-signal commands (false by default)
+    includeRole: true
   },
 });
 ```
