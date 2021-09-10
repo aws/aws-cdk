@@ -129,8 +129,18 @@ assert.hasOutput('*', {
 });
 ```
 
-`findOutputs()` will return a list of outputs that match the `logicalId` and `props`,
+`findOutputs()` will return a set of outputs that match the `logicalId` and `props`,
 and you can use the `'*'` special case as well.
+
+```ts
+const result = assert.findOutputs('*', {
+  Value: 'Fred',
+});
+expect(result).toEqual({
+  Foo: { Value: 'Fred', Description: 'FooFred' },
+  Bar: { Value: 'Fred', Description: 'BarFred' },
+});
+```
 
 The APIs `hasMapping()` and `findMappings()` provide similar functionalities.
 
