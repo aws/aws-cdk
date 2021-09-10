@@ -30,6 +30,21 @@
             }
           ],
           "Version": "2012-10-17"
+        },
+        "EnableKeyRotation": false
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "MyPipelineArtifactsBucketEncryptionKeyAlias9D4F8C59": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-awscdkpipelineeventtargetmypipeline4ae5d407",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+            "Arn"
+          ]
         }
       },
       "UpdateReplacePolicy": "Delete",
@@ -62,20 +77,6 @@
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
-    },
-    "MyPipelineArtifactsBucketEncryptionKeyAlias9D4F8C59": {
-      "Type": "AWS::KMS::Alias",
-      "Properties": {
-        "AliasName": "alias/codepipeline-awscdkpipelineeventtargetmypipeline4ae5d407",
-        "TargetKeyId": {
-          "Fn::GetAtt": [
-            "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
-            "Arn"
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
     },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",
