@@ -8,14 +8,14 @@ import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob 
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
-import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
+import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
 import { Configuration } from './settings';
-import { partition } from './util';
+import { numberFromBool, partition } from './util';
 
 export interface CdkToolkitProps {
 
@@ -94,13 +94,17 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
-      diffs = printStackDiff(template, stacks.firstStack, strict, contextLines, stream);
+      diffs = options.securityOnly
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
-        diffs += printStackDiff(currentTemplate, stack, strict, contextLines, stream);
+        diffs += options.securityOnly
+          ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
+          : printStackDiff(currentTemplate, stack, strict, contextLines, stream);
       }
     }
 
@@ -108,7 +112,7 @@ export class CdkToolkit {
   }
 
   public async deploy(options: DeployOptions) {
-    const stacks = await this.selectStacksForDeploy(options.stackNames, options.exclusively);
+    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively);
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -127,6 +131,11 @@ export class CdkToolkit {
       }
     }
 
+    if (options.hotswap) {
+      warning('⚠️ The --hotswap flag deliberately introduces CloudFormation drift to speed up deployments');
+      warning('⚠️ It should only be used for development - never use it for your production Stacks!');
+    }
+
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
@@ -143,7 +152,7 @@ export class CdkToolkit {
         } else {
           warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.displayName));
           await this.destroy({
-            stackNames: [stack.stackName],
+            selector: { patterns: [stack.stackName] },
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
@@ -192,6 +201,8 @@ export class CdkToolkit {
           usePreviousParameters: options.usePreviousParameters,
           progress: options.progress,
           ci: options.ci,
+          rollback: options.rollback,
+          hotswap: options.hotswap,
         });
 
         const message = result.noOp
@@ -233,7 +244,7 @@ export class CdkToolkit {
   }
 
   public async destroy(options: DestroyOptions) {
-    let stacks = await this.selectStacksForDestroy(options.stackNames, options.exclusively);
+    let stacks = await this.selectStacksForDestroy(options.selector, options.exclusively);
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks = stacks.reversed();
@@ -296,8 +307,8 @@ export class CdkToolkit {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean): Promise<any> {
-    const stacks = await this.selectStacksForDiff(stackNames, exclusively);
+  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean, autoValidate?: boolean): Promise<any> {
+    const stacks = await this.selectStacksForDiff(stackNames, exclusively, autoValidate);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
@@ -334,17 +345,23 @@ export class CdkToolkit {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  public async bootstrap(environmentSpecs: string[], bootstrapper: Bootstrapper, options: BootstrapEnvironmentOptions): Promise<void> {
+  public async bootstrap(userEnvironmentSpecs: string[], bootstrapper: Bootstrapper, options: BootstrapEnvironmentOptions): Promise<void> {
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise use what the user said.
 
     // By default glob for everything
-    environmentSpecs = environmentSpecs.length > 0 ? environmentSpecs : ['**'];
+    const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
 
     // Partition into globs and non-globs (this will mutate environmentSpecs).
     const globSpecs = partition(environmentSpecs, looksLikeGlob);
     if (globSpecs.length > 0 && !this.props.cloudExecutable.hasApp) {
-      throw new Error(`'${globSpecs}' is not an environment name. Run in app directory to glob or specify an environment name like \'aws://123456789012/us-east-1\'.`);
+      if (userEnvironmentSpecs.length > 0) {
+        // User did request this glob
+        throw new Error(`'${globSpecs}' is not an environment name. Specify an environment name like 'aws://123456789012/us-east-1', or run in a directory with 'cdk.json' to use wildcards.`);
+      } else {
+        // User did not request anything
+        throw new Error('Specify an environment name like \'aws://123456789012/us-east-1\', or run in a directory with \'cdk.json\'.');
+      }
     }
 
     const environments: cxapi.Environment[] = [
@@ -371,46 +388,50 @@ export class CdkToolkit {
     }));
   }
 
-  private async selectStacksForList(selectors: string[]) {
+  private async selectStacksForList(patterns: string[]) {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(selectors, { defaultBehavior: DefaultSelection.AllStacks });
+    const stacks = await assembly.selectStacks({ patterns }, { defaultBehavior: DefaultSelection.AllStacks });
 
     // No validation
 
     return stacks;
   }
 
-  private async selectStacksForDeploy(stackNames: string[], exclusively?: boolean) {
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean): Promise<StackCollection> {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(stackNames, {
+    const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
 
-    await this.validateStacks(stacks);
+    this.validateStacksSelected(stacks, selector.patterns);
+    this.validateStacks(stacks);
 
     return stacks;
   }
 
-  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean) {
+  private async selectStacksForDiff(stackNames: string[], exclusively?: boolean, autoValidate?: boolean): Promise<StackCollection> {
     const assembly = await this.assembly();
 
-    const selectedForDiff = await assembly.selectStacks(stackNames, {
+    const selectedForDiff = await assembly.selectStacks({ patterns: stackNames }, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.MainAssembly,
     });
 
     const allStacks = await this.selectStacksForList([]);
-    const flaggedStacks = allStacks.filter(art => art.validateOnSynth ?? false);
+    const autoValidateStacks = autoValidate
+      ? allStacks.filter(art => art.validateOnSynth ?? false)
+      : new StackCollection(assembly, []);
 
-    await this.validateStacks(selectedForDiff.concat(flaggedStacks));
+    this.validateStacksSelected(selectedForDiff.concat(autoValidateStacks), stackNames);
+    this.validateStacks(selectedForDiff.concat(autoValidateStacks));
 
     return selectedForDiff;
   }
 
-  private async selectStacksForDestroy(stackNames: string[], exclusively?: boolean) {
+  private async selectStacksForDestroy(selector: StackSelector, exclusively?: boolean) {
     const assembly = await this.assembly();
-    const stacks = await assembly.selectStacks(stackNames, {
+    const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
@@ -423,7 +444,7 @@ export class CdkToolkit {
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
-  private async validateStacks(stacks: StackCollection) {
+  private validateStacks(stacks: StackCollection) {
     stacks.processMetadataMessages({
       ignoreErrors: this.props.ignoreErrors,
       strict: this.props.strict,
@@ -432,12 +453,21 @@ export class CdkToolkit {
   }
 
   /**
+   * Validate that if a user specified a stack name there exists at least 1 stack selected
+   */
+  private validateStacksSelected(stacks: StackCollection, stackNames: string[]) {
+    if (stackNames.length != 0 && stacks.stackCount == 0) {
+      throw new Error(`No stacks match the name(s) ${stackNames}`);
+    }
+  }
+
+  /**
    * Select a single stack by its name
    */
   private async selectSingleStackByName(stackName: string) {
     const assembly = await this.assembly();
 
-    const stacks = await assembly.selectStacks([stackName], {
+    const stacks = await assembly.selectStacks({ patterns: [stackName] }, {
       extend: ExtendedStackSelection.None,
       defaultBehavior: DefaultSelection.None,
     });
@@ -503,13 +533,20 @@ export interface DiffOptions {
    * @default false
    */
   fail?: boolean;
+
+  /**
+   * Only run diff on broadened security changes
+   *
+   * @default false
+   */
+  securityOnly?: boolean;
 }
 
 export interface DeployOptions {
   /**
-   * Stack names to deploy
+   * Criteria for selecting stacks to deploy
    */
-  stackNames: string[];
+  selector: StackSelector;
 
   /**
    * Only select the given stack
@@ -606,13 +643,28 @@ export interface DeployOptions {
    * @default false
    */
   readonly ci?: boolean;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
+  /*
+   * Whether to perform a 'hotswap' deployment.
+   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
+   * and update the affected resources like Lambda functions directly.
+   *
+   * @default - false (do not perform a 'hotswap' deployment)
+   */
+  readonly hotswap?: boolean;
 }
 
 export interface DestroyOptions {
   /**
-   * The names of the stacks to delete
+   * Criteria for selecting stacks to deploy
    */
-  stackNames: string[];
+  selector: StackSelector;
 
   /**
    * Whether to exclude stacks that depend on the stacks to be deleted

@@ -76,12 +76,17 @@ const cluster = msk.Cluster.fromClusterArn(this, 'Cluster', 'arn:aws:kafka:us-we
 
 ## Client Authentication
 
+[MSK supports](https://docs.aws.amazon.com/msk/latest/developerguide/kafka_apis_iam.html) the following authentication mechanisms.
+
+> Only one authentication method can be enabled.
+
 ### TLS
 
 To enable client authentication with TLS set the `certificateAuthorityArns` property to reference your ACM Private CA. [More info on Private CAs.](https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html)
 
 ```typescript
 import * as msk from "@aws-cdk/aws-msk"
+import * as acmpca from "@aws-cdk/aws-acmpca"
 
 const cluster = new msk.Cluster(this, 'Cluster', {
     ...
@@ -89,8 +94,12 @@ const cluster = new msk.Cluster(this, 'Cluster', {
       clientBroker: msk.ClientBrokerEncryption.TLS,
     },
     clientAuthentication: msk.ClientAuthentication.tls({
-      certificateAuthorityArns: [
-        'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+      certificateAuthorities: [
+        acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+          stack,
+          "CertificateAuthority",
+          "arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111"
+        ),
       ],
     }),
   });
@@ -99,7 +108,7 @@ const cluster = new msk.Cluster(this, 'Cluster', {
 
 ### SASL/SCRAM
 
-Enable client authentication with SASL/SCRAM:
+Enable client authentication with [SASL/SCRAM](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html):
 
 ```typescript
 import * as msk from "@aws-cdk/aws-msk"
@@ -111,6 +120,24 @@ const cluster = new msk.cluster(this, "cluster", {
   },
   clientAuthentication: msk.ClientAuthentication.sasl({
     scram: true,
+  }),
+})
+```
+
+### SASL/IAM
+
+Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/developerguide/iam-access-control.html):
+
+```typescript
+import * as msk from "@aws-cdk/aws-msk"
+
+const cluster = new msk.cluster(this, "cluster", {
+  ...
+  encryptionInTransit: {
+    clientBroker: msk.ClientBrokerEncryption.TLS,
+  },
+  clientAuthentication: msk.ClientAuthentication.sasl({
+    iam: true,
   }),
 })
 ```

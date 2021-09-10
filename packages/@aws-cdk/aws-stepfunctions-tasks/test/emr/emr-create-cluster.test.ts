@@ -131,7 +131,7 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
-    name: sfn.TaskInput.fromDataAt('$.ClusterName').value,
+    name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
     serviceRole,
     autoScalingRole,
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -636,6 +636,123 @@ test('Create Cluster with Instances configuration', () => {
       },
       AutoScalingRole: {
         Ref: 'AutoScalingRole015ADA0A',
+      },
+    },
+  });
+});
+
+test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimized', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceTypeConfigs: [{
+          bidPrice: '1',
+          bidPriceAsPercentageOfOnDemandPrice: 1,
+          configurations: [{
+            classification: 'Classification',
+            properties: {
+              Key: 'Value',
+            },
+          }],
+          ebsConfiguration: {
+            ebsBlockDeviceConfigs: [{
+              volumeSpecification: {
+                iops: 1,
+                volumeSize: cdk.Size.gibibytes(1),
+                volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+              },
+              volumesPerInstance: 1,
+            }],
+            ebsOptimized: true,
+          },
+          instanceType: 'm5.xlarge',
+          weightedCapacity: 1,
+        }],
+        launchSpecifications: {
+          spotSpecification: {
+            allocationStrategy: EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
+            blockDurationMinutes: 1,
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeoutDurationMinutes: 1,
+          },
+        },
+        name: 'Master',
+        targetOnDemandCapacity: 1,
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+        InstanceFleets: [{
+          InstanceFleetType: 'MASTER',
+          InstanceTypeConfigs: [{
+            BidPrice: '1',
+            BidPriceAsPercentageOfOnDemandPrice: 1,
+            Configurations: [{
+              Classification: 'Classification',
+              Properties: {
+                Key: 'Value',
+              },
+            }],
+            EbsConfiguration: {
+              EbsBlockDeviceConfigs: [{
+                VolumeSpecification: {
+                  Iops: 1,
+                  SizeInGB: 1,
+                  VolumeType: 'standard',
+                },
+                VolumesPerInstance: 1,
+              }],
+              EbsOptimized: true,
+            },
+            InstanceType: 'm5.xlarge',
+            WeightedCapacity: 1,
+          }],
+          LaunchSpecifications: {
+            SpotSpecification: {
+              AllocationStrategy: 'capacity-optimized',
+              BlockDurationMinutes: 1,
+              TimeoutAction: 'TERMINATE_CLUSTER',
+              TimeoutDurationMinutes: 1,
+            },
+          },
+          Name: 'Master',
+          TargetOnDemandCapacity: 1,
+          TargetSpotCapacity: 1,
+        }],
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
       },
     },
   });

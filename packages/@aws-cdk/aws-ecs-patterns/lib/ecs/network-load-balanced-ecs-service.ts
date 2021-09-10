@@ -108,6 +108,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
         logging: logDriver,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,

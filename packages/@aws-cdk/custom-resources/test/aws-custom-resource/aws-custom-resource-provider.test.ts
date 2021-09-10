@@ -302,6 +302,53 @@ test('restrict output path', async () => {
   expect(request.isDone()).toBeTruthy();
 });
 
+test('restrict output paths', async () => {
+  const listObjectsFake = sinon.fake.resolves({
+    Contents: [
+      {
+        Key: 'first-key',
+        ETag: 'first-key-etag',
+      },
+      {
+        Key: 'second-key',
+        ETag: 'second-key-etag',
+      },
+    ],
+  } as SDK.S3.ListObjectsOutput);
+
+  AWS.mock('S3', 'listObjects', listObjectsFake);
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: 'S3',
+        action: 'listObjects',
+        parameters: {
+          Bucket: 'my-bucket',
+        },
+        physicalResourceId: PhysicalResourceId.of('id'),
+        outputPaths: ['Contents.0.Key', 'Contents.1.Key'],
+      } as AwsSdkCall),
+    },
+  };
+
+  const request = createRequest(body =>
+    body.Status === 'SUCCESS' &&
+    body.PhysicalResourceId === 'id' &&
+    JSON.stringify(body.Data) === JSON.stringify({
+      'Contents.0.Key': 'first-key',
+      'Contents.1.Key': 'second-key',
+    }),
+  );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+});
+
 test('can specify apiVersion and region', async () => {
   const publishFake = sinon.fake.resolves({});
 

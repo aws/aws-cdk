@@ -1,4 +1,4 @@
-import { Resource } from '@aws-cdk/core';
+import { Duration, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnAuthorizer } from '../apigatewayv2.generated';
 
@@ -15,9 +15,18 @@ export enum HttpAuthorizerType {
 
   /** Lambda Authorizer */
   LAMBDA = 'REQUEST',
+}
 
-  /** No authorizer */
-  NONE = 'NONE'
+/**
+ * Payload format version for lambda authorizers
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html
+ */
+export enum AuthorizerPayloadVersion {
+  /** Version 1.0 */
+  VERSION_1_0 = '1.0',
+
+  /** Version 2.0 */
+  VERSION_2_0 = '2.0'
 }
 
 /**
@@ -58,6 +67,38 @@ export interface HttpAuthorizerProps {
    * @default - required for JWT authorizer types.
    */
   readonly jwtIssuer?: string;
+
+  /**
+   * Specifies whether a Lambda authorizer returns a response in a simple format.
+   *
+   * If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy.
+   *
+   * @default - The lambda authorizer must return an IAM policy as its response
+   */
+  readonly enableSimpleResponses?: boolean;
+
+  /**
+   * Specifies the format of the payload sent to an HTTP API Lambda authorizer.
+   *
+   * @default AuthorizerPayloadVersion.VERSION_2_0 if the authorizer type is HttpAuthorizerType.LAMBDA
+   */
+  readonly payloadFormatVersion?: AuthorizerPayloadVersion;
+
+  /**
+   * The authorizer's Uniform Resource Identifier (URI).
+   *
+   * For REQUEST authorizers, this must be a well-formed Lambda function URI.
+   *
+   * @default - required for Request authorizer types
+   */
+  readonly authorizerUri?: string;
+
+  /**
+   * How long APIGateway should cache the results. Max 1 hour.
+   *
+   * @default - API Gateway will not cache authorizer responses
+   */
+  readonly resultsCacheTtl?: Duration;
 }
 
 /**
@@ -77,8 +118,13 @@ export interface HttpAuthorizerAttributes {
 
   /**
    * Type of authorizer
+   *
+   * Possible values are:
+   * - JWT - JSON Web Token Authorizer
+   * - CUSTOM - Lambda Authorizer
+   * - NONE - No Authorization
    */
-  readonly authorizerType: HttpAuthorizerType
+  readonly authorizerType: string
 }
 
 /**
@@ -109,8 +155,22 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
 
+    let authorizerPayloadFormatVersion = props.payloadFormatVersion;
+
     if (props.type === HttpAuthorizerType.JWT && (!props.jwtAudience || props.jwtAudience.length === 0 || !props.jwtIssuer)) {
       throw new Error('jwtAudience and jwtIssuer are mandatory for JWT authorizers');
+    }
+
+    if (props.type === HttpAuthorizerType.LAMBDA && !props.authorizerUri) {
+      throw new Error('authorizerUri is mandatory for Lambda authorizers');
+    }
+
+    /**
+     * This check is required because Cloudformation will fail stack creation is this property
+     * is set for the JWT authorizer. AuthorizerPayloadFormatVersion can only be set for REQUEST authorizer
+     */
+    if (props.type === HttpAuthorizerType.LAMBDA && typeof authorizerPayloadFormatVersion === 'undefined') {
+      authorizerPayloadFormatVersion = AuthorizerPayloadVersion.VERSION_2_0;
     }
 
     const resource = new CfnAuthorizer(this, 'Resource', {
@@ -122,6 +182,10 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
         audience: props.jwtAudience,
         issuer: props.jwtIssuer,
       }),
+      enableSimpleResponses: props.enableSimpleResponses,
+      authorizerPayloadFormatVersion,
+      authorizerUri: props.authorizerUri,
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
     });
 
     this.authorizerId = resource.ref;
@@ -152,10 +216,17 @@ export interface HttpRouteAuthorizerConfig {
    * @default - No authorizer id (useful for AWS_IAM route authorizer)
    */
   readonly authorizerId?: string;
+
   /**
    * The type of authorization
+   *
+   * Possible values are:
+   * - JWT - JSON Web Token Authorizer
+   * - CUSTOM - Lambda Authorizer
+   * - NONE - No Authorization
    */
-  readonly authorizationType: HttpAuthorizerType;
+  readonly authorizationType: string;
+
   /**
    * The list of OIDC scopes to include in the authorization.
    * @default - no authorization scopes
@@ -184,7 +255,7 @@ function undefinedIfNoKeys<A>(obj: A): A | undefined {
 export class HttpNoneAuthorizer implements IHttpRouteAuthorizer {
   public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     return {
-      authorizationType: HttpAuthorizerType.NONE,
+      authorizationType: 'NONE',
     };
   }
 }

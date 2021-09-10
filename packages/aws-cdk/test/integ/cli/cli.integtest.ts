@@ -39,23 +39,36 @@ integTest('Termination protection', withDefaultFixture(async (fixture) => {
 }));
 
 integTest('cdk synth', withDefaultFixture(async (fixture) => {
-  await expect(fixture.cdk(['synth', fixture.fullStackName('test-1')], { verbose: false })).resolves.toEqual(
-    `Resources:
-  topic69831491:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-1/topic/Resource`);
+  await fixture.cdk(['synth', fixture.fullStackName('test-1')]);
+  expect(fixture.template('test-1')).toEqual({
+    Resources: {
+      topic69831491: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-1/topic/Resource`,
+        },
+      },
+    },
+  });
 
-  await expect(fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false })).resolves.toEqual(
-    `Resources:
-  topic152D84A37:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-2/topic1/Resource
-  topic2A4FB547F:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-2/topic2/Resource`);
+  await fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false });
+  expect(fixture.template('test-2')).toEqual({
+    Resources: {
+      topic152D84A37: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-2/topic1/Resource`,
+        },
+      },
+      topic2A4FB547F: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-2/topic2/Resource`,
+        },
+      },
+    },
+  });
+
 }));
 
 integTest('ssm parameter provider error', withDefaultFixture(async (fixture) => {
@@ -484,6 +497,11 @@ integTest('cdk diff --fail with multiple stack exits with if any of the stacks c
   await expect(fixture.cdk(['diff', '--fail', fixture.fullStackName('test-1'), fixture.fullStackName('test-2')])).rejects.toThrow('exited with error');
 }));
 
+integTest('cdk diff --security-only --fail exits when security changes are present', withDefaultFixture(async (fixture) => {
+  const stackName = 'iam-test';
+  await expect(fixture.cdk(['diff', '--security-only', '--fail', fixture.fullStackName(stackName)])).rejects.toThrow('exited with error');
+}));
+
 integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) => {
   await fixture.cdkDeploy('docker');
 }));
@@ -534,6 +552,25 @@ integTest('cdk ls', withDefaultFixture(async (fixture) => {
   for (const stack of expectedStacks) {
     expect(listing).toContain(fixture.fullStackName(stack));
   }
+}));
+
+integTest('synthing a stage with errors leads to failure', withDefaultFixture(async (fixture) => {
+  const output = await fixture.cdk(['synth'], {
+    allowErrExit: true,
+    modEnv: {
+      INTEG_STACK_SET: 'stage-with-errors',
+    },
+  });
+
+  expect(output).toContain('This is an error');
+}));
+
+integTest('synthing a stage with errors can be suppressed', withDefaultFixture(async (fixture) => {
+  await fixture.cdk(['synth', '--no-validation'], {
+    modEnv: {
+      INTEG_STACK_SET: 'stage-with-errors',
+    },
+  });
 }));
 
 integTest('deploy stack without resource', withDefaultFixture(async (fixture) => {

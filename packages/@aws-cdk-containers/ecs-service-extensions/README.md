@@ -19,6 +19,7 @@ The `Service` construct provided by this module can be extended with optional `S
 - [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
+- Queue to allow your service to consume messages from an SQS Queue which is populated by one or more SNS Topics that it is subscribed to
 - [Community Extensions](#community-extensions), providing support for advanced use cases
 
 The `ServiceExtension` class is an abstract class which you can also implement in
@@ -132,6 +133,25 @@ const nameService = new Service(stack, 'name', {
 At this point, all the service resources will be created. This includes the ECS Task
 Definition, Service, as well as any other attached resources, such as App Mesh Virtual
 Node or an Application Load Balancer.
+
+## Creating your own taskRole
+
+Sometimes the taskRole should be defined outside of the service so that you can create strict resource policies (ie. S3 bucket policies) that are restricted to a given taskRole:
+
+```ts
+const taskRole = new iam.Role(stack, 'CustomTaskRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+});
+
+// Use taskRole in any CDK resource policies
+// new s3.BucketPolicy(this, 'BucketPolicy, {});
+
+const nameService = new Service(stack, 'name', {
+  environment: environment,
+  serviceDescription: nameDescription,
+  taskRole,
+});
+```
 
 ## Creating your own custom `ServiceExtension`
 
@@ -300,6 +320,40 @@ const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', 
   cluster,
 });
 
+```
+
+## Queue Extension
+
+This service extension creates a default SQS Queue `eventsQueue` for the service (if not provided) and accepts a list of `ISubscribable` objects that the `eventsQueue` can subscribe to. The service extension creates the subscriptions and sets up permissions for the service to consume messages from the SQS Queue.
+
+### Setting up SNS Topic Subscriptions for SQS Queues
+
+You can use this extension to set up SNS Topic subscriptions for the `eventsQueue`. To do this, create a new object of type `TopicSubscription` for every SNS Topic you want the `eventsQueue` to subscribe to and provide it as input to the service extension.
+
+```ts
+const myServiceDescription = nameDescription.add(new QueueExtension({
+  // Provide list of topic subscriptions that you want the `eventsQueue` to subscribe to
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+  }],
+}));
+
+// To access the `eventsQueue` for the service, use the `eventsQueue` getter for the extension
+const myQueueExtension = myServiceDescription.extensions.queue as QueueExtension;
+const myEventsQueue = myQueueExtension.eventsQueue;
+```
+
+For setting up a topic-specific queue subscription, you can provide a custom queue in the `TopicSubscription` object along with the SNS Topic. The extension will set up a topic subscription for the provided queue instead of the default `eventsQueue` of the service.
+
+```ts
+nameDescription.add(new QueueExtension({
+  queue: myEventsQueue,
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+    // `myTopicQueue` will subscribe to the `my-topic` instead of `eventsQueue`
+    queue: myTopicQueue,
+  }],
+}));
 ```
 
 ## Community Extensions

@@ -92,11 +92,34 @@ A bucket policy will be automatically created for the bucket upon the first call
 
 ```ts
 const bucket = new Bucket(this, 'MyBucket');
-bucket.addToResourcePolicy(new iam.PolicyStatement({
+const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
   actions: ['s3:GetObject'],
   resources: [bucket.arnForObjects('file.txt')],
   principals: [new iam.AccountRootPrincipal()],
 }));
+```
+
+If you try to add a policy statement to an existing bucket, this method will 
+not do anything:
+
+```ts
+const bucket = Bucket.fromBucketName(this, 'existingBucket', 'bucket-name');
+
+// Nothing will change here
+const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
+  ...
+}));
+```
+
+That's because it's not possible to tell whether the bucket 
+already has a policy attached, let alone to re-use that policy to add more 
+statements to it. We recommend that you always check the result of the call:
+
+```ts
+const result = bucket.addToResourcePolicy(...)
+if (!result.statementAdded) {
+  // Uh-oh! Someone probably made a mistake here.
+}
 ```
 
 The bucket policy can be directly accessed after creation to add statements or
@@ -150,7 +173,7 @@ const bucket = Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 });
 
 // now you can just call methods on the bucket
-bucket.grantReadWrite(user);
+bucket.addEventNotification(EventType.OBJECT_CREATED, ...);
 ```
 
 Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
@@ -188,7 +211,7 @@ The following example will subscribe an SNS topic to be notified of all `s3:Obje
 ```ts
 import * as s3n from '@aws-cdk/aws-s3-notifications';
 
-const myTopic = new sns.Topic(this, 'MyTopic');
+const topic = new sns.Topic(this, 'MyTopic');
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
 
@@ -205,6 +228,15 @@ have the `.jpg` suffix are removed from the bucket.
 bucket.addEventNotification(s3.EventType.OBJECT_REMOVED,
   new s3n.SqsDestination(myQueue),
   { prefix: 'foo/', suffix: '.jpg' });
+```
+
+Adding notifications on existing buckets:
+
+```ts
+const bucket = Bucket.fromBucketAttributes(this, 'ImportedBucket', {
+    bucketArn: 'arn:aws:s3:::my-bucket'
+});
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
 
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html

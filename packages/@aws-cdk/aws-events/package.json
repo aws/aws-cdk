@@ -49,10 +49,13 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::Events",
+    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
@@ -72,10 +75,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/nodeunit": "^0.0.31",
+    "@types/jest": "^26.0.24",
+    "@types/nodeunit": "^0.0.32",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
+    "jest": "^26.6.3",
     "pkglint": "0.0.0",
     "@aws-cdk/assert-internal": "0.0.0"
   },

@@ -1,3 +1,4 @@
+import { ABSENT } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import { Code, EventSourceMapping, Function, Runtime } from '../lib';
@@ -290,6 +291,65 @@ describe('event source mapping', () => {
       target: fn,
       eventSourceArn: '',
       tumblingWindow: lazyDuration,
+    });
+  });
+
+  test('transforms reportBatchItemFailures into functionResponseTypes with ReportBatchItemFailures', () => {
+    const stack = new cdk.Stack();
+
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      reportBatchItemFailures: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+      FunctionResponseTypes: ['ReportBatchItemFailures'],
+    });
+  });
+
+  test('transforms missing reportBatchItemFailures into absent FunctionResponseTypes', () => {
+    const stack = new cdk.Stack();
+
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+      FunctionResponseTypes: ABSENT,
+    });
+  });
+
+  test('transforms reportBatchItemFailures false into absent FunctionResponseTypes', () => {
+    const stack = new cdk.Stack();
+
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      reportBatchItemFailures: false,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+      FunctionResponseTypes: ABSENT,
     });
   });
 });

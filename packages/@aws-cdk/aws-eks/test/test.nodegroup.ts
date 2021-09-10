@@ -7,7 +7,7 @@ import { testFixture } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
 export = {
 
@@ -538,6 +538,42 @@ export = {
     ));
     test.done();
   },
+  'add node group with taints'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+
+    // WHEN
+    cluster.addNodegroupCapacity('ng', {
+      taints: [
+        {
+          effect: eks.TaintEffect.NO_SCHEDULE,
+          key: 'foo',
+          value: 'bar',
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      Taints: [
+        {
+          Effect: 'NO_SCHEDULE',
+          Key: 'foo',
+          Value: 'bar',
+        },
+      ],
+    },
+    ));
+    test.done();
+  },
   'throws when desiredSize > maxSize'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -560,6 +596,58 @@ export = {
     });
     // THEN
     test.throws(() => cluster.addNodegroupCapacity('ng', { desiredSize: 2, minSize: 3 }), /Minimum capacity 3 can't be greater than desired size 2/);
+    test.done();
+  },
+  'can set minSize , maxSize and DesiredSize'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // WHEN
+    new eks.Nodegroup(stack, 'NodeGroup', {
+      cluster: cluster,
+      minSize: 2,
+      maxSize: 6,
+      desiredSize: 4,
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      ScalingConfig: {
+        MinSize: 2,
+        MaxSize: 6,
+        DesiredSize: 4,
+      },
+    },
+    ));
+    test.done();
+  },
+  'validation is not performed when using Tokens'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // WHEN
+    new eks.Nodegroup(stack, 'NodeGroup', {
+      cluster: cluster,
+      minSize: cdk.Lazy.number({ produce: () => 5 }),
+      maxSize: cdk.Lazy.number({ produce: () => 1 }),
+      desiredSize: cdk.Lazy.number({ produce: () => 20 }),
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      ScalingConfig: {
+        MinSize: 5,
+        MaxSize: 1,
+        DesiredSize: 20,
+      },
+    },
+    ));
     test.done();
   },
   'create nodegroup correctly with launch template'(test: Test) {

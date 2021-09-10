@@ -12,7 +12,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "cdk-build": {
     "jest": true,
@@ -34,7 +36,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "aws-cdk-migration": "0.0.0",
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^26.0.24",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.3.69",
     "jest": "^26.6.3",
@@ -51,7 +53,7 @@
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69",
-    "jest": "^26.6.3"
+    "jest": ">=26.6.3"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

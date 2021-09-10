@@ -6,7 +6,7 @@ import {
 } from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
@@ -191,6 +191,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly listenerPort?: number;
 
   /**
+   * The security policy that defines which ciphers and protocols are supported by the ALB Listener.
+   *
+   * @default - The recommended elastic load balancing security policy
+   */
+  readonly sslPolicy?: SslPolicy;
+
+  /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
@@ -243,6 +250,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * Name of the load balancer
+   *
+   * @default - Automatically generated name.
+   */
+  readonly loadBalancerName?: string;
 
 }
 
@@ -325,6 +339,13 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * A key/value map of labels to add to the container.
+   *
+   * @default - No labels.
+   */
+  readonly dockerLabels?: { [key: string]: string };
 }
 
 /**
@@ -403,6 +424,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
 
     const lbProps = {
       vpc: this.cluster.vpc,
+      loadBalancerName: props.loadBalancerName,
       internetFacing,
     };
 
@@ -426,6 +448,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
       protocol,
       port: props.listenerPort,
       open: props.openListener ?? true,
+      sslPolicy: props.sslPolicy,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 

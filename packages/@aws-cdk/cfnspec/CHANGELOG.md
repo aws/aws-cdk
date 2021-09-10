@@ -1,3 +1,1259 @@
+# CloudFormation Resource Specification v40.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CE::CostCategory SplitChargeRules (__added__)
+
+## Property Type Changes
+
+* AWS::EFS::FileSystem.LifecyclePolicy TransitionToPrimaryStorageClass (__added__)
+* AWS::EFS::FileSystem.LifecyclePolicy TransitionToIA.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v40.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::EC2::DHCPOptions Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html
+* AWS::EC2::DHCPOptions DhcpOptionsId (__added__)
+
+## Property Changes
+
+* AWS::AutoScaling::ScalingPolicy PredictiveScalingConfiguration (__added__)
+* AWS::EC2::DHCPOptions DomainName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-domainname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-domainname
+* AWS::EC2::DHCPOptions DomainNameServers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-domainnameservers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-domainnameservers
+* AWS::EC2::DHCPOptions NetbiosNameServers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-netbiosnameservers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-netbiosnameservers
+* AWS::EC2::DHCPOptions NetbiosNodeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-netbiosnodetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-netbiosnodetype
+* AWS::EC2::DHCPOptions NtpServers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-ntpservers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-ntpservers
+* AWS::EC2::DHCPOptions Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-tags
+* AWS::Redshift::Cluster AquaConfigurationStatus (__added__)
+* AWS::Redshift::Cluster AvailabilityZoneRelocation (__added__)
+* AWS::Redshift::Cluster AvailabilityZoneRelocationStatus (__added__)
+* AWS::Redshift::Cluster Classic (__added__)
+* AWS::Redshift::Cluster DeferMaintenance (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceDuration (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceEndTime (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceIdentifier (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceStartTime (__added__)
+* AWS::Redshift::Cluster DestinationRegion (__added__)
+* AWS::Redshift::Cluster EnhancedVpcRouting (__added__)
+* AWS::Redshift::Cluster MaintenanceTrackName (__added__)
+* AWS::Redshift::Cluster ManualSnapshotRetentionPeriod (__added__)
+* AWS::Redshift::Cluster ResourceAction (__added__)
+* AWS::Redshift::Cluster RevisionTarget (__added__)
+* AWS::Redshift::Cluster RotateEncryptionKey (__added__)
+* AWS::Redshift::Cluster SnapshotCopyGrantName (__added__)
+* AWS::Redshift::Cluster SnapshotCopyManual (__added__)
+* AWS::Redshift::Cluster SnapshotCopyRetentionPeriod (__added__)
+* AWS::Redshift::Cluster AvailabilityZone.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster ElasticIp.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster Encrypted.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster KmsKeyId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster Port.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::EndpointConfig AsyncInferenceConfig (__added__)
+
+## Property Type Changes
+
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingConfiguration (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingPredefinedLoadMetric (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingPredefinedMetricPair (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingPredefinedScalingMetric (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceClientConfig (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceConfig (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceNotificationConfig (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceOutputConfig (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement Version (__added__)
+
+
+# CloudFormation Resource Specification v39.10.0
+
+## New Resource Types
+
+* AWS::WAFv2::LoggingConfiguration
+
+## Attribute Changes
+
+* AWS::EC2::EgressOnlyInternetGateway Id (__added__)
+* AWS::S3::AccessPoint Alias (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::DomainName OwnershipVerificationCertificateArn (__added__)
+* AWS::CodeBuild::Project ResourceAccessRole (__added__)
+* AWS::CodeBuild::Project Visibility (__added__)
+
+## Property Type Changes
+
+* AWS::Elasticsearch::Domain.ColdStorageOptions (__added__)
+* AWS::IoTAnalytics::Datastore.CustomerManagedS3Storage (__added__)
+* AWS::IoTAnalytics::Datastore.IotSiteWiseMultiLayerStorage (__added__)
+* AWS::ApiGatewayV2::DomainName.DomainNameConfiguration OwnershipVerificationCertificateArn (__added__)
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig ColdStorageOptions (__added__)
+* AWS::IoTAnalytics::Datastore.DatastoreStorage IotSiteWiseMultiLayerStorage (__added__)
+
+
+# CloudFormation Resource Specification v39.9.0
+
+## New Resource Types
+
+* AWS::Athena::PreparedStatement
+
+## Attribute Changes
+
+* AWS::ApiGateway::Resource ResourceId (__added__)
+* AWS::Athena::WorkGroup WorkGroupConfigurationUpdates.EngineVersion.EffectiveEngineVersion (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.SchedulerLogs.CloudWatchLogGroupArn (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.TaskLogs.CloudWatchLogGroupArn (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.WebserverLogs.CloudWatchLogGroupArn (__added__)
+* AWS::MWAA::Environment LoggingConfiguration.WorkerLogs.CloudWatchLogGroupArn (__added__)
+
+## Property Changes
+
+* AWS::AppSync::GraphQLApi LambdaAuthorizerConfig (__added__)
+* AWS::LookoutEquipment::InferenceScheduler ModelName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LookoutEquipment::InferenceScheduler ServerSideKmsKeyId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::S3::AccessPoint Name (__added__)
+* AWS::Synthetics::Canary VisualReference (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::GraphQLApi.LambdaAuthorizerConfig (__added__)
+* AWS::SageMaker::Model.RepositoryAuthConfig (__added__)
+* AWS::Synthetics::Canary.BaseScreenshot (__added__)
+* AWS::Synthetics::Canary.VisualReference (__added__)
+* AWS::AppSync::GraphQLApi.AdditionalAuthenticationProvider LambdaAuthorizerConfig (__added__)
+* AWS::IoTSiteWise::AssetModel.TumblingWindow Offset (__added__)
+* AWS::SageMaker::Model.ImageConfig RepositoryAuthConfig (__added__)
+
+
+# CloudFormation Resource Specification v39.8.0
+
+## New Resource Types
+
+* AWS::Route53RecoveryControl::Cluster
+* AWS::Route53RecoveryControl::ControlPanel
+* AWS::Route53RecoveryControl::RoutingControl
+* AWS::Route53RecoveryControl::SafetyRule
+* AWS::Route53RecoveryReadiness::Cell
+* AWS::Route53RecoveryReadiness::ReadinessCheck
+* AWS::Route53RecoveryReadiness::RecoveryGroup
+* AWS::Route53RecoveryReadiness::ResourceSet
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DataBrew::Job DatabaseOutputs (__added__)
+* AWS::DataBrew::Job ProfileConfiguration (__added__)
+* AWS::DataSync::LocationNFS MountOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationNFS OnPremConfig.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationNFS Subdirectory.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage AccessKey.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage AgentArns.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage SecretKey.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage ServerPort.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage ServerProtocol.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationObjectStorage Subdirectory.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB AgentArns.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB Domain.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB MountOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB Password.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB Subdirectory.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB User.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3Outposts::Endpoint AccessType (__added__)
+* AWS::S3Outposts::Endpoint CustomerOwnedIpv4Pool (__added__)
+
+## Property Type Changes
+
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyDeprecateRule (__added__)
+* AWS::DLM::LifecyclePolicy.DeprecateRule (__added__)
+* AWS::DataBrew::Job.ColumnSelector (__added__)
+* AWS::DataBrew::Job.ColumnStatisticsConfiguration (__added__)
+* AWS::DataBrew::Job.DatabaseOutput (__added__)
+* AWS::DataBrew::Job.ParameterMap (__added__)
+* AWS::DataBrew::Job.ProfileConfiguration (__added__)
+* AWS::DataBrew::Job.StatisticOverride (__added__)
+* AWS::DataBrew::Job.StatisticsConfiguration (__added__)
+* AWS::FSx::FileSystem.AuditLogConfiguration (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule DeprecateRule (__added__)
+* AWS::DLM::LifecyclePolicy.Schedule DeprecateRule (__added__)
+* AWS::DataSync::LocationNFS.MountOptions Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationNFS.OnPremConfig AgentArns.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::LocationSMB.MountOptions Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataSync::Task.Options SecurityDescriptorCopyFlags (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration AuditLogConfiguration (__added__)
+
+
+# CloudFormation Resource Specification v39.7.0
+
+## New Resource Types
+
+* AWS::Logs::ResourcePolicy
+* AWS::LookoutEquipment::InferenceScheduler
+
+## Attribute Changes
+
+* AWS::Amplify::Domain AutoSubDomainCreationPatterns.DuplicatesAllowed (__added__)
+* AWS::S3::AccessPoint Arn (__added__)
+* AWS::S3::AccessPoint Name (__added__)
+
+## Property Changes
+
+* AWS::Amplify::Domain AutoSubDomainCreationPatterns.DuplicatesAllowed (__added__)
+* AWS::Amplify::Domain SubDomainSettings.DuplicatesAllowed (__added__)
+* AWS::Cassandra::Table EncryptionSpecification (__added__)
+* AWS::EC2::TransitGateway AssociationDefaultRouteTableId (__added__)
+* AWS::EC2::TransitGateway PropagationDefaultRouteTableId (__added__)
+* AWS::EC2::TransitGateway TransitGatewayCidrBlocks (__added__)
+* AWS::EC2::TransitGateway AutoAcceptSharedAttachments.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway DefaultRouteTableAssociation.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway DefaultRouteTablePropagation.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway DnsSupport.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::TransitGateway VpnEcmpSupport.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::VPCCidrBlock Ipv6CidrBlock (__added__)
+* AWS::EC2::VPCCidrBlock Ipv6Pool (__added__)
+* AWS::Glue::Crawler RecrawlPolicy (__added__)
+* AWS::ImageBuilder::ContainerRecipe InstanceConfiguration.PrimitiveType (__deleted__)
+* AWS::ImageBuilder::ImageRecipe AdditionalInstanceConfiguration (__added__)
+* AWS::LookoutMetrics::Alert Action.PrimitiveType (__deleted__)
+* AWS::LookoutMetrics::Alert Action.Type (__added__)
+* AWS::LookoutMetrics::AnomalyDetector AnomalyDetectorConfig.PrimitiveType (__deleted__)
+* AWS::LookoutMetrics::AnomalyDetector AnomalyDetectorConfig.Type (__added__)
+* AWS::S3::AccessPoint Name (__deleted__)
+* AWS::S3::AccessPoint PolicyStatus (__added__)
+* AWS::SSMIncidents::ReplicationSet Regions.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::Cassandra::Table.EncryptionSpecification (__added__)
+* AWS::Glue::Crawler.RecrawlPolicy (__added__)
+* AWS::Glue::Database.DataLakePrincipal (__added__)
+* AWS::Glue::Database.PrincipalPrivileges (__added__)
+* AWS::ImageBuilder::ImageRecipe.AdditionalInstanceConfiguration (__added__)
+* AWS::ImageBuilder::ImageRecipe.ComponentParameter (__added__)
+* AWS::ImageBuilder::ImageRecipe.SystemsManagerAgent (__added__)
+* AWS::LookoutMetrics::Alert.Action (__added__)
+* AWS::LookoutMetrics::Alert.LambdaConfiguration (__added__)
+* AWS::LookoutMetrics::Alert.SNSConfiguration (__added__)
+* AWS::LookoutMetrics::AnomalyDetector.AnomalyDetectorConfig (__added__)
+* AWS::CloudWatch::Alarm.MetricDataQuery AccountId (__added__)
+* AWS::Glue::Database.DatabaseInput CreateTableDefaultPermissions (__added__)
+* AWS::Glue::Partition.SchemaReference SchameVersionId (__deleted__)
+* AWS::Glue::Partition.SchemaReference SchemaVersionId (__added__)
+* AWS::Glue::Table.SchemaReference SchameVersionId (__deleted__)
+* AWS::Glue::Table.SchemaReference SchemaVersionId (__added__)
+* AWS::ImageBuilder::ImageRecipe.ComponentConfiguration Parameters (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionDataSet FormatVersion (__added__)
+
+
+# CloudFormation Resource Specification v39.5.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker MaintenanceWindowStartTime.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::CodeDeploy::Application Tags (__added__)
+* AWS::CodeDeploy::DeploymentConfig ComputePlatform (__added__)
+* AWS::CodeDeploy::DeploymentConfig TrafficRoutingConfig (__added__)
+* AWS::CodeDeploy::DeploymentGroup BlueGreenDeploymentConfiguration (__added__)
+* AWS::CodeDeploy::DeploymentGroup ECSServices (__added__)
+* AWS::DataBrew::Job DataCatalogOutputs (__added__)
+* AWS::ServiceDiscovery::HttpNamespace Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PrivateDnsNamespace Properties (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PublicDnsNamespace Properties (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedCanary (__added__)
+* AWS::CodeDeploy::DeploymentConfig.TimeBasedLinear (__added__)
+* AWS::CodeDeploy::DeploymentConfig.TrafficRoutingConfig (__added__)
+* AWS::CodeDeploy::DeploymentGroup.BlueGreenDeploymentConfiguration (__added__)
+* AWS::CodeDeploy::DeploymentGroup.BlueInstanceTerminationOption (__added__)
+* AWS::CodeDeploy::DeploymentGroup.DeploymentReadyOption (__added__)
+* AWS::CodeDeploy::DeploymentGroup.ECSService (__added__)
+* AWS::CodeDeploy::DeploymentGroup.GreenFleetProvisioningOption (__added__)
+* AWS::DataBrew::Job.DataCatalogOutput (__added__)
+* AWS::DataBrew::Job.DatabaseTableOutputOptions (__added__)
+* AWS::DataBrew::Job.S3TableOutputOptions (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace.PrivateDnsPropertiesMutable (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace.Properties (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace.SOA (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace.Properties (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace.PublicDnsPropertiesMutable (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace.SOA (__added__)
+* AWS::ApiGatewayV2::DomainName.DomainNameConfiguration OwnershipVerificationCertificateArn (__deleted__)
+
+
+# CloudFormation Resource Specification v39.3.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ApiGateway::UsagePlanKey Id (__added__)
+* AWS::Location::Map Arn (__added__)
+* AWS::Location::PlaceIndex Arn (__added__)
+* AWS::MediaPackage::Asset EgressEndpoints (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::RestApi Mode (__added__)
+* AWS::AppSync::GraphQLApi LambdaAuthorizerConfig (__deleted__)
+* AWS::AutoScaling::AutoScalingGroup LoadBalancerNames.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::EC2Fleet Context (__added__)
+* AWS::IoTAnalytics::Datastore DatastorePartitions (__added__)
+* AWS::IoTSiteWise::Portal Alarms (__added__)
+* AWS::IoTSiteWise::Portal NotificationSenderEmail (__added__)
+* AWS::Lambda::EventSourceMapping StartingPositionTimestamp (__added__)
+* AWS::MediaPackage::Asset EgressEndpoints (__deleted__)
+* AWS::RDS::DBCluster CopyTagsToSnapshot (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::GraphQLApi.LambdaAuthorizerConfig (__removed__)
+* AWS::FSx::FileSystem.AuditLogConfiguration (__removed__)
+* AWS::IoTAnalytics::Datastore.DatastorePartition (__added__)
+* AWS::IoTAnalytics::Datastore.DatastorePartitions (__added__)
+* AWS::IoTAnalytics::Datastore.Partition (__added__)
+* AWS::IoTAnalytics::Datastore.TimestampPartition (__added__)
+* AWS::AppSync::GraphQLApi.AdditionalAuthenticationProvider LambdaAuthorizerConfig (__deleted__)
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction Timezone (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData Context (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration AuditLogConfiguration (__deleted__)
+
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function CodeUri.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Serverless::Function Handler.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Serverless::Function Runtime.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+
+# CloudFormation Resource Specification v39.3.0
+
+## New Resource Types
+
+* AWS::CloudFormation::PublicTypeVersion
+* AWS::CloudFormation::Publisher
+* AWS::CloudFormation::TypeActivation
+* AWS::Connect::QuickConnect
+* AWS::KMS::ReplicaKey
+
+## Attribute Changes
+
+* AWS::Redshift::Cluster Id (__added__)
+* AWS::Timestream::Table Name (__added__)
+
+## Property Changes
+
+* AWS::Amplify::App CustomRules.DuplicatesAllowed (__added__)
+* AWS::Amplify::App EnvironmentVariables.DuplicatesAllowed (__added__)
+* AWS::Amplify::App Tags.DuplicatesAllowed (__added__)
+* AWS::Amplify::Branch EnvironmentVariables.DuplicatesAllowed (__added__)
+* AWS::Amplify::Branch Tags.DuplicatesAllowed (__added__)
+* AWS::AppSync::GraphQLApi LambdaAuthorizerConfig (__added__)
+* AWS::AutoScaling::ScheduledAction TimeZone (__added__)
+* AWS::CodeGuruReviewer::RepositoryAssociation BucketName (__added__)
+* AWS::Cognito::UserPoolClient EnableTokenRevocation (__added__)
+* AWS::EKS::Nodegroup UpdateConfig (__added__)
+* AWS::ImageBuilder::ContainerRecipe DockerfileTemplateData.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ImageBuilder::ContainerRecipe DockerfileTemplateUri.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ImageBuilder::ContainerRecipe ImageOsVersionOverride.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::KMS::Key MultiRegion (__added__)
+* AWS::MWAA::Environment Schedulers (__added__)
+* AWS::QLDB::Ledger KmsKey (__added__)
+* AWS::Redshift::Cluster Endpoint (__added__)
+* AWS::Redshift::Cluster HsmClientCertificateIdentifier.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-cluster.html#cfn-redshift-cluster-hsmclientcertidentifier
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-cluster.html#cfn-redshift-cluster-hsmclientcertificateidentifier
+* AWS::Redshift::Cluster HsmConfigurationIdentifier.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-cluster.html#cfn-redshift-cluster-HsmConfigurationIdentifier
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-cluster.html#cfn-redshift-cluster-hsmconfigurationidentifier
+* AWS::Redshift::Cluster NumberOfNodes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-cluster.html#cfn-redshift-cluster-nodetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-cluster.html#cfn-redshift-cluster-numberofnodes
+* AWS::Transfer::Server ProtocolDetails (__added__)
+
+## Property Type Changes
+
+* AWS::AppMesh::GatewayRoute.GatewayRouteHostnameMatch (__added__)
+* AWS::AppMesh::GatewayRoute.GatewayRouteHostnameRewrite (__added__)
+* AWS::AppMesh::GatewayRoute.GatewayRouteMetadataMatch (__added__)
+* AWS::AppMesh::GatewayRoute.GatewayRouteRangeMatch (__added__)
+* AWS::AppMesh::GatewayRoute.GrpcGatewayRouteMetadata (__added__)
+* AWS::AppMesh::GatewayRoute.GrpcGatewayRouteRewrite (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteHeader (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteHeaderMatch (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRoutePathRewrite (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRoutePrefixRewrite (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteRewrite (__added__)
+* AWS::AppMesh::GatewayRoute.HttpPathMatch (__added__)
+* AWS::AppMesh::GatewayRoute.HttpQueryParameterMatch (__added__)
+* AWS::AppMesh::GatewayRoute.QueryParameter (__added__)
+* AWS::AppMesh::Route.HttpPathMatch (__added__)
+* AWS::AppMesh::Route.HttpQueryParameterMatch (__added__)
+* AWS::AppMesh::Route.QueryParameter (__added__)
+* AWS::AppSync::GraphQLApi.LambdaAuthorizerConfig (__added__)
+* AWS::DataBrew::Recipe.ParameterMap (__added__)
+* AWS::EKS::Nodegroup.UpdateConfig (__added__)
+* AWS::FSx::FileSystem.AuditLogConfiguration (__added__)
+* AWS::Redshift::Cluster.Endpoint (__added__)
+* AWS::Transfer::Server.ProtocolDetails (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig AutoBranchCreationPatterns.DuplicatesAllowed (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig EnvironmentVariables.DuplicatesAllowed (__added__)
+* AWS::ApiGatewayV2::DomainName.DomainNameConfiguration OwnershipVerificationCertificateArn (__added__)
+* AWS::AppMesh::GatewayRoute.GrpcGatewayRouteAction Rewrite (__added__)
+* AWS::AppMesh::GatewayRoute.GrpcGatewayRouteMatch Hostname (__added__)
+* AWS::AppMesh::GatewayRoute.GrpcGatewayRouteMatch Metadata (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteAction Rewrite (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteMatch Headers (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteMatch Hostname (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteMatch Method (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteMatch Path (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteMatch QueryParameters (__added__)
+* AWS::AppMesh::GatewayRoute.HttpGatewayRouteMatch Prefix.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::Route.HttpRouteMatch Path (__added__)
+* AWS::AppMesh::Route.HttpRouteMatch QueryParameters (__added__)
+* AWS::AppMesh::Route.HttpRouteMatch Prefix.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::VirtualNode.DnsServiceDiscovery ResponseType (__added__)
+* AWS::AppSync::GraphQLApi.AdditionalAuthenticationProvider LambdaAuthorizerConfig (__added__)
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice Throughput (__added__)
+* AWS::DataBrew::Recipe.Action Parameters.Type (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration AuditLogConfiguration (__added__)
+* AWS::IoT::TopicRule.TimestreamAction BatchMode (__added__)
+* AWS::WAFv2::RuleGroup.SizeConstraintStatement Size.PrimitiveType (__changed__)
+  * Old: Integer
+  * New: Double
+* AWS::WAFv2::WebACL.SizeConstraintStatement Size.PrimitiveType (__changed__)
+  * Old: Integer
+  * New: Double
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+* AWS::Serverless::HttpApi
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api CanarySetting (__added__)
+* AWS::Serverless::Api Description (__added__)
+* AWS::Serverless::Api GatewayResponses (__added__)
+* AWS::Serverless::Api MinimumCompressionSize (__added__)
+* AWS::Serverless::Api Models (__added__)
+* AWS::Serverless::Api Tags (__added__)
+* AWS::Serverless::Api EndpointConfiguration.PrimitiveType (__deleted__)
+* AWS::Serverless::Api EndpointConfiguration.Type (__added__)
+* AWS::Serverless::Function AssumeRolePolicyDocument (__added__)
+* AWS::Serverless::Function AutoPublishCodeSha256 (__added__)
+* AWS::Serverless::Function CodeSigningConfigArn (__added__)
+* AWS::Serverless::Function EventInvokeConfig (__added__)
+* AWS::Serverless::Function ImageConfig (__added__)
+* AWS::Serverless::Function ImageUri (__added__)
+* AWS::Serverless::Function InlineCode (__added__)
+* AWS::Serverless::Function PackageType (__added__)
+* AWS::Serverless::Function VersionDescription (__added__)
+* AWS::Serverless::StateMachine PermissionsBoundaries (__added__)
+* AWS::Serverless::StateMachine Tracing (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.OnFailure (__removed__)
+* AWS::Serverless::Api.CanarySetting (__added__)
+* AWS::Serverless::Api.EndpointConfiguration (__added__)
+* AWS::Serverless::Function.Auth (__added__)
+* AWS::Serverless::Function.AuthResourcePolicy (__added__)
+* AWS::Serverless::Function.Destination (__added__)
+* AWS::Serverless::Function.EventInvokeConfig (__added__)
+* AWS::Serverless::Function.ImageConfig (__added__)
+* AWS::Serverless::StateMachine.TracingConfiguration (__added__)
+* AWS::Serverless::Api.S3Location Bucket.Documentation (__changed__)
+  * Old: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  * New: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object
+* AWS::Serverless::Api.S3Location Key.Documentation (__changed__)
+  * Old: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  * New: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object
+* AWS::Serverless::Api.S3Location Version.Documentation (__changed__)
+  * Old: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  * New: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object
+* AWS::Serverless::Function.ApiEvent Auth (__added__)
+* AWS::Serverless::Function.DestinationConfig OnSuccess (__added__)
+* AWS::Serverless::Function.DestinationConfig OnFailure.Type (__changed__)
+  * Old: OnFailure
+  * New: Destination
+
+# CloudFormation Resource Specification v39.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::AuditManager::Assessment FrameworkId (__deleted__)
+* AWS::EC2::TransitGateway Id (__added__)
+
+## Property Changes
+
+* AWS::AutoScaling::AutoScalingGroup Context (__added__)
+* AWS::EC2::NatGateway ConnectivityType (__added__)
+* AWS::EC2::NatGateway AllocationId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::TransitGateway Tags.DuplicatesAllowed (__added__)
+* AWS::Lambda::Function Id (__deleted__)
+* AWS::Lambda::LayerVersion CompatibleArchitectures (__deleted__)
+* AWS::RAM::ResourceShare PermissionArns (__added__)
+* AWS::SQS::Queue DeduplicationScope (__added__)
+* AWS::SQS::Queue FifoThroughputLimit (__added__)
+* AWS::SageMaker::CodeRepository Tags (__added__)
+
+## Property Type Changes
+
+* AWS::SSMContacts::Contact.ChannelTargetInfo (__added__)
+* AWS::SSMContacts::Contact.ContactTargetInfo (__added__)
+* AWS::SSMContacts::Contact.Targets ChannelTargetInfo.PrimitiveType (__deleted__)
+* AWS::SSMContacts::Contact.Targets ChannelTargetInfo.Type (__added__)
+* AWS::SSMContacts::Contact.Targets ContactTargetInfo.PrimitiveType (__deleted__)
+* AWS::SSMContacts::Contact.Targets ContactTargetInfo.Type (__added__)
+
+
+# CloudFormation Resource Specification v38.0.0
+
+## New Resource Types
+
+* AWS::Location::GeofenceCollection
+* AWS::Location::Map
+* AWS::Location::PlaceIndex
+* AWS::Location::RouteCalculator
+* AWS::Location::Tracker
+* AWS::Location::TrackerConsumer
+
+## Attribute Changes
+
+* AWS::Athena::WorkGroup EffectiveEngineVersion (__deleted__)
+* AWS::Athena::WorkGroup WorkGroupConfiguration.EngineVersion.EffectiveEngineVersion (__added__)
+* AWS::CloudFront::Function FunctionMetadata.FunctionARN (__added__)
+* AWS::DAX::Cluster ClusterDiscoveryEndpointURL (__added__)
+* AWS::EC2::EC2Fleet FleetId (__added__)
+* AWS::EC2::SpotFleet Id (__added__)
+* AWS::FSx::FileSystem DNSName (__added__)
+* AWS::FraudDetector::Detector EventType.Arn (__added__)
+* AWS::FraudDetector::Detector EventType.CreatedTime (__added__)
+* AWS::FraudDetector::Detector EventType.LastUpdatedTime (__added__)
+* AWS::IoTWireless::ServiceProfile ChannelMask (__deleted__)
+* AWS::IoTWireless::ServiceProfile DevStatusReqFreq (__deleted__)
+* AWS::IoTWireless::ServiceProfile DlBucketSize (__deleted__)
+* AWS::IoTWireless::ServiceProfile DlRate (__deleted__)
+* AWS::IoTWireless::ServiceProfile DlRatePolicy (__deleted__)
+* AWS::IoTWireless::ServiceProfile DrMax (__deleted__)
+* AWS::IoTWireless::ServiceProfile DrMin (__deleted__)
+* AWS::IoTWireless::ServiceProfile HrAllowed (__deleted__)
+* AWS::IoTWireless::ServiceProfile MinGwDiversity (__deleted__)
+* AWS::IoTWireless::ServiceProfile NwkGeoLoc (__deleted__)
+* AWS::IoTWireless::ServiceProfile PrAllowed (__deleted__)
+* AWS::IoTWireless::ServiceProfile RaAllowed (__deleted__)
+* AWS::IoTWireless::ServiceProfile ReportDevStatusBattery (__deleted__)
+* AWS::IoTWireless::ServiceProfile ReportDevStatusMargin (__deleted__)
+* AWS::IoTWireless::ServiceProfile TargetPer (__deleted__)
+* AWS::IoTWireless::ServiceProfile UlBucketSize (__deleted__)
+* AWS::IoTWireless::ServiceProfile UlRate (__deleted__)
+* AWS::IoTWireless::ServiceProfile UlRatePolicy (__deleted__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.ChannelMask (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.DevStatusReqFreq (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.DlBucketSize (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.DlRate (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.DlRatePolicy (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.DrMax (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.DrMin (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.HrAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.MinGwDiversity (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.NwkGeoLoc (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.PrAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.RaAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.ReportDevStatusBattery (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.ReportDevStatusMargin (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.TargetPer (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.UlBucketSize (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.UlRate (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN.UlRatePolicy (__added__)
+* AWS::MWAA::Environment CloudWatchLogGroupArn (__deleted__)
+* AWS::MWAA::Environment LoggingConfiguration.DagProcessingLogs.CloudWatchLogGroupArn (__added__)
+* AWS::MediaConnect::Flow IngestIp (__deleted__)
+* AWS::MediaConnect::Flow SourceArn (__deleted__)
+* AWS::MediaConnect::Flow Source.IngestIp (__added__)
+* AWS::MediaConnect::Flow Source.SourceArn (__added__)
+* AWS::S3::StorageLens StorageLensArn (__deleted__)
+* AWS::S3::StorageLens StorageLensConfiguration.StorageLensArn (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::Authorizer IdentitySource.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DAX::Cluster ClusterEndpointEncryptionType (__added__)
+* AWS::EC2::EC2Fleet LaunchTemplateConfigs.DuplicatesAllowed (__added__)
+* AWS::EC2::EC2Fleet TagSpecifications.DuplicatesAllowed (__added__)
+* AWS::EC2::SpotFleet SpotFleetRequestConfigData.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::KinesisAnalyticsV2::Application ApplicationMode (__added__)
+* AWS::SSM::Association Parameters.ItemType (__deleted__)
+* AWS::SSM::Association Parameters.PrimitiveItemType (__added__)
+
+## Property Type Changes
+
+* AWS::KinesisAnalyticsV2::Application.CatalogConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application.CustomArtifactConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application.CustomArtifactsConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application.DeployAsApplicationConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application.GlueDataCatalogConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application.MavenReference (__added__)
+* AWS::KinesisAnalyticsV2::Application.S3ContentBaseLocation (__added__)
+* AWS::KinesisAnalyticsV2::Application.ZeppelinApplicationConfiguration (__added__)
+* AWS::KinesisAnalyticsV2::Application.ZeppelinMonitoringConfiguration (__added__)
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateConfigRequest Overrides.DuplicatesAllowed (__added__)
+* AWS::EC2::EC2Fleet.TagSpecification Tags.DuplicatesAllowed (__added__)
+* AWS::EC2::SpotFleet.BlockDeviceMapping DeviceName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-blockdevicemappings.html#cfn-ec2-spotfleet-blockdevicemapping-devicename
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-blockdevicemapping.html#cfn-ec2-spotfleet-blockdevicemapping-devicename
+* AWS::EC2::SpotFleet.BlockDeviceMapping DeviceName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.BlockDeviceMapping Ebs.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-blockdevicemappings.html#cfn-ec2-spotfleet-blockdevicemapping-ebs
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-blockdevicemapping.html#cfn-ec2-spotfleet-blockdevicemapping-ebs
+* AWS::EC2::SpotFleet.BlockDeviceMapping Ebs.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.BlockDeviceMapping NoDevice.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-blockdevicemappings.html#cfn-ec2-spotfleet-blockdevicemapping-nodevice
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-blockdevicemapping.html#cfn-ec2-spotfleet-blockdevicemapping-nodevice
+* AWS::EC2::SpotFleet.BlockDeviceMapping NoDevice.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.BlockDeviceMapping VirtualName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-blockdevicemappings.html#cfn-ec2-spotfleet-blockdevicemapping-virtualname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-blockdevicemapping.html#cfn-ec2-spotfleet-blockdevicemapping-virtualname
+* AWS::EC2::SpotFleet.BlockDeviceMapping VirtualName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.ClassicLoadBalancer Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.ClassicLoadBalancersConfig ClassicLoadBalancers.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.EbsBlockDevice DeleteOnTermination.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-blockdevicemappings-ebs.html#cfn-ec2-spotfleet-ebsblockdevice-deleteontermination
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-ebsblockdevice.html#cfn-ec2-spotfleet-ebsblockdevice-deleteontermination
+* AWS::EC2::SpotFleet.EbsBlockDevice DeleteOnTermination.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.EbsBlockDevice Encrypted.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-blockdevicemappings-ebs.html#cfn-ec2-spotfleet-ebsblockdevice-encrypted
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-ebsblockdevice.html#cfn-ec2-spotfleet-ebsblockdevice-encrypted
+* AWS::EC2::SpotFleet.EbsBlockDevice Encrypted.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.EbsBlockDevice Iops.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-blockdevicemappings-ebs.html#cfn-ec2-spotfleet-ebsblockdevice-iops
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-ebsblockdevice.html#cfn-ec2-spotfleet-ebsblockdevice-iops
+* AWS::EC2::SpotFleet.EbsBlockDevice Iops.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.EbsBlockDevice SnapshotId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-blockdevicemappings-ebs.html#cfn-ec2-spotfleet-ebsblockdevice-snapshotid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-ebsblockdevice.html#cfn-ec2-spotfleet-ebsblockdevice-snapshotid
+* AWS::EC2::SpotFleet.EbsBlockDevice SnapshotId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.EbsBlockDevice VolumeSize.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-blockdevicemappings-ebs.html#cfn-ec2-spotfleet-ebsblockdevice-volumesize
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-ebsblockdevice.html#cfn-ec2-spotfleet-ebsblockdevice-volumesize
+* AWS::EC2::SpotFleet.EbsBlockDevice VolumeSize.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.EbsBlockDevice VolumeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-blockdevicemappings-ebs.html#cfn-ec2-spotfleet-ebsblockdevice-volumetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-ebsblockdevice.html#cfn-ec2-spotfleet-ebsblockdevice-volumetype
+* AWS::EC2::SpotFleet.EbsBlockDevice VolumeType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.FleetLaunchTemplateSpecification LaunchTemplateId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.FleetLaunchTemplateSpecification LaunchTemplateName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.FleetLaunchTemplateSpecification Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.GroupIdentifier GroupId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-securitygroups.html#cfn-ec2-spotfleet-groupidentifier-groupid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-groupidentifier.html#cfn-ec2-spotfleet-groupidentifier-groupid
+* AWS::EC2::SpotFleet.GroupIdentifier GroupId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.IamInstanceProfileSpecification Arn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-iaminstanceprofile.html#cfn-ec2-spotfleet-iaminstanceprofilespecification-arn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-iaminstanceprofilespecification.html#cfn-ec2-spotfleet-iaminstanceprofilespecification-arn
+* AWS::EC2::SpotFleet.IamInstanceProfileSpecification Arn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceIpv6Address Ipv6Address.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification AssociatePublicIpAddress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-associatepublicipaddress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-associatepublicipaddress
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification AssociatePublicIpAddress.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification DeleteOnTermination.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-deleteontermination
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-deleteontermination
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification DeleteOnTermination.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-description
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification Description.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification DeviceIndex.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-deviceindex
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-deviceindex
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification DeviceIndex.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification Groups.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-groups
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-groups
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification Groups.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification Ipv6AddressCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-ipv6addresscount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-ipv6addresscount
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification Ipv6AddressCount.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification Ipv6Addresses.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-ipv6addresses
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-ipv6addresses
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification Ipv6Addresses.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification NetworkInterfaceId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-networkinterfaceid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-networkinterfaceid
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification NetworkInterfaceId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification PrivateIpAddresses.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-privateipaddresses
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-privateipaddresses
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification PrivateIpAddresses.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification SecondaryPrivateIpAddressCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-secondaryprivateipaddresscount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-secondaryprivateipaddresscount
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification SecondaryPrivateIpAddressCount.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification SubnetId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-subnetid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-instancenetworkinterfacespecification.html#cfn-ec2-spotfleet-instancenetworkinterfacespecification-subnetid
+* AWS::EC2::SpotFleet.InstanceNetworkInterfaceSpecification SubnetId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.LaunchTemplateConfig LaunchTemplateSpecification.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.LaunchTemplateConfig Overrides.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.LaunchTemplateOverrides Priority (__deleted__)
+* AWS::EC2::SpotFleet.LaunchTemplateOverrides AvailabilityZone.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.LaunchTemplateOverrides InstanceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.LaunchTemplateOverrides SpotPrice.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.LaunchTemplateOverrides SubnetId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.LaunchTemplateOverrides WeightedCapacity.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.LoadBalancersConfig ClassicLoadBalancersConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.LoadBalancersConfig TargetGroupsConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.PrivateIpAddressSpecification Primary.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces-privateipaddresses.html#cfn-ec2-spotfleet-privateipaddressspecification-primary
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-privateipaddressspecification.html#cfn-ec2-spotfleet-privateipaddressspecification-primary
+* AWS::EC2::SpotFleet.PrivateIpAddressSpecification Primary.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.PrivateIpAddressSpecification PrivateIpAddress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-networkinterfaces-privateipaddresses.html#cfn-ec2-spotfleet-privateipaddressspecification-privateipaddress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-privateipaddressspecification.html#cfn-ec2-spotfleet-privateipaddressspecification-privateipaddress
+* AWS::EC2::SpotFleet.PrivateIpAddressSpecification PrivateIpAddress.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotCapacityRebalance ReplacementStrategy.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification BlockDeviceMappings.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-blockdevicemappings
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-blockdevicemappings
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification BlockDeviceMappings.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification EbsOptimized.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-ebsoptimized
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-ebsoptimized
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification EbsOptimized.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification IamInstanceProfile.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-iaminstanceprofile
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-iaminstanceprofile
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification IamInstanceProfile.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification ImageId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-imageid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-imageid
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification ImageId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification InstanceType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-instancetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-instancetype
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification InstanceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification KernelId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-kernelid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-kernelid
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification KernelId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification KeyName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-keyname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-keyname
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification KeyName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification Monitoring.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-monitoring
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-monitoring
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification Monitoring.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification NetworkInterfaces.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-networkinterfaces
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-networkinterfaces
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification NetworkInterfaces.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification Placement.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-placement
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-placement
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification Placement.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification RamdiskId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-ramdiskid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-ramdiskid
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification RamdiskId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification SecurityGroups.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-securitygroups
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-securitygroups
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification SecurityGroups.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification SpotPrice.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-spotprice
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-spotprice
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification SpotPrice.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification SubnetId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-subnetid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-subnetid
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification SubnetId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification TagSpecifications.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-tagspecifications
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-tagspecifications
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification TagSpecifications.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification UserData.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-userdata
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-userdata
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification UserData.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification WeightedCapacity.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-weightedcapacity
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetlaunchspecification.html#cfn-ec2-spotfleet-spotfleetlaunchspecification-weightedcapacity
+* AWS::EC2::SpotFleet.SpotFleetLaunchSpecification WeightedCapacity.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetMonitoring Enabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-monitoring.html#cfn-ec2-spotfleet-spotfleetmonitoring-enabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetmonitoring.html#cfn-ec2-spotfleet-spotfleetmonitoring-enabled
+* AWS::EC2::SpotFleet.SpotFleetMonitoring Enabled.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetTagSpecification ResourceType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-tagspecifications.html#cfn-ec2-spotfleet-spotfleettagspecification-resourcetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleettagspecification.html#cfn-ec2-spotfleet-spotfleettagspecification-resourcetype
+* AWS::EC2::SpotFleet.SpotFleetTagSpecification ResourceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotFleetTagSpecification Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-tagspecifications.html#cfn-ec2-spotfleet-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleettagspecification.html#cfn-ec2-spotfleet-spotfleettagspecification-tags
+* AWS::EC2::SpotFleet.SpotFleetTagSpecification Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotMaintenanceStrategies CapacityRebalance.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotPlacement AvailabilityZone.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-placement.html#cfn-ec2-spotfleet-spotplacement-availabilityzone
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotplacement.html#cfn-ec2-spotfleet-spotplacement-availabilityzone
+* AWS::EC2::SpotFleet.SpotPlacement AvailabilityZone.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotPlacement GroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-placement.html#cfn-ec2-spotfleet-spotplacement-groupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotplacement.html#cfn-ec2-spotfleet-spotplacement-groupname
+* AWS::EC2::SpotFleet.SpotPlacement GroupName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.SpotPlacement Tenancy.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotfleetrequestconfigdata-launchspecifications-placement.html#cfn-ec2-spotfleet-spotplacement-tenancy
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-spotfleet-spotplacement.html#cfn-ec2-spotfleet-spotplacement-tenancy
+* AWS::EC2::SpotFleet.SpotPlacement Tenancy.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.TargetGroup Arn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SpotFleet.TargetGroupsConfig TargetGroups.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::KinesisAnalyticsV2::Application.ApplicationConfiguration ZeppelinApplicationConfiguration (__added__)
+* AWS::Transfer::Server.IdentityProviderDetails DirectoryId (__added__)
+* AWS::Transfer::Server.IdentityProviderDetails InvocationRole.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Transfer::Server.IdentityProviderDetails Url.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v37.1.0
+
+## New Resource Types
+
+* AWS::CUR::ReportDefinition
+
+## Attribute Changes
+
+* AWS::MWAA::Environment CloudWatchLogGroupArn (__added__)
+
+## Property Changes
+
+* AWS::ECR::Repository EncryptionConfiguration.PrimitiveType (__deleted__)
+* AWS::ECR::Repository EncryptionConfiguration.Type (__added__)
+* AWS::ECR::Repository ImageScanningConfiguration.PrimitiveType (__deleted__)
+* AWS::ECR::Repository ImageScanningConfiguration.Type (__added__)
+* AWS::FraudDetector::Detector AssociatedModels (__added__)
+* AWS::QLDB::Ledger PermissionsMode.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::XRay::Group Tags.ItemType (__deleted__)
+* AWS::XRay::Group Tags.PrimitiveItemType (__added__)
+* AWS::XRay::SamplingRule Tags.ItemType (__deleted__)
+* AWS::XRay::SamplingRule Tags.PrimitiveItemType (__added__)
+
+## Property Type Changes
+
+* AWS::ECR::Repository.EncryptionConfiguration (__added__)
+* AWS::ECR::Repository.ImageScanningConfiguration (__added__)
+* AWS::FraudDetector::Detector.Model (__added__)
+* AWS::ACMPCA::CertificateAuthority.CrlConfiguration S3ObjectAcl (__added__)
+* AWS::ApplicationInsights::Application.ComponentMonitoringSetting ComponentConfigurationMode.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ApplicationInsights::Application.ComponentMonitoringSetting Tier.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFront::Function.FunctionMetadata FunctionARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::FSx::FileSystem.LustreConfiguration DataCompressionType (__added__)
+
+
+# CloudFormation Resource Specification v37.0.0
+
+## New Resource Types
+
+* AWS::AppRunner::Service
+* AWS::EC2::TransitGatewayPeeringAttachment
+* AWS::IoTCoreDeviceAdvisor::SuiteDefinition
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::MediaPackage::Channel EgressAccessLogs (__added__)
+* AWS::MediaPackage::Channel IngressAccessLogs (__added__)
+* AWS::MediaPackage::OriginEndpoint Id.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaPackage::PackagingConfiguration Id.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaPackage::PackagingGroup EgressAccessLogs (__added__)
+
+## Property Type Changes
+
+* AWS::MediaPackage::Channel.LogConfiguration (__added__)
+* AWS::MediaPackage::PackagingGroup.LogConfiguration (__added__)
+* AWS::MediaPackage::OriginEndpoint.CmafEncryption ConstantInitializationVector (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage UtcTiming (__added__)
+* AWS::MediaPackage::OriginEndpoint.DashPackage UtcTimingUri (__added__)
+* AWS::MediaPackage::PackagingConfiguration.CmafPackage IncludeEncoderConfigurationInSegments (__added__)
+* AWS::MediaPackage::PackagingConfiguration.DashPackage IncludeEncoderConfigurationInSegments (__added__)
+
+
+# CloudFormation Resource Specification v36.0.0
+
+## New Resource Types
+
+* AWS::DynamoDB::GlobalTable
+* AWS::SSMContacts::Contact
+* AWS::SSMContacts::ContactChannel
+* AWS::SSMIncidents::ReplicationSet
+* AWS::SSMIncidents::ResponsePlan
+
+## Attribute Changes
+
+* AWS::ApiGateway::RequestValidator RequestValidatorId (__added__)
+
+## Property Changes
+
+* AWS::CloudFormation::StackSet CallAs (__added__)
+* AWS::CustomerProfiles::Integration FlowDefinition (__added__)
+* AWS::CustomerProfiles::Integration ObjectTypeName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ECS::TaskDefinition EphemeralStorage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Elasticsearch::Domain EncryptionAtRestOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Elasticsearch::Domain NodeToNodeEncryptionOptions.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Lambda::EventSourceMapping PartialBatchResponse (__deleted__)
+* AWS::Lambda::LayerVersion CompatibleArchitectures (__added__)
+* AWS::SSM::Association CalendarNames (__added__)
+
+## Property Type Changes
+
+* AWS::AppFlow::Flow.ZendeskDestinationProperties (__added__)
+* AWS::CustomerProfiles::Integration.ConnectorOperator (__added__)
+* AWS::CustomerProfiles::Integration.FlowDefinition (__added__)
+* AWS::CustomerProfiles::Integration.IncrementalPullConfig (__added__)
+* AWS::CustomerProfiles::Integration.MarketoSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.S3SourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.SalesforceSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.ScheduledTriggerProperties (__added__)
+* AWS::CustomerProfiles::Integration.ServiceNowSourceProperties (__added__)
+* AWS::CustomerProfiles::Integration.SourceConnectorProperties (__added__)
+* AWS::CustomerProfiles::Integration.SourceFlowConfig (__added__)
+* AWS::CustomerProfiles::Integration.Task (__added__)
+* AWS::CustomerProfiles::Integration.TaskPropertiesMap (__added__)
+* AWS::CustomerProfiles::Integration.TriggerConfig (__added__)
+* AWS::CustomerProfiles::Integration.TriggerProperties (__added__)
+* AWS::CustomerProfiles::Integration.ZendeskSourceProperties (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties Zendesk (__added__)
+* AWS::CloudFront::Distribution.Origin OriginShield.Type (__added__)
+* AWS::ECS::CapacityProvider.ManagedScaling InstanceWarmupPeriod (__added__)
+* AWS::ECS::TaskDefinition.EphemeralStorage SizeInGiB.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Elasticsearch::Domain.EncryptionAtRestOptions Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Elasticsearch::Domain.NodeToNodeEncryptionOptions Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::S3::Bucket.Rule ExpiredObjectDeleteMarker (__added__)
+
+
 # CloudFormation Resource Specification v35.2.0
 
 ## New Resource Types

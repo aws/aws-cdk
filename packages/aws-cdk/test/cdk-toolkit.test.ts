@@ -5,7 +5,8 @@ import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudf
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
-import { MockCloudExecutable, TestStackArtifact, instanceMockFrom } from './util';
+import { RequireApproval } from '../lib/diff';
+import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
@@ -39,13 +40,52 @@ function defaultToolkitSetup() {
 }
 
 describe('deploy', () => {
+  test('fails when no valid stack names are given', async () => {
+    // GIVEN
+    const toolkit = defaultToolkitSetup();
+
+    // WHEN
+    await expect(() => toolkit.deploy({ selector: { patterns: ['Test-Stack-D'] } })).rejects.toThrow('No stacks match the name(s) Test-Stack-D');
+  });
+
+  describe('with hotswap deployment', () => {
+    test("passes through the 'hotswap' option to CloudFormationDeployments.deployStack()", async () => {
+      // GIVEN
+      const mockCfnDeployments = instanceMockFrom(CloudFormationDeployments);
+      mockCfnDeployments.deployStack.mockReturnValue(Promise.resolve({
+        noOp: false,
+        outputs: {},
+        stackArn: 'stackArn',
+        stackArtifact: instanceMockFrom(cxapi.CloudFormationStackArtifact),
+      }));
+      const cdkToolkit = new CdkToolkit({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: mockCfnDeployments,
+      });
+
+      // WHEN
+      await cdkToolkit.deploy({
+        selector: { patterns: ['Test-Stack-A'] },
+        requireApproval: RequireApproval.Never,
+        hotswap: true,
+      });
+
+      // THEN
+      expect(mockCfnDeployments.deployStack).toHaveBeenCalledWith(expect.objectContaining({
+        hotswap: true,
+      }));
+    });
+  });
+
   describe('makes correct CloudFormation calls', () => {
     test('without options', async () => {
       // GIVEN
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'] });
+      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] } });
     });
 
     test('with stacks all stacks specified as double wildcard', async () => {
@@ -53,7 +93,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['**'] });
+      await toolkit.deploy({ selector: { patterns: ['**'] } });
     });
 
 
@@ -62,7 +102,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['Test-Stack-A'] });
+      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A'] } });
     });
 
     test('with stacks all stacks specified as wildcard', async () => {
@@ -70,7 +110,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ stackNames: ['*'] });
+      await toolkit.deploy({ selector: { patterns: ['*'] } });
     });
 
     test('with sns notification arns', async () => {
@@ -88,7 +128,7 @@ describe('deploy', () => {
 
       // WHEN
       await toolkit.deploy({
-        stackNames: ['Test-Stack-A', 'Test-Stack-B'],
+        selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] },
         notificationArns,
       });
     });
@@ -178,22 +218,32 @@ describe('synth', () => {
     process.env.STACKS_TO_VALIDATE = undefined;
   });
 
-  test('stack has error and is flagged for validation', async() => {
-    cloudExecutable = new MockCloudExecutable({
-      stacks: [
-        MockStack.MOCK_STACK_A,
-        MockStack.MOCK_STACK_B,
-      ],
-      nestedAssemblies: [{
+  describe('stack with error and flagged for validation', () => {
+    beforeEach(() => {
+      cloudExecutable = new MockCloudExecutable({
         stacks: [
-          { properties: { validateOnSynth: true }, ...MockStack.MOCK_STACK_WITH_ERROR },
+          MockStack.MOCK_STACK_A,
+          MockStack.MOCK_STACK_B,
         ],
-      }],
+        nestedAssemblies: [{
+          stacks: [
+            { properties: { validateOnSynth: true }, ...MockStack.MOCK_STACK_WITH_ERROR },
+          ],
+        }],
+      });
     });
 
-    const toolkit = defaultToolkitSetup();
+    test('causes synth to fail if autoValidate=true', async() => {
+      const toolkit = defaultToolkitSetup();
+      const autoValidate = true;
+      await expect(toolkit.synth([], false, true, autoValidate)).rejects.toBeDefined();
+    });
 
-    await expect(toolkit.synth([], false, true)).rejects.toBeDefined();
+    test('causes synth to succeed if autoValidate=false', async() => {
+      const toolkit = defaultToolkitSetup();
+      const autoValidate = false;
+      await expect(toolkit.synth([], false, true, autoValidate)).resolves.toBeUndefined();
+    });
   });
 
   test('stack has error and was explicitly selected', async() => {
@@ -211,7 +261,7 @@ describe('synth', () => {
 
     const toolkit = defaultToolkitSetup();
 
-    await expect(toolkit.synth(['witherrors'], false, true)).rejects.toBeDefined();
+    await expect(toolkit.synth(['Test-Stack-A/witherrors'], false, true)).rejects.toBeDefined();
   });
 
   test('stack has error, is not flagged for validation and was not explicitly selected', async () => {
@@ -231,12 +281,25 @@ describe('synth', () => {
 
     await toolkit.synth([], false, true);
   });
+
+  test('stack has dependency and was explicitly selected', async () => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_C,
+        MockStack.MOCK_STACK_D,
+      ],
+    });
+
+    const toolkit = defaultToolkitSetup();
+
+    await expect(toolkit.synth([MockStack.MOCK_STACK_D.stackName], true, false)).resolves.toBeDefined();
+  });
 });
 
 class MockStack {
   public static readonly MOCK_STACK_A: TestStackArtifact = {
     stackName: 'Test-Stack-A',
-    template: { Resources: { TempalteName: 'Test-Stack-A' } },
+    template: { Resources: { TemplateName: 'Test-Stack-A' } },
     env: 'aws://123456789012/bermuda-triangle-1',
     metadata: {
       '/Test-Stack-A': [
@@ -251,7 +314,7 @@ class MockStack {
   };
   public static readonly MOCK_STACK_B: TestStackArtifact = {
     stackName: 'Test-Stack-B',
-    template: { Resources: { TempalteName: 'Test-Stack-B' } },
+    template: { Resources: { TemplateName: 'Test-Stack-B' } },
     env: 'aws://123456789012/bermuda-triangle-1',
     metadata: {
       '/Test-Stack-B': [
@@ -266,7 +329,7 @@ class MockStack {
   };
   public static readonly MOCK_STACK_C: TestStackArtifact = {
     stackName: 'Test-Stack-C',
-    template: { Resources: { TempalteName: 'Test-Stack-C' } },
+    template: { Resources: { TemplateName: 'Test-Stack-C' } },
     env: 'aws://123456789012/bermuda-triangle-1',
     metadata: {
       '/Test-Stack-C': [
@@ -280,6 +343,22 @@ class MockStack {
     },
     displayName: 'Test-Stack-A/Test-Stack-C',
   };
+  public static readonly MOCK_STACK_D: TestStackArtifact = {
+    stackName: 'Test-Stack-D',
+    template: { Resources: { TemplateName: 'Test-Stack-D' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    metadata: {
+      '/Test-Stack-D': [
+        {
+          type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+          data: [
+            { key: 'Baz', value: 'Zinga!' },
+          ],
+        },
+      ],
+    },
+    depends: [MockStack.MOCK_STACK_C.stackName],
+  }
   public static readonly MOCK_STACK_WITH_ERROR: TestStackArtifact = {
     stackName: 'witherrors',
     env: 'aws://123456789012/bermuda-triangle-1',

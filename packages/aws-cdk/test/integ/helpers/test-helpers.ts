@@ -9,8 +9,11 @@ export type TestContext = { readonly output: NodeJS.WritableStream; };
 /**
  * A wrapper for jest's 'test' which takes regression-disabled tests into account and prints a banner
  */
-export function integTest(name: string,
-  callback: (context: TestContext) => Promise<void>) {
+export function integTest(
+  name: string,
+  callback: (context: TestContext) => Promise<void>,
+  timeoutMillis?: number,
+) {
 
   // Integ tests can run concurrently, and are responsible for blocking themselves if they cannot.
   const runner = shouldSkip(name) ? test.skip : test.concurrent;
@@ -36,7 +39,7 @@ export function integTest(name: string,
         process.stderr.write('✅');
       }
     }
-  });
+  }, timeoutMillis);
 }
 
 function shouldSkip(testName: string) {

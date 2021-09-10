@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration, IResource, Resource, Token } from '@aws-cdk/core';
+import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
@@ -58,6 +58,13 @@ export enum RecordType {
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#CNAMEFormat
    */
   CNAME = 'CNAME',
+
+  /**
+   * A delegation signer (DS) record refers a zone key for a delegated subdomain zone.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#DSFormat
+   */
+  DS = 'DS',
 
   /**
    * An MX record specifies the names of your mail servers and, if you have two or more mail servers,
@@ -219,7 +226,7 @@ export class RecordSet extends Resource implements IRecordSet {
       name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone),
       type: props.recordType,
       resourceRecords: props.target.values,
-      aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this),
+      aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this, props.zone),
       ttl,
       comment: props.comment,
     });
@@ -567,6 +574,31 @@ export class NsRecord extends RecordSet {
 }
 
 /**
+ * Construction properties for a DSRecord.
+ */
+export interface DsRecordProps extends RecordSetOptions {
+  /**
+   * The DS values.
+   */
+  readonly values: string[];
+}
+
+/**
+ * A DNS DS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+export class DsRecord extends RecordSet {
+  constructor(scope: Construct, id: string, props: DsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.DS,
+      target: RecordTarget.fromValues(...props.values),
+    });
+  }
+}
+
+/**
  * Construction properties for a ZoneDelegationRecord
  */
 export interface ZoneDelegationRecordProps extends RecordSetOptions {
@@ -627,6 +659,13 @@ export interface CrossAccountZoneDelegationRecordProps {
    * @default Duration.days(2)
    */
   readonly ttl?: Duration;
+
+  /**
+   * The removal policy to apply to the record set.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -653,6 +692,7 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
     new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
       resourceType: CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE,
       serviceToken,
+      removalPolicy: props.removalPolicy,
       properties: {
         AssumeRoleArn: props.delegationRole.roleArn,
         ParentZoneName: props.parentHostedZoneName,

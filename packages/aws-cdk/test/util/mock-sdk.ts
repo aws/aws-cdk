@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Account, ISDK, SDK, SdkProvider } from '../../lib/api/aws-auth';
+import { Mode } from '../../lib/api/aws-auth/credentials';
 import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 
@@ -41,6 +42,10 @@ export class MockSdkProvider extends SdkProvider {
     } else {
       this.sdk = new MockSdk();
     }
+  }
+
+  async baseCredentialsPartition(_environment: cxapi.Environment, _mode: Mode): Promise<string | undefined> {
+    return undefined;
   }
 
   public defaultAccount(): Promise<Account | undefined> {
@@ -92,10 +97,15 @@ export class MockSdkProvider extends SdkProvider {
   public stubSSM(stubs: SyncHandlerSubsetOf<AWS.SSM>) {
     (this.sdk as any).ssm = jest.fn().mockReturnValue(partialAwsService<AWS.SSM>(stubs));
   }
+
+  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
+    (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs));
+  }
 }
 
 export class MockSdk implements ISDK {
   public readonly currentRegion: string = 'bermuda-triangle-1337';
+  public readonly lambda = jest.fn();
   public readonly cloudFormation = jest.fn();
   public readonly ec2 = jest.fn();
   public readonly ssm = jest.fn();
@@ -103,6 +113,8 @@ export class MockSdk implements ISDK {
   public readonly route53 = jest.fn();
   public readonly ecr = jest.fn();
   public readonly elbv2 = jest.fn();
+  public readonly secretsManager = jest.fn();
+  public readonly kms = jest.fn();
 
   public currentAccount(): Promise<Account> {
     return Promise.resolve({ accountId: '123456789012', partition: 'aws' });

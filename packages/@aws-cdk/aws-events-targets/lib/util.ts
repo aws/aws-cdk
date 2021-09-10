@@ -2,7 +2,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ConstructNode, IConstruct, Names, Token, TokenComparison, Duration } from '@aws-cdk/core';
+import { Annotations, ConstructNode, IConstruct, Names, Token, TokenComparison, Duration, PhysicalName } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -77,6 +77,7 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
   if (existing) { return existing; }
 
   const role = new iam.Role(scope as Construct, id, {
+    roleName: PhysicalName.GENERATE_IF_NEEDED,
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
 
