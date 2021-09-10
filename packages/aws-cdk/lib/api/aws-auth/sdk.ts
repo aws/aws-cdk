@@ -22,6 +22,7 @@ export interface ISDK {
    */
   currentAccount(): Promise<Account>;
 
+  lambda(): AWS.Lambda;
   cloudFormation(): AWS.CloudFormation;
   ec2(): AWS.EC2;
   ssm(): AWS.SSM;
@@ -30,6 +31,7 @@ export interface ISDK {
   ecr(): AWS.ECR;
   elbv2(): AWS.ELBv2;
   secretsManager(): AWS.SecretsManager;
+  kms(): AWS.KMS;
 }
 
 /**
@@ -83,6 +85,10 @@ export class SDK implements ISDK {
     this.currentRegion = region;
   }
 
+  public lambda(): AWS.Lambda {
+    return this.wrapServiceErrorHandling(new AWS.Lambda(this.config));
+  }
+
   public cloudFormation(): AWS.CloudFormation {
     return this.wrapServiceErrorHandling(new AWS.CloudFormation({
       ...this.config,
@@ -116,6 +122,10 @@ export class SDK implements ISDK {
 
   public secretsManager(): AWS.SecretsManager {
     return this.wrapServiceErrorHandling(new AWS.SecretsManager(this.config));
+  }
+
+  public kms(): AWS.KMS {
+    return this.wrapServiceErrorHandling(new AWS.KMS(this.config));
   }
 
   public async currentAccount(): Promise<Account> {
