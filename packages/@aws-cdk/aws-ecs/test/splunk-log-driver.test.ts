@@ -1,23 +1,22 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
-import * as cdk from '@aws-cdk/core';
+import '@aws-cdk/assert-internal/jest';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
 const image = ecs.ContainerImage.fromRegistry('test-image');
 
-nodeunitShim({
-  'setUp'(cb: () => void) {
+describe('splunk log driver', () => {
+  beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
 
-    cb();
-  },
 
-  'create a splunk log driver with minimum options'(test: Test) {
+  });
+
+  test('create a splunk log driver with minimum options', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -29,7 +28,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -41,12 +40,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a splunk log driver using splunk with minimum options'(test: Test) {
+  });
+
+  test('create a splunk log driver using splunk with minimum options', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -58,7 +57,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -70,12 +69,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a splunk log driver using splunk with sourcetype defined'(test: Test) {
+  });
+
+  test('create a splunk log driver using splunk with sourcetype defined', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -88,7 +87,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -101,12 +100,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a splunk log driver using secret splunk token from secrets manager'(test: Test) {
+  });
+
+  test('create a splunk log driver using secret splunk token from secrets manager', () => {
     const secret = new secretsmanager.Secret(stack, 'Secret');
     // WHEN
     td.addContainer('Container', {
@@ -119,7 +118,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -138,12 +137,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a splunk log driver using secret splunk token from systems manager parameter store'(test: Test) {
+  });
+
+  test('create a splunk log driver using secret splunk token from systems manager parameter store', () => {
     const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
       parameterName: '/token',
       version: 1,
@@ -159,7 +158,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -195,13 +194,13 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'throws when neither token nor secret token are provided'(test: Test) {
-    test.throws(() => {
+  });
+
+  test('throws when neither token nor secret token are provided', () => {
+    expect(() => {
       td.addContainer('Container', {
         image,
         logging: ecs.LogDrivers.splunk({
@@ -209,8 +208,8 @@ nodeunitShim({
         }),
         memoryLimitMiB: 128,
       });
-    }, 'Please provide either token or secretToken.');
+    }).toThrow('Please provide either token or secretToken.');
 
-    test.done();
-  },
+
+  });
 });
