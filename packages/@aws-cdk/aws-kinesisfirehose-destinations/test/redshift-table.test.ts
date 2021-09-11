@@ -72,7 +72,7 @@ describe('redshift destination', () => {
           ],
         },
         CopyCommand: {
-          DataTableName: { 'Fn::GetAtt': ['Table7ABB320E', 'tableName'] },
+          DataTableName: { Ref: 'Table7ABB320E' },
           DataTableColumns: 'col1,col2',
         },
         Username: {
@@ -155,7 +155,7 @@ describe('redshift destination', () => {
         },
         CopyCommand: {
           CopyOptions: 'json \'auto\' gzip',
-          DataTableName: { 'Fn::GetAtt': ['Table7ABB320E', 'tableName'] },
+          DataTableName: { Ref: 'Table7ABB320E' },
           DataTableColumns: 'col1,col2',
         },
         Username: {
@@ -844,12 +844,7 @@ describe('redshift destination', () => {
           ],
         },
         tablePrivileges: [{
-          tableName: {
-            'Fn::GetAtt': [
-              'Table7ABB320E',
-              'tableName',
-            ],
-          },
+          tableName: { Ref: 'Table7ABB320E' },
           actions: ['INSERT'],
         }],
       });

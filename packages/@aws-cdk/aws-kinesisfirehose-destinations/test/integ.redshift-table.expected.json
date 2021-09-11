@@ -885,7 +885,10 @@
           "Ref": "ClusterSecretAttachment769E6258"
         },
         "databaseName": "my_db",
-        "tableName": "awscdkfirehoseredshiftclusterTableBAEBB6C7",
+        "tableName": {
+          "prefix": "awscdkfirehoseredshiftclusterTableBAEBB6C7",
+          "generateSuffix": true
+        },
         "tableColumns": [
           {
             "name": "TICKER_SYMBOL",
@@ -992,7 +995,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835S3BucketB3F58BF4"
+            "Ref": "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fS3Bucket3B967306"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1005,7 +1008,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835S3VersionKeyFBF92179"
+                          "Ref": "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fS3VersionKeyC171429B"
                         }
                       ]
                     }
@@ -1018,7 +1021,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835S3VersionKeyFBF92179"
+                          "Ref": "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fS3VersionKeyC171429B"
                         }
                       ]
                     }
@@ -1623,10 +1626,7 @@
         "tablePrivileges": [
           {
             "tableName": {
-              "Fn::GetAtt": [
-                "Table7ABB320E",
-                "tableName"
-              ]
+              "Ref": "Table7ABB320E"
             },
             "actions": [
               "INSERT"
@@ -1792,10 +1792,7 @@
             "CopyOptions": "json 'auto' gzip",
             "DataTableColumns": "TICKER_SYMBOL,SECTOR,CHANGE,PRICE",
             "DataTableName": {
-              "Fn::GetAtt": [
-                "Table7ABB320E",
-                "tableName"
-              ]
+              "Ref": "Table7ABB320E"
             }
           },
           "Password": {
@@ -1912,17 +1909,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835S3BucketB3F58BF4": {
+    "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fS3Bucket3B967306": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835\""
+      "Description": "S3 bucket for asset \"7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4f\""
     },
-    "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835S3VersionKeyFBF92179": {
+    "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fS3VersionKeyC171429B": {
       "Type": "String",
-      "Description": "S3 key for asset version \"1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835\""
+      "Description": "S3 key for asset version \"7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4f\""
     },
-    "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835ArtifactHash342ADFB2": {
+    "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fArtifactHash0EE8CD3D": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835\""
+      "Description": "Artifact hash for asset \"7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4f\""
     },
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",

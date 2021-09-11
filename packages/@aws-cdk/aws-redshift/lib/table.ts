@@ -187,17 +187,20 @@ export class Table extends TableBase {
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
 
-    this.resource = new DatabaseQuery(this, 'Resource', {
+    this.resource = new DatabaseQuery<TableHandlerProps>(this, 'Resource', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       ...props,
       handler: HandlerName.Table,
       properties: {
-        tableName: props.tableName ?? cdk.Names.uniqueId(this),
+        tableName: {
+          prefix: props.tableName ?? cdk.Names.uniqueId(this),
+          generateSuffix: !props.tableName,
+        },
         tableColumns: this.tableColumns,
       },
     });
 
-    this.tableName = this.resource.getAttString('tableName');
+    this.tableName = this.resource.ref;
   }
 
   /**

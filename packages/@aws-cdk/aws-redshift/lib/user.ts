@@ -154,7 +154,7 @@ export class User extends UserBase {
     const attachedSecret = secret.attach(props.cluster);
     this.password = attachedSecret.secretValueFromJson('password');
 
-    this.resource = new DatabaseQuery(this, 'Resource', {
+    this.resource = new DatabaseQuery<UserHandlerProps>(this, 'Resource', {
       ...this.databaseProps,
       handler: HandlerName.User,
       properties: {
