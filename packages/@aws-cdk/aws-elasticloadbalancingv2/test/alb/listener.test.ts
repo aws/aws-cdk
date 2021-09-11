@@ -437,17 +437,17 @@ describe('tests', () => {
     });
     group.configureHealthCheck({
       unhealthyThresholdCount: 3,
-      timeout: cdk.Duration.hours(1),
-      interval: cdk.Duration.seconds(30),
+      timeout: cdk.Duration.seconds(30),
+      interval: cdk.Duration.seconds(60),
       path: '/test',
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       UnhealthyThresholdCount: 3,
-      HealthCheckIntervalSeconds: 30,
+      HealthCheckIntervalSeconds: 60,
       HealthCheckPath: '/test',
-      HealthCheckTimeoutSeconds: 3600,
+      HealthCheckTimeoutSeconds: 30,
     });
   });
 
@@ -466,8 +466,8 @@ describe('tests', () => {
 
     group.configureHealthCheck({
       unhealthyThresholdCount: 3,
-      timeout: cdk.Duration.hours(1),
-      interval: cdk.Duration.seconds(30),
+      timeout: cdk.Duration.seconds(30),
+      interval: cdk.Duration.seconds(60),
       path: '/test',
       protocol: elbv2.Protocol.TCP,
     });
@@ -861,6 +861,31 @@ describe('tests', () => {
         {
           Key: 'deregistration_delay.timeout_seconds',
           Value: '30',
+        },
+      ],
+    });
+  });
+
+  test('Custom Load balancer algorithm type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // WHEN
+    listener.addTargets('Group', {
+      port: 80,
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+      loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.LEAST_OUTSTANDING_REQUESTS,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'load_balancing.algorithm.type',
+          Value: 'least_outstanding_requests',
         },
       ],
     });

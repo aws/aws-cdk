@@ -129,6 +129,22 @@ export interface DeployStackOptions {
    * @default false
    */
   readonly ci?: boolean;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
+
+  /*
+   * Whether to perform a 'hotswap' deployment.
+   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
+   * and update the affected resources like Lambda functions directly.
+   *
+   * @default - false (do not perform a 'hotswap' deployment)
+   */
+  readonly hotswap?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -204,6 +220,8 @@ export class CloudFormationDeployments {
       usePreviousParameters: options.usePreviousParameters,
       progress: options.progress,
       ci: options.ci,
+      rollback: options.rollback,
+      hotswap: options.hotswap,
     });
   }
 

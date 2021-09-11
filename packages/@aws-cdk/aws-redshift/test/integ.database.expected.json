@@ -860,23 +860,23 @@
             "Arn"
           ]
         },
-        "username": "awscdkredshiftclusterdatabaseuserc17d5ebd",
-        "passwordSecretArn": {
-          "Ref": "UserSecretAttachment02022609"
-        },
-        "handler": "create-user",
+        "handler": "user",
         "clusterName": {
           "Ref": "ClusterEB0386A7"
         },
         "adminUserArn": {
           "Ref": "ClusterSecretAttachment769E6258"
         },
-        "databaseName": "my_db"
+        "databaseName": "my_db",
+        "username": "awscdkredshiftclusterdatabaseuserc17d5ebd",
+        "passwordSecretArn": {
+          "Ref": "UserSecretAttachment02022609"
+        }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "UserGrantPrivilegesProviderframeworkonEventServiceRoleA106EA4A": {
+    "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -909,7 +909,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "UserGrantPrivilegesProviderframeworkonEventServiceRoleDefaultPolicy42DEBDE5": {
+    "UserTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicy3B6EF50C": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -927,17 +927,17 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "UserGrantPrivilegesProviderframeworkonEventServiceRoleDefaultPolicy42DEBDE5",
+        "PolicyName": "UserTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicy3B6EF50C",
         "Roles": [
           {
-            "Ref": "UserGrantPrivilegesProviderframeworkonEventServiceRoleA106EA4A"
+            "Ref": "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A"
           }
         ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "UserGrantPrivilegesProviderframeworkonEventC936078A": {
+    "UserTablePrivilegesProviderframeworkonEvent3F5C1851": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -980,11 +980,11 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "UserGrantPrivilegesProviderframeworkonEventServiceRoleA106EA4A",
+            "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A",
             "Arn"
           ]
         },
-        "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-database/User/Grant Privileges/Provider)",
+        "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider)",
         "Environment": {
           "Variables": {
             "USER_ON_EVENT_FUNCTION_ARN": {
@@ -1000,50 +1000,50 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "UserGrantPrivilegesProviderframeworkonEventServiceRoleDefaultPolicy42DEBDE5",
-        "UserGrantPrivilegesProviderframeworkonEventServiceRoleA106EA4A"
+        "UserTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicy3B6EF50C",
+        "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "UserGrantPrivileges79356589": {
+    "UserTablePrivileges3829D614": {
       "Type": "Custom::RedshiftDatabaseQuery",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
-            "UserGrantPrivilegesProviderframeworkonEventC936078A",
+            "UserTablePrivilegesProviderframeworkonEvent3F5C1851",
             "Arn"
           ]
         },
-        "username": {
-          "Fn::GetAtt": [
-            "UserFDDCDD17",
-            "username"
-          ]
-        },
-        "tablePrivileges": {
-          "Fn::Join": [
-            "",
-            [
-              "[{\"tableName\":\"",
-              {
-                "Fn::GetAtt": [
-                  "Table7ABB320E",
-                  "tableName"
-                ]
-              },
-              "\",\"privileges\":[\"INSERT\",\"DELETE\",\"SELECT\"]}]"
-            ]
-          ]
-        },
-        "handler": "grant-privileges",
+        "handler": "user-table-privileges",
         "clusterName": {
           "Ref": "ClusterEB0386A7"
         },
         "adminUserArn": {
           "Ref": "ClusterSecretAttachment769E6258"
         },
-        "databaseName": "my_db"
+        "databaseName": "my_db",
+        "username": {
+          "Fn::GetAtt": [
+            "UserFDDCDD17",
+            "username"
+          ]
+        },
+        "tablePrivileges": [
+          {
+            "tableName": {
+              "Fn::GetAtt": [
+                "Table7ABB320E",
+                "tableName"
+              ]
+            },
+            "actions": [
+              "INSERT",
+              "DELETE",
+              "SELECT"
+            ]
+          }
+        ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -1132,7 +1132,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters429c2674e0304a0758e963336529b5fd59976fa97b164a6e0c58937c9c304ff1S3Bucket57C7A7DA"
+            "Ref": "AssetParameters98d8856168305b21278c9e0aea6d65bb4d8044aa6639808cde7f7c0997a72436S3Bucket8D9BB722"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1145,7 +1145,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters429c2674e0304a0758e963336529b5fd59976fa97b164a6e0c58937c9c304ff1S3VersionKey0FC4BCD9"
+                          "Ref": "AssetParameters98d8856168305b21278c9e0aea6d65bb4d8044aa6639808cde7f7c0997a72436S3VersionKeyEFA65A6D"
                         }
                       ]
                     }
@@ -1158,7 +1158,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters429c2674e0304a0758e963336529b5fd59976fa97b164a6e0c58937c9c304ff1S3VersionKey0FC4BCD9"
+                          "Ref": "AssetParameters98d8856168305b21278c9e0aea6d65bb4d8044aa6639808cde7f7c0997a72436S3VersionKeyEFA65A6D"
                         }
                       ]
                     }
@@ -1324,33 +1324,42 @@
             "Arn"
           ]
         },
-        "tableName": "awscdkredshiftclusterdatabaseTable24923533",
-        "tableColumns": "[{\"name\":\"col1\",\"dataType\":\"varchar(4)\"},{\"name\":\"col2\",\"dataType\":\"float\"}]",
-        "handler": "create-table",
+        "handler": "table",
         "clusterName": {
           "Ref": "ClusterEB0386A7"
         },
         "adminUserArn": {
           "Ref": "ClusterSecretAttachment769E6258"
         },
-        "databaseName": "my_db"
+        "databaseName": "my_db",
+        "tableName": "awscdkredshiftclusterdatabaseTable24923533",
+        "tableColumns": [
+          {
+            "name": "col1",
+            "dataType": "varchar(4)"
+          },
+          {
+            "name": "col2",
+            "dataType": "float"
+          }
+        ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
-    "AssetParameters429c2674e0304a0758e963336529b5fd59976fa97b164a6e0c58937c9c304ff1S3Bucket57C7A7DA": {
+    "AssetParameters98d8856168305b21278c9e0aea6d65bb4d8044aa6639808cde7f7c0997a72436S3Bucket8D9BB722": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"429c2674e0304a0758e963336529b5fd59976fa97b164a6e0c58937c9c304ff1\""
+      "Description": "S3 bucket for asset \"98d8856168305b21278c9e0aea6d65bb4d8044aa6639808cde7f7c0997a72436\""
     },
-    "AssetParameters429c2674e0304a0758e963336529b5fd59976fa97b164a6e0c58937c9c304ff1S3VersionKey0FC4BCD9": {
+    "AssetParameters98d8856168305b21278c9e0aea6d65bb4d8044aa6639808cde7f7c0997a72436S3VersionKeyEFA65A6D": {
       "Type": "String",
-      "Description": "S3 key for asset version \"429c2674e0304a0758e963336529b5fd59976fa97b164a6e0c58937c9c304ff1\""
+      "Description": "S3 key for asset version \"98d8856168305b21278c9e0aea6d65bb4d8044aa6639808cde7f7c0997a72436\""
     },
-    "AssetParameters429c2674e0304a0758e963336529b5fd59976fa97b164a6e0c58937c9c304ff1ArtifactHashF3706C0D": {
+    "AssetParameters98d8856168305b21278c9e0aea6d65bb4d8044aa6639808cde7f7c0997a72436ArtifactHash131ACC90": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"429c2674e0304a0758e963336529b5fd59976fa97b164a6e0c58937c9c304ff1\""
+      "Description": "Artifact hash for asset \"98d8856168305b21278c9e0aea6d65bb4d8044aa6639808cde7f7c0997a72436\""
     },
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",

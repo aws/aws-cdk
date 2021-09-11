@@ -1,13 +1,56 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { DatabaseQuery } from './database-query';
-import { DatabaseProps } from './database-props';
-import { IUser, Privilege } from './user';
+import { DatabaseOptions } from './database-options';
+import { DatabaseQuery } from './private/database-query';
+import { HandlerName, TableHandlerProps } from './private/handler-props';
+import { IUser } from './user';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
+
+/**
+ * An action that a Redshift user can be granted privilege to perform on a table.
+ */
+export enum TableAction {
+  /**
+   * Grants privilege to select data from a table or view using a SELECT statement.
+   */
+  SELECT,
+
+  /**
+   * Grants privilege to load data into a table using an INSERT statement or a COPY statement.
+   */
+  INSERT,
+
+  /**
+   * Grants privilege to update a table column using an UPDATE statement.
+   */
+  UPDATE,
+
+  /**
+   * Grants privilege to delete a data row from a table.
+   */
+  DELETE,
+
+  /**
+   * Grants privilege to drop a table.
+   */
+  DROP,
+
+  /**
+   * Grants privilege to create a foreign key constraint.
+   *
+   * You need to grant this privilege on both the referenced table and the referencing table; otherwise, the user can't create the constraint.
+   */
+  REFERENCES,
+
+  /**
+   * Grants all available privileges at once to the specified user or user group.
+   */
+  ALL
+}
 
 /**
  * A column in a Redshift table.
@@ -27,7 +70,7 @@ export interface Column {
 /**
  * Properties for configuring a Redshift table.
  */
-export interface TableProps extends DatabaseProps {
+export interface TableProps extends DatabaseOptions {
   /**
    * The name of the table.
    *
@@ -75,7 +118,7 @@ export interface ITable extends cdk.IConstruct {
   /**
    * Grant a user privilege to access this table.
    */
-  grant(user: IUser, ...privileges: Privilege[]): void;
+  grant(user: IUser, ...actions: TableAction[]): void;
 }
 
 /**
@@ -108,8 +151,8 @@ abstract class TableBase extends CoreConstruct implements ITable {
   abstract readonly tableColumns: Column[];
   abstract readonly cluster: ICluster;
   abstract readonly databaseName: string;
-  grant(user: IUser, ...privileges: Privilege[]) {
-    user.addPrivilege(this.tableName, ...privileges);
+  grant(user: IUser, ...actions: TableAction[]) {
+    user.addTablePrivileges(this, ...actions);
   }
 }
 
@@ -134,7 +177,7 @@ export class Table extends TableBase {
   readonly cluster: ICluster;
   readonly databaseName: string;
 
-  private resource: DatabaseQuery;
+  private resource: DatabaseQuery<TableHandlerProps>;
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
@@ -146,10 +189,10 @@ export class Table extends TableBase {
     this.resource = new DatabaseQuery(this, 'Resource', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       ...props,
-      handler: 'create-table',
+      handler: HandlerName.Table,
       properties: {
         tableName: props.tableName ?? cdk.Names.uniqueId(this),
-        tableColumns: JSON.stringify(this.tableColumns),
+        tableColumns: this.tableColumns,
       },
     });
 

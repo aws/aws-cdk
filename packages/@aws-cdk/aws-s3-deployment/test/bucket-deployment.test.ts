@@ -225,7 +225,7 @@ test('honors passed asset options', () => {
       ],
     },
     SourceBucketNames: [{
-      Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3BucketB41AE64D',
+      Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3Bucket02009982',
     }],
     SourceObjectKeys: [{
       'Fn::Join': [
@@ -238,7 +238,7 @@ test('honors passed asset options', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
+                    Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
                   },
                 ],
               },
@@ -251,7 +251,7 @@ test('honors passed asset options', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
+                    Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
                   },
                 ],
               },
@@ -491,6 +491,30 @@ test('fails if distribution paths provided but not distribution ID', () => {
 
 });
 
+test('fails if distribution paths don\'t start with "/"', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
+    originConfigs: [
+      {
+        s3OriginSource: {
+          s3BucketSource: bucket,
+        },
+        behaviors: [{ isDefaultBehavior: true }],
+      },
+    ],
+  });
+
+  // THEN
+  expect(() => new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    distribution,
+    distributionPaths: ['images/*'],
+  })).toThrow(/Distribution paths must start with "\/"/);
+});
+
 testFutureBehavior('lambda execution role gets permissions to read from the source bucket and read/write in destination', s3GrantWriteCtx, cdk.App, (app) => {
   // GIVEN
   const stack = new cdk.Stack(app);
@@ -662,6 +686,82 @@ test('deploy without deleting missing files from destination', () => {
 
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
     Prune: false,
+  });
+});
+
+test('deploy with excluded files from destination', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    exclude: ['sample.js'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Exclude: ['sample.js'],
+  });
+});
+
+test('deploy with included files from destination', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    include: ['sample.js'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Include: ['sample.js'],
+  });
+});
+
+test('deploy with excluded and included files from destination', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    exclude: ['sample/*'],
+    include: ['sample/include.json'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Exclude: ['sample/*'],
+    Include: ['sample/include.json'],
+  });
+});
+
+test('deploy with multiple exclude and include filters', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    exclude: ['sample/*', 'another/*'],
+    include: ['sample/include.json', 'another/include.json'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Exclude: ['sample/*', 'another/*'],
+    Include: ['sample/include.json', 'another/include.json'],
   });
 });
 

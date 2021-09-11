@@ -828,7 +828,7 @@ describe('redshift destination', () => {
   });
 
   describe('redshift user', () => {
-    it ('grants insert privileges on table', () => {
+    it('grants insert privileges on table', () => {
       const destination = new dests.RedshiftTable(table);
 
       new firehose.DeliveryStream(stack, 'Delivery Stream', {
@@ -836,28 +836,22 @@ describe('redshift destination', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-        handler: 'grant-privileges',
+        handler: 'user-table-privileges',
         username: {
           'Fn::GetAtt': [
             'DeliveryStreamRedshiftUser8004061B',
             'username',
           ],
         },
-        tablePrivileges: {
-          'Fn::Join': [
-            '',
-            [
-              '[{"tableName":"',
-              {
-                'Fn::GetAtt': [
-                  'Table7ABB320E',
-                  'tableName',
-                ],
-              },
-              '","privileges":["INSERT"]}]',
+        tablePrivileges: [{
+          tableName: {
+            'Fn::GetAtt': [
+              'Table7ABB320E',
+              'tableName',
             ],
-          ],
-        },
+          },
+          actions: ['INSERT'],
+        }],
       });
     });
 

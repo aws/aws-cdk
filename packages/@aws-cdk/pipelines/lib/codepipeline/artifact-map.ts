@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { FileSet } from '../blueprint';
 import { PipelineGraph } from '../helpers-internal';
@@ -38,9 +39,27 @@ export class ArtifactMap {
   }
 }
 
+/**
+ * Sanitize a string to be a valid artifact name
+ *
+ * This must comport to both the rules of artifacts in CodePipeline, as well
+ * as the names of Source Identifiers in CodeBuild.
+ *
+ * Artifact Name limits aren't documented.
+ *
+ * Source Identifier limits are documented here:
+ * https://docs.aws.amazon.com/codebuild/latest/APIReference/API_ProjectSource.html#CodeBuild-Type-ProjectSource-sourceIdentifier
+ */
 function sanitizeArtifactName(x: string): string {
-  // FIXME: Does this REALLY not allow '.'? The docs don't mention it, but action names etc. do!
-  return x.replace(/[^A-Za-z0-9@\-_]/g, '_');
+  let sani = x.replace(/[^A-Za-z0-9_]/g, '_'); // Charset requirement is imposed by CodeBuild
+  const maxLength = 100; // Max length of 100 is imposed by CodePipeline library
+
+  if (sani.length > maxLength) {
+    const fingerprint = crypto.createHash('sha256').update(sani).digest('hex').substr(0, 8);
+    sani = sani.substr(0, maxLength - fingerprint.length) + fingerprint;
+  }
+
+  return sani;
 }
 
 /**
