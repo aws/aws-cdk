@@ -3,7 +3,7 @@ import * as AWSLambda from 'aws-lambda';
 import { handler as managePrivileges } from './privileges';
 import { handler as manageTable } from './table';
 import { handler as manageUser } from './user';
-import { HandlerName } from '../handler-props';
+import { HandlerName } from './handler-name';
 
 const HANDLERS: { [key in HandlerName]: ((props: any, event: AWSLambda.CloudFormationCustomResourceEvent) => Promise<any>) } = {
   [HandlerName.Table]: manageTable,

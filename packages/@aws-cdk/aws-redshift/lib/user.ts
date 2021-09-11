@@ -5,7 +5,8 @@ import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseSecret } from './database-secret';
 import { DatabaseQuery } from './private/database-query';
-import { HandlerName, UserHandlerProps } from './private/handler-props';
+import { HandlerName } from './private/database-query-provider/handler-name';
+import { UserHandlerProps } from './private/handler-props';
 import { UserTablePrivileges } from './private/privileges';
 import { ITable, TableAction } from './table';
 

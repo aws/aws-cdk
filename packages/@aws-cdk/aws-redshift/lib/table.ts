@@ -3,7 +3,8 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
-import { HandlerName, TableHandlerProps } from './private/handler-props';
+import { HandlerName } from './private/database-query-provider/handler-name';
+import { TableHandlerProps } from './private/handler-props';
 import { IUser } from './user';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
