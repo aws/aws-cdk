@@ -189,6 +189,34 @@ describe('userdata', () => {
     linuxUserDataTest(signalResource.logicalId);
   });
 
+  test('linux userdata contains right commands when url and role included', () => {
+    // WHEN
+    simpleInit.attach(resource, {
+      platform: ec2.OperatingSystemType.LINUX,
+      instanceRole,
+      includeUrl: true,
+      includeRole: true,
+      userData: linuxUserData,
+    });
+
+    // THEN
+    const lines = linuxUserData.render().split('\n');
+    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', `--role ${instanceRole}`));
+    expectLine(lines, cmdArg('cfn-init', `--url https://cloudformation.${Aws.REGION}.${Aws.URL_SUFFIX}`));
+    expectLine(lines, cmdArg('cfn-init', '-c default'));
+    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-signal', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', `--role ${instanceRole}`));
+    expectLine(lines, cmdArg('cfn-init', `--url https://cloudformation.${Aws.REGION}.${Aws.URL_SUFFIX}`));
+    expectLine(lines, cmdArg('cfn-signal', '-e $?'));
+    expectLine(lines, cmdArg('cat', 'cfn-init.log'));
+    expectLine(lines, /fingerprint/);
+  });
+
   test('Windows userdata contains right commands', () => {
     // WHEN
     const windowsUserData = ec2.UserData.forWindows();
