@@ -1,14 +1,17 @@
 /* eslint-disable-next-line import/no-unresolved */
 import type * as AWSLambda from 'aws-lambda';
 
-const tableName = 'tableName';
+const tableNamePrefix = 'tableNamePrefix';
 const tableColumns = [{ name: 'col1', dataType: 'varchar(1)' }];
 const clusterName = 'clusterName';
 const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
 const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties = {
-  tableName,
+  tableName: {
+    prefix: tableNamePrefix,
+    generateSuffix: false,
+  },
   tableColumns,
   clusterName,
   adminUserArn,
@@ -47,13 +50,10 @@ describe('create', () => {
     const event = baseEvent;
 
     await expect(manageTable(resourceProperties, event)).resolves.toEqual({
-      PhysicalResourceId: 'clusterName:databaseName:tableName:requestId',
-      Data: {
-        tableName,
-      },
+      PhysicalResourceId: tableNamePrefix,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: 'CREATE TABLE tableName (col1 varchar(1))',
+      Sql: `CREATE TABLE ${tableNamePrefix} (col1 varchar(1))`,
     }));
   });
 });
@@ -71,7 +71,7 @@ describe('delete', () => {
     await manageTable(resourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: 'DROP TABLE tableName',
+      Sql: `DROP TABLE ${physicalResourceId}`,
     }));
   });
 });
@@ -96,7 +96,7 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       ClusterIdentifier: newClusterName,
-      Sql: expect.stringMatching(/CREATE TABLE/),
+      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}`)),
     }));
   });
 
@@ -125,22 +125,25 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Database: newDatabaseName,
-      Sql: expect.stringMatching(/CREATE TABLE/),
+      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}`)),
     }));
   });
 
   test('replaces if table name changes', async () => {
-    const newTableName = 'newTableName';
+    const newTableNamePrefix = 'newTableNamePrefix';
     const newResourceProperties = {
       ...resourceProperties,
-      tableName: newTableName,
+      tableName: {
+        ...resourceProperties.tableName,
+        prefix: newTableNamePrefix,
+      },
     };
 
     await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${newTableName}`)),
+      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${newTableNamePrefix}`)),
     }));
   });
 
@@ -157,7 +160,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableName} (${newTableColumnName} ${newTableColumnDataType})`,
+      Sql: `CREATE TABLE ${tableNamePrefix} (${newTableColumnName} ${newTableColumnDataType})`,
     }));
   });
 
@@ -174,7 +177,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `ALTER TABLE ${tableName} ADD ${newTableColumnName} ${newTableColumnDataType}`,
+      Sql: `ALTER TABLE ${physicalResourceId} ADD ${newTableColumnName} ${newTableColumnDataType}`,
     }));
   });
 });

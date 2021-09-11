@@ -13,7 +13,10 @@ export interface UserHandlerProps {
 }
 
 export interface TableHandlerProps {
-  readonly tableName: string;
+  readonly tableName: {
+    readonly prefix: string;
+    readonly generateSuffix: boolean;
+  };
   readonly tableColumns: Column[];
 }
 
