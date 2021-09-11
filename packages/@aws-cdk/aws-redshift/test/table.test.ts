@@ -38,7 +38,10 @@ describe('cluster table', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-      tableName: 'Table',
+      tableName: {
+        prefix: 'Table',
+        generateSuffix: true,
+      },
       tableColumns,
     });
   });
@@ -50,10 +53,7 @@ describe('cluster table', () => {
     });
 
     expect(stack.resolve(table.tableName)).toStrictEqual({
-      'Fn::GetAtt': [
-        'Table7ABB320E',
-        'tableName',
-      ],
+      Ref: 'Table7ABB320E',
     });
   });
 
@@ -65,7 +65,10 @@ describe('cluster table', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-      tableName: tableName,
+      tableName: {
+        prefix: tableName,
+        generateSuffix: false,
+      },
     });
   });
 
@@ -111,7 +114,7 @@ describe('cluster table', () => {
 
     Template.fromStack(stack).hasResource('Custom::RedshiftDatabaseQuery', {
       Properties: {
-        tableName: 'Table',
+        handler: 'table',
       },
       DeletionPolicy: 'Retain',
     });
@@ -127,7 +130,7 @@ describe('cluster table', () => {
 
     Template.fromStack(stack).hasResource('Custom::RedshiftDatabaseQuery', {
       Properties: {
-        tableName: 'Table',
+        handler: 'table',
       },
       DeletionPolicy: 'Delete',
     });

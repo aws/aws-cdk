@@ -1032,10 +1032,7 @@
         "tablePrivileges": [
           {
             "tableName": {
-              "Fn::GetAtt": [
-                "Table7ABB320E",
-                "tableName"
-              ]
+              "Ref": "Table7ABB320E"
             },
             "actions": [
               "INSERT",
@@ -1132,7 +1129,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835S3BucketB3F58BF4"
+            "Ref": "AssetParameters483841e46ab98aa099d0371a7800e2ace3ddbbb12cb8efb3162ca172ebdafd49S3Bucket148631C8"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1145,7 +1142,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835S3VersionKeyFBF92179"
+                          "Ref": "AssetParameters483841e46ab98aa099d0371a7800e2ace3ddbbb12cb8efb3162ca172ebdafd49S3VersionKey1A4E04E7"
                         }
                       ]
                     }
@@ -1158,7 +1155,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835S3VersionKeyFBF92179"
+                          "Ref": "AssetParameters483841e46ab98aa099d0371a7800e2ace3ddbbb12cb8efb3162ca172ebdafd49S3VersionKey1A4E04E7"
                         }
                       ]
                     }
@@ -1332,7 +1329,10 @@
           "Ref": "ClusterSecretAttachment769E6258"
         },
         "databaseName": "my_db",
-        "tableName": "awscdkredshiftclusterdatabaseTable24923533",
+        "tableName": {
+          "prefix": "awscdkredshiftclusterdatabaseTable24923533",
+          "generateSuffix": true
+        },
         "tableColumns": [
           {
             "name": "col1",
@@ -1349,17 +1349,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835S3BucketB3F58BF4": {
+    "AssetParameters483841e46ab98aa099d0371a7800e2ace3ddbbb12cb8efb3162ca172ebdafd49S3Bucket148631C8": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835\""
+      "Description": "S3 bucket for asset \"483841e46ab98aa099d0371a7800e2ace3ddbbb12cb8efb3162ca172ebdafd49\""
     },
-    "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835S3VersionKeyFBF92179": {
+    "AssetParameters483841e46ab98aa099d0371a7800e2ace3ddbbb12cb8efb3162ca172ebdafd49S3VersionKey1A4E04E7": {
       "Type": "String",
-      "Description": "S3 key for asset version \"1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835\""
+      "Description": "S3 key for asset version \"483841e46ab98aa099d0371a7800e2ace3ddbbb12cb8efb3162ca172ebdafd49\""
     },
-    "AssetParameters1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835ArtifactHash342ADFB2": {
+    "AssetParameters483841e46ab98aa099d0371a7800e2ace3ddbbb12cb8efb3162ca172ebdafd49ArtifactHashEB952795": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"1653997de2557bb7efc17a74fd61424f41bf82db76a4b20f9f1dd04e5ea7b835\""
+      "Description": "Artifact hash for asset \"483841e46ab98aa099d0371a7800e2ace3ddbbb12cb8efb3162ca172ebdafd49\""
     },
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",

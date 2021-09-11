@@ -10,7 +10,7 @@ const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties = {
   tableName: {
     prefix: tableNamePrefix,
-    generateSuffix: false,
+    generateSuffix: true,
   },
   tableColumns,
   clusterName,
@@ -19,6 +19,7 @@ const resourceProperties = {
   ServiceToken: '',
 };
 const requestId = 'requestId';
+const requestIdTruncated = 'requestI';
 const genericEvent: AWSLambda.CloudFormationCustomResourceEventCommon = {
   ResourceProperties: resourceProperties,
   ServiceToken: '',
@@ -50,6 +51,24 @@ describe('create', () => {
     const event = baseEvent;
 
     await expect(manageTable(resourceProperties, event)).resolves.toEqual({
+      PhysicalResourceId: `${tableNamePrefix}${requestIdTruncated}`,
+    });
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`,
+    }));
+  });
+
+  test('does not modify table name if no suffix generation requested', async () => {
+    const event = baseEvent;
+    const newResourceProperties = {
+      ...resourceProperties,
+      tableName: {
+        ...resourceProperties.tableName,
+        generateSuffix: false,
+      },
+    };
+
+    await expect(manageTable(newResourceProperties, event)).resolves.toEqual({
       PhysicalResourceId: tableNamePrefix,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
@@ -96,7 +115,7 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       ClusterIdentifier: newClusterName,
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}`)),
+      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`)),
     }));
   });
 
@@ -125,7 +144,7 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Database: newDatabaseName,
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}`)),
+      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`)),
     }));
   });
 
@@ -143,7 +162,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${newTableNamePrefix}`)),
+      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${newTableNamePrefix}${requestIdTruncated}`)),
     }));
   });
 
@@ -160,7 +179,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix} (${newTableColumnName} ${newTableColumnDataType})`,
+      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (${newTableColumnName} ${newTableColumnDataType})`,
     }));
   });
 

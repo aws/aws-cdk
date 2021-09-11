@@ -6,18 +6,25 @@ import { ClusterProps, executeStatement } from './util';
 
 export async function handler(props: TableHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
-  const tableNameGenerateSuffix = props.tableName.generateSuffix;
+  const tableNameSuffix = props.tableName.generateSuffix ? `${event.RequestId.substring(0, 8)}` : '';
   const tableColumns = props.tableColumns;
   const clusterProps = props;
 
   if (event.RequestType === 'Create') {
-    const tableName = await createTable(tableNamePrefix, tableNameGenerateSuffix, tableColumns, clusterProps);
+    const tableName = await createTable(tableNamePrefix, tableNameSuffix, tableColumns, clusterProps);
     return { PhysicalResourceId: tableName };
   } else if (event.RequestType === 'Delete') {
     await dropTable(event.PhysicalResourceId, clusterProps);
     return;
   } else if (event.RequestType === 'Update') {
-    const tableName = await updateTable(event.PhysicalResourceId, tableNamePrefix, tableNameGenerateSuffix, tableColumns, clusterProps, event.OldResourceProperties as TableHandlerProps & ClusterProps);
+    const tableName = await updateTable(
+      event.PhysicalResourceId,
+      tableNamePrefix,
+      tableNameSuffix,
+      tableColumns,
+      clusterProps,
+      event.OldResourceProperties as TableHandlerProps & ClusterProps,
+    );
     return { PhysicalResourceId: tableName };
   } else {
     /* eslint-disable-next-line dot-notation */
@@ -25,8 +32,8 @@ export async function handler(props: TableHandlerProps & ClusterProps, event: AW
   }
 }
 
-async function createTable(tableNamePrefix: string, tableNameGenerateSuffix: boolean, tableColumns: Column[], clusterProps: ClusterProps): Promise<string> {
-  const tableName = tableNamePrefix;
+async function createTable(tableNamePrefix: string, tableNameSuffix: string, tableColumns: Column[], clusterProps: ClusterProps): Promise<string> {
+  const tableName = tableNamePrefix + tableNameSuffix;
   const tableColumnsString = tableColumns.map(column => `${column.name} ${column.dataType}`).join();
   await executeStatement(`CREATE TABLE ${tableName} (${tableColumnsString})`, clusterProps);
   return tableName;
@@ -39,24 +46,24 @@ async function dropTable(tableName: string, clusterProps: ClusterProps) {
 async function updateTable(
   tableName: string,
   tableNamePrefix: string,
-  tableNameGenerateSuffix: boolean,
+  tableNameSuffix: string,
   tableColumns: Column[],
   clusterProps: ClusterProps,
   oldResourceProperties: TableHandlerProps & ClusterProps,
 ): Promise<string> {
   const oldClusterProps = oldResourceProperties;
   if (clusterProps.clusterName !== oldClusterProps.clusterName || clusterProps.databaseName !== oldClusterProps.databaseName) {
-    return createTable(tableNamePrefix, tableNameGenerateSuffix, tableColumns, clusterProps);
+    return createTable(tableNamePrefix, tableNameSuffix, tableColumns, clusterProps);
   }
 
   const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
   if (tableNamePrefix !== oldTableNamePrefix) {
-    return createTable(tableNamePrefix, tableNameGenerateSuffix, tableColumns, clusterProps);
+    return createTable(tableNamePrefix, tableNameSuffix, tableColumns, clusterProps);
   }
 
   const oldTableColumns = oldResourceProperties.tableColumns;
   if (!oldTableColumns.every(oldColumn => tableColumns.some(column => column.name === oldColumn.name && column.dataType === oldColumn.dataType))) {
-    return createTable(tableNamePrefix, tableNameGenerateSuffix, tableColumns, clusterProps);
+    return createTable(tableNamePrefix, tableNameSuffix, tableColumns, clusterProps);
   }
 
   const additions = tableColumns.filter(column => {
