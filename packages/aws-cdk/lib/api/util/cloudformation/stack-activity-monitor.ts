@@ -384,6 +384,8 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
   protected readonly stream: NodeJS.WriteStream;
 
   constructor(protected readonly props: PrinterProps) {
+    // +1 because the stack also emits a "COMPLETE" event at the end, and that wasn't
+    // counted yet. This makes it line up with the amount of events we expect.
     this.resourcesTotal = props.resourcesTotal ? props.resourcesTotal + 1 : undefined;
 
     // How many digits does this number take to represent?

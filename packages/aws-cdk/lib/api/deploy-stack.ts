@@ -334,8 +334,7 @@ async function prepareAndExecuteChangeSet(
     // eslint-disable-next-line max-len
     const changeSetLength: number = (changeSetDescription.Changes ?? []).length;
     const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, stackArtifact, {
-      // +2 for the COMPLETE event emitted from updates.
-      // +1 for the COMPLETE event emitted from creates.
+      // +1 for the extra event emitted from updates.
       resourcesTotal: cloudFormationStack.exists ? changeSetLength + 1 : changeSetLength,
       progress: options.progress,
       changeSetCreationTime: changeSetDescription.CreationTime,
