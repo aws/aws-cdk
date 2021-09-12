@@ -84,6 +84,10 @@ export class DomainName extends Resource implements IDomainName {
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
 
+    if (props.domainName === '') {
+      throw new Error('empty string for domainName not allowed');
+    }
+
     const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,
       domainNameConfigurations: [
@@ -94,7 +98,7 @@ export class DomainName extends Resource implements IDomainName {
       ],
     };
     const resource = new CfnDomainName(this, 'Resource', domainNameProps);
-    this.name = props.domainName ?? resource.ref;
+    this.name = resource.ref;
     this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
     this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
   }

@@ -1,4 +1,4 @@
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as sources from '../lib';
@@ -17,7 +17,7 @@ describe('SQSEventSource', () => {
     fn.addEventSource(new sources.SqsEventSource(q));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -41,7 +41,7 @@ describe('SQSEventSource', () => {
       },
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'Q63C6E3AB',
@@ -68,7 +68,7 @@ describe('SQSEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'Q63C6E3AB',
@@ -101,7 +101,7 @@ describe('SQSEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'BatchSize': 500,
     });
 
@@ -149,7 +149,7 @@ describe('SQSEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'BatchSize': 1000,
       'MaximumBatchingWindowInSeconds': 300,
     });
@@ -184,7 +184,7 @@ describe('SQSEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'MaximumBatchingWindowInSeconds': 300,
     });
 
@@ -259,7 +259,7 @@ describe('SQSEventSource', () => {
     }));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
 

@@ -559,6 +559,14 @@ behavior('Synth can be made to run in a VPC', (suite) => {
     THEN_codePipelineExpectation();
   });
 
+  suite.additional('Modern, using the synthCodeBuildDefaults', () => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synthCodeBuildDefaults: { vpc },
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
   suite.additional('Modern, using CodeBuildStep', () => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       synth: new CodeBuildStep('Synth', {
@@ -940,8 +948,8 @@ behavior('Multiple input sources in side-by-side directories', (suite) => {
           phases: {
             install: {
               commands: [
-                'ln -s "$CODEBUILD_SRC_DIR_foo_bar_Source" "../sibling"',
-                'ln -s "$CODEBUILD_SRC_DIR_Prebuild_Output" "sub"',
+                'ln -s -- "$CODEBUILD_SRC_DIR_foo_bar_Source" "../sibling"',
+                'ln -s -- "$CODEBUILD_SRC_DIR_Prebuild_Output" "sub"',
               ],
             },
             build: {

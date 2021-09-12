@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { WebSocketApi, WebSocketStage } from '../../lib';
 
@@ -15,7 +15,7 @@ describe('WebSocketStage', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
       ApiId: stack.resolve(api.apiId),
       StageName: 'dev',
     });

@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { isSuperObject } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';
 
@@ -27,11 +26,13 @@ describe('Dashboard', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudWatch::Dashboard', thatHasWidgets([
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(resources.length).toEqual(1);
+    hasWidgets(resources[0].Properties, [
       { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: { markdown: 'first' } },
       { type: 'text', width: 1, height: 4, x: 0, y: 2, properties: { markdown: 'second' } },
       { type: 'text', width: 4, height: 1, x: 0, y: 6, properties: { markdown: 'third' } },
-    ]));
+    ]);
 
 
   });
@@ -61,11 +62,13 @@ describe('Dashboard', () => {
     );
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudWatch::Dashboard', thatHasWidgets([
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(resources.length).toEqual(1);
+    hasWidgets(resources[0].Properties, [
       { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: { markdown: 'first' } },
       { type: 'text', width: 1, height: 4, x: 10, y: 0, properties: { markdown: 'second' } },
       { type: 'text', width: 4, height: 1, x: 11, y: 0, properties: { markdown: 'third' } },
-    ]));
+    ]);
 
 
   });
@@ -81,7 +84,7 @@ describe('Dashboard', () => {
     );
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudWatch::Dashboard', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
       DashboardBody: {
         'Fn::Join': ['', [
           '{"widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
@@ -110,7 +113,7 @@ describe('Dashboard', () => {
     );
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudWatch::Dashboard', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
       DashboardBody: {
         'Fn::Join': ['', [
           '{"start":"-9H","end":"2018-12-17T06:00:00.000Z","periodOverride":"inherit",\
@@ -135,7 +138,7 @@ describe('Dashboard', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudWatch::Dashboard', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
       DashboardName: 'MyCustomDashboardName',
     });
 
@@ -151,7 +154,7 @@ describe('Dashboard', () => {
     new Dashboard(stack, 'MyDashboard');
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudWatch::Dashboard', {});
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {});
 
 
   });
@@ -178,15 +181,14 @@ describe('Dashboard', () => {
 /**
  * Returns a property predicate that checks that the given Dashboard has the indicated widgets
  */
-function thatHasWidgets(widgets: any): (props: any) => boolean {
-  return (props: any) => {
-    try {
-      const actualWidgets = JSON.parse(props.DashboardBody).widgets;
-      return isSuperObject(actualWidgets, widgets);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('Error parsing', props);
-      throw e;
-    }
-  };
+function hasWidgets(props: any, widgets: any[]) {
+  let actualWidgets: any[] = [];
+  try {
+    actualWidgets = JSON.parse(props.DashboardBody).widgets;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Error parsing', props);
+    throw e;
+  }
+  expect(actualWidgets).toEqual(expect.arrayContaining(widgets));
 }

@@ -367,7 +367,7 @@ function newFixtures(spot = false) {
   const stack = new Stack(app, 'my-stack', { env: { region: 'us-west-33' } });
   const vpc = new ec2.Vpc(stack, 'vpc');
   const cluster = new Cluster(stack, 'cluster', {
-    version: KubernetesVersion.V1_20,
+    version: KubernetesVersion.V1_21,
     clusterName: 'my-cluster-name',
     vpc,
   });

@@ -1,4 +1,4 @@
-import { Match, TemplateAssertions } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Stack, Duration } from '@aws-cdk/core';
 import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
 
@@ -14,7 +14,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
       AllowedOAuthFlows: ['implicit', 'code'],
       AllowedOAuthScopes: ['profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin'],
@@ -62,7 +62,7 @@ describe('User Pool Client', () => {
     pool.addClient('Client');
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ExplicitAuthFlows: Match.absentProperty(),
     });
   });
@@ -82,7 +82,7 @@ describe('User Pool Client', () => {
       },
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ExplicitAuthFlows: [
         'ALLOW_USER_PASSWORD_AUTH',
         'ALLOW_ADMIN_USER_PASSWORD_AUTH',
@@ -105,7 +105,7 @@ describe('User Pool Client', () => {
       },
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ExplicitAuthFlows: [
         'ALLOW_USER_SRP_AUTH',
         'ALLOW_REFRESH_TOKEN_AUTH',
@@ -138,12 +138,12 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['implicit', 'code'],
       AllowedOAuthFlowsUserPoolClient: true,
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['client_credentials'],
       AllowedOAuthFlowsUserPoolClient: true,
     });
@@ -177,17 +177,17 @@ describe('User Pool Client', () => {
       },
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['client_credentials'],
       CallbackURLs: Match.absentProperty(),
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['implicit'],
       CallbackURLs: ['https://example.com'],
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['code'],
       CallbackURLs: ['https://example.com'],
     });
@@ -205,7 +205,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       CallbackURLs: Match.absentProperty(),
     });
   });
@@ -246,7 +246,7 @@ describe('User Pool Client', () => {
       },
     });
 
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       LogoutURLs: ['https://example.com'],
     });
   });
@@ -297,7 +297,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthScopes: [
         'phone',
         'email',
@@ -330,7 +330,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthScopes: [
         {
           'Fn::Join': [
@@ -380,19 +380,19 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client1',
       AllowedOAuthScopes: ['phone', 'openid'],
     });
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client2',
       AllowedOAuthScopes: ['email', 'openid'],
     });
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client3',
       AllowedOAuthScopes: ['profile', 'openid'],
     });
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client4',
       AllowedOAuthScopes: ['aws.cognito.signin.user.admin'],
     });
@@ -410,7 +410,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
       PreventUserExistenceErrors: 'ENABLED',
     });
@@ -428,7 +428,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
       PreventUserExistenceErrors: 'LEGACY',
     });
@@ -445,7 +445,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
       PreventUserExistenceErrors: Match.absentProperty(),
     });
@@ -465,7 +465,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       SupportedIdentityProviders: [
         'userpool-idp',
         'COGNITO',
@@ -491,7 +491,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'AllEnabled',
       SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'Google', 'SignInWithApple'],
     });
@@ -513,13 +513,13 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'OAuthDisabled',
       AllowedOAuthFlows: Match.absentProperty(),
       AllowedOAuthScopes: Match.absentProperty(),
       AllowedOAuthFlowsUserPoolClient: false,
     });
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'OAuthEnabled',
       AllowedOAuthFlows: ['implicit', 'code'],
       AllowedOAuthScopes: ['profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin'],
@@ -539,6 +539,53 @@ describe('User Pool Client', () => {
         },
       },
     })).toThrow(/disableOAuth is set/);
+  });
+
+  test('EnableTokenRevocation is absent by default', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: Match.absentProperty(),
+    });
+  });
+
+  test('enableTokenRevocation in addClient', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      enableTokenRevocation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: true,
+    });
+  });
+
+  test('enableTokenRevocation in UserPoolClient', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client1', {
+      userPool: pool,
+      enableTokenRevocation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: true,
+    });
   });
 
   describe('token validity', () => {
@@ -571,7 +618,7 @@ describe('User Pool Client', () => {
       });
 
       // THEN
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client1',
         AccessTokenValidity: 60,
         IdTokenValidity: 60,
@@ -582,7 +629,7 @@ describe('User Pool Client', () => {
           RefreshToken: 'minutes',
         },
       });
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client2',
         AccessTokenValidity: 60,
         IdTokenValidity: Match.absentProperty(),
@@ -593,7 +640,7 @@ describe('User Pool Client', () => {
           RefreshToken: Match.absentProperty(),
         },
       });
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client3',
         AccessTokenValidity: Match.absentProperty(),
         IdTokenValidity: 60,
@@ -604,7 +651,7 @@ describe('User Pool Client', () => {
           RefreshToken: Match.absentProperty(),
         },
       });
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client4',
         AccessTokenValidity: Match.absentProperty(),
         IdTokenValidity: Match.absentProperty(),
@@ -615,7 +662,7 @@ describe('User Pool Client', () => {
           RefreshToken: 'minutes',
         },
       });
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client5',
         TokenValidityUnits: Match.absentProperty(),
         IdTokenValidity: Match.absentProperty(),
@@ -719,7 +766,7 @@ describe('User Pool Client', () => {
       });
 
       // THEN
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client1',
         AccessTokenValidity: validity.toMinutes(),
         TokenValidityUnits: {
@@ -743,7 +790,7 @@ describe('User Pool Client', () => {
       });
 
       // THEN
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client1',
         IdTokenValidity: validity.toMinutes(),
         TokenValidityUnits: {
@@ -768,7 +815,7 @@ describe('User Pool Client', () => {
       });
 
       // THEN
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client1',
         RefreshTokenValidity: validity.toMinutes(),
         TokenValidityUnits: {
@@ -793,7 +840,7 @@ describe('User Pool Client', () => {
       });
 
       // THEN
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client1',
         AccessTokenValidity: validity.toMinutes(),
         TokenValidityUnits: {
@@ -818,7 +865,7 @@ describe('User Pool Client', () => {
       });
 
       // THEN
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client1',
         IdTokenValidity: validity.toMinutes(),
         TokenValidityUnits: {
@@ -838,7 +885,7 @@ describe('User Pool Client', () => {
       pool.addClient('Client', {});
 
       // EXPECT
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ReadAttributes: Match.absentProperty(),
         WriteAttributes: Match.absentProperty(),
       });
@@ -878,7 +925,7 @@ describe('User Pool Client', () => {
       });
 
       // EXPECT
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ReadAttributes: Match.arrayWith(['address', 'birthdate', 'email', 'email_verified', 'family_name', 'gender',
           'given_name', 'locale', 'middle_name', 'name', 'nickname', 'phone_number', 'phone_number_verified', 'picture',
           'preferred_username', 'profile', 'updated_at', 'website', 'zoneinfo']),

@@ -1,10 +1,13 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kinesis from '@aws-cdk/aws-kinesis';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { Construct, Node } from 'constructs';
 import { IDestination } from './destination';
+import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 const PUT_RECORD_ACTIONS = [
@@ -44,6 +47,43 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
    * Return the given named metric for this delivery stream.
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of bytes ingested successfully into the delivery stream over the specified time period after throttling.
+   *
+   * By default, this metric will be calculated as an average over a period of 5 minutes.
+   */
+  metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of records ingested successfully into the delivery stream over the specified time period after throttling.
+   *
+   * By default, this metric will be calculated as an average over a period of 5 minutes.
+   */
+  metricIncomingRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of bytes delivered to Amazon S3 for backup over the specified time period.
+   *
+   * By default, this metric will be calculated as an average over a period of 5 minutes.
+   */
+  metricBackupToS3Bytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the age (from getting into Kinesis Data Firehose to now) of the oldest record in Kinesis Data Firehose.
+   *
+   * Any record older than this age has been delivered to the Amazon S3 bucket for backup.
+   *
+   * By default, this metric will be calculated as an average over a period of 5 minutes.
+   */
+  metricBackupToS3DataFreshness(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of records delivered to Amazon S3 for backup over the specified time period.
+   *
+   * By default, this metric will be calculated as an average over a period of 5 minutes.
+   */
+  metricBackupToS3Records(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -90,6 +130,53 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
       ...props,
     }).attachTo(this);
   }
+
+  public metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(FirehoseMetrics.incomingBytesAverage, props);
+  }
+
+  public metricIncomingRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(FirehoseMetrics.incomingRecordsAverage, props);
+  }
+
+  public metricBackupToS3Bytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(FirehoseMetrics.backupToS3BytesAverage, props);
+  }
+
+  public metricBackupToS3DataFreshness(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(FirehoseMetrics.backupToS3DataFreshnessAverage, props);
+  }
+
+  public metricBackupToS3Records(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(FirehoseMetrics.backupToS3RecordsAverage, props);
+  }
+
+  private cannedMetric(fn: (dims: { DeliveryStreamName: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ DeliveryStreamName: this.deliveryStreamName }),
+      ...props,
+    }).attachTo(this);
+  }
+}
+
+/**
+ * Options for server-side encryption of a delivery stream.
+ */
+export enum StreamEncryption {
+  /**
+   * Data in the stream is stored unencrypted.
+   */
+  UNENCRYPTED,
+
+  /**
+   * Data in the stream is stored encrypted by a KMS key managed by the customer.
+   */
+  CUSTOMER_MANAGED,
+
+  /**
+   * Data in the stream is stored encrypted by a KMS key owned by AWS and managed for use in multiple AWS accounts.
+   */
+  AWS_OWNED,
 }
 
 /**
@@ -111,6 +198,13 @@ export interface DeliveryStreamProps {
   readonly deliveryStreamName?: string;
 
   /**
+   * The Kinesis data stream to use as a source for this delivery stream.
+   *
+   * @default - data must be written to the delivery stream via a direct put.
+   */
+  readonly sourceStream?: kinesis.IStream;
+
+  /**
    * The IAM role associated with this delivery stream.
    *
    * Assumed by Kinesis Data Firehose to read from sources and encrypt data server-side.
@@ -118,6 +212,20 @@ export interface DeliveryStreamProps {
    * @default - a role will be created with default permissions.
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Indicates the type of customer master key (CMK) to use for server-side encryption, if any.
+   *
+   * @default StreamEncryption.UNENCRYPTED - unless `encryptionKey` is provided, in which case this will be implicitly set to `StreamEncryption.CUSTOMER_MANAGED`
+   */
+  readonly encryption?: StreamEncryption;
+
+  /**
+   * Customer managed key to server-side encrypt data in the stream.
+   *
+   * @default - no KMS key will be used; if `encryption` is set to `CUSTOMER_MANAGED`, a KMS key will be created for you
+   */
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -219,14 +327,59 @@ export class DeliveryStream extends DeliveryStreamBase {
     });
     this.grantPrincipal = role;
 
+    if (
+      props.sourceStream &&
+        (props.encryption === StreamEncryption.AWS_OWNED || props.encryption === StreamEncryption.CUSTOMER_MANAGED || props.encryptionKey)
+    ) {
+      throw new Error('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+    }
+    if ((props.encryption === StreamEncryption.AWS_OWNED || props.encryption === StreamEncryption.UNENCRYPTED) && props.encryptionKey) {
+      throw new Error(`Specified stream encryption as ${StreamEncryption[props.encryption]} but provided a customer-managed key`);
+    }
+    const encryptionKey = props.encryptionKey ?? (props.encryption === StreamEncryption.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
+    const encryptionConfig = (encryptionKey || (props.encryption === StreamEncryption.AWS_OWNED)) ? {
+      keyArn: encryptionKey?.keyArn,
+      keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
+    } : undefined;
+    /*
+     * In order for the service role to have access to the encryption key before the delivery stream is created, the
+     * CfnDeliveryStream below should have a dependency on the grant returned by the function call below:
+     * > `keyGrant?.applyBefore(resource)`
+     * However, an error during synthesis is thrown if this is added:
+     * > ${Token[PolicyDocument.###]} does not implement DependableTrait
+     * Data will not be lost if the permissions are not granted to the service role immediately; Firehose has a 24 hour
+     * period where data will be buffered and retried if access is denied to the encryption key. For that reason, it is
+     * acceptable to omit the dependency for now. See: https://github.com/aws/aws-cdk/issues/15790
+     */
+    encryptionKey?.grantEncryptDecrypt(role);
+
+    const sourceStreamConfig = props.sourceStream ? {
+      kinesisStreamArn: props.sourceStream.streamArn,
+      roleArn: role.roleArn,
+    } : undefined;
+    const readStreamGrant = props.sourceStream?.grantRead(role);
+    /*
+     * Firehose still uses the deprecated DescribeStream API instead of the modern DescribeStreamSummary API.
+     * kinesis.IStream.grantRead does not provide DescribeStream permissions so we add it manually here.
+     */
+    if (readStreamGrant && readStreamGrant.principalStatement) {
+      readStreamGrant.principalStatement.addActions('kinesis:DescribeStream');
+    }
+
     const destinationConfig = props.destinations[0].bind(this, {});
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
+      deliveryStreamEncryptionConfigurationInput: encryptionConfig,
       deliveryStreamName: props.deliveryStreamName,
-      deliveryStreamType: 'DirectPut',
+      deliveryStreamType: props.sourceStream ? 'KinesisStreamAsSource' : 'DirectPut',
+      kinesisStreamSourceConfiguration: sourceStreamConfig,
       ...destinationConfig,
     });
+
     destinationConfig.dependables?.forEach(dependable => resource.node.addDependency(dependable));
+    if (readStreamGrant) {
+      resource.node.addDependency(readStreamGrant);
+    }
 
     this.deliveryStreamArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'kinesis',

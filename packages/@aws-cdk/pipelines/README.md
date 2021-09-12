@@ -460,7 +460,7 @@ manual or automated gates to your pipeline. We recommend putting manual approval
 the set of `post` steps.
 
 The following example shows both an automated approval in the form of a `ShellStep`, and
-a manual approvel in the form of a `ManualApprovalStep` added to the pipeline. Both must
+a manual approval in the form of a `ManualApprovalStep` added to the pipeline. Both must
 pass in order to promote from the `PreProd` to the `Prod` environment:
 
 ```ts
@@ -478,6 +478,22 @@ pipeline.addStage(prod, {
   pre: [
     new ManualApprovalStep('PromoteToProd'),
   ],
+});
+```
+
+You can also specify steps to be executed at the stack level. To achieve this, you can specify the stack and step via the `stackSteps` property: 
+
+```ts
+pipeline.addStage(prod, {
+  stackSteps: [{
+    stack: prod.stack1,
+    pre: [new ManualApprovalStep('Pre-Stack Check')], // Executed before stack is prepared
+    changeSet: [new ManualApprovalStep('ChangeSet Approval')], // Executed after stack is prepared but before the stack is deployed
+    post: [new ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+  }, {
+    stack: prod.stack2,
+    post: [new ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+  }],
 });
 ```
 
@@ -547,7 +563,7 @@ of properties that allow you to customize various aspects of the projects:
 
 ```ts
 new CodeBuildStep('Synth', {
-  // ...standard RunScript props...
+  // ...standard ShellStep props...
   commands: [/* ... */],
   env: { /* ... */ },
 
@@ -575,15 +591,15 @@ new CodeBuildStep('Synth', {
   securityGroups: [mySecurityGroup],
 
   // Additional policy statements for the execution role
-  rolePolicy: [
+  rolePolicyStatements: [
     new iam.PolicyStatement({ /* ... */ }),
   ],
 });
 ```
 
 You can also configure defaults for *all* CodeBuild projects by passing `codeBuildDefaults`,
-or just for the asset publishing and self-mutation projects by passing `assetPublishingCodeBuildDefaults`
-or `selfMutationCodeBuildDefaults`:
+or just for the synth, asset publishing, and self-mutation projects by passing `synthCodeBuildDefaults`,
+`assetPublishingCodeBuildDefaults`, or `selfMutationCodeBuildDefaults`:
 
 ```ts
 new CodePipeline(this, 'Pipeline', {
@@ -613,6 +629,7 @@ new CodePipeline(this, 'Pipeline', {
     ],
   },
 
+  synthCodeBuildDefaults: { /* ... */ },
   assetPublishingCodeBuildDefaults: { /* ... */ },
   selfMutationCodeBuildDefaults: { /* ... */ },
 });
@@ -954,7 +971,7 @@ new CodePipeline(this, 'Pipeline', {
         resources: ['*'],
         conditions: {
           StringEquals: {
-            'iam:ResourceTag/aws-cdk:bootstrap-role': 'deploy',
+            'iam:ResourceTag/aws-cdk:bootstrap-role': 'lookup',
           },
         },
       }),

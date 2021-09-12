@@ -4,7 +4,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
@@ -133,16 +133,23 @@ export interface CodePipelineProps {
   readonly codeBuildDefaults?: CodeBuildOptions;
 
   /**
+   * Additional customizations to apply to the synthesize CodeBuild projects
+   *
+   * @default - Only `codeBuildDefaults` are applied
+   */
+  readonly synthCodeBuildDefaults?: CodeBuildOptions;
+
+  /**
    * Additional customizations to apply to the asset publishing CodeBuild projects
    *
-   * @default - Only `codeBuildProjectDefaults` are applied
+   * @default - Only `codeBuildDefaults` are applied
    */
   readonly assetPublishingCodeBuildDefaults?: CodeBuildOptions;
 
   /**
    * Additional customizations to apply to the self mutation CodeBuild projects
    *
-   * @default - Only `codeBuildProjectDefaults` are applied
+   * @default - Only `codeBuildDefaults` are applied
    */
   readonly selfMutationCodeBuildDefaults?: CodeBuildOptions;
 
@@ -536,6 +543,7 @@ export class CodePipeline extends PipelineBase {
           templateConfiguration: templateConfigurationPath
             ? templateArtifact.atPath(toPosixPath(templateConfigurationPath))
             : undefined,
+          cfnCapabilities: [CfnCapabilities.NAMED_IAM, CfnCapabilities.AUTO_EXPAND],
         }));
         return { runOrdersConsumed: 1 };
       },
@@ -680,8 +688,8 @@ export class CodePipeline extends PipelineBase {
 
     const typeBasedCustomizations = {
       [CodeBuildProjectType.SYNTH]: this.props.dockerEnabledForSynth
-        ? { buildEnvironment: { privileged: true } }
-        : {},
+        ? mergeCodeBuildOptions(this.props.synthCodeBuildDefaults, { buildEnvironment: { privileged: true } })
+        : this.props.synthCodeBuildDefaults,
 
       [CodeBuildProjectType.ASSETS]: this.props.assetPublishingCodeBuildDefaults,
 
@@ -822,7 +830,7 @@ enum CodeBuildProjectType {
 
 function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
   const names = node.ancestorPath(parent).map(n => n.id);
-  return names.map(sanitizeName).join('.');
+  return names.map(sanitizeName).join('.').substr(0, 100); // Cannot exceed 100 chars
 }
 
 function sanitizeName(x: string): string {

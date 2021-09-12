@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, VpcLink } from '@aws-cdk/aws-apigatewayv2';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as servicediscovery from '@aws-cdk/aws-servicediscovery';
@@ -29,7 +29,7 @@ describe('HttpServiceDiscoveryIntegration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'HTTP_PROXY',
       ConnectionId: {
         Ref: 'VpcLink42ED6FF0',
@@ -70,7 +70,7 @@ describe('HttpServiceDiscoveryIntegration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationMethod: 'PATCH',
     });
   });
@@ -119,7 +119,7 @@ describe('HttpServiceDiscoveryIntegration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       TlsConfig: {
         ServerNameToVerify: 'name-to-verify',
       },

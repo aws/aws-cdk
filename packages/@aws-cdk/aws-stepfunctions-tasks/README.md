@@ -205,6 +205,28 @@ const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
 });
 ```
 
+You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`. 
+Here is an example of starting an Athena query that is dynamically created using the task input:
+
+```ts
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Athena Start Query', {
+  queryString: sfn.JsonPath.stringAt("States.Format('select contacts where year={};', $.year)"),
+  queryExecutionContext: {
+    databaseName: 'interactions',
+  },
+  resultConfiguration: {
+    encryptionConfiguration: {
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
+    },
+    outputLocation: {
+      bucketName: 'mybucket',
+      objectKey: 'myprefix',
+    },
+  },
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
+
 Each service integration has its own set of parameters that can be supplied.
 
 ## Evaluate Expression
@@ -1028,7 +1050,23 @@ const topic = new sns.Topic(this, 'Topic');
 const task1 = new tasks.SnsPublish(this, 'Publish1', {
   topic,
   integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  message: sfn.TaskInput.fromJsonPathAt('$.state.message'),
+  message: sfn.TaskInput.fromDataAt('$.state.message'),
+  messageAttributes: {
+    place: {
+      value: sfn.JsonPath.stringAt('$.place'),
+    },
+    pic: {
+      // BINARY must be explicitly set
+      type: MessageAttributeDataType.BINARY,
+      value: sfn.JsonPath.stringAt('$.pic'),
+    },
+    people: {
+      value: 4,
+    },
+    handles: {
+      value: ['@kslater', '@jjf', null, '@mfanning'],
+    },
+
 });
 
 // Combine a field from the execution data with
