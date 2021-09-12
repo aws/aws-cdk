@@ -1,7 +1,7 @@
 import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import {
-  AwsLogDriver, BaseService, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  AwsLogDriver, BaseService, CapacityProviderStrategy, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
@@ -207,6 +207,14 @@ export interface QueueProcessingServiceBaseProps {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * A list of Capacity Provider strategies used to place a service.
+   *
+   * @default - undefined
+   *
+   */
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
 }
 
 /**

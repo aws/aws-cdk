@@ -131,6 +131,23 @@ cluster.addAutoScalingGroup(autoScalingGroup);
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
 
+By default, all machine images will auto-update to the latest version
+on each deployment, causing a replacement of the instances in your AutoScalingGroup
+if the AMI has been updated since the last deployment.
+
+If task draining is enabled, ECS will transparently reschedule tasks on to the new
+instances before terminating your old instances. If you have disabled task draining,
+the tasks will be terminated along with the instance. To prevent that, you
+can pick a non-updating AMI by passing `cacheInContext: true`, but be sure
+to periodically update to the latest AMI manually by using the [CDK CLI
+context management commands](https://docs.aws.amazon.com/cdk/latest/guide/context.html):
+
+```ts
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  // ...
+  machineImage: EcsOptimizedImage.amazonLinux({ cacheInContext: true }),
+});
+```
 
 ### Bottlerocket
 
@@ -228,6 +245,17 @@ For a `FargateTaskDefinition`, specify the task size (`memoryLimitMiB` and `cpu`
 const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
   memoryLimitMiB: 512,
   cpu: 256
+});
+```
+
+On Fargate Platform Version 1.4.0 or later, you may specify up to 200GiB of
+[ephemeral storage](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html#fargate-task-storage-pv14):
+
+```ts
+const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  memoryLimitMiB: 512,
+  cpu: 256,
+  ephemeralStorageGiB: 100
 });
 ```
 
