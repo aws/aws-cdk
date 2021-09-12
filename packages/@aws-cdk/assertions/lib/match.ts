@@ -299,9 +299,6 @@ class SerializedJson extends Matcher {
       }
     }
 
-    if (parsed == null) {
-      result.push(this, [], `Invalid JSON string: ${actual}`);
-    }
     const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
     const innerResult = matcher.test(parsed);
     result.compose(`(${this.name})`, innerResult);
