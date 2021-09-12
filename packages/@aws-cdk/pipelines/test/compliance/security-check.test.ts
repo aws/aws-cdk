@@ -1,5 +1,4 @@
 import { Match, Template } from '@aws-cdk/assertions';
-import '@aws-cdk/assert-internal/jest';
 import { Topic } from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';

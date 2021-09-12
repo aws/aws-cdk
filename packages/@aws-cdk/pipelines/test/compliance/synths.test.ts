@@ -1,5 +1,4 @@
 import { Capture, Match, Template } from '@aws-cdk/assertions';
-import '@aws-cdk/assert-internal/jest';
 import * as cbuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';

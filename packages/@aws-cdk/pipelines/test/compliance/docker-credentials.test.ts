@@ -1,5 +1,4 @@
 import { Match, Template } from '@aws-cdk/assertions';
-import '@aws-cdk/assert-internal/jest';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack } from '@aws-cdk/core';

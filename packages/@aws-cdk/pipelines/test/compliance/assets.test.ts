@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Capture, Match, Template } from '@aws-cdk/assertions';
-import '@aws-cdk/assert-internal/jest';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack, Stage } from '@aws-cdk/core';

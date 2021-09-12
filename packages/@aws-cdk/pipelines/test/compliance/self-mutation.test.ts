@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { Match, Template } from '@aws-cdk/assertions';
-import '@aws-cdk/assert-internal/jest';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Stack, Stage } from '@aws-cdk/core';
