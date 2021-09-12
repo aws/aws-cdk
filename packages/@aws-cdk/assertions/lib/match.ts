@@ -292,7 +292,7 @@ class SerializedJson extends Matcher {
       parsed = JSON.parse(actual);
     } catch (err) {
       if (err instanceof SyntaxError) {
-        result.push(this, [], 'Invalid JSON string');
+        result.push(this, [], `Invalid JSON string: ${actual}`);
         return result;
       } else {
         throw err;
@@ -300,7 +300,7 @@ class SerializedJson extends Matcher {
     }
 
     if (parsed == null) {
-      result.push(this, [], 'Invalid JSON string');
+      result.push(this, [], `Invalid JSON string: ${actual}`);
     }
     const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
     const innerResult = matcher.test(parsed);

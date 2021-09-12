@@ -356,6 +356,12 @@ describe('Matchers', () => {
       expectFailure(matcher, '{ "Foo": ["Baz"] }', ['Missing element [Bar] at pattern index 0 at (serializedJson)/Foo']);
       expectFailure(matcher, '{ "Bar": ["Baz"] }', ['Missing key at (serializedJson)/Foo']);
     });
+
+    test('invalid json string', () => {
+      matcher = Match.serializedJson({ Foo: 'Bar' });
+
+      expectFailure(matcher, '{ "Foo"', [/invalid JSON string/i]);
+    });
   });
 });
 
