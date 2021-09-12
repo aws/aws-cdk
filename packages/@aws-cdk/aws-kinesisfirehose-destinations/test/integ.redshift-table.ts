@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
