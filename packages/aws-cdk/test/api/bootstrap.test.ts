@@ -134,54 +134,6 @@ test('bootstrap disable bucket Public Access Block Configuration', async () => {
   expect(executed).toBeTruthy();
 });
 
-test('bootstrap default container asset image scanning setting', async () => {
-  // WHEN
-  const ret = await bootstrapper.bootstrapEnvironment(env, sdk, {
-    toolkitStackName: 'mockStack',
-  });
-
-  // THEN
-  const ecrProperties = changeSetTemplate.Resources.ContainerAssetsRepository.Properties;
-  expect(ecrProperties.ImageScanningConfiguration.ScanOnPush.Ref).toBe('ContainerAssetScanOnPush');
-  expect(changeSetTemplate.Parameters.ContainerAssetScanOnPush).toBe('false');
-  expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
-});
-
-test('bootstrap disable container asset image scanning setting', async () => {
-  // WHEN
-  const ret = await bootstrapper.bootstrapEnvironment(env, sdk, {
-    toolkitStackName: 'mockStack',
-    parameters: {
-      containerAssetScanOnPush: false,
-    },
-  });
-
-  // THEN
-  const ecrProperties = changeSetTemplate.Resources.ContainerAssetsRepository.Properties;
-  expect(ecrProperties.ImageScanningConfiguration.ScanOnPush.Ref).toBe('ContainerAssetScanOnPush');
-  expect(changeSetTemplate.Parameters.ContainerAssetScanOnPush).toBe('false');
-  expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
-});
-
-test('bootstrap enable container asset image scanning setting', async () => {
-  // WHEN
-  const ret = await bootstrapper.bootstrapEnvironment(env, sdk, {
-    toolkitStackName: 'mockStack',
-    parameters: {
-      containerAssetScanOnPush: true,
-    },
-  });
-
-  // THEN
-  const ecrProperties = changeSetTemplate.Resources.ContainerAssetsRepository.Properties;
-  expect(ecrProperties.ImageScanningConfiguration.ScanOnPush.Ref).toBe('ContainerAssetScanOnPush');
-  expect(changeSetTemplate.Parameters.ContainerAssetScanOnPush).toBe('true');
-  expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
-});
-
 test('do bootstrap with custom tags for toolkit stack', async () => {
   // WHEN
   const ret = await bootstrapper.bootstrapEnvironment(env, sdk, {

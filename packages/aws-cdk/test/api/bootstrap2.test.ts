@@ -329,4 +329,32 @@ describe('Bootstrapping v2', () => {
       }));
     });
   });
+
+  describe('Scan on push', () => {
+    test.each([
+      // no scan on push parameter passed
+      [undefined, 'false'],
+      // passed as true
+      [true, 'true'],
+      // passed as false
+      [false, 'false'],
+    ])('containerAssetScanOnPush=%p => parameter becomes %p', async (containerAssetScanOnPush, execptedSetting) => {
+      // GIVEN
+      // mockTheToolkitInfo({});
+
+      // WHEN
+      await bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          containerAssetScanOnPush,
+        },
+      });
+
+      // THEN
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        parameters: expect.objectContaining({
+          ContainerAssetScanOnPush: execptedSetting,
+        }),
+      }));
+    });
+  });
 });

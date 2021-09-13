@@ -144,7 +144,7 @@ export class Bootstrapper {
         CloudFormationExecutionPolicies: cloudFormationExecutionPolicies.join(','),
         Qualifier: params.qualifier,
         PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
-        ContainerAssetScanOnPush: params.containerAssetScanOnPush || params.containerAssetScanOnPush === undefined ? 'false' : 'true',
+        ContainerAssetScanOnPush: params.containerAssetScanOnPush === undefined ? 'false' : params.containerAssetScanOnPush ? 'true' : 'false',
       }, {
         ...options,
         terminationProtection: options.terminationProtection ?? current.terminationProtection,
