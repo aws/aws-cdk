@@ -1111,6 +1111,10 @@ new sfn.StateMachine(this, 'ParentStateMachine', {
 });
 ```
 
+You can set `associateWithParent=true` to utilize
+[Associate Workflow Executions](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-nested-workflows.html#nested-execution-startid),
+which will pass the execution ID from the context object to the execution input.
+
 ### Invoke Activity
 
 You can invoke a [Step Functions Activity](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-activities.html) which enables you to have
