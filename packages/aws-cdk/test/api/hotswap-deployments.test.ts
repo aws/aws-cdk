@@ -103,6 +103,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateMachineCode).not.toHaveBeenCalled();
   expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
     FunctionName: 'my-function',
     S3Bucket: 'current-bucket',
@@ -254,7 +255,49 @@ test('changes to CDK::Metadata result in a noOp', async () => {
 
 // TODO: need test for no state machine name being provided
 // TODO: need test for lambda having changes to something other than its' code
-// TODO: need test for statemachine having changes to something other than its' definition (this very likely requires source code changes)
+
+test('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
+  // GIVEN
+  currentCfnStack.setTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+          PackageType: 'Zip',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'current-key',
+            },
+            PackageType: 'Image',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+  expect(mockUpdateMachineCode).not.toHaveBeenCalled();
+});
+
 
 test('does not call the updateStateMachine() API when it receives a change to a parameter that is not the definitionString in a state machine', async () => {
   // GIVEN
@@ -271,7 +314,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
               ],
             ],
           },
-          LoggingConfiguration: {
+          LoggingConfiguration: { // non-definitionString property
             IncludeExecutionData: true,
           },
         },
