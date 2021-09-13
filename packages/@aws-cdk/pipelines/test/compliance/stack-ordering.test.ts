@@ -1,7 +1,6 @@
-import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
-import { behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortedByRunOrder, TestApp, ThreeStackApp, TwoStackApp } from '../testhelpers';
+import { behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortByRunOrder, TestApp, ThreeStackApp, TwoStackApp } from '../testhelpers';
 
 let app: App;
 let pipelineStack: Stack;
@@ -28,16 +27,16 @@ behavior('interdependent stacks are in the right order', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'MyApp',
-        Actions: sortedByRunOrder([
-          objectLike({ Name: 'Stack1.Prepare' }),
-          objectLike({ Name: 'Stack1.Deploy' }),
-          objectLike({ Name: 'Stack2.Prepare' }),
-          objectLike({ Name: 'Stack2.Deploy' }),
+        Actions: sortByRunOrder([
+          Match.objectLike({ Name: 'Stack1.Prepare' }),
+          Match.objectLike({ Name: 'Stack1.Deploy' }),
+          Match.objectLike({ Name: 'Stack2.Prepare' }),
+          Match.objectLike({ Name: 'Stack2.Deploy' }),
         ]),
-      }),
+      }]),
     });
   }
 });
@@ -59,20 +58,20 @@ behavior('multiple independent stacks go in parallel', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'MyApp',
-        Actions: sortedByRunOrder([
+        Actions: sortByRunOrder([
           // 1 and 2 in parallel
-          objectLike({ Name: 'Stack1.Prepare' }),
-          objectLike({ Name: 'Stack2.Prepare' }),
-          objectLike({ Name: 'Stack1.Deploy' }),
-          objectLike({ Name: 'Stack2.Deploy' }),
+          Match.objectLike({ Name: 'Stack1.Prepare' }),
+          Match.objectLike({ Name: 'Stack2.Prepare' }),
+          Match.objectLike({ Name: 'Stack1.Deploy' }),
+          Match.objectLike({ Name: 'Stack2.Deploy' }),
           // Then 3
-          objectLike({ Name: 'Stack3.Prepare' }),
-          objectLike({ Name: 'Stack3.Deploy' }),
+          Match.objectLike({ Name: 'Stack3.Prepare' }),
+          Match.objectLike({ Name: 'Stack3.Deploy' }),
         ]),
-      }),
+      }]),
     });
   }
 });
@@ -86,18 +85,18 @@ behavior('user can request manual change set approvals', (suite) => {
     });
 
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'MyApp',
-        Actions: sortedByRunOrder([
-          objectLike({ Name: 'Stack1.Prepare' }),
-          objectLike({ Name: 'ManualApproval' }),
-          objectLike({ Name: 'Stack1.Deploy' }),
-          objectLike({ Name: 'Stack2.Prepare' }),
-          objectLike({ Name: 'ManualApproval2' }),
-          objectLike({ Name: 'Stack2.Deploy' }),
+        Actions: sortByRunOrder([
+          Match.objectLike({ Name: 'Stack1.Prepare' }),
+          Match.objectLike({ Name: 'ManualApproval' }),
+          Match.objectLike({ Name: 'Stack1.Deploy' }),
+          Match.objectLike({ Name: 'Stack2.Prepare' }),
+          Match.objectLike({ Name: 'ManualApproval2' }),
+          Match.objectLike({ Name: 'Stack2.Deploy' }),
         ]),
-      }),
+      }]),
     });
   });
 
@@ -114,28 +113,28 @@ behavior('user can request extra runorder space between prepare and deploy', (su
     });
 
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'MyApp',
-        Actions: sortedByRunOrder([
-          objectLike({
+        Actions: sortByRunOrder([
+          Match.objectLike({
             Name: 'Stack1.Prepare',
             RunOrder: 1,
           }),
-          objectLike({
+          Match.objectLike({
             Name: 'Stack1.Deploy',
             RunOrder: 3,
           }),
-          objectLike({
+          Match.objectLike({
             Name: 'Stack2.Prepare',
             RunOrder: 4,
           }),
-          objectLike({
+          Match.objectLike({
             Name: 'Stack2.Deploy',
             RunOrder: 6,
           }),
         ]),
-      }),
+      }]),
     });
   });
 
@@ -153,24 +152,24 @@ behavior('user can request both manual change set approval and extraRunOrderSpac
     });
 
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'MyApp',
-        Actions: sortedByRunOrder([
-          objectLike({
+        Actions: sortByRunOrder([
+          Match.objectLike({
             Name: 'Stack.Prepare',
             RunOrder: 1,
           }),
-          objectLike({
+          Match.objectLike({
             Name: 'ManualApproval',
             RunOrder: 2,
           }),
-          objectLike({
+          Match.objectLike({
             Name: 'Stack.Deploy',
             RunOrder: 4,
           }),
         ]),
-      }),
+      }]),
     });
   });
 
