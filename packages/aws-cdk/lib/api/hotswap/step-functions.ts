@@ -79,15 +79,9 @@ function isStepFunctionDefinitionOnlyChange(
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
 
-    console.log('updateProp')
-    console.log(updatedProp)
-
     for (const newPropName in updatedProp.newValue) {
-      console.log('newPropName')
-      console.log(newPropName)
       if (newPropName === 'Fn::Join') {
         const joinString = updatedProp.newValue[newPropName];
-        console.log(joinString[1]);
         const updatedDefinition = JSON.parse(joinString[1]); // new value is located here
 
         return stringifyPotentialCfnExpression(JSON.stringify(updatedDefinition), assetParamsWithEnv);
@@ -115,7 +109,6 @@ class StepFunctionHotswapOperation implements HotswapOperation {
     if (this.stepFunctionResource.stateMachineName) {
       stateMachineName = this.stepFunctionResource.stateMachineName;
     } else {
-      console.log('ignore' + stackResources)
       const stackResourceList = await stackResources.listStackResources();
       const foundMachineName = stackResourceList
         .find(resSummary => resSummary.LogicalResourceId === this.stepFunctionResource.logicalId)

@@ -254,7 +254,60 @@ test('changes to CDK::Metadata result in a noOp', async () => {
 });
 
 // TODO: need test for no state machine name being provided
-// TODO: need test for lambda having changes to something other than its' code
+
+/*test('calls the updateStateMachine() API when it receives a change to the definitionString in a state machine that has no name', async () => {
+  // GIVEN
+  currentCfnStack.setTemplate({
+    Resources: {
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: {
+            'Fn::Join': [
+              '',
+              [
+                '{ "Prop" : "old-value" }',
+              ],
+            ],
+          },
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              'Fn::Join': [
+                '',
+                [
+                  '{ "Prop" : "new-value" }',
+                ],
+              ],
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+    FunctionName: 'my-function',
+    S3Bucket: 'current-bucket',
+    S3Key: 'new-key',
+  });
+  expect(mockUpdateMachineCode).not.toHaveBeenCalled();
+});
+*/
+
 
 test('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
   // GIVEN
