@@ -1367,15 +1367,10 @@ describe('auto scaling group', () => {
   test('Can configure role to import', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = mockVpc(stack);
     const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/HelloFriend');
 
     // WHEN
-    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      machineImage: new ec2.AmazonLinuxImage(),
-      vpc,
-      autoScalingGroupName: 'MyAsg',
+    const asg = autoscaling.AutoScalingGroup.fromAutoScalingGroupAttributes(stack, 'MyASG', {
       role: importedRole,
     });
 

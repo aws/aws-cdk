@@ -393,7 +393,7 @@ export interface AutoScalingGroupAttributes {
   /**
    * AutoScalingGroup's name
    */
-  readonly autoScalingGroupName: string;
+  readonly autoScalingGroupName?: string;
 
   /**
    * AutoScalingGroup's role
@@ -876,7 +876,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public static fromAutoScalingGroupAttributes(scope: Construct, id: string, attrs: AutoScalingGroupAttributes): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
-      public autoScalingGroupName = attrs.autoScalingGroupName;
+      public autoScalingGroupName = attrs.autoScalingGroupName || id;
       public autoScalingGroupArn = Stack.of(this).formatArn({
         service: 'autoscaling',
         resource: 'autoScalingGroup:*:autoScalingGroupName',
@@ -1616,6 +1616,13 @@ export interface IAutoScalingGroup extends IResource, iam.IGrantable {
    * Is 'UNKNOWN' for imported ASGs.
    */
   readonly osType: ec2.OperatingSystemType;
+
+  /**
+   * The IAM role of the AutoScalingGroup.
+   *
+   * @default - A role will automatically be created
+   */
+  readonly role?: iam.IRole;
 
   /**
    * Add command to the startup script of fleet instances.
