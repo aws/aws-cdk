@@ -323,18 +323,63 @@ describe('Matchers', () => {
       expectFailure(matcher, {}, ['Missing key at /foo']);
     });
   });
+
+  describe('serializedJson()', () => {
+    let matcher: Matcher;
+
+    test('all types', () => {
+      matcher = Match.serializedJson({ Foo: 'Bar', Baz: 3, Boo: true, Fred: [1, 2] });
+      expectPass(matcher, '{ "Foo": "Bar", "Baz": 3, "Boo": true, "Fred": [1, 2] }');
+    });
+
+    test('simple match', () => {
+      matcher = Match.serializedJson({ Foo: 'Bar' });
+      expectPass(matcher, '{ "Foo": "Bar" }');
+
+      expectFailure(matcher, '{ "Foo": "Baz" }', ['Expected Bar but received Baz at (serializedJson)/Foo']);
+      expectFailure(matcher, '{ "Foo": 4 }', ['Expected type string but received number at (serializedJson)/Foo']);
+      expectFailure(matcher, '{ "Bar": "Baz" }', [
+        'Unexpected key at (serializedJson)/Bar',
+        'Missing key at (serializedJson)/Foo',
+      ]);
+    });
+
+    test('nested matcher', () => {
+      matcher = Match.serializedJson(Match.objectLike({
+        Foo: Match.arrayWith(['Bar']),
+      }));
+
+      expectPass(matcher, '{ "Foo": ["Bar"] }');
+      expectPass(matcher, '{ "Foo": ["Bar", "Baz"] }');
+      expectPass(matcher, '{ "Foo": ["Bar", "Baz"], "Fred": "Waldo" }');
+
+      expectFailure(matcher, '{ "Foo": ["Baz"] }', ['Missing element [Bar] at pattern index 0 at (serializedJson)/Foo']);
+      expectFailure(matcher, '{ "Bar": ["Baz"] }', ['Missing key at (serializedJson)/Foo']);
+    });
+
+    test('invalid json string', () => {
+      matcher = Match.serializedJson({ Foo: 'Bar' });
+
+      expectFailure(matcher, '{ "Foo"', [/invalid JSON string/i]);
+    });
+  });
 });
 
 function expectPass(matcher: Matcher, target: any): void {
-  expect(matcher.test(target).hasFailed()).toEqual(false);
+  const result = matcher.test(target);
+  if (result.hasFailed()) {
+    fail(result.toHumanStrings()); // eslint-disable-line jest/no-jasmine-globals
+  }
 }
 
 function expectFailure(matcher: Matcher, target: any, expected: (string | RegExp)[] = []): void {
   const result = matcher.test(target);
   expect(result.failCount).toBeGreaterThan(0);
   const actual = result.toHumanStrings();
-  if (expected.length > 0) {
-    expect(actual.length).toEqual(expected.length);
+  if (expected.length > 0 && actual.length !== expected.length) {
+    // only do this if the lengths are different, so as to display a nice failure message.
+    // otherwise need to use `toMatch()` to support RegExp
+    expect(actual).toEqual(expected);
   }
   for (let i = 0; i < expected.length; i++) {
     const e = expected[i];
