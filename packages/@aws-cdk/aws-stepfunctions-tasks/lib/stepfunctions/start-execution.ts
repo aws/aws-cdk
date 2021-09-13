@@ -30,6 +30,13 @@ export interface StepFunctionsStartExecutionProps extends sfn.TaskStateBaseProps
    * @default - None
    */
   readonly name?: string;
+
+  /**
+   * Whether or not AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID is added to the input payload.
+   *
+   * @default - false
+   */
+  readonly associateWithParent?: boolean;
 }
 
 /**
@@ -59,6 +66,10 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
       throw new Error('Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.');
     }
 
+    if (this.props.associateWithParent && props.input && props.input.type !== sfn.InputType.OBJECT) {
+      throw new Error('Could not associate child execution with parent execution because input is taken directly from a JSON path (or a value for the `input` property was not provided). Use `sfn.TaskInput.fromObject` instead.');
+    }
+
     this.taskPolicies = this.createScopedAccessPolicy();
   }
 
@@ -70,10 +81,20 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     // suffix is only applicable when waiting for a nested state machine to complete (RUN_JOB)
     // https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html
     const suffix = this.integrationPattern === sfn.IntegrationPattern.RUN_JOB ? ':2' : '';
+    let input: any;
+    if (this.props.associateWithParent) {
+      const associateWithParentEntry = {
+        AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID: sfn.JsonPath.stringAt('$$.Execution.Id'),
+      };
+      input = this.props.input ? { ...this.props.input.value, ...associateWithParentEntry } : associateWithParentEntry;
+    } else {
+      input = this.props.input ? this.props.input.value: sfn.TaskInput.fromJsonPathAt('$').value;
+    }
+
     return {
       Resource: `${integrationResourceArn('states', 'startExecution', this.integrationPattern)}${suffix}`,
       Parameters: sfn.FieldUtils.renderObject({
-        Input: this.props.input ? this.props.input.value : sfn.TaskInput.fromJsonPathAt('$').value,
+        Input: input,
         StateMachineArn: this.props.stateMachine.stateMachineArn,
         Name: this.props.name,
       }),
