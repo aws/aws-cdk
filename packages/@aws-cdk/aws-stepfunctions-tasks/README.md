@@ -1173,7 +1173,17 @@ const queue = new sqs.Queue(this, 'Queue');
 const task1 = new tasks.SqsSendMessage(this, 'Send1', {
   queue,
   messageBody: '...',
+  // Attributes are sourced entirely from the task input
   messageAttributes: tasks.SqsMessageAttributes.fromJsonPathAt('$.Attributes'),
 });
 
+const task2 = new tasks.SqsSendMessage(this, 'Send2', {
+  queue,
+  messageBody: '...',
+  // Mix and match from the task input and literals
+  messageAttributes: tasks.SqsMessageAttributes.fromObject({
+    MyValueFromTaskInput: tasks.SqsMessageAttributeValue.stringFromJsonPathAt('$.StringValue'),
+    MyLiteralValue: tasks.SqsMessageAttributeValue.fromNumber(1337),
+  }),
+});
 ```

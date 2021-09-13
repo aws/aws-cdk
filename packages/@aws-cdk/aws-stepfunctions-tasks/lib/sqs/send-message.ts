@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -147,7 +148,10 @@ export class SqsMessageAttributeValue {
    * @returns a new `SqsMessageAttributeValue` instance.
    */
   public static fromNumber(number: number): SqsMessageAttributeValue {
-    return new SqsMessageAttributeValue(sfn.TaskInput.fromObject({ DataType: 'Number', StringValue: `${number}` }));
+    const stringified = Token.isUnresolved(number)
+      ? Token.asString(number)
+      : number.toString();
+    return new SqsMessageAttributeValue(sfn.TaskInput.fromObject({ DataType: 'Number', StringValue: stringified }));
   }
 
   /**
