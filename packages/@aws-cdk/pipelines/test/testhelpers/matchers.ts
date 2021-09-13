@@ -5,7 +5,7 @@ export function stringLike(pattern: string) {
 }
 
 export function sortByRunOrder(pattern: any[]): Matcher {
-  return new Sorter(pattern, (a: any, b: any) => {
+  return new Sorter('SortByRunOrder', pattern, (a: any, b: any) => {
     if (a.RunOrder !== b.RunOrder) { return a.RunOrder - b.RunOrder; }
     return (a.Name as string).localeCompare(b.Name);
   });
@@ -43,9 +43,8 @@ class StringLike extends Matcher {
 }
 
 class Sorter extends Matcher {
-  public name = 'SortByRunOrder';
-
   constructor(
+    public readonly name: string,
     private readonly pattern: any[],
     private readonly compareFn: (a: any, b: any) => number,
   ) {
