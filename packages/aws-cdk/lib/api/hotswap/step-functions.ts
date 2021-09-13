@@ -60,6 +60,11 @@ function isStepFunctionDefinitionOnlyChange(
     //return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
+  if (change.oldValue?.Type == null) {
+    // can't short-circuit a brand new StateMachine
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
+
   const propertyUpdates = change.propertyUpdates;
 
   for (const updatedPropName in propertyUpdates) {

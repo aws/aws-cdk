@@ -197,6 +197,26 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 });
 
+test('returns undefined when a new StateMachine is added to the Stack', async () => {
+  // GIVEN
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+});
+
+
 test('changes to CDK::Metadata result in a noOp', async () => {
   // GIVEN
   currentCfnStack.setTemplate({
