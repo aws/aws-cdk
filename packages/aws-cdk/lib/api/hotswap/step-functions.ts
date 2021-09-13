@@ -47,18 +47,19 @@ export function isHotswappableStepFunctionChange(
   });
 }
 
-// returns true if a change to the definition string occured and false otherwise
+/**
+ * Returns `ChangeHotswapImpact.IRRELEVANT` if the change is not for a AWS::StepFunctions::StateMachine,
+ * but doesn't prevent short-circuiting
+ * (like a change to CDKMetadata resource),
+ * `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change is to a AWS::Lambda::Function,
+ * but not only to its Code property,
+ * or a LambdaFunctionCode if the change is to a AWS::Lambda::Function,
+ * and only affects its Code property.
+ */
 function isStepFunctionDefinitionOnlyChange(
   change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
 ): string | ChangeHotswapImpact {
   // TODO: this is where the change.newValue === undefined check might go if we need it
-
-  // TODO: remove this check (leaving for needless log)
-  if (change.newValue?.Type != 'AWS::StepFunctions::StateMachine') {
-    console.log('ignore: ' + assetParamsWithEnv)
-
-    //return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  }
 
   if (change.oldValue?.Type == null) {
     // can't short-circuit a brand new StateMachine
@@ -67,16 +68,22 @@ function isStepFunctionDefinitionOnlyChange(
 
   const propertyUpdates = change.propertyUpdates;
 
+  // ensure that only changes to the definition string result in a hotswap
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
 
+    console.log('updateProp')
+    console.log(updatedProp)
+
     for (const newPropName in updatedProp.newValue) {
-      if (newPropName == 'Fn::Join') {
+      console.log('newPropName')
+      console.log(newPropName)
+      if (newPropName === 'Fn::Join') {
         const joinString = updatedProp.newValue[newPropName];
         console.log(joinString[1]);
         const updatedDefinition = JSON.parse(joinString[1]); // new value is located here
 
-        return JSON.stringify(updatedDefinition);
+        return stringifyPotentialCfnExpression(JSON.stringify(updatedDefinition), assetParamsWithEnv);
       }
     }
   }

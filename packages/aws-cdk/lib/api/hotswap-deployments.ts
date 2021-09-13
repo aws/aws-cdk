@@ -97,8 +97,8 @@ function findAllHotswappableChanges(
 
 export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): ChangeHotswapImpact | false {
 
+  // change.newValue being undefined means the resource was removed; we can't short-circuit that change
   if (!change.newValue) {
-    // TODO: determine what this line does
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 

@@ -46,10 +46,10 @@ export function isHotswappableLambdaFunctionChange(
 }
 
 /**
- * Returns `true` if the change is not for a AWS::Lambda::Function,
+ * Returns `ChangeHotswapImpact.IRRELEVANT` if the change is not for a AWS::Lambda::Function,
  * but doesn't prevent short-circuiting
  * (like a change to CDKMetadata resource),
- * `false` if the change is to a AWS::Lambda::Function,
+ * `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change is to a AWS::Lambda::Function,
  * but not only to its Code property,
  * or a LambdaFunctionCode if the change is to a AWS::Lambda::Function,
  * and only affects its Code property.
@@ -77,16 +77,10 @@ function isLambdaFunctionCodeOnlyChange(
     }
   }*/
 
-  if (!change.newValue) {
-    // TODO: determine what this line does
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  }
-  const newResourceType = change.newValue.Type;
-  // Ignore Metadata changes
-  /*if (newResourceType === 'AWS::CDK::Metadata') {
-    return ChangeHotswapImpact.IRRELEVANT;
-  }*/
-  // The only other resource change we should see is a Lambda function
+  const newResourceType = change.newValue?.Type;
+
+  // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
+  // this also ignores Metadata changes
   if (newResourceType !== 'AWS::Lambda::Function') {
     return ChangeHotswapImpact.IRRELEVANT;
   }

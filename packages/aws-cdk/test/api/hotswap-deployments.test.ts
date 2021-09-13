@@ -253,6 +253,98 @@ test('changes to CDK::Metadata result in a noOp', async () => {
 });
 
 // TODO: need test for no state machine name being provided
+// TODO: need test for lambda having changes to something other than its' code
+// TODO: need test for statemachine having changes to something other than its' definition (this very likely requires source code changes)
+
+test('does not call the updateStateMachine() API when it receives a change to a parameter that is not the definitionString in a state machine', async () => {
+  // GIVEN
+  currentCfnStack.setTemplate({
+    Resources: {
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: {
+            'Fn::Join': [
+              '',
+              [
+                '{ "Prop" : "old-value" }',
+              ],
+            ],
+          },
+          LoggingConfiguration: {
+            IncludeExecutionData: true,
+          },
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              'Fn::Join': [
+                '',
+                [
+                  '{ "Prop" : "old-value" }',
+                ],
+              ],
+            },
+            LoggingConfiguration: {
+              IncludeExecutionData: false,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+  expect(mockUpdateMachineCode).not.toHaveBeenCalled();
+});
+
+test('resource deletions require full deployments', async () => {
+  // GIVEN
+  currentCfnStack.setTemplate({
+    Resources: {
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: {
+            'Fn::Join': [
+              '',
+              [
+                '{ "Prop" : "old-value", "AnotherProp" : "another-old-value" }',
+              ],
+            ],
+          },
+          StateMachineName: 'my-machine',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+  expect(mockUpdateMachineCode).not.toHaveBeenCalled();
+});
 
 
 function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
