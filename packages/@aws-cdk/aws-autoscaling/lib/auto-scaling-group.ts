@@ -869,17 +869,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     return AutoScalingGroup.fromAutoScalingGroupAttributes(scope, id, { autoScalingGroupName });
-    class Import extends AutoScalingGroupBase {
-      public autoScalingGroupName = autoScalingGroupName;
-      public autoScalingGroupArn = Stack.of(this).formatArn({
-        service: 'autoscaling',
-        resource: 'autoScalingGroup:*:autoScalingGroupName',
-        resourceName: this.autoScalingGroupName,
-      });
-      public readonly osType = ec2.OperatingSystemType.UNKNOWN;
-    }
-
-    return new Import(scope, id);
   }
 
   /**
