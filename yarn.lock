@@ -9262,9 +9262,9 @@ tar-stream@^2.2.0:
     readable-stream "^3.1.1"
 
 tar@^4.4.12:
-  version "4.4.16"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-4.4.16.tgz#4a48b3c025e77d9d0c788f038a09b91c594d326d"
-  integrity sha512-gOVUT/KWPkGFZQmCRDVFNUWBl7niIo/PRR7lzrIqtZpit+st54lGROuVjc6zEQM9FhH+dJfQIl+9F0k8GNXg5g==
+  version "4.4.19"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-4.4.19.tgz#2e4d7263df26f2b914dee10c825ab132123742f3"
+  integrity sha512-a20gEsvHnWe0ygBY8JbxoM4w3SJdhc7ZAuxkLqh+nvNQN2IOt0B5lLgM490X5Hl8FF0dl0tOf2ewFYAlIFgzVA==
   dependencies:
     chownr "^1.1.4"
     fs-minipass "^1.2.7"
