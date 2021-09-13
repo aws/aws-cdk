@@ -88,17 +88,17 @@ export interface CdkPipelineProps {
   // @deprecated(v2): switch to default false
 
 
-   /**
+  /**
    * Enables KMS key rotation for cross-account keys
    *
    * Can only be set if `crossAccountKeys` is not set.
-   * 
+   *
    * By default kms key rotation is disabled, but will add an additional $1/month
    * for each year the key exists when enabled.
    *
    * @default false
    */
-    readonly enableKeyRotation?: boolean;
+  readonly enableKeyRotation?: boolean;
 
 
   /**
@@ -235,7 +235,7 @@ export class CdkPipeline extends CoreConstruct {
       if (props.crossAccountKeys !== undefined) {
         throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
       }
-      if (props.enableKeyRotation  !== undefined) {
+      if (props.enableKeyRotation !== undefined) {
         throw new Error('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
       }
 
@@ -261,7 +261,7 @@ export class CdkPipeline extends CoreConstruct {
     }
 
     if (props.enableKeyRotation && props.crossAccountKeys) {
-      throw new Error(`Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled`);
+      throw new Error('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
     }
 
     if (props.sourceAction) {
