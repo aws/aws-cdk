@@ -101,4 +101,11 @@ export interface BootstrappingParameters {
    */
   readonly publicAccessBlockConfiguration?: boolean;
 
+  /**
+   * Whether or not to enable image scanning on push for the container assets ECR repository
+   * 
+   * @default false
+   */
+  readonly containerAssetScanOnPush?: boolean;
+
 }

@@ -42,6 +42,11 @@ Parameters:
     Default: 'true'
     Type: 'String'
     AllowedValues: ['true', 'false']
+  ContainerAssetScanOnPush:
+    Description: Whether or not to enable image scanning on push for the container assets ECR repository
+    Default: 'false'
+    Type: 'String'
+    AllowedValues: [ 'true', 'false' ]
 Conditions:
   HasTrustedAccounts:
     Fn::Not:
@@ -207,6 +212,9 @@ Resources:
           - HasCustomContainerAssetsRepositoryName
           - Fn::Sub: "${ContainerAssetsRepositoryName}"
           - Fn::Sub: cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}
+      ImageScanningConfiguration:
+        ScanOnPush:
+          Ref: ContainerAssetScanOnPush
   FilePublishingRole:
     Type: AWS::IAM::Role
     Properties:
