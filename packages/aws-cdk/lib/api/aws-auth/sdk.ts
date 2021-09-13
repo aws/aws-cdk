@@ -84,9 +84,6 @@ export class SDK implements ISDK {
       logger: { log: (...messages) => messages.forEach(m => trace('%s', m)) },
     };
     this.currentRegion = region;
-
-    /*eslint-disable*/
-    console.log('MAKING SDK')
   }
 
   public lambda(): AWS.Lambda {
@@ -94,8 +91,6 @@ export class SDK implements ISDK {
   }
 
   public cloudFormation(): AWS.CloudFormation {
-    /*eslint-disable*/
-    console.log('NEW CFN')
     return this.wrapServiceErrorHandling(new AWS.CloudFormation({
       ...this.config,
       ...this.cloudFormationRetryOptions,

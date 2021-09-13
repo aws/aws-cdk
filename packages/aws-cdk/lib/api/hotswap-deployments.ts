@@ -123,6 +123,8 @@ async function applyAllHotswappableChanges(
   // We fetch it lazily, to save a service call, in case all updated Lambdas have their names set.
   const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
 
+  //console.log('hihihihi')
+  //console.log(listStackResources)
   return Promise.all(hotswappableChanges.map(hotswapOperation => hotswapOperation.apply(sdk, listStackResources)));
 }
 
@@ -143,20 +145,13 @@ class LazyListStackResources implements ListStackResources {
     const ret = new Array<CloudFormation.StackResourceSummary>();
     let nextToken: string | undefined;
     do {
-      /*console.log('------------------------------------------------------------');
-      console.log(Object.keys(this.sdk));
-        console.log(this.sdk.elbv2());
-        console.log(this.sdk.stepFunctions());
-        console.log(this.sdk.secretsManager());
-        console.log(this.sdk.ec2());
-        console.log(this.sdk.ecr());
       console.log(this.sdk.cloudFormation());
-      console.log(this.sdk.cloudFormation);
-      console.log('------------------------------------------------------------');*/
       const stackResourcesResponse = await this.sdk.cloudFormation().listStackResources({
         StackName: this.stackName,
         NextToken: nextToken,
       }).promise();
+      console.log('response');
+      console.log(stackResourcesResponse);
       ret.push(...(stackResourcesResponse.StackResourceSummaries ?? []));
       nextToken = stackResourcesResponse.NextToken;
     } while (nextToken);

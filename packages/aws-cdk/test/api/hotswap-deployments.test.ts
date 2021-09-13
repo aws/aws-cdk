@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Lambda, StepFunctions } from 'aws-sdk';
+import { Lambda, StepFunctions, CloudFormation } from 'aws-sdk';
+import { StackResourceSummaries } from 'aws-sdk/clients/cloudformation';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { testStack, TestStackArtifact } from '../util';
 import { MockSdkProvider } from '../util/mock-sdk';
@@ -11,13 +12,30 @@ const STACK_ID = 'stackId';
 let mockSdkProvider: MockSdkProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateMachineCode: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
+let mockListStackResources: (params: CloudFormation.Types.ListStackResourcesInput) => CloudFormation.Types.ListStackResourcesOutput;
 let currentCfnStack: FakeCloudformationStack;
 
 beforeEach(() => {
   jest.resetAllMocks();
   mockSdkProvider = new MockSdkProvider({ realSdk: false });
+  mockListStackResources = jest.fn(() => {
+    let summaries: StackResourceSummaries = [];
+
+    summaries[0] = {
+      LogicalResourceId: 'Func',
+      ResourceType: 'AWS::Lambda::Function',
+      ResourceStatus: 'CREATE_COMPLETE',
+      LastUpdatedTimestamp: new Date(),
+      PhysicalResourceId: 'mock-function-resource-id',
+    };
+    return { StackResourceSummaries: summaries };
+
+  });
   mockUpdateLambdaCode = jest.fn();
   mockUpdateMachineCode = jest.fn();
+  mockSdkProvider.stubCloudFormation({
+    listStackResources: mockListStackResources,
+  });
   mockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
   });
@@ -253,9 +271,60 @@ test('changes to CDK::Metadata result in a noOp', async () => {
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
+// TODO: need test for no lambda function name being provided
 // TODO: need test for no state machine name being provided
 
-/*test('calls the updateStateMachine() API when it receives a change to the definitionString in a state machine that has no name', async () => {
+test('does not call the updateLambdaCode() API when it receives a code difference in a Lambda function with no name', async () => {
+  // GIVEN
+  currentCfnStack.setTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'new-key',
+            },
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateMachineCode).not.toHaveBeenCalled();
+  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+    FunctionName: 'mock-function-resource-id',
+    S3Bucket: 'current-bucket',
+    S3Key: 'new-key',
+  });
+});
+
+test('calls the updateStateMachine() API when it receives a change to the definitionString in a state machine that has no name', async () => {
   // GIVEN
   currentCfnStack.setTemplate({
     Resources: {
@@ -306,7 +375,6 @@ test('changes to CDK::Metadata result in a noOp', async () => {
   });
   expect(mockUpdateMachineCode).not.toHaveBeenCalled();
 });
-*/
 
 
 test('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
