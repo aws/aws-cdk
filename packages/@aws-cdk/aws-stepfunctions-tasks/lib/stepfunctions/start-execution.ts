@@ -32,7 +32,9 @@ export interface StepFunctionsStartExecutionProps extends sfn.TaskStateBaseProps
   readonly name?: string;
 
   /**
-   * Whether or not AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID is added to the input payload.
+   * Pass the execution ID from the context object to the execution input.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-nested-workflows.html#nested-execution-startid
    *
    * @default - false
    */
