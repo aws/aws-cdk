@@ -342,7 +342,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(() => inspect.hasOutput({ Value: 'Bar' })).not.toThrow();
+      expect(() => inspect.hasOutput('Foo', { Value: 'Bar' })).not.toThrow();
     });
 
     test('not matching', (done) => {
@@ -357,18 +357,62 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasOutput({
+        () => inspect.hasOutput('Foo', {
           Value: 'Bar',
           Export: { Name: 'ExportBaz' },
         }),
         [
-          /2 outputs/,
+          /1 outputs named Foo/,
           /Expected ExportBaz but received ExportBar/,
         ],
         done,
       );
       done();
     });
+
+    test('value not matching with outputName', (done) => {
+      const stack = new Stack();
+      new CfnOutput(stack, 'Foo', {
+        value: 'Bar',
+      });
+      new CfnOutput(stack, 'Fred', {
+        value: 'Baz',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasOutput('Fred', {
+          Value: 'Bar',
+        }),
+        [
+          /1 outputs named Fred/,
+          /Expected Bar but received Baz/,
+        ],
+        done,
+      );
+      done();
+    });
+  });
+
+  test('outputName not matching', (done) => {
+    const stack = new Stack();
+    new CfnOutput(stack, 'Foo', {
+      value: 'Bar',
+      exportName: 'ExportBar',
+    });
+
+    const inspect = Template.fromStack(stack);
+    expectToThrow(
+      () => inspect.hasOutput('Fred', {
+        Value: 'Bar',
+        Export: { Name: 'ExportBar' },
+      }),
+      [
+        /No outputs named Fred found in the template./,
+      ],
+      done,
+    );
+    done();
   });
 
   describe('findOutputs', () => {
@@ -388,7 +432,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findOutputs({ Value: 'Fred' });
+      const result = inspect.findOutputs('*', { Value: 'Fred' });
       expect(result).toEqual([
         { Value: 'Fred', Description: 'FooFred' },
         { Value: 'Fred', Description: 'BarFred' },
@@ -402,7 +446,37 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findOutputs({ Value: 'Waldo' });
+      const result = inspect.findOutputs('*', { Value: 'Waldo' });
+      expect(result.length).toEqual(0);
+    });
+
+    test('matching specific output', () => {
+      const stack = new Stack();
+      new CfnOutput(stack, 'Foo', {
+        value: 'Fred',
+      });
+      new CfnOutput(stack, 'Baz', {
+        value: 'Waldo',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findOutputs('Foo', { Value: 'Fred' });
+      expect(result).toEqual([
+        { Value: 'Fred' },
+      ]);
+    });
+
+    test('not matching specific output', () => {
+      const stack = new Stack();
+      new CfnOutput(stack, 'Foo', {
+        value: 'Fred',
+      });
+      new CfnOutput(stack, 'Baz', {
+        value: 'Waldo',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findOutputs('Foo', { Value: 'Waldo' });
       expect(result.length).toEqual(0);
     });
   });
@@ -423,7 +497,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(() => inspect.hasMapping({ Foo: { Bar: 'Lightning' } })).not.toThrow();
+      expect(() => inspect.hasMapping('*', { Foo: { Bar: 'Lightning' } })).not.toThrow();
     });
 
     test('not matching', (done) => {
@@ -442,12 +516,58 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasMapping({
+        () => inspect.hasMapping('*', {
           Foo: { Bar: 'Qux' },
         }),
         [
           /2 mappings/,
           /Expected Qux but received Fred/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('matching specific outputName', () => {
+      const stack = new Stack();
+      new CfnMapping(stack, 'Foo', {
+        mapping: {
+          Foo: { Bar: 'Lightning', Fred: 'Waldo' },
+          Baz: { Bar: 'Qux' },
+        },
+      });
+      new CfnMapping(stack, 'Fred', {
+        mapping: {
+          Foo: { Bar: 'Lightning' },
+        },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(() => inspect.hasMapping('Foo', { Baz: { Bar: 'Qux' } })).not.toThrow();
+    });
+
+    test('not matching specific outputName', (done) => {
+      const stack = new Stack();
+      new CfnMapping(stack, 'Foo', {
+        mapping: {
+          Foo: { Bar: 'Fred', Baz: 'Waldo' },
+          Qux: { Bar: 'Fred' },
+        },
+      });
+      new CfnMapping(stack, 'Fred', {
+        mapping: {
+          Foo: { Baz: 'Baz' },
+        },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasMapping('Fred', {
+          Foo: { Baz: 'Fred' },
+        }),
+        [
+          /1 mappings/,
+          /Expected Fred but received Baz/,
         ],
         done,
       );
@@ -471,7 +591,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findMappings({ Foo: { Bar: 'Lightning' } });
+      const result = inspect.findMappings('*', { Foo: { Bar: 'Lightning' } });
       expect(result).toEqual([
         {
           Foo: { Bar: 'Lightning', Fred: 'Waldo' },
@@ -490,7 +610,50 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findMappings({ Foo: { Bar: 'Waldo' } });
+      const result = inspect.findMappings('*', { Foo: { Bar: 'Waldo' } });
+      expect(result.length).toEqual(0);
+    });
+
+    test('matching with specific outputName', () => {
+      const stack = new Stack();
+      new CfnMapping(stack, 'Foo', {
+        mapping: {
+          Foo: { Bar: 'Lightning', Fred: 'Waldo' },
+          Baz: { Bar: 'Qux' },
+        },
+      });
+      new CfnMapping(stack, 'Fred', {
+        mapping: {
+          Foo: { Bar: 'Lightning' },
+        },
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findMappings('Foo', { Foo: { Bar: 'Lightning' } });
+      expect(result).toEqual([
+        {
+          Foo: { Bar: 'Lightning', Fred: 'Waldo' },
+          Baz: { Bar: 'Qux' },
+        },
+      ]);
+    });
+
+    test('not matching', () => {
+      const stack = new Stack();
+      new CfnMapping(stack, 'Foo', {
+        mapping: {
+          Foo: { Bar: 'Lightning', Fred: 'Waldo' },
+          Baz: { Bar: 'Qux' },
+        },
+      });
+      new CfnMapping(stack, 'Fred', {
+        mapping: {
+          Foo: { Bar: 'Lightning' },
+        },
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findMappings('Fred', { Baz: { Bar: 'Qux' } });
       expect(result.length).toEqual(0);
     });
   });
