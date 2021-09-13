@@ -61,6 +61,13 @@ function isStepFunctionDefinitionOnlyChange(
 ): string | ChangeHotswapImpact {
   // TODO: this is where the change.newValue === undefined check might go if we need it
 
+  // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
+  // this also ignores Metadata changes
+  const newResourceType = change.newValue?.Type;
+  if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
+    return ChangeHotswapImpact.IRRELEVANT;
+  }
+
   if (change.oldValue?.Type == null) {
     // can't short-circuit a brand new StateMachine
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -85,6 +92,8 @@ function isStepFunctionDefinitionOnlyChange(
 
         return stringifyPotentialCfnExpression(JSON.stringify(updatedDefinition), assetParamsWithEnv);
       }
+
+      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
   }
 

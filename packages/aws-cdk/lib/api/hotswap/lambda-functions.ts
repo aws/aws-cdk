@@ -77,10 +77,10 @@ function isLambdaFunctionCodeOnlyChange(
     }
   }*/
 
-  const newResourceType = change.newValue?.Type;
 
   // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
   // this also ignores Metadata changes
+  const newResourceType = change.newValue?.Type;
   if (newResourceType !== 'AWS::Lambda::Function') {
     return ChangeHotswapImpact.IRRELEVANT;
   }
