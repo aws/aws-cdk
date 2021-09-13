@@ -16,7 +16,7 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
  */
 export interface TablePrivilege {
   /**
-   * The table on which priveleges will be granted.
+   * The table on which privileges will be granted.
    */
   readonly table: ITable;
 
