@@ -110,6 +110,7 @@ export interface BucketDeploymentProps {
 
   /**
    *  Mount an EFS file system. Enable this if your assets are large and you encounter disk space errors.
+   *  Enabling this option will require a VPC to be specified.
    *
    * @default - No EFS. Lambda has access only to 512MB of disk space.
    */
@@ -341,7 +342,7 @@ export class BucketDeployment extends CoreConstruct {
     // configurations since we have a singleton.
     // A VPC is a must if EFS storage is used and that's why we are only using VPC in uuid.
     if (vpc) {
-      uuid += `-${vpc.node.addr.toUpperCase()}`;
+      uuid += `-${vpc.node.addr}`;
     }
 
     return uuid;
@@ -355,7 +356,7 @@ export class BucketDeployment extends CoreConstruct {
    */
   private getOrCreateEfsFileSystem(scope: Construct, fileSystemProps: efs.FileSystemProps): efs.FileSystem {
     const stack = cdk.Stack.of(scope);
-    const uuid = `Efs-${fileSystemProps.vpc.node.addr.toUpperCase()}`;
+    const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
     return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
   }
 }

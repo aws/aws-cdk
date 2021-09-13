@@ -243,7 +243,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
               },
               ':access-point/',
               {
-                Ref: 'EfsC8FD940ACB9A3F95AD0E87FB4C3A2482B1900BA175AccessPoint5E4EC619',
+                Ref: 'BucketDeploymentEFSVPCc8fd940acb9a3f95ad0e87fb4c3a2482b1900ba175AccessPoint557A73A5',
               },
             ],
           ],
@@ -260,7 +260,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
       SecurityGroupIds: [
         {
           'Fn::GetAtt': [
-            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC8FD940ACB9A3F95AD0E87FB4C3A2482B1900BA175SecurityGroup18DD298D',
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8fd940acb9a3f95ad0e87fb4c3a2482b1900ba175SecurityGroup3E7AAF58',
             'GroupId',
           ],
         },
@@ -859,7 +859,7 @@ test('deployment allows vpc to be implicitly supplied to lambda', () => {
       SecurityGroupIds: [
         {
           'Fn::GetAtt': [
-            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC81CEC990A9A5D64A5922E5708AD8067EEB95C53D1SecurityGroup38E82F7F',
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc81cec990a9a5d64a5922e5708ad8067eeb95c53d1SecurityGroup881B9147',
             'GroupId',
           ],
         },
@@ -867,7 +867,8 @@ test('deployment allows vpc to be implicitly supplied to lambda', () => {
       SubnetIds: [
         {
           Ref: 'SomeVpc1PrivateSubnet1SubnetCBA5DD76',
-        }, {
+        },
+        {
           Ref: 'SomeVpc1PrivateSubnet2SubnetD4B3A566',
         },
       ],
@@ -903,7 +904,7 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
       SecurityGroupIds: [
         {
           'Fn::GetAtt': [
-            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CC8A39596CB8641929FCF6A288BC9DB5AB7B0F656ADSecurityGroupA1413B04',
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8a39596cb8641929fcf6a288bc9db5ab7b0f656adSecurityGroup11274779',
             'GroupId',
           ],
         },
