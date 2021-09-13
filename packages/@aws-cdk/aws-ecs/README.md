@@ -131,13 +131,28 @@ cluster.addAutoScalingGroup(autoScalingGroup);
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
 
+By default, all machine images will auto-update to the latest version
+on each deployment, causing a replacement of the instances in your AutoScalingGroup
+if the AMI has been updated since the last deployment.
+
+If task draining is enabled, ECS will transparently reschedule tasks on to the new
+instances before terminating your old instances. If you have disabled task draining,
+the tasks will be terminated along with the instance. To prevent that, you
+can pick a non-updating AMI by passing `cacheInContext: true`, but be sure
+to periodically update to the latest AMI manually by using the [CDK CLI
+context management commands](https://docs.aws.amazon.com/cdk/latest/guide/context.html):
+
+```ts
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  // ...
+  machineImage: EcsOptimizedImage.amazonLinux({ cacheInContext: true }),
+});
+```
 
 ### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open source operating system that is
 purpose-built by AWS for running containers. You can launch Amazon ECS container instances with the Bottlerocket AMI.
-
-> **NOTICE**: The Bottlerocket AMI is in developer preview release for Amazon ECS and is subject to change.
 
 The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `c5.large` Linux instances running with `Bottlerocket` AMI.
 
@@ -164,7 +179,16 @@ cluster.addCapacity('graviton-cluster', {
   instanceType: new ec2.InstanceType('c6g.large'),
   machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
 });
+```
 
+Bottlerocket is also supported:
+
+```ts
+cluster.addCapacity('graviton-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c6g.large'),
+  machineImage: ecs.MachineImageType.BOTTLEROCKET,
+});
 ```
 
 ### Spot Instances
@@ -221,6 +245,17 @@ For a `FargateTaskDefinition`, specify the task size (`memoryLimitMiB` and `cpu`
 const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
   memoryLimitMiB: 512,
   cpu: 256
+});
+```
+
+On Fargate Platform Version 1.4.0 or later, you may specify up to 200GiB of
+[ephemeral storage](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html#fargate-task-storage-pv14):
+
+```ts
+const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  memoryLimitMiB: 512,
+  cpu: 256,
+  ephemeralStorageGiB: 100
 });
 ```
 
@@ -854,7 +889,7 @@ cluster.addAsgCapacityProvider(capacityProvider);
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
 taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample',
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   memoryReservationMiB: 256,
 });
 

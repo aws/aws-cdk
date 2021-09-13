@@ -135,7 +135,7 @@ rdsDS.createResolver({
   }
   `),
   responseMappingTemplate: MappingTemplate.fromString(`
-    $util.rds.toJsonObject($ctx.result)
+    $utils.toJson($utils.rds.toJsonObject($ctx.result)[0])
   `),
 });
 
@@ -157,7 +157,7 @@ rdsDS.createResolver({
   }
   `),
   responseMappingTemplate: MappingTemplate.fromString(`
-    $util.rds.toJsonObject($ctx.result)
+    $utils.toJson($utils.rds.toJsonObject($ctx.result)[1][0])
   `),
 });
 ```
