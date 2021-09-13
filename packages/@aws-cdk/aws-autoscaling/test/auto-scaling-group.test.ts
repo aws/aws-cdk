@@ -1371,22 +1371,17 @@ describe('auto scaling group', () => {
     const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/HelloFriend');
 
     // WHEN
-    const asg1 = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       autoScalingGroupName: 'MyAsg',
       role: importedRole,
     });
-    const asg2 = autoscaling.AutoScalingGroup.fromAutoScalingGroupAttributes(stack, 'MyASG-Ref', {
-      autoScalingGroupName: 'MyAsg',
-      role: importedRole,
-    });
 
     // THEN
-    // test.equal(asg1.role, asg2.grantPrincipal);
-    // test.done();
-  },
+    expect(asg.role).toEqual(importedRole);
+  });
 });
 
 function mockVpc(stack: cdk.Stack) {
