@@ -1381,7 +1381,7 @@ nodeunitShim({
     });
     const asg2 = autoscaling.AutoScalingGroup.fromAutoScalingGroupAttributes(stack, 'MyASG-Ref', {
       autoScalingGroupName: 'MyAsg',
-      grantPrincipal: importedRole,
+      role: importedRole,
     });
 
     // THEN

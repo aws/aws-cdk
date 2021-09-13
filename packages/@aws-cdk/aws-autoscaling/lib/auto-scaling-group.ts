@@ -397,8 +397,10 @@ export interface AutoScalingGroupAttributes {
 
   /**
    * AutoScalingGroup's role
+   *
+   * @default - A role will automatically be created
    */
-  readonly grantPrincipal: iam.IRole;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -866,6 +868,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   elbv2.INetworkLoadBalancerTarget {
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
+    return AutoScalingGroup.fromAutoScalingGroupAttributes(scope, id, { autoScalingGroupName });
     class Import extends AutoScalingGroupBase {
       public autoScalingGroupName = autoScalingGroupName;
       public autoScalingGroupArn = Stack.of(this).formatArn({
@@ -884,14 +887,14 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public static fromAutoScalingGroupAttributes(scope: Construct, id: string, attrs: AutoScalingGroupAttributes): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
-      public autoScalingGroupName = attrs.autoScalingGroupName
+      public autoScalingGroupName = attrs.autoScalingGroupName;
       public autoScalingGroupArn = Stack.of(this).formatArn({
         service: 'autoscaling',
         resource: 'autoScalingGroup:*:autoScalingGroupName',
         resourceName: attrs.autoScalingGroupName,
       });
       public readonly osType = ec2.OperatingSystemType.UNKNOWN;
-      public readonly grantPrincipal = attrs.grantPrincipal;
+      public readonly role = attrs.role || undefined;
     }
     return new Import(scope, id);
   }
