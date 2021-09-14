@@ -13,10 +13,10 @@ jobs:
       issues: write
     runs-on: ubuntu-latest
     steps:
-      - uses: Naturalclar/issue-action@v2.0.2
+      - uses: peterwoodworth/issue-action@main
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-          title-or-body: 'title'
+          excluded-expressions: "[ CDK CLI Version | TypeScript | Java | Python ]"
           parameters: >
            [
            {"keywords":["(cli)","(command line)"],"labels":["package/tools"],"assignees":["rix0rrr"]},
