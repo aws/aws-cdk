@@ -79,11 +79,10 @@ function findAllHotswappableChanges(
 }
 
 /**
- * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a resource we cannot hotswap was changed.
- * Returns `ChangeHotswapImpact.IRRELEVANT` if a metadata change occured.
- * returns false if no other changes that cannot be hotswapped were found.
+ * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a change that we cannot short-circuit occured.
+ * Returns `ChangeHotswapImpact.IRRELEVANT` if a change that does not impact shortcircuiting occured, such as a metadata change.
  */
-export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): ChangeHotswapImpact | false {
+export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): ChangeHotswapImpact {
   // change.newValue being undefined means the resource was removed; we can't short-circuit that change
   if (!change.newValue) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -99,7 +98,7 @@ export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDiffere
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
-  return false;
+  return ChangeHotswapImpact.IRRELEVANT;
 }
 
 async function applyAllHotswappableChanges(

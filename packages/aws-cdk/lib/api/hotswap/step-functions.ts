@@ -26,7 +26,6 @@ export function isHotswappableStepFunctionChange(
     machineName = undefined;
   }
 
-
   return new StepFunctionHotswapOperation({
     logicalId: logicalId,
     definition: stepDefinitionChange,
@@ -99,7 +98,7 @@ class StepFunctionHotswapOperation implements HotswapOperation {
         .find(resSummary => resSummary.LogicalResourceId === this.stepFunctionResource.logicalId)
         ?.PhysicalResourceId;
       if (!foundMachineName) {
-        // if we couldn't find the function in the current stack, we can't update it
+        // if we couldn't find the state machine in the current stack, we can't update it
         return;
       }
       stateMachineName = foundMachineName;
