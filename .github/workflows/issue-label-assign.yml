@@ -16,7 +16,7 @@ jobs:
       - uses: peterwoodworth/issue-action@main
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-          excluded-expressions: "[ CDK CLI Version | TypeScript | Java | Python ]"
+          excluded-expressions: "[CDK CLI Version|TypeScript|Java|Python]"
           parameters: >
            [
            {"keywords":["(cli)","(command line)"],"labels":["package/tools"],"assignees":["rix0rrr"]},
