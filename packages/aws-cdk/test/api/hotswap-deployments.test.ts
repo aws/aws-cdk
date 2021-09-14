@@ -383,7 +383,6 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
-
 test('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
   // GIVEN
   currentCfnStack.setTemplate({

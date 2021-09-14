@@ -37,10 +37,6 @@ export async function tryHotswapDeployment(
   // create a new SDK using the CLI credentials, because the default one will not work for new-style synthesis -
   // it assumes the bootstrap deploy Role, which doesn't have permissions to update Lambda functions
   const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting);
-  /*eslint-disable*/
-  //console.log('////////////////////////////////////////');
-  //console.log(sdk.cloudFormation());
-  //console.log('////////////////////////////////////////');
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, stackArtifact, hotswappableChanges);
 
@@ -61,17 +57,6 @@ function findAllHotswappableChanges(
     (stepFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
     (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT)) {
       foundNonHotswappableChange = true;
-      /*eslint-disable*/
-      /*console.log('lambda')
-      console.log(lambdaFunctionShortCircuitChange)
-
-      console.log('stepfuncion')
-      console.log(stepFunctionShortCircuitChange)
-
-      console.log('nonHotswappableresource')
-      console.log(nonHotswappableResourceFound)
-      */
-
     } else if ((lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
     (stepFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
     (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT)) {
@@ -86,9 +71,6 @@ function findAllHotswappableChanges(
       }
     }
   });
-  /*eslint-disable*/
-  //console.log("returning: ");
-  //console.log( foundNonHotswappableChange ? undefined : hotswappableResources);
   return foundNonHotswappableChange ? undefined : hotswappableResources;
 }
 
@@ -104,7 +86,7 @@ export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDiffere
   if (newResourceType === 'AWS::CDK::Metadata') {
     return ChangeHotswapImpact.IRRELEVANT;
   }
-  // The only other resource change we should see is a Lambda function or a Step function
+  // The only other resource change we should see is a Lambda function or a StepFunctions StateMachine
   if ((newResourceType !== 'AWS::Lambda::Function') && (newResourceType !== 'AWS::StepFunctions::StateMachine')) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
@@ -120,8 +102,6 @@ async function applyAllHotswappableChanges(
   // We fetch it lazily, to save a service call, in case all updated Lambdas have their names set.
   const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
 
-  //console.log('hihihihi')
-  //console.log(listStackResources)
   return Promise.all(hotswappableChanges.map(hotswapOperation => hotswapOperation.apply(sdk, listStackResources)));
 }
 

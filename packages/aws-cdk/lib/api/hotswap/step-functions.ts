@@ -1,26 +1,13 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { ISDK } from '../aws-auth';
-import { /*assetMetadataChanged,*/ ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression } from './common';
-
-/**
- * currently, we need to check this:
- * newval.type == 'AWS::StepFunctions::StateMachine',
- * updatedpropname: DefinitionString
- * These two => a hotswappable change
- */
-
-/**
- * deleteme
- * Updates an existing state machine by modifying its definition, roleArn, or loggingConfiguration. Running executions will continue to use the previous definition and roleArn. You must include at least one of definition or roleArn or you will receive a MissingRequiredParameter error. All StartExecution calls within a few seconds will use the updated definition and roleArn. Executions started immediately after calling UpdateStateMachine may use the previous state machine definition and roleArn.
- */
-/*eslint-disable*/
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression } from './common';
 
 export function isHotswappableStepFunctionChange(
   logicalId: string, change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
 ): ChangeHotswapResult {
   const stepDefinitionChange = isStepFunctionDefinitionOnlyChange(change, assetParamsWithEnv);
 
-  if ((stepDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) || 
+  if ((stepDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
       (stepDefinitionChange === ChangeHotswapImpact.IRRELEVANT)) {
     return stepDefinitionChange;
   }
@@ -120,13 +107,13 @@ class StepFunctionHotswapOperation implements HotswapOperation {
       stateMachineName = foundMachineName;
     }
 
-   return sdk.stepFunctions().updateStateMachine({
-     // CloudFormation Docs state that we can use the Ref intrinsic with the state machine name to get the ARN
-     // but it turns out that the name is automatically magically converted to the arn
-     //stateMachineArn: '{ Ref: ' + stateMachineName  + ' }',
-     // magic
-     stateMachineArn: stateMachineName,
-     definition: this.stepFunctionResource.definition,
-   }).promise();
+    return sdk.stepFunctions().updateStateMachine({
+      // CloudFormation Docs state that we can use the Ref intrinsic with the state machine name to get the ARN
+      // but it turns out that the name is automatically magically converted to the arn
+      //stateMachineArn: '{ Ref: ' + stateMachineName  + ' }',
+      // magic
+      stateMachineArn: stateMachineName,
+      definition: this.stepFunctionResource.definition,
+    }).promise();
   }
 }

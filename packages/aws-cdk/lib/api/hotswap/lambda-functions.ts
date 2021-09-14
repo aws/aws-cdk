@@ -57,27 +57,6 @@ export function isHotswappableLambdaFunctionChange(
 function isLambdaFunctionCodeOnlyChange(
   change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
 ): LambdaFunctionCode | ChangeHotswapImpact {
-/*eslint-disable*/
-  /*console.log("new val: ")
-  console.log(change.newValue);
-  console.log("updates.newval: ");
-  console.log(change.propertyUpdates.newValue);
-  const propertyUpdates2 = change.propertyUpdates;
-  for (const updatedPropName in propertyUpdates2) {
-  console.log("updatedpropname: ");
-    console.log(updatedPropName);
-    const updatedProp = propertyUpdates2[updatedPropName];
-    //if (updatedProp.newValue === undefined) {
-    //}
-    console.log(updatedProp.newValue);
-
-    console.log('---------------------------------------------')
-    for (const newPropName in updatedProp.newValue) {
-      console.log(newPropName);
-    }
-  }*/
-
-
   // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
   // this also ignores Metadata changes
   const newResourceType = change.newValue?.Type;
@@ -161,10 +140,8 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
         ?.PhysicalResourceId;
       if (!foundFunctionName) {
         // if we couldn't find the function in the current stack, we can't update it
-      console.log('D:')
         return;
       }
-      console.log(':D')
       functionPhysicalName = foundFunctionName;
     }
 
