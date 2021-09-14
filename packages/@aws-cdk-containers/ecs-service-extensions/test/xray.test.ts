@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Container, Environment, XRayExtension, Service, ServiceDescription } from '../lib';
 
-export = {
-  'should be able to add AWS X-Ray to a service'(test: Test) {
+describe('xray', () => {
+  test('should be able to add AWS X-Ray to a service', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -28,7 +27,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -114,9 +113,9 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-};
+  });
+
+});

@@ -1,13 +1,12 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Container, Environment, QueueExtension, Service, ServiceDescription, TopicSubscription } from '../lib';
 
-export = {
-  'should only create a default queue when no input props are provided'(test: Test) {
+describe('queue', () => {
+  test('should only create a default queue when no input props are provided', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -34,11 +33,11 @@ export = {
 
     // THEN
     // Ensure creation of default queue and queue policy allowing SNS Topics to send message to the queue
-    expect(stack).to(haveResource('AWS::SQS::Queue', {
+    expect(stack).toHaveResource('AWS::SQS::Queue', {
       MessageRetentionPeriod: 1209600,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SQS::Queue', {
+    expect(stack).toHaveResource('AWS::SQS::Queue', {
       RedrivePolicy: {
         deadLetterTargetArn: {
           'Fn::GetAtt': [
@@ -48,10 +47,10 @@ export = {
         },
         maxReceiveCount: 3,
       },
-    }));
+    });
 
     // Ensure the task role is given permissions to consume messages from the queue
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -73,13 +72,13 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
     // Ensure there are no SNS Subscriptions created
-    expect(stack).to(countResources('AWS::SNS::Subscription', 0));
+    expect(stack).toCountResources('AWS::SNS::Subscription', 0);
 
     // Ensure that the queue URL has been correctly appended to the environment variables
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -114,12 +113,12 @@ export = {
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'should be able to subscribe default events queue created by the extension to given topics'(test: Test) {
+  });
+
+  test('should be able to subscribe default events queue created by the extension to given topics', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -154,11 +153,11 @@ export = {
 
     // THEN
     // Ensure creation of default queue and queue policy allowing SNS Topics to send message to the queue
-    expect(stack).to(haveResource('AWS::SQS::Queue', {
+    expect(stack).toHaveResource('AWS::SQS::Queue', {
       MessageRetentionPeriod: 1209600,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SQS::Queue', {
+    expect(stack).toHaveResource('AWS::SQS::Queue', {
       RedrivePolicy: {
         deadLetterTargetArn: {
           'Fn::GetAtt': [
@@ -168,9 +167,9 @@ export = {
         },
         maxReceiveCount: 3,
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
+    expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -216,10 +215,10 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
     // Ensure the task role is given permissions to consume messages from the queue
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -241,10 +240,10 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
     // Ensure SNS Subscriptions for given topics
-    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+    expect(stack).toHaveResource('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic152D84A37',
@@ -255,9 +254,9 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+    expect(stack).toHaveResource('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic2A4FB547F',
@@ -268,10 +267,10 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
     // Ensure that the queue URL has been correctly appended to the environment variables
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -306,12 +305,12 @@ export = {
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'should be able to subscribe user-provided queue to given topics'(test: Test) {
+  });
+
+  test('should be able to subscribe user-provided queue to given topics', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -345,7 +344,7 @@ export = {
 
     // THEN
     // Ensure queue policy allows SNS Topics to send message to the queue
-    expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
+    expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -371,9 +370,9 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
+    expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -399,10 +398,10 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
     // Ensure the task role is given permissions to consume messages from the queue
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -440,10 +439,10 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
     // Ensure SNS Subscriptions for given topics
-    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+    expect(stack).toHaveResource('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic152D84A37',
@@ -454,9 +453,9 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+    expect(stack).toHaveResource('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic2A4FB547F',
@@ -467,10 +466,10 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
     // Ensure that the queue URL has been correctly added to the environment variables
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -501,8 +500,8 @@ export = {
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});

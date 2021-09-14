@@ -1,11 +1,10 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Container, Environment, ScaleOnCpuUtilization, Service, ServiceDescription } from '../lib';
 
-export = {
-  'scale on cpu utilization extension with no parameters should create a default autoscaling setup'(test: Test) {
+describe('scale on cpu utilization', () => {
+  test('scale on cpu utilization extension with no parameters should create a default autoscaling setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -28,15 +27,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 200,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 2,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
       MaxCapacity: 8,
       MinCapacity: 2,
       ResourceId: {
@@ -75,9 +74,9 @@ export = {
       },
       ScalableDimension: 'ecs:service:DesiredCount',
       ServiceNamespace: 'ecs',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyName: 'myserviceserviceTaskCountTargetmyservicetargetcpuutilization50E6628660',
       PolicyType: 'TargetTrackingScaling',
       ScalingTargetId: {
@@ -91,12 +90,12 @@ export = {
         ScaleOutCooldown: 60,
         TargetValue: 50,
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'should be able to set a custom scaling policy as well'(test: Test) {
+  });
+
+  test('should be able to set a custom scaling policy as well', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -126,28 +125,28 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 200,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 25,
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
       MaxCapacity: 30,
       MinCapacity: 15,
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
       TargetTrackingScalingPolicyConfiguration: {
         ScaleInCooldown: 180,
         ScaleOutCooldown: 180,
         TargetValue: 75,
       },
-    }));
+    });
 
-    test.done();
-  },
 
-};
+  });
+
+});

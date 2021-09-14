@@ -1,14 +1,13 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { AssignPublicIpExtension, Container, Environment, EnvironmentCapacityType, Service, ServiceDescription } from '../lib';
 import { TaskRecordManager } from '../lib/extensions/assign-public-ip/task-record-manager';
 
-export = {
-  'should assign a public ip to fargate tasks'(test: Test) {
+describe('assign public ip', () => {
+  test('should assign a public ip to fargate tasks', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -29,18 +28,18 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
       NetworkConfiguration: {
         AwsvpcConfiguration: {
           AssignPublicIp: 'ENABLED',
         },
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'errors when adding a public ip to ec2-backed service'(test: Test) {
+  });
+
+  test('errors when adding a public ip to ec2-backed service', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -66,17 +65,17 @@ export = {
     serviceDescription.add(new AssignPublicIpExtension());
 
     // WHEN / THEN
-    test.throws(() => {
+    expect(() => {
       new Service(stack, 'my-service', {
         environment,
         serviceDescription,
       });
-    }, /Fargate/i);
+    }).toThrow(/Fargate/i);
 
-    test.done();
-  },
 
-  'should not add a task record manager by default'(test: Test) {
+  });
+
+  test('should not add a task record manager by default', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -98,12 +97,12 @@ export = {
     });
 
     // THEN
-    test.strictEqual(service.ecsService.node.tryFindChild('TaskRecordManager'), undefined, 'task record manager should not be present');
+    expect(service.ecsService.node.tryFindChild('TaskRecordManager')).toBeUndefined();
 
-    test.done();
-  },
 
-  'should add a task record manager when dns is requested'(test: Test) {
+  });
+
+  test('should add a task record manager when dns is requested', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const dnsZone = new route53.PublicHostedZone(stack, 'zone', {
@@ -133,12 +132,12 @@ export = {
     });
 
     // THEN
-    test.notEqual(service.ecsService.node.tryFindChild('TaskRecordManager'), undefined, 'task record manager should be present');
+    expect(service.ecsService.node.tryFindChild('TaskRecordManager')).toBeDefined();
 
-    test.done();
-  },
 
-  'task record manager listens for ecs events'(test: Test) {
+  });
+
+  test('task record manager listens for ecs events', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const dnsZone = new route53.PublicHostedZone(stack, 'zone', {
@@ -168,7 +167,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
       EventPattern: {
         'source': ['aws.ecs'],
         'detail-type': [
@@ -179,9 +178,9 @@ export = {
           desiredStatus: ['RUNNING'],
         },
       },
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
       EventPattern: {
         'source': ['aws.ecs'],
         'detail-type': [
@@ -192,8 +191,8 @@ export = {
           desiredStatus: ['STOPPED'],
         },
       },
-    }));
+    });
 
-    test.done();
-  },
-}
+
+  });
+});

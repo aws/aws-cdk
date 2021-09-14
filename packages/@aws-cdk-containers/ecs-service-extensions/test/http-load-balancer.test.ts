@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Container, Environment, HttpLoadBalancerExtension, Service, ServiceDescription } from '../lib';
 
-export = {
-  'should be able to add an HTTP load balancer to a service'(test: Test) {
+describe('http load balancer', () => {
+  test('should be able to add an HTTP load balancer to a service', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -28,7 +27,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -65,12 +64,12 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener'));
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
 
-    test.done();
-  },
 
-};
+  });
+
+});

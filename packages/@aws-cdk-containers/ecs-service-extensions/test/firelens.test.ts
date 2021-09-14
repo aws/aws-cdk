@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Container, Environment, FireLensExtension, Service, ServiceDescription } from '../lib';
 
-export = {
-  'should be able to add Firelens to a service'(test: Test) {
+describe('firelens', () => {
+  test('should be able to add Firelens to a service', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -30,11 +29,11 @@ export = {
     // THEN
 
     // Ensure that the log group was created
-    expect(stack).to(haveResource('AWS::Logs::LogGroup'));
+    expect(stack).toHaveResource('AWS::Logs::LogGroup');
 
     // Ensure that task has a Firelens sidecar and a log configuration
     // pointing at the sidecar
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -114,9 +113,9 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-};
+  });
+
+});

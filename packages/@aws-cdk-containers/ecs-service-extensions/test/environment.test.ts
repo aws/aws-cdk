@@ -1,12 +1,11 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Container, Environment, EnvironmentCapacityType, Service, ServiceDescription } from '../lib';
 
-export = {
-  'should be able to add a service to an environment'(test: Test) {
+describe('environment', () => {
+  test('should be able to add a service to an environment', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -27,9 +26,9 @@ export = {
     });
 
     // THEN
-    expect(stack).to(countResources('AWS::ECS::Service', 1));
+    expect(stack).toCountResources('AWS::ECS::Service', 1);
 
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -66,12 +65,12 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'should be able to create a Fargate environment with a given VPC and cluster'(test: Test) {
+  });
+
+  test('should be able to create a Fargate environment with a given VPC and cluster', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -98,9 +97,9 @@ export = {
     });
 
     // THEN
-    expect(stack).to(countResources('AWS::ECS::Service', 1));
+    expect(stack).toCountResources('AWS::ECS::Service', 1);
 
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -137,12 +136,12 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'should be able to create an environment for EC2'(test: Test) {
+  });
+
+  test('should be able to create an environment for EC2', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -173,9 +172,9 @@ export = {
     });
 
     // THEN
-    expect(stack).to(countResources('AWS::ECS::Service', 1));
+    expect(stack).toCountResources('AWS::ECS::Service', 1);
 
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -212,12 +211,12 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'should be able to create an environment from attributes'(test: Test) {
+  });
+
+  test('should be able to create an environment from attributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -234,11 +233,11 @@ export = {
     });
 
     // THEN
-    test.equal(environment.capacityType, EnvironmentCapacityType.EC2);
-    test.equal(environment.cluster, cluster);
-    test.equal(environment.vpc, vpc);
-    test.equal(environment.id, 'Environment');
+    expect(environment.capacityType).toEqual(EnvironmentCapacityType.EC2);
+    expect(environment.cluster).toEqual(cluster);
+    expect(environment.vpc).toEqual(vpc);
+    expect(environment.id).toEqual('Environment');
 
-    test.done();
-  },
-};
+
+  });
+});

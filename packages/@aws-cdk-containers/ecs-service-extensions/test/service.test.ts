@@ -1,13 +1,12 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Container, EnvironmentCapacityType, Environment, Service, ServiceDescription } from '../lib';
 
-export = {
-  'should error if a service is prepared with no addons'(test: Test) {
+describe('service', () => {
+  test('should error if a service is prepared with no addons', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -16,17 +15,17 @@ export = {
     const serviceDescription = new ServiceDescription();
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       new Service(stack, 'my-service', {
         environment,
         serviceDescription,
       });
-    }, /Service 'my-service' must have a Container extension/);
+    }).toThrow(/Service 'my-service' must have a Container extension/);
 
-    test.done();
-  },
 
-  'should be able to add a container to the service'(test: Test) {
+  });
+
+  test('should be able to add a container to the service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -59,9 +58,9 @@ export = {
     });
 
     // THEN
-    expect(stack).to(countResources('AWS::ECS::Service', 1));
+    expect(stack).toCountResources('AWS::ECS::Service', 1);
 
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -98,9 +97,9 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-};
+  });
+
+});

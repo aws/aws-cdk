@@ -1,13 +1,11 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as appmesh from '@aws-cdk/aws-appmesh';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-
-import { Test } from 'nodeunit';
 import { AppMeshExtension, Container, Environment, ScaleOnCpuUtilization, ServiceDescription, Service } from '../lib';
 
-export = {
-  'should be able to add AWS App Mesh to a service'(test: Test) {
+describe('appmesh', () => {
+  test('should be able to add AWS App Mesh to a service', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -37,7 +35,7 @@ export = {
     // THEN
 
     // Ensure that task has an App Mesh sidecar
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -210,10 +208,10 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
     // Ensure that the service has the right settings
-    expect(stack).to(haveResource('AWS::ECS::Service', {
+    expect(stack).toHaveResource('AWS::ECS::Service', {
       Cluster: {
         Ref: 'productionenvironmentclusterC6599D2D',
       },
@@ -258,12 +256,12 @@ export = {
       TaskDefinition: {
         Ref: 'myservicetaskdefinitionF3E2D86F',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'should have the right maximumPercentage at desired count == 1'(test: Test) {
+  });
+
+  test('should have the right maximumPercentage at desired count == 1', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -293,18 +291,18 @@ export = {
       serviceDescription,
     });
 
-    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 200,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 1,
-    }));
+    });
 
-    test.done();
-  },
 
-  'should have the right maximumPercentage at desired count == 2'(test: Test) {
+  });
+
+  test('should have the right maximumPercentage at desired count == 2', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -334,18 +332,18 @@ export = {
       serviceDescription,
     });
 
-    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 150,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 2,
-    }));
+    });
 
-    test.done();
-  },
 
-  'should have the right maximumPercentage at desired count == 3'(test: Test) {
+  });
+
+  test('should have the right maximumPercentage at desired count == 3', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -375,18 +373,18 @@ export = {
       serviceDescription,
     });
 
-    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 150,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 3,
-    }));
+    });
 
-    test.done();
-  },
 
-  'should have the right maximumPercentage at desired count == 4'(test: Test) {
+  });
+
+  test('should have the right maximumPercentage at desired count == 4', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -416,18 +414,18 @@ export = {
       serviceDescription,
     });
 
-    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 125,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 4,
-    }));
+    });
 
-    test.done();
-  },
 
-  'should have the right maximumPercentage at desired count > 4'(test: Test) {
+  });
+
+  test('should have the right maximumPercentage at desired count > 4', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -457,18 +455,18 @@ export = {
       serviceDescription,
     });
 
-    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 125,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 8,
-    }));
+    });
 
-    test.done();
-  },
 
-  'should be able to create multiple App Mesh enabled services and connect'(test: Test) {
+  });
+
+  test('should be able to create multiple App Mesh enabled services and connect', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -529,12 +527,12 @@ export = {
     greeterService.connectTo(greetingService);
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition'));
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition');
 
-    test.done();
-  },
 
-  'should detect when attempting to connect services from two different envs'(test: Test) {
+  });
+
+  test('should detect when attempting to connect services from two different envs', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -582,10 +580,10 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       developmentNameService.connectTo(productionNameService);
-    }, /Unable to connect service 'name-development' in environment 'development' to service 'name-production' in environment 'production' because services can not be connected across environment boundaries/);
+    }).toThrow(/Unable to connect service 'name-development' in environment 'development' to service 'name-production' in environment 'production' because services can not be connected across environment boundaries/);
 
-    test.done();
-  },
-};
+
+  });
+});
