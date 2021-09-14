@@ -17,6 +17,8 @@ export abstract class Matcher {
 
   /**
    * Test whether a target matches the provided pattern.
+   * Every Matcher must implement this method.
+   * This method will be invoked by the assertions framework. Do not call this method directly.
    * @param actual the target to match
    * @return the list of match failures. An empty array denotes a successful match.
    */
