@@ -48,7 +48,7 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
 
   const visitor = <T extends ts.Node>(node: T): ts.VisitResult<T> => {
     const moduleSpecifier = getModuleSpecifier(node);
-    const newTarget = moduleSpecifier && updatedLocationOf(moduleSpecifier.text, options);
+    const newTarget = moduleSpecifier && updatedLocationOf(moduleSpecifier.text, options, getImportedElements(node));
 
     if (moduleSpecifier != null && newTarget != null) {
       replacements.push({ original: moduleSpecifier, updatedLocation: newTarget });
@@ -112,16 +112,27 @@ const EXEMPTIONS = new Set([
   '@aws-cdk/cloudformation-diff',
 ]);
 
-function updatedLocationOf(modulePath: string, options: RewriteOptions): string | undefined {
+function updatedLocationOf(modulePath: string, options: RewriteOptions, importedElements?: ts.NodeArray<ts.ImportSpecifier>): string | undefined {
   const customModulePath = options.customModules?.[modulePath];
   if (customModulePath) {
+    let awsCdkLibLocation = undefined;
+    importedElements?.forEach(e => {
+      if (e.name.text.startsWith('Cfn') || e.propertyName?.text.startsWith('Cfn')) {
+        // This is an L1 import, so don't return the customModulePath (which is the alpha module).
+        // Return the relevant aws-cdk-lib location.
+        awsCdkLibLocation = `aws-cdk-lib/${modulePath.substring(9)}`;
+      }
+    });
+    if (awsCdkLibLocation) {
+      return awsCdkLibLocation;
+    }
     return customModulePath;
   }
 
   if (options.rewriteCfnImports && modulePath.endsWith('generated') && !modulePath.match(/canned-metric|augmentations/)) {
     const modulePathSplit = modulePath.split(/[./]/);
     // The following line takes the 2nd to last item in modulePathSplit, which will always be the basename of the module e.g. apigatewayv2.
-    return `aws-cdk-lib/aws-${modulePathSplit[modulePathSplit.length-2]}`;
+    return `aws-cdk-lib/aws-${modulePathSplit[modulePathSplit.length - 2]}`;
   }
 
   if (!modulePath.startsWith('@aws-cdk/') || EXEMPTIONS.has(modulePath)) {
@@ -152,4 +163,17 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions): string 
   }
 
   return `aws-cdk-lib/${modulePath.substring(9)}`;
+}
+
+function getImportedElements(node: ts.Node): ts.NodeArray<ts.ImportSpecifier> | undefined {
+  if (
+    ts.isImportDeclaration(node)
+    && ts.isStringLiteral(node.moduleSpecifier)
+    && node.importClause
+    && node.importClause.namedBindings
+    && ts.isNamedImports(node.importClause.namedBindings)
+  ) {
+    return node.importClause.namedBindings.elements;
+  }
+  return undefined;
 }

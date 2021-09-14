@@ -112,4 +112,28 @@ describe(rewriteImports, () => {
 
     console.log('Look! I did something!');`);
   });
+
+  test('correctly rewrites Cfn imports for an alpha module', () => {
+    const customModules = {
+      '@aws-cdk/aws-kinesisfirehose': 'aws-kinesisfirehose-alpha',
+    };
+    const output = rewriteImports(`
+    // something before
+    import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+    import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
+    // something after
+
+    console.log('Look! I did something!');`, 'subject.ts', {
+      rewriteCfnImports: true,
+      customModules: customModules,
+    });
+
+    expect(output).toBe(`
+    // something before
+    import * as firehose from 'aws-kinesisfirehose-alpha';
+    import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+    // something after
+
+    console.log('Look! I did something!');`);
+  });
 });
