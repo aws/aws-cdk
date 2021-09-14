@@ -53,13 +53,17 @@ function findAllHotswappableChanges(
     const lambdaFunctionShortCircuitChange = isHotswappableLambdaFunctionChange(logicalId, change, assetParamsWithEnv);
     const stepFunctionShortCircuitChange = isHotswappableStepFunctionChange(logicalId, change, assetParamsWithEnv);
 
-    if ((lambdaFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
-    (stepFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
-    (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT)) {
+    const requiresFullDeployment = (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
+                                   (stepFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
+                                   (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT);
+
+    const irrelevant = (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
+                       (stepFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
+                       (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT);
+
+    if (requiresFullDeployment) {
       foundNonHotswappableChange = true;
-    } else if ((lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
-    (stepFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
-    (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT)) {
+    } else if (irrelevant) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
       if (typeof lambdaFunctionShortCircuitChange !== 'string') {
@@ -74,8 +78,12 @@ function findAllHotswappableChanges(
   return foundNonHotswappableChange ? undefined : hotswappableResources;
 }
 
+/**
+ * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a resource we cannot hotswap was changed.
+ * Returns `ChangeHotswapImpact.IRRELEVANT` if a metadata change occured.
+ * returns false if no other changes that cannot be hotswapped were found.
+ */
 export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): ChangeHotswapImpact | false {
-
   // change.newValue being undefined means the resource was removed; we can't short-circuit that change
   if (!change.newValue) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;

@@ -22,7 +22,7 @@ export function isHotswappableStepFunctionChange(
     // That's fine though - ignore any errors,
     // and treat this case the same way as if the name wasn't provided at all,
     // which means it will be looked up using the listStackResources() call
-    // by the later phase (which actually does the Lambda function update)
+    // by the later phase (which actually does the StepFunctions state machine update)
     machineName = undefined;
   }
 
@@ -38,16 +38,14 @@ export function isHotswappableStepFunctionChange(
  * Returns `ChangeHotswapImpact.IRRELEVANT` if the change is not for a AWS::StepFunctions::StateMachine,
  * but doesn't prevent short-circuiting
  * (like a change to CDKMetadata resource),
- * `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change is to a AWS::Lambda::Function,
- * but not only to its Code property,
- * or a LambdaFunctionCode if the change is to a AWS::Lambda::Function,
- * and only affects its Code property.
+ * `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change is to a AWS::StepFunctions::StateMachine,
+ * but not only to its definition property,
+ * or the definition string if the change is to a AWS::StepFunctions::StateMachine,
+ * and only affects its definition property.
  */
 function isStepFunctionDefinitionOnlyChange(
   change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
 ): string | ChangeHotswapImpact {
-  // TODO: this is where the change.newValue === undefined check might go if we need it
-
   // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
   // this also ignores Metadata changes
   const newResourceType = change.newValue?.Type;
@@ -69,7 +67,7 @@ function isStepFunctionDefinitionOnlyChange(
     for (const newPropName in updatedProp.newValue) {
       if (newPropName === 'Fn::Join') {
         const joinString = updatedProp.newValue[newPropName];
-        const updatedDefinition = JSON.parse(joinString[1]); // new value is located here
+        const updatedDefinition = JSON.parse(joinString[1]);
 
         return stringifyPotentialCfnExpression(JSON.stringify(updatedDefinition), assetParamsWithEnv);
       }
@@ -108,10 +106,7 @@ class StepFunctionHotswapOperation implements HotswapOperation {
     }
 
     return sdk.stepFunctions().updateStateMachine({
-      // CloudFormation Docs state that we can use the Ref intrinsic with the state machine name to get the ARN
-      // but it turns out that the name is automatically magically converted to the arn
-      //stateMachineArn: '{ Ref: ' + stateMachineName  + ' }',
-      // magic
+      // the sdk turns the stateMachineName into the required ARN for us
       stateMachineArn: stateMachineName,
       definition: this.stepFunctionResource.definition,
     }).promise();
