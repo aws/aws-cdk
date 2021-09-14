@@ -1,4 +1,3 @@
-// dummy commit
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as lambda from '@aws-cdk/aws-lambda';
