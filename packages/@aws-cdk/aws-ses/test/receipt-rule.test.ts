@@ -1,12 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { ReceiptRule, ReceiptRuleSet, TlsPolicy } from '../lib';
 
 /* eslint-disable quote-props */
 
-export = {
-  'can create receipt rules with second after first'(test: Test) {
+describe('receipt rule', () => {
+  test('can create receipt rules with second after first', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -27,7 +26,7 @@ export = {
     });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'RuleSetE30C6C48': {
           'Type': 'AWS::SES::ReceiptRuleSet',
@@ -67,10 +66,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'import receipt rule'(test: Test) {
+  });
+
+  test('import receipt rule', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -83,7 +82,7 @@ export = {
     });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'RuleSetE30C6C48': {
           'Type': 'AWS::SES::ReceiptRuleSet',
@@ -103,10 +102,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'can add actions in rule props'(test: Test) {
+  });
+
+  test('can add actions in rule props', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -125,7 +124,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
+    expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
       'Rule': {
         'Actions': [
           {
@@ -139,12 +138,12 @@ export = {
       'RuleSetName': {
         'Ref': 'RuleSetE30C6C48',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'can add action with addAction'(test: Test) {
+  });
+
+  test('can add action with addAction', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -160,7 +159,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
+    expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
       'Rule': {
         'Actions': [
           {
@@ -174,8 +173,8 @@ export = {
       'RuleSetName': {
         'Ref': 'RuleSetE30C6C48',
       },
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});

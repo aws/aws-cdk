@@ -1,12 +1,11 @@
-import { expect } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { AllowListReceiptFilter, ReceiptFilter, ReceiptFilterPolicy } from '../lib';
 
 /* eslint-disable quote-props */
 
-export = {
-  'can create a receipt filter'(test: Test) {
+describe('receipt filter', () => {
+  test('can create a receipt filter', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -18,7 +17,7 @@ export = {
     });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'FilterC907D6DA': {
           'Type': 'AWS::SES::ReceiptFilter',
@@ -35,10 +34,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'can create an allow list filter'(test: Test) {
+  });
+
+  test('can create an allow list filter', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -51,7 +50,7 @@ export = {
     });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'AllowListBlockAll094C9B97': {
           'Type': 'AWS::SES::ReceiptFilter',
@@ -89,6 +88,6 @@ export = {
       },
     });
 
-    test.done();
-  },
-};
+
+  });
+});

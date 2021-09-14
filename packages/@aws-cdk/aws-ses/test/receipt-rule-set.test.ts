@@ -1,12 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { ReceiptRuleSet } from '../lib';
 
 /* eslint-disable quote-props */
 
-export = {
-  'can create a receipt rule set'(test: Test) {
+describe('receipt rule set', () => {
+  test('can create a receipt rule set', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -16,14 +15,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::SES::ReceiptRuleSet', {
+    expect(stack).toHaveResource('AWS::SES::ReceiptRuleSet', {
       RuleSetName: 'MyRuleSet',
-    }));
+    });
 
-    test.done();
-  },
 
-  'can create a receipt rule set with drop spam'(test: Test) {
+  });
+
+  test('can create a receipt rule set with drop spam', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -33,7 +32,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
+    expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
       Rule: {
         Actions: [
           {
@@ -51,14 +50,14 @@ export = {
         Enabled: true,
         ScanEnabled: true,
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::Lambda::Function'));
+    expect(stack).toHaveResource('AWS::Lambda::Function');
 
-    test.done();
-  },
 
-  'drop spam rule should always appear first'(test: Test) {
+  });
+
+  test('drop spam rule should always appear first', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -74,7 +73,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
+    expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
       Rule: {
         Enabled: true,
         Recipients: [
@@ -86,14 +85,14 @@ export = {
       After: {
         Ref: 'RuleSetDropSpamRule5809F51B',
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::Lambda::Function'));
+    expect(stack).toHaveResource('AWS::Lambda::Function');
 
-    test.done();
-  },
 
-  'import receipt rule set'(test: Test) {
+  });
+
+  test('import receipt rule set', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -103,7 +102,7 @@ export = {
     receiptRuleSet.addRule('MyRule');
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'ImportedRuleSetMyRule53EE2F7F': {
           'Type': 'AWS::SES::ReceiptRule',
@@ -117,6 +116,6 @@ export = {
       },
     });
 
-    test.done();
-  },
-};
+
+  });
+});
