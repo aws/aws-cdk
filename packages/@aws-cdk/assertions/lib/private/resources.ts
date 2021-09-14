@@ -6,12 +6,12 @@ type Resource = {
   Type: string;
 }
 
-export function findResources(inspector: StackInspector, type: string, props: any = {}): { [key: string]: any } {
+export function findResources(inspector: StackInspector, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
   const section: { [key: string] : Resource } = inspector.value.Resources;
   const result = matchSection(filterType(section, type), props);
 
   if (!result.match) {
-    return [];
+    return {};
   }
 
   return result.matches;

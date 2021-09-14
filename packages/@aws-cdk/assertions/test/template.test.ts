@@ -294,7 +294,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(inspect.findResources('Foo::Baz')).toEqual([]);
+      expect(inspect.findResources('Foo::Baz')).toEqual({});
     });
 
     test('matching resource props', () => {
@@ -320,7 +320,7 @@ describe('Template', () => {
       const inspect = Template.fromStack(stack);
       expect(inspect.findResources('Foo::Bar', {
         Properties: { baz: 'waldo' },
-      })).toEqual([]);
+      })).toEqual({});
     });
 
     test('multiple matching resources', () => {
@@ -329,7 +329,10 @@ describe('Template', () => {
       new CfnResource(stack, 'Bar', { type: 'Foo::Bar' });
 
       const inspect = Template.fromStack(stack);
-      expect(Object.keys(inspect.findResources('Foo::Bar')).length).toEqual(2);
+      const result = inspect.findResources('Foo::Bar');
+      expect(Object.keys(result).length).toEqual(2);
+      expect(result.Foo).toEqual({ Type: 'Foo::Bar' });
+      expect(result.Bar).toEqual({ Type: 'Foo::Bar' });
     });
   });
 
@@ -435,10 +438,9 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       const result = inspect.findOutputs('*', { Value: 'Fred' });
-      expect(result).toEqual({
-        Foo: { Value: 'Fred', Description: 'FooFred' },
-        Bar: { Value: 'Fred', Description: 'BarFred' },
-      });
+      expect(Object.keys(result).length).toEqual(2);
+      expect(result.Foo).toEqual({ Value: 'Fred', Description: 'FooFred' });
+      expect(result.Bar).toEqual({ Value: 'Fred', Description: 'BarFred' });
     });
 
     test('not matching', () => {
@@ -449,7 +451,7 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       const result = inspect.findOutputs('*', { Value: 'Waldo' });
-      expect(result.length).toEqual(0);
+      expect(Object.keys(result).length).toEqual(0);
     });
 
     test('matching specific output', () => {
@@ -481,7 +483,7 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       const result = inspect.findOutputs('Foo', { Value: 'Waldo' });
-      expect(result.length).toEqual(0);
+      expect(Object.keys(result).length).toEqual(0);
     });
   });
 
@@ -615,7 +617,7 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       const result = inspect.findMappings('*', { Foo: { Bar: 'Waldo' } });
-      expect(result.length).toEqual(0);
+      expect(Object.keys(result).length).toEqual(0);
     });
 
     test('matching with specific outputName', () => {
@@ -642,7 +644,7 @@ describe('Template', () => {
       });
     });
 
-    test('not matching', () => {
+    test('not matching specific output name', () => {
       const stack = new Stack();
       new CfnMapping(stack, 'Foo', {
         mapping: {
@@ -658,7 +660,7 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       const result = inspect.findMappings('Fred', { Baz: { Bar: 'Qux' } });
-      expect(result.length).toEqual(0);
+      expect(Object.keys(result).length).toEqual(0);
     });
   });
 });

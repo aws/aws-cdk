@@ -101,7 +101,7 @@ export class Template {
    * When a literal is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findResources(type: string, props: any = {}): { [key: string]: any } {
+  public findResources(type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
     return findResources(this.inspector, type, props);
   }
 
@@ -126,7 +126,7 @@ export class Template {
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findOutputs(logicalId: string, props: any = {}): { [key: string]: any } {
+  public findOutputs(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
     return findOutputs(this.inspector, logicalId, props);
   }
 
@@ -151,7 +151,7 @@ export class Template {
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findMappings(logicalId: string, props: any = {}): { [key: string]: any } {
+  public findMappings(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
     return findMappings(this.inspector, logicalId, props);
   }
 

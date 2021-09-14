@@ -136,10 +136,8 @@ and you can use the `'*'` special case as well.
 const result = assert.findOutputs('*', {
   Value: 'Fred',
 });
-expect(result).toEqual({
-  Foo: { Value: 'Fred', Description: 'FooFred' },
-  Bar: { Value: 'Fred', Description: 'BarFred' },
-});
+expect(result.Foo).toEqual({ Value: 'Fred', Description: 'FooFred' });
+expect(result.Bar).toEqual({ Value: 'Fred', Description: 'BarFred' });
 ```
 
 The APIs `hasMapping()` and `findMappings()` provide similar functionalities.
