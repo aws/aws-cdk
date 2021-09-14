@@ -106,20 +106,6 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
-      "Type": "AWS::KMS::Alias",
-      "Properties": {
-        "AliasName": "alias/codepipeline-awscdkcodepipelinecodecommitpipelinef780ca18",
-        "TargetKeyId": {
-          "Fn::GetAtt": [
-            "PipelineArtifactsBucketEncryptionKey01D58D69",
-            "Arn"
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -147,6 +133,20 @@
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
+    },
+    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-awscdkcodepipelinecodecommitpipelinef780ca18",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "PipelineArtifactsBucketEncryptionKey01D58D69",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
