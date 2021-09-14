@@ -1,6 +1,16 @@
 import * as ts from 'typescript';
 
 /**
+ * The options for rewriting the file.
+ */
+export interface RewriteOptions {
+  /**
+   * Optional module names that should result in replacing to something different than just 'aws-cdk-lib'.
+   */
+  readonly customModules?: { [moduleName: string]: string };
+}
+
+/**
  * Re-writes "hyper-modular" CDK imports (most packages in `@aws-cdk/*`) to the
  * relevant "mono" CDK import path. The re-writing will only modify the imported
  * library path, presrving the existing quote style, etc...
@@ -21,14 +31,14 @@ import * as ts from 'typescript';
  *
  * @returns the updated source code.
  */
-export function rewriteImports(sourceText: string, fileName: string = 'index.ts'): string {
+export function rewriteImports(sourceText: string, fileName: string = 'index.ts', options: RewriteOptions = {}): string {
   const sourceFile = ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.ES2018);
 
   const replacements = new Array<{ original: ts.Node, updatedLocation: string }>();
 
   const visitor = <T extends ts.Node>(node: T): ts.VisitResult<T> => {
     const moduleSpecifier = getModuleSpecifier(node);
-    const newTarget = moduleSpecifier && updatedLocationOf(moduleSpecifier.text);
+    const newTarget = moduleSpecifier && updatedLocationOf(moduleSpecifier.text, options);
 
     if (moduleSpecifier != null && newTarget != null) {
       replacements.push({ original: moduleSpecifier, updatedLocation: newTarget });
@@ -92,9 +102,18 @@ const EXEMPTIONS = new Set([
   '@aws-cdk/cloudformation-diff',
 ]);
 
-function updatedLocationOf(modulePath: string): string | undefined {
+function updatedLocationOf(modulePath: string, options: RewriteOptions): string | undefined {
+  const customModulePath = options.customModules?.[modulePath];
+  if (customModulePath) {
+    return customModulePath;
+  }
+
   if (!modulePath.startsWith('@aws-cdk/') || EXEMPTIONS.has(modulePath)) {
     return undefined;
+  }
+
+  if (modulePath.startsWith('@aws-cdk/core/lib')) {
+    return `aws-cdk-lib/lib/core/lib/${modulePath.substring('@aws-cdk/core/lib/'.length)}`;
   }
 
   if (modulePath === '@aws-cdk/core') {
@@ -104,6 +123,12 @@ function updatedLocationOf(modulePath: string): string | undefined {
   // These 2 are unchanged
   if (modulePath === '@aws-cdk/assert') {
     return '@aws-cdk/assert';
+  }
+
+  // can't use simple equality here,
+  // because we have imports like "import '@aws-cdk/assert-internal/jest'"
+  if (modulePath.startsWith('@aws-cdk/assert-internal')) {
+    return modulePath.replace(/^@aws-cdk\/assert-internal/, '@aws-cdk/assert');
   }
 
   if (modulePath === '@aws-cdk/assert/jest') {
