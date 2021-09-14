@@ -481,7 +481,7 @@ pipeline.addStage(prod, {
 });
 ```
 
-You can also specify steps to be executed at the stack level. To achieve this, you can specify the stack and step via the `stackSteps` property: 
+You can also specify steps to be executed at the stack level. To achieve this, you can specify the stack and step via the `stackSteps` property:
 
 ```ts
 pipeline.addStage(prod, {
@@ -1273,6 +1273,27 @@ encryption key policy for the artifacts bucket may have a statement that looks l
 ```
 
 Any resource or policy that references the qualifier (`hnb659fds` by default) will need to be updated.
+
+### This CDK CLI is not compatible with the CDK library used by your application
+
+The CDK CLI version used in your pipeline is too old to read the Cloud Assembly
+produced by your CDK app.
+
+Most likely this happens in the `SelfMutate` action, you are passing the `cliVersion`
+parameter to control the version of the CDK CLI, and you just updated the CDK
+framework version that your application uses. You either forgot to change the
+`cliVersion` parameter, or changed the `cliVersion` in the same commit in which
+you changed the framework version. Because a change to the pipeline settings needs
+a successful run of the `SelfMutate` step to be applied, the next iteration of the
+`SelfMutate` step still executes with the *old* CLI version, and that old CLI version
+is not able to read the cloud assembly produced by the new framework version.
+
+Solution: change the `cliVersion` first, commit, push and deploy, and only then
+change the framework version.
+ 
+We recommend you avoid specifying the `cliVersion` parameter at all. By default
+the pipeline will use the latest CLI version, which will support all cloud assembly
+versions.
 
 ## Known Issues
 
