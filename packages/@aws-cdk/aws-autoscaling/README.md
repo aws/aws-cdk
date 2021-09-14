@@ -45,6 +45,19 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+## Importing existing AutoScalingGroups
+
+To import an existing AutoScalingGroup into your CDK application, use the `AutoScalingGroup.fromAutoScalingGroupAttributes`
+factory method. This method accepts `AutoScalingGroupAttributes` which describes the properties of an already existing AutoScalingGroup:
+
+```ts
+const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/ExistingRole');
+
+const asg = AutoScalingGroup.fromAutoScalingGroupAttributes(this, 'ImportedAutoScalingGroup', {
+  role,
+});
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
