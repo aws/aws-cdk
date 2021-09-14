@@ -16,6 +16,11 @@ export interface RewriteOptions {
 
   /**
    * Optional flag to set for rewriting imports in alpha packages. When true, this will rewrite imports of generated L1s to reference aws-cdk-lib.
+   *
+   * For example:
+   *   import * as codestar from './codestar.generated';`
+   * becomes:
+   *   import * as codestar from 'aws-cdk-lib/aws-codestar';
    */
   readonly rewriteCfnImports?: boolean;
 
