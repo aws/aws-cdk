@@ -24,6 +24,9 @@ createSymlinks() {
 }
 
 runtarget="build"
+# Tests are not run by default on the transformed packages since they should
+# have been tested prior to this script being run. Integration tests that depend
+# on assets tend to fail post-transformation due to changes in asset hashes.
 run_tests="false"
 extract_snippets="false"
 skip_build=""
