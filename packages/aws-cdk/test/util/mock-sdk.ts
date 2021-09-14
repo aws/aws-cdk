@@ -60,8 +60,6 @@ export class MockSdkProvider extends SdkProvider {
    * Replace the CloudFormation client with the given object
    */
   public stubCloudFormation(stubs: SyncHandlerSubsetOf<AWS.CloudFormation>) {
-    /*eslint-disable*/
-    console.log('MOCK CFN');
     (this.sdk as any).cloudFormation = jest.fn().mockReturnValue(partialAwsService<AWS.CloudFormation>(stubs));
   }
 

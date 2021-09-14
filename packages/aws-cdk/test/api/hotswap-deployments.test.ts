@@ -21,6 +21,7 @@ beforeEach(() => {
   mockListStackResources = jest.fn(() => {
     let summaries: StackResourceSummaries = [];
 
+    // Mock lambda stack resource
     summaries[0] = {
       LogicalResourceId: 'Func',
       ResourceType: 'AWS::Lambda::Function',
@@ -28,6 +29,16 @@ beforeEach(() => {
       LastUpdatedTimestamp: new Date(),
       PhysicalResourceId: 'mock-function-resource-id',
     };
+
+    // Mock state machine stack resource
+    summaries[1] = {
+      LogicalResourceId: 'Machine',
+      ResourceType: 'AWS::StepFunctions::StateMachine',
+      ResourceStatus: 'CREATE_COMPLETE',
+      LastUpdatedTimestamp: new Date(),
+      PhysicalResourceId: 'mock-machine-resource-id',
+    };
+
     return { StackResourceSummaries: summaries };
 
   });
@@ -271,9 +282,6 @@ test('changes to CDK::Metadata result in a noOp', async () => {
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
-// TODO: need test for no lambda function name being provided
-// TODO: need test for no state machine name being provided
-
 test('does not call the updateLambdaCode() API when it receives a code difference in a Lambda function with no name', async () => {
   // GIVEN
   currentCfnStack.setTemplate({
@@ -367,13 +375,12 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
 
   // THEN
-  expect(deployStackResult).toBeUndefined();
-  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-    S3Bucket: 'current-bucket',
-    S3Key: 'new-key',
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateMachineCode).toHaveBeenCalledWith({
+    definition: '{"Prop":"new-value"}',
+    stateMachineArn: 'mock-machine-resource-id', // the sdk will convert the ID to the arn in a production environment
   });
-  expect(mockUpdateMachineCode).not.toHaveBeenCalled();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
 

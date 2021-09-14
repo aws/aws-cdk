@@ -78,13 +78,10 @@ function findAllHotswappableChanges(
       // empty 'if' just for flow-aware typing to kick in...
     } else {
       if (typeof lambdaFunctionShortCircuitChange !== 'string') {
-        //console.log('adding lmbda')
         hotswappableResources.push(lambdaFunctionShortCircuitChange);
       }
 
       if (typeof stepFunctionShortCircuitChange !== 'string') {
-        //console.log('adding stepfunc')
-        console.log(typeof stepFunctionShortCircuitChange)
         hotswappableResources.push(stepFunctionShortCircuitChange);
       }
     }
@@ -145,13 +142,10 @@ class LazyListStackResources implements ListStackResources {
     const ret = new Array<CloudFormation.StackResourceSummary>();
     let nextToken: string | undefined;
     do {
-      console.log(this.sdk.cloudFormation());
       const stackResourcesResponse = await this.sdk.cloudFormation().listStackResources({
         StackName: this.stackName,
         NextToken: nextToken,
       }).promise();
-      console.log('response');
-      console.log(stackResourcesResponse);
       ret.push(...(stackResourcesResponse.StackResourceSummaries ?? []));
       nextToken = stackResourcesResponse.NextToken;
     } while (nextToken);
