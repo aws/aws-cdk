@@ -34,7 +34,7 @@ export function isHotswappableStepFunctionChange(
 }
 
 /**
- * Returns `ChangeHotswapImpact.IRRELEVANT` if the change is not for a AWS::StepFunctions::StateMachine,
+ * Returns `ChangeHotswapImpact.IRRELEVANT` if the change is not for a `AWS::StepFunctions::StateMachine`,
  * but doesn't prevent short-circuiting
  * (like a change to CDKMetadata resource),
  * `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change is to a AWS::StepFunctions::StateMachine,
