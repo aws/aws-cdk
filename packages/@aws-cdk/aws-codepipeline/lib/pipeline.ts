@@ -327,7 +327,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
   private readonly crossAccountKeys: boolean;
-  private readonly enableKeyRotation: boolean;
+  private readonly enableKeyRotation?: boolean;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -345,7 +345,7 @@ export class Pipeline extends PipelineBase {
     // @deprecated(v2): switch to default false
     this.crossAccountKeys = props.crossAccountKeys ?? true;
 
-    this.enableKeyRotation = props.enableKeyRotation ?? false;
+    this.enableKeyRotation = props.enableKeyRotation;
 
     // Cross account keys must be set for key rotation to be enabled
     if (props.enableKeyRotation && !props.crossAccountKeys) {
@@ -592,8 +592,7 @@ export class Pipeline extends PipelineBase {
     return crossRegionSupport;
   }
 
-  private createSupportResourcesForRegion(otherStack: Stack | undefined, actionRegion: string):
-  CrossRegionSupport {
+  private createSupportResourcesForRegion(otherStack: Stack | undefined, actionRegion: string): CrossRegionSupport {
     // if we have a stack from the resource passed - use that!
     if (otherStack) {
       // check if the stack doesn't have this magic construct already
