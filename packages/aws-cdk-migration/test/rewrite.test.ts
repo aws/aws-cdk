@@ -3,10 +3,18 @@ import { rewriteImports } from '../lib/rewrite';
 describe(rewriteImports, () => {
   test('correctly rewrites naked "import"', () => {
     const output = rewriteImports(`
-    import '@aws-cdk/aws-s3/hello';`, 'subhect.ts');
+    // something before
+    import '@aws-cdk/aws-s3/hello';
+    // something after
+
+    console.log('Look! I did something!');`, 'subhect.ts');
 
     expect(output).toBe(`
-    import 'aws-cdk-lib/aws-s3/hello';`);
+    // something before
+    import 'aws-cdk-lib/aws-s3/hello';
+    // something after
+
+    console.log('Look! I did something!');`);
   });
 
   test('correctly rewrites naked "require"', () => {
@@ -47,10 +55,22 @@ describe(rewriteImports, () => {
 
   test('correctly rewrites "import = require"', () => {
     const output = rewriteImports(`
-  import { Construct } = require("@aws-cdk/core");`, 'subject.ts');
+  // something before
+  import s3 = require('@aws-cdk/aws-s3');
+  import cfndiff = require('@aws-cdk/cloudformation-diff');
+  import { Construct } = require("@aws-cdk/core");
+  // something after
+
+  console.log('Look! I did something!');`, 'subject.ts');
 
     expect(output).toBe(`
-  import { Construct } = require("aws-cdk-lib");`);
+  // something before
+  import s3 = require('aws-cdk-lib/aws-s3');
+  import cfndiff = require('@aws-cdk/cloudformation-diff');
+  import { Construct } = require("aws-cdk-lib");
+  // something after
+
+  console.log('Look! I did something!');`);
   });
 
   test('does not rewrite @aws-cdk/assert', () => {
