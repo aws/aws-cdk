@@ -110,7 +110,6 @@ export class MockSdkProvider extends SdkProvider {
 export class MockSdk implements ISDK {
   public readonly currentRegion: string = 'bermuda-triangle-1337';
   public readonly lambda = jest.fn();
-  public readonly step = jest.fn();
   public readonly cloudFormation = jest.fn();
   public readonly ec2 = jest.fn();
   public readonly ssm = jest.fn();

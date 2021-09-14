@@ -129,7 +129,6 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
-
     let functionPhysicalName: string;
     if (this.lambdaFunctionResource.physicalName) {
       functionPhysicalName = this.lambdaFunctionResource.physicalName;
