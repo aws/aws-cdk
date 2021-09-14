@@ -392,6 +392,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
 export interface AutoScalingGroupAttributes {
   /**
    * AutoScalingGroup's name
+   * @default - The construct's name (id)
    */
   readonly autoScalingGroupName?: string;
 
@@ -876,14 +877,17 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public static fromAutoScalingGroupAttributes(scope: Construct, id: string, attrs: AutoScalingGroupAttributes): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
-      public autoScalingGroupName = attrs.autoScalingGroupName || id;
+      public autoScalingGroupName = attrs.autoScalingGroupName ? attrs.autoScalingGroupName : id;
       public autoScalingGroupArn = Stack.of(this).formatArn({
         service: 'autoscaling',
         resource: 'autoScalingGroup:*:autoScalingGroupName',
         resourceName: attrs.autoScalingGroupName,
       });
       public readonly osType = ec2.OperatingSystemType.UNKNOWN;
-      public readonly role = attrs.role || undefined;
+      public readonly role?: iam.IRole = attrs.role || new iam.Role(this, 'InstanceRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      });
     }
     return new Import(scope, id);
   }
@@ -901,7 +905,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * The IAM role assumed by instances of this fleet.
    */
-  public readonly role: iam.IRole;
+  public readonly role?: iam.IRole;
 
   /**
    * The principal to grant permissions to
@@ -1143,7 +1147,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Adds a statement to the IAM role assumed by instances of this fleet.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPrincipalPolicy(statement);
+    if (this.role !== undefined) {
+      this.role.addToPrincipalPolicy(statement);
+    }
   }
 
   /**
@@ -1163,7 +1169,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     init.attach(this.autoScalingGroup, {
       platform: this.osType,
-      instanceRole: this.role,
+      instanceRole: this.role || new iam.Role(this, 'InstanceRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      }),
       userData: this.userData,
       configSets: options.configSets,
       embedFingerprint: options.embedFingerprint,
