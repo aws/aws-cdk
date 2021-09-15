@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as assets from '@aws-cdk/aws-ecr-assets';
 import * as cdk from '@aws-cdk/core';
-import { Service, Code, ContainerImage, GitHubConnection, CodeRuntime } from '../lib';
+import { Service, Code, ContainerImage, GitHubConnection, Runtime } from '../lib';
 
 
 const app = new cdk.App();
@@ -42,7 +42,7 @@ const service4 = new Service(stack, 'Service4', {
   source: Code.fromGitHub({
     repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
     branch: 'main',
-    runtime: CodeRuntime.PYTHON_3,
+    runtime: Runtime.PYTHON_3,
     port: 8080,
     connection: GitHubConnection.fromConnectionArn(connectionArn),
   }),

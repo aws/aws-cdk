@@ -4,7 +4,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Service, ContainerImage, GitHubConnection, CodeRuntime, Code, Cpu, Memory } from '../lib';
+import { Service, ContainerImage, GitHubConnection, Runtime, Code, Cpu, Memory } from '../lib';
 
 let app: cdk.App;
 let env: { region: string; account: string };
@@ -110,7 +110,7 @@ test('create a service with local assets(image repository type: ECR)', () => {
   const image = ContainerImage.fromDockerImageAssets(dockerAssets);
   // WHEN
   new Service(stack, 'DemoService', {
-    source: Code.fromImage(image, { port: 80 }),
+    source: Code.fromImage(image, { port: 8000 }),
   });
 
   // THEN
@@ -142,7 +142,7 @@ test('create a service with local assets(image repository type: ECR)', () => {
       },
       ImageRepository: {
         ImageConfiguration: {
-          Port: '80',
+          Port: '8000',
         },
         ImageIdentifier: {
           'Fn::Join': [
@@ -152,7 +152,7 @@ test('create a service with local assets(image repository type: ECR)', () => {
               {
                 Ref: 'AWS::URLSuffix',
               },
-              '/aws-cdk/assets:424c8142f98fbfce57ac06e87a84c82eb336f9a858a041ed52f8e550b938b7f5',
+              '/aws-cdk/assets:e9db95c5eb5c683b56dbb8a1930ab8b028babb58b58058d72fa77071e38e66a4',
             ],
           ],
         },
@@ -169,7 +169,7 @@ test('create a service with github repository', () => {
     source: Code.fromGitHub({
       repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
       branch: 'main',
-      runtime: CodeRuntime.PYTHON_3,
+      runtime: Runtime.PYTHON_3,
       connection: GitHubConnection.fromConnectionArn('MOCK'),
     }),
   });
@@ -200,7 +200,7 @@ test('create a service with github repository - undefined branch name is allowed
   new Service(stack, 'DemoService', {
     source: Code.fromGitHub({
       repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
-      runtime: CodeRuntime.PYTHON_3,
+      runtime: Runtime.PYTHON_3,
       connection: GitHubConnection.fromConnectionArn('MOCK'),
     }),
   });
@@ -316,7 +316,7 @@ test('custom IAM access role and instance role are allowed', () => {
               {
                 Ref: 'AWS::URLSuffix',
               },
-              '/aws-cdk/assets:424c8142f98fbfce57ac06e87a84c82eb336f9a858a041ed52f8e550b938b7f5',
+              '/aws-cdk/assets:e9db95c5eb5c683b56dbb8a1930ab8b028babb58b58058d72fa77071e38e66a4',
             ],
           ],
         },

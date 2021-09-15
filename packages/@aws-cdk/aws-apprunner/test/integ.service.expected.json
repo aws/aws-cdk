@@ -220,7 +220,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-cdk/assets:74d6478cf6bf420f698a060c5faf033198e2fbe85588bc2620937c3366c36e76"
+                  "/aws-cdk/assets:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967"
                 ]
               ]
             },

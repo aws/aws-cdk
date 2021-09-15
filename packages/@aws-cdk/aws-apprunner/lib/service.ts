@@ -22,6 +22,7 @@ export enum ImageRepositoryType {
 
 /**
  * The number of CPU units reserved for each instance of your App Runner service.
+ *
  */
 export class Cpu {
   /**
@@ -36,6 +37,8 @@ export class Cpu {
 
   /**
    * Custom CPU unit
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-instanceconfiguration.html#cfn-apprunner-service-instanceconfiguration-cpu
    *
    * @param unit custom CPU unit
    */
@@ -54,17 +57,17 @@ export class Cpu {
  */
 export class Memory {
   /**
-   * 2 GB
+   * 2 GB(for 1 vCPU)
    */
   public static readonly TWO_GB = Memory.of('2 GB')
 
   /**
-   * 3 GB
+   * 3 GB(for 1 vCPU)
    */
   public static readonly THREE_GB = Memory.of('3 GB')
 
   /**
-   * 4 GB
+   * 4 GB(for 1 or 2 vCPU)
    */
   public static readonly FOUR_GB = Memory.of('4 GB')
 
@@ -72,6 +75,8 @@ export class Memory {
    * Custom Memory unit
    *
    * @param unit custom Memory unit
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-instanceconfiguration.html#cfn-apprunner-service-instanceconfiguration-memory
    */
   public static of(unit: string) { return new Memory(unit); }
 
@@ -85,17 +90,34 @@ export class Memory {
 /**
  * The code runtimes
  */
-export enum CodeRuntime {
+export class Runtime {
   /**
    * NodeJS 12
    */
-  NODEJS_12 = 'NODEJS_12',
+  public static readonly NODEJS_12 = Runtime.of('NODEJS_12')
 
   /**
    * Python 3
    */
-  PYTHON_3 = 'PYTHON_3',
+  public static readonly PYTHON_3 = Runtime.of('PYTHON_3')
+
+  /**
+   * Other runtimes
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-codeconfigurationvalues.html#cfn-apprunner-service-codeconfigurationvalues-runtime for all available runtimes.
+   *
+   * @param name runtime name
+   *
+   */
+  public static of(name: string) { return new Runtime(name); }
+
+  /**
+   *
+   * @param name The runtime name.
+   */
+  private constructor(public readonly name: string) { }
 }
+
 
 /**
  * The configuration for the Code.
@@ -143,7 +165,7 @@ export interface GithubRepositoryProps {
    * A runtime environment type for building and running an App Runner service.
    * It represents a programming language runtime.
    */
-  readonly runtime: CodeRuntime;
+  readonly runtime: Runtime;
 
   /**
    * The branch name that represents a specific version for the repository.
@@ -272,9 +294,11 @@ export interface ImageConfiguration {
  */
 export interface ImageRepository {
   /**
-   * The identifier of an image.
+   * The identifier of the image. For `ECR_PUBLIC` imageRepositoryType, the identifier domain should
+   * always be `public.ecr.aws`. For `ECR`, the pattern should be
+   * `([0-9]{12}.dkr.ecr.[a-z\-]+-[0-9]{1}.amazonaws.com\/.*)`.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html for more details.
    */
   readonly imageIdentifier: string;
 
@@ -459,7 +483,7 @@ export interface CodeConfigurationValues {
    * A runtime environment type for building and running an App Runner service. It represents
    * a programming language runtime.
    */
-  readonly runtime: CodeRuntime;
+  readonly runtime: Runtime;
 
   /**
    * The environment variables that are available to your running App Runner service.
