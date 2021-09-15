@@ -44,8 +44,8 @@ export class CloudFormationExecutableTemplate {
         return this.evaluateIntrinsic(intrinsic);
       } else {
         const ret: { [key: string]: any } = {};
-        for (const key of Object.keys(cfnExpression)) {
-          ret[key] = await this.evaluateCfnExpression(cfnExpression[key]);
+        for (const [key, val] of Object.entries(cfnExpression)) {
+          ret[key] = await this.evaluateCfnExpression(val);
         }
         return ret;
       }
@@ -70,8 +70,9 @@ export class CloudFormationExecutableTemplate {
   }
 
   async 'Ref'(logicalId: string): Promise<string> {
-    if (logicalId in this.context) {
-      return this.context[logicalId];
+    const refTarget = await this.findRefTarget(logicalId);
+    if (refTarget) {
+      return refTarget;
     } else {
       throw new Error(`Reference target '${logicalId}' was not found`);
     }
@@ -121,6 +122,21 @@ export class CloudFormationExecutableTemplate {
     const argsAsArray = Array.isArray(intrinsic.args) ? intrinsic.args : [intrinsic.args];
 
     return intrinsicFunc.apply(this, argsAsArray);
+  }
+
+  private async findRefTarget(logicalId: string): Promise<string | undefined> {
+    // first, check to see if the Ref is a Parameter who's value we have
+    const parameterTarget = this.context[logicalId];
+    if (parameterTarget) {
+      return parameterTarget;
+    }
+
+    // if it's not a Parameter, we need to search in the current Stack resources
+    const stackResources = await this.stackResources.listStackResources();
+    const foundResource = stackResources.find(sr => sr.LogicalResourceId === logicalId);
+    // ToDo this needs to be more sophisticated, and do different things based on the resource type
+    // (as the PhysicalId can also be other things, like an ARN)
+    return foundResource?.PhysicalResourceId;
   }
 }
 
