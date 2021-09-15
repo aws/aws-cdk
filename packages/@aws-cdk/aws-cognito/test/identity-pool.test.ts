@@ -28,6 +28,7 @@ describe('identity pool', () => {
     });
 
     temp.resourceCountIs('AWS::IAM::Role', 2);
+    temp.resourceCountIs('AWS::IAM::Policy', 0);
     temp.hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
@@ -49,10 +50,7 @@ describe('identity pool', () => {
             },
           },
         ],
-        Version: '2012-10-17',
       },
-      Description: 'Default Authenticated Role for Identity Pool TestIdentityPoolMini',
-      RoleName: 'TestIdentityPoolMinimalAuthenticatedRole',
     });
 
   });
@@ -74,25 +72,26 @@ describe('identity pool', () => {
     });
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 2);
-    temp.hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
+    temp.resourceCountIs('AWS::IAM::Policy', 2);
+    temp.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
         Statement: [
           {
-            Effect: 'Allow',
             Action: 'execute-api:*',
-            Resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+            Effect: 'Allow',
+            Resource: 'arn:aws:execute-api:us-east-1:*:my-api/prod',
           },
         ],
       },
     });
 
-    temp.hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
+    temp.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
         Statement: [
           {
-            Effect: 'Allow',
             Action: 'execute-api:*',
-            Resources: ['*'],
+            Effect: 'Allow',
+            Resource: '*',
           },
         ],
       },
@@ -110,16 +109,21 @@ describe('identity pool', () => {
       })],
     });
     const temp = Template.fromStack(stack);
-
-    temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
-      AllowUnauthenticatedIdentities: false,
-    });
-
     temp.hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
             Action: 'sts:AssumeRole',
+            Condition: {
+              'StringEquals': {
+                'cognito-identity.amazonaws.com:aud': {
+                  Ref: 'TestIdentityPoolActions02A84B9A',
+                },
+              },
+              'ForAnyValue:StringLike': {
+                'cognito-identity.amazonaws.com:amr': 'authenticated',
+              },
+            },
             Effect: 'Allow',
             Principal: {
               Federated: 'cognito-identity.amazonaws.com',
@@ -133,18 +137,18 @@ describe('identity pool', () => {
 
     temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
-        Ref: 'TestIdentityPool328F7622',
+        Ref: 'TestIdentityPoolActions02A84B9A',
       },
       Roles: {
         authenticated: {
           'Fn::GetAtt': [
-            'authRoleB7A6401B',
+            'TestIdentityPoolActionsTestIdentityPoolActionsAuthenticatedRoleC93FFB7C',
             'Arn',
           ],
         },
         unauthenticated: {
           'Fn::GetAtt': [
-            'unauthRole8318277E',
+            'TestIdentityPoolActionsTestIdentityPoolActionsUnauthenticatedRoleE17FC01D',
             'Arn',
           ],
         },
@@ -348,8 +352,12 @@ describe('identity pool', () => {
         },
       },
       SupportedLoginProviders: {
-        'www.amazon.com': 'amzn1.application.12312k3j234j13rjiwuenf',
-        'accounts.google.com': '12345678012.apps.googleusercontent.com',
+        'www.amazon.com': {
+          appId: 'amzn1.application.12312k3j234j13rjiwuenf',
+        },
+        'accounts.google.com': {
+          appId: '12345678012.apps.googleusercontent.com',
+        },
       },
     });
   });
@@ -378,13 +386,13 @@ describe('role mappings', () => {
       Roles: {
         authenticated: {
           'Fn::GetAtt': [
-            'authRoleB7A6401B',
+            'TestIdentityPoolRoleMappingTokenTestIdentityPoolRoleMappingTokenAuthenticatedRoleD2ED95FF',
             'Arn',
           ],
         },
         unauthenticated: {
           'Fn::GetAtt': [
-            'unauthRole8318277E',
+            'TestIdentityPoolRoleMappingTokenTestIdentityPoolRoleMappingTokenUnauthenticatedRole0BEF1509',
             'Arn',
           ],
         },
@@ -494,13 +502,13 @@ describe('role mappings', () => {
       Roles: {
         authenticated: {
           'Fn::GetAtt': [
-            'authRoleB7A6401B',
+            'TestIdentityPoolRoleMappingRulesTestIdentityPoolRoleMappingRulesAuthenticatedRole1785BA7D',
             'Arn',
           ],
         },
         unauthenticated: {
           'Fn::GetAtt': [
-            'unauthRole8318277E',
+            'TestIdentityPoolRoleMappingRulesTestIdentityPoolRoleMappingRulesUnauthenticatedRoleA5D688B7',
             'Arn',
           ],
         },
