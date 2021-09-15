@@ -264,6 +264,13 @@ export class BucketDeployment extends CoreConstruct {
           gid: '1001',
         },
       });
+      accessPoint.node.addDependency(fileSystem.mountTargetsAvailable);
+    }
+
+    // Making VPC dependent on BucketDeployment so that CFN stack deletion is smooth.
+    // Refer comments on https://github.com/aws/aws-cdk/pull/15220 for more details.
+    if (props.vpc) {
+      this.node.addDependency(props.vpc);
     }
 
     const mountPath = `/mnt${accessPointPath}`;
