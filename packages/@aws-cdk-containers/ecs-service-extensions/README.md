@@ -19,9 +19,8 @@ The `Service` construct provided by this module can be extended with optional `S
 - [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
-- [Publish/Subscribe Service Pattern](https://aws.amazon.com/pub-sub-messaging/), for implementing asynchronous communication between services. This can be accomplished by using the following service extensions:
-  - [Publisher Extension](#publisher-extension) to allow your service to publish events to SNS Topics or Amazon EventBridge Event Bus 
-  - [Queue Extension](#queue-extension) to allow your service to consume messages from an SQS Queue which is populated by one or more SNS Topics that it is subscribed to
+- [Injecter Extension](#injecter-extension), for allowing your service to publish events to resources like SNS Topics
+- [Queue Extension](#queue-extension), for allowing your service to consume messages from an SQS Queue which can be populated by one or more SNS Topics that it is subscribed to
 - [Community Extensions](#community-extensions), providing support for advanced use cases
 
 The `ServiceExtension` class is an abstract class which you can also implement in
@@ -324,17 +323,17 @@ const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', 
 
 ```
 
-## Publisher Extension
+## Injecter Extension
 
-This service extension accepts a list of `IPublisher` resources that the service can publish events to. It sets up the corresponding publish permissions for the task role of the service.
+This service extension accepts a list of `Injectable` resources that the service can publish events or write data to and sets up the corresponding permissions for the service.
 
 ### Publishing to SNS Topics
 
 You can use this extension to set up publishing permissions for SNS Topics.
 
 ```ts
-nameDescription.add(new PublisherExtension({
-  publishers: [new PublisherTopic({
+nameDescription.add(new InjecterExtension({
+  injectables: [new InjecterTopic({
     // SNS Topic the service will publish to
     topic: new sns.Topic(stack, 'my-topic'),
   })],
@@ -343,7 +342,7 @@ nameDescription.add(new PublisherExtension({
 
 ## Queue Extension
 
-This service extension creates a default SQS Queue `eventsQueue` for the service (if not provided) and accepts a list of `ISubscribable` objects that the `eventsQueue` can subscribe to. The service extension creates the subscriptions and sets up permissions for the service to consume messages from the SQS Queue.
+This service extension creates a default SQS Queue `eventsQueue` for the service (if not provided) and optionally also accepts list of `ISubscribable` objects that the `eventsQueue` can subscribe to. The service extension creates the subscriptions and sets up permissions for the service to consume messages from the SQS Queue.
 
 ### Setting up SNS Topic Subscriptions for SQS Queues
 
@@ -379,7 +378,7 @@ nameDescription.add(new QueueExtension({
 
 The [Publish/Subscribe Service Pattern](https://aws.amazon.com/pub-sub-messaging/) is used for implementing asynchronous communication between services. It involves 'publisher' services emitting events to SNS Topics, which are passed to subscribed SQS queues and then consumed by 'worker' services. 
 
-The following example adds the `PublisherExtension` to a `Publisher` Service which can publish events to an SNS Topic and adds the `QueueExtension` to a `Worker` Service which can poll its `eventsQueue` to consume messages populated by the topic.
+The following example adds the `InjecterExtension` to a `Publisher` Service which can publish events to an SNS Topic and adds the `QueueExtension` to a `Worker` Service which can poll its `eventsQueue` to consume messages populated by the topic.
 
 ```ts
 const environment = new Environment(stack, 'production');
@@ -392,13 +391,13 @@ pubServiceDescription.add(new Container({
   image: ecs.ContainerImage.fromRegistry('sns-publish'),
 }));
 
-const myTopic = new PublisherTopic({
-  topic: new sns.Topic(stack, 'myTopic'),
-});
+const myTopic = new sns.Topic(stack, 'myTopic');
 
-// Add the `PublisherExtension` to the service description to allow publishing events to `myTopic`
-pubServiceDescription.add(new PublisherExtension({
-  publishers: [myTopic],
+// Add the `InjecterExtension` to the service description to allow publishing events to `myTopic`
+pubServiceDescription.add(new InjecterExtension({
+  injectables: [new InjecterTopic({
+    topic: myTopic,
+  }],
 }));
 
 // Create the `Publisher` Service
@@ -418,7 +417,7 @@ subServiceDescription.add(new Container({
 // Add the `QueueExtension` to the service description to subscribe to `myTopic`
 subServiceDescription.add(new QueueExtension({
   subscriptions: [new TopicSubscription({
-    topic: myTopic.topic,
+    topic: myTopic,
   }],
 }));
 
