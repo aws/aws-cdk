@@ -126,8 +126,8 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     if (!functionPhysicalName) {
       return;
     }
-    const codeS3Bucket = cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Bucket);
-    const codeS3Key = cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Key);
+    const codeS3Bucket = await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Bucket);
+    const codeS3Key = await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Key);
 
     return sdk.lambda().updateFunctionCode({
       FunctionName: functionPhysicalName,
@@ -139,7 +139,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
   private async establishFunctionPhysicalName(cfnExectuableTemplate: CloudFormationExecutableTemplate): Promise<string | undefined> {
     if (this.lambdaFunctionResource.physicalName) {
       try {
-        return cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.physicalName);
+        return await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.physicalName);
       } catch (e) {
         // It's possible we can't evaluate the function's name -
         // for example, it can use a Ref to a different resource,

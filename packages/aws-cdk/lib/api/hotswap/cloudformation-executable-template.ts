@@ -29,13 +29,13 @@ export class CloudFormationExecutableTemplate {
     };
   }
 
-  public evaluateCfnExpression(cfnExpression: any): any {
+  public async evaluateCfnExpression(cfnExpression: any): Promise<any> {
     if (cfnExpression == null) {
       return cfnExpression;
     }
 
     if (Array.isArray(cfnExpression)) {
-      return cfnExpression.map(expr => this.evaluateCfnExpression(expr));
+      return Promise.all(cfnExpression.map(expr => this.evaluateCfnExpression(expr)));
     }
 
     if (typeof cfnExpression === 'object') {
@@ -45,7 +45,7 @@ export class CloudFormationExecutableTemplate {
       } else {
         const ret: { [key: string]: any } = {};
         for (const key of Object.keys(cfnExpression)) {
-          ret[key] = this.evaluateCfnExpression(cfnExpression[key]);
+          ret[key] = await this.evaluateCfnExpression(cfnExpression[key]);
         }
         return ret;
       }
@@ -54,19 +54,22 @@ export class CloudFormationExecutableTemplate {
     return cfnExpression;
   }
 
-  'Fn::Join'(separator: string, args: string[]): string {
-    return this.evaluateCfnExpression(args).map((expr: any) => this.evaluateCfnExpression(expr)).join(separator);
+  async 'Fn::Join'(separator: string, args: any[]): Promise<string> {
+    const evaluatedArgs = await this.evaluateCfnExpression(args);
+    return evaluatedArgs.join(separator);
   }
 
-  'Fn::Split'(separator: string, args: string): string {
-    return this.evaluateCfnExpression(args).split(separator);
+  async 'Fn::Split'(separator: string, args: any): Promise<string> {
+    const evaluatedArgs = await this.evaluateCfnExpression(args);
+    return evaluatedArgs.split(separator);
   }
 
-  'Fn::Select'(index: number, args: string[]): string {
-    return this.evaluateCfnExpression(args).map((expr: any) => this.evaluateCfnExpression(expr))[index];
+  async 'Fn::Select'(index: number, args: any[]): Promise<string> {
+    const evaluatedArgs = await this.evaluateCfnExpression(args);
+    return evaluatedArgs[index];
   }
 
-  'Ref'(logicalId: string): string {
+  async 'Ref'(logicalId: string): Promise<string> {
     if (logicalId in this.context) {
       return this.context[logicalId];
     } else {
@@ -74,7 +77,7 @@ export class CloudFormationExecutableTemplate {
     }
   }
 
-  'Fn::GetAtt'(logicalId: string, attributeName: string): string {
+  async 'Fn::GetAtt'(logicalId: string, attributeName: string): Promise<string> {
     // ToDo handle the 'logicalId.attributeName' form of Fn::GetAtt
     const key = `${logicalId}.${attributeName}`;
     if (key in this.context) {
@@ -84,9 +87,9 @@ export class CloudFormationExecutableTemplate {
     }
   }
 
-  'Fn::Sub'(template: string, explicitPlaceholders?: { [variable: string]: string }): string {
+  async 'Fn::Sub'(template: string, explicitPlaceholders?: { [variable: string]: string }): Promise<string> {
     const placeholders = explicitPlaceholders
-      ? { ...this.context, ...this.evaluateCfnExpression(explicitPlaceholders) }
+      ? { ...this.context, ...(await this.evaluateCfnExpression(explicitPlaceholders)) }
       : this.context;
 
     return template.replace(/\${([^}]*)}/g, (_: string, key: string) => {
