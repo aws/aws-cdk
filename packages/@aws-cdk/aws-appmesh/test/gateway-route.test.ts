@@ -1,11 +1,11 @@
-import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
 
-export = {
-  'When creating a GatewayRoute': {
-    'should have expected defaults'(test: Test) {
+describe('gateway route', () => {
+  describe('When creating a GatewayRoute', () => {
+    test('should have expected defaults', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -50,7 +50,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'gateway-http-route',
         MeshOwner: ABSENT,
         Spec: {
@@ -69,8 +69,8 @@ export = {
             },
           },
         },
-      }));
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+      });
+      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'gateway-http2-route',
         Spec: {
           Http2Route: {
@@ -88,8 +88,8 @@ export = {
             },
           },
         },
-      }));
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+      });
+      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'gateway-grpc-route',
         Spec: {
           GrpcRoute: {
@@ -109,11 +109,11 @@ export = {
             },
           },
         },
-      }));
-      test.done();
-    },
+      });
 
-    'should throw an exception if you start an http prefix match not with a /'(test: Test) {
+    });
+
+    test('should throw an exception if you start an http prefix match not with a /', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -124,18 +124,17 @@ export = {
       const virtualService = new appmesh.VirtualService(stack, 'testVirtualService', {
         virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
-      test.throws(() => appmesh.GatewayRouteSpec.http({
+      expect(() => appmesh.GatewayRouteSpec.http({
         routeTarget: virtualService,
         match: {
           path: appmesh.HttpRoutePathMatch.startsWith('wrong'),
         },
-      }).bind(stack),
-      /Prefix Path for the match must start with \'\/\', got: wrong/);
-      test.done();
-    },
+      }).bind(stack)).toThrow(/Prefix Path for the match must start with \'\/\', got: wrong/);
 
-    'with shared service mesh': {
-      'Mesh Owner is the AWS account ID of the account that shared the mesh with your account'(test:Test) {
+    });
+
+    describe('with shared service mesh', () => {
+      test('Mesh Owner is the AWS account ID of the account that shared the mesh with your account', () => {
         // GIVEN
         const app = new cdk.App();
         const meshEnv = { account: '1234567899', region: 'us-west-2' };
@@ -164,16 +163,16 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           MeshOwner: meshEnv.account,
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'with host name rewrite': {
-      'should set default target host name'(test:Test) {
+      });
+    });
+
+    describe('with host name rewrite', () => {
+      test('should set default target host name', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -215,7 +214,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -228,9 +227,9 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-grpc-route',
           Spec: {
             GrpcRoute: {
@@ -243,14 +242,14 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'with wholePath rewrite': {
-      'should set exact path'(test: Test) {
+      });
+    });
+
+    describe('with wholePath rewrite', () => {
+      test('should set exact path', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -283,7 +282,7 @@ export = {
 
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http2-route',
           Spec: {
             Http2Route: {
@@ -296,14 +295,14 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'with prefix rewrite': {
-      'should set default prefix or value'(test:Test) {
+      });
+    });
+
+    describe('with prefix rewrite', () => {
+      test('should set default prefix or value', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -356,7 +355,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -369,9 +368,9 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http2-route',
           Spec: {
             Http2Route: {
@@ -384,9 +383,9 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http2-route-1',
           Spec: {
             Http2Route: {
@@ -395,12 +394,12 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
 
-      "should throw an error if the prefix match does not start and end with '/'"(test:Test) {
+      });
+
+      test("should throw an error if the prefix match does not start and end with '/'", () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -419,7 +418,7 @@ export = {
         });
 
         // WHEN + THEN
-        test.throws(() => {
+        expect(() => {
           virtualGateway.addGatewayRoute('gateway-http-route', {
             routeSpec: appmesh.GatewayRouteSpec.http({
               routeTarget: virtualService,
@@ -429,10 +428,10 @@ export = {
             }),
             gatewayRouteName: 'gateway-http-route',
           });
-        }, /Prefix path for the match must start with \'\/\', got: test\//);
+        }).toThrow(/Prefix path for the match must start with \'\/\', got: test\//);
 
 
-        test.throws(() => {
+        expect(() => {
           virtualGateway.addGatewayRoute('gateway-http2-route', {
             routeSpec: appmesh.GatewayRouteSpec.http2({
               routeTarget: virtualService,
@@ -442,12 +441,12 @@ export = {
             }),
             gatewayRouteName: 'gateway-http2-route',
           });
-        }, /When prefix path for the rewrite is specified, prefix path for the match must end with \'\/\', got: \/test/);
+        }).toThrow(/When prefix path for the rewrite is specified, prefix path for the match must end with \'\/\', got: \/test/);
 
-        test.done();
-      },
 
-      "should throw an error if the custom prefix does not start and end with '/'"(test:Test) {
+      });
+
+      test("should throw an error if the custom prefix does not start and end with '/'", () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -466,7 +465,7 @@ export = {
         });
 
         // WHEN + THEN
-        test.throws(() => {
+        expect(() => {
           virtualGateway.addGatewayRoute('gateway-http2-route', {
             routeSpec: appmesh.GatewayRouteSpec.http2({
               routeTarget: virtualService,
@@ -476,9 +475,9 @@ export = {
             }),
             gatewayRouteName: 'gateway-http2-route',
           });
-        }, /Prefix path for the rewrite must start and end with \'\/\', got: rewrittenUri\//);
+        }).toThrow(/Prefix path for the rewrite must start and end with \'\/\', got: rewrittenUri\//);
 
-        test.throws(() => {
+        expect(() => {
           virtualGateway.addGatewayRoute('gateway-http2-route-1', {
             routeSpec: appmesh.GatewayRouteSpec.http2({
               routeTarget: virtualService,
@@ -488,14 +487,14 @@ export = {
             }),
             gatewayRouteName: 'gateway-http2-route',
           });
-        }, /Prefix path for the rewrite must start and end with \'\/\', got: \/rewrittenUri/);
+        }).toThrow(/Prefix path for the rewrite must start and end with \'\/\', got: \/rewrittenUri/);
 
-        test.done();
-      },
-    },
 
-    'with host name match': {
-      'should match based on host name'(test:Test) {
+      });
+    });
+
+    describe('with host name match', () => {
+      test('should match based on host name', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -536,7 +535,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -550,9 +549,9 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-grpc-route',
           Spec: {
             GrpcRoute: {
@@ -563,14 +562,14 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'with metadata match': {
-      'should match based on metadata'(test:Test) {
+      });
+    });
+
+    describe('with metadata match', () => {
+      test('should match based on metadata', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -611,7 +610,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-grpc-route',
           Spec: {
             GrpcRoute: {
@@ -681,12 +680,12 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
 
-      'should throw an error if the array length is invalid'(test:Test) {
+      });
+
+      test('should throw an error if the array length is invalid', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -705,7 +704,7 @@ export = {
           virtualServiceName: 'target.local',
         });
 
-        test.throws(() => {
+        expect(() => {
           virtualGateway.addGatewayRoute('gateway-grpc-route', {
             routeSpec: appmesh.GatewayRouteSpec.grpc({
               routeTarget: virtualService,
@@ -717,9 +716,9 @@ export = {
             }),
             gatewayRouteName: 'gateway-grpc-route',
           });
-        }, /Number of metadata provided for matching must be between 1 and 10/);
+        }).toThrow(/Number of metadata provided for matching must be between 1 and 10/);
 
-        test.throws(() => {
+        expect(() => {
           virtualGateway.addGatewayRoute('gateway-grpc-route-1', {
             routeSpec: appmesh.GatewayRouteSpec.grpc({
               routeTarget: virtualService,
@@ -742,14 +741,14 @@ export = {
             }),
             gatewayRouteName: 'gateway-grpc-route',
           });
-        }, /Number of metadata provided for matching must be between 1 and 10/);
+        }).toThrow(/Number of metadata provided for matching must be between 1 and 10/);
 
-        test.done();
-      },
-    },
 
-    'with header match': {
-      'should match based on header'(test:Test) {
+      });
+    });
+
+    describe('with header match', () => {
+      test('should match based on header', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -791,7 +790,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -861,14 +860,14 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'with method match': {
-      'should match based on method'(test:Test) {
+      });
+    });
+
+    describe('with method match', () => {
+      test('should match based on method', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -899,7 +898,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -908,14 +907,14 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'with path match': {
-      'should match based on path'(test:Test) {
+      });
+    });
+
+    describe('with path match', () => {
+      test('should match based on path', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -957,7 +956,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -971,9 +970,9 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http2-route',
           Spec: {
             Http2Route: {
@@ -984,12 +983,12 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
 
-      'should throw an error if empty string is passed'(test:Test) {
+      });
+
+      test('should throw an error if empty string is passed', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -1009,7 +1008,7 @@ export = {
 
         // WHEN + THEN
 
-        test.throws(() => {
+        expect(() => {
           virtualGateway.addGatewayRoute('gateway-http-route', {
             routeSpec: appmesh.GatewayRouteSpec.http({
               routeTarget: virtualService,
@@ -1019,14 +1018,14 @@ export = {
             }),
             gatewayRouteName: 'gateway-http-route',
           });
-        }, /Exact Path for the rewrite cannot be empty. Unlike startsWith\(\) method, no automatic rewrite on whole path match/);
+        }).toThrow(/Exact Path for the rewrite cannot be empty. Unlike startsWith\(\) method, no automatic rewrite on whole path match/);
 
-        test.done();
-      },
-    },
 
-    'with query paramater match': {
-      'should match based on query parameter'(test:Test) {
+      });
+    });
+
+    describe('with query paramater match', () => {
+      test('should match based on query parameter', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -1059,7 +1058,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -1075,15 +1074,15 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
-  },
 
-  'with empty HTTP/HTTP2match': {
-    'should match based on prefix'(test:Test) {
+      });
+    });
+  });
+
+  describe('with empty HTTP/HTTP2match', () => {
+    test('should match based on prefix', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -1113,7 +1112,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'gateway-http-route',
         Spec: {
           HttpRoute: {
@@ -1122,13 +1121,13 @@ export = {
             },
           },
         },
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'Can import Gateway Routes using an ARN'(test: Test) {
+    });
+  });
+
+  test('Can import Gateway Routes using an ARN', () => {
     const app = new cdk.App();
     // GIVEN
     const stack = new cdk.Stack(app, 'Imports', {
@@ -1142,12 +1141,12 @@ export = {
     // WHEN
     const gatewayRoute = appmesh.GatewayRoute.fromGatewayRouteArn(stack, 'importedGatewayRoute', arn);
     // THEN
-    test.equal(gatewayRoute.gatewayRouteName, gatewayRouteName);
-    test.equal(gatewayRoute.virtualGateway.virtualGatewayName, virtualGatewayName);
-    test.equal(gatewayRoute.virtualGateway.mesh.meshName, meshName);
-    test.done();
-  },
-  'Can import Gateway Routes using attributes'(test: Test) {
+    expect(gatewayRoute.gatewayRouteName).toEqual(gatewayRouteName);
+    expect(gatewayRoute.virtualGateway.virtualGatewayName).toEqual(virtualGatewayName);
+    expect(gatewayRoute.virtualGateway.mesh.meshName).toEqual(meshName);
+
+  });
+  test('Can import Gateway Routes using attributes', () => {
     const app = new cdk.App();
     // GIVEN
     const stack = new cdk.Stack(app, 'Imports', {
@@ -1167,8 +1166,8 @@ export = {
       virtualGateway: gateway,
     });
     // THEN
-    test.equal(gatewayRoute.gatewayRouteName, gatewayRouteName);
-    test.equal(gatewayRoute.virtualGateway.mesh.meshName, meshName);
-    test.done();
-  },
-};
+    expect(gatewayRoute.gatewayRouteName).toEqual(gatewayRouteName);
+    expect(gatewayRoute.virtualGateway.mesh.meshName).toEqual(meshName);
+
+  });
+});

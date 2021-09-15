@@ -1,15 +1,15 @@
-import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
 
-export = {
-  'When an existing VirtualNode': {
-    'with existing backends, adds new backend': {
-      'should add resource with service backends'(test: Test) {
+describe('virtual node', () => {
+  describe('When an existing VirtualNode', () => {
+    describe('with existing backends, adds new backend', () => {
+      test('should add resource with service backends', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -36,7 +36,7 @@ export = {
         node.addBackend(appmesh.Backend.virtualService(service2));
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Backends: [
               {
@@ -56,14 +56,14 @@ export = {
             ],
           },
           MeshOwner: ABSENT,
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when a single portmapping is added': {
-      'should add the portmapping to the resource'(test: Test) {
+      });
+    });
+
+    describe('when a single portmapping is added', () => {
+      test('should add the portmapping to the resource', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -81,7 +81,7 @@ export = {
         }));
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -92,14 +92,14 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when a listener is added with timeout': {
-      'should add the listener timeout to the resource'(test: Test) {
+      });
+    });
+
+    describe('when a listener is added with timeout', () => {
+      test('should add the listener timeout to the resource', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -121,7 +121,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -144,14 +144,14 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when a listener is added with healthcheck ': {
-      'should add a default listener healthcheck to the resource'(test: Test) {
+      });
+    });
+
+    describe('when a listener is added with healthcheck ', () => {
+      test('should add a default listener healthcheck to the resource', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -171,7 +171,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -198,14 +198,14 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when a listener is added with healthcheck with user defined props': {
-      'should add a listener healthcheck to the resource'(test: Test) {
+      });
+    });
+
+    describe('when a listener is added with healthcheck with user defined props', () => {
+      test('should add a listener healthcheck to the resource', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -228,7 +228,7 @@ export = {
         }));
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -255,14 +255,14 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when a listener is added with outlier detection with user defined props': {
-      'should add a listener outlier detection to the resource'(test: Test) {
+      });
+    });
+
+    describe('when a listener is added with outlier detection with user defined props', () => {
+      test('should add a listener outlier detection to the resource', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -287,7 +287,7 @@ export = {
         }));
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -310,14 +310,14 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when a default backend is added': {
-      'should add a backend default to the resource'(test: Test) {
+      });
+    });
+
+    describe('when a default backend is added', () => {
+      test('should add a backend default to the resource', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -342,7 +342,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             BackendDefaults: {
               ClientPolicy: {
@@ -359,14 +359,14 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    "with client's TLS certificate from SDS": {
-      'should add a backend default to the resource with TLS certificate'(test: Test) {
+      });
+    });
+
+    describe("with client's TLS certificate from SDS", () => {
+      test('should add a backend default to the resource with TLS certificate', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -390,7 +390,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             BackendDefaults: {
               ClientPolicy: {
@@ -417,14 +417,14 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when a backend is added': {
-      'should add a backend virtual service to the resource'(test: Test) {
+      });
+    });
+
+    describe('when a backend is added', () => {
+      test('should add a backend virtual service to the resource', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -453,7 +453,7 @@ export = {
         }));
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Backends: [
               {
@@ -477,14 +477,14 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when a grpc listener is added with a TLS certificate from ACM': {
-      'the listener should include the TLS configuration'(test: Test) {
+      });
+    });
+
+    describe('when a grpc listener is added with a TLS certificate from ACM', () => {
+      test('the listener should include the TLS configuration', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -511,7 +511,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -528,14 +528,14 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when an http listener is added with a TLS certificate from file': {
-      'the listener should include the TLS configuration'(test: Test) {
+      });
+    });
+
+    describe('when an http listener is added with a TLS certificate from file', () => {
+      test('the listener should include the TLS configuration', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -557,7 +557,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -573,14 +573,14 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when an http2 listener is added with a TLS certificate from SDS': {
-      'the listener should include the TLS configuration'(test: Test) {
+      });
+    });
+
+    describe('when an http2 listener is added with a TLS certificate from SDS', () => {
+      test('the listener should include the TLS configuration', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -601,7 +601,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -616,14 +616,14 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'when an http listener is added with the TLS mode permissive': {
-      'the listener should include the TLS configuration'(test: Test) {
+      });
+    });
+
+    describe('when an http listener is added with the TLS mode permissive', () => {
+      test('the listener should include the TLS configuration', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -645,7 +645,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -661,13 +661,13 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'Can add an http connection pool to listener'(test: Test) {
+      });
+    });
+
+    test('Can add an http connection pool to listener', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -691,7 +691,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
         Spec: {
           Listeners: [
             {
@@ -704,12 +704,12 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'Can add an tcp connection pool to listener'(test: Test) {
+    });
+
+    test('Can add an tcp connection pool to listener', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -732,7 +732,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
         Spec: {
           Listeners: [
             {
@@ -744,12 +744,12 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'Can add an grpc connection pool to listener'(test: Test) {
+    });
+
+    test('Can add an grpc connection pool to listener', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -772,7 +772,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
         Spec: {
           Listeners: [
             {
@@ -784,12 +784,12 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'Can add an http2 connection pool to listener'(test: Test) {
+    });
+
+    test('Can add an http2 connection pool to listener', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -812,7 +812,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
         Spec: {
           Listeners: [
             {
@@ -824,13 +824,13 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'Can import Virtual Nodes using an ARN'(test: Test) {
+    });
+  });
+
+  test('Can import Virtual Nodes using an ARN', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -842,13 +842,13 @@ export = {
     const virtualNode = appmesh.VirtualNode.fromVirtualNodeArn(
       stack, 'importedVirtualNode', arn);
     // THEN
-    test.equal(virtualNode.mesh.meshName, meshName);
-    test.equal(virtualNode.virtualNodeName, virtualNodeName);
+    expect(virtualNode.mesh.meshName).toEqual(meshName);
+    expect(virtualNode.virtualNodeName).toEqual(virtualNodeName);
 
-    test.done();
-  },
 
-  'Can import Virtual Nodes using attributes'(test: Test) {
+  });
+
+  test('Can import Virtual Nodes using attributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const meshName = 'testMesh';
@@ -859,13 +859,13 @@ export = {
       virtualNodeName: virtualNodeName,
     });
     // THEN
-    test.equal(virtualNode.mesh.meshName, meshName);
-    test.equal(virtualNode.virtualNodeName, virtualNodeName);
+    expect(virtualNode.mesh.meshName).toEqual(meshName);
+    expect(virtualNode.virtualNodeName).toEqual(virtualNodeName);
 
-    test.done();
-  },
 
-  'Can grant an identity StreamAggregatedResources for a given VirtualNode'(test: Test) {
+  });
+
+  test('Can grant an identity StreamAggregatedResources for a given VirtualNode', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -888,7 +888,7 @@ export = {
     node.grantStreamAggregatedResources(user);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -900,14 +900,14 @@ export = {
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'When creating a VirtualNode': {
-    'with shared service mesh': {
-      'Mesh Owner is the AWS account ID of the account that shared the mesh with your account'(test:Test) {
+  });
+
+  describe('When creating a VirtualNode', () => {
+    describe('with shared service mesh', () => {
+      test('Mesh Owner is the AWS account ID of the account that shared the mesh with your account', () => {
         // GIVEN
         const app = new cdk.App();
         const meshEnv = { account: '1234567899', region: 'us-west-2' };
@@ -925,16 +925,16 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           MeshOwner: meshEnv.account,
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'with DNS service discovery': {
-      'should allow set response type'(test: Test) {
+      });
+    });
+
+    describe('with DNS service discovery', () => {
+      test('should allow set response type', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -949,7 +949,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             ServiceDiscovery: {
               DNS: {
@@ -958,14 +958,14 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'with listener and without service discovery': {
-      'should throw an error'(test: Test) {
+      });
+    });
+
+    describe('with listener and without service discovery', () => {
+      test('should throw an error', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -978,27 +978,27 @@ export = {
         });
 
         // WHEN + THEN
-        test.throws(() => {
+        expect(() => {
           new appmesh.VirtualNode(stack, 'test-node-2', {
             mesh,
             listeners: [appmesh.VirtualNodeListener.http()],
           });
-        }, /Service discovery information is required for a VirtualNode with a listener/);
+        }).toThrow(/Service discovery information is required for a VirtualNode with a listener/);
 
-        test.throws(() => {
+        expect(() => {
           mesh.addVirtualNode('test-node-3', {
             listeners: [appmesh.VirtualNodeListener.http()],
           });
-        }, /Service discovery information is required for a VirtualNode with a listener/);
+        }).toThrow(/Service discovery information is required for a VirtualNode with a listener/);
 
-        test.throws(() => {
+        expect(() => {
           node.addListener(appmesh.VirtualNodeListener.http());
-        }, /Service discovery information is required for a VirtualNode with a listener/);
+        }).toThrow(/Service discovery information is required for a VirtualNode with a listener/);
 
-        test.done();
-      },
-    },
-  },
-};
+
+      });
+    });
+  });
+});
 
 

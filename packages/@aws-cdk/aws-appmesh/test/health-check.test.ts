@@ -1,5 +1,4 @@
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 
 import * as appmesh from '../lib';
 
@@ -13,8 +12,8 @@ const getNode = (stack: cdk.Stack) => {
   });
 };
 
-export = {
-  'interval'(test: Test) {
+describe('health check', () => {
+  test('interval', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -26,14 +25,14 @@ export = {
     }));
 
     // THEN
-    test.doesNotThrow(() => toThrow(min));
-    test.doesNotThrow(() => toThrow(max));
-    test.throws(() => toThrow(min - 1), /interval must be between 5 seconds and 300 seconds/);
-    test.throws(() => toThrow(max + 1), /interval must be between 5 seconds and 300 seconds/);
+    expect(() => toThrow(min)).not.toThrow();
+    expect(() => toThrow(max)).not.toThrow();
+    expect(() => toThrow(min - 1)).toThrow(/interval must be between 5 seconds and 300 seconds/);
+    expect(() => toThrow(max + 1)).toThrow(/interval must be between 5 seconds and 300 seconds/);
 
-    test.done();
-  },
-  'timeout'(test: Test) {
+
+  });
+  test('timeout', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -45,14 +44,14 @@ export = {
     }));
 
     // THEN
-    test.doesNotThrow(() => toThrow(min));
-    test.doesNotThrow(() => toThrow(max));
-    test.throws(() => toThrow(min - 1), /timeout must be between 2 seconds and 60 seconds/);
-    test.throws(() => toThrow(max + 1), /timeout must be between 2 seconds and 60 seconds/);
+    expect(() => toThrow(min)).not.toThrow();
+    expect(() => toThrow(max)).not.toThrow();
+    expect(() => toThrow(min - 1)).toThrow(/timeout must be between 2 seconds and 60 seconds/);
+    expect(() => toThrow(max + 1)).toThrow(/timeout must be between 2 seconds and 60 seconds/);
 
-    test.done();
-  },
-  'healthyThreshold'(test: Test) {
+
+  });
+  test('healthyThreshold', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -64,14 +63,14 @@ export = {
     }));
 
     // THEN
-    test.doesNotThrow(() => toThrow(min));
-    test.doesNotThrow(() => toThrow(max));
-    test.throws(() => toThrow(min - 1), /healthyThreshold must be between 2 and 10/);
-    test.throws(() => toThrow(max + 1), /healthyThreshold must be between 2 and 10/);
+    expect(() => toThrow(min)).not.toThrow();
+    expect(() => toThrow(max)).not.toThrow();
+    expect(() => toThrow(min - 1)).toThrow(/healthyThreshold must be between 2 and 10/);
+    expect(() => toThrow(max + 1)).toThrow(/healthyThreshold must be between 2 and 10/);
 
-    test.done();
-  },
-  'unhealthyThreshold'(test: Test) {
+
+  });
+  test('unhealthyThreshold', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -83,11 +82,11 @@ export = {
     }));
 
     // THEN
-    test.doesNotThrow(() => toThrow(min));
-    test.doesNotThrow(() => toThrow(max));
-    test.throws(() => toThrow(min - 1), /unhealthyThreshold must be between 2 and 10/);
-    test.throws(() => toThrow(max + 1), /unhealthyThreshold must be between 2 and 10/);
+    expect(() => toThrow(min)).not.toThrow();
+    expect(() => toThrow(max)).not.toThrow();
+    expect(() => toThrow(min - 1)).toThrow(/unhealthyThreshold must be between 2 and 10/);
+    expect(() => toThrow(max + 1)).toThrow(/unhealthyThreshold must be between 2 and 10/);
 
-    test.done();
-  },
-};
+
+  });
+});

@@ -1,13 +1,13 @@
-import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
 
-export = {
-  'When creating a VirtualGateway': {
-    'should have expected defaults'(test: Test) {
+describe('virtual gateway', () => {
+  describe('When creating a VirtualGateway', () => {
+    test('should have expected defaults', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -39,7 +39,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -51,9 +51,9 @@ export = {
           ],
         },
         VirtualGatewayName: 'testGateway',
-      }));
+      });
 
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -75,9 +75,9 @@ export = {
         },
         VirtualGatewayName: 'httpGateway',
         MeshOwner: ABSENT,
-      }));
+      });
 
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -98,11 +98,11 @@ export = {
           ],
         },
         VirtualGatewayName: 'http2Gateway',
-      }));
-      test.done();
-    },
+      });
 
-    'should have expected features'(test: Test) {
+    });
+
+    test('should have expected features', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -122,7 +122,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -149,11 +149,11 @@ export = {
           },
         },
         VirtualGatewayName: 'test-gateway',
-      }));
-      test.done();
-    },
+      });
 
-    'with an http listener with a TLS certificate from ACM'(test: Test) {
+    });
+
+    test('with an http listener with a TLS certificate from ACM', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -179,7 +179,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -196,12 +196,12 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with an grpc listener with a TLS certificate from file'(test: Test) {
+    });
+
+    test('with an grpc listener with a TLS certificate from file', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -223,7 +223,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -239,12 +239,12 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with an http2 listener with a TLS certificate from SDS'(test: Test) {
+    });
+
+    test('with an http2 listener with a TLS certificate from SDS', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -265,7 +265,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -280,13 +280,13 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with an grpc listener with a TLS validation from file': {
-      'the listener should include the TLS configuration'(test:Test) {
+    });
+
+    describe('with an grpc listener with a TLS validation from file', () => {
+      test('the listener should include the TLS configuration', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -310,7 +310,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
           Spec: {
             Listeners: [
               {
@@ -333,14 +333,14 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'with an http2 listener with a TLS validation from SDS': {
-      'the listener should include the TLS configuration'(test:Test) {
+      });
+    });
+
+    describe('with an http2 listener with a TLS validation from SDS', () => {
+      test('the listener should include the TLS configuration', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -365,7 +365,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
           Spec: {
             Listeners: [
               {
@@ -387,13 +387,13 @@ export = {
               },
             ],
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
 
-    'with an grpc listener with the TLS mode permissive'(test: Test) {
+      });
+    });
+
+    test('with an grpc listener with the TLS mode permissive', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -415,7 +415,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -431,13 +431,13 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with shared service mesh': {
-      'Mesh Owner is the AWS account ID of the account that shared the mesh with your account'(test:Test) {
+    });
+
+    describe('with shared service mesh', () => {
+      test('Mesh Owner is the AWS account ID of the account that shared the mesh with your account', () => {
         // GIVEN
         const app = new cdk.App();
         const meshEnv = { account: '1234567899', region: 'us-west-2' };
@@ -455,17 +455,17 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
           MeshOwner: meshEnv.account,
-        }));
+        });
 
-        test.done();
-      },
-    },
-  },
 
-  'When adding a gateway route to existing VirtualGateway ': {
-    'should create gateway route resource'(test: Test) {
+      });
+    });
+  });
+
+  describe('When adding a gateway route to existing VirtualGateway ', () => {
+    test('should create gateway route resource', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -491,7 +491,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'test-gateway-route',
         Spec: {
           HttpRoute: {
@@ -509,13 +509,13 @@ export = {
             },
           },
         },
-      }));
-      test.done();
-    },
-  },
+      });
 
-  'When adding gateway routes to a VirtualGateway with existing gateway routes': {
-    'should add gateway routes and not overwite'(test: Test) {
+    });
+  });
+
+  describe('When adding gateway routes to a VirtualGateway with existing gateway routes', () => {
+    test('should add gateway routes and not overwite', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -542,18 +542,18 @@ export = {
         }),
       });
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'test-gateway-route',
-      }));
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+      });
+      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'test-gateway-route-2',
-      }));
-      test.done();
-    },
-  },
+      });
 
-  'When creating a VirtualGateway with backend defaults': {
-    'should add backend defaults to the VirtualGateway'(test: Test) {
+    });
+  });
+
+  describe('When creating a VirtualGateway with backend defaults', () => {
+    test('should add backend defaults to the VirtualGateway', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -575,7 +575,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
         VirtualGatewayName: 'virtual-gateway',
         Spec: {
           BackendDefaults: {
@@ -592,13 +592,13 @@ export = {
             },
           },
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    "with client's TLS certificate from SDS": {
-      'should add a backend default to the resource with TLS certificate'(test: Test) {
+    });
+
+    describe("with client's TLS certificate from SDS", () => {
+      test('should add a backend default to the resource with TLS certificate', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -621,7 +621,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
           VirtualGatewayName: 'virtual-gateway',
           Spec: {
             BackendDefaults: {
@@ -648,14 +648,14 @@ export = {
               },
             },
           },
-        }));
+        });
 
-        test.done();
-      },
-    },
-  },
 
-  'Can add an http connection pool to listener'(test: Test) {
+      });
+    });
+  });
+
+  test('Can add an http connection pool to listener', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -679,7 +679,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+    expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
       VirtualGatewayName: 'virtual-gateway',
       Spec: {
         Listeners: [
@@ -693,12 +693,12 @@ export = {
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'Can add an grpc connection pool to listener'(test: Test) {
+  });
+
+  test('Can add an grpc connection pool to listener', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -721,7 +721,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+    expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
       VirtualGatewayName: 'virtual-gateway',
       Spec: {
         Listeners: [
@@ -734,12 +734,12 @@ export = {
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'Can add an http2 connection pool to listener'(test: Test) {
+  });
+
+  test('Can add an http2 connection pool to listener', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -762,7 +762,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+    expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
       VirtualGatewayName: 'virtual-gateway',
       Spec: {
         Listeners: [
@@ -775,12 +775,12 @@ export = {
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'Can import VirtualGateways using an ARN'(test: Test) {
+  });
+
+  test('Can import VirtualGateways using an ARN', () => {
     const app = new cdk.App();
     // GIVEN
     const stack = new cdk.Stack(app, 'Imports', {
@@ -794,12 +794,12 @@ export = {
     const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayArn(
       stack, 'importedGateway', arn);
     // THEN
-    test.equal(virtualGateway.mesh.meshName, meshName);
-    test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
-    test.done();
-  },
+    expect(virtualGateway.mesh.meshName).toEqual(meshName);
+    expect(virtualGateway.virtualGatewayName).toEqual(virtualGatewayName);
 
-  'Can import VirtualGateways using attributes'(test: Test) {
+  });
+
+  test('Can import VirtualGateways using attributes', () => {
     const app = new cdk.App();
     // GIVEN
     const stack = new cdk.Stack(app, 'Imports', {
@@ -814,13 +814,13 @@ export = {
       virtualGatewayName: virtualGatewayName,
     });
     // THEN
-    test.equal(virtualGateway.mesh.meshName, meshName);
-    test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
+    expect(virtualGateway.mesh.meshName).toEqual(meshName);
+    expect(virtualGateway.virtualGatewayName).toEqual(virtualGatewayName);
 
-    test.done();
-  },
 
-  'Can grant an identity StreamAggregatedResources for a given VirtualGateway'(test: Test) {
+  });
+
+  test('Can grant an identity StreamAggregatedResources for a given VirtualGateway', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -835,7 +835,7 @@ export = {
     gateway.grantStreamAggregatedResources(user);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -847,8 +847,8 @@ export = {
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});

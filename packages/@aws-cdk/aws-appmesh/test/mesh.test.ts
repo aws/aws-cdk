@@ -1,15 +1,14 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 
 import * as appmesh from '../lib';
 
-export = {
-  'When creating a Mesh': {
-    'with no spec applied': {
-      'should defaults to DROP_ALL egress filter'(test: Test) {
+describe('mesh', () => {
+  describe('When creating a Mesh', () => {
+    describe('with no spec applied', () => {
+      test('should defaults to DROP_ALL egress filter', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -17,19 +16,18 @@ export = {
         new appmesh.Mesh(stack, 'mesh', { meshName: 'test-mesh' });
 
         // THEN
-        expect(stack).to(
-          haveResource('AWS::AppMesh::Mesh', {
+        expect(stack).
+          toHaveResource('AWS::AppMesh::Mesh', {
             Spec: {
             },
-          }),
-        );
+          });
 
-        test.done();
-      },
-    },
 
-    'with spec applied': {
-      'should take egress filter from props'(test: Test) {
+      });
+    });
+
+    describe('with spec applied', () => {
+      test('should take egress filter from props', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -40,24 +38,23 @@ export = {
         });
 
         // THEN
-        expect(stack).to(
-          haveResource('AWS::AppMesh::Mesh', {
+        expect(stack).
+          toHaveResource('AWS::AppMesh::Mesh', {
             Spec: {
               EgressFilter: {
                 Type: 'ALLOW_ALL',
               },
             },
-          }),
-        );
+          });
 
-        test.done();
-      },
-    },
-  },
 
-  'When adding a Virtual Router to existing mesh': {
-    'with at least one complete port mappings': {
-      'should create proper router'(test: Test) {
+      });
+    });
+  });
+
+  describe('When adding a Virtual Router to existing mesh', () => {
+    describe('with at least one complete port mappings', () => {
+      test('should create proper router', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -69,8 +66,8 @@ export = {
         mesh.addVirtualRouter('router');
 
         // THEN
-        expect(stack).to(
-          haveResource('AWS::AppMesh::VirtualRouter', {
+        expect(stack).
+          toHaveResource('AWS::AppMesh::VirtualRouter', {
             Spec: {
               Listeners: [
                 {
@@ -81,15 +78,14 @@ export = {
                 },
               ],
             },
-          }),
-        );
+          });
 
-        test.done();
-      },
-    },
-  },
 
-  'VirtualService can use CloudMap service'(test: Test) {
+      });
+    });
+  });
+
+  test('VirtualService can use CloudMap service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -109,7 +105,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+    expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
       Spec: {
         ServiceDiscovery: {
           AWSCloudMap: {
@@ -118,12 +114,12 @@ export = {
           },
         },
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'VirtualService can use CloudMap service with instanceAttributes'(test: Test) {
+  });
+
+  test('VirtualService can use CloudMap service with instanceAttributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -146,7 +142,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+    expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
       Spec: {
         ServiceDiscovery: {
           AWSCloudMap: {
@@ -161,14 +157,14 @@ export = {
           },
         },
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'When adding a VirtualNode to a mesh': {
-    'with empty default listeners and backends': {
-      'should create default resource'(test: Test) {
+  });
+
+  describe('When adding a VirtualNode to a mesh', () => {
+    describe('with empty default listeners and backends', () => {
+      test('should create default resource', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -182,8 +178,8 @@ export = {
         });
 
         // THEN
-        expect(stack).to(
-          haveResource('AWS::AppMesh::VirtualNode', {
+        expect(stack).
+          toHaveResource('AWS::AppMesh::VirtualNode', {
             MeshName: {
               'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
@@ -195,14 +191,13 @@ export = {
                 },
               },
             },
-          }),
-        );
+          });
 
-        test.done();
-      },
-    },
-    'with added listeners': {
-      'should create listener resource'(test: Test) {
+
+      });
+    });
+    describe('with added listeners', () => {
+      test('should create listener resource', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -219,8 +214,8 @@ export = {
         });
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).
+          toHaveResourceLike('AWS::AppMesh::VirtualNode', {
             MeshName: {
               'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
@@ -234,14 +229,13 @@ export = {
                 },
               ],
             },
-          }),
-        );
+          });
 
-        test.done();
-      },
-    },
-    'with added listeners with healthchecks': {
-      'should create healthcheck resource'(test: Test) {
+
+      });
+    });
+    describe('with added listeners with healthchecks', () => {
+      test('should create healthcheck resource', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -265,8 +259,8 @@ export = {
         });
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).
+          toHaveResourceLike('AWS::AppMesh::VirtualNode', {
             MeshName: {
               'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
@@ -285,14 +279,13 @@ export = {
                 },
               ],
             },
-          }),
-        );
+          });
 
-        test.done();
-      },
-    },
-    'with backends': {
-      'should create resource with service backends'(test: Test) {
+
+      });
+    });
+    describe('with backends', () => {
+      test('should create resource with service backends', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -315,8 +308,8 @@ export = {
         });
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).
+          toHaveResourceLike('AWS::AppMesh::VirtualNode', {
             Spec: {
               Backends: [
                 {
@@ -328,14 +321,13 @@ export = {
                 },
               ],
             },
-          }),
-        );
+          });
 
-        test.done();
-      },
-    },
-  },
-  'Can construct a mesh from a name'(test: Test) {
+
+      });
+    });
+  });
+  test('Can construct a mesh from a name', () => {
     // WHEN
     const stack2 = new cdk.Stack();
     const mesh2 = appmesh.Mesh.fromMeshName(stack2, 'imported-mesh', 'abc');
@@ -346,14 +338,13 @@ export = {
     });
 
     // THEN
-    expect(stack2).to(
-      haveResourceLike('AWS::AppMesh::VirtualService', {
+    expect(stack2).
+      toHaveResourceLike('AWS::AppMesh::VirtualService', {
         MeshName: 'abc',
         Spec: {},
         VirtualServiceName: 'test.domain.local',
-      }),
-    );
+      });
 
-    test.done();
-  },
-};
+
+  });
+});

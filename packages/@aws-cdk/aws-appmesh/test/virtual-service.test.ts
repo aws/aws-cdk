@@ -1,11 +1,11 @@
-import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 
 import * as appmesh from '../lib';
 
-export = {
-  'Can import Virtual Services using an ARN'(test: Test) {
+describe('virtual service', () => {
+  test('Can import Virtual Services using an ARN', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -15,13 +15,13 @@ export = {
     // WHEN
     const virtualRouter = appmesh.VirtualRouter.fromVirtualRouterArn(stack, 'importedVirtualRouter', arn);
     // THEN
-    test.equal(virtualRouter.mesh.meshName, meshName);
-    test.equal(virtualRouter.virtualRouterName, virtualServiceName);
+    expect(virtualRouter.mesh.meshName).toEqual(meshName);
+    expect(virtualRouter.virtualRouterName).toEqual(virtualServiceName);
 
-    test.done();
-  },
 
-  'Can import Virtual Services using attributes'(test: Test) {
+  });
+
+  test('Can import Virtual Services using attributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -34,15 +34,15 @@ export = {
       virtualServiceName: virtualServiceName,
     });
     // THEN
-    test.equal(virtualService.mesh.meshName, meshName);
-    test.equal(virtualService.virtualServiceName, virtualServiceName);
+    expect(virtualService.mesh.meshName).toEqual(meshName);
+    expect(virtualService.virtualServiceName).toEqual(virtualServiceName);
 
-    test.done();
-  },
 
-  'When adding a VirtualService to a mesh': {
-    'with single virtual router provider resource': {
-      'should create service'(test: Test) {
+  });
+
+  describe('When adding a VirtualService to a mesh', () => {
+    describe('with single virtual router provider resource', () => {
+      test('should create service', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -63,8 +63,8 @@ export = {
         });
 
         // THEN
-        expect(stack).to(
-          haveResource('AWS::AppMesh::VirtualService', {
+        expect(stack).
+          toHaveResource('AWS::AppMesh::VirtualService', {
             Spec: {
               Provider: {
                 VirtualRouter: {
@@ -75,15 +75,14 @@ export = {
               },
             },
             MeshOwner: ABSENT,
-          }),
-        );
+          });
 
-        test.done();
-      },
-    },
 
-    'with single virtual node provider resource': {
-      'should create service'(test: Test) {
+      });
+    });
+
+    describe('with single virtual node provider resource', () => {
+      test('should create service', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -105,8 +104,8 @@ export = {
         });
 
         // THEN
-        expect(stack).to(
-          haveResource('AWS::AppMesh::VirtualService', {
+        expect(stack).
+          toHaveResource('AWS::AppMesh::VirtualService', {
             Spec: {
               Provider: {
                 VirtualNode: {
@@ -116,17 +115,16 @@ export = {
                 },
               },
             },
-          }),
-        );
+          });
 
-        test.done();
-      },
-    },
-  },
 
-  'When creating a VirtualService': {
-    'with shared service mesh': {
-      'Mesh Owner is the AWS account ID of the account that shared the mesh with your account'(test:Test) {
+      });
+    });
+  });
+
+  describe('When creating a VirtualService', () => {
+    describe('with shared service mesh', () => {
+      test('Mesh Owner is the AWS account ID of the account that shared the mesh with your account', () => {
         // GIVEN
         const app = new cdk.App();
         const meshEnv = { account: '1234567899', region: 'us-west-2' };
@@ -151,12 +149,12 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualService', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualService', {
           MeshOwner: meshEnv.account,
-        }));
+        });
 
-        test.done();
-      },
-    },
-  },
-};
+
+      });
+    });
+  });
+});

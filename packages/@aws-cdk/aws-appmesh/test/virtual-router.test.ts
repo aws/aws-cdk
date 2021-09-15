@@ -1,11 +1,11 @@
-import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
 
-export = {
-  'When creating a VirtualRouter': {
-    'should have appropriate defaults'(test: Test) {
+describe('virtual router', () => {
+  describe('When creating a VirtualRouter', () => {
+    test('should have appropriate defaults', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -14,7 +14,7 @@ export = {
       // WHEN
       mesh.addVirtualRouter('http-router-listener');
 
-      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualRouter', {
+      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualRouter', {
         VirtualRouterName: 'meshhttprouterlistenerF57BCB2F',
         Spec: {
           Listeners: [
@@ -26,10 +26,10 @@ export = {
             },
           ],
         },
-      }));
-      test.done();
-    },
-    'should have protocol variant listeners'(test: Test) {
+      });
+
+    });
+    test('should have protocol variant listeners', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -67,7 +67,7 @@ export = {
       // THEN
       const expectedPorts = [appmesh.Protocol.HTTP, appmesh.Protocol.HTTP2, appmesh.Protocol.GRPC, appmesh.Protocol.TCP];
       expectedPorts.forEach(protocol => {
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualRouter', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualRouter', {
           VirtualRouterName: `${protocol}-router-listener`,
           Spec: {
             Listeners: [
@@ -80,14 +80,14 @@ export = {
             ],
           },
           MeshOwner: ABSENT,
-        }));
+        });
       });
 
-      test.done();
-    },
 
-    'with shared service mesh': {
-      'Mesh Owner is the AWS account ID of the account that shared the mesh with your account'(test:Test) {
+    });
+
+    describe('with shared service mesh', () => {
+      test('Mesh Owner is the AWS account ID of the account that shared the mesh with your account', () => {
         // GIVEN
         const app = new cdk.App();
         const meshEnv = { account: '1234567899', region: 'us-west-2' };
@@ -105,17 +105,17 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualRouter', {
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualRouter', {
           MeshOwner: meshEnv.account,
-        }));
+        });
 
-        test.done();
-      },
-    },
-  },
 
-  'When adding route to existing VirtualRouter': {
-    'should create route resource'(test: Test) {
+      });
+    });
+  });
+
+  describe('When adding route to existing VirtualRouter', () => {
+    test('should create route resource', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -154,8 +154,8 @@ export = {
       });
 
       // THEN
-      expect(stack).to(
-        haveResourceLike('AWS::AppMesh::Route', {
+      expect(stack).
+        toHaveResourceLike('AWS::AppMesh::Route', {
           RouteName: 'route-1',
           Spec: {
             HttpRoute: {
@@ -177,14 +177,13 @@ export = {
           VirtualRouterName: {
             'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
           },
-        }),
-      );
+        });
 
-      test.done();
-    },
-  },
-  'When adding routes to a VirtualRouter with existing routes': {
-    'should add routes and not overwrite'(test: Test) {
+
+    });
+  });
+  describe('When adding routes to a VirtualRouter with existing routes', () => {
+    test('should add routes and not overwrite', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -269,8 +268,8 @@ export = {
       });
 
       // THEN
-      expect(stack).to(
-        haveResourceLike('AWS::AppMesh::Route', {
+      expect(stack).
+        toHaveResourceLike('AWS::AppMesh::Route', {
           RouteName: 'route-1',
           Spec: {
             HttpRoute: {
@@ -289,10 +288,10 @@ export = {
               },
             },
           },
-        }),
-      );
-      expect(stack).to(
-        haveResourceLike('AWS::AppMesh::Route', {
+        });
+
+      expect(stack).
+        toHaveResourceLike('AWS::AppMesh::Route', {
           RouteName: 'route-2',
           Spec: {
             HttpRoute: {
@@ -311,10 +310,10 @@ export = {
               },
             },
           },
-        }),
-      );
-      expect(stack).to(
-        haveResourceLike('AWS::AppMesh::Route', {
+        });
+
+      expect(stack).
+        toHaveResourceLike('AWS::AppMesh::Route', {
           RouteName: 'route-3',
           Spec: {
             HttpRoute: {
@@ -333,14 +332,13 @@ export = {
               },
             },
           },
-        }),
-      );
+        });
 
-      test.done();
-    },
-  },
-  'When adding a TCP route to existing VirtualRouter': {
-    'should create route resource'(test: Test) {
+
+    });
+  });
+  describe('When adding a TCP route to existing VirtualRouter', () => {
+    test('should create route resource', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -376,8 +374,8 @@ export = {
       });
 
       // THEN
-      expect(stack).to(
-        haveResourceLike('AWS::AppMesh::Route', {
+      expect(stack).
+        toHaveResourceLike('AWS::AppMesh::Route', {
           RouteName: 'route-tcp-1',
           Spec: {
             TcpRoute: {
@@ -396,14 +394,13 @@ export = {
           VirtualRouterName: {
             'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
           },
-        }),
-      );
+        });
 
-      test.done();
-    },
-  },
 
-  'Can import Virtual Routers using an ARN'(test: Test) {
+    });
+  });
+
+  test('Can import Virtual Routers using an ARN', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -415,12 +412,12 @@ export = {
     const virtualRouter = appmesh.VirtualRouter.fromVirtualRouterArn(
       stack, 'importedVirtualRouter', arn);
     // THEN
-    test.equal(virtualRouter.mesh.meshName, meshName);
-    test.equal(virtualRouter.virtualRouterName, virtualRouterName);
+    expect(virtualRouter.mesh.meshName).toEqual(meshName);
+    expect(virtualRouter.virtualRouterName).toEqual(virtualRouterName);
 
-    test.done();
-  },
-  'Can import Virtual Routers using attributes'(test: Test) {
+
+  });
+  test('Can import Virtual Routers using attributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -434,9 +431,9 @@ export = {
     });
 
     // THEN
-    test.equal(virtualRouter1.mesh.meshName, meshName);
-    test.equal(virtualRouter1.virtualRouterName, virtualRouterName);
+    expect(virtualRouter1.mesh.meshName).toEqual(meshName);
+    expect(virtualRouter1.virtualRouterName).toEqual(virtualRouterName);
 
-    test.done();
-  },
-};
+
+  });
+});
