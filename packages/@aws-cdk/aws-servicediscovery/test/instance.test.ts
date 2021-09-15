@@ -1,12 +1,11 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as servicediscovery from '../lib';
 
-export = {
-  'IpInstance for service in HTTP namespace'(test: Test) {
+describe('instance', () => {
+  test('IpInstance for service in HTTP namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -25,7 +24,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_INSTANCE_IPV4: '10.0.0.0',
         AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
@@ -38,12 +37,12 @@ export = {
         ],
       },
       InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
-    }));
+    });
 
-    test.done();
-  },
 
-  'IpInstance for service in PublicDnsNamespace'(test: Test) {
+  });
+
+  test('IpInstance for service in PublicDnsNamespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -63,7 +62,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_INSTANCE_IPV4: '54.239.25.192',
         AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
@@ -76,12 +75,12 @@ export = {
         ],
       },
       InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
-    }));
+    });
 
-    test.done();
-  },
 
-  'IpInstance for service in PrivateDnsNamespace'(test: Test) {
+  });
+
+  test('IpInstance for service in PrivateDnsNamespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc');
@@ -103,7 +102,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_INSTANCE_IPV4: '10.0.0.0',
         AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
@@ -116,12 +115,12 @@ export = {
         ],
       },
       InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
-    }));
+    });
 
-    test.done();
-  },
 
-  'Registering IpInstance throws when omitting port for a service using SRV'(test: Test) {
+  });
+
+  test('Registering IpInstance throws when omitting port for a service using SRV', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -135,16 +134,16 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerIpInstance('IpInstance', {
         instanceId: 'id',
       });
-    }, /A `port` must be specified for a service using a `SRV` record./);
+    }).toThrow(/A `port` must be specified for a service using a `SRV` record./);
 
-    test.done();
-  },
 
-  'Registering IpInstance throws when omitting ipv4 and ipv6 for a service using SRV'(test: Test) {
+  });
+
+  test('Registering IpInstance throws when omitting ipv4 and ipv6 for a service using SRV', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -158,16 +157,16 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerIpInstance('IpInstance', {
         port: 3306,
       });
-    }, /At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record./);
+    }).toThrow(/At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record./);
 
-    test.done();
-  },
 
-  'Registering IpInstance throws when omitting ipv4 for a service using A records'(test: Test) {
+  });
+
+  test('Registering IpInstance throws when omitting ipv4 for a service using A records', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -181,16 +180,16 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerIpInstance('IpInstance', {
         port: 3306,
       });
-    }, /An `ipv4` must be specified for a service using a `A` record./);
+    }).toThrow(/An `ipv4` must be specified for a service using a `A` record./);
 
-    test.done();
-  },
 
-  'Registering IpInstance throws when omitting ipv6 for a service using AAAA records'(test: Test) {
+  });
+
+  test('Registering IpInstance throws when omitting ipv6 for a service using AAAA records', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -204,16 +203,16 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerIpInstance('IpInstance', {
         port: 3306,
       });
-    }, /An `ipv6` must be specified for a service using a `AAAA` record./);
+    }).toThrow(/An `ipv6` must be specified for a service using a `AAAA` record./);
 
-    test.done();
-  },
 
-  'Registering IpInstance throws with wrong DNS record type'(test: Test) {
+  });
+
+  test('Registering IpInstance throws with wrong DNS record type', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -227,16 +226,16 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerIpInstance('IpInstance', {
         port: 3306,
       });
-    }, /Service must support `A`, `AAAA` or `SRV` records to register this instance type./);
+    }).toThrow(/Service must support `A`, `AAAA` or `SRV` records to register this instance type./);
 
-    test.done();
-  },
 
-  'Registering AliasTargetInstance'(test: Test) {
+  });
+
+  test('Registering AliasTargetInstance', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -257,7 +256,7 @@ export = {
     service.registerLoadBalancer('Loadbalancer', alb, customAttributes);
 
     // THEN
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_ALIAS_DNS_NAME: {
           'Fn::GetAtt': [
@@ -274,12 +273,12 @@ export = {
         ],
       },
       InstanceId: 'MyNamespaceMyServiceLoadbalancerD1112A76',
-    }));
+    });
 
-    test.done();
-  },
 
-  'Throws when registering AliasTargetInstance with Http Namespace'(test: Test) {
+  });
+
+  test('Throws when registering AliasTargetInstance with Http Namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -295,15 +294,15 @@ export = {
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerLoadBalancer('Loadbalancer', alb);
-    }, /Namespace associated with Service must be a DNS Namespace./);
+    }).toThrow(/Namespace associated with Service must be a DNS Namespace./);
 
-    test.done();
-  },
+
+  });
 
   // TODO shouldn't be allowed to do this if loadbalancer on ServiceProps is not set to true.
-  'Throws when registering AliasTargetInstance with wrong Routing Policy'(test: Test) {
+  test('Throws when registering AliasTargetInstance with wrong Routing Policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -319,14 +318,14 @@ export = {
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerLoadBalancer('Loadbalancer', alb);
-    }, /Service must use `WEIGHTED` routing policy./);
+    }).toThrow(/Service must use `WEIGHTED` routing policy./);
 
-    test.done();
-  },
 
-  'Register CnameInstance'(test: Test) {
+  });
+
+  test('Register CnameInstance', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -344,7 +343,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_INSTANCE_CNAME: 'foo.com',
         dogs: 'good',
@@ -356,12 +355,12 @@ export = {
         ],
       },
       InstanceId: 'MyNamespaceMyServiceCnameInstance0EB1C98D',
-    }));
+    });
 
-    test.done();
-  },
 
-  'Throws when registering CnameInstance for an HTTP namespace'(test: Test) {
+  });
+
+  test('Throws when registering CnameInstance for an HTTP namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -374,16 +373,16 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerCnameInstance('CnameInstance', {
         instanceCname: 'foo.com',
       });
-    }, /Namespace associated with Service must be a DNS Namespace/);
+    }).toThrow(/Namespace associated with Service must be a DNS Namespace/);
 
-    test.done();
-  },
 
-  'Register NonIpInstance'(test: Test) {
+  });
+
+  test('Register NonIpInstance', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -398,7 +397,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         dogs: 'good',
       },
@@ -409,12 +408,12 @@ export = {
         ],
       },
       InstanceId: 'MyNamespaceMyServiceNonIpInstance7EFD703A',
-    }));
+    });
 
-    test.done();
-  },
 
-  'Throws when registering NonIpInstance for an Public namespace'(test: Test) {
+  });
+
+  test('Throws when registering NonIpInstance for an Public namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -425,16 +424,16 @@ export = {
     const service = namespace.createService('MyService');
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerNonIpInstance('NonIpInstance', {
         instanceId: 'nonIp',
       });
-    }, /This type of instance can only be registered for HTTP namespaces./);
+    }).toThrow(/This type of instance can only be registered for HTTP namespaces./);
 
-    test.done();
-  },
 
-  'Throws when no custom attribues specified for NonIpInstance'(test: Test) {
+  });
+
+  test('Throws when no custom attribues specified for NonIpInstance', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -445,16 +444,16 @@ export = {
     const service = namespace.createService('MyService');
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerNonIpInstance('NonIpInstance', {
         instanceId: 'nonIp',
       });
-    }, /You must specify at least one custom attribute for this instance type./);
+    }).toThrow(/You must specify at least one custom attribute for this instance type./);
 
-    test.done();
-  },
 
-  'Throws when custom attribues are emptyfor NonIpInstance'(test: Test) {
+  });
+
+  test('Throws when custom attribues are emptyfor NonIpInstance', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -465,17 +464,17 @@ export = {
     const service = namespace.createService('MyService');
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       service.registerNonIpInstance('NonIpInstance', {
         instanceId: 'nonIp',
         customAttributes: {},
       });
-    }, /You must specify at least one custom attribute for this instance type./);
+    }).toThrow(/You must specify at least one custom attribute for this instance type./);
 
-    test.done();
-  },
 
-  'Register multiple instances on the same service'(test: Test) {
+  });
+
+  test('Register multiple instances on the same service', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -495,8 +494,8 @@ export = {
     });
 
     // THEN
-    expect(stack).to(countResources('AWS::ServiceDiscovery::Instance', 2));
+    expect(stack).toCountResources('AWS::ServiceDiscovery::Instance', 2);
 
-    test.done();
-  },
-};
+
+  });
+});

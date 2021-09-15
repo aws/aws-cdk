@@ -1,18 +1,17 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as servicediscovery from '../lib';
 
-export = {
-  'HTTP namespace'(test: Test) {
+describe('namespace', () => {
+  test('HTTP namespace', () => {
     const stack = new cdk.Stack();
 
     new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'foobar.com',
     });
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::HttpNamespace',
@@ -23,17 +22,17 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'Public DNS namespace'(test: Test) {
+  });
+
+  test('Public DNS namespace', () => {
     const stack = new cdk.Stack();
 
     new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'foobar.com',
     });
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
@@ -44,10 +43,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'Private DNS namespace'(test: Test) {
+  });
+
+  test('Private DNS namespace', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc');
 
@@ -56,13 +55,13 @@ export = {
       vpc,
     });
 
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
       Name: 'foobar.com',
       Vpc: {
         Ref: 'MyVpcF9F0CA6F',
       },
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});

@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as servicediscovery from '../lib';
 
-export = {
-  'Service for HTTP namespace with custom health check'(test: Test) {
+describe('service', () => {
+  test('Service for HTTP namespace with custom health check', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -22,7 +21,7 @@ export = {
     });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::HttpNamespace',
@@ -49,10 +48,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'Service for HTTP namespace with health check'(test: Test) {
+  });
+
+  test('Service for HTTP namespace with health check', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -70,7 +69,7 @@ export = {
     });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::HttpNamespace',
@@ -99,10 +98,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'Service for Public DNS namespace'(test: Test) {
+  });
+
+  test('Service for Public DNS namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -119,7 +118,7 @@ export = {
     });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
@@ -161,10 +160,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'Service for Public DNS namespace with A and AAAA records'(test: Test) {
+  });
+
+  test('Service for Public DNS namespace with A and AAAA records', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -177,7 +176,7 @@ export = {
     });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
@@ -218,10 +217,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'Defaults to WEIGHTED routing policy for CNAME'(test: Test) {
+  });
+
+  test('Defaults to WEIGHTED routing policy for CNAME', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -234,7 +233,7 @@ export = {
     });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
@@ -271,10 +270,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'Throws when specifying both healthCheckConfig and healthCheckCustomConfig on PublicDnsNamespace'(test: Test) {
+  });
+
+  test('Throws when specifying both healthCheckConfig and healthCheckCustomConfig on PublicDnsNamespace', () => {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
@@ -282,7 +281,7 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       namespace.createService('MyService', {
         name: 'service',
         healthCheck: {
@@ -292,12 +291,12 @@ export = {
           failureThreshold: 1,
         },
       });
-    }, /`healthCheckConfig`.+`healthCheckCustomConfig`/);
+    }).toThrow(/`healthCheckConfig`.+`healthCheckCustomConfig`/);
 
-    test.done();
-  },
 
-  'Throws when specifying healthCheckConfig on PrivateDnsNamespace'(test: Test) {
+  });
+
+  test('Throws when specifying healthCheckConfig on PrivateDnsNamespace', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc');
 
@@ -307,7 +306,7 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       namespace.createService('MyService', {
         name: 'service',
         healthCheck: {
@@ -317,12 +316,12 @@ export = {
           failureThreshold: 1,
         },
       });
-    }, /`healthCheckConfig`.+`healthCheckCustomConfig`/);
+    }).toThrow(/`healthCheckConfig`.+`healthCheckCustomConfig`/);
 
-    test.done();
-  },
 
-  'Throws when using CNAME and Multivalue routing policy'(test: Test) {
+  });
+
+  test('Throws when using CNAME and Multivalue routing policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -331,18 +330,18 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       namespace.createService('MyService', {
         name: 'service',
         dnsRecordType: servicediscovery.DnsRecordType.CNAME,
         routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE,
       });
-    }, /Cannot use `CNAME` record when routing policy is `Multivalue`./);
+    }).toThrow(/Cannot use `CNAME` record when routing policy is `Multivalue`./);
 
-    test.done();
-  },
 
-  'Throws when specifying resourcePath with TCP'(test: Test) {
+  });
+
+  test('Throws when specifying resourcePath with TCP', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -351,7 +350,7 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       namespace.createService('MyService', {
         name: 'service',
         healthCheck: {
@@ -359,12 +358,12 @@ export = {
           resourcePath: '/check',
         },
       });
-    }, /`resourcePath`.+`TCP`/);
+    }).toThrow(/`resourcePath`.+`TCP`/);
 
-    test.done();
-  },
 
-  'Throws when specifying loadbalancer with wrong DnsRecordType'(test: Test) {
+  });
+
+  test('Throws when specifying loadbalancer with wrong DnsRecordType', () => {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
@@ -372,18 +371,18 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       namespace.createService('MyService', {
         name: 'service',
         dnsRecordType: servicediscovery.DnsRecordType.CNAME,
         loadBalancer: true,
       });
-    }, /Must support `A` or `AAAA` records to register loadbalancers/);
+    }).toThrow(/Must support `A` or `AAAA` records to register loadbalancers/);
 
-    test.done();
-  },
 
-  'Throws when specifying loadbalancer with Multivalue routing Policy'(test: Test) {
+  });
+
+  test('Throws when specifying loadbalancer with Multivalue routing Policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -392,17 +391,17 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       namespace.createService('MyService', {
         loadBalancer: true,
         routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE,
       });
-    }, /Cannot register loadbalancers when routing policy is `Multivalue`./);
+    }).toThrow(/Cannot register loadbalancers when routing policy is `Multivalue`./);
 
-    test.done();
-  },
 
-  'Service for Private DNS namespace'(test: Test) {
+  });
+
+  test('Service for Private DNS namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc');
@@ -418,11 +417,11 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
       Name: 'private',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
       Description: 'service description',
       DnsConfig: {
         DnsRecords: [
@@ -446,8 +445,8 @@ export = {
           'Id',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});
