@@ -925,7 +925,7 @@ identityPool.addUserPool(userpool, {
 }, true);
 ```
 
-#### Associating a Provider Directly
+#### Associating an External Provider Directly
 
 You can associate with one or more [external identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html) directly with an identity pool using  
 `supportedLoginProviders`:
