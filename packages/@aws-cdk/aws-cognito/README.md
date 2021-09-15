@@ -57,12 +57,12 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Authenticated and Unauthenticated Identities](#authenticated-and-unauthenticated-identities)
     - [Default Authenticated Role](#default-authenticated-role)
     - [Default Unauthenticated Role](#default-unauthenticated-role)
-  - [Authenticated Providers](#authenticated-providers)
+  - [Authentication Providers](#authentication-providers)
     - [Using User Pool](#associating-a-provider-through-a-user-pool)
-      - [Server Side Token Check](#server-side-token-check)
-    - [Directly](#associating-a-provider-directly)
-  - [OpenIdConnect and Saml](#openid-connect-and-saml)
-  - [Custom Providers](#custom-providers)
+    - [Server Side Token Check](#server-side-token-check)
+    - [Associating a Provider Directly](#associating-a-provider-directly)
+    - [OpenIdConnect and Saml](#openid-connect-and-saml)
+    - [Custom Providers](#custom-providers)
   - [Role Mapping](#role-mapping)
   - [Authentication Flow](#authentication-flow)
   - [Cognito Sync](#cognito-sync)
@@ -807,12 +807,12 @@ The default authenticated role that will be attached to the identity pool allows
 credentials created by the identity pool.
 
 The role allows the following permissions by default on all resources:
-- cognito-identity:*
-- cognito-sync:*
-- sts:assumeRole
-- sts:AssumeRoleWithWebIdentity
-- sts:TagSession
-- mobileanalytics:PutEvents
+- `cognito-identity:*`
+- `cognito-sync:*`
+- `sts:assumeRole`
+- `sts:AssumeRoleWithWebIdentity`
+- `sts:TagSession`
+- `mobileanalytics:PutEvents`
 
 If all you want to do is add permissions or narrow the resources for this role, then instead of overriding the default  
 role you can use the `authenticationActions` and `authenticationResources` fields:
@@ -826,10 +826,10 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 
 #### Default Unauthenticated Role
 The default unauthenticated role explicitly denies the following actions for all resources:
-- cognito-identity:*
-- sts:assumeRole
-- sts:AssumeRoleWithWebIdentity
-- sts:TagSession
+- `cognito-identity:*`
+- `sts:assumeRole`
+- `sts:AssumeRoleWithWebIdentity`
+- `sts:TagSession`
 
 ### Authentication Providers
 
@@ -947,7 +947,7 @@ If you want to associate more than one provider of the same type with the identi
 Pools, OpenIdConnect, or Saml. You can't attach more than one provider per external service directly to the identity  
 pool.
 
-### OpenId Connect and Saml
+#### OpenId Connect and Saml
 
 [OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/open-id.html) is an open standard for  
 authentication that is supported by a number of login providers. Amazon Cognito supports linking of identities with  
@@ -971,7 +971,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 });
 ```
 
-### Custom Providers
+#### Custom Providers
 
 You can also customize your identity pool's behavior further using customized [developer authenticated identities](https://docs.aws.amazon.com/cognito/latest/developerguide/developer-authenticated-identities.html).  
 With developer authenticated identities, you can register and authenticate users via your own existing authentication  
