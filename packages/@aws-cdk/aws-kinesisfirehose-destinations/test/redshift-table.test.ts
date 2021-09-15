@@ -890,4 +890,27 @@ describe('redshift destination', () => {
       })).toThrowError('Provided Redshift user must be located in the same Redshift cluster and database as the table');
     });
   });
+
+  test('allows connections from Firehose to cluster VPC', () => {
+    const destination = new dests.RedshiftTable(table);
+
+    new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [destination],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: 'tcp',
+      CidrIp: {
+        'Fn::FindInMap': Match.arrayWith([
+          {
+            Ref: 'AWS::Region',
+          },
+          'FirehoseCidrBlock',
+        ]),
+      },
+      FromPort: stack.resolve(cluster.clusterEndpoint.port),
+      ToPort: stack.resolve(cluster.clusterEndpoint.port),
+      GroupId: stack.resolve(cluster.connections.securityGroups[0].securityGroupId),
+    });
+  });
 });
