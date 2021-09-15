@@ -1,5 +1,5 @@
 import {
-  randomBytes
+  randomBytes,
 } from 'crypto';
 import {
   IOpenIdConnectProvider,
@@ -8,10 +8,10 @@ import {
   Role,
   Effect,
   PolicyStatement,
-  FederatedPrincipal
+  FederatedPrincipal,
 } from '@aws-cdk/aws-iam';
 import {
-  IFunction
+  IFunction,
 } from '@aws-cdk/aws-lambda';
 import {
   Resource,
@@ -19,23 +19,23 @@ import {
   Stack,
   ArnFormat,
   Lazy,
-  Names
+  Names,
 } from '@aws-cdk/core';
 import {
-  Construct
+  Construct,
 } from 'constructs';
 import {
   CfnIdentityPool,
-  CfnIdentityPoolRoleAttachment
+  CfnIdentityPoolRoleAttachment,
 } from './cognito.generated';
 import {
-  IUserPool
+  IUserPool,
 } from './user-pool';
 import {
   IUserPoolClient,
   UserPoolClient,
   UserPoolClientOptions,
-  UserPoolClientProps
+  UserPoolClientProps,
 } from './user-pool-client';
 
 /**
@@ -122,8 +122,8 @@ export interface IdentityPoolProps {
   readonly syncTrigger?: IFunction;
 
   /**
-   * Supported login providers for using directly in identity pool without using OpnIdConnect or a user pool.
-   * @default - No Supported Login Providers passed directly to Identity Pool
+   * Authentication providers for using in identity pool.
+   * @default - No Authentication Providers passed directly to Identity Pool
    */
   readonly authenticationProviders?: AuthenticationProviders
 }
@@ -252,7 +252,7 @@ export interface RoleMappingRule {
 }
 
 /**
- * Keys for SupportedLoginProvider - correspond to client id's of respective federation identity providers
+ * Keys for AuthenticationProvider - correspond to client id's of respective federation identity providers
  */
 export enum AuthenticationProviderType {
   /** Facebook Provider type */
@@ -296,7 +296,7 @@ export interface UserPoolAuthenticationProviderProps extends UserPoolClientProps
 }
 
 /**
- * Supported login providers for using directly in identity pool without using OpenIdConnect or a user pool. String values are id's associated with provider. Separate multiple fields with a semicolon
+ * Authentication providers for using in identity pool.
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
  */
 export interface AuthenticationProviders {
@@ -425,25 +425,25 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = [];
 
-  constructor(scope: Construct, private id: string, props:IdentityPoolProps) {
+  constructor(scope: Construct, private id: string, props:IdentityPoolProps = {}) {
     super(scope, id, {
       physicalName: props.identityPoolName || Lazy.string({ produce: () => this.generateUniqueId() }),
     });
     this.identityPoolName = this.physicalName;
     const authProviders: AuthenticationProviders = props.authenticationProviders || {};
-    const providers = this.configureUserPools(authProviders.userPools);
+    const providers = this.configureUserPools(authProviders.userPools as UserPoolAuthenticationProviderProps[]);
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
     this.cfnIdentityPool = new CfnIdentityPool(this, id, {
       allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
       allowClassicFlow: props.allowClassicFlow,
       identityPoolName: props.identityPoolName,
-      developerProviderName:  authProviders.customProvider,
+      developerProviderName: authProviders.customProvider,
       openIdConnectProviderArns: this.configureOpenIdConnectProviderArns(authProviders.openIdConnectProvider),
       samlProviderArns: this.configureSamlProviderArns(authProviders.samlProvider),
       cognitoEvents: this.configureCognitoEvents(props.syncTrigger),
       cognitoStreams: this.configureCognitoStreamOptions(props.streamOptions),
       pushSync: this.configurePushSyncConfig(props.pushSyncConfig),
-      authenticationProviders: this.configureAuthenticationProviders(props.authenticationProviders),
+      supportedLoginProviders: this.configureAuthenticationProviders(authProviders),
       cognitoIdentityProviders: providers,
     });
     this.identityPoolId = this.cfnIdentityPool.ref;
@@ -503,14 +503,14 @@ export class IdentityPool extends Resource implements IIdentityPool {
       assumedBy: this.configureFederatedPrincipal(true),
     });
     role.addToPolicy(new PolicyStatement({
-      effect: Effect.Allow,
+      effect: Effect.ALLOW,
       actions: [
-        "cognito-identity:*",
-        "cognito-sync:*",
-        "sts:assumeRole",
-        "sts:AssumeRoleWithWebIdentity",
-        "sts:TagSession",
-        "mobileanalytics:PutEvents",
+        'cognito-identity:*',
+        'cognito-sync:*',
+        'sts:assumeRole',
+        'sts:AssumeRoleWithWebIdentity',
+        'sts:TagSession',
+        'mobileanalytics:PutEvents',
       ],
       resources: ['*'],
     }));
@@ -528,20 +528,20 @@ export class IdentityPool extends Resource implements IIdentityPool {
       assumedBy: this.configureFederatedPrincipal(false),
     });
     role.addToPolicy(new PolicyStatement({
-      effect: Effect.Allow,
+      effect: Effect.ALLOW,
       actions: [
-        "cognito-sync:*",
-        "mobileanalytics:PutEvents",
+        'cognito-sync:*',
+        'mobileanalytics:PutEvents',
       ],
       resources: ['*'],
     }));
     role.addToPolicy(new PolicyStatement({
-      effect: Effect.Deny,
+      effect: Effect.DENY,
       actions: [
-        "sts:assumeRole",
-        "sts:AssumeRoleWithWebIdentity",
-        "sts:TagSession",
-        "cognito-identity:*",
+        'sts:assumeRole',
+        'sts:AssumeRoleWithWebIdentity',
+        'sts:TagSession',
+        'cognito-identity:*',
       ],
       resources: ['*'],
     }));
@@ -615,19 +615,17 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Converts OpenIdConnectProvider constructs to an array of Arns
    */
-  private configureOpenIdConnectProviderArns(arns: IOpenIdConnectProvider[] = []): string[] | undefined {
-    let arnList = arns.map(openId => openId.openIdConnectProviderArn);
-    if (!arnList.length) return undefined;
-    return arnList;
+  private configureOpenIdConnectProviderArns(provider?: IOpenIdConnectProvider): string[] | undefined {
+    if (!provider) return undefined;
+    return [provider.openIdConnectProviderArn];
   }
 
   /**
    * Converts SamlProvider constructs to an array of Arns
    */
-  private configureSamlProviderArns(arns: ISamlProvider[] = []): string[] | undefined {
-    let arnList = arns.map(saml => saml.samlProviderArn);
-    if (!arnList.length) return undefined;
-    return arnList;
+  private configureSamlProviderArns(provider?: ISamlProvider): string[] | undefined {
+    if (!provider) return undefined;
+    return [provider.samlProviderArn];
   }
 
   /**
@@ -668,17 +666,17 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
-   * Formats supported login providers
+   * Formats authentication providers
    */
   private configureAuthenticationProviders(providers?: AuthenticationProviders): any {
     if (!providers) return undefined;
-    const supportedProviders:any = {};
-    if (providers.amazon) supportedProviders[AuthenticationProviderType.AMAZON] = providers.amazon;
-    if (providers.facebook) supportedProviders[AuthenticationProviderType.FACEBOOK] = providers.facebook;
-    if (providers.google) supportedProviders[AuthenticationProviderType.GOOGLE] = providers.google;
-    if (providers.apple) supportedProviders[AuthenticationProviderType.APPLE] = providers.apple;
-    if (providers.twitter) supportedProviders[AuthenticationProviderType.TWITTER] = providers.twitter;
-    return supportedProviders;
+    const authenticatedProviders:any = {};
+    if (providers.amazon) authenticatedProviders[AuthenticationProviderType.AMAZON] = providers.amazon;
+    if (providers.facebook) authenticatedProviders[AuthenticationProviderType.FACEBOOK] = providers.facebook;
+    if (providers.google) authenticatedProviders[AuthenticationProviderType.GOOGLE] = providers.google;
+    if (providers.apple) authenticatedProviders[AuthenticationProviderType.APPLE] = providers.apple;
+    if (providers.twitter) authenticatedProviders[AuthenticationProviderType.TWITTER] = providers.twitter;
+    return authenticatedProviders;
   }
 
   /**
@@ -720,12 +718,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   private configureFederatedPrincipal(authenticated?: boolean): FederatedPrincipal {
     return new FederatedPrincipal('cognito-identity.amazonaws.com', {
-        StringEquals: {
-            'cognito-identity.amazonaws.com:aud': this.identityPoolId,
-        },
-        'ForAnyValue:StringLike': {
-            'cognito-identity.amazonaws.com:amr': authenticated ? 'authenticated' : 'unauthenticated',
-        },
+      'StringEquals': {
+        'cognito-identity.amazonaws.com:aud': this.identityPoolId,
+      },
+      'ForAnyValue:StringLike': {
+        'cognito-identity.amazonaws.com:amr': authenticated ? 'authenticated' : 'unauthenticated',
+      },
     }, 'sts:AssumeRoleWithWebIdentity');
   }
 

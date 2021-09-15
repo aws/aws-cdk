@@ -13,7 +13,7 @@ import {
 } from '@aws-cdk/aws-iam';
 import { Function } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import { IdentityPool, SupportedLoginProviderType, RoleMappingMatchType } from '../lib/identity-pool';
+import { IdentityPool, AuthenticationProviderType, RoleMappingMatchType } from '../lib/identity-pool';
 import { UserPool } from '../lib/user-pool';
 import { UserPoolIdentityProvider } from '../lib/user-pool-idp';
 
@@ -102,11 +102,13 @@ describe('identity pool', () => {
     const otherPool = new UserPool(stack, 'OtherPool');
     pool.registerIdentityProvider(poolProvider);
     otherPool.registerIdentityProvider(otherPoolProvider);
-    const userPools = [pool];
+    const userPools = [{
+      userPool: pool,
+    }];
     const idPool = new IdentityPool(stack, 'TestIdentityPoolUserPools', {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
-      userPools,
+      authenticationProviders: { userPools },
     });
     idPool.addUserPool(otherPool, undefined, true);
     const temp = Template.fromStack(stack);
@@ -200,9 +202,11 @@ describe('identity pool', () => {
     new IdentityPool(stack, 'TestIdentityPoolCustomProviders', {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
-      openIdConnectProviders: [openId],
-      samlProviders: [saml],
-      customProvider: 'my-custom-provider.com',
+      authenticationProviders: {
+        openIdConnectProvider: openId,
+        samlProvider: saml,
+        customProvider: 'my-custom-provider.com',
+      },
       allowClassicFlow: true,
     });
     const temp = Template.fromStack(stack);
@@ -253,9 +257,9 @@ describe('identity pool', () => {
         enableStreamingStatus: true,
         role: streamRole,
       },
-      supportedLoginProviders: {
-        amazon: 'amzn1.application.12312k3j234j13rjiwuenf',
-        google: '12345678012.apps.googleusercontent.com',
+      authenticationProviders: {
+        amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
+        google: { appId: '12345678012.apps.googleusercontent.com' },
       },
       syncTrigger: Function.fromFunctionArn(stack, 'my-event-function', 'arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger'),
     });
@@ -309,7 +313,7 @@ describe('role mappings', () => {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
       roleMappings: [{
-        providerUrl: SupportedLoginProviderType.AMAZON,
+        providerUrl: AuthenticationProviderType.AMAZON,
         useToken: true,
       }],
     });
@@ -353,7 +357,7 @@ describe('role mappings', () => {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
       roleMappings: [{
-        providerUrl: SupportedLoginProviderType.AMAZON,
+        providerUrl: AuthenticationProviderType.AMAZON,
       }],
     })).toThrowError('IdentityPoolRoleMapping.rules is required when useToken is false');
   });
@@ -390,7 +394,7 @@ describe('role mappings', () => {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
       roleMappings: [{
-        providerUrl: SupportedLoginProviderType.AMAZON,
+        providerUrl: AuthenticationProviderType.AMAZON,
         resolveAmbiguousRoles: true,
         rules: [
           {
@@ -408,7 +412,7 @@ describe('role mappings', () => {
       }],
     });
     idPool.addRoleMappings({
-      providerUrl: SupportedLoginProviderType.FACEBOOK,
+      providerUrl: AuthenticationProviderType.FACEBOOK,
       rules: [
         {
           claim: 'iss',

@@ -109,7 +109,7 @@
   "awslint": {
     "exclude": [
       "attribute-tag:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
-      "no-unused-type:@aws-cdk/aws-cognito.SupportedLoginProviderType",
+      "no-unused-type:@aws-cdk/aws-cognito.AuthenticationProviderType",
       "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderFacebookProps",

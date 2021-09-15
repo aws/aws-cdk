@@ -18,12 +18,21 @@ const streamRole = new Role(stack, 'streamRole', {
 
 const pool = new UserPool(stack, 'Pool');
 const otherPool = new UserPool(stack, 'OtherPool');
-const userPools = [pool, otherPool];
+const userPools = [{
+  userPool: pool,
+},
+{
+  userPool: otherPool,
+}];
 
 new IdentityPool(stack, 'identitypool', {
   authenticatedRole: authRole,
   unauthenticatedRole: unauthRole,
-  userPools,
+  authenticationProviders: {
+    userPools,
+    amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
+    google: { appId: '12345678012.apps.googleusercontent.com' },
+  },
   allowClassicFlow: true,
   allowUnauthenticatedIdentities: true,
   identityPoolName: 'my-id-pool',
@@ -31,10 +40,6 @@ new IdentityPool(stack, 'identitypool', {
     streamName: 'my-stream',
     enableStreamingStatus: true,
     role: streamRole,
-  },
-  supportedLoginProviders: {
-    amazon: 'amzn1.application.12312k3j234j13rjiwuenf',
-    google: '12345678012.apps.googleusercontent.com',
   },
   syncTrigger: new Function(stack, 'NewFunction', {
     runtime: Runtime.NODEJS_12_X,
