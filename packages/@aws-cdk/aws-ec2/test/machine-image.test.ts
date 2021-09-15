@@ -158,6 +158,25 @@ test('LookupMachineImage creates correct type of UserData', () => {
   expect(isLinuxUserData(linuxDetails.userData)).toBeTruthy();
 });
 
+test('cached lookups of Amazon Linux', () => {
+  // WHEN
+  const ami = ec2.MachineImage.latestAmazonLinux({ cachedInContext: true }).getImage(stack).imageId;
+
+  // THEN
+  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=testregion',
+      props: {
+        account: '1234',
+        region: 'testregion',
+        parameterName: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
 function isWindowsUserData(ud: ec2.UserData) {
   return ud.render().indexOf('powershell') > -1;
 }
