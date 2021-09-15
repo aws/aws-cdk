@@ -1,11 +1,38 @@
-import { randomBytes } from 'crypto';
-import { IOpenIdConnectProvider, ISamlProvider, IRole } from '@aws-cdk/aws-iam';
-import { IFunction } from '@aws-cdk/aws-lambda';
-import { Resource, IResource, Stack, ArnFormat, Lazy, Names } from '@aws-cdk/core';
-import { Construct } from 'constructs';
-import { CfnIdentityPool, CfnIdentityPoolRoleAttachment } from './cognito.generated';
-import { IUserPool } from './user-pool';
-import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import {
+  randomBytes
+} from 'crypto';
+import {
+  IOpenIdConnectProvider,
+  ISamlProvider,
+  IRole
+} from '@aws-cdk/aws-iam';
+import {
+  IFunction
+} from '@aws-cdk/aws-lambda';
+import {
+  Resource,
+  IResource,
+  Stack,
+  ArnFormat,
+  Lazy,
+  Names
+} from '@aws-cdk/core';
+import {
+  Construct
+} from 'constructs';
+import {
+  CfnIdentityPool,
+  CfnIdentityPoolRoleAttachment
+} from './cognito.generated';
+import {
+  IUserPool
+} from './user-pool';
+import {
+  IUserPoolClient,
+  UserPoolClient,
+  UserPoolClientOptions,
+  UserPoolClientProps
+} from './user-pool-client';
 
 /**
  * Represents a Cognito IdentityPool
@@ -58,47 +85,10 @@ export interface IdentityPoolProps {
   readonly roleMappings?: IdentityPoolRoleMapping[];
 
   /**
-   * The User Pools associated with this Identity Pool
-   * @default - no User Pools Associated
-   */
-  readonly userPools?: IUserPool[];
-
-  /**
-   * The OpenIdConnect Provider associated with this Identity Pool
-   * @default - no OpenIdConnectProvider
-   */
-  readonly openIdConnectProviders?: IOpenIdConnectProvider[];
-
-  /**
-   * The Security Assertion Markup Language Provider associated with this Identity Pool
-   * @default - no SamlProvider
-   */
-  readonly samlProviders?: ISamlProvider[];
-
-  /**
-   * The Developer Provider Name to associate with this Identity Pool
-   * @default - no Custom Provider
-   */
-  readonly customProvider?: string;
-
-  /**
    * Whether to allow unauthenticated identities access to identity pool
    * @default false
    */
   readonly allowUnauthenticatedIdentities?: boolean;
-
-  /**
-   * The User Pool Client Options to apply to User Pool Clients configured by the provided User Pools
-   * @default {}
-   */
-  readonly defaultClientOptions?: UserPoolClientOptions;
-
-  /**
-   * Setting this to true turns off identity pool checks with the integrated user pools to make sure the user has not been globally signed out or deleted before the identity pool provides an OIDC token or AWS credentials for the user
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-identitypool-cognitoidentityprovider.html
-   * @default false
-   */
-  readonly disableServerSideTokenCheck?: boolean;
 
   /**
    * Enables the Basic (Classic) authentication flow
@@ -129,7 +119,7 @@ export interface IdentityPoolProps {
    * Supported login providers for using directly in identity pool without using OpnIdConnect or a user pool.
    * @default - No Supported Login Providers passed directly to Identity Pool
    */
-  readonly supportedLoginProviders?: SupportedLoginProviders
+  readonly authenticationProviders?: AuthenticationProviders
 }
 
 /**
@@ -180,7 +170,7 @@ export interface IdentityPoolRoleMapping {
   /**
    * The url of the provider of for which the role is mapped
    */
-  readonly providerUrl: SupportedLoginProviderType | string;
+  readonly providerUrl: AuthenticationProviderType | string;
 
   /**
    *  If true then mapped roles must be passed through the cognito:roles or cognito:preferred_role claims from identity provider.
@@ -258,7 +248,7 @@ export interface RoleMappingRule {
 /**
  * Keys for SupportedLoginProvider - correspond to client id's of respective federation identity providers
  */
-export enum SupportedLoginProviderType {
+export enum AuthenticationProviderType {
   /** Facebook Provider type */
   FACEBOOK = 'graph.facebook.com',
   /** Google Provider Type */
@@ -272,34 +262,87 @@ export enum SupportedLoginProviderType {
 }
 
 /**
+ * Id for Amazon Identity Federation
+*/
+export interface IdentityPoolIdentityProviderProps {
+  /**
+   * App Id for External Identity Provider
+  */
+  readonly appId: string
+
+  /**
+   * App Secret for External Identity Provider (currently only needed for Twitter)
+   * @default - No app secret
+  */
+  readonly appSecret?: string
+}
+
+/**
+ * Props for User Pools and User Pool Clients to be attached to identity pool
+*/
+export interface UserPoolAuthenticationProviderProps extends UserPoolClientProps {
+  /**
+   * Setting this to true turns off identity pool checks for this user pool to make sure the user has not been globally signed out or deleted before the identity pool provides an OIDC token or AWS credentials for the user
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-identitypool-cognitoidentityprovider.html
+   * @default false
+  */
+  readonly disableServerSideTokenCheck?: boolean;
+}
+
+/**
  * Supported login providers for using directly in identity pool without using OpenIdConnect or a user pool. String values are id's associated with provider. Separate multiple fields with a semicolon
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
  */
-export interface SupportedLoginProviders {
-  /** Id for Facebook Identity Federation
+export interface AuthenticationProviders {
+
+  /**
+   * The User Pools associated with this Identity Pool
+   * @default - no User Pools Associated
+  */
+  readonly userPools?: UserPoolAuthenticationProviderProps[];
+
+  /** App Id for Facebook Identity Federation
    * @default - No Facebook Login Provider used without OpenIdConnect or a User Pool
   */
-  readonly facebook?: string
+  readonly facebook?: IdentityPoolIdentityProviderProps
 
-  /** Id for Google Identity Federation
+  /** Client Id for Google Identity Federation
    * @default - No Google Login Provider used without OpenIdConnect or a User Pool
   */
-  readonly google?: string
+  readonly google?: IdentityPoolIdentityProviderProps
 
-  /** Id for Facebook Identity Federation
+  /** App Id for Amazon Identity Federation
    * @default -  No Amazon Login Provider used without OpenIdConnect or a User Pool
   */
-  readonly amazon?: string
+  readonly amazon?: IdentityPoolIdentityProviderProps
 
-  /** Id for Apple Identity Federation
+  /** Services Id for Apple Identity Federation
    * @default - No Apple Login Provider used without OpenIdConnect or a User Pool
   */
-  readonly apple?: string
+  readonly apple?: IdentityPoolIdentityProviderProps
 
-  /** Id and Secret separated by a semicolon for Twitter Identity Federation
+  /** Consumer Key and Secret for Twitter Identity Federation
    * @default - No Twitter Login Provider used without OpenIdConnect or a User Pool
   */
-  readonly twitter?: string
+  readonly twitter?: IdentityPoolIdentityProviderProps
+
+  /**
+   * The OpenIdConnect Provider associated with this Identity Pool
+   * @default - no OpenIdConnectProvider
+  */
+  readonly openIdConnectProvider?: IOpenIdConnectProvider;
+
+  /**
+   * The Security Assertion Markup Language Provider associated with this Identity Pool
+   * @default - no SamlProvider
+  */
+  readonly samlProvider?: ISamlProvider;
+
+  /**
+   * The Developer Provider Name to associate with this Identity Pool
+   * @default - no Custom Provider
+  */
+  readonly customProvider?: string;
 }
 
 /**
@@ -381,19 +424,20 @@ export class IdentityPool extends Resource implements IIdentityPool {
       physicalName: props.identityPoolName || Lazy.string({ produce: () => this.generateUniqueId() }),
     });
     this.identityPoolName = this.physicalName;
-    const providers = this.configureUserPools(props);
+    const authProviders: AuthenticationProviders = props.authenticationProviders || {};
+    const providers = this.configureUserPools(authProviders.userPools);
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
     this.cfnIdentityPool = new CfnIdentityPool(this, id, {
       allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
       allowClassicFlow: props.allowClassicFlow,
       identityPoolName: props.identityPoolName,
-      developerProviderName: props.customProvider,
-      openIdConnectProviderArns: this.configureOpenIdConnectProviderArns(props.openIdConnectProviders),
-      samlProviderArns: this.configureSamlProviderArns(props.samlProviders),
+      developerProviderName:  authProviders.customProvider,
+      openIdConnectProviderArns: this.configureOpenIdConnectProviderArns(authProviders.openIdConnectProvider),
+      samlProviderArns: this.configureSamlProviderArns(authProviders.samlProvider),
       cognitoEvents: this.configureCognitoEvents(props.syncTrigger),
       cognitoStreams: this.configureCognitoStreamOptions(props.streamOptions),
       pushSync: this.configurePushSyncConfig(props.pushSyncConfig),
-      supportedLoginProviders: this.configureSupportedLoginProviders(props.supportedLoginProviders),
+      authenticationProviders: this.configureAuthenticationProviders(props.authenticationProviders),
       cognitoIdentityProviders: providers,
     });
     this.identityPoolId = this.cfnIdentityPool.ref;
@@ -494,11 +538,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Configure CognitoIdentityProviders from list of User Pools
    */
-  private configureUserPools(props: IdentityPoolProps): CfnIdentityPool.CognitoIdentityProviderProperty[] | undefined {
-    if (!props.userPools) return undefined;
+  private configureUserPools(userPoolProps: UserPoolAuthenticationProviderProps[]): CfnIdentityPool.CognitoIdentityProviderProperty[] | undefined {
+    if (!userPoolProps || !userPoolProps.length) return undefined;
     let providers: CfnIdentityPool.CognitoIdentityProviderProperty[] = [];
-    props.userPools.forEach(pool => {
-      const client = this.configureUserPoolClient(pool, props.defaultClientOptions);
+    userPoolProps.forEach(props => {
+      const pool = props.userPool;
+      const client = this.configureUserPoolClient(pool, props);
       providers = [...providers, ...this.configureIdentityProviders(pool, client, props.disableServerSideTokenCheck)];
     }, this);
     return providers;
@@ -562,14 +607,14 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Formats supported login providers
    */
-  private configureSupportedLoginProviders(providers?: SupportedLoginProviders): any {
+  private configureAuthenticationProviders(providers?: AuthenticationProviders): any {
     if (!providers) return undefined;
     const supportedProviders:any = {};
-    if (providers.amazon) supportedProviders[SupportedLoginProviderType.AMAZON] = providers.amazon;
-    if (providers.facebook) supportedProviders[SupportedLoginProviderType.FACEBOOK] = providers.facebook;
-    if (providers.google) supportedProviders[SupportedLoginProviderType.GOOGLE] = providers.google;
-    if (providers.apple) supportedProviders[SupportedLoginProviderType.APPLE] = providers.apple;
-    if (providers.twitter) supportedProviders[SupportedLoginProviderType.TWITTER] = providers.twitter;
+    if (providers.amazon) supportedProviders[AuthenticationProviderType.AMAZON] = providers.amazon;
+    if (providers.facebook) supportedProviders[AuthenticationProviderType.FACEBOOK] = providers.facebook;
+    if (providers.google) supportedProviders[AuthenticationProviderType.GOOGLE] = providers.google;
+    if (providers.apple) supportedProviders[AuthenticationProviderType.APPLE] = providers.apple;
+    if (providers.twitter) supportedProviders[AuthenticationProviderType.TWITTER] = providers.twitter;
     return supportedProviders;
   }
 

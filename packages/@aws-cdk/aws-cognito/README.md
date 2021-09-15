@@ -821,7 +821,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 
 When associating a user pool with an identity pool, a `UserPoolClient` is automatically created to handle the user  
 pool's providers. If you want to control the the settings of the `UserPoolClient`, you can do that using  
-`IdentityPoolProps.defaultClientOptions`:
+`defaultClientOptions` property:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
@@ -850,8 +850,8 @@ const userPoolClient = identityPool.addUserPool(userpool, {
 
 #### Associating a Provider Directly
 
-You can associate with one or more [external identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html)  directly with an identity pool using  
-`IdentityPoolProps.supportedLoginProviders`:
+You can associate with one or more [external identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html) directly with an identity pool using  
+`supportedLoginProviders`:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
