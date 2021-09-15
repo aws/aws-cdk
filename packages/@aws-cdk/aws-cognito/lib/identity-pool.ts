@@ -4,7 +4,11 @@ import {
 import {
   IOpenIdConnectProvider,
   ISamlProvider,
-  IRole
+  IRole,
+  Role,
+  Effect,
+  PolicyStatement,
+  FederatedPrincipal
 } from '@aws-cdk/aws-iam';
 import {
   IFunction
@@ -70,13 +74,15 @@ export interface IdentityPoolProps {
 
   /**
    * The Default Role to be assumed by Authenticated Users
+   * @default - A new Iam Role is created with basic authenticated permissions
    */
-  readonly authenticatedRole: IRole;
+  readonly authenticatedRole?: IRole;
 
   /**
    * The Default Role to be assumed by Unauthenticated Users
+   * @default - A new Iam Role is created with basic unauthenticated permissions
    */
-  readonly unauthenticatedRole: IRole;
+  readonly unauthenticatedRole?: IRole;
 
   /**
    * The Default Role to be assumed by Authenticated Users
@@ -447,8 +453,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
       resourceName: this.identityPoolId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
-
-    this.configureRoleAttachment(props.authenticatedRole, props.unauthenticatedRole, ...(props.roleMappings || []));
+    const authRole = props.authenticatedRole || this.configureAuthenticatedRole();
+    const unauthRole = props.unauthenticatedRole || this.configureUnauthenticatedRole();
+    this.configureRoleAttachment(authRole, unauthRole, ...(props.roleMappings || []));
   }
 
   /**
@@ -486,8 +493,64 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
+   * Configure Default Authenticated Role For Identity Pool
+  */
+  private configureAuthenticatedRole(): Role {
+    const name = this.id + 'AuthenticatedRole';
+    const role = new Role(this, name, {
+      roleName: name,
+      description: 'Default Authenticated Role for Identity Pool ' + this.identityPoolName,
+      assumedBy: this.configureFederatedPrincipal(true),
+    });
+    role.addToPolicy(new PolicyStatement({
+      effect: Effect.Allow,
+      actions: [
+        "cognito-identity:*",
+        "cognito-sync:*",
+        "sts:assumeRole",
+        "sts:AssumeRoleWithWebIdentity",
+        "sts:TagSession",
+        "mobileanalytics:PutEvents",
+      ],
+      resources: ['*'],
+    }));
+    return role;
+  }
+
+  /**
+   * Configure Default Unauthenticated Role For Identity Pool
+  */
+  private configureUnauthenticatedRole(): Role {
+    const name = this.id + 'UnauthenticatedRole';
+    const role = new Role(this, name, {
+      roleName: name,
+      description: 'Default Unauthenticated Role for Identity Pool ' + this.identityPoolName,
+      assumedBy: this.configureFederatedPrincipal(false),
+    });
+    role.addToPolicy(new PolicyStatement({
+      effect: Effect.Allow,
+      actions: [
+        "cognito-sync:*",
+        "mobileanalytics:PutEvents",
+      ],
+      resources: ['*'],
+    }));
+    role.addToPolicy(new PolicyStatement({
+      effect: Effect.Deny,
+      actions: [
+        "sts:assumeRole",
+        "sts:AssumeRoleWithWebIdentity",
+        "sts:TagSession",
+        "cognito-identity:*",
+      ],
+      resources: ['*'],
+    }));
+    return role;
+  }
+
+  /**
    * Configure Role Attachments For Identity Pool
-   */
+  */
   private configureRoleAttachment(
     authenticatedRole?: IRole,
     unauthenticatedRole?: IRole,
@@ -650,6 +713,20 @@ export class IdentityPool extends Resource implements IIdentityPool {
       acc[prop.providerUrl] = roleMapping;
       return acc;
     }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });
+  }
+
+  /**
+   * Configure Federated Principal with Conditions
+   */
+  private configureFederatedPrincipal(authenticated?: boolean): FederatedPrincipal {
+    return new FederatedPrincipal('cognito-identity.amazonaws.com', {
+        StringEquals: {
+            'cognito-identity.amazonaws.com:aud': this.identityPoolId,
+        },
+        'ForAnyValue:StringLike': {
+            'cognito-identity.amazonaws.com:amr': authenticated ? 'authenticated' : 'unauthenticated',
+        },
+    }, 'sts:AssumeRoleWithWebIdentity');
   }
 
   /** Generate random name when construct name is not present */
