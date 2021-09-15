@@ -20,13 +20,77 @@ import { UserPoolIdentityProvider } from '../lib/user-pool-idp';
 describe('identity pool', () => {
   test('minimal setup', () => {
     const stack = new Stack();
+    new IdentityPool(stack, 'TestIdentityPoolMinimal');
+    const temp = Template.fromStack(stack);
+
+    temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
+      AllowUnauthenticatedIdentities: false,
+    });
+
+    temp.resourceCountIs('AWS::IAM::Role', 2);
+    temp.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Actions:  [
+              'cognito-identity:*',
+              'cognito-sync:*',
+              'sts:assumeRole',
+              'sts:AssumeRoleWithWebIdentity',
+              'sts:TagSession',
+              'mobileanalytics:PutEvents',
+            ],
+            Effect: 'Allow',
+            Principal: {
+              Federated: 'cognito-identity.amazonaws.com',
+            },
+          },
+        ],
+      },
+    });
+
+  });
+
+  test('adding actions and resources to default role', () => {
+    const stack = new Stack();
+    new IdentityPool(stack, 'TestIdentityPoolActions', {
+      authenticatedActions: ['execute-api:*'],
+      authenticatedResources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+    });
+    const temp = Template.fromStack(stack);
+    temp.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Actions:  [
+              'cognito-identity:*',
+              'cognito-sync:*',
+              'sts:assumeRole',
+              'sts:AssumeRoleWithWebIdentity',
+              'sts:TagSession',
+              'mobileanalytics:PutEvents',
+              'execute-api:*',
+            ],
+            Effect: 'Allow',
+            Principal: {
+              Federated: 'cognito-identity.amazonaws.com',
+            },
+            Resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+          },
+        ],
+      },
+    });
+  });
+
+  test('overriding default roles', () => {
+    const stack = new Stack();
     const authRole = new Role(stack, 'authRole', {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
     });
     const unauthRole = new Role(stack, 'unauthRole', {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
     });
-    new IdentityPool(stack, 'TestIdentityPool', {
+    new IdentityPool(stack, 'TestIdentityPoolOverride', {
       authenticatedRole: authRole,
       unauthenticatedRole: unauthRole,
     });
