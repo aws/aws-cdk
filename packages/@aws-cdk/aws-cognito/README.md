@@ -829,8 +829,8 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 ```
 
 The default authenticated and unauthenticated roles are preconfigured to allow users to assume their respective  
-credentials using the `sts:AssumeRoleWithWebIdentity` action. You can use a different action to assume the role by  
-using the `assumeAction` field:
+credentials using the `sts:AssumeRoleWithWebIdentity` action. You can use a different action to assume the role with  
+the `assumeAction` field:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
