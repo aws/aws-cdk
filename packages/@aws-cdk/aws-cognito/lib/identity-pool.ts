@@ -80,9 +80,21 @@ export interface IdentityPoolProps {
 
   /**
    * The Default Role to be assumed by Unauthenticated Users
-   * @default - A new Iam Role is created with basic unauthenticated permissions
+   * @default - A new Iam Role is created to deny access to user credentials
    */
   readonly unauthenticatedRole?: IRole;
+
+  /**
+   * IAM Actions to be added to the default Authenticated Role - ignored if "authenticatedRole" is provided
+   * @default - No actions added
+   */
+  readonly authenticatedActions?: string[];
+
+  /**
+   * The IAM Resources that the default Authenticated Role will be applied to - ignored if "authenticatedRole" is provided
+   * @default - ['*']
+   */
+   readonly authenticatedResources?: string[];
 
   /**
    * The Default Role to be assumed by Authenticated Users
@@ -453,7 +465,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       resourceName: this.identityPoolId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
-    const authRole = props.authenticatedRole || this.configureAuthenticatedRole();
+    const authRole = props.authenticatedRole || this.configureAuthenticatedRole(props.authenticatedActions, props.authenticatedResources);
     const unauthRole = props.unauthenticatedRole || this.configureUnauthenticatedRole();
     this.configureRoleAttachment(authRole, unauthRole, ...(props.roleMappings || []));
   }
@@ -495,7 +507,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Configure Default Authenticated Role For Identity Pool
   */
-  private configureAuthenticatedRole(): Role {
+  private configureAuthenticatedRole(actions: string[] = [], resources: string[] = ['*']): Role {
     const name = this.id + 'AuthenticatedRole';
     const role = new Role(this, name, {
       roleName: name,
@@ -511,8 +523,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
         'sts:AssumeRoleWithWebIdentity',
         'sts:TagSession',
         'mobileanalytics:PutEvents',
+        ...actions
       ],
-      resources: ['*'],
+      resources,
     }));
     return role;
   }
@@ -530,7 +543,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
     role.addToPolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       actions: [
-        'cognito-sync:*',
         'mobileanalytics:PutEvents',
       ],
       resources: ['*'],

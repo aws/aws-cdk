@@ -55,16 +55,17 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Domains](#domains)
 - [Identity Pools](#identity-pools)
   - [Authenticated and Unauthenticated Identities](#authenticated-and-unauthenticated-identities)
-  - [Federated Identity Providers](#federated-identity-providers)
+    - [Default Authenticated Role](#default-authenticated-role)
+    - [Default Unauthenticated Role](#default-unauthenticated-role)
+  - [Authenticated Providers](#authenticated-providers)
     - [Using User Pool](#associating-a-provider-through-a-user-pool)
+      - [Server Side Token Check](#server-side-token-check)
     - [Directly](#associating-a-provider-directly)
-  - [Supported Login Providers](#supported-login-providers)
   - [OpenIdConnect and Saml](#openid-connect-and-saml)
   - [Custom Providers](#custom-providers)
   - [Role Mapping](#role-mapping)
   - [Authentication Flow](#authentication-flow)
   - [Cognito Sync](#cognito-sync)
-  - [Server Side Token Check](#server-side-token-check)
   - [Importing Identity Pools](#importing-identity-pools)
 
 ## User Pools
@@ -784,9 +785,14 @@ login provider (Amazon Cognito user pools, Login with Amazon, Sign in with Apple
 Connect Providers) or a developer provider (your own backend authentication process). Unauthenticated identities  
 typically belong to guest users.
 
-A basic Identity Pool with minimal configuration consists of two roles: one to apply to authenticated identities and  
-one to apply to unauthenticated identities:
+A basic Identity Pool with minimal configuration has no required props, with default authenticated and unauthenticated  
+roles applied to the identity pool: 
 
+```ts
+new cognito.IdentityPool(this, 'myIdentityPool');
+```
+
+In many cases you'll want to customize one or both of the default roles by supplying your own: 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
@@ -795,8 +801,37 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 });
 ```
 
+#### Default Authenticated Role
 
-### Federated Identity Providers
+The default authenticated role that will be attached to the identity pool allows an authenticated user to assume the  
+credentials created by the identity pool.
+
+The role allows the following permissions by default on all resources:
+- cognito-identity:*
+- cognito-sync:*
+- sts:assumeRole
+- sts:AssumeRoleWithWebIdentity
+- sts:TagSession
+- mobileanalytics:PutEvents
+
+If all you want to do is add permissions or narrow the resources for this role, then instead of overriding the default  
+role you can use the `authenticationActions` and `authenticationResources` fields:
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedActions: ['execute-api:*'],
+  authenticatedResources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+});
+```
+
+#### Default Unauthenticated Role
+The default unauthenticated role explicitly denies the following actions for all resources:
+- cognito-identity:*
+- sts:assumeRole
+- sts:AssumeRoleWithWebIdentity
+- sts:TagSession
+
+### Authentication Providers
 
 You can associate identity providers with an Identity Pool by first associating them with a Cognito User Pool or by  
 associating the provider directly with the identity pool.
@@ -816,24 +851,28 @@ new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
   unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  userPools: [userpool]
+  authenticationProviders: {
+    userPools: [{ userpool }] 
+  }
 });
 ```
 
 When associating a user pool with an identity pool, a `UserPoolClient` is automatically created to handle the user  
-pool's providers. If you want to control the the settings of the `UserPoolClient`, you can do that using  
-`defaultClientOptions` property:
+pool's providers. If you want to control the the settings of the `UserPoolClient`, you can do that as well:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  userPools: [userpool],
-  defaultClientOptions: {
-    userPoolClientName: 'my-user-pool-client',
-    disableOath: true,
-    refreshTokenValidity: Duration.days(14),
+  authenticationProviders: {
+    userPools: [
+      {
+        userpool,
+        // User Pool Client Options
+        userPoolClientName: 'my-user-pool-client',
+        disableOath: true,
+        refreshTokenValidity: Duration.days(14),
+      }
+    ],
   },
 });
 ```
@@ -849,6 +888,43 @@ const userPoolClient = identityPool.addUserPool(userpool, {
 });
 ```
 
+#### Server Side Token Check
+
+With the `IdentityPool` CDK Construct, by default the pool is configured to check with the integrated user pools to  
+make sure that the user has not been globally signed out or deleted before the identity pool provides an OIDC token or  
+AWS credentials for the user. 
+
+If the user is signed out or deleted, the identity pool will return a 400 Not Authorized error. You can disable this  
+setting, however, in several ways.
+
+Setting `IdentityPoolProps.disableServerSideTokenCheck` to true will change the default behavior to no server side  
+token check:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticationProviders: {
+    userPools: [
+      {
+        userpool,
+        disableServerSideTokenCheck: true,
+      }
+    ],
+  },
+});
+```
+
+You can also turn off server side token check for individual user pools setting the third argument of the Identity  
+Pool's `addUserPool` method to true:
+
+```ts
+identityPool.addUserPool(userpool, {
+  userPoolClientName: 'my-user-pool-client',
+  disableOath: true,
+  refreshTokenValidity: Duration.days(14),
+}, true);
+```
+
 #### Associating a Provider Directly
 
 You can associate with one or more [external identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html) directly with an identity pool using  
@@ -857,9 +933,7 @@ You can associate with one or more [external identity providers](https://docs.aw
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  supportedLoginProviders: {
+  authenticationProviders: {
     amazon: 'amzn1.application.12312k3j234j13rjiwuenf',
     facebook: '1234567890123',
     google: '12345678012.apps.googleusercontent.com',
@@ -872,7 +946,6 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 If you want to associate more than one provider of the same type with the identity pool, you can do so using User  
 Pools, OpenIdConnect, or Saml. You can't attach more than one provider per external service directly to the identity  
 pool.
-
 
 ### OpenId Connect and Saml
 
@@ -891,13 +964,12 @@ const samlProvider = new iam.SamlProvider(this, 'my-saml-provider', ...);
 
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  openIdConnectProviders: [ openIdConnectProvider ],
-  samlProviders: [ samlProvider ],
+  authenticationProviders: {
+    openIdConnectProvider: openIdConnectProvider,
+    samlProvider: samlProvider,
+  }
 });
 ```
-
 
 ### Custom Providers
 
@@ -911,12 +983,13 @@ pool, so to add more you'd need to integrate them with OpenIdConnect or another 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  customProvider: 'my-custom-provider.example.com',
+  authenticationProviders: {
+    google: '12345678012.apps.googleusercontent.com',
+    openIdConnectProvider: openIdConnectProvider,
+    customProvider: 'my-custom-provider.example.com',
+  }
 });
 ```
-
 
 ### Role Mapping
 
@@ -931,8 +1004,6 @@ Using a [token-based approach](https://docs.aws.amazon.com/cognito/latest/develo
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
   roleMappings: [{
     providerUrl: SupportedLoginProviderType.AMAZON,
     useToken: true,
@@ -946,8 +1017,6 @@ based on custom claims passed from the identity provider:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
   // Assign specific roles to users of your app based on whether or not the custom admin claim is passed from the  
   // identity provider
   roleMappings: [{
@@ -975,7 +1044,6 @@ You can also add role mappings after instantiation with the Identity Pool's `add
 identityPool.addRoleMappings(myAddedRoleMapping1, myAddedRoleMapping2, myAddedRoleMapping3);
 ```
 
-
 ### Authentication Flow
 
 Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html) defaults to the enhanced, simplified flow. If you prefer to use the Classic (basic)  
@@ -984,8 +1052,6 @@ Authentication Flow, you can do so using `IdentityPoolProps.allowClassicFlow`:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
   allowClassicFlow: true,
 });
 ```
@@ -1000,8 +1066,6 @@ of an Identity Pool:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
   pushSyncConfig: {
     applicationArns: ['arn::my::application'],
     role: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-push-sync-role'),
@@ -1014,40 +1078,6 @@ new cognito.IdentityPool(this, 'myidentitypool', {
   syncTrigger: Function.fromFunctionArn('arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger'),
 });
 ```
-
-
-### Server Side Token Check
-
-With the `IdentityPool` CDK Construct, by default the pool is configured to check with the integrated user pools to  
-make sure that the user has not been globally signed out or deleted before the identity pool provides an OIDC token or  
-AWS credentials for the user. 
-
-If the user is signed out or deleted, the identity pool will return a 400 Not Authorized error. You can disable this  
-setting, however, in several ways.
-
-Setting `IdentityPoolProps.disableServerSideTokenCheck` to true will change the default behavior to no server side  
-token check:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  disableServerSideTokenCheck: true
-});
-```
-
-You can also turn off server side token check for individual user pools setting the third argument of the Identity  
-Pool's `addUserPool` method to true:
-
-```ts
-identityPool.addUserPool(userpool, {
-  userPoolClientName: 'my-user-pool-client',
-  disableOath: true,
-  refreshTokenValidity: Duration.days(14),
-}, true);
-```
-
 
 ### Importing Identity Pools
 
