@@ -361,8 +361,8 @@ export class Pipeline extends PipelineBase {
     this.enableKeyRotation = props.enableKeyRotation;
 
     // Cross account keys must be set for key rotation to be enabled
-    if (props.enableKeyRotation && !props.crossAccountKeys) {
-      throw new Error('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
+    if (this.enableKeyRotation && !this.crossAccountKeys) {
+      throw new Error("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled");
     }
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
