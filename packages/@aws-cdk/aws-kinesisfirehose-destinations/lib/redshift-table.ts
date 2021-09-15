@@ -107,7 +107,7 @@ export class RedshiftTable implements firehose.IDestination {
       cluster: cluster,
       databaseName: this.table.databaseName,
     });
-    this.table.grant(user, redshift.TableAction.INSERT); // TODO: needs to be added as a dependable
+    this.table.grant(user, redshift.TableAction.INSERT);
 
     const { loggingOptions: intermediateLoggingOptions, dependables: intermediateLoggingDependables } = createLoggingOptions(scope, {
       logging: this.props.logging,
