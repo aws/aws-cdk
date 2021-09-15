@@ -601,7 +601,6 @@ export class Service extends cdk.Resource {
   }
   private readonly props: ServiceProps;
   private accessRole?: iam.IRole;
-  // private ecrRepository?: ecr.IRepository;
   private source: CodeConfig;
 
   /**
