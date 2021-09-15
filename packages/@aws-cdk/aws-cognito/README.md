@@ -854,12 +854,12 @@ associating the provider directly with the identity pool.
 #### Associating a Provider Through a User Pool
 
 ```ts
-const userpool = new cognito.UserPool(this, 'Pool');
+const userPool = new cognito.UserPool(this, 'Pool');
 
 const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
   clientId: 'amzn-client-id',
   clientSecret: 'amzn-client-secret',
-  userPool: userpool,
+  userPool,
 });
 
 new cognito.IdentityPool(this, 'myidentitypool', {
@@ -872,7 +872,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
     });
   ],
   authenticationProviders: {
-    userPools: [{ userpool }] 
+    userPools: [{ userPool }] 
   }
 });
 ```
@@ -881,6 +881,7 @@ When associating a user pool with an identity pool, a `UserPoolClient` is automa
 pool's providers. If you want to control the the settings of the `UserPoolClient`, you can do that as well:
 
 ```ts
+const userPool = new cognito.UserPool(this, 'Pool');
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticatedPermissions: [
@@ -893,7 +894,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
   authenticationProviders: {
     userPools: [
       {
-        userpool,
+        userPool,
         // User Pool Client Options
         userPoolClientName: 'my-user-pool-client',
         disableOath: true,
@@ -928,6 +929,7 @@ Setting `IdentityPoolProps.disableServerSideTokenCheck` to true will change the 
 token check:
 
 ```ts
+const userPool = new cognito.UserPool(this, 'Pool');
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticatedPermissions: [
@@ -940,7 +942,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
   authenticationProviders: {
     userPools: [
       {
-        userpool,
+        userPool,
         disableServerSideTokenCheck: true,
       }
     ],
@@ -952,7 +954,8 @@ You can also turn off server side token check for individual user pools setting 
 Pool's `addUserPool` method to true:
 
 ```ts
-identityPool.addUserPool(userpool, {
+const userPool = new cognito.UserPool(this, 'Pool');
+identityPool.addUserPool(userPool, {
   userPoolClientName: 'my-user-pool-client',
   disableOath: true,
   refreshTokenValidity: Duration.days(14),
