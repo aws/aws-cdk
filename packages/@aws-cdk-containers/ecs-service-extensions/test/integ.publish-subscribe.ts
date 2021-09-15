@@ -2,7 +2,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
-import { Container, Environment, InjecterExtension, InjecterTopic, QueueExtension, Service, ServiceDescription, TopicSubscription } from '../lib';
+import { Container, Environment, InjecterExtension, InjectableTopic, QueueExtension, Service, ServiceDescription, TopicSubscription } from '../lib';
 
 
 const app = new cdk.App();
@@ -22,11 +22,11 @@ pubServiceDescription.add(new Container({
   },
 }));
 
-const topic1 = new InjecterTopic({
+const topic1 = new InjectableTopic({
   topic: new sns.Topic(stack, 'sign-up'),
 });
 
-const topic2 = new InjecterTopic({
+const topic2 = new InjectableTopic({
   topic: new sns.Topic(stack, 'delete'),
 });
 

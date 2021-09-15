@@ -333,7 +333,7 @@ You can use this extension to set up publishing permissions for SNS Topics.
 
 ```ts
 nameDescription.add(new InjecterExtension({
-  injectables: [new InjecterTopic({
+  injectables: [new InjectableTopic({
     // SNS Topic the service will publish to
     topic: new sns.Topic(stack, 'my-topic'),
   })],
@@ -395,7 +395,7 @@ const myTopic = new sns.Topic(stack, 'myTopic');
 
 // Add the `InjecterExtension` to the service description to allow publishing events to `myTopic`
 pubServiceDescription.add(new InjecterExtension({
-  injectables: [new InjecterTopic({
+  injectables: [new InjectableTopic({
     topic: myTopic,
   }],
 }));

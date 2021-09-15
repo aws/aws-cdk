@@ -23,9 +23,9 @@ export interface GrantInjectable extends Injectable {
 }
 
 /**
- * The settings for the `InjecterTopic` class.
+ * The settings for the `InjectableTopic` class.
  */
-export interface InjecterTopicProps {
+export interface InjectableTopicProps {
   /**
    * The SNS Topic to publish events to.
    */
@@ -33,13 +33,13 @@ export interface InjecterTopicProps {
 }
 
 /**
- * The `InjecterTopic` class represents SNS Topic resource that can be published events to by the parent service.
+ * The `InjectableTopic` class represents SNS Topic resource that can be published events to by the parent service.
  */
 
-export class InjecterTopic implements GrantInjectable {
+export class InjectableTopic implements GrantInjectable {
   public readonly topic: sns.ITopic;
 
-  constructor(props: InjecterTopicProps) {
+  constructor(props: InjectableTopicProps) {
     this.topic = props.topic;
   }
 

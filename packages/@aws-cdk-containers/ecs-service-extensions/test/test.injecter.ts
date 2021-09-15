@@ -3,7 +3,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Container, Environment, InjecterExtension, InjecterTopic, Service, ServiceDescription } from '../lib';
+import { Container, Environment, InjecterExtension, InjectableTopic, Service, ServiceDescription } from '../lib';
 
 export = {
   'correctly sets publish permissions for given topics'(test: Test) {
@@ -24,11 +24,11 @@ export = {
     }));
 
     // WHEN
-    const topic1 = new InjecterTopic({
+    const topic1 = new InjectableTopic({
       topic: new sns.Topic(stack, 'topic1'),
     });
 
-    const topic2 = new InjecterTopic({
+    const topic2 = new InjectableTopic({
       topic: new sns.Topic(stack, 'topic2'),
     });
 
