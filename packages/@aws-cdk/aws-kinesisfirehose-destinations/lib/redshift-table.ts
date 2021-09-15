@@ -22,6 +22,7 @@ export interface RedshiftDestinationProps extends CommonDestinationProps, Common
    * Parameters given to the COPY command that is used to move data from S3 to Redshift.
    *
    * @see https://docs.aws.amazon.com/firehose/latest/APIReference/API_CopyCommand.html
+   * @example "json 'auto'"
    *
    * @default '' - no extra parameters are provided to the Redshift COPY command
    */
@@ -56,6 +57,11 @@ export interface RedshiftDestinationProps extends CommonDestinationProps, Common
 
 /**
  * Redshift table delivery stream destination.
+ *
+ * By default, the format of the data to be delivered is assumed to be character-delimited UTF-8
+ * text, where the delimeter is a pipe character (`|`). To accept source data in a different format,
+ * provide the appropriate value for `copyOptions`.
+ * @see https://docs.aws.amazon.com/redshift/latest/dg/copy-parameters-data-format.html
  */
 export class RedshiftTable implements firehose.IDestination {
   /**
