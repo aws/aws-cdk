@@ -32,7 +32,7 @@ export interface StepFunctionsStartExecutionProps extends sfn.TaskStateBaseProps
   readonly name?: string;
 
   /**
-   * Pass the execution ID from the context object to the execution input. 
+   * Pass the execution ID from the context object to the execution input.
    * This allows the Step Functions UI to link child executions from parent executions, making it easier to trace execution flow across state machines.
    *
    * If you set this property to `true`, the `input` property must be an object or omitted entirely.

@@ -234,8 +234,8 @@ test('Execute State Machine - Associate With Parent - Input Provided', () => {
       Input: {
         'token.$': '$$.Task.Token',
         'AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$': '$$.Execution.Id',
-      }
-    }
+      },
+    },
   });
 });
 
@@ -253,8 +253,8 @@ test('Execute State Machine - Associate With Parent - Input Not Provided', () =>
     Parameters: {
       Input: {
         'AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$': '$$.Execution.Id',
-      }
-    }
+      },
+    },
   });
 });
 
