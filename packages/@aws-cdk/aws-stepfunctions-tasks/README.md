@@ -1111,6 +1111,21 @@ new sfn.StateMachine(this, 'ParentStateMachine', {
 });
 ```
 
+You can utilize [Associate Workflow Executions](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-nested-workflows.html#nested-execution-startid)
+via the `associateWithParent` property. This allows the Step Functions UI to link child
+executions from parent executions, making it easier to trace execution flow across state machines.
+
+```ts
+const task = new tasks.StepFunctionsStartExecution(this, 'ChildTask', {
+  stateMachine: child,
+  associateWithParent: true,
+});
+```
+
+This will add the payload `AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$: $$.Execution.Id` to the
+`input`property for you, which will pass the execution ID from the context object to the
+execution input. It requires `input` to be an object or not be set at all.
+
 ### Invoke Activity
 
 You can invoke a [Step Functions Activity](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-activities.html) which enables you to have

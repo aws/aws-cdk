@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as s3deploy from '../lib';
@@ -16,6 +17,15 @@ class TestBucketDeployment extends cdk.Stack {
     new s3deploy.BucketDeployment(this, 'DeployMe', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket,
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
+    });
+
+    new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket,
+      destinationKeyPrefix: 'efs/',
+      useEfs: true,
+      vpc: new ec2.Vpc(this, 'InlineVpc'),
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
