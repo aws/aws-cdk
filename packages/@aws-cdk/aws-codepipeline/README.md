@@ -46,14 +46,13 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 });
 ```
 
-If key rotation is required for KMS keys, you can configure it by passing
-`enableKeyRotation: true` when defining the pipeline. Ensure that
-`crossAccountKeys: true` is also passed. Enabling key rotation will
-incur an additional cost of **$1/month**.
+If you want to enable key rotation for the generated KMS keys,
+you can configure it by passing `enableKeyRotation: true` when creating the pipeline.
+Note that key rotation will incur an additional cost of **$1/month**.
 
 ```ts
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
-  crossAccountKeys: true,
+  // ...
   enableKeyRotation: true,
 });
 ```
@@ -382,8 +381,6 @@ const target = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
   slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
 });
 
-const rule = pipeline.notifyOnExecutionStateChange(
-  'NotifyOnExecutionStateChange',
-  target
-);
+const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange'
+, target);
 ```

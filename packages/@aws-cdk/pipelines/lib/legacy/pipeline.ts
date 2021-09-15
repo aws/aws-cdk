@@ -260,10 +260,6 @@ export class CdkPipeline extends CoreConstruct {
       throw new Error('You must pass a \'sourceAction\' (or a \'codePipeline\' that already has a Source stage)');
     }
 
-    if (props.enableKeyRotation && props.crossAccountKeys) {
-      throw new Error('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
-    }
-
     if (props.sourceAction) {
       this._pipeline.addStage({
         stageName: 'Source',
