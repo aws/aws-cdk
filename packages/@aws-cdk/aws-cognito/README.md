@@ -55,8 +55,6 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Domains](#domains)
 - [Identity Pools](#identity-pools)
   - [Authenticated and Unauthenticated Identities](#authenticated-and-unauthenticated-identities)
-    - [Default Authenticated Role](#default-authenticated-role)
-    - [Default Unauthenticated Role](#default-unauthenticated-role)
   - [Authentication Providers](#authentication-providers)
     - [User Pools](#associating-a-provider-through-a-user-pool)
     - [Server Side Token Check](#server-side-token-check)
@@ -776,6 +774,12 @@ authenticated and received a token. An identity pool is a store of user identity
 Identity pools can be used in conjunction with Cognito User Pools or by accessing external federated identity providers  
 directly.
 
+A basic Identity Pool with minimal configuration has no required props, with default authenticated and unauthenticated  
+roles applied to the identity pool: 
+
+```ts
+new cognito.IdentityPool(this, 'myIdentityPool');
+```
 
 ### Authenticated and Unauthenticated Identities
 
@@ -785,51 +789,62 @@ login provider (Amazon Cognito user pools, Login with Amazon, Sign in with Apple
 Connect Providers) or a developer provider (your own backend authentication process). Unauthenticated identities  
 typically belong to guest users.
 
-A basic Identity Pool with minimal configuration has no required props, with default authenticated and unauthenticated  
-roles applied to the identity pool: 
+You can add policy statements to your default authenticated role to determine what base permissions an authenticated  
+user will have:
 
-```ts
-new cognito.IdentityPool(this, 'myIdentityPool');
-```
-
-In many cases you'll want to customize one or both of the default roles by supplying your own: 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['execute-api:*'],
+      resources: ['*'],
+    });
+  ]
 });
 ```
 
-#### Default Authenticated Role
+If you want to allow guest users limited access, you can add policies to the default unauthenticated role as well:
 
-The default authenticated role that will be attached to the identity pool allows an authenticated user to assume the  
-credentials created by the identity pool.
-
-The role allows the following permissions by default on all resources:
-- `cognito-identity:*`
-- `cognito-sync:*`
-- `sts:assumeRole`
-- `sts:AssumeRoleWithWebIdentity`
-- `sts:TagSession`
-- `mobileanalytics:PutEvents`
-
-If all you want to do is add permissions or narrow the resources for this role, then instead of overriding the default  
-role you can use the `authenticationActions` and `authenticationResources` fields:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedActions: ['execute-api:*'],
-  authenticatedResources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+  allowUnauthenticatedIdentities: true,
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['dynamodb:*'],
+      resources: ['*'],
+    }),
+  ],
+  unauthenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['dynamodb:Get*'],
+      resources: ['*'],
+    }),
+  ],
 });
 ```
 
-#### Default Unauthenticated Role
-The default unauthenticated role explicitly denies the following actions for all resources:
-- `cognito-identity:*`
-- `sts:assumeRole`
-- `sts:AssumeRoleWithWebIdentity`
-- `sts:TagSession`
+The default authenticated and unauthenticated roles are preconfigured to allow users to assume their respective  
+credentials using the `sts:AssumeRoleWithWebIdentity` action. You can use a different action to assume the role by  
+using the `assumeAction` field:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  assumeAction: 'sts:AssumeRole',
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['execute-api'],
+      resources: ['*'],
+    });
+  ],
+});
+```
 
 ### Authentication Providers
 
@@ -849,8 +864,13 @@ const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
 
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['execute-api'],
+      resources: ['*'],
+    });
+  ],
   authenticationProviders: {
     userPools: [{ userpool }] 
   }
@@ -863,6 +883,13 @@ pool's providers. If you want to control the the settings of the `UserPoolClient
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['execute-api'],
+      resources: ['*'],
+    });
+  ],
   authenticationProviders: {
     userPools: [
       {
@@ -903,6 +930,13 @@ token check:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['execute-api'],
+      resources: ['*'],
+    });
+  ],
   authenticationProviders: {
     userPools: [
       {
@@ -933,6 +967,13 @@ You can associate with one or more [external identity providers](https://docs.aw
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['execute-api'],
+      resources: ['*'],
+    });
+  ],
   authenticationProviders: {
     amazon: 'amzn1.application.12312k3j234j13rjiwuenf',
     facebook: '1234567890123',
@@ -964,6 +1005,13 @@ const samlProvider = new iam.SamlProvider(this, 'my-saml-provider', ...);
 
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['execute-api'],
+      resources: ['*'],
+    });
+  ],
   authenticationProviders: {
     openIdConnectProvider: openIdConnectProvider,
     samlProvider: samlProvider,
@@ -983,6 +1031,13 @@ pool, so to add more you'd need to integrate them with OpenIdConnect or another 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['execute-api'],
+      resources: ['*'],
+    });
+  ],
   authenticationProviders: {
     google: '12345678012.apps.googleusercontent.com',
     openIdConnectProvider: openIdConnectProvider,
@@ -1052,6 +1107,13 @@ Authentication Flow, you can do so using `IdentityPoolProps.allowClassicFlow`:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['execute-api'],
+      resources: ['*'],
+    });
+  ],
   allowClassicFlow: true,
 });
 ```
@@ -1066,6 +1128,13 @@ of an Identity Pool:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
+  authenticatedPermissions: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['execute-api'],
+      resources: ['*'],
+    });
+  ],
   pushSyncConfig: {
     applicationArns: ['arn::my::application'],
     role: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-push-sync-role'),

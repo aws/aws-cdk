@@ -1,4 +1,4 @@
-import { Role, AnyPrincipal } from '@aws-cdk/aws-iam';
+import { Role, AnyPrincipal, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
 import { IdentityPool } from '../lib/identity-pool';
@@ -6,12 +6,6 @@ import { UserPool } from '../lib/user-pool';
 
 const app = new App();
 const stack = new Stack(app, 'integ-identity-pool');
-const authRole = new Role(stack, 'authRole', {
-  assumedBy: new AnyPrincipal(),
-});
-const unauthRole = new Role(stack, 'unauthRole', {
-  assumedBy: new AnyPrincipal(),
-});
 const streamRole = new Role(stack, 'streamRole', {
   assumedBy: new AnyPrincipal(),
 });
@@ -26,8 +20,20 @@ const userPools = [{
 }];
 
 new IdentityPool(stack, 'identitypool', {
-  authenticatedRole: authRole,
-  unauthenticatedRole: unauthRole,
+  authenticatedPermissions: [
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['dynamodb:*'],
+      resources: ['*'],
+    }),
+  ],
+  unauthenticatedPermissions: [
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['dynamodb:Get*'],
+      resources: ['*'],
+    }),
+  ],
   authenticationProviders: {
     userPools,
     amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },

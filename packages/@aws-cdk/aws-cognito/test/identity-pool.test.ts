@@ -32,14 +32,7 @@ describe('identity pool', () => {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Actions:  [
-              'cognito-identity:*',
-              'cognito-sync:*',
-              'sts:assumeRole',
-              'sts:AssumeRoleWithWebIdentity',
-              'sts:TagSession',
-              'mobileanalytics:PutEvents',
-            ],
+            Action: 'sts:AssumeRoleWithWebIdentity',
             Effect: 'Allow',
             Principal: {
               Federated: 'cognito-identity.amazonaws.com',
@@ -51,38 +44,49 @@ describe('identity pool', () => {
 
   });
 
-  test('adding actions and resources to default role', () => {
+  test('adding actions and resources to default roles', () => {
     const stack = new Stack();
     new IdentityPool(stack, 'TestIdentityPoolActions', {
-      authenticatedActions: ['execute-api:*'],
-      authenticatedResources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+      allowUnauthenticatedIdentities: true,
+      authenticatedPermissions: [new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['execute-api:*'],
+        resources: ['*'],
+      })],
+      unauthenticatedPermissions: [new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['execute-api:*'],
+        resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+      })],
     });
     const temp = Template.fromStack(stack);
+    temp.resourceCountIs('AWS::IAM::Role', 2);
     temp.hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Actions:  [
-              'cognito-identity:*',
-              'cognito-sync:*',
-              'sts:assumeRole',
-              'sts:AssumeRoleWithWebIdentity',
-              'sts:TagSession',
-              'mobileanalytics:PutEvents',
-              'execute-api:*',
-            ],
             Effect: 'Allow',
-            Principal: {
-              Federated: 'cognito-identity.amazonaws.com',
-            },
+            Action: 'execute-api:*',
             Resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
           },
         ],
       },
     });
+
+    temp.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'execute-api:*',
+            Resources: ['*'],
+          },
+        ],
+      },
+    });
   });
 
-  test('overriding default roles', () => {
+  test('changing assume action', () => {
     const stack = new Stack();
     const authRole = new Role(stack, 'authRole', {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
@@ -90,9 +94,13 @@ describe('identity pool', () => {
     const unauthRole = new Role(stack, 'unauthRole', {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
     });
-    new IdentityPool(stack, 'TestIdentityPoolOverride', {
-      authenticatedRole: authRole,
-      unauthenticatedRole: unauthRole,
+    new IdentityPool(stack, 'TestIdentityPoolActions', {
+      assumeAction: 'sts:AssumeRole',
+      authenticatedPermissions: [new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['execute-api:*'],
+        resources: ['*'],
+      })],
     });
     const temp = Template.fromStack(stack);
 
@@ -107,7 +115,7 @@ describe('identity pool', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: 'service.amazonaws.com',
+              Federated: 'cognito-identity.amazonaws.com',
             },
           },
         ],
@@ -154,12 +162,6 @@ describe('identity pool', () => {
 
   test('user pools are properly configured', () => {
     const stack = new Stack();
-    const authRole = new Role(stack, 'authRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
-    const unauthRole = new Role(stack, 'unauthRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
     const poolProvider = UserPoolIdentityProvider.fromProviderName(stack, 'poolProvider', 'poolProvider');
     const otherPoolProvider = UserPoolIdentityProvider.fromProviderName(stack, 'otherPoolProvider', 'otherPoolProvider');
     const pool = new UserPool(stack, 'Pool');
@@ -170,8 +172,6 @@ describe('identity pool', () => {
       userPool: pool,
     }];
     const idPool = new IdentityPool(stack, 'TestIdentityPoolUserPools', {
-      authenticatedRole: authRole,
-      unauthenticatedRole: unauthRole,
       authenticationProviders: { userPools },
     });
     idPool.addUserPool(otherPool, undefined, true);
@@ -249,12 +249,6 @@ describe('identity pool', () => {
 
   test('openId, saml, classicFlow, customProviders', () => {
     const stack = new Stack();
-    const authRole = new Role(stack, 'authRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
-    const unauthRole = new Role(stack, 'unauthRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
     const openId = new OpenIdConnectProvider(stack, 'OpenId', {
       url: 'https://example.com',
       clientIds: ['client1', 'client2'],
@@ -264,8 +258,6 @@ describe('identity pool', () => {
       metadataDocument: SamlMetadataDocument.fromXml('document'),
     });
     new IdentityPool(stack, 'TestIdentityPoolCustomProviders', {
-      authenticatedRole: authRole,
-      unauthenticatedRole: unauthRole,
       authenticationProviders: {
         openIdConnectProvider: openId,
         samlProvider: saml,
@@ -295,12 +287,6 @@ describe('identity pool', () => {
 
   test('pushSync, cognito events and streams, supported login providers', () => {
     const stack = new Stack();
-    const authRole = new Role(stack, 'authRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
-    const unauthRole = new Role(stack, 'unauthRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
     const pushSyncRole = new Role(stack, 'pushSyncRole', {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
     });
@@ -308,8 +294,6 @@ describe('identity pool', () => {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
     });
     new IdentityPool(stack, 'TestIdentityPoolPushSyncStreamsEventsEtc', {
-      authenticatedRole: authRole,
-      unauthenticatedRole: unauthRole,
       allowUnauthenticatedIdentities: true,
       identityPoolName: 'my-id-pool',
       pushSyncConfig: {
@@ -367,15 +351,7 @@ describe('identity pool', () => {
 describe('role mappings', () => {
   test('using token', () => {
     const stack = new Stack();
-    const authRole = new Role(stack, 'authRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
-    const unauthRole = new Role(stack, 'unauthRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
     new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
-      authenticatedRole: authRole,
-      unauthenticatedRole: unauthRole,
       roleMappings: [{
         providerUrl: AuthenticationProviderType.AMAZON,
         useToken: true,
@@ -411,15 +387,7 @@ describe('role mappings', () => {
 
   test('rules type without rules throws', () => {
     const stack = new Stack();
-    const authRole = new Role(stack, 'authRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
-    const unauthRole = new Role(stack, 'unauthRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
     expect(() => new IdentityPool(stack, 'TestIdentityPoolRoleMappingErrors', {
-      authenticatedRole: authRole,
-      unauthenticatedRole: unauthRole,
       roleMappings: [{
         providerUrl: AuthenticationProviderType.AMAZON,
       }],
@@ -428,12 +396,6 @@ describe('role mappings', () => {
 
   test('role mapping with rules configuration', () => {
     const stack = new Stack();
-    const authRole = new Role(stack, 'authRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
-    const unauthRole = new Role(stack, 'unauthRole', {
-      assumedBy: new ServicePrincipal('noservice.amazonaws.com'),
-    });
     const adminRole = new Role(stack, 'adminRole', {
       assumedBy: new ServicePrincipal('admin.amazonaws.com'),
     });
@@ -455,8 +417,6 @@ describe('role mappings', () => {
       assumedBy: new ArnPrincipal('arn:aws:iam::123456789012:user/FacebookUser'),
     });
     const idPool = new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
-      authenticatedRole: authRole,
-      unauthenticatedRole: unauthRole,
       roleMappings: [{
         providerUrl: AuthenticationProviderType.AMAZON,
         resolveAmbiguousRoles: true,

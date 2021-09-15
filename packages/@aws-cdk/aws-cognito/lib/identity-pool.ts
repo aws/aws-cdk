@@ -9,6 +9,7 @@ import {
   Effect,
   PolicyStatement,
   FederatedPrincipal,
+  IPrincipal,
 } from '@aws-cdk/aws-iam';
 import {
   IFunction,
@@ -73,28 +74,22 @@ export interface IdentityPoolProps {
   readonly identityPoolName?: string;
 
   /**
-   * The Default Role to be assumed by Authenticated Users
-   * @default - A new Iam Role is created with basic authenticated permissions
+   * Additional Policy Statements to add to Default Authenticated Role
+   * @default - No Permissions added
    */
-  readonly authenticatedRole?: IRole;
+  readonly authenticatedPermissions?: PolicyStatement[];
 
   /**
-   * The Default Role to be assumed by Unauthenticated Users
-   * @default - A new Iam Role is created to deny access to user credentials
+   * Additional Policy Statements to add to Default Authenticated Role
+   * @default - No Permissions
    */
-  readonly unauthenticatedRole?: IRole;
+  readonly unauthenticatedPermissions?: PolicyStatement[];
 
   /**
-   * IAM Actions to be added to the default Authenticated Role - ignored if "authenticatedRole" is provided
-   * @default - No actions added
+   * The action used with credentials to assume the default authenticated or unauthenticated role
+   * @default - 'sts:AssumeRoleWithWebIdentity'
    */
-  readonly authenticatedActions?: string[];
-
-  /**
-   * The IAM Resources that the default Authenticated Role will be applied to - ignored if "authenticatedRole" is provided
-   * @default - ['*']
-   */
-   readonly authenticatedResources?: string[];
+  readonly assumeAction?: string
 
   /**
    * The Default Role to be assumed by Authenticated Users
@@ -465,8 +460,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
       resourceName: this.identityPoolId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
-    const authRole = props.authenticatedRole || this.configureAuthenticatedRole(props.authenticatedActions, props.authenticatedResources);
-    const unauthRole = props.unauthenticatedRole || this.configureUnauthenticatedRole();
+    const authRole = this.configureDefaultRole('Authenticated', props.authenticatedPermissions, props.assumeAction);
+    const unauthRole = this.configureDefaultRole('Unauthenticated', props.unauthenticatedPermissions, props.assumeAction);
     this.configureRoleAttachment(authRole, unauthRole, ...(props.roleMappings || []));
   }
 
@@ -505,58 +500,27 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
-   * Configure Default Authenticated Role For Identity Pool
+   * Configure Default Roles For Identity Pool
   */
-  private configureAuthenticatedRole(actions: string[] = [], resources: string[] = ['*']): Role {
-    const name = this.id + 'AuthenticatedRole';
+  private configureDefaultRole(
+    type: string,
+    additionalPolicyStatements: PolicyStatement[] = [],
+    action: string = 'sts:AssumeRoleWithWebIdentity'
+  ): Role {
+    const name = `this.id${type}Role`;
     const role = new Role(this, name, {
       roleName: name,
-      description: 'Default Authenticated Role for Identity Pool ' + this.identityPoolName,
-      assumedBy: this.configureFederatedPrincipal(true),
+      description: `Default ${type} Role for Identity Pool ${this.identityPoolName}`,
+      assumedBy: new FederatedPrincipal('cognito-identity.amazonaws.com', {
+        'StringEquals': {
+          'cognito-identity.amazonaws.com:aud': this.identityPoolId,
+        },
+        'ForAnyValue:StringLike': {
+          'cognito-identity.amazonaws.com:amr': type.toLowerCase(),
+        },
+      }, action),
     });
-    role.addToPolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: [
-        'cognito-identity:*',
-        'cognito-sync:*',
-        'sts:assumeRole',
-        'sts:AssumeRoleWithWebIdentity',
-        'sts:TagSession',
-        'mobileanalytics:PutEvents',
-        ...actions
-      ],
-      resources,
-    }));
-    return role;
-  }
-
-  /**
-   * Configure Default Unauthenticated Role For Identity Pool
-  */
-  private configureUnauthenticatedRole(): Role {
-    const name = this.id + 'UnauthenticatedRole';
-    const role = new Role(this, name, {
-      roleName: name,
-      description: 'Default Unauthenticated Role for Identity Pool ' + this.identityPoolName,
-      assumedBy: this.configureFederatedPrincipal(false),
-    });
-    role.addToPolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: [
-        'mobileanalytics:PutEvents',
-      ],
-      resources: ['*'],
-    }));
-    role.addToPolicy(new PolicyStatement({
-      effect: Effect.DENY,
-      actions: [
-        'sts:assumeRole',
-        'sts:AssumeRoleWithWebIdentity',
-        'sts:TagSession',
-        'cognito-identity:*',
-      ],
-      resources: ['*'],
-    }));
+    additionalPolicyStatements.forEach(statement => role.addToPolicy(statement));
     return role;
   }
 
@@ -723,20 +687,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
       acc[prop.providerUrl] = roleMapping;
       return acc;
     }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });
-  }
-
-  /**
-   * Configure Federated Principal with Conditions
-   */
-  private configureFederatedPrincipal(authenticated?: boolean): FederatedPrincipal {
-    return new FederatedPrincipal('cognito-identity.amazonaws.com', {
-      'StringEquals': {
-        'cognito-identity.amazonaws.com:aud': this.identityPoolId,
-      },
-      'ForAnyValue:StringLike': {
-        'cognito-identity.amazonaws.com:amr': authenticated ? 'authenticated' : 'unauthenticated',
-      },
-    }, 'sts:AssumeRoleWithWebIdentity');
   }
 
   /** Generate random name when construct name is not present */
