@@ -393,18 +393,11 @@ describe('', () => {
       test('does not allow key rotation if cross account keys has not been set', () => {
         const app = new cdk.App();
         const stack = new cdk.Stack(app, 'PipelineStack');
-        const sourceOutput = new codepipeline.Artifact();
 
         expect(() => {
           new codepipeline.Pipeline(stack, 'Pipeline', {
             crossAccountKeys: false,
             enableKeyRotation: true,
-            stages: [
-              {
-                stageName: 'Source',
-                actions: [new FakeSourceAction({ actionName: 'Source', output: sourceOutput })],
-              },
-            ],
           });
         }).toThrow("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled");
       });
@@ -415,7 +408,6 @@ describe('', () => {
         const sourceOutput = new codepipeline.Artifact();
         new codepipeline.Pipeline(stack, 'Pipeline', {
           enableKeyRotation: true,
-          crossAccountKeys: true,
           stages: [
             {
               stageName: 'Source',
