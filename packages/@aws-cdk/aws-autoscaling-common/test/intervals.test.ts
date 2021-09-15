@@ -1,14 +1,13 @@
 import * as fc from 'fast-check';
-import { Test } from 'nodeunit';
 import * as appscaling from '../lib';
 import { findAlarmThresholds, normalizeIntervals } from '../lib/interval-utils';
 import { arbitrary_complete_intervals } from './util';
 
-export = {
-  'test bounds propagation'(test: Test) {
+describe('intervals', () => {
+  test('test bounds propagation', () => {
     const intervals = normalizeIntervals(realisticRelativeIntervals(), false);
 
-    test.deepEqual(intervals, [
+    expect(intervals).toEqual([
       { lower: 0, upper: 10, change: -2 },
       { lower: 10, upper: 20, change: -1 },
       { lower: 20, upper: 80, change: undefined },
@@ -16,10 +15,10 @@ export = {
       { lower: 90, upper: Infinity, change: +2 },
     ]);
 
-    test.done();
-  },
 
-  'test interval completion'(test: Test) {
+  });
+
+  test('test interval completion', () => {
     const lowerIncompleteIntervals = normalizeIntervals(
       incompleteLowerRelativeIntervals(),
       false);
@@ -27,33 +26,33 @@ export = {
       incompleteUpperRelativeIntervals(),
       false);
 
-    test.deepEqual(lowerIncompleteIntervals, [
+    expect(lowerIncompleteIntervals).toEqual([
       { lower: 0, upper: 65, change: undefined },
       { lower: 65, upper: 85, change: +2 },
       { lower: 85, upper: Infinity, change: +3 },
     ]);
 
-    test.deepEqual(upperIncompleteIntervals, [
+    expect(upperIncompleteIntervals).toEqual([
       { lower: 0, upper: 65, change: +2 },
       { lower: 65, upper: 85, change: +3 },
       { lower: 85, upper: Infinity, change: undefined },
     ]);
 
-    test.done();
-  },
 
-  'bounds propagation fails if middle boundary missing'(test: Test) {
-    test.throws(() => {
+  });
+
+  test('bounds propagation fails if middle boundary missing', () => {
+    expect(() => {
       normalizeIntervals([
         { lower: 0, change: -2 },
         { upper: 20, change: -1 },
       ], false);
-    });
+    }).toThrow();
 
-    test.done();
-  },
 
-  'lower alarm index is lower than higher alarm index'(test: Test) {
+  });
+
+  test('lower alarm index is lower than higher alarm index', () => {
     fc.assert(fc.property(
       arbitrary_complete_intervals(),
       (intervals) => {
@@ -65,10 +64,10 @@ export = {
       },
     ));
 
-    test.done();
-  },
 
-  'never pick undefined intervals for relative alarms'(test: Test) {
+  });
+
+  test('never pick undefined intervals for relative alarms', () => {
     fc.assert(fc.property(
       arbitrary_complete_intervals(),
       (intervals) => {
@@ -79,10 +78,10 @@ export = {
       },
     ));
 
-    test.done();
-  },
 
-  'pick intervals on either side of the undefined interval, if present'(test: Test) {
+  });
+
+  test('pick intervals on either side of the undefined interval, if present', () => {
     fc.assert(fc.property(
       arbitrary_complete_intervals(),
       (intervals) => {
@@ -95,10 +94,10 @@ export = {
       },
     ));
 
-    test.done();
-  },
 
-  'no picking upper bound infinity for lower alarm'(test: Test) {
+  });
+
+  test('no picking upper bound infinity for lower alarm', () => {
     fc.assert(fc.property(
       arbitrary_complete_intervals(),
       (intervals) => {
@@ -109,10 +108,10 @@ export = {
       },
     ));
 
-    test.done();
-  },
 
-  'no picking lower bound 0 for upper alarm'(test: Test) {
+  });
+
+  test('no picking lower bound 0 for upper alarm', () => {
     fc.assert(fc.property(
       arbitrary_complete_intervals(),
       (intervals) => {
@@ -123,9 +122,9 @@ export = {
       },
     ));
 
-    test.done();
-  },
-};
+
+  });
+});
 
 function realisticRelativeIntervals(): appscaling.ScalingInterval[] {
   // Function so we don't have to worry about cloning
