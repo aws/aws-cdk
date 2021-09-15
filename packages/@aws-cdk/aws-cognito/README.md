@@ -885,17 +885,8 @@ your users so that different users can be granted different sets of permissions.
 Associating an OpenId Connect or Saml provider with an identity pool:
 
 ```ts
-const openIdConnectProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
-  this, 
-  'my-openid-connect-provider', 
-  'arn:aws:iam::123456789012:oidc-provider/my-open-id-provider.example.com'
-);
-
-const samlProvider = iam.SamlProvider.fromSamlProviderArn(
-  this,  
-  'my-saml-provider',  
-  'arn:aws:iam::123456789012:saml-provider/my-saml-provider'
-);
+const openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'my-openid-connect-provider', ...);
+const samlProvider = new iam.SamlProvider(this, 'my-saml-provider', ...);
 
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
