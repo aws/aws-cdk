@@ -32,7 +32,10 @@ export interface StepFunctionsStartExecutionProps extends sfn.TaskStateBaseProps
   readonly name?: string;
 
   /**
-   * Pass the execution ID from the context object to the execution input.
+   * Pass the execution ID from the context object to the execution input. 
+   * This allows the Step Functions UI to link child executions from parent executions, making it easier to trace execution flow across state machines.
+   *
+   * If you set this property to `true`, the `input` property must be an object or omitted entirely.
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-nested-workflows.html#nested-execution-startid
    *
@@ -69,7 +72,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     }
 
     if (this.props.associateWithParent && props.input && props.input.type !== sfn.InputType.OBJECT) {
-      throw new Error('Could not associate child execution with parent execution because input is taken directly from a JSON path (or a value for the `input` property was not provided). Use `sfn.TaskInput.fromObject` instead.');
+      throw new Error('Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.');
     }
 
     this.taskPolicies = this.createScopedAccessPolicy();
