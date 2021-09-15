@@ -154,31 +154,30 @@ import * as redshift from '@aws-cdk/aws-redshift';
 import { Duration, Size } from '@aws-cdk/core';
 
 const vpc = new ec2.Vpc(this, 'Vpc');
-const database = 'my_db';
+const databaseName = 'my_db';
 const cluster = new redshift.Cluster(this, 'Cluster', {
   vpc: vpc,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
   },
   masterUser: {
-    masterUsername: 'master',
+    masterUsername: 'admin',
   },
-  defaultDatabaseName: database,
+  defaultDatabaseName: databaseName,
   publiclyAccessible: true,
 });
-
-const redshiftDestination = new destinations.Redshift(cluster, {
-  user: {
-    username: 'firehose',
-  },
-  database: database,
-  tableName: 'firehose_test_table',
+const table = new redshift.Table(this, 'Table', {
+  cluster: cluster,
+  databaseName: databaseName,
   tableColumns: [
     { name: 'TICKER_SYMBOL', dataType: 'varchar(4)' },
     { name: 'SECTOR', dataType: 'varchar(16)' },
     { name: 'CHANGE', dataType: 'float' },
     { name: 'PRICE', dataType: 'float' },
   ],
+});
+
+const redshiftDestination = new firehosedestinations.RedshiftTable(table, {
   copyOptions: 'json \'auto\'',
 });
 new DeliveryStream(this, 'Delivery Stream', {
