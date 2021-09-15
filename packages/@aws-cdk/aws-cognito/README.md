@@ -37,19 +37,6 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Table of Contents
 
-- [Identity Pools](#identity-pools)
-  - [Authenticated and Unauthenticated Identities](#authenticated-and-unauthenticated-identities)
-  - [Federated Identity Providers](#federated-identity-providers)
-    - [Using User Pool](#associating-a-provider-through-a-user-pool)
-    - [Directly](#associating-a-provider-directly)
-  - [Supported Login Providers](#supported-login-providers)
-  - [OpenIdConnect and Saml](#openid-connect-and-saml)
-  - [Custom Providers](#custom-providers)
-  - [Role Mapping](#role-mapping)
-  - [Authentication Flow](#authentication-flow)
-  - [Cognito Sync](#cognito-sync)
-  - [Server Side Token Check](#server-side-token-check)
-  - [Importing Identity Pools](#importing-identity-pools)
 - [User Pools](#user-pools)
   - [Sign Up](#sign-up)
   - [Sign In](#sign-in)
@@ -66,265 +53,19 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [App Clients](#app-clients)
   - [Resource Servers](#resource-servers)
   - [Domains](#domains)
-
-## Identity Pools
-
-Identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.
-
-Identity pools can be used in conjunction with Cognito User Pools or by accessing external federated identity providers directly.
-
-
-### Authenticated and Unauthenticated Identities
-
-Identity pools define two types of identities: authenticated and unauthenticated. Every identity in your identity pool is either authenticated or unauthenticated. Authenticated identities belong to users who are authenticated by a public login provider (Amazon Cognito user pools, Login with Amazon, Sign in with Apple, Facebook, Google, SAML, or any OpenID Connect Providers) or a developer provider (your own backend authentication process). Unauthenticated identities typically belong to guest users.
-
-A basic Identity Pool with minimal configuration consists of two roles: one to apply to authenticated identities and one to apply to unauthenticated identities:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-});
-```
-
-
-### Federated Identity Providers
-
-You can associate identity providers with an Identity Pool by first associating them with a Cognito User Pool or by associating the provider directly with the identity pool.
-
-#### Associating a Provider Through a User Pool
-
-```ts
-const userpool = new cognito.UserPool(this, 'Pool');
-
-const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
-  clientId: 'amzn-client-id',
-  clientSecret: 'amzn-client-secret',
-  userPool: userpool,
-});
-
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  userPools: [userpool]
-});
-```
-
-When associating a user pool with an identity pool, a `UserPoolClient` is automatically created to handle the user pool's providers. If you want to control the the settings of the `UserPoolClient`, you can do that using `IdentityPoolProps.defaultClientOptions`:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  userPools: [userpool],
-  defaultClientOptions: {
-    userPoolClientName: 'my-user-pool-client',
-    disableOath: true,
-    refreshTokenValidity: Duration.days(14),
-  },
-});
-```
-
-You can also associate user pools with an identity pool after instantiation. The Identity Pool's `addUserPool` method returns the User Pool Client that has been created:
-
-```ts
-const userPoolClient = identityPool.addUserPool(userpool, {
-  userPoolClientName: 'my-user-pool-client',
-  disableOath: true,
-  refreshTokenValidity: Duration.days(14),
-});
-```
-
-#### Associating a Provider Directly
-
-You can associate with one or more [external identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html) directly with an identity pool using `IdentityPoolProps.supportedLoginProviders`:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  supportedLoginProviders: {
-    amazon: 'amzn1.application.12312k3j234j13rjiwuenf',
-    facebook: '1234567890123',
-    google: '12345678012.apps.googleusercontent.com',
-    apple: 'com.yourappleapp.auth',
-    twitter: 'my-twitter-id;my-twitter-secret',
-  },
-});
-```
-
-If you want to associate more than one provider of the same type with the identity pool, you can do so using User Pools, OpenIdConnect, or Saml. You can't attach more than one provider per external service directly to the identity pool.
-
-
-### OpenId Connect and Saml
-
-[OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/open-id.html) is an open standard for authentication that is supported by a number of login providers. Amazon Cognito supports linking of identities with OpenID Connect providers that are configured through [AWS Identity and Access Management](http://aws.amazon.com/iam/). 
-
-You can use an identity provider that supports [Security Assertion Markup Language 2.0 (SAML 2.0)](https://docs.aws.amazon.com/cognito/latest/developerguide/saml-identity-provider.html) to provide a simple onboarding flow for your users. Your SAML-supporting identity provider specifies the IAM roles that can be assumed by your users so that different users can be granted different sets of permissions.
-Associating an OpenId Connect or Saml provider with an identity pool:
-
-```ts
-const openIdConnectProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(this, 'my-openid-connect-provider', 'arn:aws:iam::123456789012:oidc-provider/my-open-id-provider.example.com');
-
-const samlProvider = iam.SamlProvider.fromSamlProviderArn(this, 'my-saml-provider', 'arn:aws:iam::123456789012:saml-provider/my-saml-provider');
-
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  openIdConnectProviders: [ openIdConnectProvider ],
-  samlProviders: [ samlProvider ],
-});
-```
-
-
-### Custom Providers
-
-You can also customize your identity pool's behavior further using customized [developer authenticated identities](https://docs.aws.amazon.com/cognito/latest/developerguide/developer-authenticated-identities.html). With developer authenticated identities, you can register and authenticate users via your own existing authentication process, while still using Amazon Cognito to synchronize user data and access AWS resources.
-
-Like the supported external providers, though, you can only associate one custom provider directly with the identity pool, so to add more you'd need to integrate them with OpenIdConnect or another provider.
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  customProvider: 'my-custom-provider.example.com',
-});
-```
-
-
-### Role Mapping
-
-In addition to setting default roles for authenticated and unauthenticated users, you can also use identity pools to define rules to choose the role for each user based on claims in the user's ID token by using Role Mapping. When using role mapping, it's important to be aware of some of the permissions your role will need. You can find an in depth review of roles and role mapping [here](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html).
-
-Using a [token-based approach](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html#using-tokens-to-assign-roles-to-users) to role mapping will allow mapped roles to be passed through the cognito:roles or cognito:preferred_role claims from the identity provider:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  roleMappings: [{
-    providerUrl: SupportedLoginProviderType.AMAZON,
-    useToken: true,
-  }],
-});
-```
-
-Using a rule-based approach to role mapping allows you to determine your own rules for when and how roles are assigned based on custom claims passed from the identity provider:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  // Assign specific roles to users of your app based on whether or not the custom admin claim is passed from the identity provider
-  roleMappings: [{
-    providerUrl: SupportedLoginProviderType.AMAZON,
-    rules: [
-      {
-        claim: 'custom:admin',
-        claimValue: 'admin',
-        mappedRole: adminRole,
-      },
-      {
-        claim: 'custom:admin',
-        claimValue: 'admin',
-        matchType: RoleMappingMatchType.NOTEQUAL,
-        mappedRole: nonAdminRole,
-      }
-    ],
-  }],
-});
-```
-
-You can also add role mappings after instantiation with the Identity Pool's `addRoleMappings` method:
-
-```ts
-identityPool.addRoleMappings(myAddedRoleMapping1, myAddedRoleMapping2, myAddedRoleMapping3);
-```
-
-
-### Authentication Flow
-
-Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html) defaults to the enhanced, simplified flow. If you prefer to use the Classic (basic) Authentication Flow, you can do so using `IdentityPoolProps.allowClassicFlow`:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  allowClassicFlow: true,
-});
-```
-
-
-### Cognito Sync
-
-It's now recommended to integrate [AWS AppSync](https://aws.amazon.com/appsync/) for synchronizing app data across devices, but you can still implement [Cognito Sync](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sync.html) features like [Push Sync](https://docs.aws.amazon.com/cognito/latest/developerguide/push-sync.html), [Cognito Events](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-events.html), and [Cognito Streams](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-streams.html) and configured them as part of an Identity Pool:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  pushSyncConfig: {
-    applicationArns: ['arn::my::application'],
-    role: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-push-sync-role'),
-  },
-  streamOptions: {
-    streamName: 'my-stream',
-    enableStreamingStatus: true,
-    role: streamRole,
-  },
-  syncTrigger: Function.fromFunctionArn('arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger'),
-});
-```
-
-
-### Server Side Token Check
-
-With the `IdentityPool` CDK Construct, by default the pool is configured to check with the integrated user pools to make sure that the user has not been globally signed out or deleted before the identity pool provides an OIDC token or AWS credentials for the user. 
-
-If the user is signed out or deleted, the identity pool will return a 400 Not Authorized error. You can disable this setting, however, in several ways.
-
-Setting `IdentityPoolProps.disableServerSideTokenCheck` to true will change the default behavior to no server side token check:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
-  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
-  disableServerSideTokenCheck: true
-});
-```
-
-You can also turn off server side token check for individual user pools setting the third argument of the Identity Pool's `addUserPool` method to true:
-
-```ts
-identityPool.addUserPool(userpool, {
-  userPoolClientName: 'my-user-pool-client',
-  disableOath: true,
-  refreshTokenValidity: Duration.days(14),
-}, true);
-```
-
-
-### Importing Identity Pools
-
-You can import existing identity pools into your stack using Identity Pool static methods with the Identity Pool Id or Arn:
-
-```ts
-IdentityPool.fromIdentityPoolId(this, 'my-imported-identity-pool', 'us-east-1:dj2823ryiwuhef937');
-
-IdentityPool.fromIdentityPoolArn(this, 'my-imported-identity-pool', 'arn:aws:cognito-identity:us-east-1:123456789012:identitypool/us-east-1:dj2823ryiwuhef937');
-```
-
+- [Identity Pools](#identity-pools)
+  - [Authenticated and Unauthenticated Identities](#authenticated-and-unauthenticated-identities)
+  - [Federated Identity Providers](#federated-identity-providers)
+    - [Using User Pool](#associating-a-provider-through-a-user-pool)
+    - [Directly](#associating-a-provider-directly)
+  - [Supported Login Providers](#supported-login-providers)
+  - [OpenIdConnect and Saml](#openid-connect-and-saml)
+  - [Custom Providers](#custom-providers)
+  - [Role Mapping](#role-mapping)
+  - [Authentication Flow](#authentication-flow)
+  - [Cognito Sync](#cognito-sync)
+  - [Server Side Token Check](#server-side-token-check)
+  - [Importing Identity Pools](#importing-identity-pools)
 
 ## User Pools
 
@@ -1025,3 +766,312 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 ```ts
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
+## Identity Pools
+
+Identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been  
+authenticated and received a token. An identity pool is a store of user identity data specific to your account.
+
+Identity pools can be used in conjunction with Cognito User Pools or by accessing external federated identity providers  
+directly.
+
+
+### Authenticated and Unauthenticated Identities
+
+Identity pools define two types of identities: authenticated and unauthenticated. Every identity in your identity pool  
+is either authenticated or unauthenticated. Authenticated identities belong to users who are authenticated by a public  
+login provider (Amazon Cognito user pools, Login with Amazon, Sign in with Apple, Facebook, Google, SAML, or any OpenID  
+Connect Providers) or a developer provider (your own backend authentication process). Unauthenticated identities  
+typically belong to guest users.
+
+A basic Identity Pool with minimal configuration consists of two roles: one to apply to authenticated identities and  
+one to apply to unauthenticated identities:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+});
+```
+
+
+### Federated Identity Providers
+
+You can associate identity providers with an Identity Pool by first associating them with a Cognito User Pool or by  
+associating the provider directly with the identity pool.
+
+#### Associating a Provider Through a User Pool
+
+```ts
+const userpool = new cognito.UserPool(this, 'Pool');
+
+const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
+  clientId: 'amzn-client-id',
+  clientSecret: 'amzn-client-secret',
+  userPool: userpool,
+});
+
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  userPools: [userpool]
+});
+```
+
+When associating a user pool with an identity pool, a `UserPoolClient` is automatically created to handle the user  
+pool's providers. If you want to control the the settings of the `UserPoolClient`, you can do that using  
+`IdentityPoolProps.defaultClientOptions`:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  userPools: [userpool],
+  defaultClientOptions: {
+    userPoolClientName: 'my-user-pool-client',
+    disableOath: true,
+    refreshTokenValidity: Duration.days(14),
+  },
+});
+```
+
+You can also associate user pools with an identity pool after instantiation. The Identity Pool's `addUserPool` method  
+returns the User Pool Client that has been created:
+
+```ts
+const userPoolClient = identityPool.addUserPool(userpool, {
+  userPoolClientName: 'my-user-pool-client',
+  disableOath: true,
+  refreshTokenValidity: Duration.days(14),
+});
+```
+
+#### Associating a Provider Directly
+
+You can associate with one or more [external identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html)  directly with an identity pool using  
+`IdentityPoolProps.supportedLoginProviders`:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  supportedLoginProviders: {
+    amazon: 'amzn1.application.12312k3j234j13rjiwuenf',
+    facebook: '1234567890123',
+    google: '12345678012.apps.googleusercontent.com',
+    apple: 'com.yourappleapp.auth',
+    twitter: 'my-twitter-id;my-twitter-secret',
+  },
+});
+```
+
+If you want to associate more than one provider of the same type with the identity pool, you can do so using User  
+Pools, OpenIdConnect, or Saml. You can't attach more than one provider per external service directly to the identity  
+pool.
+
+
+### OpenId Connect and Saml
+
+[OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/open-id.html) is an open standard for  
+authentication that is supported by a number of login providers. Amazon Cognito supports linking of identities with  
+OpenID Connect providers that are configured through [AWS Identity and Access Management](http://aws.amazon.com/iam/). 
+
+You can use an identity provider that supports [Security Assertion Markup Language 2.0 (SAML 2.0)](https://docs.aws.amazon.com/cognito/latest/developerguide/saml-identity-provider.html) to provide a simple  
+onboarding flow for your users. Your SAML-supporting identity provider specifies the IAM roles that can be assumed by  
+your users so that different users can be granted different sets of permissions.  
+Associating an OpenId Connect or Saml provider with an identity pool:
+
+```ts
+const openIdConnectProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+  this, 
+  'my-openid-connect-provider', 
+  'arn:aws:iam::123456789012:oidc-provider/my-open-id-provider.example.com'
+);
+
+const samlProvider = iam.SamlProvider.fromSamlProviderArn(
+  this,  
+  'my-saml-provider',  
+  'arn:aws:iam::123456789012:saml-provider/my-saml-provider'
+);
+
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  openIdConnectProviders: [ openIdConnectProvider ],
+  samlProviders: [ samlProvider ],
+});
+```
+
+
+### Custom Providers
+
+You can also customize your identity pool's behavior further using customized [developer authenticated identities](https://docs.aws.amazon.com/cognito/latest/developerguide/developer-authenticated-identities.html).  
+With developer authenticated identities, you can register and authenticate users via your own existing authentication  
+process, while still using Amazon Cognito to synchronize user data and access AWS resources.
+
+Like the supported external providers, though, you can only associate one custom provider directly with the identity  
+pool, so to add more you'd need to integrate them with OpenIdConnect or another provider.
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  customProvider: 'my-custom-provider.example.com',
+});
+```
+
+
+### Role Mapping
+
+In addition to setting default roles for authenticated and unauthenticated users, you can also use identity pools to  
+define rules to choose the role for each user based on claims in the user's ID token by using Role Mapping. When using  
+role mapping, it's important to be aware of some of the permissions your role will need. You can find an in depth  
+review of roles and role mapping [here](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html).
+
+Using a [token-based approach](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html#using-tokens-to-assign-roles-to-users) to role mapping will allow mapped roles to be passed through the `cognito:roles` or  
+`cognito:preferred_role` claims from the identity provider:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  roleMappings: [{
+    providerUrl: SupportedLoginProviderType.AMAZON,
+    useToken: true,
+  }],
+});
+```
+
+Using a rule-based approach to role mapping allows you to determine your own rules for when and how roles are assigned  
+based on custom claims passed from the identity provider:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  // Assign specific roles to users of your app based on whether or not the custom admin claim is passed from the  
+  // identity provider
+  roleMappings: [{
+    providerUrl: SupportedLoginProviderType.AMAZON,
+    rules: [
+      {
+        claim: 'custom:admin',
+        claimValue: 'admin',
+        mappedRole: adminRole,
+      },
+      {
+        claim: 'custom:admin',
+        claimValue: 'admin',
+        matchType: RoleMappingMatchType.NOTEQUAL,
+        mappedRole: nonAdminRole,
+      }
+    ],
+  }],
+});
+```
+
+You can also add role mappings after instantiation with the Identity Pool's `addRoleMappings` method:
+
+```ts
+identityPool.addRoleMappings(myAddedRoleMapping1, myAddedRoleMapping2, myAddedRoleMapping3);
+```
+
+
+### Authentication Flow
+
+Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html) defaults to the enhanced, simplified flow. If you prefer to use the Classic (basic)  
+Authentication Flow, you can do so using `IdentityPoolProps.allowClassicFlow`:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  allowClassicFlow: true,
+});
+```
+
+
+### Cognito Sync
+
+It's now recommended to integrate [AWS AppSync](https://aws.amazon.com/appsync/) for synchronizing app data across  devices, but you can still  
+implement [Cognito Sync] features like [Push Sync](https://docs.aws.amazon.com/cognito/latest/developerguide/push-sync.html), [Cognito Events](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-events.html), and [Cognito Streams](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-streams.html) and configured them as part  
+of an Identity Pool:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  pushSyncConfig: {
+    applicationArns: ['arn::my::application'],
+    role: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-push-sync-role'),
+  },
+  streamOptions: {
+    streamName: 'my-stream',
+    enableStreamingStatus: true,
+    role: streamRole,
+  },
+  syncTrigger: Function.fromFunctionArn('arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger'),
+});
+```
+
+
+### Server Side Token Check
+
+With the `IdentityPool` CDK Construct, by default the pool is configured to check with the integrated user pools to  
+make sure that the user has not been globally signed out or deleted before the identity pool provides an OIDC token or  
+AWS credentials for the user. 
+
+If the user is signed out or deleted, the identity pool will return a 400 Not Authorized error. You can disable this  
+setting, however, in several ways.
+
+Setting `IdentityPoolProps.disableServerSideTokenCheck` to true will change the default behavior to no server side  
+token check:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  authenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-authenticated-role'),
+  unauthenticatedRole: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-unauthenticated-role'),
+  disableServerSideTokenCheck: true
+});
+```
+
+You can also turn off server side token check for individual user pools setting the third argument of the Identity  
+Pool's `addUserPool` method to true:
+
+```ts
+identityPool.addUserPool(userpool, {
+  userPoolClientName: 'my-user-pool-client',
+  disableOath: true,
+  refreshTokenValidity: Duration.days(14),
+}, true);
+```
+
+
+### Importing Identity Pools
+
+You can import existing identity pools into your stack using Identity Pool static methods with the Identity Pool Id or  
+Arn:
+
+```ts
+IdentityPool.fromIdentityPoolId(
+  this,
+  'my-imported-identity-pool',
+  'us-east-1:dj2823ryiwuhef937'
+);
+
+IdentityPool.fromIdentityPoolArn(
+  this,
+  'my-imported-identity-pool',
+  'arn:aws:cognito-identity:us-east-1:123456789012:identitypool/us-east-1:dj2823ryiwuhef937');
+```
+
