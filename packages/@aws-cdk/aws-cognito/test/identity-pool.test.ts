@@ -33,13 +33,26 @@ describe('identity pool', () => {
         Statement: [
           {
             Action: 'sts:AssumeRoleWithWebIdentity',
+            Condition: {
+              'StringEquals': {
+                'cognito-identity.amazonaws.com:aud': {
+                  Ref: 'TestIdentityPoolMinimalCA44517F',
+                },
+              },
+              'ForAnyValue:StringLike': {
+                'cognito-identity.amazonaws.com:amr': 'authenticated',
+              },
+            },
             Effect: 'Allow',
             Principal: {
               Federated: 'cognito-identity.amazonaws.com',
             },
           },
         ],
+        Version: '2012-10-17',
       },
+      Description: 'Default Authenticated Role for Identity Pool TestIdentityPoolMini',
+      RoleName: 'TestIdentityPoolMinimalAuthenticatedRole',
     });
 
   });
@@ -88,12 +101,6 @@ describe('identity pool', () => {
 
   test('changing assume action', () => {
     const stack = new Stack();
-    const authRole = new Role(stack, 'authRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
-    const unauthRole = new Role(stack, 'unauthRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
     new IdentityPool(stack, 'TestIdentityPoolActions', {
       assumeAction: 'sts:AssumeRole',
       authenticatedPermissions: [new PolicyStatement({

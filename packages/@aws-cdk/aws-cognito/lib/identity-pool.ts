@@ -6,10 +6,8 @@ import {
   ISamlProvider,
   IRole,
   Role,
-  Effect,
   PolicyStatement,
   FederatedPrincipal,
-  IPrincipal,
 } from '@aws-cdk/aws-iam';
 import {
   IFunction,
@@ -505,9 +503,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
   private configureDefaultRole(
     type: string,
     additionalPolicyStatements: PolicyStatement[] = [],
-    action: string = 'sts:AssumeRoleWithWebIdentity'
+    action: string = 'sts:AssumeRoleWithWebIdentity',
   ): Role {
-    const name = `this.id${type}Role`;
+    const name = this.id + type + 'Role';
     const role = new Role(this, name, {
       roleName: name,
       description: `Default ${type} Role for Identity Pool ${this.identityPoolName}`,
