@@ -5,7 +5,7 @@ import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
 import { ChangeHotswapImpact, HotswapOperation, ListStackResources } from './hotswap/common';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
-import { isHotswappableStepFunctionChange } from './hotswap/step-functions';
+import { isHotswappableStepFunctionChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
 
 /**
