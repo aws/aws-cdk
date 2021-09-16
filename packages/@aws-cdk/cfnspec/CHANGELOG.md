@@ -1,3 +1,161 @@
+# CloudFormation Resource Specification v41.1.0
+
+## New Resource Types
+
+* AWS::EC2::TransitGatewayVpcAttachment
+* AWS::IoT::FleetMetric
+* AWS::S3::MultiRegionAccessPoint
+* AWS::S3::MultiRegionAccessPointPolicy
+
+## Attribute Changes
+
+* AWS::ApiGateway::Account Id (__added__)
+* AWS::ApiGateway::UsagePlan Id (__added__)
+* AWS::CodeStarNotifications::NotificationRule Arn (__added__)
+* AWS::EventSchemas::Discoverer CrossAccount (__added__)
+* AWS::Location::GeofenceCollection Arn (__added__)
+* AWS::Location::RouteCalculator Arn (__added__)
+* AWS::Location::Tracker Arn (__added__)
+* AWS::Macie::CustomDataIdentifier CreatedAt (__deleted__)
+* AWS::Macie::CustomDataIdentifier Deleted (__deleted__)
+* AWS::Redshift::Cluster DeferMaintenanceIdentifier (__added__)
+* AWS::RoboMaker::Robot Arn (__added__)
+* AWS::RoboMaker::RobotApplicationVersion ApplicationVersion (__added__)
+* AWS::RoboMaker::RobotApplicationVersion Arn (__added__)
+* AWS::RoboMaker::SimulationApplicationVersion ApplicationVersion (__added__)
+* AWS::RoboMaker::SimulationApplicationVersion Arn (__added__)
+
+## Property Changes
+
+* AWS::Athena::DataCatalog Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudTrail::Trail InsightSelectors (__added__)
+* AWS::CloudTrail::Trail IsOrganizationTrail (__added__)
+* AWS::CodeStarNotifications::NotificationRule EventTypeIds.DuplicatesAllowed (__added__)
+* AWS::CodeStarNotifications::NotificationRule Targets.DuplicatesAllowed (__added__)
+* AWS::DataSync::Task Includes (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup IpAddressType (__added__)
+* AWS::EventSchemas::Discoverer CrossAccount (__added__)
+* AWS::ImageBuilder::InfrastructureConfiguration Logging.PrimitiveType (__deleted__)
+* AWS::Redshift::Cluster DeferMaintenanceIdentifier (__deleted__)
+* AWS::RoboMaker::Fleet Tags.PrimitiveType (__deleted__)
+* AWS::RoboMaker::Fleet Tags.PrimitiveItemType (__added__)
+* AWS::RoboMaker::Fleet Tags.Type (__added__)
+* AWS::RoboMaker::Robot Tags.PrimitiveType (__deleted__)
+* AWS::RoboMaker::Robot Tags.PrimitiveItemType (__added__)
+* AWS::RoboMaker::Robot Tags.Type (__added__)
+* AWS::RoboMaker::SimulationApplication RenderingEngine.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RoboMaker::SimulationApplication RobotSoftwareSuite.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RoboMaker::SimulationApplication SimulationSoftwareSuite.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RoboMaker::SimulationApplication Tags.PrimitiveType (__deleted__)
+* AWS::RoboMaker::SimulationApplication Tags.PrimitiveItemType (__added__)
+* AWS::RoboMaker::SimulationApplication Tags.Type (__added__)
+* AWS::Transfer::Server WorkflowDetails (__added__)
+
+## Property Type Changes
+
+* AWS::SageMaker::DataQualityJobDefinition.Environment (__removed__)
+* AWS::SageMaker::ModelBiasJobDefinition.Environment (__removed__)
+* AWS::SageMaker::ModelExplainabilityJobDefinition.Environment (__removed__)
+* AWS::SageMaker::ModelQualityJobDefinition.Environment (__removed__)
+* AWS::SageMaker::MonitoringSchedule.Environment (__removed__)
+* AWS::ACMPCA::CertificateAuthority.OcspConfiguration (__added__)
+* AWS::CloudTrail::Trail.InsightSelector (__added__)
+* AWS::Events::Rule.CapacityProviderStrategyItem (__added__)
+* AWS::Events::Rule.PlacementConstraint (__added__)
+* AWS::Events::Rule.PlacementStrategy (__added__)
+* AWS::Events::Rule.Tag (__added__)
+* AWS::KinesisFirehose::DeliveryStream.DynamicPartitioningConfiguration (__added__)
+* AWS::Transfer::Server.WorkflowDetail (__added__)
+* AWS::Transfer::Server.WorkflowDetails (__added__)
+* AWS::ACMPCA::CertificateAuthority.RevocationConfiguration OcspConfiguration (__added__)
+* AWS::ApiGateway::UsagePlan.ApiStage Throttle.DuplicatesAllowed (__deleted__)
+* AWS::AppFlow::Flow.ScheduledTriggerProperties ScheduleOffset (__added__)
+* AWS::AppFlow::Flow.VeevaSourceProperties DocumentType (__added__)
+* AWS::AppFlow::Flow.VeevaSourceProperties IncludeAllVersions (__added__)
+* AWS::AppFlow::Flow.VeevaSourceProperties IncludeRenditions (__added__)
+* AWS::AppFlow::Flow.VeevaSourceProperties IncludeSourceFiles (__added__)
+* AWS::CloudTrail::Trail.EventSelector ExcludeManagementEventSources (__added__)
+* AWS::CodeStarNotifications::NotificationRule.Target TargetAddress.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CodeStarNotifications::NotificationRule.Target TargetType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.CloudWatchLogsDestinationDetails LogGroup.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.KinesisFirehoseDestinationDetails DeliveryStream.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.LogDeliveryConfigurationRequest DestinationDetails.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.LogDeliveryConfigurationRequest DestinationType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.LogDeliveryConfigurationRequest LogFormat.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.LogDeliveryConfigurationRequest LogType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.CloudWatchLogsDestinationDetails LogGroup.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.KinesisFirehoseDestinationDetails DeliveryStream.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.LogDeliveryConfigurationRequest DestinationDetails.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.LogDeliveryConfigurationRequest DestinationType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.LogDeliveryConfigurationRequest LogFormat.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.LogDeliveryConfigurationRequest LogType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Events::Rule.EcsParameters CapacityProviderStrategy (__added__)
+* AWS::Events::Rule.EcsParameters EnableECSManagedTags (__added__)
+* AWS::Events::Rule.EcsParameters EnableExecuteCommand (__added__)
+* AWS::Events::Rule.EcsParameters PlacementConstraints (__added__)
+* AWS::Events::Rule.EcsParameters PlacementStrategies (__added__)
+* AWS::Events::Rule.EcsParameters PropagateTags (__added__)
+* AWS::Events::Rule.EcsParameters ReferenceId (__added__)
+* AWS::Events::Rule.EcsParameters TagList (__added__)
+* AWS::KinesisFirehose::DeliveryStream.ExtendedS3DestinationConfiguration DynamicPartitioningConfiguration (__added__)
+* AWS::SageMaker::DataQualityJobDefinition.DataQualityAppSpecification Environment.PrimitiveItemType (__added__)
+* AWS::SageMaker::DataQualityJobDefinition.DataQualityAppSpecification Environment.Type (__changed__)
+  * Old: Environment
+  * New: Map
+* AWS::SageMaker::ModelBiasJobDefinition.ModelBiasAppSpecification Environment.PrimitiveItemType (__added__)
+* AWS::SageMaker::ModelBiasJobDefinition.ModelBiasAppSpecification Environment.Type (__changed__)
+  * Old: Environment
+  * New: Map
+* AWS::SageMaker::ModelExplainabilityJobDefinition.ModelExplainabilityAppSpecification Environment.PrimitiveItemType (__added__)
+* AWS::SageMaker::ModelExplainabilityJobDefinition.ModelExplainabilityAppSpecification Environment.Type (__changed__)
+  * Old: Environment
+  * New: Map
+* AWS::SageMaker::ModelQualityJobDefinition.ModelQualityAppSpecification Environment.PrimitiveItemType (__added__)
+* AWS::SageMaker::ModelQualityJobDefinition.ModelQualityAppSpecification Environment.Type (__changed__)
+  * Old: Environment
+  * New: Map
+* AWS::SageMaker::MonitoringSchedule.MonitoringJobDefinition Environment.PrimitiveItemType (__added__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringJobDefinition Environment.Type (__changed__)
+  * Old: Environment
+  * New: Map
+
+
 # CloudFormation Resource Specification v40.1.0
 
 ## New Resource Types
