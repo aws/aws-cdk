@@ -19,7 +19,7 @@ The `Service` construct provided by this module can be extended with optional `S
 - [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
-- [Injecter Extension](#injecter-extension), for allowing your service to publish events to resources like SNS Topics
+- [Injecter Extension](#injecter-extension), for allowing your service connect to other AWS services by granting permission and injecting environment variables
 - [Queue Extension](#queue-extension), for allowing your service to consume messages from an SQS Queue which can be populated by one or more SNS Topics that it is subscribed to
 - [Community Extensions](#community-extensions), providing support for advanced use cases
 
@@ -325,7 +325,9 @@ const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', 
 
 ## Injecter Extension
 
-This service extension accepts a list of `Injectable` resources that the service can publish events or write data to and sets up the corresponding permissions for the service.
+This service extension accepts a list of `Injectable` resources. It grants access to these resources and adds the necessary environment variables to the tasks that are part of the service. 
+
+For example, an `InjectableTopic` is an SNS Topic that grants permission to the task role and adds the topic ARN as an environment variable to the task definition.
 
 ### Publishing to SNS Topics
 
