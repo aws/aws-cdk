@@ -1,4 +1,4 @@
-import { Role, AnyPrincipal, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
+import { Role, AnyPrincipal, Effect } from '@aws-cdk/aws-iam';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
 import { IdentityPool } from '../lib/identity-pool';
@@ -20,19 +20,19 @@ const userPools = [{
 }];
 
 new IdentityPool(stack, 'identitypool', {
-  authenticatedPermissions: [
-    new PolicyStatement({
+  userPermissions: [
+    {
       effect: Effect.ALLOW,
       actions: ['dynamodb:*'],
       resources: ['*'],
-    }),
+    },
   ],
-  unauthenticatedPermissions: [
-    new PolicyStatement({
+  guestPermissions: [
+    {
       effect: Effect.ALLOW,
       actions: ['dynamodb:Get*'],
       resources: ['*'],
-    }),
+    },
   ],
   authenticationProviders: {
     userPools,

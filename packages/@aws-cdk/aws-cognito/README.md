@@ -789,41 +789,40 @@ login provider (Amazon Cognito user pools, Login with Amazon, Sign in with Apple
 Connect Providers) or a developer provider (your own backend authentication process). Unauthenticated identities  
 typically belong to guest users.
 
-You can add policy statements to your default authenticated role to determine what base permissions an authenticated  
+You can add permissions to your default authenticated role to determine what base permissions an authenticated  
 user will have:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['execute-api:*'],
       resources: ['*'],
-    });
-  ]
+    },
+  ],
 });
 ```
 
-If you want to allow guest users limited access, you can add policies to the default unauthenticated role as well:
+If you want to allow guest users limited access, you can add permissions to the default unauthenticated role as well:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  allowUnauthenticatedIdentities: true,
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['dynamodb:*'],
       resources: ['*'],
-    }),
+    },
   ],
-  unauthenticatedPermissions: [
-    new iam.PolicyStatement({
+  guestPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['dynamodb:Get*'],
       resources: ['*'],
-    }),
+    },
   ],
 });
 ```
@@ -836,12 +835,12 @@ the `assumeAction` field:
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   assumeAction: 'sts:AssumeRole',
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['execute-api'],
       resources: ['*'],
-    });
+    },
   ],
 });
 ```
@@ -850,6 +849,36 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 
 You can associate identity providers with an Identity Pool by first associating them with a Cognito User Pool or by  
 associating the provider directly with the identity pool.
+
+Here's a simple setup for an app where all authenticated users have the same permissions, and all unauthenticated users  
+are redirected to a sign up page:
+
+```ts
+new cognito.IdentityPool(this, 'myidentitypool', {
+  userPermissions: [
+    {
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'execute-api:*',
+        'dynamodb:*',
+      ],
+      resources: ['*'],
+    },
+  ],
+  guestPermissions: [
+    {
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'execute-api:invoke',
+      ],
+      resources: ['arn:aws:execute-api:my-app-region:*:my-signup-api/prod'],
+    },
+  ],
+  authenticationProviders: {
+    facebook: 'my-facebook-app-id',
+  },
+});
+```
 
 #### Associating a Provider Through a User Pool
 
@@ -864,16 +893,16 @@ const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
 
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['execute-api'],
       resources: ['*'],
-    });
+    },
   ],
   authenticationProviders: {
     userPools: [{ userPool }] 
-  }
+  },
 });
 ```
 
@@ -884,12 +913,12 @@ pool's providers. If you want to control the the settings of the `UserPoolClient
 const userPool = new cognito.UserPool(this, 'Pool');
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['execute-api'],
       resources: ['*'],
-    });
+    };
   ],
   authenticationProviders: {
     userPools: [
@@ -932,12 +961,12 @@ token check:
 const userPool = new cognito.UserPool(this, 'Pool');
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['execute-api'],
       resources: ['*'],
-    });
+    };
   ],
   authenticationProviders: {
     userPools: [
@@ -970,12 +999,12 @@ You can associate with one or more [external identity providers](https://docs.aw
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['execute-api'],
       resources: ['*'],
-    });
+    };
   ],
   authenticationProviders: {
     amazon: 'amzn1.application.12312k3j234j13rjiwuenf',
@@ -1008,12 +1037,12 @@ const samlProvider = new iam.SamlProvider(this, 'my-saml-provider', ...);
 
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['execute-api'],
       resources: ['*'],
-    });
+    };
   ],
   authenticationProviders: {
     openIdConnectProvider: openIdConnectProvider,
@@ -1034,12 +1063,12 @@ pool, so to add more you'd need to integrate them with OpenIdConnect or another 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['execute-api'],
       resources: ['*'],
-    });
+    };
   ],
   authenticationProviders: {
     google: '12345678012.apps.googleusercontent.com',
@@ -1110,17 +1139,16 @@ Authentication Flow, you can do so using `IdentityPoolProps.allowClassicFlow`:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['execute-api'],
       resources: ['*'],
-    });
+    };
   ],
   allowClassicFlow: true,
 });
 ```
-
 
 ### Cognito Sync
 
@@ -1131,12 +1159,12 @@ of an Identity Pool:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  authenticatedPermissions: [
-    new iam.PolicyStatement({
+  userPermissions: [
+    {
       effect: iam.Effect.ALLOW,
       actions: ['execute-api'],
       resources: ['*'],
-    });
+    },
   ],
   pushSyncConfig: {
     applicationArns: ['arn::my::application'],

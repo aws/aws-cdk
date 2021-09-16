@@ -7,6 +7,7 @@ import {
   IRole,
   Role,
   PolicyStatement,
+  PolicyStatementProps,
   FederatedPrincipal,
 } from '@aws-cdk/aws-iam';
 import {
@@ -72,16 +73,16 @@ export interface IdentityPoolProps {
   readonly identityPoolName?: string;
 
   /**
-   * Additional Policy Statements to add to Default Authenticated Role
+   * Additional Policy Statements to add to Default Authenticated Role for authenticated users
    * @default - No Permissions added
    */
-  readonly authenticatedPermissions?: PolicyStatement[];
+  readonly userPermissions?: PolicyStatementProps[];
 
   /**
-   * Additional Policy Statements to add to Default Authenticated Role
+   * Additional Policy Statements to add to Default Authenticated Role for unauthenticated users
    * @default - No Permissions
    */
-  readonly unauthenticatedPermissions?: PolicyStatement[];
+  readonly guestPermissions?: PolicyStatementProps[];
 
   /**
    * The action used with credentials to assume the default authenticated or unauthenticated role
@@ -94,12 +95,6 @@ export interface IdentityPoolProps {
    * @default - no Role Mappings
    */
   readonly roleMappings?: IdentityPoolRoleMapping[];
-
-  /**
-   * Whether to allow unauthenticated identities access to identity pool
-   * @default false
-   */
-  readonly allowUnauthenticatedIdentities?: boolean;
 
   /**
    * Enables the Basic (Classic) authentication flow
@@ -430,6 +425,16 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = [];
 
+  /**
+   * Default role for authenticated users
+   */
+  private authenticatedRole: Role;
+
+  /**
+   * Default role for unauthenticated users
+   */
+  private unauthenticatedRole: Role;
+
   constructor(scope: Construct, private id: string, props:IdentityPoolProps = {}) {
     super(scope, id, {
       physicalName: props.identityPoolName || Lazy.string({ produce: () => this.generateUniqueId() }),
@@ -439,7 +444,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     const providers = this.configureUserPools(authProviders.userPools as UserPoolAuthenticationProviderProps[]);
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
     this.cfnIdentityPool = new CfnIdentityPool(this, id, {
-      allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
+      allowUnauthenticatedIdentities: props.guestPermissions && props.guestPermissions.length ? true : false,
       allowClassicFlow: props.allowClassicFlow,
       identityPoolName: props.identityPoolName,
       developerProviderName: authProviders.customProvider,
@@ -458,9 +463,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
       resourceName: this.identityPoolId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
-    const authRole = this.configureDefaultRole('Authenticated', props.authenticatedPermissions, props.assumeAction);
-    const unauthRole = this.configureDefaultRole('Unauthenticated', props.unauthenticatedPermissions, props.assumeAction);
-    this.configureRoleAttachment(authRole, unauthRole, ...(props.roleMappings || []));
+    this.authenticatedRole = this.configureDefaultRole('Authenticated', props.userPermissions, props.assumeAction);
+    this.unauthenticatedRole = this.configureDefaultRole('Unauthenticated', props.guestPermissions, props.assumeAction);
+    this.configureRoleAttachment(this.authenticatedRole, this.unauthenticatedRole, ...(props.roleMappings || []));
   }
 
   /**
@@ -498,11 +503,31 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
+   * Add permissions to default role for authenticated users
+   */
+  public addUserPermissions(...statements: PolicyStatementProps[]): void {
+    statements.forEach(statement => this.authenticatedRole.addToPolicy(
+      new PolicyStatement(statement)
+    ));
+  }
+
+  /**
+   * Add permissions to default role for unauthenticated users
+   */
+  public addGuestPermissions(...statements: PolicyStatementProps[]): void {
+    statements.forEach(statement => this.unauthenticatedRole.addToPolicy(
+      new PolicyStatement(statement)
+    ));
+    // Make sure `allowUnauthenticatedIdentities` is true now that there are guest permissions
+    this.node.addPropertyOverride('AllowUnauthenticatedIdentities', true);
+  }
+
+  /**
    * Configure Default Roles For Identity Pool
   */
   private configureDefaultRole(
     type: string,
-    additionalPolicyStatements: PolicyStatement[] = [],
+    additionalPermissions: PolicyStatementProps[] = [],
     action: string = 'sts:AssumeRoleWithWebIdentity',
   ): Role {
     const name = this.id + type + 'Role';
@@ -518,7 +543,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
         },
       }, action),
     });
-    additionalPolicyStatements.forEach(statement => role.addToPolicy(statement));
+    additionalPermissions.forEach(statement => role.addToPolicy(
+      new PolicyStatement(statement)
+    ));
     return role;
   }
 

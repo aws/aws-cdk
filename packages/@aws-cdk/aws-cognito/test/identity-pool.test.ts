@@ -9,7 +9,6 @@ import {
   SamlMetadataDocument,
   Effect,
   PolicyDocument,
-  PolicyStatement,
 } from '@aws-cdk/aws-iam';
 import { Function } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
@@ -57,22 +56,29 @@ describe('identity pool', () => {
 
   test('adding actions and resources to default roles', () => {
     const stack = new Stack();
-    new IdentityPool(stack, 'TestIdentityPoolActions', {
-      allowUnauthenticatedIdentities: true,
-      authenticatedPermissions: [new PolicyStatement({
+    const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
+      userPermissions: [{
         effect: Effect.ALLOW,
         actions: ['execute-api:*'],
         resources: ['*'],
-      })],
-      unauthenticatedPermissions: [new PolicyStatement({
+      }],
+      guestPermissions: [{
         effect: Effect.ALLOW,
         actions: ['execute-api:*'],
         resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
-      })],
+      }],
+    });
+    identityPool.addUserPermissions({
+      effect: Effect.ALLOW,
+      actions: ['dynamodb:*'],
+      resources: ['*'],
     });
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 2);
-    temp.resourceCountIs('AWS::IAM::Policy', 2);
+    temp.resourceCountIs('AWS::IAM::Policy', 3);
+    temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
+      AllowUnauthenticatedIdentities: true,
+    })
     temp.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -96,13 +102,25 @@ describe('identity pool', () => {
         ],
       },
     });
+
+    temp.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:*',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      },
+    });
   });
 
   test('changing assume action', () => {
     const stack = new Stack();
     new IdentityPool(stack, 'TestIdentityPoolActions', {
       assumeAction: 'sts:AssumeRole',
-      authenticatedPermissions: [new PolicyStatement({
+      userPermissions: [new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ['execute-api:*'],
         resources: ['*'],
@@ -305,7 +323,6 @@ describe('identity pool', () => {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
     });
     new IdentityPool(stack, 'TestIdentityPoolPushSyncStreamsEventsEtc', {
-      allowUnauthenticatedIdentities: true,
       identityPoolName: 'my-id-pool',
       pushSyncConfig: {
         applicationArns: ['arn::my::application'],
@@ -325,7 +342,6 @@ describe('identity pool', () => {
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 4);
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
-      AllowUnauthenticatedIdentities: true,
       CognitoEvents: {
         SyncTrigger: 'arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger',
       },
