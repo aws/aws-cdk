@@ -1,12 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Repository, RepositoryProps } from '../lib';
 
-export = {
-  'CodeCommit Repositories': {
-    'add an SNS trigger to repository'(test: Test) {
+describe('codecommit', () => {
+  describe('CodeCommit Repositories', () => {
+    test('add an SNS trigger to repository', () => {
       const stack = new Stack();
 
       const props: RepositoryProps = {
@@ -17,7 +16,7 @@ export = {
 
       new Repository(stack, 'MyRepository', props).notify(snsArn);
 
-      expect(stack).toMatch({
+      expect(stack).toMatchTemplate({
         Resources: {
           MyRepository4C4BD5FC: {
             Type: 'AWS::CodeCommit::Repository',
@@ -37,22 +36,22 @@ export = {
         },
       });
 
-      test.done();
-    },
 
-    'fails when triggers have duplicate names'(test: Test) {
+    });
+
+    test('fails when triggers have duplicate names', () => {
       const stack = new Stack();
 
       const myRepository = new Repository(stack, 'MyRepository', {
         repositoryName: 'MyRepository',
       }).notify('myTrigger');
 
-      test.throws(() => myRepository.notify('myTrigger'));
+      expect(() => myRepository.notify('myTrigger')).toThrow();
 
-      test.done();
-    },
 
-    'can be imported using a Repository ARN'(test: Test) {
+    });
+
+    test('can be imported using a Repository ARN', () => {
       // GIVEN
       const stack = new Stack();
       const repositoryArn = 'arn:aws:codecommit:us-east-1:585695036304:my-repo';
@@ -61,16 +60,16 @@ export = {
       const repo = Repository.fromRepositoryArn(stack, 'ImportedRepo', repositoryArn);
 
       // THEN
-      test.deepEqual(stack.resolve(repo.repositoryArn), repositoryArn);
-      test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
+      expect(stack.resolve(repo.repositoryArn)).toEqual(repositoryArn);
+      expect(stack.resolve(repo.repositoryName)).toEqual('my-repo');
 
-      test.done();
-    },
+
+    });
 
     /**
      * Fix for https://github.com/aws/aws-cdk/issues/10630
      */
-    'can be imported using a Repository ARN and respect the region in clone urls'(test: Test) {
+    test('can be imported using a Repository ARN and respect the region in clone urls', () => {
       // GIVEN
       const stack = new Stack();
       const repositoryArn = 'arn:aws:codecommit:us-west-2:585695036304:my-repo';
@@ -80,7 +79,7 @@ export = {
 
       // THEN
       // a fully qualified arn should use the region from the arn
-      test.deepEqual(stack.resolve(repo.repositoryCloneUrlHttp), {
+      expect(stack.resolve(repo.repositoryCloneUrlHttp)).toEqual({
         'Fn::Join': [
           '',
           [
@@ -91,7 +90,7 @@ export = {
         ],
       });
 
-      test.deepEqual(stack.resolve(repo.repositoryCloneUrlSsh), {
+      expect(stack.resolve(repo.repositoryCloneUrlSsh)).toEqual({
         'Fn::Join': [
           '',
           [
@@ -102,15 +101,15 @@ export = {
         ],
       });
 
-      test.deepEqual(stack.resolve(repo.repositoryCloneUrlGrc), 'codecommit::us-west-2://my-repo');
+      expect(stack.resolve(repo.repositoryCloneUrlGrc)).toEqual('codecommit::us-west-2://my-repo');
 
-      test.deepEqual(repo.env.account, '585695036304');
-      test.deepEqual(repo.env.region, 'us-west-2');
+      expect(repo.env.account).toEqual('585695036304');
+      expect(repo.env.region).toEqual('us-west-2');
 
-      test.done();
-    },
 
-    'can be imported using just a Repository name (the ARN is deduced)'(test: Test) {
+    });
+
+    test('can be imported using just a Repository name (the ARN is deduced)', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -118,7 +117,7 @@ export = {
       const repo = Repository.fromRepositoryName(stack, 'ImportedRepo', 'my-repo');
 
       // THEN
-      test.deepEqual(stack.resolve(repo.repositoryArn), {
+      expect(stack.resolve(repo.repositoryArn)).toEqual({
         'Fn::Join': ['', [
           'arn:',
           { Ref: 'AWS::Partition' },
@@ -129,10 +128,10 @@ export = {
           ':my-repo',
         ]],
       });
-      test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
+      expect(stack.resolve(repo.repositoryName)).toEqual('my-repo');
 
       //local name resolution should use stack region
-      test.deepEqual(stack.resolve(repo.repositoryCloneUrlHttp), {
+      expect(stack.resolve(repo.repositoryCloneUrlHttp)).toEqual({
         'Fn::Join': [
           '',
           [
@@ -145,7 +144,7 @@ export = {
         ],
       });
 
-      test.deepEqual(stack.resolve(repo.repositoryCloneUrlGrc), {
+      expect(stack.resolve(repo.repositoryCloneUrlGrc)).toEqual({
         'Fn::Join': [
           '',
           [
@@ -156,10 +155,10 @@ export = {
         ],
       });
 
-      test.done();
-    },
 
-    'grant push'(test: Test) {
+    });
+
+    test('grant push', () => {
       // GIVEN
       const stack = new Stack();
       const repository = new Repository(stack, 'Repo', {
@@ -173,7 +172,7 @@ export = {
       repository.grantPullPush(role);
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -199,19 +198,19 @@ export = {
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'HTTPS (GRC) clone URL'(test: Test) {
+    });
+
+    test('HTTPS (GRC) clone URL', () => {
       const stack = new Stack();
 
       const repository = new Repository(stack, 'Repository', {
         repositoryName: 'my-repo',
       });
 
-      test.deepEqual(stack.resolve(repository.repositoryCloneUrlGrc), {
+      expect(stack.resolve(repository.repositoryCloneUrlGrc)).toEqual({
         'Fn::Join': [
           '',
           [
@@ -223,7 +222,7 @@ export = {
         ],
       });
 
-      test.done();
-    },
-  },
-};
+
+    });
+  });
+});

@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as codecommit from '../lib';
 
-export = {
-  'CodeCommit Repositories - can create notification rule'(test: Test) {
+describe('notification rule', () => {
+  test('CodeCommit Repositories - can create notification rule', () => {
     const stack = new cdk.Stack();
     const repository = new codecommit.Repository(stack, 'MyCodecommitRepository', {
       repositoryName: 'my-test-repository',
@@ -17,7 +16,7 @@ export = {
 
     repository.notifiyOnPullRequestMerged('NotifyOnPullRequestMerged', target);
 
-    expect(stack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
+    expect(stack).toHaveResource('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyCodecommitRepositoryNotifyOnPullRequestCreatedBB14EA32',
       DetailType: 'FULL',
       EventTypeIds: [
@@ -37,9 +36,9 @@ export = {
           TargetType: 'SNS',
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::CodeStarNotifications::NotificationRule', {
+    expect(stack).toHaveResource('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyCodecommitRepositoryNotifyOnPullRequestMerged34A7EDF1',
       DetailType: 'FULL',
       EventTypeIds: [
@@ -59,8 +58,8 @@ export = {
           TargetType: 'SNS',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});
