@@ -178,7 +178,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
 }
 
-class ImportedKubectlProvider extends NestedStack implements IKubectlProvider {
+class ImportedKubectlProvider extends CoreConstruct implements IKubectlProvider {
 
   /**
    * The custom resource provider's service token.
