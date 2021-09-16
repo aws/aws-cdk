@@ -98,6 +98,7 @@ new Service(stack, 'Service', {
   }),
 });
 ```
+
 Use `codeConfigurationValues` to override configuration values with the `API` configuration source type.
 
 ```ts
