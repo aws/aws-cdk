@@ -7,7 +7,7 @@
           "AuthenticationConfiguration": {},
           "ImageRepository": {
             "ImageConfiguration": {
-              "Port": "80"
+              "Port": "8000"
             },
             "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
             "ImageRepositoryType": "ECR_PUBLIC"
@@ -203,7 +203,7 @@
           },
           "ImageRepository": {
             "ImageConfiguration": {
-              "Port": "80"
+              "Port": "8000"
             },
             "ImageIdentifier": {
               "Fn::Join": [
@@ -240,6 +240,31 @@
           "CodeRepository": {
             "CodeConfiguration": {
               "ConfigurationSource": "REPOSITORY"
+            },
+            "RepositoryUrl": "https://github.com/aws-containers/hello-app-runner",
+            "SourceCodeVersion": {
+              "Type": "BRANCH",
+              "Value": "main"
+            }
+          }
+        },
+        "InstanceConfiguration": {}
+      }
+    },
+    "Service5AD92B5A5": {
+      "Type": "AWS::AppRunner::Service",
+      "Properties": {
+        "SourceConfiguration": {
+          "AuthenticationConfiguration": {
+            "ConnectionArn": "MOCK"
+          },
+          "CodeRepository": {
+            "CodeConfiguration": {
+              "CodeConfigurationValues": {
+                "Port": "8000",
+                "Runtime": "PYTHON_3"
+              },
+              "ConfigurationSource": "API"
             },
             "RepositoryUrl": "https://github.com/aws-containers/hello-app-runner",
             "SourceCodeVersion": {
@@ -310,6 +335,22 @@
             {
               "Fn::GetAtt": [
                 "Service429949929",
+                "ServiceUrl"
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "URL5": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "Service5AD92B5A5",
                 "ServiceUrl"
               ]
             }

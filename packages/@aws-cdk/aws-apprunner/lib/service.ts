@@ -1,5 +1,5 @@
 import * as ecr from '@aws-cdk/aws-ecr';
-import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
+import * as assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -120,52 +120,49 @@ export class Runtime {
 
 
 /**
- * The configuration for the Code.
+ * Result of binding `Source` into a `Service`.
  */
-export interface CodeConfig {
+export interface SourceConfig {
   /**
-   * The image repository configuration.
+   * The image repository configuration (mutually exclusive  with `codeRepository`).
    *
    * @default - no image repository.
    */
   readonly imageRepository?: ImageRepository;
 
   /**
-   * The ECR repository.
+   * The ECR repository (required to grant the pull privileges for the iam role).
    *
    * @default - no ECR repository.
    */
   readonly ecrRepository?: ecr.IRepository;
 
   /**
-   * The code repository configuration.
+   * The code repository configuration (mutually exclusive  with `imageRepository`).
    *
    * @default - no code repository.
    */
   readonly codeRepository?: CodeRepositoryProps;
-
-  /**
-   * The github connectoin for the app runner.
-   *
-   * @default - no github connection.
-   */
-  readonly connection?: GitHubConnection;
 }
 
 /**
- * Properties of the Github repository.
+ * Properties of the Github repository for `Source.fromGitHub()`
  */
 export interface GithubRepositoryProps {
+  /**
+   * The code configuration values. Will be ignored if configurationSource is `REPOSITORY`.
+   */
+  readonly codeConfigurationValues?: CodeConfigurationValues;
+
+  /**
+   * The source of the App Runner configuration.
+   */
+  readonly configurationSource: ConfigurationSourceType;
+
   /**
    * The location of the repository that contains the source code.
    */
   readonly repositoryUrl: string;
-
-  /**
-   * A runtime environment type for building and running an App Runner service.
-   * It represents a programming language runtime.
-   */
-  readonly runtime: Runtime;
 
   /**
    * The branch name that represents a specific version for the repository.
@@ -178,81 +175,137 @@ export interface GithubRepositoryProps {
    * ARN of the connection to Github. Only required for Github source.
    */
   readonly connection: GitHubConnection;
+}
 
-  /**
-   * The command App Runner runs to build your application.
-   *
-   * @default - no build command.
-   */
-  readonly buildCommand?: string;
 
-  /**
-   * The port that your application listens to in the container.
-   *
-   * @default 8080
-   */
-  readonly port?: number;
-
-  /**
-   * The command App Runner runs to start your application.
-   *
-   * @default - no start command.
-   */
-  readonly startCommand?: string;
-
-  /**
-   * The environment variables that are available to your running App Runner service.
-   * Keys with a prefix of AWSAPPRUNNER are reserved for system use and aren't valid.
-   *
-   * @default - no environment variables
-   */
-  readonly environment?: {[s: string]: string}
+/**
+ * Properties of the image repository for `Source.fromEcrPublic()`
+ */
+export interface EcrPublicProps {
+  readonly imageConfiguration?: ImageConfiguration;
+  readonly imageIdentifier: string;
 }
 
 /**
- * Represents the source of the repositories for the service.
+ * Properties of the image repository for `Source.fromEcr()`
  */
-export class Code {
+export interface EcrProps {
+  readonly imageConfiguration?: ImageConfiguration;
+  readonly repository: ecr.IRepository;
+  /**
+   * Image tag.
+   * @default - 'latest'
+   */
+  readonly tag?: string;
+}
+
+/**
+ * Properties of the image repository for `Source.fromAsset()`
+ */
+export interface AssetProps {
+  readonly imageConfiguration?: ImageConfiguration;
+  readonly asset: assets.DockerImageAsset;
+}
+
+
+
+/**
+ * Represents the App Runner service source.
+ */
+export abstract class Source {
   /**
    * Code from the GitHub repository.
    */
-  public static fromGitHub(props: GithubRepositoryProps): CodeConfig {
+  public static fromGitHub(props: GithubRepositoryProps): GithubSource {
+    return new GithubSource(props)
+  }
+  public static fromEcr(props: EcrProps): EcrSource {
+    return new EcrSource(props)
+  }
+  public static fromEcrPublic(props: EcrPublicProps): EcrPublicSource {
+    return new EcrPublicSource(props)
+  }
+  public static fromAsset(props: AssetProps): AssetSource {
+    return new AssetSource(props)
+  }
+  /**
+    * Called when the Job is initialized to allow this object to bind.
+    */
+  public abstract bind(scope: Construct): SourceConfig;
+}
+
+export class GithubSource extends Source {
+  private readonly props: GithubRepositoryProps
+  constructor(props: GithubRepositoryProps) {
+    super()
+    this.props = props
+  }
+  public bind(_scope: Construct): SourceConfig {
     return {
-      connection: props.connection,
       codeRepository: {
         codeConfiguration: {
-          configurationValues: {
-            runtime: props.runtime,
-            buildCommand: props.buildCommand,
-            port: props.port?.toString(),
-            startCommand: props.startCommand,
-            environment: props.environment,
-          },
-          configurationSource: ConfigurationSourceType.REPOSITORY,
+          configurationSource: this.props.configurationSource,
+          configurationValues: this.props.codeConfigurationValues,
         },
-        repositoryUrl: props.repositoryUrl,
+        repositoryUrl: this.props.repositoryUrl,
         sourceCodeVersion: {
           type: 'BRANCH',
-          value: props.branch ?? 'main',
+          value: this.props.branch ?? 'main',
         },
+        connection: this.props.connection,
       },
     };
   }
-  /**
-   * Code from the container image.
-   */
-  public static fromImage(assets: ContainerImage, options?: ImageConfiguration): CodeConfig {
+}
+export class EcrSource extends Source {
+  private readonly props: EcrProps
+  constructor(props: EcrProps) {
+    super()
+    this.props = props
+  }
+  public bind(_scope: Construct): SourceConfig {
     return {
-      ecrRepository: assets.ecrRepository,
       imageRepository: {
-        imageIdentifier: assets.uri,
-        imageRepositoryType: assets.type,
-        imageConfiguration: options ? {
-          port: options.port,
-          environment: options.environment,
-          startCommand: options.startCommand,
-        } : {},
+        imageConfiguration: this.props.imageConfiguration,
+        imageIdentifier: this.props.repository.repositoryUriForTag(this.props.tag || 'latest'),
+        imageRepositoryType: ImageRepositoryType.ECR,
       },
+      ecrRepository: this.props.repository,
+    };
+  }
+}
+
+export class EcrPublicSource extends Source {
+  private readonly props: EcrPublicProps;
+  constructor(props: EcrPublicProps) {
+    super()
+    this.props = props
+  }
+  public bind(_scope: Construct): SourceConfig {
+    return {
+      imageRepository: {
+        imageConfiguration: this.props.imageConfiguration,
+        imageIdentifier: this.props.imageIdentifier,
+        imageRepositoryType: ImageRepositoryType.ECR_PUBLIC,
+      }
+    };
+  }
+}
+
+export class AssetSource extends Source {
+  private readonly props: AssetProps
+  constructor(props: AssetProps) {
+    super()
+    this.props = props
+  }
+  public bind(_scope: Construct): SourceConfig {
+    return {
+      imageRepository: {
+        imageConfiguration: this.props.imageConfiguration,
+        imageIdentifier: this.props.asset.imageUri,
+        imageRepositoryType: ImageRepositoryType.ECR,
+      },
+      ecrRepository: this.props.asset.repository,
     };
   }
 }
@@ -311,7 +364,7 @@ export interface ImageRepository {
   /**
    * Configuration for running the identified image.
    */
-  readonly imageConfiguration: ImageConfiguration;
+  readonly imageConfiguration?: ImageConfiguration;
 }
 
 /**
@@ -349,6 +402,11 @@ export interface CodeRepositoryProps {
    * The version that should be used within the source code repository.
    */
   readonly sourceCodeVersion: SourceCodeVersion;
+
+  /**
+   * The App Runner connection for GitHub.
+   */
+  readonly connection: GitHubConnection;
 }
 
 /**
@@ -358,7 +416,7 @@ export interface ServiceProps {
   /**
    * The source of the repository for the service.
    */
-  readonly source: CodeConfig;
+  readonly source: Source;
 
   /**
    * The number of CPU units reserved for each instance of your App Runner service.
@@ -601,7 +659,7 @@ export class Service extends cdk.Resource {
   }
   private readonly props: ServiceProps;
   private accessRole?: iam.IRole;
-  private source: CodeConfig;
+  private source: SourceConfig;
 
   /**
    * The ARN of the Service.
@@ -635,12 +693,19 @@ export class Service extends cdk.Resource {
 
   public constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
-    this.props = props;
-    this.source = props.source;
 
+    const source = props.source.bind(this);
+    this.source = source;
+    this.props = props;
+  
     // generate an IAM role only when ImageRepositoryType is ECR and props.role is undefined
     this.accessRole = (this.source.imageRepository?.imageRepositoryType == ImageRepositoryType.ECR) ?
       this.props.accessRole ? this.props.accessRole : this.generateDefaultRole() : undefined;
+  
+    if (source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY && 
+      source.codeRepository?.codeConfiguration.configurationValues) {
+      throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository')
+    }
 
     const resource = new CfnService(this, 'Resource', {
       instanceConfiguration: {
@@ -650,15 +715,14 @@ export class Service extends cdk.Resource {
       },
       sourceConfiguration: {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
-        imageRepository: this.source.imageRepository ?
-          this.renderImageRepository(this.source.imageRepository) : undefined,
-        codeRepository: this.source.codeRepository,
+        imageRepository: source.imageRepository ? this.renderImageRepository() : undefined,
+        codeRepository: source.codeRepository ? this.renderCodeConfiguration() : undefined,
       },
     });
 
     // grant required privileges for the role
-    if (this.source.ecrRepository && this.accessRole) {
-      this.source.ecrRepository.grantPull(this.accessRole);
+    if (source.ecrRepository && this.accessRole) {
+      source.ecrRepository.grantPull(this.accessRole);
     }
 
     this.serviceArn = resource.attrServiceArn;
@@ -670,12 +734,32 @@ export class Service extends cdk.Resource {
   private renderAuthenticationConfiguration(): AuthenticationConfiguration {
     return {
       accessRoleArn: this.accessRole?.roleArn,
-      connectionArn: this.source.connection?.connectionArn,
+      connectionArn: this.source.codeRepository?.connection?.connectionArn,
     };
   }
-  private renderImageRepository(repo: ImageRepository): any {
-  // convert port from number to string
-    if (repo.imageConfiguration.port) {
+  private renderCodeConfiguration() {
+    return {
+      codeConfiguration: {
+        configurationSource: this.source.codeRepository!.codeConfiguration.configurationSource,
+        // codeConfigurationValues will be ignored if configurationSource is REPOSITORY
+        codeConfigurationValues: this.source.codeRepository!.codeConfiguration.configurationValues ?
+          this.renderCodeConfigurationValues(this.source.codeRepository!.codeConfiguration.configurationValues) : undefined,
+      },
+      repositoryUrl: this.source.codeRepository!.repositoryUrl,
+      sourceCodeVersion: this.source.codeRepository!.sourceCodeVersion,
+    }
+
+  }
+  private renderCodeConfigurationValues(props: CodeConfigurationValues): any {
+    return {
+      ...props,
+      runtime: props.runtime.name,
+    }
+  }
+  private renderImageRepository(): any {
+    const repo = this.source.imageRepository!
+    if (repo.imageConfiguration?.port) {
+      // convert port from type number to string
       return Object.assign(repo, {
         imageConfiguration: {
           port: repo.imageConfiguration.port.toString(),
@@ -697,49 +781,4 @@ export class Service extends cdk.Resource {
     this.accessRole = accessRole;
     return accessRole;
   }
-}
-
-/**
- * The container image for the App Runner service.
- */
-export class ContainerImage {
-  /**
-   * Using the ECR Public repository.
-   * @param uri URL of the ECR Public registry
-   * @returns ContainerImage
-   */
-  public static fromEcrPublic(uri: string): ContainerImage {
-    return new ContainerImage(ImageRepositoryType.ECR_PUBLIC, uri);
-  }
-  /**
-   * Using the ECR repository.
-   * @param repository The ECR repository.
-   * @param tag The image tag. Default `latest`.
-   * @returns
-   */
-  public static fromEcrRepository(repository: ecr.IRepository, tag?: string): ContainerImage {
-    const uri = repository.repositoryUriForTag(tag || 'latest');
-    return new ContainerImage(ImageRepositoryType.ECR, uri, repository );
-  }
-
-  /**
-   * Using local docker image assets. On deployment, local image assets will be built and pushed to Amazon ECR.
-   * @param assert docker image asset
-   * @returns ContainerImage
-   */
-  public static fromDockerImageAssets(assert: DockerImageAsset): ContainerImage {
-    return {
-      type: ImageRepositoryType.ECR,
-      uri: assert.imageUri,
-      ecrRepository: assert.repository,
-    };
-  }
-
-  /**
-   *
-   * @param type Image repository type.
-   * @param uri Image repository URI.
-   * @param ecrRepository ECR Repository.
-   */
-  protected constructor(public readonly type: ImageRepositoryType, public readonly uri: string, public readonly ecrRepository?: ecr.IRepository) { }
 }

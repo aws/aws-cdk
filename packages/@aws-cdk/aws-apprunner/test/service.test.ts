@@ -4,7 +4,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Service, ContainerImage, GitHubConnection, Runtime, Code, Cpu, Memory } from '../lib';
+import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType } from '../lib';
 
 let app: cdk.App;
 let env: { region: string; account: string };
@@ -22,9 +22,11 @@ beforeEach(() => {
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {
   // WHEN
-  const image = ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest');
   new Service(stack, 'DemoService', {
-    source: Code.fromImage(image, { port: 80 }),
+    source: Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
   });
 
   // THEN
@@ -34,7 +36,7 @@ test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () =
       AuthenticationConfiguration: {},
       ImageRepository: {
         ImageConfiguration: {
-          Port: '80',
+          Port: '8000',
         },
         ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
         ImageRepositoryType: 'ECR_PUBLIC',
@@ -45,12 +47,12 @@ test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () =
 
 test('create a service from existing ECR repository(image repository type: ECR)', () => {
   // GIVEN
-  const repo = ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx');
-  const image = ContainerImage.fromEcrRepository(repo);
-
   // WHEN
   new Service(stack, 'Service', {
-    source: Code.fromImage(image, { port: 80 }),
+    source: Source.fromEcr({
+      imageConfiguration: { port: 80 },
+      repository: ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx'),
+    }),
   });
 
   // THEN
@@ -104,13 +106,15 @@ test('create a service from existing ECR repository(image repository type: ECR)'
 
 test('create a service with local assets(image repository type: ECR)', () => {
   // GIVEN
-  const dockerAssets = new ecr_assets.DockerImageAsset(stack, 'Assets', {
+  const dockerAsset = new ecr_assets.DockerImageAsset(stack, 'Assets', {
     directory: path.join(__dirname, './docker.assets'),
   });
-  const image = ContainerImage.fromDockerImageAssets(dockerAssets);
   // WHEN
   new Service(stack, 'DemoService', {
-    source: Code.fromImage(image, { port: 8000 }),
+    source: Source.fromAsset({
+      imageConfiguration: { port: 8000 },
+      asset: dockerAsset,
+    }),
   });
 
   // THEN
@@ -166,10 +170,10 @@ test('create a service with local assets(image repository type: ECR)', () => {
 test('create a service with github repository', () => {
   // WHEN
   new Service(stack, 'DemoService', {
-    source: Code.fromGitHub({
+    source: Source.fromGitHub({
       repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
       branch: 'main',
-      runtime: Runtime.PYTHON_3,
+      configurationSource: ConfigurationSourceType.REPOSITORY,
       connection: GitHubConnection.fromConnectionArn('MOCK'),
     }),
   });
@@ -198,9 +202,13 @@ test('create a service with github repository', () => {
 test('create a service with github repository - undefined branch name is allowed', () => {
   // WHEN
   new Service(stack, 'DemoService', {
-    source: Code.fromGitHub({
+    source: Source.fromGitHub({
       repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
-      runtime: Runtime.PYTHON_3,
+      configurationSource: ConfigurationSourceType.API,
+      codeConfigurationValues: {
+        runtime: Runtime.PYTHON_3,
+        port: '8000',
+      },
       connection: GitHubConnection.fromConnectionArn('MOCK'),
     }),
   });
@@ -214,7 +222,11 @@ test('create a service with github repository - undefined branch name is allowed
       },
       CodeRepository: {
         CodeConfiguration: {
-          ConfigurationSource: 'REPOSITORY',
+          CodeConfigurationValues: {
+            Port: '8000',
+            Runtime: 'PYTHON_3',
+          },
+          ConfigurationSource: 'API',
         },
         RepositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
         SourceCodeVersion: {
@@ -251,11 +263,12 @@ test('import from service attributes)', () => {
 });
 
 
-test('undefined port is allowed', () => {
+test('undefined imageConfiguration port is allowed', () => {
   // WHEN
-  const image = ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest');
   new Service(stack, 'Service', {
-    source: Code.fromImage(image),
+    source: Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
   });
 
   // THEN
@@ -264,7 +277,6 @@ test('undefined port is allowed', () => {
     SourceConfiguration: {
       AuthenticationConfiguration: {},
       ImageRepository: {
-        ImageConfiguration: {},
         ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
         ImageRepositoryType: 'ECR_PUBLIC',
       },
@@ -275,13 +287,14 @@ test('undefined port is allowed', () => {
 test('custom IAM access role and instance role are allowed', () => {
   // WHEN
   // GIVEN
-  const dockerAssets = new ecr_assets.DockerImageAsset(stack, 'Assets', {
+  const dockerAsset = new ecr_assets.DockerImageAsset(stack, 'Assets', {
     directory: path.join(__dirname, './docker.assets'),
   });
-  const image = ContainerImage.fromDockerImageAssets(dockerAssets);
-  // WHEN
   new Service(stack, 'DemoService', {
-    source: Code.fromImage(image, { port: 80 }),
+    source: Source.fromAsset({
+      asset: dockerAsset,
+      imageConfiguration: { port: 8000 },
+    }),
     accessRole: new iam.Role(stack, 'AccessRole', {
       assumedBy: new iam.ServicePrincipal('build.apprunner.amazonaws.com'),
       managedPolicies: [
@@ -306,7 +319,7 @@ test('custom IAM access role and instance role are allowed', () => {
       },
       ImageRepository: {
         ImageConfiguration: {
-          Port: '80',
+          Port: '8000',
         },
         ImageIdentifier: {
           'Fn::Join': [
@@ -336,9 +349,10 @@ test('custom IAM access role and instance role are allowed', () => {
 
 test('cpu and memory properties are allowed', () => {
   // WHEN
-  const image = ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest');
   new Service(stack, 'DemoService', {
-    source: Code.fromImage(image, { port: 80 }),
+    source: Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
     cpu: Cpu.ONE_VCPU,
     memory: Memory.THREE_GB,
   });
@@ -353,9 +367,10 @@ test('cpu and memory properties are allowed', () => {
 
 test('custom cpu and memory units are allowed', () => {
   // WHEN
-  const image = ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest');
   new Service(stack, 'DemoService', {
-    source: Code.fromImage(image, { port: 80 }),
+    source: Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
     cpu: Cpu.of('Some vCPU'),
     memory: Memory.of('Some GB'),
   });
