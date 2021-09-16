@@ -260,7 +260,7 @@ export class CdkPipeline extends CoreConstruct {
     }
 
     if (props.enableKeyRotation && props.crossAccountKeys) {
-      throw new Error(`Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled`);
+      throw new Error('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
     }
 
     if (props.sourceAction) {
