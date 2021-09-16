@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as asg from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -9,7 +10,6 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
 import * as constructs from 'constructs';
-import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
@@ -19,9 +19,9 @@ import { testFixture, testFixtureNoVpc } from './util';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
-export = {
+describe('cluster', () => {
 
-  'can specify custom environment to cluster resource handler'(test: Test) {
+  test('can specify custom environment to cluster resource handler', () => {
 
     const { stack } = testFixture();
 
@@ -34,92 +34,91 @@ export = {
 
     const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
 
-    test.deepEqual(expect(nested).value.Resources.OnEventHandler42BEBAE0.Properties.Environment, { Variables: { foo: 'bar' } });
-    test.done();
+    const template = SynthUtils.toCloudFormation(nested);
+    expect(template.Resources.OnEventHandler42BEBAE0.Properties.Environment).toEqual({ Variables: { foo: 'bar' } });
 
-  },
 
-  'throws when trying to place cluster handlers in a vpc with no private subnets'(test: Test) {
+  });
+
+  test('throws when trying to place cluster handlers in a vpc with no private subnets', () => {
     const { stack } = testFixture();
 
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    test.throws(() => {
+    expect(() => {
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
         placeClusterHandlerInVpc: true,
         vpc: vpc,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
       });
-    }, /Cannot place cluster handler in the VPC since no private subnets could be selected/);
+    }).toThrow(/Cannot place cluster handler in the VPC since no private subnets could be selected/);
 
-    test.done();
-  },
 
-  'imported Vpc from unparseable list tokens': (() => {
+  });
+
+  describe('imported Vpc from unparseable list tokens', () => {
     let stack: cdk.Stack;
     let vpc: ec2.IVpc;
 
-    return {
-      'setUp'(cb: () => void) {
-        stack = new cdk.Stack();
-        const vpcId = cdk.Fn.importValue('myVpcId');
-        const availabilityZones = cdk.Fn.split(',', cdk.Fn.importValue('myAvailabilityZones'));
-        const publicSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPublicSubnetIds'));
-        const privateSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPrivateSubnetIds'));
-        const isolatedSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myIsolatedSubnetIds'));
+    beforeEach(() => {
+      stack = new cdk.Stack();
+      const vpcId = cdk.Fn.importValue('myVpcId');
+      const availabilityZones = cdk.Fn.split(',', cdk.Fn.importValue('myAvailabilityZones'));
+      const publicSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPublicSubnetIds'));
+      const privateSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPrivateSubnetIds'));
+      const isolatedSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myIsolatedSubnetIds'));
 
-        vpc = ec2.Vpc.fromVpcAttributes(stack, 'importedVpc', {
-          vpcId,
-          availabilityZones,
-          publicSubnetIds,
-          privateSubnetIds,
-          isolatedSubnetIds,
-        });
+      vpc = ec2.Vpc.fromVpcAttributes(stack, 'importedVpc', {
+        vpcId,
+        availabilityZones,
+        publicSubnetIds,
+        privateSubnetIds,
+        isolatedSubnetIds,
+      });
 
-        cb();
-      },
 
-      'throws if selecting more than one subnet group'(test: Test) {
-        test.throws(() => new eks.Cluster(stack, 'Cluster', {
-          vpc: vpc,
-          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }],
-          defaultCapacity: 0,
-          version: eks.KubernetesVersion.V1_21,
-        }), /cannot select multiple subnet groups/);
+    });
 
-        test.done();
-      },
+    test('throws if selecting more than one subnet group', () => {
+      expect(() => new eks.Cluster(stack, 'Cluster', {
+        vpc: vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }],
+        defaultCapacity: 0,
+        version: eks.KubernetesVersion.V1_21,
+      })).toThrow(/cannot select multiple subnet groups/);
 
-      'synthesis works if only one subnet group is selected'(test: Test) {
-        // WHEN
-        new eks.Cluster(stack, 'Cluster', {
-          vpc: vpc,
-          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
-          defaultCapacity: 0,
-          version: eks.KubernetesVersion.V1_21,
-        });
 
-        // THEN
-        expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
-          Config: {
-            resourcesVpcConfig: {
-              subnetIds: {
-                'Fn::Split': [
-                  ',',
-                  { 'Fn::ImportValue': 'myPublicSubnetIds' },
-                ],
-              },
+    });
+
+    test('synthesis works if only one subnet group is selected', () => {
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        vpc: vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+        defaultCapacity: 0,
+        version: eks.KubernetesVersion.V1_21,
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          resourcesVpcConfig: {
+            subnetIds: {
+              'Fn::Split': [
+                ',',
+                { 'Fn::ImportValue': 'myPublicSubnetIds' },
+              ],
             },
           },
-        }));
+        },
+      });
 
-        test.done();
-      },
-    };
-  })(),
 
-  'throws when accessing cluster security group for imported cluster without cluster security group id'(test: Test) {
+    });
+  });
+
+  test('throws when accessing cluster security group for imported cluster without cluster security group id', () => {
 
     const { stack } = testFixture();
 
@@ -127,12 +126,12 @@ export = {
       clusterName: 'cluster',
     });
 
-    test.throws(() => cluster.clusterSecurityGroup, /"clusterSecurityGroup" is not defined for this imported cluster/);
-    test.done();
+    expect(() => cluster.clusterSecurityGroup).toThrow(/"clusterSecurityGroup" is not defined for this imported cluster/);
 
-  },
 
-  'can place cluster handlers in the cluster vpc'(test: Test) {
+  });
+
+  test('can place cluster handlers in the cluster vpc', () => {
 
     const { stack } = testFixture();
 
@@ -142,9 +141,10 @@ export = {
     });
 
     const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+    const template = SynthUtils.toCloudFormation(nested);
 
     function assertFunctionPlacedInVpc(id: string) {
-      test.deepEqual(expect(nested).value.Resources[id].Properties.VpcConfig.SubnetIds, [
+      expect(template.Resources[id].Properties.VpcConfig.SubnetIds).toEqual([
         { Ref: 'referencetoStackClusterDefaultVpcPrivateSubnet1SubnetA64D1BF0Ref' },
         { Ref: 'referencetoStackClusterDefaultVpcPrivateSubnet2Subnet32D85AB8Ref' },
       ]);
@@ -156,10 +156,10 @@ export = {
     assertFunctionPlacedInVpc('ProviderframeworkisComplete26D7B0CB');
     assertFunctionPlacedInVpc('ProviderframeworkonTimeout0B47CA38');
 
-    test.done();
-  },
 
-  'can access cluster security group for imported cluster with cluster security group id'(test: Test) {
+  });
+
+  test('can access cluster security group for imported cluster with cluster security group id', () => {
 
     const { stack } = testFixture();
 
@@ -172,11 +172,11 @@ export = {
 
     const clusterSg = cluster.clusterSecurityGroup;
 
-    test.equal(clusterSg.securityGroupId, clusterSgId);
-    test.done();
-  },
+    expect(clusterSg.securityGroupId).toEqual(clusterSgId);
 
-  'cluster security group is attached when adding self-managed nodes'(test: Test) {
+  });
+
+  test('cluster security group is attached when adding self-managed nodes', () => {
 
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -192,15 +192,16 @@ export = {
       instanceType: new ec2.InstanceType('t2.medium'),
     });
 
-    test.deepEqual(expect(stack).value.Resources.ClusterselfmanagedLaunchConfigA5B57EF6.Properties.SecurityGroups, [
+    const template = SynthUtils.toCloudFormation(stack);
+    expect(template.Resources.ClusterselfmanagedLaunchConfigA5B57EF6.Properties.SecurityGroups).toEqual([
       { 'Fn::GetAtt': ['ClusterselfmanagedInstanceSecurityGroup64468C3A', 'GroupId'] },
       { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
     ]);
-    test.done();
 
-  },
 
-  'security group of self-managed asg is not tagged with owned'(test: Test) {
+  });
+
+  test('security group of self-managed asg is not tagged with owned', () => {
 
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -214,15 +215,16 @@ export = {
       instanceType: new ec2.InstanceType('t2.medium'),
     });
 
+    const template = SynthUtils.toCloudFormation(stack);
     // make sure the "kubernetes.io/cluster/<CLUSTER_NAME>: owned" tag isn't here.
-    test.deepEqual(expect(stack).value.Resources.ClusterselfmanagedInstanceSecurityGroup64468C3A.Properties.Tags, [
+    expect(template.Resources.ClusterselfmanagedInstanceSecurityGroup64468C3A.Properties.Tags).toEqual([
       { Key: 'Name', Value: 'Stack/Cluster/self-managed' },
     ]);
-    test.done();
 
-  },
 
-  'cluster security group is attached when connecting self-managed nodes'(test: Test) {
+  });
+
+  test('cluster security group is attached when connecting self-managed nodes', () => {
 
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -242,15 +244,16 @@ export = {
     // WHEN
     cluster.connectAutoScalingGroupCapacity(selfManaged, {});
 
-    test.deepEqual(expect(stack).value.Resources.selfmanagedLaunchConfigD41289EB.Properties.SecurityGroups, [
+    const template = SynthUtils.toCloudFormation(stack);
+    expect(template.Resources.selfmanagedLaunchConfigD41289EB.Properties.SecurityGroups).toEqual([
       { 'Fn::GetAtt': ['selfmanagedInstanceSecurityGroupEA6D80C9', 'GroupId'] },
       { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
     ]);
-    test.done();
 
-  },
 
-  'spot interrupt handler is not added if spotInterruptHandler is false when connecting self-managed nodes'(test: Test) {
+  });
+
+  test('spot interrupt handler is not added if spotInterruptHandler is false when connecting self-managed nodes', () => {
 
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -271,11 +274,11 @@ export = {
     // WHEN
     cluster.connectAutoScalingGroupCapacity(selfManaged, { spotInterruptHandler: false });
 
-    test.equal(cluster.node.findAll().filter(c => c.node.id === 'chart-spot-interrupt-handler').length, 0);
-    test.done();
-  },
+    expect(cluster.node.findAll().filter(c => c.node.id === 'chart-spot-interrupt-handler').length).toEqual(0);
 
-  'throws when a non cdk8s chart construct is added as cdk8s chart'(test: Test) {
+  });
+
+  test('throws when a non cdk8s chart construct is added as cdk8s chart', () => {
 
     const { stack } = testFixture();
 
@@ -287,12 +290,12 @@ export = {
     // create a plain construct, not a cdk8s chart
     const someConstruct = new constructs.Construct(stack, 'SomeConstruct');
 
-    test.throws(() => cluster.addCdk8sChart('chart', someConstruct), /Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
-    test.done();
+    expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
 
-  },
 
-  'throws when a core construct is added as cdk8s chart'(test: Test) {
+  });
+
+  test('throws when a core construct is added as cdk8s chart', () => {
 
     const { stack } = testFixture();
 
@@ -304,12 +307,12 @@ export = {
     // create a plain construct, not a cdk8s chart
     const someConstruct = new cdk.Construct(stack, 'SomeConstruct');
 
-    test.throws(() => cluster.addCdk8sChart('chart', someConstruct), /Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
-    test.done();
+    expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
 
-  },
 
-  'cdk8s chart can be added to cluster'(test: Test) {
+  });
+
+  test('cdk8s chart can be added to cluster', () => {
 
     const { stack } = testFixture();
 
@@ -335,7 +338,7 @@ export = {
 
     cluster.addCdk8sChart('cdk8s-chart', chart);
 
-    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-KubernetesResource', {
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesResource', {
       Manifest: {
         'Fn::Join': [
           '',
@@ -348,12 +351,12 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'cluster connections include both control plane and cluster security group'(test: Test) {
+  });
+
+  test('cluster connections include both control plane and cluster security group', () => {
 
     const { stack } = testFixture();
 
@@ -362,16 +365,15 @@ export = {
       prune: false,
     });
 
-    test.deepEqual(cluster.connections.securityGroups.map(sg => stack.resolve(sg.securityGroupId)), [
+    expect(cluster.connections.securityGroups.map(sg => stack.resolve(sg.securityGroupId))).toEqual([
       { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
       { 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] },
     ]);
 
-    test.done();
 
-  },
+  });
 
-  'can declare a security group from a different stack'(test: Test) {
+  test('can declare a security group from a different stack', () => {
 
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
@@ -407,10 +409,10 @@ export = {
     // make sure we can synth (no circular dependencies between the stacks)
     app.synth();
 
-    test.done();
-  },
 
-  'can declare a manifest with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
+  });
+
+  test('can declare a manifest with a token from a different stack than the cluster that depends on the cluster stack', () => {
 
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
@@ -459,10 +461,10 @@ export = {
     // make sure we can synth (no circular dependencies between the stacks)
     app.synth();
 
-    test.done();
-  },
 
-  'can declare a chart with a token from a different stack than the cluster that depends on the cluster stack'(test: Test) {
+  });
+
+  test('can declare a chart with a token from a different stack than the cluster that depends on the cluster stack', () => {
 
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
@@ -502,10 +504,10 @@ export = {
     // make sure we can synth (no circular dependencies between the stacks)
     app.synth();
 
-    test.done();
-  },
 
-  'can declare a HelmChart in a different stack than the cluster'(test: Test) {
+  });
+
+  test('can declare a HelmChart in a different stack than the cluster', () => {
 
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
@@ -536,10 +538,10 @@ export = {
     // make sure we can synth (no circular dependencies between the stacks)
     app.synth();
 
-    test.done();
-  },
 
-  'throws when declaring an ASG role in a different stack than the cluster'(test: Test) {
+  });
+
+  test('throws when declaring an ASG role in a different stack than the cluster', () => {
 
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
@@ -576,17 +578,16 @@ export = {
     const clusterStack = new ClusterStack(app, 'ClusterStack');
     const capacityStack = new CapacityStack(app, 'CapacityStack', { cluster: clusterStack.eksCluster });
 
-    try {
+    expect(() => {
       clusterStack.eksCluster.connectAutoScalingGroupCapacity(capacityStack.group, {});
-      test.ok(false, 'expected error');
-    } catch (err) {
-      test.equal(err.message, 'CapacityStack/autoScaling/InstanceRole should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
-    }
+    }).toThrow(
+      'CapacityStack/autoScaling/InstanceRole should be defined in the scope of the ClusterStack stack to prevent circular dependencies',
+    );
 
-    test.done();
-  },
 
-  'can declare a ServiceAccount in a different stack than the cluster'(test: Test) {
+  });
+
+  test('can declare a ServiceAccount in a different stack than the cluster', () => {
 
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
@@ -615,10 +616,10 @@ export = {
     // make sure we can synth (no circular dependencies between the stacks)
     app.synth();
 
-    test.done();
-  },
 
-  'a default cluster spans all subnets'(test: Test) {
+  });
+
+  test('a default cluster spans all subnets', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -626,7 +627,7 @@ export = {
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
     // THEN
-    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
         version: '1.21',
@@ -640,12 +641,12 @@ export = {
           ],
         },
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'if "vpc" is not specified, vpc with default configuration will be created'(test: Test) {
+  });
+
+  test('if "vpc" is not specified, vpc with default configuration will be created', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
 
@@ -653,13 +654,13 @@ export = {
     new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false }) ;
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::VPC'));
-    test.done();
-  },
+    expect(stack).toHaveResource('AWS::EC2::VPC');
 
-  'default capacity': {
+  });
 
-    'x2 m5.large by default'(test: Test) {
+  describe('default capacity', () => {
+
+    test('x2 m5.large by default', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
 
@@ -667,8 +668,8 @@ export = {
       const cluster = new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false });
 
       // THEN
-      test.ok(cluster.defaultNodegroup);
-      expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
+      expect(cluster.defaultNodegroup).toBeDefined();
+      expect(stack).toHaveResource('AWS::EKS::Nodegroup', {
         InstanceTypes: [
           'm5.large',
         ],
@@ -677,11 +678,11 @@ export = {
           MaxSize: 2,
           MinSize: 2,
         },
-      }));
-      test.done();
-    },
+      });
 
-    'quantity and type can be customized'(test: Test) {
+    });
+
+    test('quantity and type can be customized', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
 
@@ -694,19 +695,19 @@ export = {
       });
 
       // THEN
-      test.ok(cluster.defaultNodegroup);
-      expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
+      expect(cluster.defaultNodegroup).toBeDefined();
+      expect(stack).toHaveResource('AWS::EKS::Nodegroup', {
         ScalingConfig: {
           DesiredSize: 10,
           MaxSize: 10,
           MinSize: 10,
         },
-      }));
-      // expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' }));
-      test.done();
-    },
+      });
+      // expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' }));
 
-    'defaultCapacity=0 will not allocate at all'(test: Test) {
+    });
+
+    test('defaultCapacity=0 will not allocate at all', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
 
@@ -714,14 +715,14 @@ export = {
       const cluster = new eks.Cluster(stack, 'cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
       // THEN
-      test.ok(!cluster.defaultCapacity);
-      expect(stack).notTo(haveResource('AWS::AutoScaling::AutoScalingGroup'));
-      expect(stack).notTo(haveResource('AWS::AutoScaling::LaunchConfiguration'));
-      test.done();
-    },
-  },
+      expect(cluster.defaultCapacity).toBeUndefined();
+      expect(stack).not.toHaveResource('AWS::AutoScaling::AutoScalingGroup');
+      expect(stack).not.toHaveResource('AWS::AutoScaling::LaunchConfiguration');
 
-  'creating a cluster tags the private VPC subnets'(test: Test) {
+    });
+  });
+
+  test('creating a cluster tags the private VPC subnets', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -729,19 +730,19 @@ export = {
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::Subnet', {
+    expect(stack).toHaveResource('AWS::EC2::Subnet', {
       Tags: [
         { Key: 'aws-cdk:subnet-name', Value: 'Private' },
         { Key: 'aws-cdk:subnet-type', Value: 'Private' },
         { Key: 'kubernetes.io/role/internal-elb', Value: '1' },
         { Key: 'Name', Value: 'Stack/VPC/PrivateSubnet1' },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'creating a cluster tags the public VPC subnets'(test: Test) {
+  });
+
+  test('creating a cluster tags the public VPC subnets', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -749,7 +750,7 @@ export = {
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::Subnet', {
+    expect(stack).toHaveResource('AWS::EC2::Subnet', {
       MapPublicIpOnLaunch: true,
       Tags: [
         { Key: 'aws-cdk:subnet-name', Value: 'Public' },
@@ -757,12 +758,12 @@ export = {
         { Key: 'kubernetes.io/role/elb', Value: '1' },
         { Key: 'Name', Value: 'Stack/VPC/PublicSubnet1' },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'adding capacity creates an ASG without a rolling update policy'(test: Test) {
+  });
+
+  test('adding capacity creates an ASG without a rolling update policy', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -777,11 +778,12 @@ export = {
       instanceType: new ec2.InstanceType('t2.medium'),
     });
 
-    test.deepEqual(expect(stack).value.Resources.ClusterASG0E4BA723.UpdatePolicy, { AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: true } });
-    test.done();
-  },
+    const template = SynthUtils.toCloudFormation(stack);
+    expect(template.Resources.ClusterASG0E4BA723.UpdatePolicy).toEqual({ AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: true } });
 
-  'adding capacity creates an ASG with tags'(test: Test) {
+  });
+
+  test('adding capacity creates an ASG with tags', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -797,7 +799,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
           Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'Cluster9EE0221C' }]] },
@@ -810,12 +812,12 @@ export = {
           Value: 'Stack/Cluster/Default',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create nodegroup with existing role'(test: Test) {
+  });
+
+  test('create nodegroup with existing role', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
 
@@ -837,18 +839,18 @@ export = {
     });
 
     // THEN
-    test.ok(cluster.defaultNodegroup);
-    expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
+    expect(cluster.defaultNodegroup).toBeDefined();
+    expect(stack).toHaveResource('AWS::EKS::Nodegroup', {
       ScalingConfig: {
         DesiredSize: 10,
         MaxSize: 10,
         MinSize: 10,
       },
-    }));
-    test.done();
-  },
+    });
 
-  'adding bottlerocket capacity creates an ASG with tags'(test: Test) {
+  });
+
+  test('adding bottlerocket capacity creates an ASG with tags', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -865,7 +867,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
           Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'Cluster9EE0221C' }]] },
@@ -878,11 +880,11 @@ export = {
           Value: 'Stack/Cluster/Bottlerocket',
         },
       ],
-    }));
-    test.done();
-  },
+    });
 
-  'adding bottlerocket capacity with bootstrapOptions throws error'(test: Test) {
+  });
+
+  test('adding bottlerocket capacity with bootstrapOptions throws error', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -892,15 +894,15 @@ export = {
       prune: false,
     });
 
-    test.throws(() => cluster.addAutoScalingGroupCapacity('Bottlerocket', {
+    expect(() => cluster.addAutoScalingGroupCapacity('Bottlerocket', {
       instanceType: new ec2.InstanceType('t2.medium'),
       machineImageType: eks.MachineImageType.BOTTLEROCKET,
       bootstrapOptions: {},
-    }), /bootstrapOptions is not supported for Bottlerocket/);
-    test.done();
-  },
+    })).toThrow(/bootstrapOptions is not supported for Bottlerocket/);
 
-  'import cluster with new kubectl private subnets'(test: Test) {
+  });
+
+  test('import cluster with new kubectl private subnets', () => {
 
     const { stack, vpc } = testFixture();
 
@@ -909,21 +911,20 @@ export = {
       kubectlPrivateSubnetIds: vpc.privateSubnets.map(s => s.subnetId),
     });
 
-    test.deepEqual(cluster.kubectlPrivateSubnets?.map(s => stack.resolve(s.subnetId)), [
+    expect(cluster.kubectlPrivateSubnets?.map(s => stack.resolve(s.subnetId))).toEqual([
       { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
       { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
     ]);
 
-    test.deepEqual(cluster.kubectlPrivateSubnets?.map(s => s.node.id), [
+    expect(cluster.kubectlPrivateSubnets?.map(s => s.node.id)).toEqual([
       'KubectlSubnet0',
       'KubectlSubnet1',
     ]);
 
-    test.done();
 
-  },
+  });
 
-  'exercise export/import'(test: Test) {
+  test('exercise export/import', () => {
     // GIVEN
     const { stack: stack1, vpc, app } = testFixture();
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
@@ -949,7 +950,7 @@ export = {
     new cdk.CfnOutput(stack2, 'ClusterARN', { value: imported.clusterArn });
 
     // THEN
-    expect(stack2).toMatch({
+    expect(stack2).toMatchTemplate({
       Outputs: {
         ClusterARN: {
           Value: {
@@ -974,10 +975,10 @@ export = {
         },
       },
     });
-    test.done();
-  },
 
-  'mastersRole can be used to map an IAM role to "system:masters"'(test: Test) {
+  });
+
+  test('mastersRole can be used to map an IAM role to "system:masters"', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
@@ -992,7 +993,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -1015,12 +1016,12 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'addManifest can be used to apply k8s manifests on this cluster'(test: Test) {
+  });
+
+  test('addManifest can be used to apply k8s manifests on this cluster', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -1035,18 +1036,18 @@ export = {
     cluster.addManifest('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"foo":123}]',
-    }));
+    });
 
-    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"bar":123},{"boor":[1,2,3]}]',
-    }));
+    });
 
-    test.done();
-  },
 
-  'kubectl resources can be created in a separate stack'(test: Test) {
+  });
+
+  test('kubectl resources can be created in a separate stack', () => {
     // GIVEN
     const { stack, app } = testFixture();
     const cluster = new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false }); // cluster is under stack2
@@ -1062,7 +1063,7 @@ export = {
     app.synth(); // no cyclic dependency (see https://github.com/aws/aws-cdk/issues/7231)
 
     // expect a single resource in the 2nd stack
-    expect(stack2).toMatch({
+    expect(stack2).toMatchTemplate({
       Resources: {
         myresource49C6D325: {
           Type: 'Custom::AWSCDK-EKS-KubernetesResource',
@@ -1080,10 +1081,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'adding capacity will automatically map its IAM role'(test: Test) {
+  });
+
+  test('adding capacity will automatically map its IAM role', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -1099,7 +1100,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -1129,12 +1130,12 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'addAutoScalingGroupCapacity will *not* map the IAM role if mapRole is false'(test: Test) {
+  });
+
+  test('addAutoScalingGroupCapacity will *not* map the IAM role if mapRole is false', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -1151,7 +1152,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -1174,12 +1175,12 @@ export = {
           ],
         ],
       },
-    }));
-    test.done();
-  },
+    });
 
-  'outputs': {
-    'aws eks update-kubeconfig is the only output synthesized by default'(test: Test) {
+  });
+
+  describe('outputs', () => {
+    test('aws eks update-kubeconfig is the only output synthesized by default', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1189,14 +1190,14 @@ export = {
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
-      test.deepEqual(template.Outputs, {
+      expect(template.Outputs).toEqual({
         ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['ClusterMastersRole9AA35625', 'Arn'] }]] } },
         ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['ClusterMastersRole9AA35625', 'Arn'] }]] } },
       });
-      test.done();
-    },
 
-    'if masters role is defined, it should be included in the config command'(test: Test) {
+    });
+
+    test('if masters role is defined, it should be included in the config command', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1211,14 +1212,14 @@ export = {
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
-      test.deepEqual(template.Outputs, {
+      expect(template.Outputs).toEqual({
         ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
         ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
       });
-      test.done();
-    },
 
-    'if `outputConfigCommand=false` will disabled the output'(test: Test) {
+    });
+
+    test('if `outputConfigCommand=false` will disabled the output', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1234,11 +1235,11 @@ export = {
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
-      test.ok(!template.Outputs); // no outputs
-      test.done();
-    },
+      expect(template.Outputs).toBeUndefined(); // no outputs
 
-    '`outputClusterName` can be used to synthesize an output with the cluster name'(test: Test) {
+    });
+
+    test('`outputClusterName` can be used to synthesize an output with the cluster name', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1253,13 +1254,13 @@ export = {
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
-      test.deepEqual(template.Outputs, {
+      expect(template.Outputs).toEqual({
         ClusterClusterNameEB26049E: { Value: { Ref: 'Cluster9EE0221C' } },
       });
-      test.done();
-    },
 
-    '`outputMastersRoleArn` can be used to synthesize an output with the arn of the masters role if defined'(test: Test) {
+    });
+
+    test('`outputMastersRoleArn` can be used to synthesize an output with the arn of the masters role if defined', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1275,15 +1276,15 @@ export = {
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
-      test.deepEqual(template.Outputs, {
+      expect(template.Outputs).toEqual({
         ClusterMastersRoleArnB15964B1: { Value: { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] } },
       });
-      test.done();
-    },
 
-    'boostrap user-data': {
+    });
 
-      'rendered by default for ASGs'(test: Test) {
+    describe('boostrap user-data', () => {
+
+      test('rendered by default for ASGs', () => {
         // GIVEN
         const { app, stack } = testFixtureNoVpc();
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -1294,11 +1295,11 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
-        test.done();
-      },
+        expect(userData).toEqual({ 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
 
-      'not rendered if bootstrap is disabled'(test: Test) {
+      });
+
+      test('not rendered if bootstrap is disabled', () => {
         // GIVEN
         const { app, stack } = testFixtureNoVpc();
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -1312,12 +1313,12 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': '#!/bin/bash' });
-        test.done();
-      },
+        expect(userData).toEqual({ 'Fn::Base64': '#!/bin/bash' });
+
+      });
 
       // cursory test for options: see test.user-data.ts for full suite
-      'bootstrap options'(test: Test) {
+      test('bootstrap options', () => {
         // GIVEN
         const { app, stack } = testFixtureNoVpc();
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -1333,13 +1334,13 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
-        test.done();
-      },
+        expect(userData).toEqual({ 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
 
-      'spot instances': {
+      });
 
-        'nodes labeled an tainted accordingly'(test: Test) {
+      describe('spot instances', () => {
+
+        test('nodes labeled an tainted accordingly', () => {
           // GIVEN
           const { app, stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -1353,11 +1354,11 @@ export = {
           // THEN
           const template = app.synth().getStackByName(stack.stackName).template;
           const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
-          test.done();
-        },
+          expect(userData).toEqual({ 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
 
-        'interrupt handler is added'(test: Test) {
+        });
+
+        test('interrupt handler is added', () => {
           // GIVEN
           const { stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -1369,17 +1370,17 @@ export = {
           });
 
           // THEN
-          expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, {
+          expect(stack).toHaveResource(eks.HelmChart.RESOURCE_TYPE, {
             Release: 'stackclusterchartspotinterrupthandlerdec62e07',
             Chart: 'aws-node-termination-handler',
             Values: '{\"nodeSelector\":{\"lifecycle\":\"Ec2Spot\"}}',
             Namespace: 'kube-system',
             Repository: 'https://aws.github.io/eks-charts',
-          }));
-          test.done();
-        },
+          });
 
-        'interrupt handler is not added when spotInterruptHandler is false'(test: Test) {
+        });
+
+        test('interrupt handler is not added when spotInterruptHandler is false', () => {
           // GIVEN
           const { stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -1392,11 +1393,11 @@ export = {
           });
 
           // THEN
-          test.equal(cluster.node.findAll().filter(c => c.node.id === 'chart-spot-interrupt-handler').length, 0);
-          test.done();
-        },
+          expect(cluster.node.findAll().filter(c => c.node.id === 'chart-spot-interrupt-handler').length).toEqual(0);
 
-        'its possible to add two capacities with spot instances and only one stop handler will be installed'(test: Test) {
+        });
+
+        test('its possible to add two capacities with spot instances and only one stop handler will be installed', () => {
           // GIVEN
           const { stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -1413,29 +1414,29 @@ export = {
           });
 
           // THEN
-          expect(stack).to(countResources(eks.HelmChart.RESOURCE_TYPE, 1));
-          test.done();
-        },
+          expect(stack).toCountResources(eks.HelmChart.RESOURCE_TYPE, 1);
 
-      },
+        });
 
-    },
+      });
 
-    'if bootstrap is disabled cannot specify options'(test: Test) {
+    });
+
+    test('if bootstrap is disabled cannot specify options', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
       // THEN
-      test.throws(() => cluster.addAutoScalingGroupCapacity('MyCapcity', {
+      expect(() => cluster.addAutoScalingGroupCapacity('MyCapcity', {
         instanceType: new ec2.InstanceType('m3.xlargs'),
         bootstrapEnabled: false,
         bootstrapOptions: { awsApiRetryAttempts: 10 },
-      }), /Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false/);
-      test.done();
-    },
+      })).toThrow(/Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false/);
 
-    'EksOptimizedImage() with no nodeType always uses STANDARD with LATEST_KUBERNETES_VERSION'(test: Test) {
+    });
+
+    test('EksOptimizedImage() with no nodeType always uses STANDARD with LATEST_KUBERNETES_VERSION', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
       const LATEST_KUBERNETES_VERSION = '1.14';
@@ -1446,18 +1447,18 @@ export = {
       // THEN
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
+      expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
           (v as any).Default.includes('/amazon-linux-2/'),
-      ), 'EKS STANDARD AMI should be in ssm parameters');
-      test.ok(Object.entries(parameters).some(
+      )).toEqual(true);
+      expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
           (v as any).Default.includes(LATEST_KUBERNETES_VERSION),
-      ), 'LATEST_KUBERNETES_VERSION should be in ssm parameters');
-      test.done();
-    },
+      )).toEqual(true);
 
-    'EksOptimizedImage() with specific kubernetesVersion return correct AMI'(test: Test) {
+    });
+
+    test('EksOptimizedImage() with specific kubernetesVersion return correct AMI', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1467,18 +1468,18 @@ export = {
       // THEN
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
+      expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
           (v as any).Default.includes('/amazon-linux-2/'),
-      ), 'EKS STANDARD AMI should be in ssm parameters');
-      test.ok(Object.entries(parameters).some(
+      )).toEqual(true);
+      expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
           (v as any).Default.includes('/1.21/'),
-      ), 'kubernetesVersion should be in ssm parameters');
-      test.done();
-    },
+      )).toEqual(true);
 
-    'default cluster capacity with ARM64 instance type comes with nodegroup with correct AmiType'(test: Test) {
+    });
+
+    test('default cluster capacity with ARM64 instance type comes with nodegroup with correct AmiType', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
 
@@ -1491,13 +1492,13 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
         AmiType: 'AL2_ARM_64',
-      }));
-      test.done();
-    },
+      });
 
-    'addNodegroup with ARM64 instance type comes with nodegroup with correct AmiType'(test: Test) {
+    });
+
+    test('addNodegroup with ARM64 instance type comes with nodegroup with correct AmiType', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
 
@@ -1512,13 +1513,13 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
         AmiType: 'AL2_ARM_64',
-      }));
-      test.done();
-    },
+      });
 
-    'addNodegroupCapacity with T4g instance type comes with nodegroup with correct AmiType'(test: Test) {
+    });
+
+    test('addNodegroupCapacity with T4g instance type comes with nodegroup with correct AmiType', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
 
@@ -1533,13 +1534,13 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
         AmiType: 'AL2_ARM_64',
-      }));
-      test.done();
-    },
+      });
 
-    'addAutoScalingGroupCapacity with T4g instance type comes with nodegroup with correct AmiType'(test: Test) {
+    });
+
+    test('addAutoScalingGroupCapacity with T4g instance type comes with nodegroup with correct AmiType', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1555,14 +1556,14 @@ export = {
       // THEN
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
+      expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
           (v as any).Default.includes('amazon-linux-2-arm64/'),
-      ), 'Amazon Linux 2 AMI for ARM64 should be in ssm parameters');
-      test.done();
-    },
+      )).toEqual(true);
 
-    'EKS-Optimized AMI with GPU support when addAutoScalingGroupCapacity'(test: Test) {
+    });
+
+    test('EKS-Optimized AMI with GPU support when addAutoScalingGroupCapacity', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1578,13 +1579,13 @@ export = {
       // THEN
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
+      expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux-2-gpu'),
-      ), 'EKS AMI with GPU should be in ssm parameters');
-      test.done();
-    },
+      )).toEqual(true);
 
-    'EKS-Optimized AMI with ARM64 when addAutoScalingGroupCapacity'(test: Test) {
+    });
+
+    test('EKS-Optimized AMI with ARM64 when addAutoScalingGroupCapacity', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1600,13 +1601,13 @@ export = {
       // THEN
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
+      expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2-arm64/'),
-      ), 'EKS AMI with GPU should be in ssm parameters');
-      test.done();
-    },
+      )).toEqual(true);
 
-    'BottleRocketImage() with specific kubernetesVersion return correct AMI'(test: Test) {
+    });
+
+    test('BottleRocketImage() with specific kubernetesVersion return correct AMI', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1616,18 +1617,18 @@ export = {
       // THEN
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
+      expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
           (v as any).Default.includes('/bottlerocket/'),
-      ), 'BottleRocket AMI should be in ssm parameters');
-      test.ok(Object.entries(parameters).some(
+      )).toEqual(true);
+      expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
           (v as any).Default.includes('/aws-k8s-1.21/'),
-      ), 'kubernetesVersion should be in ssm parameters');
-      test.done();
-    },
+      )).toEqual(true);
 
-    'when using custom resource a creation role & policy is defined'(test: Test) {
+    });
+
+    test('when using custom resource a creation role & policy is defined', () => {
       // GIVEN
       const { stack } = testFixture();
 
@@ -1639,7 +1640,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
+      expect(stack).toHaveResource('Custom::AWSCDK-EKS-Cluster', {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
@@ -1658,10 +1659,10 @@ export = {
             endpointPublicAccess: true,
           },
         },
-      }));
+      });
 
       // role can be assumed by 3 lambda handlers (2 for the cluster resource and 1 for the kubernetes resource)
-      expect(stack).to(haveResource('AWS::IAM::Role', {
+      expect(stack).toHaveResource('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -1679,10 +1680,10 @@ export = {
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
       // policy allows creation role to pass the cluster role and to interact with the cluster (given we know the explicit cluster name)
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -1789,11 +1790,11 @@ export = {
           ],
           Version: '2012-10-17',
         },
-      }));
-      test.done();
-    },
+      });
 
-    'if an explicit cluster name is not provided, the creation role policy is wider (allows interacting with all clusters)'(test: Test) {
+    });
+
+    test('if an explicit cluster name is not provided, the creation role policy is wider (allows interacting with all clusters)', () => {
       // GIVEN
       const { stack } = testFixture();
 
@@ -1801,7 +1802,7 @@ export = {
       new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION, prune: false });
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -1863,11 +1864,11 @@ export = {
           ],
           Version: '2012-10-17',
         },
-      }));
-      test.done();
-    },
+      });
 
-    'if helm charts are used, the provider role is allowed to assume the creation role'(test: Test) {
+    });
+
+    test('if helm charts are used, the provider role is allowed to assume the creation role', () => {
       // GIVEN
       const { stack } = testFixture();
       const cluster = new eks.Cluster(stack, 'MyCluster', {
@@ -1884,7 +1885,7 @@ export = {
       // THEN
 
       const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      expect(providerStack).to(haveResource('AWS::IAM::Policy', {
+      expect(providerStack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -1910,12 +1911,12 @@ export = {
             Ref: 'HandlerServiceRoleFCDC14AE',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'coreDnsComputeType will patch the coreDNS configuration to use a "fargate" compute type and restore to "ec2" upon removal'(test: Test) {
+    });
+
+    test('coreDnsComputeType will patch the coreDNS configuration to use a "fargate" compute type and restore to "ec2" upon removal', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -1927,7 +1928,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+      expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
         ResourceName: 'deployment/coredns',
         ResourceNamespace: 'kube-system',
         ApplyPatchJson: '{"spec":{"template":{"metadata":{"annotations":{"eks.amazonaws.com/compute-type":"fargate"}}}}}',
@@ -1941,10 +1942,10 @@ export = {
             'Arn',
           ],
         },
-      }));
-      test.done();
-    },
-    'if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed'(test: Test) {
+      });
+
+    });
+    test('if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -1953,8 +1954,8 @@ export = {
       const provider = cluster.openIdConnectProvider;
 
       // THEN
-      test.equal(provider, cluster.openIdConnectProvider, 'openIdConnect provider is different and created more than once.');
-      expect(stack).to(haveResource('Custom::AWSCDKOpenIdConnectProvider', {
+      expect(provider).toEqual(cluster.openIdConnectProvider);
+      expect(stack).toHaveResource('Custom::AWSCDKOpenIdConnectProvider', {
         ServiceToken: {
           'Fn::GetAtt': [
             'CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0',
@@ -1973,10 +1974,10 @@ export = {
             'OpenIdConnectIssuerUrl',
           ],
         },
-      }));
-      test.done();
-    },
-    'inference instances are supported'(test: Test) {
+      });
+
+    });
+    test('inference instances are supported', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -1990,13 +1991,13 @@ export = {
       const sanitized = YAML.parse(fileContents);
 
       // THEN
-      expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([sanitized]),
-      }));
-      test.done();
-    },
+      });
 
-    'kubectl resources are always created after all fargate profiles'(test: Test) {
+    });
+
+    test('kubectl resources are always created after all fargate profiles', () => {
       // GIVEN
       const { stack, app } = testFixture();
       const cluster = new eks.Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
@@ -2020,7 +2021,7 @@ export = {
 
       const barrier = template.Resources.ClusterKubectlReadyBarrier200052AF;
 
-      test.deepEqual(barrier.DependsOn, [
+      expect(barrier.DependsOn).toEqual([
         'Clusterfargateprofileprofile1PodExecutionRoleE85F87B5',
         'Clusterfargateprofileprofile129AEA3C6',
         'Clusterfargateprofileprofile2PodExecutionRole22670AF8',
@@ -2038,13 +2039,13 @@ export = {
 
       // check that all kubectl resources depend on the barrier
       for (const r of kubectlResources) {
-        test.deepEqual(template.Resources[r].DependsOn, ['ClusterKubectlReadyBarrier200052AF']);
+        expect(template.Resources[r].DependsOn).toEqual(['ClusterKubectlReadyBarrier200052AF']);
       }
 
-      test.done();
-    },
 
-    'kubectl provider role can assume creation role'(test: Test) {
+    });
+
+    test('kubectl provider role can assume creation role', () => {
       // GIVEN
       const { stack } = testFixture();
       const c1 = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, prune: false });
@@ -2057,7 +2058,7 @@ export = {
 
       // THEN
       const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      expect(providerStack).to(haveResource('AWS::IAM::Policy', {
+      expect(providerStack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2077,13 +2078,13 @@ export = {
           ],
           Version: '2012-10-17',
         },
-      }));
-      test.done();
-    },
+      });
 
-  },
+    });
 
-  'kubectl provider passes security group to provider'(test: Test) {
+  });
+
+  test('kubectl provider passes security group to provider', () => {
 
     const { stack } = testFixture();
 
@@ -2098,13 +2099,14 @@ export = {
 
     // the kubectl provider is inside a nested stack.
     const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    test.deepEqual(expect(nested).value.Resources.ProviderframeworkonEvent83C1D0A7.Properties.VpcConfig.SecurityGroupIds,
+    const template = SynthUtils.toCloudFormation(nested);
+    expect(template.Resources.ProviderframeworkonEvent83C1D0A7.Properties.VpcConfig.SecurityGroupIds).toEqual(
       [{ Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId' }]);
 
-    test.done();
-  },
 
-  'kubectl provider passes environment to lambda'(test: Test) {
+  });
+
+  test('kubectl provider passes environment to lambda', () => {
 
     const { stack } = testFixture();
 
@@ -2130,29 +2132,29 @@ export = {
 
     // the kubectl provider is inside a nested stack.
     const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    expect(nested).to(haveResource('AWS::Lambda::Function', {
+    expect(nested).toHaveResource('AWS::Lambda::Function', {
       Environment: {
         Variables: {
           Foo: 'Bar',
         },
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'endpoint access': {
+  });
 
-    'public restricted'(test: Test) {
+  describe('endpoint access', () => {
 
-      test.throws(() => {
+    test('public restricted', () => {
+
+      expect(() => {
         eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/32');
-      }, /Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom\(\) instead./);
+      }).toThrow(/Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom\(\) instead./);
 
-      test.done();
-    },
 
-    'public non restricted without private subnets'(test: Test) {
+    });
+
+    test('public non restricted without private subnets', () => {
       const { stack } = testFixture();
 
       new eks.Cluster(stack, 'Cluster', {
@@ -2163,16 +2165,16 @@ export = {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const template = expect(nested).value;
+      const template = SynthUtils.toCloudFormation(nested);
 
       // we don't attach vpc config in case endpoint is public only, regardless of whether
       // the vpc has private subnets or not.
-      test.equal(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig).toEqual(undefined);
 
-      test.done();
-    },
 
-    'public non restricted with private subnets'(test: Test) {
+    });
+
+    test('public non restricted with private subnets', () => {
 
       const { stack } = testFixture();
 
@@ -2183,32 +2185,31 @@ export = {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const template = expect(nested).value;
+      const template = SynthUtils.toCloudFormation(nested);
 
       // we don't attach vpc config in case endpoint is public only, regardless of whether
       // the vpc has private subnets or not.
-      test.equal(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig).toEqual(undefined);
 
-      test.done();
 
-    },
+    });
 
-    'private without private subnets'(test: Test) {
+    test('private without private subnets', () => {
       const { stack } = testFixture();
 
-      test.throws(() => {
+      expect(() => {
         new eks.Cluster(stack, 'Cluster', {
           version: CLUSTER_VERSION,
           prune: false,
           endpointAccess: eks.EndpointAccess.PRIVATE,
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
-      }, /Vpc must contain private subnets when public endpoint access is disabled/);
+      }).toThrow(/Vpc must contain private subnets when public endpoint access is disabled/);
 
-      test.done();
-    },
 
-    'private with private subnets'(test: Test) {
+    });
+
+    test('private with private subnets', () => {
 
       const { stack } = testFixture();
 
@@ -2219,17 +2220,16 @@ export = {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const template = expect(nested).value;
+      const template = SynthUtils.toCloudFormation(nested);
 
       // handler should have vpc config
-      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length !== 0);
-      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length !== 0);
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
 
-      test.done();
 
-    },
+    });
 
-    'private and non restricted public without private subnets'(test: Test) {
+    test('private and non restricted public without private subnets', () => {
       const { stack } = testFixture();
 
       new eks.Cluster(stack, 'Cluster', {
@@ -2240,16 +2240,16 @@ export = {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const template = expect(nested).value;
+      const template = SynthUtils.toCloudFormation(nested);
 
       // we don't have private subnets, but we don't need them since public access
       // is not restricted.
-      test.equal(template.Resources.Handler886CB40B.Properties.VpcConfig, undefined);
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig).toEqual(undefined);
 
-      test.done();
-    },
 
-    'private and non restricted public with private subnets'(test: Test) {
+    });
+
+    test('private and non restricted public with private subnets', () => {
       const { stack } = testFixture();
 
       new eks.Cluster(stack, 'Cluster', {
@@ -2259,31 +2259,31 @@ export = {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const template = expect(nested).value;
+      const template = SynthUtils.toCloudFormation(nested);
 
       // we have private subnets so we should use them.
-      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length !== 0);
-      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length !== 0);
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
 
-      test.done();
-    },
 
-    'private and restricted public without private subnets'(test: Test) {
+    });
+
+    test('private and restricted public without private subnets', () => {
       const { stack } = testFixture();
 
-      test.throws(() => {
+      expect(() => {
         new eks.Cluster(stack, 'Cluster', {
           version: CLUSTER_VERSION,
           prune: false,
           endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
-      }, /Vpc must contain private subnets when public endpoint access is restricted/);
+      }).toThrow(/Vpc must contain private subnets when public endpoint access is restricted/);
 
-      test.done();
-    },
 
-    'private and restricted public with private subnets'(test: Test) {
+    });
+
+    test('private and restricted public with private subnets', () => {
       const { stack } = testFixture();
 
       new eks.Cluster(stack, 'Cluster', {
@@ -2293,16 +2293,16 @@ export = {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const template = expect(nested).value;
+      const template = SynthUtils.toCloudFormation(nested);
 
       // we have private subnets so we should use them.
-      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length !== 0);
-      test.ok(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length !== 0);
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
 
-      test.done();
-    },
 
-    'private endpoint access selects only private subnets from looked up vpc'(test: Test) {
+    });
+
+    test('private endpoint access selects only private subnets from looked up vpc', () => {
 
       const vpcId = 'vpc-12345';
       // can't use the regular fixture because it also adds a VPC to the stack, which prevents
@@ -2355,16 +2355,16 @@ export = {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const template = expect(nested).value;
+      const template = SynthUtils.toCloudFormation(nested);
 
-      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds).toEqual([
         'subnet-private-in-us-east-1a',
       ]);
 
-      test.done();
-    },
 
-    'private endpoint access selects only private subnets from looked up vpc with concrete subnet selection'(test: Test) {
+    });
+
+    test('private endpoint access selects only private subnets from looked up vpc with concrete subnet selection', () => {
 
       const vpcId = 'vpc-12345';
       // can't use the regular fixture because it also adds a VPC to the stack, which prevents
@@ -2423,16 +2423,16 @@ export = {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const template = expect(nested).value;
+      const template = SynthUtils.toCloudFormation(nested);
 
-      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds).toEqual([
         'subnet-private-in-us-east-1a',
       ]);
 
-      test.done();
-    },
 
-    'private endpoint access selects only private subnets from managed vpc with concrete subnet selection'(test: Test) {
+    });
+
+    test('private endpoint access selects only private subnets from managed vpc with concrete subnet selection', () => {
 
       const { stack } = testFixture();
 
@@ -2453,17 +2453,17 @@ export = {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const template = expect(nested).value;
+      const template = SynthUtils.toCloudFormation(nested);
 
-      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds).toEqual([
         { Ref: 'referencetoStackVpcPrivateSubnet1Subnet8E6A14CBRef' },
         'subnet-unknown',
       ]);
 
-      test.done();
-    },
 
-    'private endpoint access considers specific subnet selection'(test: Test) {
+    });
+
+    test('private endpoint access considers specific subnet selection', () => {
       const { stack } = testFixture();
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
@@ -2479,28 +2479,29 @@ export = {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const template = expect(nested).value;
+      const template = SynthUtils.toCloudFormation(nested);
 
-      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
+      expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds).toEqual([
         'subnet1',
       ]);
 
-      test.done();
 
-    },
+    });
 
-    'can configure private endpoint access'(test: Test) {
+    test('can configure private endpoint access', () => {
       // GIVEN
       const { stack } = testFixture();
       new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE, prune: false });
 
-      test.equal(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPrivateAccess, true);
-      test.equal(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPublicAccess, false);
+      const app = stack.node.root as cdk.App;
+      const template = app.synth().getStackArtifact(stack.stackName).template;
+      expect(template.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPrivateAccess).toEqual(true);
+      expect(template.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPublicAccess).toEqual(false);
 
-      test.done();
-    },
 
-    'kubectl provider chooses only private subnets'(test: Test) {
+    });
+
+    test('kubectl provider chooses only private subnets', () => {
 
       const { stack } = testFixture();
 
@@ -2539,7 +2540,7 @@ export = {
 
       // the kubectl provider is inside a nested stack.
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      expect(nested).to(haveResource('AWS::Lambda::Function', {
+      expect(nested).toHaveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
             {
@@ -2555,12 +2556,12 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'kubectl provider limits number of subnets to 16'(test: Test) {
+    });
+
+    test('kubectl provider limits number of subnets to 16', () => {
 
       const { stack } = testFixture();
 
@@ -2605,12 +2606,13 @@ export = {
 
       // the kubectl provider is inside a nested stack.
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      test.equal(16, expect(nested).value.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length);
+      const template = SynthUtils.toCloudFormation(nested);
+      expect(16).toEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length);
 
-      test.done();
-    },
 
-    'kubectl provider considers vpc subnet selection'(test: Test) {
+    });
+
+    test('kubectl provider considers vpc subnet selection', () => {
 
       const { stack } = testFixture();
 
@@ -2656,7 +2658,7 @@ export = {
 
       // the kubectl provider is inside a nested stack.
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      expect(nested).to(haveResource('AWS::Lambda::Function', {
+      expect(nested).toHaveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
             {
@@ -2678,16 +2680,16 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'throw when private access is configured without dns support enabled for the VPC'(test: Test) {
+    });
+
+    test('throw when private access is configured without dns support enabled for the VPC', () => {
 
       const { stack } = testFixture();
 
-      test.throws(() => {
+      expect(() => {
         new eks.Cluster(stack, 'Cluster', {
           vpc: new ec2.Vpc(stack, 'Vpc', {
             enableDnsSupport: false,
@@ -2695,15 +2697,15 @@ export = {
           version: CLUSTER_VERSION,
           prune: false,
         });
-      }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
-      test.done();
-    },
+      }).toThrow(/Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
 
-    'throw when private access is configured without dns hostnames enabled for the VPC'(test: Test) {
+    });
+
+    test('throw when private access is configured without dns hostnames enabled for the VPC', () => {
 
       const { stack } = testFixture();
 
-      test.throws(() => {
+      expect(() => {
         new eks.Cluster(stack, 'Cluster', {
           vpc: new ec2.Vpc(stack, 'Vpc', {
             enableDnsHostnames: false,
@@ -2711,21 +2713,21 @@ export = {
           version: CLUSTER_VERSION,
           prune: false,
         });
-      }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
-      test.done();
-    },
+      }).toThrow(/Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
 
-    'throw when cidrs are configured without public access endpoint'(test: Test) {
+    });
 
-      test.throws(() => {
+    test('throw when cidrs are configured without public access endpoint', () => {
+
+      expect(() => {
         eks.EndpointAccess.PRIVATE.onlyFrom('1.2.3.4/5');
-      }, /CIDR blocks can only be configured when public access is enabled/);
-      test.done();
-    },
+      }).toThrow(/CIDR blocks can only be configured when public access is enabled/);
 
-  },
+    });
 
-  'getServiceLoadBalancerAddress'(test: Test) {
+  });
+
+  test('getServiceLoadBalancerAddress', () => {
 
     const { stack } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, prune: false });
@@ -2738,10 +2740,10 @@ export = {
 
     const expectedKubernetesGetId = 'Cluster1myserviceLoadBalancerAddress198CCB03';
 
-    const rawTemplate = expect(stack).value;
+    const template = SynthUtils.toCloudFormation(stack);
 
     // make sure the custom resource is created correctly
-    test.deepEqual(rawTemplate.Resources[expectedKubernetesGetId].Properties, {
+    expect(template.Resources[expectedKubernetesGetId].Properties).toEqual({
       ServiceToken: {
         'Fn::GetAtt': [
           'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
@@ -2765,11 +2767,11 @@ export = {
     });
 
     // make sure the attribute points to the expected custom resource and extracts the correct attribute
-    test.deepEqual(rawTemplate.Outputs.LoadBalancerAddress.Value, { 'Fn::GetAtt': [expectedKubernetesGetId, 'Value'] });
-    test.done();
-  },
+    expect(template.Outputs.LoadBalancerAddress.Value).toEqual({ 'Fn::GetAtt': [expectedKubernetesGetId, 'Value'] });
 
-  'custom kubectl layer can be provided'(test: Test) {
+  });
+
+  test('custom kubectl layer can be provided', () => {
     // GIVEN
     const { stack } = testFixture();
 
@@ -2783,14 +2785,14 @@ export = {
 
     // THEN
     const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    expect(providerStack).to(haveResource('AWS::Lambda::Function', {
+    expect(providerStack).toHaveResource('AWS::Lambda::Function', {
       Layers: ['arn:of:layer'],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a cluster using custom resource with secrets encryption using KMS CMK'(test: Test) {
+  });
+
+  test('create a cluster using custom resource with secrets encryption using KMS CMK', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -2803,7 +2805,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         encryptionConfig: [{
           provider: {
@@ -2817,11 +2819,11 @@ export = {
           resources: ['secrets'],
         }],
       },
-    }));
-    test.done();
-  },
+    });
 
-  'custom memory size for kubectl provider'(test: Test) {
+  });
+
+  test('custom memory size for kubectl provider', () => {
     // GIVEN
     const { stack, vpc, app } = testFixture();
 
@@ -2835,11 +2837,11 @@ export = {
     // THEN
     const casm = app.synth();
     const providerNestedStackTemplate = JSON.parse(fs.readFileSync(path.join(casm.directory, 'StackawscdkawseksKubectlProvider7346F799.nested.template.json'), 'utf-8'));
-    test.equal(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize, 2048);
-    test.done();
-  },
+    expect(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize).toEqual(2048);
 
-  'custom memory size for imported clusters'(test: Test) {
+  });
+
+  test('custom memory size for imported clusters', () => {
     // GIVEN
     const { stack, app } = testFixture();
 
@@ -2855,7 +2857,7 @@ export = {
     // THEN
     const casm = app.synth();
     const providerNestedStackTemplate = JSON.parse(fs.readFileSync(path.join(casm.directory, 'StackStackImported1CBA9C50KubectlProviderAA00BA49.nested.template.json'), 'utf-8'));
-    test.equal(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize, 4096);
-    test.done();
-  },
-};
+    expect(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize).toEqual(4096);
+
+  });
+});

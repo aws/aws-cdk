@@ -1,7 +1,6 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
 import { testFixtureNoVpc } from './util';
@@ -10,9 +9,9 @@ import { testFixtureNoVpc } from './util';
 
 const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
-export = {
+describe('aws auth', () => {
 
-  'throws when adding a role from a different stack'(test: Test) {
+  test('throws when adding a role from a different stack', () => {
 
     const app = new cdk.App();
     const clusterStack = new cdk.Stack(app, 'ClusterStack');
@@ -22,18 +21,16 @@ export = {
     });
     const role = new iam.Role(roleStack, 'Role', { assumedBy: new iam.AnyPrincipal() });
 
-    try {
+    expect(() => {
       awsAuth.addRoleMapping(role, { groups: ['group'] });
-      test.ok(false, 'expected error');
-    } catch (err) {
-      test.equal(err.message, 'RoleStack/Role should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
-    }
+    }).toThrow(
+      'RoleStack/Role should be defined in the scope of the ClusterStack stack to prevent circular dependencies',
+    );
 
-    test.done();
 
-  },
+  });
 
-  'throws when adding a user from a different stack'(test: Test) {
+  test('throws when adding a user from a different stack', () => {
 
     const app = new cdk.App();
     const clusterStack = new cdk.Stack(app, 'ClusterStack');
@@ -43,18 +40,16 @@ export = {
     });
     const user = new iam.User(userStack, 'User');
 
-    try {
+    expect(() => {
       awsAuth.addUserMapping(user, { groups: ['group'] });
-      test.ok(false, 'expected error');
-    } catch (err) {
-      test.equal(err.message, 'UserStack/User should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
-    }
+    }).toThrow(
+      'UserStack/User should be defined in the scope of the ClusterStack stack to prevent circular dependencies',
+    );
 
-    test.done();
 
-  },
+  });
 
-  'empty aws-auth'(test: Test) {
+  test('empty aws-auth', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false });
@@ -63,18 +58,18 @@ export = {
     new AwsAuth(stack, 'AwsAuth', { cluster });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: JSON.stringify([{
         apiVersion: 'v1',
         kind: 'ConfigMap',
         metadata: { name: 'aws-auth', namespace: 'kube-system' },
         data: { mapRoles: '[]', mapUsers: '[]', mapAccounts: '[]' },
       }]),
-    }));
-    test.done();
-  },
+    });
 
-  'addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap'(test: Test) {
+  });
+
+  test('addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
@@ -90,8 +85,8 @@ export = {
     cluster.awsAuth.addAccount('5566776655');
 
     // THEN
-    expect(stack).to(countResources(KubernetesManifest.RESOURCE_TYPE, 1));
-    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toCountResources(KubernetesManifest.RESOURCE_TYPE, 1);
+    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -163,12 +158,12 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'imported users and roles can be also be used'(test: Test) {
+  });
+
+  test('imported users and roles can be also be used', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
@@ -180,7 +175,7 @@ export = {
     cluster.awsAuth.addUserMapping(user, { groups: ['group2'] });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -226,11 +221,11 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
-  'addMastersRole after addNodegroup correctly'(test: Test) {
+
+  });
+  test('addMastersRole after addNodegroup correctly', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
@@ -241,7 +236,7 @@ export = {
     cluster.awsAuth.addMastersRole(role);
 
     // THEN
-    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -287,8 +282,8 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});

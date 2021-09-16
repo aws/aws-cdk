@@ -1,7 +1,6 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixture } from './util';
 
@@ -9,9 +8,9 @@ import { testFixture } from './util';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
-export = {
+describe('node group', () => {
 
-  'default ami type is not applied when launch template is configured'(test: Test) {
+  test('default ami type is not applied when launch template is configured', () => {
 
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -38,11 +37,13 @@ export = {
     });
 
     // THEN
-    test.equal(expect(stack).value.Resources.Nodegroup62B4B2C1.Properties.AmiType, undefined);
-    test.done();
-  },
+    const root = stack.node.root as cdk.App;
+    const stackArtifact = root.synth().getStackByName(stack.stackName);
+    expect(stackArtifact.template.Resources.Nodegroup62B4B2C1.Properties.AmiType).toBeUndefined();
 
-  'explicit ami type is applied even when launch template is configured'(test: Test) {
+  });
+
+  test('explicit ami type is applied even when launch template is configured', () => {
 
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -69,11 +70,13 @@ export = {
     });
 
     // THEN
-    test.equal(expect(stack).value.Resources.Nodegroup62B4B2C1.Properties.AmiType, 'AL2_x86_64');
-    test.done();
-  },
+    const root = stack.node.root as cdk.App;
+    const stackArtifact = root.synth().getStackByName(stack.stackName);
+    expect(stackArtifact.template.Resources.Nodegroup62B4B2C1.Properties.AmiType).toEqual('AL2_x86_64');
 
-  'ami type is taken as is when no instance types are configured'(test: Test) {
+  });
+
+  test('ami type is taken as is when no instance types are configured', () => {
 
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -90,13 +93,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       AmiType: 'AL2_x86_64_GPU',
-    }));
-    test.done();
-  },
+    });
 
-  'create nodegroup correctly'(test: Test) {
+  });
+
+  test('create nodegroup correctly', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -109,7 +112,7 @@ export = {
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -133,11 +136,11 @@ export = {
         MaxSize: 2,
         MinSize: 1,
       },
-    },
-    ));
-    test.done();
-  },
-  'aws-auth will be updated'(test: Test) {
+    });
+
+
+  });
+  test('aws-auth will be updated', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -151,7 +154,7 @@ export = {
 
     // THEN
     // THEN
-    expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -191,10 +194,10 @@ export = {
         ],
       },
       PruneLabel: 'aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76',
-    }));
-    test.done();
-  },
-  'create nodegroup correctly with security groups provided'(test: Test) {
+    });
+
+  });
+  test('create nodegroup correctly with security groups provided', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -212,7 +215,7 @@ export = {
       },
     });
     // THEN
-    expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResource('AWS::EKS::Nodegroup', {
       RemoteAccess: {
         Ec2SshKey: 'foo',
         SourceSecurityGroups: [
@@ -224,11 +227,11 @@ export = {
           },
         ],
       },
-    },
-    ));
-    test.done();
-  },
-  'create nodegroup with forceUpdate disabled'(test: Test) {
+    });
+
+
+  });
+  test('create nodegroup with forceUpdate disabled', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -241,13 +244,13 @@ export = {
     new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdate: false });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       ForceUpdateEnabled: false,
-    },
-    ));
-    test.done();
-  },
-  'create nodegroup with instanceType provided'(test: Test) {
+    });
+
+
+  });
+  test('create nodegroup with instanceType provided', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -263,15 +266,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
       ],
-    },
-    ));
-    test.done();
-  },
-  'create nodegroup with on-demand capacity type'(test: Test) {
+    });
+
+
+  });
+  test('create nodegroup with on-demand capacity type', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -288,16 +291,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
       ],
       CapacityType: 'ON_DEMAND',
-    },
-    ));
-    test.done();
-  },
-  'create nodegroup with spot capacity type'(test: Test) {
+    });
+
+
+  });
+  test('create nodegroup with spot capacity type', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -317,18 +320,18 @@ export = {
       capacityType: eks.CapacityType.SPOT,
     });
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
         't3.large',
         'c5.large',
       ],
       CapacityType: 'SPOT',
-    },
-    ));
-    test.done();
-  },
-  'create nodegroup with on-demand capacity type and multiple instance types'(test: Test) {
+    });
+
+
+  });
+  test('create nodegroup with on-demand capacity type and multiple instance types', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -348,18 +351,18 @@ export = {
       capacityType: eks.CapacityType.ON_DEMAND,
     });
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
         't3.large',
         'c5.large',
       ],
       CapacityType: 'ON_DEMAND',
-    },
-    ));
-    test.done();
-  },
-  'throws when both instanceTypes and instanceType defined'(test: Test) {
+    });
+
+
+  });
+  test('throws when both instanceTypes and instanceType defined', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -370,7 +373,7 @@ export = {
       version: CLUSTER_VERSION,
     });
     // THEN
-    test.throws(() => cluster.addNodegroupCapacity('ng', {
+    expect(() => cluster.addNodegroupCapacity('ng', {
       instanceType: new ec2.InstanceType('m5.large'),
       instanceTypes: [
         new ec2.InstanceType('m5.large'),
@@ -378,10 +381,10 @@ export = {
         new ec2.InstanceType('c5.large'),
       ],
       capacityType: eks.CapacityType.SPOT,
-    }), /"instanceType is deprecated, please use "instanceTypes" only/);
-    test.done();
-  },
-  'create nodegroup with neither instanceTypes nor instanceType defined'(test: Test) {
+    })).toThrow(/"instanceType is deprecated, please use "instanceTypes" only/);
+
+  });
+  test('create nodegroup with neither instanceTypes nor instanceType defined', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -395,13 +398,13 @@ export = {
       capacityType: eks.CapacityType.SPOT,
     });
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       CapacityType: 'SPOT',
-    },
-    ));
-    test.done();
-  },
-  'throws when instanceTypes provided with different CPU architrcture'(test: Test) {
+    });
+
+
+  });
+  test('throws when instanceTypes provided with different CPU architrcture', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -410,7 +413,7 @@ export = {
       version: CLUSTER_VERSION,
     });
     // THEN
-    test.throws(() => cluster.addNodegroupCapacity('ng', {
+    expect(() => cluster.addNodegroupCapacity('ng', {
       instanceTypes: [
         // X86
         new ec2.InstanceType('c5.large'),
@@ -418,10 +421,10 @@ export = {
         // ARM64
         new ec2.InstanceType('m6g.large'),
       ],
-    }), /instanceTypes of different CPU architectures is not allowed/);
-    test.done();
-  },
-  'throws when amiType provided is incorrect'(test: Test) {
+    })).toThrow(/instanceTypes of different CPU architectures is not allowed/);
+
+  });
+  test('throws when amiType provided is incorrect', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -430,7 +433,7 @@ export = {
       version: CLUSTER_VERSION,
     });
     // THEN
-    test.throws(() => cluster.addNodegroupCapacity('ng', {
+    expect(() => cluster.addNodegroupCapacity('ng', {
       instanceTypes: [
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('c5a.large'),
@@ -438,11 +441,11 @@ export = {
       ],
       // incorrect amiType
       amiType: eks.NodegroupAmiType.AL2_ARM_64,
-    }), /The specified AMI does not match the instance types architecture/);
-    test.done();
-  },
+    })).toThrow(/The specified AMI does not match the instance types architecture/);
 
-  'remoteAccess without security group provided'(test: Test) {
+  });
+
+  test('remoteAccess without security group provided', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -460,16 +463,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       RemoteAccess: {
         Ec2SshKey: 'foo',
       },
-    },
-    ));
-    test.done();
-  },
+    });
 
-  'import nodegroup correctly'(test: Test) {
+
+  });
+
+  test('import nodegroup correctly', () => {
     // GIVEN
     const { stack: stack1, vpc, app } = testFixture();
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
@@ -486,7 +489,7 @@ export = {
     new cdk.CfnOutput(stack2, 'NodegroupName', { value: imported.nodegroupName });
 
     // THEN
-    expect(stack2).toMatch({
+    expect(stack2).toMatchTemplate({
       Outputs: {
         NodegroupName: {
           Value: {
@@ -495,9 +498,9 @@ export = {
         },
       },
     });
-    test.done();
-  },
-  'addNodegroup correctly'(test: Test) {
+
+  });
+  test('addNodegroup correctly', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -510,7 +513,7 @@ export = {
     cluster.addNodegroupCapacity('ng');
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -534,11 +537,11 @@ export = {
         MaxSize: 2,
         MinSize: 1,
       },
-    },
-    ));
-    test.done();
-  },
-  'add node group with taints'(test: Test) {
+    });
+
+
+  });
+  test('add node group with taints', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -559,7 +562,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -570,11 +573,11 @@ export = {
           Value: 'bar',
         },
       ],
-    },
-    ));
-    test.done();
-  },
-  'throws when desiredSize > maxSize'(test: Test) {
+    });
+
+
+  });
+  test('throws when desiredSize > maxSize', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -583,10 +586,10 @@ export = {
       version: CLUSTER_VERSION,
     });
     // THEN
-    test.throws(() => cluster.addNodegroupCapacity('ng', { desiredSize: 3, maxSize: 2 }), /Desired capacity 3 can't be greater than max size 2/);
-    test.done();
-  },
-  'throws when desiredSize < minSize'(test: Test) {
+    expect(() => cluster.addNodegroupCapacity('ng', { desiredSize: 3, maxSize: 2 })).toThrow(/Desired capacity 3 can't be greater than max size 2/);
+
+  });
+  test('throws when desiredSize < minSize', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -595,10 +598,10 @@ export = {
       version: CLUSTER_VERSION,
     });
     // THEN
-    test.throws(() => cluster.addNodegroupCapacity('ng', { desiredSize: 2, minSize: 3 }), /Minimum capacity 3 can't be greater than desired size 2/);
-    test.done();
-  },
-  'can set minSize , maxSize and DesiredSize'(test: Test) {
+    expect(() => cluster.addNodegroupCapacity('ng', { desiredSize: 2, minSize: 3 })).toThrow(/Minimum capacity 3 can't be greater than desired size 2/);
+
+  });
+  test('can set minSize , maxSize and DesiredSize', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -614,17 +617,17 @@ export = {
       desiredSize: 4,
     });
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       ScalingConfig: {
         MinSize: 2,
         MaxSize: 6,
         DesiredSize: 4,
       },
-    },
-    ));
-    test.done();
-  },
-  'validation is not performed when using Tokens'(test: Test) {
+    });
+
+
+  });
+  test('validation is not performed when using Tokens', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -640,17 +643,17 @@ export = {
       desiredSize: cdk.Lazy.number({ produce: () => 20 }),
     });
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       ScalingConfig: {
         MinSize: 5,
         MaxSize: 1,
         DesiredSize: 20,
       },
-    },
-    ));
-    test.done();
-  },
-  'create nodegroup correctly with launch template'(test: Test) {
+    });
+
+
+  });
+  test('create nodegroup correctly with launch template', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -680,7 +683,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       LaunchTemplate: {
         Id: {
           Ref: 'LaunchTemplate',
@@ -692,11 +695,11 @@ export = {
           ],
         },
       },
-    },
-    ));
-    test.done();
-  },
-  'throws when both diskSize and launch template specified'(test: Test) {
+    });
+
+
+  });
+  test('throws when both diskSize and launch template specified', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -719,14 +722,14 @@ export = {
       },
     });
     // THEN
-    test.throws(() =>
+    expect(() =>
       cluster.addNodegroupCapacity('ng-lt', {
         diskSize: 100,
         launchTemplateSpec: {
           id: lt.ref,
           version: lt.attrDefaultVersionNumber,
         },
-      }), /diskSize must be specified within the launch template/);
-    test.done();
-  },
-};
+      })).toThrow(/diskSize must be specified within the launch template/);
+
+  });
+});

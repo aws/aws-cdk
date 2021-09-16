@@ -1,14 +1,13 @@
-import { expect } from '@aws-cdk/assert-internal';
-import { Stack, Duration } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import '@aws-cdk/assert-internal/jest';
+import { App, Stack, Duration } from '@aws-cdk/core';
 import * as eks from '../lib';
 import { KubernetesObjectValue } from '../lib/k8s-object-value';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
-export = {
+describe('k8s object value', () => {
 
-  'creates the correct custom resource with explicit values for all properties'(test: Test) {
+  test('creates the correct custom resource with explicit values for all properties', () => {
     // GIVEN
     const stack = new Stack();
     const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
@@ -24,7 +23,10 @@ export = {
     });
 
     const expectedCustomResourceId = 'MyAttributeF1E9B10D';
-    test.deepEqual(expect(stack).value.Resources[expectedCustomResourceId], {
+
+    const app = stack.node.root as App;
+    const stackTemplate = app.synth().getStackArtifact(stack.stackName).template;
+    expect(stackTemplate.Resources[expectedCustomResourceId]).toEqual({
       Type: 'Custom::AWSCDK-EKS-KubernetesObjectValue',
       Properties: {
         ServiceToken: {
@@ -46,11 +48,11 @@ export = {
       DeletionPolicy: 'Delete',
     });
 
-    test.deepEqual(stack.resolve(attribute.value), { 'Fn::GetAtt': [expectedCustomResourceId, 'Value'] });
-    test.done();
-  },
+    expect(stack.resolve(attribute.value)).toEqual({ 'Fn::GetAtt': [expectedCustomResourceId, 'Value'] });
 
-  'creates the correct custom resource with defaults'(test: Test) {
+  });
+
+  test('creates the correct custom resource with defaults', () => {
     // GIVEN
     const stack = new Stack();
     const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
@@ -64,7 +66,9 @@ export = {
     });
 
     const expectedCustomResourceId = 'MyAttributeF1E9B10D';
-    test.deepEqual(expect(stack).value.Resources[expectedCustomResourceId], {
+    const app = stack.node.root as App;
+    const stackTemplate = app.synth().getStackArtifact(stack.stackName).template;
+    expect(stackTemplate.Resources[expectedCustomResourceId]).toEqual({
       Type: 'Custom::AWSCDK-EKS-KubernetesObjectValue',
       Properties: {
         ServiceToken: {
@@ -86,8 +90,8 @@ export = {
       DeletionPolicy: 'Delete',
     });
 
-    test.deepEqual(stack.resolve(attribute.value), { 'Fn::GetAtt': [expectedCustomResourceId, 'Value'] });
-    test.done();
-  },
+    expect(stack.resolve(attribute.value)).toEqual({ 'Fn::GetAtt': [expectedCustomResourceId, 'Value'] });
 
-};
+  });
+
+});

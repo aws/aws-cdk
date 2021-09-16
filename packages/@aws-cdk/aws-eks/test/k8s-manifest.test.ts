@@ -1,6 +1,6 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';
 import { testFixtureNoVpc, testFixtureCluster } from './util';
 
@@ -8,8 +8,8 @@ import { testFixtureNoVpc, testFixtureCluster } from './util';
 
 const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
-export = {
-  'basic usage'(test: Test) {
+describe('k8s manifest', () => {
+  test('basic usage', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION });
@@ -72,13 +72,13 @@ export = {
       manifest,
     });
 
-    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: JSON.stringify(manifest),
-    }));
-    test.done();
-  },
+    });
 
-  'can be added to an imported cluster with minimal config'(test: Test) {
+  });
+
+  test('can be added to an imported cluster with minimal config', () => {
     // GIVEN
     const stack = new Stack();
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
@@ -91,27 +91,27 @@ export = {
     cluster.addHelmChart('helm', { chart: 'hello-world' });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"bar":2334}]',
       ClusterName: 'my-cluster-name',
       RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
-    }));
+    });
 
-    expect(stack).to(haveResource(HelmChart.RESOURCE_TYPE, {
+    expect(stack).toHaveResource(HelmChart.RESOURCE_TYPE, {
       ClusterName: 'my-cluster-name',
       RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
       Release: 'myclustercharthelm78d2c26a',
       Chart: 'hello-world',
       Namespace: 'default',
       CreateNamespace: true,
-    }));
+    });
 
-    test.done();
-  },
 
-  'prune labels': {
+  });
 
-    'base case'(test: Test) {
+  describe('prune labels', () => {
+
+    test('base case', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
 
@@ -120,7 +120,7 @@ export = {
         version: KubernetesVersion.V1_16,
       });
 
-      test.equal(cluster.prune, true, '"prune" is enabled by default');
+      expect(cluster.prune).toEqual(true);
 
       // WHEN
       cluster.addManifest('m1', {
@@ -129,7 +129,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([{
           apiVersion: 'v1beta1',
           kind: 'Foo',
@@ -140,12 +140,12 @@ export = {
           },
         }]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
-      }));
+      });
 
-      test.done();
-    },
 
-    'multiple resources in the same manifest'(test: Test) {
+    });
+
+    test('multiple resources in the same manifest', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster({ prune: true });
 
@@ -171,7 +171,7 @@ export = {
       );
 
       // THEN
-      expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([
           {
             apiVersion: 'v1beta',
@@ -203,12 +203,12 @@ export = {
           },
         ]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
-      }));
+      });
 
-      test.done();
-    },
 
-    'different KubernetesManifest resource use different prune labels'(test: Test) {
+    });
+
+    test('different KubernetesManifest resource use different prune labels', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster({ prune: true });
 
@@ -233,7 +233,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([
           {
             apiVersion: 'v1beta',
@@ -246,9 +246,9 @@ export = {
           },
         ]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
-      }));
+      });
 
-      expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([
           {
             apiVersion: 'v1',
@@ -271,12 +271,12 @@ export = {
           },
         ]),
         PruneLabel: 'aws.cdk.eks/prune-c8aff6ac817006dd4d644e9d99b2cdbb8c8cd036d9',
-      }));
+      });
 
-      test.done();
-    },
 
-    'ignores resources without "kind"'(test: Test) {
+    });
+
+    test('ignores resources without "kind"', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster({ prune: true });
 
@@ -286,32 +286,32 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([{ malformed: { resource: 'yes' } }]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
-      }));
+      });
 
-      test.done();
-    },
 
-    'ignores entries that are not objects (invalid type)'(test: Test) {
+    });
+
+    test('ignores entries that are not objects (invalid type)', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster({ prune: true });
-      test.equal(cluster.prune, true);
+      expect(cluster.prune).toEqual(true);
 
       // WHEN
       cluster.addManifest('m1', ['foo']);
 
       // THEN
-      expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
+      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([['foo']]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
-      }));
+      });
 
-      test.done();
-    },
 
-    'no prune labels when "prune" is disabled'(test: Test) {
+    });
+
+    test('no prune labels when "prune" is disabled', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new Cluster(stack, 'Cluster', {
@@ -342,9 +342,9 @@ export = {
       const m2 = template.Resources.m201F909C5.Properties;
       const m3 = template.Resources.m3B0AF9264.Properties;
 
-      test.deepEqual(m1.Manifest, JSON.stringify([{ apiVersion: 'v1beta', kind: 'Foo' }]));
-      test.deepEqual(m2.Manifest, JSON.stringify([{ apiVersion: 'v1', kind: 'Pod' }]));
-      test.deepEqual(m3.Manifest, JSON.stringify([
+      expect(m1.Manifest).toEqual(JSON.stringify([{ apiVersion: 'v1beta', kind: 'Foo' }]));
+      expect(m2.Manifest).toEqual(JSON.stringify([{ apiVersion: 'v1', kind: 'Pod' }]));
+      expect(m3.Manifest).toEqual(JSON.stringify([
         {
           apiVersion: 'v1',
           kind: 'Deployment',
@@ -355,10 +355,10 @@ export = {
           },
         },
       ]));
-      test.ok(!m1.PruneLabel);
-      test.ok(!m2.PruneLabel);
-      test.equal(m3.PruneLabel, 'aws.cdk.eks/prune-c8971972440c5bb3661e468e4cb8069f7ee549414c');
-      test.done();
-    },
-  },
-};
+      expect(m1.PruneLabel).toBeFalsy();
+      expect(m2.PruneLabel).toBeFalsy();
+      expect(m3.PruneLabel).toEqual('aws.cdk.eks/prune-c8971972440c5bb3661e468e4cb8069f7ee549414c');
+
+    });
+  });
+});

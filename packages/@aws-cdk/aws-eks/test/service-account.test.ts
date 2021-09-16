@@ -1,14 +1,13 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
-import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixture, testFixtureCluster } from './util';
 
 /* eslint-disable max-len */
 
-export = {
-  'add Service Account': {
-    'defaults should have default namespace and lowercase unique id'(test: Test) {
+describe('service account', () => {
+  describe('add Service Account', () => {
+    test('defaults should have default namespace and lowercase unique id', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
 
@@ -16,7 +15,7 @@ export = {
       new eks.ServiceAccount(stack, 'MyServiceAccount', { cluster });
 
       // THEN
-      expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
@@ -38,8 +37,8 @@ export = {
             ],
           ],
         },
-      }));
-      expect(stack).to(haveResource(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
+      });
+      expect(stack).toHaveResource(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -62,10 +61,10 @@ export = {
           ],
           Version: '2012-10-17',
         },
-      }));
-      test.done();
-    },
-    'should have allow multiple services accounts'(test: Test) {
+      });
+
+    });
+    test('should have allow multiple services accounts', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
 
@@ -74,7 +73,7 @@ export = {
       cluster.addServiceAccount('MyOtherServiceAccount');
 
       // THEN
-      expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
@@ -96,10 +95,10 @@ export = {
             ],
           ],
         },
-      }));
-      test.done();
-    },
-    'should have unique resource name'(test: Test) {
+      });
+
+    });
+    test('should have unique resource name', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
 
@@ -107,10 +106,10 @@ export = {
       cluster.addServiceAccount('MyServiceAccount');
 
       // THEN
-      test.throws(() => cluster.addServiceAccount('MyServiceAccount'));
-      test.done();
-    },
-    'addServiceAccount for imported cluster'(test: Test) {
+      expect(() => cluster.addServiceAccount('MyServiceAccount')).toThrow();
+
+    });
+    test('addServiceAccount for imported cluster', () => {
       const { stack } = testFixture();
       const oidcProvider = new iam.OpenIdConnectProvider(stack, 'ClusterOpenIdConnectProvider', {
         url: 'oidc_issuer',
@@ -123,7 +122,7 @@ export = {
 
       cluster.addServiceAccount('MyServiceAccount');
 
-      expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'StackClusterF0EB02FAKubectlProviderNestedStackStackClusterF0EB02FAKubectlProviderNestedStackResource739D12C4',
@@ -146,9 +145,9 @@ export = {
             ],
           ],
         },
-      }));
+      });
 
-      expect(stack).to(haveResource(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
+      expect(stack).toHaveResource(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -171,8 +170,8 @@ export = {
           ],
           Version: '2012-10-17',
         },
-      }));
-      test.done();
-    },
-  },
-};
+      });
+
+    });
+  });
+});

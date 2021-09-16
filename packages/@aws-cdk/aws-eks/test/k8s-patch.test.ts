@@ -1,13 +1,12 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Names, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { KubernetesPatch, PatchType } from '../lib/k8s-patch';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
-export = {
-  'applies a patch to k8s'(test: Test) {
+describe('k8s patch', () => {
+  test('applies a patch to k8s', () => {
     // GIVEN
     const stack = new Stack();
     const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
@@ -21,7 +20,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
       ServiceToken: {
         'Fn::GetAtt': [
           'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
@@ -41,14 +40,14 @@ export = {
           'Arn',
         ],
       },
-    }));
+    });
 
     // also make sure a dependency on the barrier is added to the patch construct.
-    test.deepEqual(patch.node.dependencies.map(d => Names.nodeUniqueId(d.target.node)), ['MyClusterKubectlReadyBarrier7547948A']);
+    expect(patch.node.dependencies.map(d => Names.nodeUniqueId(d.target.node))).toEqual(['MyClusterKubectlReadyBarrier7547948A']);
 
-    test.done();
-  },
-  'defaults to "strategic" patch type if no patchType is specified'(test: Test) {
+
+  });
+  test('defaults to "strategic" patch type if no patchType is specified', () => {
     // GIVEN
     const stack = new Stack();
     const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
@@ -60,12 +59,12 @@ export = {
       restorePatch: { restore: { patch: 123 } },
       resourceName: 'myResourceName',
     });
-    expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
       PatchType: 'strategic',
-    }));
-    test.done();
-  },
-  'uses specified to patch type if specified'(test: Test) {
+    });
+
+  });
+  test('uses specified to patch type if specified', () => {
     // GIVEN
     const stack = new Stack();
     const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
@@ -93,18 +92,18 @@ export = {
       patchType: PatchType.STRATEGIC,
     });
 
-    expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'jsonPatchResource',
       PatchType: 'json',
-    }));
-    expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    });
+    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'mergePatchResource',
       PatchType: 'merge',
-    }));
-    expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    });
+    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'strategicPatchResource',
       PatchType: 'strategic',
-    }));
-    test.done();
-  },
-};
+    });
+
+  });
+});

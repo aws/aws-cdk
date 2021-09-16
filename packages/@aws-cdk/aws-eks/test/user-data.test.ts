@@ -1,14 +1,13 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Cluster, KubernetesVersion } from '../lib/cluster';
 import { renderAmazonLinuxUserData } from '../lib/user-data';
 
 /* eslint-disable max-len */
 
-export = {
-  'default user data'(test: Test) {
+describe('user data', () => {
+  test('default user data', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures();
 
@@ -16,7 +15,7 @@ export = {
     const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg));
 
     // THEN
-    test.deepEqual(userData, [
+    expect(userData).toEqual([
       'set -o xtrace',
       {
         'Fn::Join': [
@@ -37,10 +36,10 @@ export = {
       '/opt/aws/bin/cfn-signal --exit-code $? --stack my-stack --resource ASG46ED3070 --region us-west-33',
     ]);
 
-    test.done();
-  },
 
-  '--use-max-pods=true'(test: Test) {
+  });
+
+  test('--use-max-pods=true', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures();
 
@@ -50,29 +49,29 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(
+    expect(
       userData[1],
-      {
-        'Fn::Join': [
-          '',
-          [
-            '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
-            ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
-            "' --b64-cluster-ca '",
-            {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
-            },
-            "' --use-max-pods true",
-          ],
+    ).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/etc/eks/bootstrap.sh ',
+          { Ref: 'clusterC5B25D0D' },
+          ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
+          { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+          "' --b64-cluster-ca '",
+          {
+            'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+          },
+          "' --use-max-pods true",
         ],
-      },
-    );
-    test.done();
-  },
+      ],
+    });
 
-  '--use-max-pods=false'(test: Test) {
+
+  });
+
+  test('--use-max-pods=false', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures();
 
@@ -82,8 +81,9 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(
+    expect(
       userData[1],
+    ).toEqual(
       {
         'Fn::Join': [
           '',
@@ -101,10 +101,10 @@ export = {
         ],
       },
     );
-    test.done();
-  },
 
-  '--aws-api-retry-attempts'(test: Test) {
+  });
+
+  test('--aws-api-retry-attempts', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures();
 
@@ -114,8 +114,9 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(
+    expect(
       userData[1],
+    ).toEqual(
       {
         'Fn::Join': [
           '',
@@ -133,10 +134,10 @@ export = {
         ],
       },
     );
-    test.done();
-  },
 
-  '--dns-cluster-ip'(test: Test) {
+  });
+
+  test('--dns-cluster-ip', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures();
 
@@ -146,8 +147,9 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(
+    expect(
       userData[1],
+    ).toEqual(
       {
         'Fn::Join': [
           '',
@@ -165,10 +167,10 @@ export = {
         ],
       },
     );
-    test.done();
-  },
 
-  '--docker-config-json'(test: Test) {
+  });
+
+  test('--docker-config-json', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures();
 
@@ -178,8 +180,9 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(
+    expect(
       userData[1],
+    ).toEqual(
       {
         'Fn::Join': [
           '',
@@ -197,10 +200,10 @@ export = {
         ],
       },
     );
-    test.done();
-  },
 
-  '--enable-docker-bridge=true'(test: Test) {
+  });
+
+  test('--enable-docker-bridge=true', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures();
 
@@ -210,8 +213,9 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(
+    expect(
       userData[1],
+    ).toEqual(
       {
         'Fn::Join': [
           '',
@@ -229,10 +233,10 @@ export = {
         ],
       },
     );
-    test.done();
-  },
 
-  '--enable-docker-bridge=false'(test: Test) {
+  });
+
+  test('--enable-docker-bridge=false', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures();
 
@@ -242,8 +246,9 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(
+    expect(
       userData[1],
+    ).toEqual(
       {
         'Fn::Join': [
           '',
@@ -261,10 +266,10 @@ export = {
         ],
       },
     );
-    test.done();
-  },
 
-  '--kubelet-extra-args'(test: Test) {
+  });
+
+  test('--kubelet-extra-args', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures();
 
@@ -274,8 +279,9 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(
+    expect(
       userData[1],
+    ).toEqual(
       {
         'Fn::Join': [
           '',
@@ -293,10 +299,10 @@ export = {
         ],
       },
     );
-    test.done();
-  },
 
-  'arbitrary additional bootstrap arguments can be passed through "additionalArgs"'(test: Test) {
+  });
+
+  test('arbitrary additional bootstrap arguments can be passed through "additionalArgs"', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures();
 
@@ -307,8 +313,9 @@ export = {
 
     // THEN
     // NB: duplicated --apiserver-endpoint is fine.  Last wins.
-    test.deepEqual(
+    expect(
       userData[1],
+    ).toEqual(
       {
         'Fn::Join': [
           '',
@@ -326,10 +333,10 @@ export = {
         ],
       },
     );
-    test.done();
-  },
 
-  'if asg has spot instances, the correct label and taint is used'(test: Test) {
+  });
+
+  test('if asg has spot instances, the correct label and taint is used', () => {
     // GIVEN
     const { asg, stack, cluster } = newFixtures(true);
 
@@ -339,8 +346,9 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(
+    expect(
       userData[1],
+    ).toEqual(
       {
         'Fn::Join': [
           '',
@@ -358,9 +366,9 @@ export = {
         ],
       },
     );
-    test.done();
-  },
-};
+
+  });
+});
 
 function newFixtures(spot = false) {
   const app = new App();

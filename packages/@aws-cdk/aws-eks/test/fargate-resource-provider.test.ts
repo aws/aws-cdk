@@ -1,11 +1,10 @@
-import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from '../lib/cluster-resource-handler/consts';
 import { FargateProfileResourceHandler } from '../lib/cluster-resource-handler/fargate';
 
-export = {
-  create: {
-    async 'calls createFargateProfile with a generated name'(test: Test) {
+describe('fargate resource provider', () => {
+  describe('create', () => {
+    test('calls createFargateProfile with a generated name', async () => {
       // GIVEN
       const client = newEksClientMock();
       const handler = new FargateProfileResourceHandler(client, newRequestMock());
@@ -24,15 +23,15 @@ export = {
         fargateProfileName: 'LogicalResourceIdMock-RequestIdMock',
       });
 
-      test.deepEqual(onEventResponse, {
+      expect(onEventResponse).toEqual({
         PhysicalResourceId: 'MockProfileName',
         Data: { fargateProfileArn: 'MockProfileArn' },
       });
 
-      test.done();
-    },
 
-    async 'respects physical name if provided'(test: Test) {
+    });
+
+    test('respects physical name if provided', async () => {
       // GIVEN
       const client = newEksClientMock();
       const handler = new FargateProfileResourceHandler(client, newRequestMock({
@@ -54,15 +53,15 @@ export = {
         clusterName: 'MockClusterName',
       });
 
-      test.deepEqual(onEventResponse, {
+      expect(onEventResponse).toEqual({
         PhysicalResourceId: 'MockProfileName',
         Data: { fargateProfileArn: 'MockProfileArn' },
       });
 
-      test.done();
-    },
 
-    async 'isComplete returns true if fargate profile is ACTIVE'(test: Test) {
+    });
+
+    test('isComplete returns true if fargate profile is ACTIVE', async () => {
       // GIVEN
       const client = newEksClientMock();
 
@@ -82,11 +81,11 @@ export = {
         fargateProfileName: 'PhysicalResourceIdMock',
       });
 
-      test.equal(resp.IsComplete, true);
-      test.done();
-    },
+      expect(resp.IsComplete).toEqual(true);
 
-    async 'isComplete returns false as long as fargate profile is CREATING'(test: Test) {
+    });
+
+    test('isComplete returns false as long as fargate profile is CREATING', async () => {
       // GIVEN
       const client = newEksClientMock();
 
@@ -106,11 +105,11 @@ export = {
         fargateProfileName: 'PhysicalResourceIdMock',
       });
 
-      test.equal(resp.IsComplete, false);
-      test.done();
-    },
+      expect(resp.IsComplete).toEqual(false);
 
-    async 'isComplete throws an exception if the status is CREATE_FAILED'(test: Test) {
+    });
+
+    test('isComplete throws an exception if the status is CREATE_FAILED', async () => {
       // GIVEN
       const client = newEksClientMock();
 
@@ -123,7 +122,7 @@ export = {
       // WHEN
       const handler = new FargateProfileResourceHandler(client, newRequestMock());
 
-      let error;
+      let error: any;
       try {
         await handler.isComplete();
       } catch (e) {
@@ -136,14 +135,14 @@ export = {
         fargateProfileName: 'PhysicalResourceIdMock',
       });
 
-      test.equal(error.message, 'CREATE_FAILED');
-      test.done();
-    },
-  },
+      expect(error.message).toEqual('CREATE_FAILED');
 
-  update: {
+    });
+  });
 
-    async 'calls createFargateProfile with a new name'(test: Test) {
+  describe('update', () => {
+
+    test('calls createFargateProfile with a new name', async () => {
       // GIVEN
       const client = newEksClientMock();
       const handler = new FargateProfileResourceHandler(client, newRequestMock({
@@ -164,19 +163,19 @@ export = {
         fargateProfileName: 'LogicalResourceIdMock-RequestIdMock',
       });
 
-      test.deepEqual(onEventResponse, {
+      expect(onEventResponse).toEqual({
         PhysicalResourceId: 'MockProfileName',
         Data: { fargateProfileArn: 'MockProfileArn' },
       });
 
-      test.done();
-    },
 
-  },
+    });
 
-  delete: {
+  });
 
-    async 'calls deleteFargateProfile'(test: Test) {
+  describe('delete', () => {
+
+    test('calls deleteFargateProfile', async () => {
       // GIVEN
       const client = newEksClientMock();
       const handler = new FargateProfileResourceHandler(client, newRequestMock({
@@ -197,11 +196,11 @@ export = {
         fargateProfileName: 'PhysicalResourceIdMock',
       });
 
-      test.equal(onEventResponse, undefined);
-      test.done();
-    },
+      expect(onEventResponse).toEqual(undefined);
 
-    async 'isComplete returns true when describeFargateProfile throws ResourceNotFoundException'(test: Test) {
+    });
+
+    test('isComplete returns true when describeFargateProfile throws ResourceNotFoundException', async () => {
       // GIVEN
       const client = newEksClientMock();
 
@@ -221,14 +220,14 @@ export = {
         fargateProfileName: 'PhysicalResourceIdMock',
       });
 
-      test.deepEqual(resp, {
+      expect(resp).toEqual({
         IsComplete: true,
       });
 
-      test.done();
-    },
 
-    async 'isComplete throws an exception if the status is DELETE_FAILED'(test: Test) {
+    });
+
+    test('isComplete throws an exception if the status is DELETE_FAILED', async () => {
       // GIVEN
       const client = newEksClientMock();
 
@@ -241,7 +240,7 @@ export = {
       // WHEN
       const handler = new FargateProfileResourceHandler(client, newRequestMock());
 
-      let error;
+      let error: any;
       try {
         await handler.isComplete();
       } catch (e) {
@@ -254,12 +253,12 @@ export = {
         fargateProfileName: 'PhysicalResourceIdMock',
       });
 
-      test.equal(error.message, 'DELETE_FAILED');
-      test.done();
-    },
+      expect(error.message).toEqual('DELETE_FAILED');
 
-  },
-};
+    });
+
+  });
+});
 
 function newRequestMock(props: any = { }): any {
   return {
