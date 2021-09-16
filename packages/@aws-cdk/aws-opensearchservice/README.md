@@ -1,4 +1,4 @@
-# Amazon Elasticsearch Service Construct Library
+# Amazon OpenSearch Service Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -22,27 +22,29 @@ Higher level constructs for Domain | ![Stable](https://img.shields.io/badge/stab
 
 <!--END STABILITY BANNER-->
 
-> Amazon Elasticsearch Service has been renamed to Amazon OpenSearch Service; consequently, the [@aws-cdk/aws-opensearchservice](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-opensearchservice-readme.html) module should be used instead. See [Amazon OpenSearch Service FAQs](https://aws.amazon.com/opensearch-service/faqs/#Name_change) for details. See [Migrating to OpenSearch](#migrating-to-opensearch) for migration instructions.
+Amazon OpenSearch Service is the successor to Amazon Elasticsearch Service.
+
+See [Migrating to OpenSearch](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-elasticsearch-readme.html#migrating-to-opensearch) for migration instructions from `@aws-cdk/aws-elasticsearch` to this module, `@aws-cdk/aws-opensearch`.
 
 ## Quick start
 
 Create a development cluster by simply specifying the version:
 
 ```ts
-import * as es from '@aws-cdk/aws-elasticsearch';
+import * as opensearch from '@aws-cdk/aws-opensearch';
 
-const devDomain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
+const devDomain = new opensearch.Domain(this, 'Domain', {
+    version: opensearch.EngineVersion.OPENSEARCH_1_0,
 });
 ```
 
 To perform version upgrades without replacing the entire domain, specify the `enableVersionUpgrade` property.
 
 ```ts
-import * as es from '@aws-cdk/aws-elasticsearch';
+import * as opensearch from '@aws-cdk/aws-opensearch';
 
-const devDomain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_10,
+const devDomain = new opensearch.Domain(this, 'Domain', {
+    version: opensearch.EngineVersion.OPENSEARCH_1_0,
     enableVersionUpgrade: true // defaults to false
 });
 ```
@@ -50,8 +52,8 @@ const devDomain = new es.Domain(this, 'Domain', {
 Create a production grade cluster by also specifying things like capacity and az distribution
 
 ```ts
-const prodDomain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
+const prodDomain = new opensearch.Domain(this, 'Domain', {
+    version: opensearch.EngineVersion.OPENSEARCH_1_0,
     capacity: {
         masterNodes: 5,
         dataNodes: 20
@@ -70,17 +72,17 @@ const prodDomain = new es.Domain(this, 'Domain', {
 });
 ```
 
-This creates an Elasticsearch cluster and automatically sets up log groups for
+This creates an Amazon OpenSearch Service cluster and automatically sets up log groups for
 logging the domain logs and slow search logs.
 
 ## A note about SLR
 
-Some cluster configurations (e.g VPC access) require the existence of the [`AWSServiceRoleForAmazonElasticsearchService`](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/slr-es.html) Service-Linked Role.
+Some cluster configurations (e.g VPC access) require the existence of the [`AWSServiceRoleForAmazonElasticsearchService`](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/slr.html) Service-Linked Role.
 
 When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn't exist, you will encounter a failure message simlar to:
 
 ```console
-Before you can proceed, you must enable a service-linked role to give Amazon ES...
+Before you can proceed, you must enable a service-linked role to give Amazon OpenSearch Service...
 ```
 
 To resolve this, you need to [create](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html#create-service-linked-role) the SLR. We recommend using the AWS CLI:
@@ -92,7 +94,7 @@ aws iam create-service-linked-role --aws-service-name es.amazonaws.com
 You can also create it using the CDK, **but note that only the first application deploying this will succeed**:
 
 ```ts
-const slr = new iam.CfnServiceLinkedRole(this, 'ElasticSLR', {
+const slr = new iam.CfnServiceLinkedRole(this, 'Service Linked Role', {
   awsServiceName: 'es.amazonaws.com'
 });
 ```
@@ -128,8 +130,8 @@ domain.grantPathRead('app-search/_search', lambda);
 The domain can also be created with encryption enabled:
 
 ```ts
-const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_4,
+const domain = new opensearch.Domain(this, 'Domain', {
+    version: opensearch.EngineVersion.OPENSEARCH_1_0,
     ebs: {
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
@@ -147,14 +149,14 @@ rest.
 
 ## VPC Support
 
-Elasticsearch domains can be placed inside a VPC, providing a secure communication between Amazon ES and other services within the VPC without the need for an internet gateway, NAT device, or VPN connection.
+Domains can be placed inside a VPC, providing a secure communication between Amazon OpenSearch Service and other services within the VPC without the need for an internet gateway, NAT device, or VPN connection.
 
-> Visit [VPC Support for Amazon Elasticsearch Service Domains](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html) for more details.
+> Visit [VPC Support for Amazon OpenSearch Service Domains](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/vpc.html) for more details.
 
 ```ts
 const vpc = new ec2.Vpc(this, 'Vpc');
-const domainProps: es.DomainProps = {
-  version: es.ElasticsearchVersion.V7_1,
+const domainProps: opensearch.DomainProps = {
+  version: opensearch.EngineVersion.OPENSEARCH_1_0,
   removalPolicy: RemovalPolicy.DESTROY,
   vpc,
   // must be enabled since our VPC contains multiple private subnets.
@@ -166,7 +168,7 @@ const domainProps: es.DomainProps = {
     dataNodes: 2,
   },
 };
-new es.Domain(this, 'Domain', domainProps);
+new opensearch.Domain(this, 'Domain', domainProps);
 ```
 
 In addition, you can use the `vpcSubnets` property to control which specific subnets will be used, and the `securityGroups` property to control
@@ -189,8 +191,8 @@ The domain can also be created with a master user configured. The password can
 be supplied or dynamically created if not supplied.
 
 ```ts
-const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
+const domain = new opensearch.Domain(this, 'Domain', {
+    version: opensearch.EngineVersion.OPENSEARCH_1_0,
     enforceHttps: true,
     nodeToNodeEncryption: true,
     encryptionAtRest: {
@@ -227,8 +229,8 @@ stored in the AWS Secrets Manager as secret. The secret has the prefix
 `<domain id>MasterUser`.
 
 ```ts
-const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
+const domain = new opensearch.Domain(this, 'Domain', {
+    version: opensearch.EngineVersion.OPENSEARCH_1_0,
     useUnsignedBasicAuth: true,
 });
 
@@ -242,8 +244,8 @@ const masterUserPassword = domain.masterUserPassword;
 Audit logs can be enabled for a domain, but only when fine grained access control is enabled.
 
 ```ts
-const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
+const domain = new opensearch.Domain(this, 'Domain', {
+    version: opensearch.EngineVersion.OPENSEARCH_1_0,
     enforceHttps: true,
     nodeToNodeEncryption: true,
     encryptionAtRest: {
@@ -266,23 +268,23 @@ const domain = new es.Domain(this, 'Domain', {
 UltraWarm nodes can be enabled to provide a cost-effective way to store large amounts of read-only data.
 
 ```ts
-const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_10,
+const domain = new opensearch.Domain(this, 'Domain', {
+    version: opensearch.EngineVersion.OPENSEARCH_1_0,
     capacity: {
         masterNodes: 2,
         warmNodes: 2,
-        warmInstanceType: 'ultrawarm1.medium.elasticsearch',
+        warmInstanceType: 'ultrawarm1.medium.search',
     },
 });
 ```
 
 ## Custom endpoint
 
-Custom endpoints can be configured to reach the ES domain under a custom domain name.
+Custom endpoints can be configured to reach the domain under a custom domain name.
 
 ```ts
 new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_7,
+    version: EngineVersion.OPENSEARCH_1_0,
     customEndpoint: {
         domainName: 'search.example.com',
     },
@@ -295,11 +297,11 @@ Additionally, an automatic CNAME-Record is created if a hosted zone is provided 
 
 ## Advanced options
 
-[Advanced options](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-advanced-options) can used to configure additional options.
+[Advanced options](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createupdatedomains.html#createdomain-configure-advanced-options) can used to configure additional options.
 
 ```ts
 new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_7,
+    version: EngineVersion.OPENSEARCH_1_0,
     advancedOptions: {
         'rest.action.multi.allow_explicit_index': 'false',
         'indices.fielddata.cache.size': '25',
@@ -307,103 +309,3 @@ new Domain(stack, 'Domain', {
     },
 });
 ```
-
-## Migrating to OpenSearch
-
-To migrate from this module (`@aws-cdk/aws-elasticsearch`) to the new `@aws-cdk/aws-opensearchservice` module, you must modify your CDK application to refer to the new module (including some associated changes) and then perform a CloudFormation resource deletion/import.
-
-### Necessary CDK Modifications
-
-Make the following modifications to your CDK application to migrate to the `@aws-cdk/aws-opensearchservice` module.
-
-- Rewrite module imports to use `'@aws-cdk/aws-opensearchservice` to `'@aws-cdk/aws-elasticsearch`.
-  For example:
-
-  ```ts nofixture
-  import * as es from '@aws-cdk/aws-elasticsearch';
-  import { Domain } from '@aws-cdk/aws-elasticsearch';
-  ```
-
-  ...becomes...
-
-  ```ts nofixture
-  import * as opensearch from '@aws-cdk/aws-opensearchservice';
-  import { Domain } from '@aws-cdk/aws-opensearchservice';
-  ```
-
-- Replace instances of `es.ElasticsearchVersion` with `opensearch.EngineVersion`.
-  For example:
-
-  ```ts fixture=migrate-opensearch
-  const version = es.ElasticsearchVersion.V7_1;
-  ```
-
-  ...becomes...
-
-  ```ts fixture=migrate-opensearch
-  const version = opensearch.EngineVersion.ELASTICSEARCH_7_1;
-  ```
-
-- Replace the `cognitoKibanaAuth` property of `DomainProps` with `cognitoDashboardsAuth`.
-  For example:
-
-  ```ts fixture=migrate-opensearch
-  new es.Domain(this, 'Domain', {
-    cognitoKibanaAuth: {
-      identityPoolId: 'test-identity-pool-id',
-      userPoolId: 'test-user-pool-id',
-      role: role,
-    },
-    version: elasticsearchVersion,
-  });
-  ```
-
-  ...becomes...
-
-  ```ts fixture=migrate-opensearch
-  new opensearch.Domain(this, 'Domain', {
-    cognitoDashboardsAuth: {
-      identityPoolId: 'test-identity-pool-id',
-      userPoolId: 'test-user-pool-id',
-      role: role,
-    },
-    version: openSearchVersion,
-  });
-  ```
-
-- Rewrite instance type suffixes from `.elasticsearch` to `.search`.
-  For example:
-
-  ```ts fixture=migrate-opensearch
-  new es.Domain(this, 'Domain', {
-    capacity: {
-      masterNodeInstanceType: 'r5.large.elasticsearch',
-    },
-    version: elasticsearchVersion,
-  });
-  ```
-
-  ...becomes...
-
-  ```ts fixture=migrate-opensearch
-  new opensearch.Domain(this, 'Domain', {
-    capacity: {
-      masterNodeInstanceType: 'r5.large.search',
-    },
-    version: openSearchVersion,
-  });
-  ```
-
-- Any `CfnInclude`'d domains will need to be re-written in their original template in
-  order to be successfully included as a `opensearch.CfnDomain`
-
-### CloudFormation Migration
-
-Follow these steps to migrate your application without data loss:
-
-- Ensure that the [removal policy](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.RemovalPolicy.html) on your domains are set to `RemovalPolicy.RETAIN`. This is the default for the domain construct, so nothing is required unless you have specifically set the removal policy to some other value.
-- Remove the domain resource from your CloudFormation stacks by manually modifying the synthesized templates used to create the CloudFormation stacks. This may also involve modifying or deleting dependent resources, such as the custom resources that CDK creates to manage the domain's access policy or any other resource you have connected to the domain. You will need to search for references to each domain's logical ID to determine which other resources refer to it and replace or delete those references. Do not remove resources that are dependencies of the domain or you will have to recreate or import them before importing the domain. After modification, deploy the stacks through the AWS Management Console or using the AWS CLI. 
-- Migrate your CDK application to use the new `@aws-cdk/aws-opensearchservice` module by applying the necessary modifications listed above. Synthesize your application and obtain the resulting stack templates.
-- Copy just the definition of the domain from the "migrated" templates to the corresponding "stripped" templates that you deployed above. [Import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-existing-stack.html) the orphaned domains into your CloudFormation stacks using these templates.
-- Synthesize and deploy your CDK application to reconfigure/recreate the modified dependent resources. The CloudFormation stacks should now contain the same resources as existed prior to migration.
-- Proceed with development as normal!

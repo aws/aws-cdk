@@ -1,20 +1,17 @@
 /// !cdk-integ pragma:ignore-assets
 import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import * as kms from '@aws-cdk/aws-kms';
 import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as es from '../lib';
+import * as opensearch from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const key = new kms.Key(this, 'Key');
-
-    const domainProps: es.DomainProps = {
+    const domainProps: opensearch.DomainProps = {
       removalPolicy: RemovalPolicy.DESTROY,
-      version: es.ElasticsearchVersion.V7_1,
+      version: opensearch.EngineVersion.ELASTICSEARCH_7_1,
       ebs: {
         volumeSize: 10,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
@@ -26,7 +23,11 @@ class TestStack extends Stack {
       nodeToNodeEncryption: true,
       encryptionAtRest: {
         enabled: true,
-        kmsKey: key,
+      },
+      advancedOptions: {
+        'rest.action.multi.allow_explicit_index': 'false',
+        'indices.fielddata.cache.size': '25',
+        'indices.query.bool.max_clause_count': '2048',
       },
       // test the access policies custom resource works
       accessPolicies: [
@@ -39,10 +40,12 @@ class TestStack extends Stack {
       ],
     };
 
-    new es.Domain(this, 'Domain', domainProps);
+    // create 2 domains to ensure that Cloudwatch Log Group policy names dont conflict
+    new opensearch.Domain(this, 'Domain1', domainProps);
+    new opensearch.Domain(this, 'Domain2', domainProps);
   }
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-elasticsearch-custom-kms-key');
+new TestStack(app, 'cdk-integ-opensearch');
 app.synth();
