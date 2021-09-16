@@ -1,5 +1,4 @@
 # AWS CodePipeline Construct Library
-
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -79,8 +78,7 @@ Or append a Stage to an existing Pipeline:
 ```ts
 const sourceStage = pipeline.addStage({
   stageName: 'Source',
-  actions: [
-    // optional property
+  actions: [ // optional property
     // see below...
   ],
 });
@@ -94,8 +92,8 @@ const someStage = pipeline.addStage({
   placement: {
     // note: you can only specify one of the below properties
     rightBefore: anotherStage,
-    justAfter: anotherStage,
-  },
+    justAfter: anotherStage
+  }
 });
 ```
 
@@ -131,26 +129,22 @@ example, the following action deploys to an imported S3 bucket from a
 different account:
 
 ```ts
-stage.addAction(
-  new codepipeline_actions.S3DeployAction({
-    bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
-      account: '123456789012',
-      // ...
-    }),
+stage.addAction(new codepipeline_actions.S3DeployAction({
+  bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
+    account: '123456789012',
     // ...
-  })
-);
+  }),
+  // ...
+}));
 ```
 
 Actions that don't accept a resource object accept an explicit `account` parameter:
 
 ```ts
-stage.addAction(
-  new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-    account: '123456789012',
-    // ...
-  })
-);
+stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  account: '123456789012',
+  // ...
+}));
 ```
 
 The `Pipeline` construct automatically defines an **IAM Role** for you in the
@@ -164,12 +158,10 @@ If you do not want to use the generated role, you can also explicitly pass a
 account the role belongs to:
 
 ```ts
-stage.addAction(
-  new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-    // ...
-    role: iam.Role.fromRoleArn(this, 'ActionRole', '...'),
-  })
-);
+stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  // ...
+  role: iam.Role.fromRoleArn(this, 'ActionRole', '...'),
+}));
 ```
 
 ## Cross-region CodePipelines
@@ -179,27 +171,23 @@ pass to actions can also be in different *Regions*. For example, the
 following Action deploys to an imported S3 bucket from a different Region:
 
 ```ts
-stage.addAction(
-  new codepipeline_actions.S3DeployAction({
-    bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
-      region: 'us-west-1',
-      // ...
-    }),
+stage.addAction(new codepipeline_actions.S3DeployAction({
+  bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
+    region: 'us-west-1',
     // ...
-  })
-);
+  }),
+  // ...
+}));
 ```
 
 Actions that don't take an AWS resource will accept an explicit `region`
 parameter:
 
 ```ts
-stage.addAction(
-  new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-    // ...
-    region: 'us-west-1',
-  })
-);
+stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  // ...
+  region: 'us-west-1',
+}));
 ```
 
 The `Pipeline` construct automatically defines a **replication bucket** for
@@ -218,19 +206,13 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 
   crossRegionReplicationBuckets: {
     // note that a physical name of the replication Bucket must be known at synthesis time
-    'us-west-1': s3.Bucket.fromBucketAttributes(
-      this,
-      'UsWest1ReplicationBucket',
-      {
-        bucketName: 'my-us-west-1-replication-bucket',
-        // optional KMS key
-        encryptionKey: kms.Key.fromKeyArn(
-          this,
-          'UsWest1ReplicationKey',
-          'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012'
-        ),
-      }
-    ),
+    'us-west-1': s3.Bucket.fromBucketAttributes(this, 'UsWest1ReplicationBucket', {
+      bucketName: 'my-us-west-1-replication-bucket',
+      // optional KMS key
+      encryptionKey: kms.Key.fromKeyArn(this, 'UsWest1ReplicationKey',
+        'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012'
+      ),
+    }),
   },
 });
 ```
@@ -354,7 +336,7 @@ rule.addTarget(new targets.CodePipeline(pipeline));
 ```
 
 When a pipeline is used as an event target, the
-'codepipeline:StartPipelineExecution' permission is granted to the AWS
+"codepipeline:StartPipelineExecution" permission is granted to the AWS
 CloudWatch Events service.
 
 ### Event sources
