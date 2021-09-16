@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
+import { Duration, Stack, NestedStack, Names, IConstruct } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
@@ -12,6 +12,9 @@ import { ICluster, Cluster } from './cluster';
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+/**
+ * Kubectl Provider Properties
+ */
 export interface KubectlProviderProps {
   /**
    * The cluster to control.
@@ -19,24 +22,30 @@ export interface KubectlProviderProps {
   readonly cluster: ICluster;
 }
 
+/**
+ * Kubectl Provider Attributes
+ */
 export interface KubectlProviderAttributes {
   /**
    * The kubectl provider lambda arn
    */
-  functionArn: string;
+  readonly functionArn: string;
 
   /**
    * The IAM role to assume in order to perform kubectl operations against this cluster.
    */
-  kubectlRoleArn: string;
+  readonly kubectlRoleArn: string;
 
   /**
    * The IAM execution role of the handler. This role must be able to assume kubectlRoleArn
    */
-  handlerRole: iam.IRole;
+  readonly handlerRole: iam.IRole;
 }
 
-export interface IKubectlProvider {
+/**
+ * Kubectl Provider lambda
+ */
+export interface IKubectlProvider extends IConstruct {
   /**
    * The custom resource provider's service token.
    */
@@ -53,8 +62,17 @@ export interface IKubectlProvider {
   readonly handlerRole: iam.IRole;
 }
 
+/**
+ * Implementation of Kubectl Lambda
+ */
 export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
+  /**
+   * Take existing provider or create new based on cluster
+   *
+   * @param scope Construct
+   * @param cluster k8s cluster
+   */
   public static getOrCreate(scope: Construct, cluster: ICluster) {
     // if this is an "owned" cluster, it has a provider associated with it
     if (cluster instanceof Cluster) {
@@ -73,7 +91,14 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     return provider;
   }
 
-  public static fromKubectlProviderAttributes(scope: Construct, id: string, attrs: KubectlProviderAttributes) {
+  /**
+   * Import an existing provider
+   *
+   * @param scope Construct
+   * @param id an id of resource
+   * @param attrs attributes for the provider
+   */
+  public static fromKubectlProviderAttributes(scope: Construct, id: string, attrs: KubectlProviderAttributes): IKubectlProvider {
     return new ImportedKubectlProvider(scope, id, attrs);
   }
 
