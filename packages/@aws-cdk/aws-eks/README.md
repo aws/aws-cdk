@@ -542,6 +542,22 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function.
 
+By default, CDK will create a new python lambda function to apply your k8s manifests. If you want to use the existing kubectl provider function with tight trusted entities permissions of your kubectl IAM Roles - you can import the existing provider:
+
+```ts
+const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+  functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+  kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
+  handlerRole,
+});
+
+const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+  clusterName: 'cluster',
+  kubectlProvider,
+});
+```
+
 #### Environment
 
 You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:

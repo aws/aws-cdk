@@ -33,7 +33,7 @@ export interface KubectlProviderAttributes {
   /**
    * The IAM execution role of the handler. This role must be able to assume kubectlRoleArn
    */
-  handlerRole: iam.Role;
+  handlerRole: iam.IRole;
 }
 
 export interface IKubectlProvider {

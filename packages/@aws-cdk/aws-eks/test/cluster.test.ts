@@ -12,6 +12,7 @@ import * as cdk8s from 'cdk8s';
 import * as constructs from 'constructs';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
+import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
 
@@ -900,6 +901,27 @@ describe('cluster', () => {
       bootstrapOptions: {},
     })).toThrow(/bootstrapOptions is not supported for Bottlerocket/);
 
+  });
+
+  test('import cluster with existing kubectl provider function', () => {
+
+    const { stack } = testFixture();
+
+    const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+    const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+      functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+      kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
+      handlerRole,
+    });
+
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster',
+      kubectlProvider,
+    });
+
+    expect(cluster.kubectlProvider?.handlerRole.roleArn).toEqual('arn:aws:iam::123456789012:role/lambda-role');
+
+    expect(cluster.kubectlProvider?.roleArn).toEqual('arn:aws:iam::123456789012:role/kubectl-role');
   });
 
   test('import cluster with new kubectl private subnets', () => {
