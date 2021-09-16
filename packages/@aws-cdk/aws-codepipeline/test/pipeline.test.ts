@@ -390,7 +390,7 @@ describe('', () => {
 
       });
 
-      test('does not allow key rotation if cross account keys has not been set', () => {
+      test('does not allow enabling key rotation if cross account keys have been disabled', () => {
         const app = new cdk.App();
         const stack = new cdk.Stack(app, 'PipelineStack');
 
@@ -402,7 +402,7 @@ describe('', () => {
         }).toThrow("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled");
       });
 
-      test('allows enabling key rotation if cross account keys has been set', () => {
+      test("enabling key rotation sets 'EnableKeyRotation' to 'true' in the main generated KMS key", () => {
         const app = new cdk.App();
         const stack = new cdk.Stack(app, 'PipelineStack');
         const sourceOutput = new codepipeline.Artifact();

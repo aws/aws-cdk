@@ -91,9 +91,9 @@ export interface CdkPipelineProps {
   /**
    * Enables KMS key rotation for cross-account keys
    *
-   * Can only be set if `crossAccountKeys` is not set.
+   * Cannot be set if `crossAccountKeys` was set to `false`.
    *
-   * By default kms key rotation is disabled, but will add an additional $1/month
+   * By default KMS key rotation is disabled, but will add an additional $1/month
    * for each year the key exists when enabled.
    *
    * @default false
