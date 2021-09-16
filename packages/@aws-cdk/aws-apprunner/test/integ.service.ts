@@ -7,7 +7,7 @@ import { Service, Source, GitHubConnection, ConfigurationSourceType, Runtime } f
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'integ-apprunner3');
+const stack = new cdk.Stack(app, 'integ-apprunner');
 
 // Scenario 1: Create the service from ECR public
 const service1 = new Service(stack, 'Service1', {
@@ -62,6 +62,8 @@ const service5 = new Service(stack, 'Service5', {
     codeConfigurationValues: {
       runtime: Runtime.PYTHON_3,
       port: '8000',
+      startCommand: 'python app.py',
+      buildCommand: 'yum install -y pycairo && pip install -r requirements.txt',
     },
     connection: GitHubConnection.fromConnectionArn(connectionArn),
   }),

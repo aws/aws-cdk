@@ -261,8 +261,10 @@
           "CodeRepository": {
             "CodeConfiguration": {
               "CodeConfigurationValues": {
+                "BuildCommand": "yum install -y pycairo && pip install -r requirements.txt",
                 "Port": "8000",
-                "Runtime": "PYTHON_3"
+                "Runtime": "PYTHON_3",
+                "StartCommand": "python app.py"
               },
               "ConfigurationSource": "API"
             },
