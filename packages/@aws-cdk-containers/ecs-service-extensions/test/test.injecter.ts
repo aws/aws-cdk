@@ -79,13 +79,13 @@ export = {
               Value: '80',
             },
             {
-              Name: 'MY-SERVICE_TOPIC1_TOPIC_ARN',
+              Name: 'TOPIC1_TOPIC_ARN',
               Value: {
                 Ref: 'topic152D84A37',
               },
             },
             {
-              Name: 'MY-SERVICE_TOPIC2_TOPIC_ARN',
+              Name: 'TOPIC2_TOPIC_ARN',
               Value: {
                 Ref: 'topic2A4FB547F',
               },

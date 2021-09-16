@@ -582,13 +582,13 @@
                 "Value": "80"
               },
               {
-                "Name": "PUBLISHER_SIGN-UP_TOPIC_ARN",
+                "Name": "SIGN-UP_TOPIC_ARN",
                 "Value": {
                   "Ref": "signupD2AAA171"
                 }
               },
               {
-                "Name": "PUBLISHER_DELETE_TOPIC_ARN",
+                "Name": "DELETE_TOPIC_ARN",
                 "Value": {
                   "Ref": "delete1CCE71FF"
                 }

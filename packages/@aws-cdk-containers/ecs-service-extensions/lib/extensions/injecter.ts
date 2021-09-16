@@ -117,7 +117,7 @@ export class InjecterExtension extends ServiceExtension {
 
     for (const injectable of this.props.injectables) {
       for (const [key, val] of Object.entries(injectable.environmentVariables())) {
-        this.environment[`${service.id.toUpperCase()}_${key}`] = val;
+        this.environment[key] = val;
       }
     }
   }
