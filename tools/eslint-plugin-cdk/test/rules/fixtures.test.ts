@@ -36,17 +36,26 @@ fs.readdirSync(fixturesRoot).filter(f => fs.lstatSync(path.join(fixturesRoot, f)
 
     fixtureFiles.forEach(f => {
       test(f, async (done) => {
-        const actualFile = await lintAndFix(path.join(fixturesDir, f), outputDir);
+        const originalFilepath = path.join(fixturesDir, f);
         const expectedFile = path.join(fixturesDir, `${path.basename(f, '.ts')}.expected.ts`);
         if (!fs.existsSync(expectedFile)) {
-          done.fail(`Expected file not found. Generated output at ${actualFile}`);
+          // If there is no expected file, then the test does not need to check that the eslint-plugin performed a fix correctly,
+          // but we do need to check that there was at least one error from the linter. 
+          const errorCount = await lintAndGetErrorCount(originalFilepath)
+          if (errorCount > 0) {
+            done();
+          } else {
+            done.fail(`Linter did not find any errors in the test file: ${path.join(fixturesDir, f)}`);
+          }
+        } else {
+          const actualFile = await lintAndFix(originalFilepath, outputDir);
+          const actual = await fs.readFile(actualFile, { encoding: 'utf8' });
+          const expected = await fs.readFile(expectedFile, { encoding: 'utf8' });
+          if (actual !== expected) {
+            done.fail(`Linted file did not match expectations. Expected: ${expectedFile}. Actual: ${actualFile}`);
+          }
+          done();
         }
-        const actual = await fs.readFile(actualFile, { encoding: 'utf8' });
-        const expected = await fs.readFile(expectedFile, { encoding: 'utf8' });
-        if (actual !== expected) {
-          done.fail(`Linted file did not match expectations. Expected: ${expectedFile}. Actual: ${actualFile}`);
-        }
-        done();
       });
     });
   });
@@ -66,4 +75,14 @@ async function lintAndFix(file: string, outputDir: string) {
     await fs.copyFile(file, newPath);
   }
   return newPath;
+}
+
+async function lintAndGetErrorCount(file: string) {
+  const result = await linter.lintFiles(file);
+  console.log('length:' + result.length);
+  if(result.length === 1) {
+    console.log('returning: ' + result[0].errorCount);
+    return(result[0].errorCount);
+  };
+  return 0;
 }
