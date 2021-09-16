@@ -96,12 +96,12 @@ describe('identity pool', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'dynamodb:*',
+            Action: 'execute-api:*',
             Effect: 'Allow',
             Resource: '*',
           },
           {
-            Action: 'execute-api:*',
+            Action: 'dynamodb:*',
             Effect: 'Allow',
             Resource: '*',
           },
