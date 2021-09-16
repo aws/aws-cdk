@@ -17,16 +17,16 @@
 To construct an empty Pipeline:
 
 ```ts
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as codepipeline from "@aws-cdk/aws-codepipeline";
 
-const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline');
+const pipeline = new codepipeline.Pipeline(this, "MyFirstPipeline");
 ```
 
 To give the Pipeline a nice, human-readable name:
 
 ```ts
-const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
-  pipelineName: 'MyPipeline',
+const pipeline = new codepipeline.Pipeline(this, "MyFirstPipeline", {
+  pipelineName: "MyPipeline",
 });
 ```
 
@@ -41,7 +41,7 @@ the creation of the Customer Master Keys by passing `crossAccountKeys: false`
 when defining the Pipeline:
 
 ```ts
-const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+const pipeline = new codepipeline.Pipeline(this, "MyFirstPipeline", {
   crossAccountKeys: false,
 });
 ```
@@ -62,10 +62,10 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 You can provide Stages when creating the Pipeline:
 
 ```ts
-const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+const pipeline = new codepipeline.Pipeline(this, "MyFirstPipeline", {
   stages: [
     {
-      stageName: 'Source',
+      stageName: "Source",
       actions: [
         // see below...
       ],
@@ -90,7 +90,7 @@ You can insert the new Stage at an arbitrary point in the Pipeline:
 
 ```ts
 const someStage = pipeline.addStage({
-  stageName: 'SomeStage',
+  stageName: "SomeStage",
   placement: {
     // note: you can only specify one of the below properties
     rightBefore: anotherStage,
@@ -113,14 +113,14 @@ sourceStage.addAction(someAction);
 
 ## Cross-account CodePipelines
 
-> Cross-account Pipeline actions require that the Pipeline has *not* been
+> Cross-account Pipeline actions require that the Pipeline has _not_ been
 > created with `crossAccountKeys: false`.
 
 Most pipeline Actions accept an AWS resource object to operate on. For example:
 
-* `S3DeployAction` accepts an `s3.IBucket`.
-* `CodeBuildAction` accepts a `codebuild.IProject`.
-* etc.
+- `S3DeployAction` accepts an `s3.IBucket`.
+- `CodeBuildAction` accepts a `codebuild.IProject`.
+- etc.
 
 These resources can be either newly defined (`new s3.Bucket(...)`) or imported
 (`s3.Bucket.fromBucketAttributes(...)`) and identify the resource that should
@@ -175,7 +175,7 @@ stage.addAction(
 ## Cross-region CodePipelines
 
 Similar to how you set up a cross-account Action, the AWS resource object you
-pass to actions can also be in different *Regions*. For example, the
+pass to actions can also be in different _Regions_. For example, the
 following Action deploys to an imported S3 bucket from a different Region:
 
 ```ts
@@ -213,7 +213,7 @@ place to serve as replication buckets, you can supply these at Pipeline definiti
 time using the `crossRegionReplicationBuckets` parameter. Example:
 
 ```ts
-const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+const pipeline = new codepipeline.Pipeline(this, "MyFirstPipeline", {
   // ...
 
   crossRegionReplicationBuckets: {
@@ -244,42 +244,42 @@ If you're passing a replication bucket created in a different stack,
 like this:
 
 ```ts
-const replicationStack = new Stack(app, 'ReplicationStack', {
+const replicationStack = new Stack(app, "ReplicationStack", {
   env: {
-    region: 'us-west-1',
+    region: "us-west-1",
   },
 });
-const key = new kms.Key(replicationStack, 'ReplicationKey');
-const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
+const key = new kms.Key(replicationStack, "ReplicationKey");
+const replicationBucket = new s3.Bucket(replicationStack, "ReplicationBucket", {
   // like was said above - replication buckets need a set physical name
   bucketName: PhysicalName.GENERATE_IF_NEEDED,
   encryptionKey: key, // does not work!
 });
 
 // later...
-new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+new codepipeline.Pipeline(pipelineStack, "Pipeline", {
   crossRegionReplicationBuckets: {
-    'us-west-1': replicationBucket,
+    "us-west-1": replicationBucket,
   },
 });
 ```
 
 When trying to encrypt it
 (and note that if any of the cross-region actions happen to be cross-account as well,
-the bucket *has to* be encrypted - otherwise the pipeline will fail at runtime),
+the bucket _has to_ be encrypted - otherwise the pipeline will fail at runtime),
 you cannot use a key directly - KMS keys don't have physical names,
 and so you can't reference them across environments.
 
 In this case, you need to use an alias in place of the key when creating the bucket:
 
 ```ts
-const key = new kms.Key(replicationStack, 'ReplicationKey');
-const alias = new kms.Alias(replicationStack, 'ReplicationAlias', {
+const key = new kms.Key(replicationStack, "ReplicationKey");
+const alias = new kms.Alias(replicationStack, "ReplicationAlias", {
   // aliasName is required
   aliasName: PhysicalName.GENERATE_IF_NEEDED,
   targetKey: key,
 });
-const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
+const replicationBucket = new s3.Bucket(replicationStack, "ReplicationBucket", {
   bucketName: PhysicalName.GENERATE_IF_NEEDED,
   encryptionKey: alias,
 });
@@ -314,7 +314,7 @@ you can pass a custom name when creating the action instance:
 ```ts
 const myAction = new MyAction({
   // ...
-  variablesNamespace: 'MyNamespace',
+  variablesNamespace: "MyNamespace",
 });
 ```
 
@@ -342,11 +342,11 @@ for more details on how to use the variables feature.
 A pipeline can be used as a target for a CloudWatch event rule:
 
 ```ts
-import * as targets from '@aws-cdk/aws-events-targets';
-import * as events from '@aws-cdk/aws-events';
+import * as targets from "@aws-cdk/aws-events-targets";
+import * as events from "@aws-cdk/aws-events";
 
 // kick off the pipeline every day
-const rule = new events.Rule(this, 'Daily', {
+const rule = new events.Rule(this, "Daily", {
   schedule: events.Schedule.rate(Duration.days(1)),
 });
 
@@ -364,9 +364,9 @@ the pipeline, stages or action, use the `onXxx` methods on the respective
 construct:
 
 ```ts
-myPipeline.onStateChange('MyPipelineStateChange', target);
-myStage.onStateChange('MyStageStateChange', target);
-myAction.onStateChange('MyActionStateChange', target);
+myPipeline.onStateChange("MyPipelineStateChange", target);
+myStage.onStateChange("MyStageStateChange", target);
+myAction.onStateChange("MyActionStateChange", target);
 ```
 
 ## CodeStar Notifications
@@ -375,11 +375,14 @@ To define CodeStar Notification rules for Pipelines, use one of the `notifyOnXxx
 They are very similar to `onXxx()` methods for CloudWatch events:
 
 ```ts
-const target = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
-  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
-  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+const target = new chatbot.SlackChannelConfiguration(stack, "MySlackChannel", {
+  slackChannelConfigurationName: "YOUR_CHANNEL_NAME",
+  slackWorkspaceId: "YOUR_SLACK_WORKSPACE_ID",
+  slackChannelId: "YOUR_SLACK_CHANNEL_ID",
 });
 
-const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange', target);
+const rule = pipeline.notifyOnExecutionStateChange(
+  "NotifyOnExecutionStateChange",
+  target
+);
 ```
