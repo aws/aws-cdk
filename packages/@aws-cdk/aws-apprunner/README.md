@@ -35,18 +35,22 @@ AWS App Runner is a fully managed service that makes it easy for developers to q
 
 The `Service` construct allows you to create AWS App Runner services with `ECR Public`, `ECR` or `Github` with the `source` property in the following scenarios:
 
-- `Code.fromImage()` - To define the source repository from `ECR Public`, `ECR` or images built from local docker image assets.
-- `Code.fromGitHub()` - To define the source repository from a GitHub repository. 
+- `Source.fromEcr()` - To define the source repository from `ECR`.
+- `Source.fromEcrPublic()` - To define the source repository from `ECR Public`.
+- `Source.fromGitHub()` - To define the source repository from the `Github repository`.
+- `Source.fromAsset()` - To define the source from local asset directory. 
+
 
 ## ECR Public
 
 To create a `Service` with ECR Public:
 
 ```ts
-const image = ContainerImage.fromEcrPublic('public.ecr.aws/aws-containers/hello-app-runner:latest');
-
 new Service(stack, 'Service', {
-  source: Code.fromImage(image, { port: 80 }),
+  source: Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
 });
 ```
 
@@ -55,46 +59,64 @@ new Service(stack, 'Service', {
 To create a `Service` from an existing ECR repository:
 
 ```ts
-// import the existing ECR repository by name
-const repo = ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx');
-const image = ContainerImage.fromEcrRepository(repo);
-
 new Service(stack, 'Service', {
-  source: Code.fromImage(image, { port: 80 }),
+  source: Source.fromEcr({
+    imageConfiguration: { port: 80 },
+    repository: ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx'),
+    tag: 'latest',
+  }),
 });
 ```
 
-
-To create a `Service` from local docker image assets being built and pushed to Amazon ECR:
+To create a `Service` from local docker image asset directory  built and pushed to Amazon ECR:
 
 ```ts
-const imageAssets = new assets.DockerImageAsset(stack, 'ImageAssets', {
-  directory, // your code assets directory with Dockerfile
+const imageAsset = new assets.DockerImageAsset(stack, 'ImageAssets', {
+  directory: path.join(__dirname, './docker.assets'),
 });
-const image = ContainerImage.fromDockerImageAssets(imageAssets);
-
 new Service(stack, 'Service', {
-  source: Code.fromImage(image, { port: 80 }),
+  source: Source.fromAsset({
+    imageConfiguration: { port: 8000 },
+    asset: imageAsset,
+  }),
 });
 ```
 
-## Github
+## GitHub
 
-To create a `Service` from the Github repository, you need to specify an existing App Runner Connection.
+To create a `Service` from the GitHub repository, you need to specify an existing App Runner `Connection`.
 
 See [Managing App Runner connections](https://docs.aws.amazon.com/apprunner/latest/dg/manage-connections.html) for more details.
 
 ```ts
 new Service(stack, 'Service', {
-  source: Code.fromGitHub({
+  source: Source.fromGitHub({
     repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
     branch: 'main',
-    runtime: CodeRuntime.PYTHON_3,
-    port: 8080,
-    connection: GitHubConnection.fromConnectionArn(connectionArn),
+    configurationSource: ConfigurationSourceType.REPOSITORY,
+    connection: GitHubConnection.fromConnectionArn('CONNECTION_ARN'),
   }),
 });
 ```
+Use `codeConfigurationValues` to override configuration values with the `API` configuration source type.
+
+```ts
+new Service(stack, 'Service', {
+  source: Source.fromGitHub({
+    repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+    branch: 'main',
+    configurationSource: ConfigurationSourceType.API,
+    codeConfigurationValues: {
+      runtime: Runtime.PYTHON_3,
+      port: '8000',
+      startCommand: 'python app.py',
+      buildCommand: 'yum install -y pycairo && pip install -r requirements.txt',
+    },
+    connection: GitHubConnection.fromConnectionArn('CONNECTION_ARN'),
+  }),
+});
+```
+
 
 ## IAM Roles
 
