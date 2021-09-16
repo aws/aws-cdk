@@ -60,6 +60,7 @@ export class CrossRegionSupportConstruct extends Construct {
     super(scope, id);
 
     const createKmsKey = props.createKmsKey ?? true;
+    const enableKeyRotation = props.enableKeyRotation ?? false;
 
     let encryptionAlias;
     if (createKmsKey) {
