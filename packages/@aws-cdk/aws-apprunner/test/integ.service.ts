@@ -16,7 +16,7 @@ const service1 = new Service(stack, 'Service1', {
       port: 8000,
     },
     imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-  })
+  }),
 });
 new cdk.CfnOutput(stack, 'URL1', { value: `https://${service1.serviceUrl}` });
 

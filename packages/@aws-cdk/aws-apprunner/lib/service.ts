@@ -151,6 +151,7 @@ export interface SourceConfig {
 export interface GithubRepositoryProps {
   /**
    * The code configuration values. Will be ignored if configurationSource is `REPOSITORY`.
+   * @default - no values will be passed. The `apprunner.yaml` from the github reopsitory will be used instead.
    */
   readonly codeConfigurationValues?: CodeConfigurationValues;
 
@@ -182,7 +183,15 @@ export interface GithubRepositoryProps {
  * Properties of the image repository for `Source.fromEcrPublic()`
  */
 export interface EcrPublicProps {
+  /**
+   * The image configuration for the image from ECR Public.
+   * @default - no image configuration will be passed. The default `port` will be 8080.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imageconfiguration.html#cfn-apprunner-service-imageconfiguration-port
+   */
   readonly imageConfiguration?: ImageConfiguration;
+  /**
+   * The ECR Public image URI.
+   */
   readonly imageIdentifier: string;
 }
 
@@ -190,7 +199,15 @@ export interface EcrPublicProps {
  * Properties of the image repository for `Source.fromEcr()`
  */
 export interface EcrProps {
+  /**
+   * The image configuration for the image from ECR.
+   * @default - no image configuration will be passed. The default `port` will be 8080.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imageconfiguration.html#cfn-apprunner-service-imageconfiguration-port
+   */
   readonly imageConfiguration?: ImageConfiguration;
+  /**
+   * Represents the ECR repository.
+   */
   readonly repository: ecr.IRepository;
   /**
    * Image tag.
@@ -203,10 +220,17 @@ export interface EcrProps {
  * Properties of the image repository for `Source.fromAsset()`
  */
 export interface AssetProps {
+  /**
+   * The image configuration for the image built from the asset.
+   * @default - no image configuration will be passed. The default `port` will be 8080.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imageconfiguration.html#cfn-apprunner-service-imageconfiguration-port
+   */
   readonly imageConfiguration?: ImageConfiguration;
+  /**
+   * Represents the docker image asset.
+   */
   readonly asset: assets.DockerImageAsset;
 }
-
 
 
 /**
@@ -214,19 +238,28 @@ export interface AssetProps {
  */
 export abstract class Source {
   /**
-   * Code from the GitHub repository.
+   * Source from the GitHub repository.
    */
   public static fromGitHub(props: GithubRepositoryProps): GithubSource {
-    return new GithubSource(props)
+    return new GithubSource(props);
   }
+  /**
+   * Source from the ECR repository.
+   */
   public static fromEcr(props: EcrProps): EcrSource {
-    return new EcrSource(props)
+    return new EcrSource(props);
   }
+  /**
+   * Source from the ECR Public repository.
+   */
   public static fromEcrPublic(props: EcrPublicProps): EcrPublicSource {
-    return new EcrPublicSource(props)
+    return new EcrPublicSource(props);
   }
+  /**
+   * Source from local assets.
+   */
   public static fromAsset(props: AssetProps): AssetSource {
-    return new AssetSource(props)
+    return new AssetSource(props);
   }
   /**
     * Called when the Job is initialized to allow this object to bind.
@@ -234,11 +267,14 @@ export abstract class Source {
   public abstract bind(scope: Construct): SourceConfig;
 }
 
+/**
+ * Represents the service source from a Github repository.
+ */
 export class GithubSource extends Source {
   private readonly props: GithubRepositoryProps
   constructor(props: GithubRepositoryProps) {
-    super()
-    this.props = props
+    super();
+    this.props = props;
   }
   public bind(_scope: Construct): SourceConfig {
     return {
@@ -257,11 +293,14 @@ export class GithubSource extends Source {
     };
   }
 }
+/**
+ * Represents the service source from ECR.
+ */
 export class EcrSource extends Source {
   private readonly props: EcrProps
   constructor(props: EcrProps) {
-    super()
-    this.props = props
+    super();
+    this.props = props;
   }
   public bind(_scope: Construct): SourceConfig {
     return {
@@ -275,11 +314,14 @@ export class EcrSource extends Source {
   }
 }
 
+/**
+ * Represents the service source from ECR Public.
+ */
 export class EcrPublicSource extends Source {
   private readonly props: EcrPublicProps;
   constructor(props: EcrPublicProps) {
-    super()
-    this.props = props
+    super();
+    this.props = props;
   }
   public bind(_scope: Construct): SourceConfig {
     return {
@@ -287,16 +329,19 @@ export class EcrPublicSource extends Source {
         imageConfiguration: this.props.imageConfiguration,
         imageIdentifier: this.props.imageIdentifier,
         imageRepositoryType: ImageRepositoryType.ECR_PUBLIC,
-      }
+      },
     };
   }
 }
 
+/**
+ * Represents the source from local assets.
+ */
 export class AssetSource extends Source {
   private readonly props: AssetProps
   constructor(props: AssetProps) {
-    super()
-    this.props = props
+    super();
+    this.props = props;
   }
   public bind(_scope: Construct): SourceConfig {
     return {
@@ -363,6 +408,8 @@ export interface ImageRepository {
 
   /**
    * Configuration for running the identified image.
+   * @default - no image configuration will be passed. The default `port` will be 8080.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imageconfiguration.html#cfn-apprunner-service-imageconfiguration-port
    */
   readonly imageConfiguration?: ImageConfiguration;
 }
@@ -697,14 +744,14 @@ export class Service extends cdk.Resource {
     const source = props.source.bind(this);
     this.source = source;
     this.props = props;
-  
+
     // generate an IAM role only when ImageRepositoryType is ECR and props.role is undefined
     this.accessRole = (this.source.imageRepository?.imageRepositoryType == ImageRepositoryType.ECR) ?
       this.props.accessRole ? this.props.accessRole : this.generateDefaultRole() : undefined;
-  
-    if (source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY && 
+
+    if (source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY &&
       source.codeRepository?.codeConfiguration.configurationValues) {
-      throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository')
+      throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
     }
 
     const resource = new CfnService(this, 'Resource', {
@@ -747,17 +794,17 @@ export class Service extends cdk.Resource {
       },
       repositoryUrl: this.source.codeRepository!.repositoryUrl,
       sourceCodeVersion: this.source.codeRepository!.sourceCodeVersion,
-    }
+    };
 
   }
   private renderCodeConfigurationValues(props: CodeConfigurationValues): any {
     return {
       ...props,
       runtime: props.runtime.name,
-    }
+    };
   }
   private renderImageRepository(): any {
-    const repo = this.source.imageRepository!
+    const repo = this.source.imageRepository!;
     if (repo.imageConfiguration?.port) {
       // convert port from type number to string
       return Object.assign(repo, {
