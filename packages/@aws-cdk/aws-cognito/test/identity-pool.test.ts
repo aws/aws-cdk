@@ -76,7 +76,7 @@ describe('identity pool', () => {
     });
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 2);
-    temp.resourceCountIs('AWS::IAM::Policy', 3);
+    temp.resourceCountIs('AWS::IAM::Policy', 2);
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
       AllowUnauthenticatedIdentities: true,
     });
@@ -96,19 +96,12 @@ describe('identity pool', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'execute-api:*',
+            Action: 'dynamodb:*',
             Effect: 'Allow',
             Resource: '*',
           },
-        ],
-      },
-    });
-
-    temp.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
           {
-            Action: 'dynamodb:*',
+            Action: 'execute-api:*',
             Effect: 'Allow',
             Resource: '*',
           },
