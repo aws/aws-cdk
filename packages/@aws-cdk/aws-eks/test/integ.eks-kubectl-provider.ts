@@ -7,7 +7,7 @@ const stack = new Stack(app, 'kubectl-provider-integ-test');
 
 const cluster = Cluster.fromClusterAttributes(stack, 'Cluster', {
   clusterName: 'cluster',
-  kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role'
+  kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
 });
 
 new KubectlProvider(stack, 'NewKubectlProvider', {
