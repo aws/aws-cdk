@@ -44,6 +44,8 @@ export async function tryHotswapDeployment(
     account: resolvedEnv.account,
     region: resolvedEnv.region,
     // ToDo make this better:
+    partition: 'aws',
+    // ToDo make this better:
     urlSuffix: 'amazonaws.com',
     listStackResources,
   });

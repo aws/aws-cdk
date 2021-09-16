@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as AWS from 'aws-sdk';
 import { ListStackResources } from './common';
 
 export interface CloudFormationExecutableTemplateProps {
@@ -6,7 +7,7 @@ export interface CloudFormationExecutableTemplateProps {
   readonly parameters: { [parameterName: string]: string };
   readonly account: string;
   readonly region: string;
-  // readonly partition: string;
+  readonly partition: string;
   readonly urlSuffix: string;
 
   readonly listStackResources: ListStackResources;
@@ -17,16 +18,23 @@ export class CloudFormationExecutableTemplate {
 
   readonly template: { [section: string]: { [headings: string]: any } };
   private readonly context: { [k: string]: string };
+  private readonly account: string;
+  private readonly region: string;
+  private readonly partition: string;
 
   constructor(props: CloudFormationExecutableTemplateProps) {
     this.stackResources = props.listStackResources;
     this.template = props.stackArtifact.template;
     this.context = {
-      'AWS::Region': props.region,
       'AWS::AccountId': props.account,
+      'AWS::Region': props.region,
+      'AWS::Partition': props.partition,
       'AWS::URLSuffix': props.urlSuffix,
       ...props.parameters,
     };
+    this.account = props.account;
+    this.region = props.region;
+    this.partition = props.partition;
   }
 
   public async evaluateCfnExpression(cfnExpression: any): Promise<any> {
@@ -80,11 +88,11 @@ export class CloudFormationExecutableTemplate {
 
   async 'Fn::GetAtt'(logicalId: string, attributeName: string): Promise<string> {
     // ToDo handle the 'logicalId.attributeName' form of Fn::GetAtt
-    const key = `${logicalId}.${attributeName}`;
-    if (key in this.context) {
-      return this.context[key];
+    const attrValue = await this.findGetAttTarget(logicalId, attributeName);
+    if (attrValue) {
+      return attrValue;
     } else {
-      throw new Error(`Trying to evaluate Fn::GetAtt of '${key}' but not in context!`);
+      throw new Error(`Trying to evaluate Fn::GetAtt of '${logicalId}.${attributeName}' but not in context!`);
     }
   }
 
@@ -130,14 +138,77 @@ export class CloudFormationExecutableTemplate {
     if (parameterTarget) {
       return parameterTarget;
     }
-
     // if it's not a Parameter, we need to search in the current Stack resources
+    return this.findGetAttTarget(logicalId);
+  }
+
+  private async findGetAttTarget(logicalId: string, attribute?: string): Promise<string | undefined> {
     const stackResources = await this.stackResources.listStackResources();
     const foundResource = stackResources.find(sr => sr.LogicalResourceId === logicalId);
-    // ToDo this needs to be more sophisticated, and do different things based on the resource type
-    // (as the PhysicalId can also be other things, like an ARN)
-    return foundResource?.PhysicalResourceId;
+    if (!foundResource) {
+      return undefined;
+    }
+    // now, we need to format the appropriate identifier depending on the resource type,
+    // and the requested attribute name
+    return this.formatResourceAttribute(foundResource, attribute);
   }
+
+  private formatResourceAttribute(resource: AWS.CloudFormation.StackResourceSummary, attribute: string | undefined): string | undefined {
+    const physicalId = resource.PhysicalResourceId;
+
+    // no attribute means Ref expression, for which we use the physical ID directly
+    if (!attribute) {
+      return physicalId;
+    }
+
+    const resourceTypeFormats = RESOURCE_TYPE_ATTRIBUTES_FORMATS[resource.ResourceType];
+    if (!resourceTypeFormats) {
+      return physicalId;
+    }
+    const attributeFmtFunc = resourceTypeFormats[attribute];
+    if (!attributeFmtFunc) {
+      return physicalId;
+    }
+    const service = this.getServiceOfResource(resource);
+    const resourceTypeArnPart = this.getResourceTypeArnPartOfResource(resource);
+    return attributeFmtFunc({
+      partition: this.partition,
+      service,
+      region: this.region,
+      account: this.account,
+      resourceType: resourceTypeArnPart,
+      resourceName: physicalId!,
+    });
+  }
+
+  private getServiceOfResource(resource: AWS.CloudFormation.StackResourceSummary): string {
+    return resource.ResourceType.split('::')[1].toLowerCase();
+  }
+
+  private getResourceTypeArnPartOfResource(resource: AWS.CloudFormation.StackResourceSummary): string {
+    return resource.ResourceType.split('::')[2].toLowerCase();
+  }
+}
+
+interface ArnParts {
+  readonly partition: string;
+  readonly service: string;
+  readonly region: string;
+  readonly account: string;
+  readonly resourceType: string;
+  readonly resourceName: string;
+}
+
+const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]: (parts: ArnParts) => string } } = {
+  'AWS::IAM::Role': {
+    Arn: iamArnFmt,
+  },
+  // ToDo add more entries here
+};
+
+function iamArnFmt(parts: ArnParts): string {
+  // we skip region for IAM resources
+  return `arn:${parts.partition}:${parts.service}::${parts.account}:${parts.resourceType}/${parts.resourceName}`;
 }
 
 interface Intrinsic {
