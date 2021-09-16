@@ -133,7 +133,7 @@ export interface PipelineProps {
    * By default KMS key rotation is disabled, but will add an additional $1/month
    * for each year the key exists when enabled.
    *
-   * @default false
+   * @default - false (key rotation is disabled)
    */
   readonly enableKeyRotation?: boolean;
 }
