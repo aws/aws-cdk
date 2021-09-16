@@ -18,3 +18,4 @@ nyc.config.js
 !.eslintrc.js
 
 junit.xml
+!jest.config.js
